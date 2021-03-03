@@ -1,5 +1,5 @@
 ﻿@model Improvar.ViewModels.SysCnfgMasterEntry
-@{
+@{  
     ViewBag.Title = "Posting & Terms Setup";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -18,10 +18,45 @@
             $("#EFFDT").attr("readonly", "readonly");
         }
         else if ("@Model.DefaultAction" == "A") {
+          
             $('form :input:enabled:visible:not([readonly]):first').focus();
+            Check_SysCnfg_DataExsistOrNot();
         }
         $("#WaitingMode").hide();
     });
+</script>
+<script>
+    function Check_SysCnfg_DataExsistOrNot()
+    {
+        debugger;
+        var chkdata = $('#Checked_DataExsist').val();
+        if (chkdata == "True") {
+            $("#EFFDT").attr("readonly", "readonly");
+            if ($("#SALDEBGLCD").val() != "")
+            { $("#SALDEBGLCD").attr("readonly", "readonly"); $("#help_SALDEBGLCD").hide(); }
+            if ($("#PURDEBGLCD").val() != "")
+            { $("#PURDEBGLCD").attr("readonly", "readonly"); $("#help_PURDEBGLCD").hide(); }
+            if ($("#CLASS1CD").val() != "")
+            { $("#CLASS1CD").attr("readonly", "readonly"); $("#help_CLASS1CD").hide(); }
+            if ($("#RETDEBSLCD").val() != "")
+            { $("#RETDEBSLCD").attr("readonly", "readonly"); $("#PARTY_HELP").hide(); }
+            var WPPRICEGENCD = $("#WPPRICEGENCD").val();
+            if (WPPRICEGENCD != "") $("#WPPRICEGENCD").attr("style", "pointer-events:none");
+            if ($("#WPPRICEGENAMT").val() != "") $("#WPPRICEGENAMT").attr("readonly", "readonly");
+            var RPPRICEGENCD = $("#RPPRICEGENCD").val();
+            if (RPPRICEGENCD != "") $("#RPPRICEGENCD").attr("style", "pointer-events:none");
+            if ($("#RPPRICEGENAMT").val() != "") $("#RPPRICEGENAMT").attr("readonly", "readonly");
+            //var DUEDATECALCON = ($("#DUEDATECALCON").find(":selected").val());
+            var DUEDATECALCON = $("#DUEDATECALCON").val();
+            if (DUEDATECALCON != "") $("#DUEDATECALCON").attr("style", "pointer-events:none");
+            if ($("#WPPER").val() != "") $("#WPPER").attr("readonly", "readonly");
+            if ($("#RPPER").val() != "") $("#RPPER").attr("readonly", "readonly");
+            if ($("#PRICEINCODE").val() != "") $("#PRICEINCODE").attr("readonly", "readonly");
+            if ($("#PRICEINCODECOST").val() != "") $("#PRICEINCODECOST").attr("readonly", "readonly");
+            if ($("#RTDEBCD").val() != "") { $("#RTDEBCD").attr("readonly", "readonly"); $("#help_RTDEBCD").hide(); }
+            if ($("#DESIGNPATH").val() != "") $("#DESIGNPATH").attr("readonly", "readonly");
+        }
+       }
 </script>
 <script>
     function requiredFieldValidator() {
@@ -33,7 +68,17 @@
 </script>
 <script>
     if ("@Model.DefaultAction" == "A") {
-        $(function () { $("#EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
+        debugger;
+       
+            $(function () {
+                var chkdata = $('#Checked_DataExsist').val();
+                if (chkdata != "True")
+                { $("#EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); }
+                else { return false;}
+               
+            });
+        
+    
     }
 </script>
 <script>
@@ -132,6 +177,7 @@
             @Html.HiddenFor(a => a.M_SYSCNFG.M_AUTONO)
             @Html.HiddenFor(e => e.M_SYSCNFG.EMD_NO)
             @Html.HiddenFor(e => e.M_SYSCNFG.COMPCD)
+            @Html.HiddenFor(e => e.Checked_DataExsist)
             <input type="hidden" id="GLCDlinkcd" value="O,C,D" />
             <input type="hidden" id="SLCDlinkcd" value="D,C,O" />
             @*<ul class="nav nav-tabs">
@@ -155,7 +201,7 @@
                                 @Html.EditorFor(model => model.M_SYSCNFG.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
                             </div>
                         </div>
-                        @if (Model.DefaultAction == "A")
+                        @*@if (Model.DefaultAction == "A")
                         {
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -173,7 +219,7 @@
                                     <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
                                 </div>
                             </div>
-                        }
+                        }*@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -185,7 +231,7 @@
                         <div class="col-md-6">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SYSCNFG.SALDEBGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALDEBGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD=1/SALDEBGLNM=GLNM=0','GLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD=1/SALDEBGLNM=GLNM=0','GLCDlinkcd');", @placeholder = "SALDEBGLCD", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD =1/SALDEBGLNM =GLNM =0','GLCDlinkcd')" />
+                                <img src="~/Image/search.png" width="20px" height="20px" id="help_SALDEBGLCD" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD =1/SALDEBGLNM =GLNM =0','GLCDlinkcd')" />
                             </div>
                         </div>
                         <div class="col-md-9">
@@ -205,7 +251,7 @@
                             <div class="editor-field">
 
                                 @Html.EditorFor(model => model.M_SYSCNFG.PURDEBGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURDEBGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD=1/PURDEBGLNM=GLNM=0','GLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD=1/PURDEBGLNM=GLNM=0','GLCDlinkcd');", @placeholder = "PURDEBGLCD", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD =1/PURDEBGLNM =GLNM =0','GLCDlinkcd')" />
+                                <img src="~/Image/search.png" width="20px" height="20px" id="help_PURDEBGLCD" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD =1/PURDEBGLNM =GLNM =0','GLCDlinkcd')" />
                             </div>
                         </div>
                         <div class="col-md-9">
@@ -223,7 +269,7 @@
                         <div class="col-md-6">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SYSCNFG.CLASS1CD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CLASS1CD", onkeydown = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0');", @placeholder = "Class1 Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetClass1Details", PageControllerName)','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD =1/CLASS1NM =CLASS1NM =0')" />
+                                <img src="~/Image/search.png" width="20px" height="20px" id="help_CLASS1CD" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetClass1Details", PageControllerName)','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD =1/CLASS1NM =CLASS1NM =0')" />
                             </div>
                         </div>
                         <div class="col-md-9">
@@ -343,7 +389,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.DropDownListFor(model => Model.M_SYSCNFG.DUEDATECALCON, new SelectList(Model.DropDown_list3, "Value", "Text"), new { @class = "form-control" })
+                                @Html.DropDownListFor(model => Model.M_SYSCNFG.DUEDATECALCON, new SelectList(Model.DropDown_list3, "Value", "Text"), new { @class = "form-control", id = "DUEDATECALCON" })
                             </div>
                         </div>
                     </div>
@@ -422,7 +468,7 @@
                         <div class="col-md-6">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SYSCNFG.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD =1/RTDBNM =RTDEBNM =0')" />
+                                <img src="~/Image/search.png" width="20px" height="20px" id="help_RTDEBCD" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD =1/RTDBNM =RTDEBNM =0')" />
                             </div>
                         </div>
                         <div class="col-md-8">

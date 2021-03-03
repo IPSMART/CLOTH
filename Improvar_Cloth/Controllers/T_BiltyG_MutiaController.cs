@@ -297,25 +297,6 @@ namespace Improvar.Controllers
                 string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM", "BALEYR" };
                 GetPendig_Data = dv.ToTable(true, COL);
                 List<string> blautonos = new List<string>();
-
-                //List<TBILTY> MLocIFSC1 = new List<TBILTY>();
-                //for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                //{
-                //    TBILTY MLI = new TBILTY();
-                //    MLI = VE.TBILTY[i];
-                //    MLocIFSC1.Add(MLI);
-                //}
-                //TBILTY MLI1 = new TBILTY();
-                //MLocIFSC1.Add(MLI1);
-                //VE.TBILTY = MLocIFSC1;
-                //if (VE.TBILTY != null)
-                //{
-                //    foreach (var i in VE.TBILTY)
-                //    {
-                //        blautonos.Add(i.BLAUTONO);
-
-                //    }
-                //} 
                   
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
@@ -330,11 +311,15 @@ namespace Improvar.Controllers
                                             TRANSLNM = dr["TRANSLNM"].retStr(),
                                             BALEYR = dr["BALEYR"].retStr(),
                                    }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
-                    for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
+                if (VE.TBILTY != null)
+                {//checked when opend secone times.
+                    var selectedbill = VE.TBILTY.Select(e => e.BLAUTONO).Distinct().ToList();
+                    var selectedbillbaleno = VE.TBILTY.Select(e => e.BALENO).Distinct().ToList();
+                    VE.TBILTY_POPUP.Where(x => selectedbill.Contains(x.BLAUTONO) && selectedbillbaleno.Contains(x.BALENO)).ForEach(e => e.Checked = true);
+                }
+                for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
                     {
                         VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
-                    //if (VE.TBILTY_POPUP[p].BLAUTONO.Contains(sqlbillautonos))
-                    //{ VE.TBILTY_POPUP[p].Checked = true; }
 
                 }
 
@@ -358,91 +343,54 @@ namespace Improvar.Controllers
         {
             try
             { var gcs = Cn.GCS();var flag = false;
-                List<TBILTY> TBILTY1 = new List<TBILTY>();
-                if (VE.TBILTY!=null)
-                {
-                    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                    {
-                        TBILTY TBL = new TBILTY();
-                        TBL = VE.TBILTY[i];
-                        TBILTY1.Add(TBL);
-                    }
-                }
-             
-                //List<string> blautonos = new List<string>();
+                List<string> baleno = new List<string>();
+                List<string> blautonos = new List<string>();
+                List<string> existingbale = new List<string>();
                 foreach (var i in VE.TBILTY_POPUP)
                 {
                     if (i.Checked == true)
                     {
-                        var chkduplicate = TBILTY1.Where(a => a.BLAUTONO + gcs + a.BALENO == i.BLAUTONO + gcs + i.BALENO).ToList();
-                       
-                        int SERIAL = 0;
-                        if (TBILTY1.Count != 0) SERIAL = Convert.ToInt32(TBILTY1.Max(a => Convert.ToInt32(a.SLNO)));
-                       
-                        TBILTY TBL1 = new TBILTY();
-                        TBL1.Checked = true;
-                        TBL1.SLNO = (SERIAL + 1).retShort();
-                        TBL1.BLAUTONO = i.BLAUTONO;
-                        TBL1.BALENO = i.BALENO;
-                        TBL1.LRNO = i.LRNO;
-                        TBL1.LRDT = i.LRDT;
-                        TBL1.PREFNO = i.PREFNO;
-                        TBL1.PREFDT = i.PREFDT;
-                        TBL1.BALEYR = i.BALEYR;
-                        TBILTY1.Add(TBL1);
+                        blautonos.Add(i.BLAUTONO);
+                        baleno.Add(i.BALENO);
                     }
                 }
-              
-                VE.TBILTY = TBILTY1;
-                //var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
-                //var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos,"","", MUTSLCD.retSqlformat());
-                //if (VE.TBILTY == null)
-                //{
-                //    VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
-                //                 select new TBILTY
-                //                 {
-                //                     BLAUTONO = dr["autono"].retStr(),
-                //                     BALENO = dr["baleno"].retStr(),
-                //                     LRNO = dr["lrno"].retStr(),
-                //                     LRDT = dr["lrdt"].retDateStr(),
-                //                     PREFNO = dr["prefno"].retStr(),
-                //                     PREFDT = dr["prefdt"].retDateStr(),
-                //                     BALEYR = dr["baleyr"].retStr()
-                //                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
-                //    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                //    {
-                //        VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
-                //    }
-                //}
-                //else
-                //{
-                //    var tbily = (from DataRow dr in GetPendig_Data.Rows
-                //                 select new TBILTY
-                //                 {
-                //                     BLAUTONO = dr["autono"].retStr(),
-                //                     BALENO = dr["baleno"].retStr(),
-                //                     LRNO = dr["lrno"].retStr(),
-                //                     LRDT = dr["lrdt"].retDateStr(),
-                //                     PREFNO = dr["prefno"].retStr(),
-                //                     PREFDT = dr["prefdt"].retDateStr(),
-                //                     BALEYR = dr["baleyr"].retStr(),
-                //                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
-
-                //    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                //    {
-                //        TBILTY MLI = new TBILTY();
-                //        MLI = VE.TBILTY[i];
-                //        MLocIFSC1.Add(MLI);
-                //    }
-
-
-                //    foreach(var j in tbily)
-                //    {
-
-                //    }
-
-                //    VE.TBILTY = MLocIFSC1;
-                //}
+                DataTable dt = new DataTable();
+                var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
+                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos, (VE.T_BILTY_HDR.AUTONO.retStr() == "" ? "" : VE.T_BILTY_HDR.AUTONO.retSqlformat()), "", MUTSLCD.retSqlformat());
+                DataView dv = new DataView(GetPendig_Data);
+                dt = dv.ToTable(true);
+                var existingdata = VE.TBILTY;
+                if (VE.TBILTY != null)
+                {
+                    existingbale = VE.TBILTY.Select(a => a.BLAUTONO + a.BALENO).ToList();
+                }
+                var newdata = (from DataRow dr in dt.Rows
+                               where !existingbale.Contains(dr["autono"].retStr() + dr["baleno"].retStr())
+                               && baleno.Contains(dr["baleno"].retStr())
+                               && blautonos.Contains(dr["autono"].retStr())
+                               select new TBILTY
+                               {
+                                   BLAUTONO = dr["autono"].retStr(),
+                                   BALENO = dr["baleno"].retStr(),
+                                   LRNO = dr["lrno"].retStr(),
+                                   LRDT = dr["lrdt"].retDateStr(),
+                                   PREFNO = dr["prefno"].retStr(),
+                                   PREFDT = dr["prefdt"].retDateStr(),
+                                   BALEYR = dr["baleyr"].retStr()
+                               }).Distinct().ToList();
+                if (VE.TBILTY == null)
+                {
+                    VE.TBILTY = newdata;
+                }
+                else
+                {
+                    VE.TBILTY.AddRange(newdata);
+                }
+                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                {
+                    VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
+                }
+            
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_BiltyG_Mutia_Main", VE);

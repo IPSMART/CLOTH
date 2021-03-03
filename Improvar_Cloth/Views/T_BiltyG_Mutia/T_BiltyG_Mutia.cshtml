@@ -59,7 +59,7 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
         return true;
     }
 </script>
@@ -82,7 +82,7 @@
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetPendingData", PageControllerName)",
-                data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                data: $('form').serialize()+"&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date."); }
                     else {
@@ -345,6 +345,7 @@
                     <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Mutia")
+                            @*<b style="color:Red;">*</b>*@
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -355,7 +356,7 @@
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Mutia Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     <div class="col-md-8">
