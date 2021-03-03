@@ -39,7 +39,6 @@ namespace Improvar.ViewModels
         public bool MNTNBARNO { get; set; }
         public bool COMMONUIQBAR { get; set; }
         public bool Checked_DataExsist { get; set; }
-
     }
 
 }
