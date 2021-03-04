@@ -197,10 +197,15 @@ namespace Improvar.Controllers
                                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                                    TXNMEMO.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    TXNMEMO.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                   
                                     VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
                                     var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
                                     VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
                                     VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                    TXNMEMO.ADDR = addrs;
+                                    TXNMEMO.CITY = syscnfgdt.Rows[0]["city"].retStr();
                                     VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
                                     VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
                                     VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
@@ -575,7 +580,7 @@ namespace Improvar.Controllers
                 string MTRLJOBCD = (from a in VE.TsalePos_TBATCHDTL select a.MTRLJOBCD).Distinct().ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TsalePos_TBATCHDTL select a.ITGRPCD).Distinct().ToArray().retSqlfromStrarray();
 
-                allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), VE.T_TXN.AUTONO.retSqlformat(), ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD, VE.T_TXN.AUTONO.retSqlformat(), ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
 
                 foreach (var v in VE.TsalePos_TBATCHDTL)
                 {
@@ -586,20 +591,21 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TsalePos_TBATCHDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var q = (from DataRow dr in allprodgrpgstper_data.Rows
-                                 select new
-                                 {
-                                     BALSTOCK = dr["BALQNTY"].retDbl(),
-                                     NEGSTOCK = dr["negstock"].retStr()
-                                 }).FirstOrDefault();
-                        v.BALSTOCK = q.BALSTOCK;
-                        v.NEGSTOCK = q.NEGSTOCK;
+                        //var q = (from DataRow dr in allprodgrpgstper_data.Rows
+                        //         select new
+                        //         {
+                        //             BALSTOCK = dr["BALQNTY"].retDbl(),
+                        //             NEGSTOCK = dr["negstock"].retStr()
+                        //         }).FirstOrDefault();
+                      
                         var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
                             if (tax_data != null && tax_data.Rows.Count > 0)
                             {
+                                v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
+                                v.NEGSTOCK = tax_data.Rows[0]["negstock"].retStr();
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {
@@ -651,20 +657,21 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TsalePos_TBATCHDTL_RETURN.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (R_allprodgrpgstper_data != null && R_allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var q = (from DataRow dr in R_allprodgrpgstper_data.Rows
-                                 select new
-                                 {
-                                     BALSTOCK = dr["BALQNTY"].retDbl(),
-                                     NEGSTOCK = dr["negstock"].retStr()
-                                 }).FirstOrDefault();
-                        v.BALSTOCK = q.BALSTOCK;
-                        v.NEGSTOCK = q.NEGSTOCK;
+                        //var q = (from DataRow dr in R_allprodgrpgstper_data.Rows
+                        //         select new
+                        //         {
+                        //             BALSTOCK = dr["BALQNTY"].retDbl(),
+                        //             NEGSTOCK = dr["negstock"].retStr()
+                        //         }).FirstOrDefault();
+                      
                         var R_DATA = R_allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (R_DATA.Count() > 0)
                         {
                             DataTable R_tax_data = R_DATA.CopyToDataTable();
                             if (R_tax_data != null && R_tax_data.Rows.Count > 0)
                             {
+                                v.BALSTOCK = R_tax_data.Rows[0]["BALQNTY"].retDbl();
+                                v.NEGSTOCK = R_tax_data.Rows[0]["negstock"].retStr();
                                 R_PRODGRPGSTPER = R_tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (R_PRODGRPGSTPER != "")
                                 {
@@ -2273,8 +2280,8 @@ namespace Improvar.Controllers
                     TTXNMEMO.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
                     TTXNMEMO.NM = VE.T_TXNMEMO.NM;
                     TTXNMEMO.MOBILE = VE.T_TXNMEMO.MOBILE;
-                    TTXNMEMO.CITY = "ABC";
-                    TTXNMEMO.ADDR = VE.ADDR;
+                    TTXNMEMO.CITY = VE.T_TXNMEMO.CITY;
+                    TTXNMEMO.ADDR = VE.T_TXNMEMO.ADDR;
                     //----------------------------------------------------------//
                     // -------------------------T_TXNPYMT_HDR--------------------------//   
                     TTXNPYMTHDR.EMD_NO = TTXN.EMD_NO;
