@@ -47,6 +47,8 @@ namespace Improvar.Models
         [Required]
         [StringLength(10)]
         public string ITCD { get; set; }
+        [StringLength(10)]
+        public string FABITCD { get; set; }
 
         [StringLength(4)]
         public string PARTCD { get; set; }

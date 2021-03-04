@@ -54,12 +54,13 @@
                                 }
                                 <th class="" style="width:71px;">Item Code</th>
                                 <th class="" style="width:160px;">Item Design</th>
+                                <th class="" style="width: 179px;">Fabric Item</th>
                                 @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
                                 @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                 {
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
-                                @*<th class="" style="width: 179px;">Fabric Item</th>*@
+                                
                                 @*<th class="" style="width:162px;">Design</th>*@
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
@@ -237,6 +238,10 @@
                                             @*@Html.HiddenFor(model => model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i })*@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITNM, new { id = "B_ITNM_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].FABITNM, new { id = "B_FABITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].FABITCD, new { id = "B_FABITCD_" + i })
                                         </td>
                                         @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
                                         @if (Model.M_SYSCNFG.MNTNBALE == "Y")
@@ -465,6 +470,7 @@
                                     }
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
                                 @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                 {
@@ -543,9 +549,6 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
