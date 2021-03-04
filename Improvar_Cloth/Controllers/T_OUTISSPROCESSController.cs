@@ -603,20 +603,21 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var q = (from DataRow dr in allprodgrpgstper_data.Rows
-                                 where dr["BARNO"].retStr() == v.BARNO
-                                 select new
-                                 { BALSTOCK = dr["BALQNTY"].retDbl() }).FirstOrDefault();
-                        if (q != null)
-                        {
-                            v.BALSTOCK = q.BALSTOCK;
-                        }
+                        //var q = (from DataRow dr in allprodgrpgstper_data.Rows
+                        //         where dr["BARNO"].retStr() == v.BARNO
+                        //         select new
+                        //         { BALSTOCK = dr["BALQNTY"].retDbl() }).FirstOrDefault();
+                        //if (q != null)
+                        //{
+                        //    v.BALSTOCK = q.BALSTOCK;
+                        //}
                         var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
                             if (tax_data != null && tax_data.Rows.Count > 0)
                             {
+                                v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {

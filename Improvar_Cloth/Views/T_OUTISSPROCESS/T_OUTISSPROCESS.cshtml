@@ -365,6 +365,7 @@
             success: function (result) {
                 //$("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
                 $("#partialdivProgramme").html(result);
+                CalculateTotal();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -405,6 +406,7 @@
             success: function (result) {
                 $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
                 $("#partialdivQtyRequirement").html(result);
+                CalculateTotal();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -707,6 +709,7 @@
         }
     }
     function T_OUTISSPROCESS_FillBarcodeArea(str, Table, i) {
+        debugger;
         if ("@Model.DefaultAction" == "V") return true;
         var MENU_PARA = $("#MENU_PARA").val();
         if (DefaultAction == "V") return true;
