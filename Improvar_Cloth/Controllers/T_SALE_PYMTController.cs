@@ -158,7 +158,7 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
-                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD);
+                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD,"");
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
 
@@ -236,8 +236,6 @@ namespace Improvar.Controllers
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             string COM_CD = CommVar.Compcd(UNQSNO);
             string LOC_CD = CommVar.Loccd(UNQSNO);
-            string DATABASE = CommVar.CurSchema(UNQSNO).ToString();
-            string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
             TBH = new T_TXNPYMT_HDR(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
             if (VE.IndexKey.Count != 0)
@@ -303,7 +301,7 @@ namespace Improvar.Controllers
 
                 }
                 VE.T_PYMT_AMT = T_PYMT_AMT;
-                //VE.PAYAMT = T_PYMT_AMT.toRound(2);
+                VE = GetOutstInvoice(VE, VE.RETDEBSLCD, TBH.AUTONO);
 
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
@@ -437,15 +435,13 @@ namespace Improvar.Controllers
             return PartialView("_T_SALE_PYMT_Adjustment", VE);
 
         }
-        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd)
+        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd,string autono)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             try
             {
                 Cn.getQueryString(VE);
-                //VE.PARENT_SLNO = slno.retInt();
                 string glcd = "";// VE.T_PYTHDR.GLCD;
-                string autono = "";// VE.T_PYTHDR?.AUTONO;
                 var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
                 var RTR = OSDATA.Rows[0]["slno"].GetType();
                 var OSList = (from customer in OSDATA.AsEnumerable()
