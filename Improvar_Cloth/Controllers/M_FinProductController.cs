@@ -1826,7 +1826,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.ITCD = MSITEM.ITCD;
                                     TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                    TBATCHMST.COMMONUIQBAR = "C";
+                                    TBATCHMST.COMMONUNIQBAR = "C";
                                     barnos.Add(TBATCHMST.BARNO);
                                     DB.T_BATCHMST.Add(TBATCHMST);
                                 }

@@ -58,5 +58,6 @@ namespace Improvar.Models
         public M_CNTRL_HDR_REM M_CNTRL_HDR_REM { get; set; }
         public string SrcFlagCaption { get; set; }
         public string BARNO { get; set; }
+        public string COMMONUNIQBAR { get; set; }
     }
 }

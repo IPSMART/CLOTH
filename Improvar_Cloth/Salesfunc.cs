@@ -1011,7 +1011,7 @@ namespace Improvar
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, d.styleno||' '||d.itnm itstyle, ";
             sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
-            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen, m.decimals ";
+            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen, m.decimals,c.commonuniqbar ";
             sql += "from ";
             sql += "( ";
             if (menupara != "PB" || barno != "")

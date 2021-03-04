@@ -102,6 +102,7 @@ function GetBarnoDetails(id, HelpFrom) {
                                 $("#NEGSTOCK").val(returncolvalue(result, "NEGSTOCK"));
                                 $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
                                 $("#GLCD").val(returncolvalue(result, "GLCD"));
+                                $("#COMMONUNIQBAR").val(returncolvalue(result, "COMMONUNIQBAR"));
                             }
 
                         }
@@ -178,6 +179,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#BARCODE").val(returncolvalue(str, "BARNO"));
         $("#Last_BARCODE").val(returncolvalue(str, "BARNO"));
         $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
+        $("#COMMONUNIQBAR").val(returncolvalue(str, "COMMONUNIQBAR"));
         $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
         $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
         //if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP" && MENU_PARA != "OTH") {
@@ -277,6 +279,7 @@ function FillBarcodeArea(str, Table, i) {
                 }
             }
         }
+        $("#COMMONUNIQBAR").val($(FieldidStarting + "COMMONUNIQBAR_" + i).val());
         $("#DISCRATE").val($(FieldidStarting + "DISCRATE_" + i).val());
         $("#DISCTYPE").val($(FieldidStarting + "DISCTYPE_" + i).val());
         $("#TDDISCTYPE").val($(FieldidStarting + "TDDISCTYPE_" + i).val());
@@ -529,6 +532,7 @@ function UpdateBarCodeRow() {
         if ($("#B_SLNO_" + j).val() == SLNO) {
             $("#B_BARNO_" + j).val($("#BARCODE").val());
             $("#B_TXNSLNO_" + j).val(TXNSLNO);
+            $("#B_COMMONUNIQBAR_" + j).val($("#COMMONUNIQBAR").val());
             $("#B_ITGRPCD_" + j).val($("#ITGRPCD").val());
             $("#B_ITGRPNM_" + j).val($("#ITGRPNM").val());
             $("#B_BARGENTYPE_" + j).val($("#BARGENTYPETEMP").val());
@@ -659,7 +663,7 @@ function ClearBarcodeArea(TAG) {
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
@@ -1741,6 +1745,7 @@ function AddBarCodeGrid() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     var ModuleCode = $("#ModuleCode").val();
+    var Delete = $("#Delete").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNPART = $("#MNTNPART").val();
@@ -1896,6 +1901,7 @@ function AddBarCodeGrid() {
     var AGDOCDT = $("#AGDOCDT").val();
     var LISTPRICE = $("#LISTPRICE").val();
     var LISTDISCPER = $("#LISTDISCPER").val();
+    var COMMONUNIQBAR = $("#COMMONUNIQBAR").val();
 
     //get bill slno
     var TXNSLNO = "";
@@ -1987,6 +1993,7 @@ function AddBarCodeGrid() {
     tr += '    <td class="sticky-cell">';
     tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
     tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
+    tr += '        <input data-val="true" data-val-length="The field COMMONUNIQBAR must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The COMMONUNIQBAR field is required." id="B_COMMONUNIQBAR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COMMONUNIQBAR" type="hidden" value="' + COMMONUNIQBAR + '">';
     tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
     tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
     if (MNTNBALE != "Y") {
@@ -2138,19 +2145,29 @@ function AddBarCodeGrid() {
     }
     else {
         tr += '    <td class="" title="' + RATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="RateUpdate(' + rowindex + ',\'#B_\');" value="' + RATE + '" >';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="RateUpdate(' + rowindex + ',\'#B_\');" value="' + RATE + '" >';
         tr += '    </td>';
     }
 
     if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") && MNTNWPRPPER == "Y") {
         tr += '    <td class="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly"  >';
+        if (Delete == "D") {
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" >';
+        }
+        else {
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly"  >';
+        }
         tr += '        <input data-val="true" data-val-length="The field WPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_WPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPRICEGEN" type="hidden" value="' + WPPRICEGEN + '">';
-        tr += '        <input data-val="true" data-val-length="The field RPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
         tr += '    </td>';
 
         tr += '    <td class="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RPRATE must be a number." id="B_RPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly" >';
+        if (Delete == "D") {
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RPRATE must be a number." id="B_RPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" >';
+        }
+        else {
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RPRATE must be a number." id="B_RPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly" >';
+        }
+        tr += '        <input data-val="true" data-val-length="The field RPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
         tr += '    </td>';
     }
 
@@ -2275,6 +2292,7 @@ function AddBarCodeGrid() {
 function RateUpdate(index, strid) {
     debugger;
     var MENU_PARA = $("#MENU_PARA").val();
+    var MNTNWPRPPER = $("#MNTNWPRPPER").val();
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
         if (strid == "") {
             var LISTPRICE = retFloat($("#LISTPRICE").val());
@@ -2292,20 +2310,21 @@ function RateUpdate(index, strid) {
         }
 
     }
-    else if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#B_BARGENTYPE_" + index).val() == "E")) && strid == "#B_") {
+    else if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#B_BARGENTYPE_" + index).val() == "E")) && strid == "#B_" && MNTNWPRPPER == "Y") {
         var WPPER = retFloat($("#WPPER").val());
         var RPPER = retFloat($("#RPPER").val());
         var RATE = retFloat($("#B_RATE_" + index).val());
         var WPPRICEGEN = $("#B_WPPRICEGEN_" + index).val();
         var RPPRICEGEN = $("#B_RPPRICEGEN_" + index).val();
-        if (WPPER != 0) {
+        if (WPPER != 0 && retFloat($("#B_WPRATE_" + index).val()) == 0) {
             var wprt = retFloat(((retFloat(RATE) * retFloat(WPPER)) / 100) + retFloat(RATE));
             var B_WPRATE = CharmPrice(retStr(WPPRICEGEN).substring(0, 2), wprt, retStr(WPPRICEGEN).substring(2, retStr(WPPRICEGEN).length));
             $("#B_WPRATE_" + index).val(parseFloat(B_WPRATE).toFixed(2))
             $("#B_WPRATE_" + index).attr('title', parseFloat(B_WPRATE).toFixed(2));
         }
-        if (RPPER != 0) {
-            var rprt = retFloat(((retFloat(RATE) * retFloat(RPPER)) / 100) + retFloat(RATE));
+        if (RPPER != 0 && retFloat($("#B_RPRATE_" + index).val()) == 0) {
+            var fixedamt = retFloat($("#FIXEDAMT").val());
+            var rprt = retFloat(((retFloat(RATE) * retFloat(RPPER)) / 100) + retFloat(RATE) + fixedamt);
             var B_RPRATE = CharmPrice(retStr(RPPRICEGEN).substring(0, 2), rprt, retStr(RPPRICEGEN).substring(2, retStr(RPPRICEGEN).length));
             $("#B_RPRATE_" + index).val(parseFloat(B_RPRATE).toFixed(2))
             $("#B_RPRATE_" + index).attr('title', parseFloat(B_RPRATE).toFixed(2))

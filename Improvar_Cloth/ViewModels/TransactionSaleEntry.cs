@@ -242,5 +242,8 @@ namespace Improvar.ViewModels
         public string SHOWMTRLJOBCD { get; set; }
         public string SHOWBLTYPE { get; set; }
         public string MUTSLNM { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? FIXEDAMT { get; set; }
+        public string FABITSTYLE { get; set; }
     }
 }

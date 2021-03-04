@@ -115,6 +115,6 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? MRPRATE { get; set; }
         [StringLength(1)]
-        public string COMMONUIQBAR { get; set; }
+        public string COMMONUNIQBAR { get; set; }
     }
 }

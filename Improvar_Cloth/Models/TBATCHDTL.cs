@@ -194,5 +194,6 @@ namespace Improvar.Models
         public double? TXBLVAL { get; set; }
         [StringLength(3)]
         public string BLUOMCD { get; set; }
+        public string COMMONUNIQBAR { get; set; }
     }
 }
