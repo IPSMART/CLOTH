@@ -244,6 +244,5 @@ namespace Improvar.ViewModels
         public string MUTSLNM { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? FIXEDAMT { get; set; }
-        public string FABITSTYLE { get; set; }
     }
 }

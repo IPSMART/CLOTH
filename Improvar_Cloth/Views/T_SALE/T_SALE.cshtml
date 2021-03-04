@@ -93,6 +93,14 @@
                 $('.barfirstrow input').removeAttr("onkeydown");
                 $('.barfirstrow input').attr('TabIndex', '-1');
             }
+            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
+                $(".fabitcdhlpdiv").show();
+                $(".fabitcddiv").hide();
+            }
+            else {
+                $(".fabitcdhlpdiv").hide();
+                $(".fabitcddiv").show();
+            }
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -106,6 +114,14 @@
                 $('.barfirstrow').find(".Help_image_button").hide();
                 $('.barfirstrow input').removeAttr("onkeydown");
                 $('.barfirstrow input').attr('TabIndex', '-1');
+            }
+            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
+                $(".fabitcdhlpdiv").show();
+                $(".fabitcddiv").hide();
+            }
+            else {
+                $(".fabitcdhlpdiv").hide();
+                $(".fabitcddiv").show();
             }
         }
         if ("@Model.LINKDOCNO" != "") {
@@ -1380,19 +1396,27 @@
                                                 </div>
                                                 @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
                                             </div>
-                                            <div class="barfirstrow col-md-1">
+
+
+                                            <div class="fabitcdhlpdiv col-md-6">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.FABITSTYLE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITSTYLE", onkeydown = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITSTYLE','FABITSTYLE=ITSTYLE=1/FABITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITSTYLE','FABITSTYLE=ITSTYLE=1/FABITCD=itcd=2');", @placeholder = "Fabric Item", maxlength = 4, @title = "Fabric Item" } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetFabItemDetails", PageControllerName)','Part Details','FABITSTYLE','FABITSTYLE=ITSTYLE=1/FABITCD=itcd=2')" />
-                                                    @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCD" })
+                                                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITNMHLP", onkeydown = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2');", @placeholder = "Fabric Item", maxlength = 4, @title = "Fabric Item" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetFabItemDetails", PageControllerName)','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2')" />
+                                                    @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCDHLP" })
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                    <div class="editor-field">
-                                                        @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
-                                                        @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
-                                                    </div>
+
+                                            <div class="fabitcddiv col-md-6">
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item", @readonly = "readonly", @TabIndex = -1 } })
+                                                        <label for="FABITNM" style="font-size: 87%;color: darkgreen;">Fabric</label>
+                                                    </span>
                                                 </div>
+                                                @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCD" })
+                                            </div>
+                                            
+
                                             <div class="col-md-4">
                                                 <div class="editor-field">
                                                     @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })

@@ -1824,6 +1824,7 @@ namespace Improvar.Controllers
                                         TBATCHMST.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
                                     }
                                     TBATCHMST.ITCD = MSITEM.ITCD;
+                                    TBATCHMST.FABITCD = MSITEM.FABITCD;
                                     TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
                                     TBATCHMST.COMMONUNIQBAR = "C";
