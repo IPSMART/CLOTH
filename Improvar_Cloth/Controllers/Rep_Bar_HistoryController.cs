@@ -88,9 +88,9 @@ namespace Improvar.Controllers
                 string barnoOrStyle = val.retStr();
                 string MTRLJOBCD = data[0].retSqlformat();
                 string DOCDT = System.DateTime.Today.ToString().retDateStr();   /*data[2].retStr()*/
-                string TAXGRPCD = data[3].retStr()==""? "C001" : data[3].retStr();
+                string TAXGRPCD = data[3].retStr() == "" ? "C001" : data[3].retStr();
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
-                string PRCCD = data[5].retStr()==""? "WP": data[5].retStr();
+                string PRCCD = data[5].retStr() == "" ? "WP" : data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
@@ -242,8 +242,8 @@ namespace Improvar.Controllers
                 sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BARCODE + "' ";
                 sql1 += "order by b.DOCDT,b.DOCNO ";
                 DataTable barcdhistory = masterHelp.SQLquery(sql1);
-             
-                int exlrowno = 2; double TINQTY = 0, TOUTQTY = 0,TNOS=0;
+
+                int exlrowno = 2; double TINQTY = 0, TOUTQTY = 0, TNOS = 0, InQty = 0, OutQty = 0;
                 for (int i = 0; i < barcdhistory.Rows.Count; i++)
                 {
                     wsSheet1.Cells[i + 2, 1].Value = barcdhistory.Rows[i]["SLNO"].retShort();
@@ -253,27 +253,37 @@ namespace Improvar.Controllers
                     wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
                     wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
                     wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
-                    var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr()=="D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                    var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
                     var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    wsSheet1.Cells[i + 2, 8].Value = inqty.QNTY.retDbl();
-                    wsSheet1.Cells[i + 2, 9].Value = outqty.QNTY.retDbl();
+                    if (inqty != null)
+                    {
+                        InQty = inqty.QNTY.retDbl();
+                    }
+                    else { InQty = 0; }
+                    wsSheet1.Cells[i + 2, 8].Value = InQty;
+                    if (outqty != null)
+                    {
+                        OutQty = outqty.QNTY.retDbl();
+                    }
+                    else { OutQty = 0; }
+                     wsSheet1.Cells[i + 2, 9].Value = OutQty; 
                     wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["NOS"].retDbl();
                     wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["RATE"].retDbl();
                     wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["RATE"].retStr() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr();
-                    TINQTY = TINQTY + inqty.QNTY.retDbl();
-                    TOUTQTY = TOUTQTY + outqty.QNTY.retDbl();
+                    TINQTY = TINQTY + InQty;
+                    TOUTQTY = TOUTQTY + OutQty;
                     TNOS = TNOS + barcdhistory.Rows[i]["NOS"].retDbl();
                     exlrowno++;
                 }
                 wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 wsSheet1.Row(exlrowno).Style.Font.Bold = true;
-                wsSheet1.Cells[exlrowno, 7].Value ="TOTAL";
+                wsSheet1.Cells[exlrowno, 7].Value = "TOTAL";
                 wsSheet1.Cells[exlrowno, 8].Value = TINQTY;
                 wsSheet1.Cells[exlrowno, 9].Value = TOUTQTY;
 
                 wsSheet1.Row(++exlrowno).Style.Font.Bold = true;
                 wsSheet1.Cells[exlrowno, 7].Value = "Balance Qnty";
-                wsSheet1.Cells[exlrowno,9].Value = (TINQTY - TOUTQTY);
+                wsSheet1.Cells[exlrowno, 9].Value = (TINQTY - TOUTQTY);
                 //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
                 //for download//
                 Response.Clear();

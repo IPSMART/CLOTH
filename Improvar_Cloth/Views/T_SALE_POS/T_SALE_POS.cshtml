@@ -59,7 +59,10 @@
             $(".nav-tabs li:first-child").addClass('active');
             $(".tab-content div").removeClass("active");
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-              $("#M_BARCODE").focus();
+            if ($("#MNTNBARNO").val() == "Y")
+            { $("#M_BARCODE").focus(); }
+            else
+            { $("#M_STYLENO").focus(); }
 
         }
         if (event.altKey && KeyID == 74) {//for Alt+J (return tab)
@@ -68,7 +71,10 @@
             //below set the  child sequence
             $(".tab-content div").removeClass("active");
             $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            $("#R_BARCODE").focus();
+            if ($("#MNTNBARNO").val() == "Y")
+            { $("#R_BARCODE").focus(); }
+            else
+            { $("#R_STYLENO").focus(); }
 
         }
 
@@ -104,7 +110,7 @@
             $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             $("#GSTNO").focus();
         }
-
+     
     });
 </script>
 <script>
@@ -377,7 +383,20 @@
                                 @Html.EditorFor(model => model.T_TXNMEMO.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Mobile No.", maxlength = 10 } })
                             </div>
                         </div>
-                        <div class="col-md-5" style="width: auto;">
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNMEMO.ADDR, new { htmlAttributes = new { @class = "form-control", id = "ADDR_", @placeholder = "Address", maxlength = 200 } })
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNMEMO.CITY, new { htmlAttributes = new { @class = "form-control", id = "CITY_", @placeholder = "City", maxlength = 30 } })
+                            </div>
+                        </div>
+
+                        </div>
+                    <div class="row">
+                        <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Inclusive Rate")
                             </div>
@@ -401,7 +420,7 @@
                             </div>
                         </div>
                         @*</div>
-                            <div class="row">*@
+            <div class="row">*@
 
                         <div class="col-md-1">
                             <div class="editor-field">
@@ -417,7 +436,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
                                 @*@Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -679,11 +698,16 @@
                                 <div id="partialdivBarCodeTab">
                                     @Html.Partial("_T_SALE_POS_PRODUCT")
                                 </div>
-                                @*<div>
-                                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
-                                        </div>
-                                    </div>*@
+                                
                             </div>
+                            @if (Model.DefaultAction != "V")
+                            { <div class="row">
+                                <p class="text-info" style="margin-top:10px;">
+                                    ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
+                                    *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
+                                </p>
+                            </div> }
+
                             @*@if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
                                     <div>
@@ -803,6 +827,13 @@
                             </div>
 
                         </div>
+                        @if (Model.DefaultAction != "V")
+                        { <div class="row">
+                            <p class="text-info" style="margin-top:10px;">
+                                ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
+                                *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
+                            </p>
+                        </div> }
                     </div>
 
                     @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
