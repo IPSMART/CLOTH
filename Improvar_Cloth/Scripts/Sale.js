@@ -104,8 +104,6 @@ function GetBarnoDetails(id, HelpFrom) {
                                 $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
                                 $("#GLCD").val(returncolvalue(result, "GLCD"));
                                 $("#COMMONUNIQBAR").val(returncolvalue(result, "COMMONUNIQBAR"));
-                                $("#FABITCD").val(returncolvalue(result, "FABITCD"));
-                                $("#FABITCDHLP").val(returncolvalue(result, "FABITCD"));
                             }
 
                         }
@@ -399,7 +397,7 @@ function FillBarcodeArea(str, Table, i) {
             RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
         }
     }
-    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && $("#FABITCD").val() == "") {
+    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#BARGENTYPETEMP").val() == "E"))) {
         $(".fabitcdhlpdiv").show();
         $(".fabitcddiv").hide();
     }
@@ -685,7 +683,7 @@ function ClearBarcodeArea(TAG) {
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
@@ -719,7 +717,7 @@ function ClearBarcodeArea(TAG) {
     if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP" && MENU_PARA != "OTH") {
         ClearAllTextBoxes("MTRLJOBCD,MTRLJOBNM,MTBARCODE");
     }
-    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && $("#FABITCD").val() == "") {
+    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP") {
         $(".fabitcdhlpdiv").show();
         $(".fabitcddiv").hide();
     }
@@ -2330,7 +2328,8 @@ function RateUpdate(index, strid) {
     debugger;
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNWPRPPER = $("#MNTNWPRPPER").val();
-    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+    var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI")&& MNTNLISTPRICE == "Y") {
         if (strid == "") {
             var LISTPRICE = retFloat($("#LISTPRICE").val());
             var LISTDISCPER = retFloat($("#LISTDISCPER").val());
@@ -3378,6 +3377,7 @@ function CheckBillNumber() {
                 if (result == "1") {
                     msgInfo("Bill Number Already Exists, for Particular Sub Code : Please Enter a Different Bill Number !! ");
                     message_value = "PREFNO";
+                    return false;
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
