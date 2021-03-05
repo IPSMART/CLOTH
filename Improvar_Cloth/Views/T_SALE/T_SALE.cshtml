@@ -146,7 +146,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {
+        if ("@Model.MENU_PARA" == "PB") {
             if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
@@ -161,7 +161,8 @@
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
-
+        }
+        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {
             var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
             var balenoexist = false;
             if (GridRow != 0) {
@@ -458,29 +459,8 @@
             //below set the  child sequence
             $(".tab-content div").removeClass("active");
             $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-
-            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    $("#D_PAGENO_" + i).attr("readonly", false);
-                    $("#D_PAGESLNO_" + i).attr("readonly", false);
-                    //if (i == 0) $("#D_PAGENO_" + i).focus();
-                }
-            }
-            $("#D_PAGENO_0").focus();
-            $("#edit_page_slno").hide();
-            $("#update_page_slno").show();
-            $("#cancel_page_slno").show();
+            Edit_Pageno_slno();
         }
-        if (event.altKey && KeyID == 115) {//for Alt+S (In Detail tab Update(Save) pageno/slno code)
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(3)").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            Update_Pageno_slno();
-        }
-
     });
 </script>
 @section Scripts {
@@ -795,7 +775,10 @@
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill no")
-                                        <b style="color:Red;">*</b>
+                                        @if (Model.MENU_PARA == "PB")
+                                        {
+                                            <b style="color:Red;">*</b>
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-md-10">
@@ -806,7 +789,10 @@
                                 <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill dt")
-                                        <b style="color:Red;">*</b>
+                                        @if (Model.MENU_PARA == "PB")
+                                        {
+                                            <b style="color:Red;">*</b>
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -1415,7 +1401,7 @@
                                                 </div>
                                                 @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCD" })
                                             </div>
-                                            
+
 
                                             <div class="col-md-4">
                                                 <div class="editor-field">
@@ -1869,7 +1855,7 @@
                             {<div class="row">
                             <div class="col-md-1" style="width:auto;">
                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno(Alt+G)" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update(Alt+S)" title="Click to Update page no/page slno in Details Tab" onclick="Update_Pageno_slno()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update(Alt+I)" accesskey="I" title="Click to Update page no/page slno in Details Tab" disabled onclick="Update_Pageno_slno()" />
                                 <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_page_slno" value="Cancel" title="Click to Cancel for unchane page no/page slno in Details Tab" onclick="Cancel_Pageno_slno()" />
                             </div>
                         </div>
