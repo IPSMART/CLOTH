@@ -737,6 +737,7 @@ namespace Improvar.Controllers
                 //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
                 TransactionOutIssProcess VE = new TransactionOutIssProcess();
                 Cn.getQueryString(VE);
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string barnoOrStyle = val.retStr();
                 string MTRLJOBCD = data[0].retSqlformat();
@@ -762,9 +763,16 @@ namespace Improvar.Controllers
                 {
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
 
-                    string glcd = "";
+                    string glcd = "",mtrljobcd="",cd="", mtrljobnm="";
                     glcd = str.retCompValue("SALGLCD");
-                    str += "^GLCD=^" + glcd + Cn.GCS();
+                    mtrljobcd = str.retCompValue("MTRLJOBCD");
+                    if(mtrljobcd=="")
+                    {
+                        cd = "FS";
+                        mtrljobnm = (from i in DB.M_MTRLJOBMST where i.MTRLJOBCD == cd select i.MTRLJOBNM).FirstOrDefault(); }
+                    else { cd = mtrljobcd; mtrljobnm= str.retCompValue("MTRLJOBNM"); }
+                    str += "^GLCD=^" + glcd + Cn.GCS() + "^MTRLJOBCD_NEW=^" + cd + Cn.GCS() + "^MTRLJOBNM_NEW=^" + mtrljobnm + Cn.GCS();
+
                     return Content(str);
                 }
             }

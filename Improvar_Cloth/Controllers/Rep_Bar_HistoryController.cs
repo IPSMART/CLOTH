@@ -269,7 +269,7 @@ namespace Improvar.Controllers
                      wsSheet1.Cells[i + 2, 9].Value = OutQty; 
                     wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["NOS"].retDbl();
                     wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["RATE"].retDbl();
-                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["RATE"].retStr() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr();
+                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr();
                     TINQTY = TINQTY + InQty;
                     TOUTQTY = TOUTQTY + OutQty;
                     TNOS = TNOS + barcdhistory.Rows[i]["NOS"].retDbl();

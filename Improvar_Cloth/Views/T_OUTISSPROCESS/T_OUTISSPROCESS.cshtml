@@ -313,9 +313,13 @@
 
     function CalculateTotalProgBomQnty() {
         if ("@Model.DefaultAction" == "V") return true;
-        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
+        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0, T_QQTY1=0;
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
+            var QQTY1 = document.getElementById("Q_QNTY1_" + i).value;
+            if (QQTY1 == "") { QQTY1 = parseFloat(0) } else { QQTY1 = parseFloat(QQTY1) }
+            if (QQTY1 != "") { T_QQTY1 = T_QQTY1 + parseFloat(QQTY1); }
+            else { T_QQTY1 = T_QQTY1 + parseFloat(0); }
 
             var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
             if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
@@ -328,8 +332,10 @@
             else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
 
-        } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
-        document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
+        }
+        document.getElementById("T_QQNTY").value = parseFloat(T_QQTY1).toFixed(3);
+        document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(3);
+        document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(3);
     }
 
 
@@ -406,7 +412,7 @@
             success: function (result) {
                 $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
                 $("#partialdivQtyRequirement").html(result);
-                CalculateTotal();
+                CalculateTotalProgBomQnty();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -426,6 +432,7 @@
             for (var J = 0; J <= GridRow - 1; J++) {
                 var slno = $("#P_SLNO_" + J).val();
                 if (parseInt(slno) == i) {
+                    $("#Q_BARNO_" + i).val($("#P_BARNO_" + J).val());
                     $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
                     $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
                     $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
@@ -650,6 +657,77 @@
     }
 
 
+</script>
+<script>
+    function Program_GetBarnoDetails(id, P_BARNO_, P_MTRLJOBCD_, P_PARTCD_, P_ITCD_, P_ITNM_, P_UOM_, P_ITGRPCD_, P_ITGRPNM_, P_COLRCD_, P_SIZECD_, P_COLRNM_, P_MTRLJOBNM_, P_BarImages_, BarImagesCount_, P_DECIMALS_, P_CLRBARCODE_, P_SZBARCODE_,tag) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        if (id == "") {
+            ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_+"," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
+        }
+        else {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
+            if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+            var MTRLJOBCD = $("#" + P_MTRLJOBCD_).val();
+            var PARTCD = $("#PARTCD").val();
+            var docdt = $("#DOCDT").val();
+            var taxgrpcd = $("#TAXGRPCD").val();
+            var gocd = $("#GOCD").val();
+            var prccd = $("#PRCCD").val();
+            var allmtrljobcd = "";
+            var bomitcd = "";
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd;
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetailsGrid", PageControllerName)",
+                data: "&val=" + id + "&Code=" + code,
+                success: function (result) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
+                            if (_mtrljbcd == "")
+                            {
+                                $("#" + P_MTRLJOBCD_).val(returncolvalue(result, "MTRLJOBCD_NEW"));
+                                $("#" + P_MTRLJOBNM_).val(returncolvalue(result, "MTRLJOBNM_NEW"));
+                            }
+                            $("#" + P_BARNO_).val(returncolvalue(result, "BARNO"));
+                            $("#" + P_PARTCD_).val(returncolvalue(result, "PARTCD"));
+                            $("#" + P_ITCD_).val(returncolvalue(result, "ITCD"));
+                            $("#" + P_ITNM_).val(returncolvalue(result, "ITSTYLE"));
+                            $("#" + P_UOM_).val(returncolvalue(result, "UOMCD"));
+                            $("#" + P_ITGRPCD_).val(returncolvalue(result, "ITGRPCD"));
+                            $("#" + P_ITGRPNM_).val(returncolvalue(result, "ITGRPNM"));
+                            $("#" + P_COLRCD_).val(returncolvalue(result, "COLRCD"));
+                            $("#" + P_SIZECD_).val(returncolvalue(result, "SIZECD"));
+                            $("#" + P_COLRNM_).val(returncolvalue(result, "COLRNM"));
+                            if (tag != "QTY")
+                            {
+                                $("#" + P_BarImages_).val(returncolvalue(result, "BARIMAGE"));
+                                $("#" + BarImagesCount_).val(returncolvalue(result, "barimagecount"));
+                                $("#" + P_DECIMALS_).val(returncolvalue(result, "DECIMALS"));
+                                $("#" + P_CLRBARCODE_).val(returncolvalue(result, "clrbarcode"));
+                                $("#" + P_SZBARCODE_).val(returncolvalue(result, "szbarcode"));
+                            }
+                        
+                        }
+                        else {
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
+                            message_value = P_BARNO_;
+                        }
+                    
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
 </script>
 <script>
     function T_OUTISSPROCESS_GetBarnoDetails(id) {
