@@ -220,14 +220,14 @@ namespace Improvar.Controllers
 
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
                             {
-                                bnos = bnos + Convert.ToDouble(tbl.Rows[i]["nos"]);
-                                bqnty = bqnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                                bnos = bnos + tbl.Rows[i]["nos"].retDbl();
+                                bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl();
                                 iop = iop + dbqty;
                             }
                             else if (tbl.Rows[i]["stkdrcr"].ToString() == "C")
                             {
-                                bnos = bnos - Convert.ToDouble(tbl.Rows[i]["nos"]);
-                                bqnty = bqnty - Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                                bnos = bnos - tbl.Rows[i]["nos"].retDbl();
+                                bqnty = bqnty - tbl.Rows[i]["qnty"].retDbl();
                                 iop = iop - dbqty;
                             }
                             i = i + 1;
@@ -250,8 +250,8 @@ namespace Improvar.Controllers
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                         {
                             //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                            dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
-                            dbamt = Convert.ToDouble(tbl.Rows[i]["txblval"]);
+                            dbqty = tbl.Rows[i]["qnty"].retDbl();
+                            dbamt = tbl.Rows[i]["txblval"].retDbl();
 
                             //string pdocno = tbl.Rows[i]["pblno"].ToString();
                             //if (pdocno == "") pdocno = tbl.Rows[i]["docno"].ToString();
