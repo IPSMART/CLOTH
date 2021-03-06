@@ -2354,14 +2354,14 @@ function RateUpdate(index, strid) {
         var RPPRICEGEN = $("#B_RPPRICEGEN_" + index).val();
         if (WPPER != 0 && retFloat($("#B_WPRATE_" + index).val()) == 0) {
             var wprt = retFloat(((retFloat(RATE) * retFloat(WPPER)) / 100) + retFloat(RATE));
-            var B_WPRATE = CharmPrice(retStr(WPPRICEGEN).substring(0, 2), wprt, retStr(WPPRICEGEN).substring(2, retStr(WPPRICEGEN).length));
+            var B_WPRATE = CharmPrice(retStr(WPPRICEGEN).substring(0, 2), retInt(wprt), retStr(WPPRICEGEN).substring(2, retStr(WPPRICEGEN).length));
             $("#B_WPRATE_" + index).val(parseFloat(B_WPRATE).toFixed(2))
             $("#B_WPRATE_" + index).attr('title', parseFloat(B_WPRATE).toFixed(2));
         }
         if (RPPER != 0 && retFloat($("#B_RPRATE_" + index).val()) == 0) {
             var fixedamt = retFloat($("#FIXEDAMT").val());
             var rprt = retFloat(((retFloat(RATE) * retFloat(RPPER)) / 100) + retFloat(RATE) + fixedamt);
-            var B_RPRATE = CharmPrice(retStr(RPPRICEGEN).substring(0, 2), rprt, retStr(RPPRICEGEN).substring(2, retStr(RPPRICEGEN).length));
+            var B_RPRATE = CharmPrice(retStr(RPPRICEGEN).substring(0, 2), retInt(rprt), retStr(RPPRICEGEN).substring(2, retStr(RPPRICEGEN).length));
             $("#B_RPRATE_" + index).val(parseFloat(B_RPRATE).toFixed(2))
             $("#B_RPRATE_" + index).attr('title', parseFloat(B_RPRATE).toFixed(2))
         }
@@ -3377,6 +3377,7 @@ function CheckBillNumber() {
                 if (result == "1") {
                     msgInfo("Bill Number Already Exists, for Particular Sub Code : Please Enter a Different Bill Number !! ");
                     message_value = "PREFNO";
+                    $("#PREFNO").val("");
                     return false;
                 }
             },
@@ -3566,6 +3567,7 @@ function Edit_Pageno_slno() {
     $("#edit_page_slno").hide();
     $("#update_page_slno").show();
     $("#cancel_page_slno").show();
+    $("#update_page_slno").prop("disabled", false);
 }
 
 function Cancel_Pageno_slno() {

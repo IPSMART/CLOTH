@@ -3739,7 +3739,7 @@ namespace Improvar.Controllers
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
-                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH") && VE.T_TXN.PREFNO == null)
+                    if ((VE.MENU_PARA == "PB") && VE.T_TXN.PREFNO == null)
                     {
                         ContentFlg = "Purchase Bill No not entered"; goto dbnotsave;
                     }
