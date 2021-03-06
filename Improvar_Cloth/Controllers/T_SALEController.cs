@@ -1616,6 +1616,7 @@ namespace Improvar.Controllers
                     x.BLUOMCD = x.BLUOMCD.retStr();
                     x.FABITCD = x.FABITCD.retStr();
                     x.FABITNM = x.FABITNM.retStr();
+                    x.PDESIGN = x.PDESIGN.retStr();
                 });
                 VE.TTXNDTL = (from x in VE.TBATCHDTL
                               group x by new
@@ -1658,6 +1659,7 @@ namespace Improvar.Controllers
                                   x.BLUOMCD,
                                   x.FABITCD,
                                   x.FABITNM,
+                                  x.PDESIGN,
                               } into P
                               select new TTXNDTL
                               {

@@ -505,7 +505,7 @@ function UpdateBarCodeRow() {
                                      retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
                                     retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
                                     retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                                    retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val())) {
+                                    retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) && retStr($("#PDESIGN").val()) == retStr($("#B_PDESIGN_" + j).val())) {
 
                         matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                         countmatchslno++;
@@ -1236,38 +1236,38 @@ function AmountCalculation(i) {
     IGST_AMT = (AMOUNT * IGST_PER) / 100;
 
     AmountChange(document.getElementById("AIGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("AIGSTPER_" + i), document.getElementById("ANETAMT_" + i),
-    document.getElementById("ACGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    document.getElementById("AIGSTAMT_" + i).value = parseFloat(IGST_AMT).toFixed(2);
+    document.getElementById("ACGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i), 'AMOUNT_GRID');
+    //document.getElementById("AIGSTAMT_" + i).value = parseFloat(IGST_AMT).toFixed(2);
     //END
 
     // CGST CALCULATION
     document.getElementById("ACGSTPER_" + i).value = CGST_PER;
     CGST_AMT = (AMOUNT * CGST_PER) / 100;
     AmountChange(document.getElementById("ACGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACGSTPER_" + i), document.getElementById("ANETAMT_" + i),
-        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    document.getElementById("ACGSTAMT_" + i).value = parseFloat(CGST_AMT).toFixed(2);
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i), 'AMOUNT_GRID');
+    //document.getElementById("ACGSTAMT_" + i).value = parseFloat(CGST_AMT).toFixed(2);
     //END
     // SGST CALCULATION
     document.getElementById("ASGSTPER_" + i).value = SGST_PER;
     SGST_AMT = (AMOUNT * SGST_PER) / 100;
     AmountChange(document.getElementById("ASGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ASGSTPER_" + i), document.getElementById("ANETAMT_" + i),
-        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    document.getElementById("ASGSTAMT_" + i).value = parseFloat(SGST_AMT).toFixed(2);
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i), 'AMOUNT_GRID');
+    //document.getElementById("ASGSTAMT_" + i).value = parseFloat(SGST_AMT).toFixed(2);
     //END
     // CESS CALCULATION
     document.getElementById("ACESSPER_" + i).value = CESS_PER;
     CESS_AMT = (AMOUNT * CESS_PER) / 100;
     AmountChange(document.getElementById("ACESSAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACESSPER_" + i), document.getElementById("ANETAMT_" + i),
-        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    document.getElementById("ACESSAMT_" + i).value = parseFloat(CESS_AMT).toFixed(2);
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i), 'AMOUNT_GRID');
+    //document.getElementById("ACESSAMT_" + i).value = parseFloat(CESS_AMT).toFixed(2);
     //END
     // DUTY CALCULATION
 
     document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
     DUTY_AMT = (AMOUNT * DUTY_PER) / 100;
     AmountChange(document.getElementById("ADUTYAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ADUTYPER_" + i), document.getElementById("ANETAMT_" + i),
-    document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    document.getElementById("ADUTYAMT_" + i).value = parseFloat(DUTY_AMT).toFixed(2);
+    document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i), 'AMOUNT_GRID');
+    //document.getElementById("ADUTYAMT_" + i).value = parseFloat(DUTY_AMT).toFixed(2);
     //END
 
     var NET_AMT = AMOUNT + parseFloat(document.getElementById("AIGSTAMT_" + i).value) + parseFloat(document.getElementById("ACGSTAMT_" + i).value) +
@@ -1278,10 +1278,10 @@ function AmountCalculation(i) {
     AmountCalculateTotal();
 
 }
-function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
+function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4,TABLEID) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    var GridRow = $("#AMOUNT_GRID > tbody > tr").length;
+    var GridRow = $("#" + TABLEID + " > tbody > tr").length;
     if (GridRow == 0) return true;
     var NEW_AMT = document.getElementById(id.id).value;
     var PERCENTAGE = document.getElementById(PER.id).value;
@@ -1307,7 +1307,12 @@ function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
         }
     }
     //GRID TOTAL CALCULATION
-    AmountCalculateTotal();
+    if (TABLEID == "AMOUNT_GRID") {
+        AmountCalculateTotal();
+    }
+    else {
+        CalculateTotal_Details();
+    }
 
 }
 function AmountCalculateTotal() {
@@ -1984,7 +1989,7 @@ function AddBarCodeGrid() {
                   retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
                  retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
                  retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                 retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val())) {
+                 retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) && retStr(PDESIGN) == retStr($("#B_PDESIGN_" + j).val())) {
 
                         matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                         if (ModuleCode.indexOf("SALESCLOTH") != -1) {

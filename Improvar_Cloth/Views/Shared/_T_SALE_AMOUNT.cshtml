@@ -99,7 +99,7 @@
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].IGSTPER_DESP, new { id = "AIGSTPER_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.EditorFor(model => Model.TTXNAMT[i].IGSTAMT, new { htmlattributes = new { id = "AIGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",AIGSTPER_" + i + ",ANETAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].IGSTAMT, new { htmlattributes = new { id = "AIGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",AIGSTPER_" + i + ",ANETAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ", 'AMOUNT_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].IGSTAMT_DESP, new { id = "AIGSTAMT_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
@@ -107,7 +107,7 @@
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].CGSTPER_DESP, new { id = "ACGSTPER_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.EditorFor(model => Model.TTXNAMT[i].CGSTAMT, new { htmlattributes = new { id = "ACGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CGSTAMT, new { htmlattributes = new { id = "ACGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ", 'AMOUNT_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].CGSTAMT_DESP, new { id = "ACGSTAMT_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
@@ -115,7 +115,7 @@
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].SGSTPER_DESP, new { id = "ASGSTPER_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.EditorFor(model => Model.TTXNAMT[i].SGSTAMT, new { htmlattributes = new { id = "ASGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ASGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].SGSTAMT, new { htmlattributes = new { id = "ASGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ASGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ", 'AMOUNT_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].SGSTAMT_DESP, new { id = "ASGSTAMT_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
@@ -123,14 +123,14 @@
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].CESSPER_DESP, new { id = "ACESSPER_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.EditorFor(model => Model.TTXNAMT[i].CESSAMT, new { htmlattributes = new { id = "ACESSAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACESSPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CESSAMT, new { htmlattributes = new { id = "ACESSAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACESSPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ADUTYAMT_" + i + ", 'AMOUNT_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].CESSAMT_DESP, new { id = "ACESSAMT_DESP_" + i })
                                 </td>
                                 <td class="grid_td">
                                     @Html.EditorFor(model => Model.TTXNAMT[i].DUTYPER, new { htmlattributes = new { id = "ADUTYPER_" + i, onblur = "AmountCalculation('" + i + "');", @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right" } })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.EditorFor(model => Model.TTXNAMT[i].DUTYAMT, new { htmlattributes = new { id = "ADUTYAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ADUTYPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].DUTYAMT, new { htmlattributes = new { id = "ADUTYAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ADUTYPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ", 'AMOUNT_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                 </td>
                                 <td class="grid_td">
                                     @Html.EditorFor(model => Model.TTXNAMT[i].NETAMT, new { htmlattributes = new { id = "ANETAMT_" + i, maxlength = 12, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })

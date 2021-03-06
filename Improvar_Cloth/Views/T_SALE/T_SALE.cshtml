@@ -1386,7 +1386,7 @@
                                             </div>
 
 
-                                            <div class="fabitcdhlpdiv col-md-6">
+                                            <div class="fabitcdhlpdiv col-md-3">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITNMHLP", onkeydown = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2/FABITNM=ITNM=1/FABITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2/FABITNM=ITNM=1/FABITCD=itcd=2');", @placeholder = "Fabric Item", maxlength = 60, @title = "Fabric Item" } })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetFabItemDetails", PageControllerName)','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2/FABITNM=ITNM=1/FABITCD=itcd=2')" />
@@ -1394,7 +1394,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="fabitcddiv col-md-6">
+                                            <div class="fabitcddiv col-md-3">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
                                                         @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @title = "Only for View", @placeholder = "Fabric Item", @readonly = "readonly", @TabIndex = -1 } })
@@ -1405,7 +1405,7 @@
                                             </div>
 
 
-                                            <div class="col-md-4">
+                                            <div class="col-md-2">
                                                 <div class="editor-field">
                                                     @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE =1/STKNAME =STKNAME =0')" />
@@ -1432,14 +1432,14 @@
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')" />
                                                     </div>
                                                 </div>
-                                                <div class="barfirstrow col-md-6">
+                                                <div class="barfirstrow col-md-2">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Color Name", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
                                                             <label for="COLRNM" style="font-size: 87%;color: darkgreen;">Color Name</label>
                                                         </span>
-                                                        @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
                                                     </div>
+                                                    @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
                                                 </div>
                                             }
                                             @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
@@ -1455,7 +1455,7 @@
                                             }
                                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                             {
-                                                <div class="barfirstrow col-md-4">
+                                                <div class="col-md-4">
 
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
