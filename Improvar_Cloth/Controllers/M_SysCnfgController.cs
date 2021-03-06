@@ -166,28 +166,28 @@ namespace Improvar.Controllers
                                               i.COMMONUNIQBAR,
                                               i.WPPRICEGEN,
                                               i.RPPRICEGEN,
-                                              j.INACTIVE_TAG
-                                          }).ToList();
-                            if (chkdata.Count > 0)
+                                              j.INACTIVE_TAG,
+                                              i.INSPOLDESC
+                                          }).OrderByDescending(a=>a.M_AUTONO).FirstOrDefault();
+                            if (chkdata!=null)
                             {
-                                foreach (var i in chkdata)
-                                {   msyscnfg.EFFDT = i.EFFDT;
-                                    msyscnfg.M_AUTONO = i.M_AUTONO;
-                                    msyscnfg.EMD_NO = i.EMD_NO;
-                                    msyscnfg.COMPCD = i.COMPCD;
-                                    msyscnfg.SALDEBGLCD = i.SALDEBGLCD;
-                                    msyscnfg.PURDEBGLCD = i.PURDEBGLCD;
-                                    msyscnfg.CLASS1CD = i.CLASS1CD;
-                                    msyscnfg.RETDEBSLCD = i.RETDEBSLCD;
-                                    msyscnfg.DUEDATECALCON = i.DUEDATECALCON;
-                                    msyscnfg.WPPER = i.WPPER;
-                                    msyscnfg.RPPER = i.RPPER;
-                                    msyscnfg.PRICEINCODE = i.PRICEINCODE;
-                                    msyscnfg.PRICEINCODECOST = i.PRICEINCODECOST;
-                                    msyscnfg.RTDEBCD = i.RTDEBCD;
-                                    msyscnfg.DESIGNPATH = i.DESIGNPATH;
-
-                                    if (msyscnfg.CLASS1CD != null)
+                                  msyscnfg.EFFDT = chkdata.EFFDT;
+                                    msyscnfg.M_AUTONO = chkdata.M_AUTONO;
+                                    msyscnfg.EMD_NO = chkdata.EMD_NO;
+                                    msyscnfg.COMPCD = chkdata.COMPCD;
+                                    msyscnfg.SALDEBGLCD = chkdata.SALDEBGLCD;
+                                    msyscnfg.PURDEBGLCD = chkdata.PURDEBGLCD;
+                                    msyscnfg.CLASS1CD = chkdata.CLASS1CD;
+                                    msyscnfg.RETDEBSLCD = chkdata.RETDEBSLCD;
+                                    msyscnfg.DUEDATECALCON = chkdata.DUEDATECALCON;
+                                    msyscnfg.WPPER = chkdata.WPPER;
+                                    msyscnfg.RPPER = chkdata.RPPER;
+                                    msyscnfg.PRICEINCODE = chkdata.PRICEINCODE;
+                                    msyscnfg.PRICEINCODECOST = chkdata.PRICEINCODECOST;
+                                    msyscnfg.RTDEBCD = chkdata.RTDEBCD;
+                                    msyscnfg.DESIGNPATH = chkdata.DESIGNPATH;
+                                    msyscnfg.INSPOLDESC= chkdata.INSPOLDESC;
+                                if (msyscnfg.CLASS1CD != null)
                                     {
                                         var classnm = (from a in DBF.M_CLASS1 where a.CLASS1CD == msyscnfg.CLASS1CD select new { a.CLASS1NM }).FirstOrDefault();
                                         VE.CLASS1NM = classnm.CLASS1NM;
@@ -209,32 +209,32 @@ namespace Improvar.Controllers
                                     }
                                     if (msyscnfg.RTDEBCD != null)
                                     { var Party = DBF.M_RETDEB.Find(msyscnfg.RTDEBCD); if (Party != null) { VE.RTDBNM = Party.RTDEBNM; } }
-                                    if (i.INC_RATE == "Y") { VE.INC_RATE = true; } else { VE.INC_RATE = false; }
-                                    if (i.MNTNSIZE == "Y") { VE.MNTNSIZE = true; } else { VE.MNTNSIZE = false; }
-                                    if (i.MNTNCOLOR == "Y") { VE.MNTNCOLOR = true; } else { VE.MNTNCOLOR = false; }
-                                    if (i.MNTNPART == "Y") { VE.MNTNPART = true; } else { VE.MNTNPART = false; }
-                                    if (i.MNTNFLAGMTR == "Y") { VE.MNTNFLAGMTR = true; } else { VE.MNTNFLAGMTR = false; }
-                                    if (i.MNTNLISTPRICE == "Y") { VE.MNTNLISTPRCE = true; } else { VE.MNTNLISTPRCE = false; }
-                                    if (i.MNTNSHADE == "Y") { VE.MNTNSHADE = true; } else { VE.MNTNSHADE = false; }
-                                    if (i.MNTNDISC1 == "Y") { VE.MNTNDISC1 = true; } else { VE.MNTNDISC1 = false; }
-                                    if (i.MNTNDISC2 == "Y") { VE.MNTNDISC2 = true; } else { VE.MNTNDISC2 = false; }
-                                    if (i.MNTNWPRPPER == "Y") { VE.MNTNWPRPPER = true; } else { VE.MNTNWPRPPER = false; }
-                                    if (i.MNTNBALE == "Y") { VE.MNTNBALE = true; } else { VE.MNTNBALE = false; }
-                                    if (i.MNTNOURDESIGN == "Y") { VE.MNTNOURDESIGN = true; } else { VE.MNTNOURDESIGN = false; }
-                                    if (i.MNTNPCSTYPE == "Y") { VE.MNTNPCSTYPE = true; } else { VE.MNTNPCSTYPE = false; }
-                                    if (i.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
-                                    if (i.COMMONUNIQBAR == "Y") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
-                                    if (i.WPPRICEGEN != null)
+                                    if (chkdata.INC_RATE == "Y") { VE.INC_RATE = true; } else { VE.INC_RATE = false; }
+                                    if (chkdata.MNTNSIZE == "Y") { VE.MNTNSIZE = true; } else { VE.MNTNSIZE = false; }
+                                    if (chkdata.MNTNCOLOR == "Y") { VE.MNTNCOLOR = true; } else { VE.MNTNCOLOR = false; }
+                                    if (chkdata.MNTNPART == "Y") { VE.MNTNPART = true; } else { VE.MNTNPART = false; }
+                                    if (chkdata.MNTNFLAGMTR == "Y") { VE.MNTNFLAGMTR = true; } else { VE.MNTNFLAGMTR = false; }
+                                    if (chkdata.MNTNLISTPRICE == "Y") { VE.MNTNLISTPRCE = true; } else { VE.MNTNLISTPRCE = false; }
+                                    if (chkdata.MNTNSHADE == "Y") { VE.MNTNSHADE = true; } else { VE.MNTNSHADE = false; }
+                                    if (chkdata.MNTNDISC1 == "Y") { VE.MNTNDISC1 = true; } else { VE.MNTNDISC1 = false; }
+                                    if (chkdata.MNTNDISC2 == "Y") { VE.MNTNDISC2 = true; } else { VE.MNTNDISC2 = false; }
+                                    if (chkdata.MNTNWPRPPER == "Y") { VE.MNTNWPRPPER = true; } else { VE.MNTNWPRPPER = false; }
+                                    if (chkdata.MNTNBALE == "Y") { VE.MNTNBALE = true; } else { VE.MNTNBALE = false; }
+                                    if (chkdata.MNTNOURDESIGN == "Y") { VE.MNTNOURDESIGN = true; } else { VE.MNTNOURDESIGN = false; }
+                                    if (chkdata.MNTNPCSTYPE == "Y") { VE.MNTNPCSTYPE = true; } else { VE.MNTNPCSTYPE = false; }
+                                    if (chkdata.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
+                                    if (chkdata.COMMONUNIQBAR == "Y") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
+                                    if (chkdata.WPPRICEGEN != null)
                                     {
-                                        VE.WPPRICEGENCD = i.WPPRICEGEN.Substring(0, 2);
-                                        VE.WPPRICEGENAMT = i.WPPRICEGEN.Substring(2, 2);
+                                        VE.WPPRICEGENCD = chkdata.WPPRICEGEN.Substring(0, 2);
+                                        VE.WPPRICEGENAMT = chkdata.WPPRICEGEN.Substring(2, 2);
                                     }
-                                    if (i.RPPRICEGEN != null)
+                                    if (chkdata.RPPRICEGEN != null)
                                     {
-                                        VE.RPPRICEGENCD = i.RPPRICEGEN.Substring(0, 2);
-                                        VE.RPPRICEGENAMT = i.RPPRICEGEN.Substring(2, 2);
+                                        VE.RPPRICEGENCD = chkdata.RPPRICEGEN.Substring(0, 2);
+                                        VE.RPPRICEGENAMT = chkdata.RPPRICEGEN.Substring(2, 2);
                                     }
-                                    if (i.INACTIVE_TAG == "Y")
+                                    if (chkdata.INACTIVE_TAG == "Y")
                                     {
                                         VE.Checked = true;
                                     }
@@ -242,7 +242,7 @@ namespace Improvar.Controllers
                                     {
                                         VE.Checked = false;
                                     }
-                                }
+                               
                                 VE.M_SYSCNFG = msyscnfg;
                                 VE.Checked_DataExsist = true;
                             }
@@ -253,6 +253,14 @@ namespace Improvar.Controllers
                             //UploadDOC1.Add(UPL);
                             //VE.UploadDOC = UploadDOC1;
                         }
+                        else if (op.ToString() == "E")
+                        {
+                            var chkdata = (from i in DB.M_SYSCNFG select i).ToList();
+                            if (chkdata.Count > 1)
+                            { VE.Checked_DataExsist = true; }
+                            else { VE.Checked_DataExsist = false; }
+                        }
+
                         return View(VE);
                     }
                     else
@@ -481,7 +489,7 @@ namespace Improvar.Controllers
                         MSYSCNFG.EFFDT = VE.M_SYSCNFG.EFFDT;
                         bool flag = false;
                         if (VE.Checked_DataExsist == true) flag = true;
-                        if (VE.DefaultAction == "A" &&flag==false)
+                        if (VE.DefaultAction == "A")
                         {
                            string query = "select EFFDT from  " + CommVar.CurSchema(UNQSNO) + ".M_SYSCNFG  where EFFDT=to_date('" + VE.M_SYSCNFG.EFFDT.retDateStr() + "', 'dd/mm/yyyy') and COMPCD='" + compcd + "'";
                             DataTable EffdtChk = Master_Help.SQLquery(query);
@@ -490,7 +498,7 @@ namespace Improvar.Controllers
                             MSYSCNFG.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
 
                         }
-                        if (VE.DefaultAction == "E" ||  flag==true)
+                        if (VE.DefaultAction == "E")
                         {
                             MSYSCNFG.DTAG = "E";
                             MSYSCNFG.M_AUTONO = VE.M_SYSCNFG.M_AUTONO;
@@ -517,7 +525,7 @@ namespace Improvar.Controllers
                             MSYSCNFG.RPPRICEGEN = VE.RPPRICEGENCD.retStr() + VE.RPPRICEGENAMT.retStr().PadLeft(2, '0');//NT99
                         }
                         //MSYSCNFG.DEALSIN = VE.M_SYSCNFG.DEALSIN;
-                        //MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
+                        MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
                         //MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
                         MSYSCNFG.DUEDATECALCON = VE.M_SYSCNFG.DUEDATECALCON;
                         //MSYSCNFG.BANKSLNO = VE.M_SYSCNFG.BANKSLNO;
@@ -543,13 +551,13 @@ namespace Improvar.Controllers
                         if (VE.MNTNBARNO == true) { MSYSCNFG.MNTNBARNO = "Y"; } else { MSYSCNFG.MNTNBARNO = "N"; }
                         if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "Y"; } else { MSYSCNFG.COMMONUNIQBAR = "N"; }
                        
-                        if (VE.DefaultAction == "A" && flag == false)
+                        if (VE.DefaultAction == "A")
                         {
                             M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
                             DB.M_SYSCNFG.Add(MSYSCNFG);
                             DB.M_CNTRL_HDR.Add(MCH);
                         }
-                        else if (VE.DefaultAction == "E"|| flag == true)
+                        else if (VE.DefaultAction == "E")
                         {
                             M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "E", CommVar.CurSchema(UNQSNO).ToString());
                             DB.Entry(MSYSCNFG).State = System.Data.Entity.EntityState.Modified;
