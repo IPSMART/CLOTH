@@ -311,25 +311,25 @@
                                                 @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_IGSTPER_" + i + ",D_NETAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_IGSTPER_" + i + ",D_NETAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].CGSTPER, new { htmlattributes = new { id = "D_CGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_CGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_CGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].SGSTPER, new { htmlattributes = new { id = "D_SGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_SGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_CESSAMT_" + i + ",'');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_SGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].CESSPER, new { htmlattributes = new { id = "D_CESSPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].CESSAMT, new { htmlattributes = new { id = "D_CESSAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_CESSPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",'');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].CESSAMT, new { htmlattributes = new { id = "D_CESSAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_CESSPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].NETAMT, new { htmlattributes = new { id = "D_NETAMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })

@@ -1509,12 +1509,12 @@ namespace Improvar.Controllers
                 sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,  ";
                 sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,  ";
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,  ";
-                sql += " b.curr_cd,a.usr_id from  ";
+                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile from  ";
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate  ";
                 sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+)  and";
                 sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
@@ -1524,12 +1524,12 @@ namespace Improvar.Controllers
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
                 sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno), d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate,a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate  ";
                 sql += " union all  ";
 
                 sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,  ";
                 sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,0 inclrate  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
                 if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
@@ -2120,92 +2120,101 @@ namespace Improvar.Controllers
                             dr1["goadd1"] = tbl.Rows[i]["goadd1"].ToString();
                             //dr1["weekno"] = tbl.Rows[i]["weekno"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["weekno"]);
                             string cfld = "", rfld = ""; int rf = 0;
-                            if (tbl.Rows[i]["prtynm"].retStr() != "")
-                            {
-                                dr1["slnm"] = tbl.Rows[i]["prtynm"].ToString();
+                            //if (tbl.Rows[i]["prtynm"].retStr() != "")
+                            //{
+                                dr1["slcd"] = tbl.Rows[i]["rtdebcd"].ToString();
+                                dr1["slnm"] = tbl.Rows[i]["nm"].ToString();
+                                dr1["sladd1"] = tbl.Rows[i]["addr"].ToString();
+                                dr1["sladd2"] = tbl.Rows[i]["city"].ToString();
+                                if (tbl.Rows[i]["mobile"].ToString() != "")
+                                {
+                                    dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
+                                }
 
-                                for (int f = 1; f <= 6; f++)
-                                {
-                                    cfld = "prtyadd" + Convert.ToString(f).ToString();
-                                    if (tbl.Rows[i][cfld].ToString() != "")
-                                    {
-                                        rf = rf + 1;
-                                        rfld = "sladd" + Convert.ToString(rf);
-                                        dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                                    }
-                                }
-                                rf = rf + 1;
-                                rfld = "sladd" + Convert.ToString(rf);
-                                dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
-                                if (tbl.Rows[i]["gstno"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
-                                }
-                                if (tbl.Rows[i]["panno"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                                }
-                                if (tbl.Rows[i]["prtymob"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "Ph. # " + tbl.Rows[i]["prtymob"].ToString();
-                                }
-                                if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                                }
-                            }
-                            else
-                            {
-                                dr1["slcd"] = tbl.Rows[i]["RTDEBCD"].ToString();
-                                dr1["slnm"] = tbl.Rows[i]["RTDEBNM"].ToString();
-                                dr1["regemailid"] = tbl.Rows[i]["rtdebemail"].ToString();
+                                //dr1["slnm"] = tbl.Rows[i]["prtynm"].ToString();
 
-                                for (int f = 1; f <= 6; f++)
-                                {
-                                    cfld = "rtdebadd" + Convert.ToString(f).ToString();
-                                    if (tbl.Rows[i][cfld].ToString() != "")
-                                    {
-                                        rf = rf + 1;
-                                        rfld = "sladd" + Convert.ToString(rf);
-                                        dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                                    }
-                                }
-                                rf = rf + 1;
-                                rfld = "sladd" + Convert.ToString(rf);
-                                dr1[rfld] = tbl.Rows[i]["rtdebstnm"].ToString() + " [ Code - " + tbl.Rows[i]["rtdebstcd"].ToString() + " ]";
-                                if (tbl.Rows[i]["gstno"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
-                                }
-                                if (tbl.Rows[i]["panno"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                                }
-                                if (tbl.Rows[i]["phno"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "Ph. # " + tbl.Rows[i]["rtdebmob"].ToString();
-                                }
-                                if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                                {
-                                    rf = rf + 1;
-                                    rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                                }
-                            }
+                                //for (int f = 1; f <= 6; f++)
+                                //{
+                                //    cfld = "prtyadd" + Convert.ToString(f).ToString();
+                                //    if (tbl.Rows[i][cfld].ToString() != "")
+                                //    {
+                                //        rf = rf + 1;
+                                //        rfld = "sladd" + Convert.ToString(rf);
+                                //        dr1[rfld] = tbl.Rows[i][cfld].ToString();
+                                //    }
+                                //}
+                                //rf = rf + 1;
+                                //rfld = "sladd" + Convert.ToString(rf);
+                                //dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
+                                //if (tbl.Rows[i]["gstno"].ToString() != "")
+                                //{
+                                //    rf = rf + 1;
+                                //    rfld = "sladd" + Convert.ToString(rf);
+                                //    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
+                                //}
+                                //if (tbl.Rows[i]["panno"].ToString() != "")
+                                //{
+                                //    rf = rf + 1;
+                                //    rfld = "sladd" + Convert.ToString(rf);
+                                //    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
+                                //}
+                                //if (tbl.Rows[i]["prtymob"].ToString() != "")
+                                //{
+                                //    rf = rf + 1;
+                                //    rfld = "sladd" + Convert.ToString(rf);
+                                //    dr1[rfld] = "Ph. # " + tbl.Rows[i]["prtymob"].ToString();
+                                //}
+                                //if (tbl.Rows[i]["slactnameof"].ToString() != "")
+                                //{
+                                //    rf = rf + 1;
+                                //    rfld = "sladd" + Convert.ToString(rf);
+                                //    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
+                                //}
+                            //}
+                            //else
+                            //{
+                            //    dr1["slcd"] = tbl.Rows[i]["RTDEBCD"].ToString();
+                            //    dr1["slnm"] = tbl.Rows[i]["RTDEBNM"].ToString();
+                            //    dr1["regemailid"] = tbl.Rows[i]["rtdebemail"].ToString();
+
+                            //    for (int f = 1; f <= 6; f++)
+                            //    {
+                            //        cfld = "rtdebadd" + Convert.ToString(f).ToString();
+                            //        if (tbl.Rows[i][cfld].ToString() != "")
+                            //        {
+                            //            rf = rf + 1;
+                            //            rfld = "sladd" + Convert.ToString(rf);
+                            //            dr1[rfld] = tbl.Rows[i][cfld].ToString();
+                            //        }
+                            //    }
+                            //    rf = rf + 1;
+                            //    rfld = "sladd" + Convert.ToString(rf);
+                            //    dr1[rfld] = tbl.Rows[i]["rtdebstnm"].ToString() + " [ Code - " + tbl.Rows[i]["rtdebstcd"].ToString() + " ]";
+                            //    if (tbl.Rows[i]["gstno"].ToString() != "")
+                            //    {
+                            //        rf = rf + 1;
+                            //        rfld = "sladd" + Convert.ToString(rf);
+                            //        dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
+                            //    }
+                            //    if (tbl.Rows[i]["panno"].ToString() != "")
+                            //    {
+                            //        rf = rf + 1;
+                            //        rfld = "sladd" + Convert.ToString(rf);
+                            //        dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
+                            //    }
+                            //    if (tbl.Rows[i]["phno"].ToString() != "")
+                            //    {
+                            //        rf = rf + 1;
+                            //        rfld = "sladd" + Convert.ToString(rf);
+                            //        dr1[rfld] = "Ph. # " + tbl.Rows[i]["rtdebmob"].ToString();
+                            //    }
+                            //    if (tbl.Rows[i]["slactnameof"].ToString() != "")
+                            //    {
+                            //        rf = rf + 1;
+                            //        rfld = "sladd" + Convert.ToString(rf);
+                            //        dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
+                            //    }
+                            //}
 
 
 
@@ -2493,7 +2502,7 @@ namespace Improvar.Controllers
 
                                 dr1["qdecimal"] = uomdecimal;
                                 dr1["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
-                                dr1["rate"] = tbl.Rows[i]["rate"].retDbl().ToString("0.00");
+                                dr1["rate"] = (tbl.Rows[i]["inclrate"].retDbl() == 0 ? tbl.Rows[i]["rate"].retDbl() : tbl.Rows[i]["inclrate"].retDbl()).ToString("0.00");
                                 dr1["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : (tbl.Rows[i]["amt"]).retDbl();
                                 //dr1["poslno"] = tbl.Rows[i]["poslno"];
                                 //dr1["mtrlcd"] = tbl.Rows[i]["mtrlcd"];

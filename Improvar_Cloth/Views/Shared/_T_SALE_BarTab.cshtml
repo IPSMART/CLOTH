@@ -36,6 +36,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div id="BARGRID" style="overflow-y:scroll;max-height:235px;">
+                    @Html.HiddenFor(a => a.PCSTYPEVALUE, new { id = "PCSTYPEVALUE" })
                     <table id="_T_SALE_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2135px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
@@ -60,7 +61,7 @@
                                 {
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
-                                
+
                                 @*<th class="" style="width:162px;">Design</th>*@
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
@@ -336,7 +337,7 @@
                                                     @Html.EditorFor(model => Model.TBATCHDTL[i].WPRATE, new { htmlAttributes = new { id = "B_WPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
                                                 }
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].WPPRICEGEN, new { id = "B_WPPRICEGEN_" + i })
-
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].WPPER, new { id = "B_WPPER_" + i })
                                             </td>
                                             <td class="">
                                                 @if (Model.Delete == "D")
@@ -348,6 +349,7 @@
                                                     @Html.EditorFor(model => Model.TBATCHDTL[i].RPRATE, new { htmlAttributes = new { id = "B_RPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
                                                 }
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].RPPRICEGEN, new { id = "B_RPPRICEGEN_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].RPPER, new { id = "B_RPPER_" + i })
                                             </td>
                                         }
 
@@ -404,7 +406,14 @@
                                         @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })
+                                                @*@Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })*@
+                                                @Html.EditorFor(model => model.TBATCHDTL[i].PCSTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_PCSTYPE_" + i,  maxlength = 15, @list = "Pcstype_List", autocomplete = "off" } })
+                                                <datalist id="Pcstype_List">
+                                                    @foreach (var jg in Model.Database_Combo4)
+                                                    {
+                                                        <option value="@jg.FIELD_VALUE" />
+                                                    }
+                                                </datalist>
                                             </td>
                                         }
                                         <td class="">
@@ -460,8 +469,15 @@
                                     if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH"))
                                     {
                                         <td>
-                                            @*<input type="text" class="atextBoxFor" readonly="readonly"/>*@
-                                            <a title="Add first Row Material Job to all Row" onclick="CopyMtrljobcd()" style="cursor:pointer;color: red;">Repeat</a>
+                                            @if (Model.SHOWMTRLJOBCD == "Y")
+                                            {
+                                                <a title="Add first Row Material Job to all Row" onclick="CopyMtrljobcd()" style="cursor:pointer;color: red;">Repeat</a>
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="atextBoxFor" readonly="readonly" />
+
+                                            }
                                         </td>
                                     }
                                     else
@@ -510,8 +526,6 @@
                                 @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
-
-                                    <
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@

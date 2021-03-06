@@ -146,7 +146,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {
+        if ("@Model.MENU_PARA" == "PB") {
             if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
@@ -161,7 +161,8 @@
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
-
+        }
+        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {
             var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
             var balenoexist = false;
             if (GridRow != 0) {
@@ -458,29 +459,8 @@
             //below set the  child sequence
             $(".tab-content div").removeClass("active");
             $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-
-            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    $("#D_PAGENO_" + i).attr("readonly", false);
-                    $("#D_PAGESLNO_" + i).attr("readonly", false);
-                    //if (i == 0) $("#D_PAGENO_" + i).focus();
-                }
-            }
-            $("#D_PAGENO_0").focus();
-            $("#edit_page_slno").hide();
-            $("#update_page_slno").show();
-            $("#cancel_page_slno").show();
+            Edit_Pageno_slno();
         }
-        if (event.altKey && KeyID == 115) {//for Alt+S (In Detail tab Update(Save) pageno/slno code)
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(3)").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            Update_Pageno_slno();
-        }
-
     });
 </script>
 @section Scripts {
@@ -795,7 +775,10 @@
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill no")
-                                        <b style="color:Red;">*</b>
+                                        @if (Model.MENU_PARA == "PB")
+                                        {
+                                            <b style="color:Red;">*</b>
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-md-10">
@@ -806,7 +789,10 @@
                                 <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill dt")
-                                        <b style="color:Red;">*</b>
+                                        @if (Model.MENU_PARA == "PB")
+                                        {
+                                            <b style="color:Red;">*</b>
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -1012,7 +998,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.WPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "WPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
 
@@ -1023,7 +1009,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.RPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "RPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
                                 <div class="col-md-1" style="width:auto;">
@@ -1215,8 +1201,8 @@
                                             }
                                             @if (Model.M_SYSCNFG.MNTNWPRPPER != "Y")
                                             {
-                                                @Html.HiddenFor(model => model.WPPER, new { id = "WPPER" })
-                                                @Html.HiddenFor(model => model.RPPER, new { id = "RPPER" })
+                                                @Html.HiddenFor(model => model.WPPERMANUAL, new { id = "WPPERMANUAL" })
+                                                @Html.HiddenFor(model => model.RPPERMANUAL, new { id = "RPPERMANUAL" })
                                             }
                                             @if (Model.M_SYSCNFG.MNTNBARNO != "Y")
                                             {
@@ -1360,6 +1346,8 @@
                                                 </div>
                                                 @Html.HiddenFor(model => model.WPPRICEGEN, new { id = "WPPRICEGEN" })
                                                 @Html.HiddenFor(model => model.RPPRICEGEN, new { id = "RPPRICEGEN" })
+                                                @Html.HiddenFor(model => model.WPPER, new { id = "WPPER" })
+                                                @Html.HiddenFor(model => model.RPPER, new { id = "RPPER" })
                                             </div>
                                             @if (Model.SHOWMTRLJOBCD == "Y")
                                             {
@@ -1398,7 +1386,7 @@
                                             </div>
 
 
-                                            <div class="fabitcdhlpdiv col-md-6">
+                                            <div class="fabitcdhlpdiv col-md-3">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITNMHLP", onkeydown = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2/FABITNM=ITNM=1/FABITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("GetFabItemDetails", PageControllerName) + "','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2/FABITNM=ITNM=1/FABITCD=itcd=2');", @placeholder = "Fabric Item", maxlength = 60, @title = "Fabric Item" } })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetFabItemDetails", PageControllerName)','Part Details','FABITNMHLP','FABITNMHLP=ITNM=1/FABITCDHLP=itcd=2/FABITNM=ITNM=1/FABITCD=itcd=2')" />
@@ -1406,7 +1394,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="fabitcddiv col-md-6">
+                                            <div class="fabitcddiv col-md-3">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
                                                         @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @title = "Only for View", @placeholder = "Fabric Item", @readonly = "readonly", @TabIndex = -1 } })
@@ -1415,9 +1403,9 @@
                                                 </div>
                                                 @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCD" })
                                             </div>
-                                            
 
-                                            <div class="col-md-4">
+
+                                            <div class="col-md-2">
                                                 <div class="editor-field">
                                                     @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE =1/STKNAME =STKNAME =0')" />
@@ -1444,14 +1432,14 @@
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')" />
                                                     </div>
                                                 </div>
-                                                <div class="barfirstrow col-md-6">
+                                                <div class="barfirstrow col-md-2">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Color Name", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
                                                             <label for="COLRNM" style="font-size: 87%;color: darkgreen;">Color Name</label>
                                                         </span>
-                                                        @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
                                                     </div>
+                                                    @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
                                                 </div>
                                             }
                                             @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
@@ -1467,7 +1455,7 @@
                                             }
                                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                             {
-                                                <div class="barfirstrow col-md-4">
+                                                <div class="col-md-4">
 
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
@@ -1869,7 +1857,7 @@
                             {<div class="row">
                             <div class="col-md-1" style="width:auto;">
                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno(Alt+G)" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update(Alt+S)" title="Click to Update page no/page slno in Details Tab" onclick="Update_Pageno_slno()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update(Alt+I)" accesskey="I" title="Click to Update page no/page slno in Details Tab" disabled onclick="Update_Pageno_slno()" />
                                 <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_page_slno" value="Cancel" title="Click to Cancel for unchane page no/page slno in Details Tab" onclick="Cancel_Pageno_slno()" />
                             </div>
                         </div>

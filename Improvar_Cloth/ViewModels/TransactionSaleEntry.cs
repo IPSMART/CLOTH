@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Improvar.ViewModels
 {
@@ -35,6 +36,7 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<Database_Combo3> Database_Combo3 { get; set; }
+        public List<Database_Combo4> Database_Combo4 { get; set; }
         public List<HSN_CODE> HSN_CODE { get; set; }
         public List<BL_TYPE> BL_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
@@ -244,5 +246,11 @@ namespace Improvar.ViewModels
         public string MUTSLNM { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? FIXEDAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? WPPERMANUAL { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RPPERMANUAL { get; set; }
+        [AllowHtml]
+        public string PCSTYPEVALUE { get; set; }
     }
 }

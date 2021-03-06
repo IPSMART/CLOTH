@@ -100,22 +100,10 @@
                         </div>
                     </div>
                 </div>
-                @*<div class="row">
-                    <div class="col-lg-10">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Bill wise details required")
-                            @Html.CheckBoxFor(model => model.Checkbox1)
-                        </div>
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Output as Excel Dump")
-                            @Html.CheckBoxFor(model => model.Checkbox2)
-                        </div>
-                    </div>
-                </div>*@
                 <div class="row">
                     <div class="col-lg-3" style="width:auto">
                         <div class="editor-label" style="margin-top: 4px;">
-                            @Html.Label("", "Bill wise details required")
+                            @Html.Label("", "Show Bill wise details")
                         </div>
                     </div>
                     <div class="col-lg-1">
@@ -123,6 +111,8 @@
                             @Html.CheckBoxFor(model => model.Checkbox1)
                         </div>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-3" style="width:auto">
                         <div class="editor-label" style="margin-top: 4px;">
                             @Html.Label("", "Output as Excel Dump")
@@ -134,15 +124,18 @@
                         </div>
                     </div>
                 </div>
-
-                @*<div class="row">
-                    <div class="col-lg-3">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Output as Excel Dump")
-                            @Html.CheckBoxFor(model => model.Checkbox2)
+                <div class="row">
+                    <div class="col-lg-3" style="width:auto">
+                        <div class="editor-label" style="margin-top: 4px;">
+                            @Html.Label("", "Show Item Details")
                         </div>
                     </div>
-                </div>*@
+                    <div class="col-lg-1">
+                        <div class="editor-field">
+                            @Html.CheckBoxFor(model => model.Checkbox3)
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">

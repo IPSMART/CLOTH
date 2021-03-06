@@ -195,5 +195,7 @@ namespace Improvar.Models
         [StringLength(3)]
         public string BLUOMCD { get; set; }
         public string COMMONUNIQBAR { get; set; }
+        public double? WPPER { get; set; }
+        public double? RPPER { get; set; }
     }
 }
