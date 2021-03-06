@@ -815,7 +815,7 @@ namespace Improvar.Controllers
             i = 0;
             while (i <= maxB)
             {
-                strbrgrpcd = tbl1.Rows[i]["itgrpcd"].retStr();
+                strbrgrpcd = summarybarcode.Rows[i]["itgrpcd"].retStr();
 
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + summarybarcode.Rows[i]["itgrpnm"].ToString();
@@ -846,7 +846,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["balval"] = summarybarcode.Rows[i]["balval"].retDbl();
 
                     i++;
-                    if (i > maxR) break;
+                    if (i > maxB) break;
                 }
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["itnm"] = "Total of " + summarybarcode.Rows[i - 1]["itgrpnm"].ToString();
@@ -907,15 +907,7 @@ namespace Improvar.Controllers
                 {
                     IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
                 }
-                //int start = 6;
-                //if (VE.Checkbox4 == true) start++;
-                //if (VE.Checkbox3 == true) start++;
-                //for (int j = start; j < IR.Columns.Count - 1; j++)
-                //{
-                //    IR.Rows[rNo][IR.Columns[j].ColumnName] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == strbrgrpcd).Sum(b => b.Field<double>(IR.Columns[j].ColumnName));
-                //}
-
-                if (i > maxR) break;
+                if (i > maxB) break;
             }
             // Create Blank line
             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
