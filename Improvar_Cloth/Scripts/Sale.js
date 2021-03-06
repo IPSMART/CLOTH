@@ -3663,6 +3663,44 @@ function SelectUOMCode(id, i) {
         });
     }
 }
+function Edit_Transport() {
+    debugger;
+    $('.Transportdiv input').attr("readonly", false);
+    $("li").removeClass("active").addClass("");
+    $(".nav-tabs li:nth-child(5)").addClass('active');
+    //below set the  child sequence
+    $(".tab-content div").removeClass("active");
+    $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+
+    $("#edit_Transport").hide();
+    $("#update_Transport").show();
+    $("#cancel_Transport").show();
+    $("#update_Transport").prop("disabled", false);
+}
+
+function Cancel_Transport() {
+    location.reload();
+}
+function Update_Transport() {
+    debugger;
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlUpdateTransport").val(),//"@Url.Action("Update_Transport", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            if (result == "1") {
+                msgSuccess1("Update Successfully !");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
 
 
 

@@ -515,6 +515,7 @@
         <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="UrlUpdatePagenoSlno" value="@Url.Action("Update_PagenoSlno", PageControllerName )" />
         <input type="hidden" id="UrlGetUOMDetails" value="@Url.Action("GetUOMDetails", PageControllerName )" />
+        <input type="hidden" id="UrlUpdateTransport" value="@Url.Action("Update_Transport", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -626,9 +627,18 @@
                     </div>
                     @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.DefaultAction == "V")
                     {
-                        <div class="col-md-1">
+                        <div class="col-md-3">
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                         </div>
+                    }
+                    @if (Model.DefaultAction == "V")
+                    {
+                        <div class="col-md-1" style="width:auto;">
+                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Transport" id="edit_Transport" value="Update Transport" title="Click to Update Transport button for edit Transport Tab" onclick="Edit_Transport()" />
+                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Transport" value="Update" title="Click to Update Transport Tab" disabled onclick="Update_Transport()" />
+                            <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Transport" value="Cancel" title="Click to Cancel" onclick="Cancel_Transport()" />
+                        </div>
+                   
                     }
                 </div>
                 <div class="row">
@@ -1967,7 +1977,7 @@
                                     @Html.Label("", "Transporter")
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="Transportdiv col-md-3">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
