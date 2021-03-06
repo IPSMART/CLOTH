@@ -304,6 +304,7 @@
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
+    <Compile Include="Controllers\Rep_SuplrAnlysController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\Sys_DataUploadController.cs" />
     <Compile Include="Controllers\Sys_PriceList_UploadController.cs" />
@@ -1297,6 +1298,7 @@
     <Content Include="Views\Rep_Agent\Rep_Agent.cshtml" />
     <Content Include="Views\T_PBillUpload\T_PBillUpload.cshtml" />
     <Content Include="Views\Sys_DataUpload\Sys_DataUpload.cshtml" />
+    <Content Include="Views\Rep_SuplrAnlys\Rep_SuplrAnlys.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
