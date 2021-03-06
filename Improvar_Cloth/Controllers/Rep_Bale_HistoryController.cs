@@ -38,8 +38,9 @@ namespace Improvar.Controllers
                     string com = CommVar.Compcd(UNQSNO); string gcs = Cn.GCS();
                     string qry = "select distinct baleno ||'/'|| baleyr BaleNoBaleYr,baleno || baleyr BaleNoBaleYrcd from " + CommVar.CurSchema(UNQSNO) + ".t_txndtl where  baleno is not null and baleyr is not null  ";
                     DataTable tbl = MasterHelp.SQLquery(qry);
-                    VE.DropDown_list1 = (from DataRow dr in tbl.Rows select new DropDown_list1() { value = dr["BaleNoBaleYrcd"].retStr(), text = dr["BaleNoBaleYr"].retStr() }).OrderBy(s => s.text).ToList();
-                    VE.TEXTBOX1 = MasterHelp.ComboFill("BaleNoBaleYrcd", VE.DropDown_list1, 0, 1);
+                    //VE.DropDown_list1 = (from DataRow dr in tbl.Rows select new DropDown_list1() { value = dr["BaleNoBaleYrcd"].retStr(), text = dr["BaleNoBaleYr"].retStr() }).OrderBy(s => s.text).ToList();
+                    VE.DropDown_list1 = (from DataRow dr in tbl.Rows select new DropDown_list1() { value = dr["BaleNoBaleYrcd"].retStr() }).OrderBy(s => s.text).ToList();
+                    VE.TEXTBOX1 = MasterHelp.ComboFill("BaleNoBaleYrcd", VE.DropDown_list1, "".retInt(),1);
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
                     VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();

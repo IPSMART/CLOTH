@@ -186,78 +186,6 @@
     }
 </script>
 <script>
-    function SelectSubLedgerCode(id, SLCD, SLNM) {
-        if (id == "") {
-            $("#" + SLCD.id).val("");
-            $("#" + SLNM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: "@Url.Action("GetSubLedgerDetails", PageControllerName)",
-                data: { val: id },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        var findstr = result;
-                        document.getElementById(SLCD.id).value = returncolvalue(findstr, "SLCD");
-                        document.getElementById(SLNM.id).value = returncolvalue(findstr, "SLNM");
-                    }
-                    else {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + SLCD.id).val("");
-                        $("#" + SLNM.id).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
-                        message_value = SLCD.id;
-                    }
-                }
-            });
-        }
-    }
-
-
-    //function SelectGridTAXGRPCD(valu, fld1, fld2) {
-    //    if (valu == "") {
-    //        $("#" + fld1.id).val("");
-    //        $("#" + fld2.id).val("");
-    //    }
-    //    else {
-    //        $.ajax({
-    //            type: 'GET',
-    //            url: $("#urlTAXGRPHLP").val(),
-    //            data: {
-    //                val: valu
-    //            },
-    //            success: function (result) {
-    //                if (result == "0") {
-    //                    $("#Msgdiv1").show();
-    //                    $("#info").show();
-    //                    $("#msgbody_info").html(" Invalid Tax Group Code !! ");
-    //                    $("#" + fld1.id).val("");
-    //                    $("#" + fld2.id).val("");
-    //                    $("#btnok").focus();
-    //                    message_value = fld1.id;
-    //                }
-    //                else {
-    //                    $("#tempHDD").val(result);
-    //                    inputhelp(fld1, fld2);
-    //                }
-    //            },
-    //            error: function (XMLHttpRequest, textStatus, errorThrown) {
-    //                $("#WaitingMode").hide();
-    //                msgError("Error: " + textStatus + "," + errorThrown);
-    //            }
-    //        });
-    //    }
-    //}
-
-
-
-
-</script>
-<script>
     function AddDOCrow() {
         $.ajax({
             type: 'POST',
@@ -296,6 +224,7 @@
             @Html.HiddenFor(a => a.BLAUTONO, new { id = "BLAUTONO" })
             @Html.HiddenFor(c => c.ACK_FLAG1)
             @Html.HiddenFor(c => c.ACK_DOCCTG)
+            <input type="hidden" id="SLCDlinkcd" value="T,U" />
             <div class="row" style="margin-top:-15px;">
                 <ul class="nav nav-tabs" style="margin-top: 11px;">
                     <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
@@ -313,7 +242,7 @@
                             <div class="col-md-7">
                                 <div class="editor-field">
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOC_Code", PageControllerName)','BLDOCCD/BLDOCNM','1/0','Select Document Type Details','BLDOCCD')" />
-                                    @Html.EditorFor(model => model.BLDOCCD, new { htmlAttributes = new { @class = "form-control textbox_image text-uppercase", id = "BLDOCCD", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','BLDOCCD/BLDOCNM','1/0','Select Document Type Details','BLDOCCD');", onblur = "SelectDOCCode(this.value);", @placeholder = "Code", maxlength = 4, required = "required" } })
+                                    @Html.EditorFor(model => model.BLDOCCD, new { htmlAttributes = new { @class = "form-control textbox_image text-uppercase", id = "BLDOCCD", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','BLDOCCD/BLDOCNM','1/0','Select Document Type Details','BLDOCCD');", onblur = "SelectDOCCode(this.value);", @placeholder = "Code", maxlength = 5, required = "required" } })
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -329,7 +258,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.BLDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BLDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOC_Number", PageControllerName) + "','BLDOCNO/BLDOCDT','0/1','Select Document Number','BLDOCNO','BLDOCCD')", onblur = "SelectDOCNumber(this.value,'BLDOCNO','BLDOCDT');", @placeholder = "DocNo.", maxlength = 8 } })
+                                    @Html.EditorFor(model => model.BLDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BLDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOC_Number", PageControllerName) + "','BLDOCNO/BLDOCDT','0/1','Select Document Number','BLDOCNO','BLDOCCD')", onblur = "SelectDOCNumber(this.value,'BLDOCNO','BLDOCDT');", @placeholder = "DocNo.", maxlength = 6 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetDOC_Number", PageControllerName)','BLDOCNO/BLDOCDT','0/1','Select Docno and Docdt Details','BLDOCNO','BLDOCCD')" />
                                 </div>
                             </div>
@@ -422,14 +351,15 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNACK.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','TRSLCD/TRSLNM','1/0','Sub Ledger Details','TRSLCD');", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TRSLNM);" } })
-                                    <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetSubLedgerDetails", PageControllerName)','TRSLCD/TRSLNM','1/0','Sub Ledger Details','TRSLCD')" />
+                                    @Html.EditorFor(model => model.T_TXNACK.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier/Transport Details','TRSLCD','TRSLCD=slcd=1/TRSLNM=slnm=0','SLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier/Transport Details','TRSLCD','TRSLCD=slcd=1/TRSLNM=slnm=0','SLCDlinkcd');", @placeholder = "TRSLCD", maxlength = 8 } })
+                                    <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Courier/Transport Details','TRSLCD','TRSLCD=slcd =1/TRSLNM =slnm =0','SLCDlinkcd')" />
+
                                 </div>
                             </div>
 
                             <div class="col-md-10">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TRSLNM, new { htmlAttributes = new { @class = "form-control ", id = "TRSLNM", @placeholder = "Sub Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TRSLNM, new { htmlAttributes = new { @class = "form-control ", id = "TRSLNM", @placeholder = "Courier/Transport Name", maxlength = 45, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>

@@ -191,7 +191,7 @@ namespace Improvar.Controllers
                 //if (showbatch == true) HC.GetPrintHeader(IR, "batchno", "string", "c,30", "Batchnos");
 
                 double iop = 0, idr = 0, icr = 0, icls = 0, idramt = 0, icramt = 0;
-                double top = 0, tdr = 0, tcr = 0, tcls = 0, tdramt = 0, tcramt = 0;
+                double top = 0, tdr = 0, tcr = 0, tcls = 0, tdramt = 0, tcramt = 0,tblqty=0;
                 double dbqty = 0, dbamt = 0;
 
                 top = 0; tdr = 0; tcr = 0; tcls = 0;
@@ -274,9 +274,11 @@ namespace Improvar.Controllers
                             }
                             icls = idr - icr;
                             IR.Rows[rNo]["balqnty"] = icls;
+                            tblqty = tblqty + icls;
                             i = i + 1;
                             if (i > maxR) break;
                         }
+                       
                         if (i > maxR) break;
                     }
 
@@ -286,7 +288,8 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                     IR.Rows[rNo]["qntyin"] = idr; IR.Rows[rNo]["amtin"] = idramt;
                     IR.Rows[rNo]["qntyout"] = icr; IR.Rows[rNo]["amtout"] = icramt;
-                    IR.Rows[rNo]["balqnty"] = icls;
+                    //IR.Rows[rNo]["balqnty"] = icls;
+                    IR.Rows[rNo]["balqnty"] = tblqty;
 
                     top = top + iop;
                     tdr = tdr + idr; tdramt = tdramt + idramt;

@@ -397,17 +397,17 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetSubLedgerDetails(string val)
+        public ActionResult GetSubLedgerDetails(string val, string Code)
         {
             try
             {
-                if (val == null)
+                var str = Master_HelpFa.SLCD_help(val, Code);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", masterHelp.SubLeg_Help(val, "T,U"));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = masterHelp.SubLeg_Help(val, "T,U");
                     return Content(str);
                 }
             }
