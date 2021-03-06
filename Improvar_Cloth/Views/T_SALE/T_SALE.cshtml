@@ -998,7 +998,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.WPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "WPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
 
@@ -1009,7 +1009,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.RPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "RPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
                                 <div class="col-md-1" style="width:auto;">
@@ -1201,8 +1201,8 @@
                                             }
                                             @if (Model.M_SYSCNFG.MNTNWPRPPER != "Y")
                                             {
-                                                @Html.HiddenFor(model => model.WPPER, new { id = "WPPER" })
-                                                @Html.HiddenFor(model => model.RPPER, new { id = "RPPER" })
+                                                @Html.HiddenFor(model => model.WPPERMANUAL, new { id = "WPPERMANUAL" })
+                                                @Html.HiddenFor(model => model.RPPERMANUAL, new { id = "RPPERMANUAL" })
                                             }
                                             @if (Model.M_SYSCNFG.MNTNBARNO != "Y")
                                             {
@@ -1346,6 +1346,8 @@
                                                 </div>
                                                 @Html.HiddenFor(model => model.WPPRICEGEN, new { id = "WPPRICEGEN" })
                                                 @Html.HiddenFor(model => model.RPPRICEGEN, new { id = "RPPRICEGEN" })
+                                                @Html.HiddenFor(model => model.WPPER, new { id = "WPPER" })
+                                                @Html.HiddenFor(model => model.RPPER, new { id = "RPPER" })
                                             </div>
                                             @if (Model.SHOWMTRLJOBCD == "Y")
                                             {

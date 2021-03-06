@@ -87,12 +87,14 @@ function GetBarnoDetails(id, HelpFrom) {
                                 if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR") && ($("#QNTY").val() != "")) {
                                     AddBarCodeGrid();
                                 }
-                                
+
                             }
                             else {
                                 if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") {
                                     $("#WPPRICEGEN").val(returncolvalue(result, "WPPRICEGEN"));
                                     $("#RPPRICEGEN").val(returncolvalue(result, "RPPRICEGEN"));
+                                    $("#WPPER").val(returncolvalue(result, "WPPER"));
+                                    $("#RPPER").val(returncolvalue(result, "RPPER"));
                                 }
                                 if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP" && MENU_PARA != "OTH") {
                                     $("#MTBARCODE").val(returncolvalue(result, "MTBARCODE"));
@@ -248,6 +250,8 @@ function FillBarcodeArea(str, Table, i) {
             $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
             $("#WPPRICEGEN").val(returncolvalue(str, "WPPRICEGEN"));
             $("#RPPRICEGEN").val(returncolvalue(str, "RPPRICEGEN"));
+            $("#WPPER").val(returncolvalue(str, "WPPER"));
+            $("#RPPER").val(returncolvalue(str, "RPPER"));
         }
         //$("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
         $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
@@ -338,6 +342,8 @@ function FillBarcodeArea(str, Table, i) {
             $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
             $("#WPPRICEGEN").val($(FieldidStarting + "WPPRICEGEN_" + i).val());
             $("#RPPRICEGEN").val($(FieldidStarting + "RPPRICEGEN_" + i).val());
+            $("#WPPER").val($(FieldidStarting + "WPPER_" + i).val());
+            $("#RPPER").val($(FieldidStarting + "RPPER_" + i).val());
             if (FieldidStarting == "#B_") {
                 $("#BarImages").val($(FieldidStarting + "BarImages_" + i).val());
             }
@@ -593,6 +599,8 @@ function UpdateBarCodeRow() {
                 $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
                 $("#B_WPPRICEGEN_" + j).val($("#WPPRICEGEN").val());
                 $("#B_RPPRICEGEN_" + j).val($("#RPPRICEGEN").val());
+                $("#B_WPPER_" + j).val($("#WPPER").val());
+                $("#B_RPPER_" + j).val($("#RPPER").val());
             }
             $("#B_TDDISCTYPE_" + j).val($("#TDDISCTYPE").val());
             $("#B_TDDISCRATE_" + j).val($("#TDDISCRATE").val());
@@ -685,7 +693,7 @@ function ClearBarcodeArea(TAG) {
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") {
-        ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
+        ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN,WPPER,RPPER");
     }
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") {
         ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
@@ -1885,11 +1893,15 @@ function AddBarCodeGrid() {
 
     var WPPRICEGEN = "";
     var RPPRICEGEN = "";
+    var WPPER = "";
+    var RPPER = "";
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") {
         OURDESIGN = $("#OURDESIGN").val();
         PDESIGN = $("#PDESIGN").val();
         WPPRICEGEN = $("#WPPRICEGEN").val();
         RPPRICEGEN = $("#RPPRICEGEN").val();
+        WPPER = $("#WPPER").val();
+        RPPER = $("#RPPER").val();
     }
     var TDDISCTYPE = $("#TDDISCTYPE").val();
     var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : "Fixed";
@@ -2047,6 +2059,8 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_WPRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPRATE" type="hidden" >';
         tr += '        <input id="B_WPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPRICEGEN" type="hidden" value="' + WPPRICEGEN + '">';
         tr += '        <input id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
+        tr += '        <input id="B_WPPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPER" type="hidden" value="' + WPPER + '">';
+        tr += '        <input id="B_RPPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPER" type="hidden" value="' + RPPER + '">';
         tr += '        <input id="B_RPRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPRATE" type="hidden"  >';
     }
     if (MENU_PARA == "OP" || MENU_PARA == "OTH") {
@@ -2076,7 +2090,7 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:60px" title="' + TXNSLNO + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
+    tr += '        <input  class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
     tr += '    </td>';
     if (MENU_PARA == "SR" || MENU_PARA == "PR") {
         tr += ' <td class="" title="' + AGDOCNO + '">';
@@ -2193,6 +2207,7 @@ function AddBarCodeGrid() {
             tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly"  >';
         }
         tr += '        <input data-val="true" data-val-length="The field WPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_WPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPRICEGEN" type="hidden" value="' + WPPRICEGEN + '">';
+        tr += '        <input data-val="true" data-val-length="The field WPPER must be a string with a maximum length of 30." data-val-length-max="30" id="B_WPPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPER" type="hidden" value="' + WPPER + '">';
         tr += '    </td>';
 
         tr += '    <td class="">';
@@ -2203,12 +2218,13 @@ function AddBarCodeGrid() {
             tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RPRATE must be a number." id="B_RPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly" >';
         }
         tr += '        <input data-val="true" data-val-length="The field RPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
+        tr += '        <input data-val="true" data-val-length="The field RPPER must be a string with a maximum length of 30." data-val-length-max="30" id="B_RPPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPER" type="hidden" value="' + RPPER + '">';
         tr += '    </td>';
     }
 
     if (MENU_PARA != "OP" && MENU_PARA != "OTH") {
         tr += '    <td class="" title="' + GSTPER + '">';
-        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
+        tr += '        <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
         tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
         tr += '    </td>';
     }
@@ -2329,7 +2345,7 @@ function RateUpdate(index, strid) {
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNWPRPPER = $("#MNTNWPRPPER").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI")&& MNTNLISTPRICE == "Y") {
+    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         if (strid == "") {
             var LISTPRICE = retFloat($("#LISTPRICE").val());
             var LISTDISCPER = retFloat($("#LISTDISCPER").val());
@@ -2347,8 +2363,14 @@ function RateUpdate(index, strid) {
 
     }
     else if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH") && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#B_BARGENTYPE_" + index).val() == "E")) && strid == "#B_" && MNTNWPRPPER == "Y") {
-        var WPPER = retFloat($("#WPPER").val());
-        var RPPER = retFloat($("#RPPER").val());
+        var WPPER = retFloat($("#WPPERMANUAL").val());
+        if (WPPER == 0) {
+            WPPER = retFloat($("#B_WPPER_" + index).val());
+        }
+        var RPPER = retFloat($("#RPPERMANUAL").val());
+        if (RPPER == 0) {
+            RPPER = retFloat($("#B_RPPER_" + index).val());
+        }
         var RATE = retFloat($("#B_RATE_" + index).val());
         var WPPRICEGEN = $("#B_WPPRICEGEN_" + index).val();
         var RPPRICEGEN = $("#B_RPPRICEGEN_" + index).val();
