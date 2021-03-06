@@ -321,4 +321,8 @@ namespace Improvar.Models
         public string Text { get; set; }
         public string Value { get; set; }
     }
+    public class Database_Combo4
+    {
+        public string FIELD_VALUE { get; set; }
+    }
 }

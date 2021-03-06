@@ -56,6 +56,10 @@ namespace Improvar.Controllers
                                           select new Database_Combo2() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                     VE.Database_Combo3 = (from n in DB.T_TXNOTH
                                           select new Database_Combo3() { FIELD_VALUE = n.PACKBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                          where n.PCSTYPE != null
+                                          select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.PCSTYPEVALUE = PCSTYPE_BIND(VE.Database_Combo4);
                     //VE.HSN_CODE = (from n in DBF.M_HSNCODE
                     //               select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
 
@@ -1523,7 +1527,7 @@ namespace Improvar.Controllers
                         string RPPRICEGEN = str.retCompValue("RPPRICEGEN");
                         string WPPER = str.retCompValue("WPPER");
                         string RPPER = str.retCompValue("RPPER");
-                        if (WPPRICEGEN.retStr() == "" || RPPRICEGEN.retStr() == ""|| WPPER.retDbl() == 0 || RPPER.retDbl() == 0)
+                        if (WPPRICEGEN.retStr() == "" || RPPRICEGEN.retStr() == "" || WPPER.retDbl() == 0 || RPPER.retDbl() == 0)
                         {
                             DataTable syscnfgdata = salesfunc.GetSyscnfgData(DOCDT.retStr());
                             if (WPPRICEGEN.retStr() == "")
@@ -2356,6 +2360,9 @@ namespace Improvar.Controllers
                     }
                 }
                 VE.TBATCHDTL = TBATCHDTL;
+
+                VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                      select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_BarTab", VE);
@@ -2854,6 +2861,16 @@ namespace Improvar.Controllers
             {
                 return Content(str);
             }
+        }
+        public string PCSTYPE_BIND(List<Database_Combo4> PCSTYPE)
+        {
+            string str = "";
+            foreach (var v in PCSTYPE)
+            {
+                str += "<option>" + v.FIELD_VALUE.retStr() + "</option>";
+            }
+            return str;
+
         }
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {

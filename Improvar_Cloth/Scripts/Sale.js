@@ -1278,7 +1278,7 @@ function AmountCalculation(i) {
     AmountCalculateTotal();
 
 }
-function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4,TABLEID) {
+function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4, TABLEID) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var GridRow = $("#" + TABLEID + " > tbody > tr").length;
@@ -1949,6 +1949,7 @@ function AddBarCodeGrid() {
     var COMMONUNIQBAR = $("#COMMONUNIQBAR").val();
     var FABITCD = $("#FABITCD").val();
     var FABITNM = $("#FABITNM").val();
+    var PCSTYPEVALUE = $("#PCSTYPEVALUE").val();
     //get bill slno
     var TXNSLNO = "";
     var PAGENO = "";
@@ -2275,7 +2276,9 @@ function AddBarCodeGrid() {
     }
     if ((MENU_PARA == "PB" || MENU_PARA == "PR" || MENU_PARA == "OP" || MENU_PARA == "OTH") && MNTNPCSTYPE == "Y") {
         tr += '    <td class="">';
-        tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
+        tr += ' <input autocomplete="off" class="atextBoxFor text-box single-line" data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" list="Pcstype_List" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="">';
+        tr += ' <datalist id="Pcstype_List">'+ PCSTYPEVALUE +'</datalist>';
+        //tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
         tr += '    </td>';
     }
     tr += '    <td class="">';

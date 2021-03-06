@@ -36,6 +36,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div id="BARGRID" style="overflow-y:scroll;max-height:235px;">
+                    @Html.HiddenFor(a => a.PCSTYPEVALUE, new { id = "PCSTYPEVALUE" })
                     <table id="_T_SALE_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2135px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
@@ -405,7 +406,14 @@
                                         @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })
+                                                @*@Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })*@
+                                                @Html.EditorFor(model => model.TBATCHDTL[i].PCSTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_PCSTYPE_" + i,  maxlength = 15, @list = "Pcstype_List", autocomplete = "off" } })
+                                                <datalist id="Pcstype_List">
+                                                    @foreach (var jg in Model.Database_Combo4)
+                                                    {
+                                                        <option value="@jg.FIELD_VALUE" />
+                                                    }
+                                                </datalist>
                                             </td>
                                         }
                                         <td class="">
