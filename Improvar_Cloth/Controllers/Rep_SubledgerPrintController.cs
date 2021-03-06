@@ -32,7 +32,7 @@ namespace Improvar.Controllers
                 {
                     ViewBag.formname = "Subledger Printing";
                     ReportViewinHtml VE = new ReportViewinHtml();
-                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE); ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     if (TempData["printparameter"] != null)
                     {
                         VE = (ReportViewinHtml)TempData["printparameter"];
@@ -56,6 +56,9 @@ namespace Improvar.Controllers
                     //}
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("ALL");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+
+                    VE.DropDown_list = (from i in DB1.MS_LINK select new DropDown_list() { value = i.LINKCD, text = i.LINKNM }).OrderBy(s => s.text).ToList();
+                    VE.TEXTBOX3 = MasterHelp.ComboFill("linkcd", VE.DropDown_list, 0, 1);
                     VE.Checkbox1 = true;
                     VE.DefaultView = true;
                     VE.DefaultView = true;
@@ -78,19 +81,25 @@ namespace Improvar.Controllers
                 string com = CommVar.Compcd(UNQSNO);
                 string loc = CommVar.Loccd(UNQSNO);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string slcd = "", sql = "";
+                string slcd = "",linkcd="", sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
 
                 if (FC.AllKeys.Contains("slcdvalue"))
                 {
                     slcd = FC["slcdvalue"].ToString().retSqlformat();
                 }
+                if (FC.AllKeys.Contains("linkcdvalue"))
+                {
+                    linkcd = FC["linkcdvalue"].ToString().retSqlformat();
+                }
                 DataTable tbl;
                 string query = "";
                 if (reptype == "All")
                 {
-                    query = query + "Select * from " + dbname + ".m_subleg";
-                    tbl = MasterHelp.SQLquery(query);
+                    query = query + "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID from " + dbname + ".m_subleg a," + dbname + ".m_subleg_link b where a.slcd=b.slcd(+) ";
+                    if (linkcd != "") query += " and b.linkcd in(" + linkcd + ") ";
+                    query += " order by a.slnm ";
+                     tbl = MasterHelp.SQLquery(query);
                     if (tbl.Rows.Count != 0)
                     {
                         DataTable IR = new DataTable("mstrep");
@@ -141,17 +150,18 @@ namespace Improvar.Controllers
                     sql += "a.compcd = '" + CommVar.Compcd(UNQSNO) + "' ";
                     DataTable tblComp = MasterHelp.SQLquery(sql);
 
-                    sql = "select a.slcd, nvl(a.fullname,a.slnm) slnm, a.add1, a.add2, a.add3, a.add4, ";
+                    sql = "select distinct a.slcd, nvl(a.fullname,a.slnm) slnm, a.add1, a.add2, a.add3, a.add4, ";
                     sql += "a.add5, a.add6, a.add7, a.regmobile, a.regemailid ";
-                    sql += "from " + scmf + ".m_subleg a ";
+                    sql += "from " + scmf + ".m_subleg a," + scmf + ".m_subleg_link b where a.slcd=b.slcd(+) ";
                     if (slcd == "")
                     {
-                        sql += " where a.slcd ='" + VE.TEXTBOX1 + "' ";
+                        sql += " and a.slcd ='" + VE.TEXTBOX1 + "' ";
                     }
                     else
                     {
-                        sql += " where a.slcd in (" + slcd + ") ";
+                        sql += " and a.slcd in (" + slcd + ") ";
                     }
+                    if(linkcd!="") sql += " and b.linkcd in (" + linkcd + ") ";
                     sql += " order by slnm";
                      tbl = MasterHelp.SQLquery(sql);
                     if (tbl.Rows.Count == 0) return Content("No Records..");
