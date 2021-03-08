@@ -76,6 +76,7 @@ namespace Improvar.Models
         public string GRPBARCODE { get; set; }
         [StringLength(20)]
         public string SAPCODE { get; set; }
-
+        public decimal? WPPER { get; set; }
+        public decimal? RPPER { get; set; }
     }
 }
