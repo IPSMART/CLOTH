@@ -2930,14 +2930,47 @@ namespace Improvar.Controllers
                     string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                     string ContentFlg = "";
                     var schnm = CommVar.CurSchema(UNQSNO);
+                    var fschnm = CommVar.FinSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
 
-                    //for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
-                    //{
-                    //    sql = "update " + schnm + ". T_TXNDTL set PAGENO='" + VE.TTXNDTL[i].PAGENO + "',PAGESLNO='" + VE.TTXNDTL[i].PAGESLNO + "' "
-                    //             + " where AUTONO='" + VE.T_TXN.AUTONO + "' and SLNO='" + VE.TTXNDTL[i].SLNO.retStr() + "'  ";
-                    //    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                    //}
+                    //update to t_txntrans//
+                    sql = "update " + schnm + ". t_txntrans set TRANSLCD='" + VE.T_TXNTRANS.TRANSLCD + "',TRANSMODE='" + VE.T_TXNTRANS.TRANSMODE + "', ";
+                   sql += " CRSLCD ='" + VE.T_TXNTRANS.CRSLCD + "',EWAYBILLNO ='" + VE.T_TXNTRANS.EWAYBILLNO + "',LRNO ='" + VE.T_TXNTRANS.LRNO + "', ";
+                   sql += " LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy'),LORRYNO ='" + VE.T_TXNTRANS.LORRYNO + "',GRWT ='" + VE.T_TXNTRANS.GRWT + "', ";
+                   sql += " TRWT ='" + VE.T_TXNTRANS.TRWT + "',NTWT ='" + VE.T_TXNTRANS.NTWT + "',DESTN ='" + VE.T_TXNTRANS.DESTN + "', ";
+                   sql += " RECVPERSON ='" + VE.T_TXNTRANS.RECVPERSON + "',VECHLTYPE ='" + VE.T_TXNTRANS.VECHLTYPE + "',GATEENTNO ='" + VE.T_TXNTRANS.GATEENTNO + "'  "
+                        + " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    //update to T_TXNOTH//
+                    sql = "update " + schnm + ". T_TXNOTH set CASENOS='" + VE.T_TXNOTH.CASENOS + "', NOOFCASES='" + VE.T_TXNOTH.NOOFCASES + "' ";
+                    sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    //update to T_TXNEWB//
+                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    var txnweb_data = DB1.T_TXNEWB.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.AUTONO).ToList();
+                    if (txnweb_data != null && txnweb_data.Count > 0)
+                    {
+                        sql = "update " + fschnm + ". T_TXNEWB set TRANSLCD='" + VE.T_TXNTRANS.TRANSLCD + "',TRANSMODE='" + VE.T_TXNTRANS.TRANSMODE + "', ";
+                        sql += " EWAYBILLNO ='" + VE.T_TXNTRANS.EWAYBILLNO + "',LRNO ='" + VE.T_TXNTRANS.LRNO + "', ";
+                        sql += " LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy'),LORRYNO ='" + VE.T_TXNTRANS.LORRYNO + "', ";
+                        sql += " VECHLTYPE ='" + VE.T_TXNTRANS.VECHLTYPE + "'  "
+                             + " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+                    //update to T_BALE_HDR//
+                    int balenocount = 0;
+                    if (VE.TTXNDTL != null && VE.TTXNDTL.Count > 0)
+                    {
+                        balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
+                    }
+                    if (balenocount > 0)
+                    { 
+                            sql = "update " + schnm + ". T_BALE_HDR set MUTSLCD='" + VE.T_TXNTRANS.TRANSLCD + "' ";
+                            sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
 
                     ModelState.Clear();
                     OraTrans.Commit();
@@ -2954,6 +2987,7 @@ namespace Improvar.Controllers
                 }
             }
         }
+     
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {
             //Cn.getQueryString(VE);
@@ -3345,7 +3379,7 @@ namespace Improvar.Controllers
                         TTXNLINKNO.LINKAUTONO = VE.T_TXN_LINKNO.LINKAUTONO;
                     }
 
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD,VE.DISPBLAMT.retDbl());
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = masterHelp.RetModeltoSql(TTXN, VE.DefaultAction);
@@ -3386,7 +3420,7 @@ namespace Improvar.Controllers
                     if (blactpost == true || blgstpost == true)
                     {
                         Cn.Create_DOCCD(UNQSNO, "F", TTXN.DOCCD);
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 0;
                         if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
