@@ -941,12 +941,12 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
                             IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
                             IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
+                            //snfb requirement new line add after every row
+                            IR.Rows.Add("");
+                            //end snfb
                             i = i + 1;
                             if (i > maxR) break;
                         }
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["dammy"] = " ";
-                        IR.Rows[rNo]["flag"] = " height:14px; ";
                     }
 
                     string pghdr1 = "";
