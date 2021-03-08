@@ -97,6 +97,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-8" style="border: 2px groove;width:auto;">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "N", new { @checked = "checked" })  @Html.Label("Normal")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "S")  @Html.Label("Standard")
+                        </label>
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
