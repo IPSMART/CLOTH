@@ -132,29 +132,29 @@ namespace Improvar.Controllers
             HtmlConverter HC = new HtmlConverter();
             DataTable IR = new DataTable("");
 
-            HC.RepStart(IR, 3);
-            HC.GetPrintHeader(IR, "slno", "long", "n,4", "Slno");
+            HC.RepStart(IR, 2);
+            if (reptype == "N") HC.GetPrintHeader(IR, "slno", "long", "n,4", "Slno");
             if (reptype == "S") HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party");
             if (reptype == "S") HC.GetPrintHeader(IR, "itgrpnm", "string", "c,40", "Group");
             HC.GetPrintHeader(IR, "styleno", "string", "c,40", "Styleno");
             HC.GetPrintHeader(IR, "pdesign", "string", "c,20", "Party Design");
             HC.GetPrintHeader(IR, "uomnm", "string", "c,5", "uom");
-            HC.GetPrintHeader(IR, "openingqnty", "double", "n,10,2", "Opening;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "openingamt", "double", "n,10,2", "Opening;Value");
-            HC.GetPrintHeader(IR, "purchaseqnty", "double", "n,10,2", "Purchase;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "purchaseamt", "double", "n,10,2", "Purchase;Value");
-            HC.GetPrintHeader(IR, "purretqnty", "double", "n,10,2", "Pur.Ret;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "purretamt", "double", "n,10,2", "Pur.Ret;Value");
-            HC.GetPrintHeader(IR, "transferinqnty", "double", "n,10,2", "Transfer In;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferinamt", "double", "n,10,2", "Transfer In;Value");
-            HC.GetPrintHeader(IR, "transferoutqnty", "double", "n,10,2", "Transfer Out;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferoutamt", "double", "n,10,2", "Transfer Out;Value");
-            HC.GetPrintHeader(IR, "salesqnty", "double", "n,10,2", "Sales;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales;Value");
-            HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others;Value");
-            HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock;Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "stockamt", "double", "n,10,2", "Stock;Value");
+            HC.GetPrintHeader(IR, "openingqnty", "double", "n,10,2", "Opening Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "openingamt", "double", "n,10,2", "Opening Value");
+            HC.GetPrintHeader(IR, "purchaseqnty", "double", "n,10,2", "Purchase Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "purchaseamt", "double", "n,10,2", "Purchase Value");
+            HC.GetPrintHeader(IR, "purretqnty", "double", "n,10,2", "Pur.Ret Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "purretamt", "double", "n,10,2", "Pur.Ret Value");
+            HC.GetPrintHeader(IR, "transferinqnty", "double", "n,10,2", "Transfer In Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferinamt", "double", "n,10,2", "Transfer In Value");
+            HC.GetPrintHeader(IR, "transferoutqnty", "double", "n,10,2", "Transfer Out Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferoutamt", "double", "n,10,2", "Transfer Out Value");
+            HC.GetPrintHeader(IR, "salesqnty", "double", "n,10,2", "Sales Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales Value");
+            HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others Value");
+            HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock Qty");
+            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "stockamt", "double", "n,10,2", "Stock Value");
             IR.Columns.Add("itgrpcd", typeof(string), "");
             IR.Columns.Add("slcd", typeof(string), "");
 
@@ -200,7 +200,7 @@ namespace Improvar.Controllers
                             string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr();
                             while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd && (tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr()) == key)
                             {
-                                IR.Rows[rNo]["slno"] = islno;
+                                if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
                                 IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
                                 IR.Rows[rNo]["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
                                 IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
@@ -299,7 +299,7 @@ namespace Improvar.Controllers
                                 }
                                 string uomnm = uomlist[x].retStr();
                                 IR.Rows[rNo]["uomnm"] = uomnm;
-                                int strart = reptype == "N" ? 7 : 9;
+                                int strart = reptype == "N" ? 7 : 8;
                                 for (int a = strart; a < IR.Columns.Count - 2; a++)
                                 {
                                     var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
@@ -351,7 +351,7 @@ namespace Improvar.Controllers
                             }
                             string uomnm = uomlist1[x].retStr();
                             IR.Rows[rNo]["uomnm"] = uomnm;
-                            int strart = reptype == "N" ? 7 : 9;
+                            int strart = reptype == "N" ? 7 : 8;
                             for (int a = strart; a < IR.Columns.Count - 2; a++)
                             {
                                 var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
