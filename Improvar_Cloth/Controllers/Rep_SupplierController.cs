@@ -123,6 +123,10 @@ namespace Improvar.Controllers
             DataTable tbl = MasterHelp.SQLquery(sql);
             if (tbl.Rows.Count == 0) return Content("no records..");
 
+            DataTable LOCDT = new DataTable("loccd");
+            string[] LOCTBLCOLS = new string[] { "loccd", "locnm" };
+            LOCDT = tbl.DefaultView.ToTable(true, LOCTBLCOLS);
+
 
             Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
             maxR = tbl.Rows.Count - 1;
@@ -149,12 +153,26 @@ namespace Improvar.Controllers
             if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferinamt", "double", "n,10,2", "Transfer In Value");
             HC.GetPrintHeader(IR, "transferoutqnty", "double", "n,10,2", "Transfer Out Qty");
             if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferoutamt", "double", "n,10,2", "Transfer Out Value");
-            HC.GetPrintHeader(IR, "salesqnty", "double", "n,10,2", "Sales Qty");
-            if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales Value");
+            if (VE.Checkbox1 == true)
+            {
+                foreach (DataRow dr in LOCDT.Rows)
+                {
+                    HC.GetPrintHeader(IR, dr["loccd"].ToString() + "salesqnty", "double", "n,10,2", dr["locnm"].ToString() + " Sales Qty");
+                    if (MENU_PARA != "Q") HC.GetPrintHeader(IR, dr["loccd"].ToString() + "salesamt", "double", "n,10,2", dr["locnm"].ToString() + " Sales Value");
+                }
+            }
+            else
+            {
+                HC.GetPrintHeader(IR, "salesqnty", "double", "n,10,2", "Sales Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales Value");
+            }
+
             HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others Qty");
             if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others Value");
             HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock Qty");
             if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "stockamt", "double", "n,10,2", "Stock Value");
+
+
             IR.Columns.Add("itgrpcd", typeof(string), "");
             IR.Columns.Add("slcd", typeof(string), "");
 
@@ -197,8 +215,8 @@ namespace Improvar.Controllers
                         double opqnty = 0, opvalue = 0, othersqnty = 0, othersvalue = 0;
                         while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd)
                         {
-                            string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr();
-                            while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd && (tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr()) == key)
+                            string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr() + tbl.Rows[i]["loccd"].retStr();
+                            while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd && (tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr() + tbl.Rows[i]["loccd"].retStr()) == key)
                             {
                                 if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
                                 IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
@@ -245,8 +263,20 @@ namespace Improvar.Controllers
                                 }
                                 else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "SR")
                                 {
-                                    IR.Rows[rNo]["salesqnty"] = IR.Rows[rNo]["salesqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = IR.Rows[rNo]["salesamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                                    if (VE.Checkbox1 == true)
+                                    {
+                                        string colnm = tbl.Rows[i]["loccd"].retStr() + "salesqnty";
+                                        IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + tbl.Rows[i]["qnty"].retDbl();
+                                        if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+
+                                    }
+                                    else
+                                    {
+                                        IR.Rows[rNo]["salesqnty"] = IR.Rows[rNo]["salesqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = IR.Rows[rNo]["salesamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+
+                                    }
+
                                     if (tbl.Rows[i]["doctag"].retStr() == "SB")
                                     {
                                         opqnty -= tbl.Rows[i]["qnty"].retDbl();
@@ -270,7 +300,7 @@ namespace Improvar.Controllers
                                 if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
 
                                 IR.Rows[rNo]["stockqnty"] = opqnty;
-                                if (MENU_PARA != "Q") IR.Rows[rNo]["stockvalue"] = opvalue;
+                                if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = opvalue;
                                 i++;
                                 if (i > maxB) break;
                             }
