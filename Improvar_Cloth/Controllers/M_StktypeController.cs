@@ -19,7 +19,7 @@ namespace Improvar.Controllers
         M_PRODGRP sPROD;
         MasterHelp Master_Help = new MasterHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        // GET: M_Stktype
+        // GET: M_Stktype  
         public ActionResult M_Stktype(FormCollection FC, string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
             //testing

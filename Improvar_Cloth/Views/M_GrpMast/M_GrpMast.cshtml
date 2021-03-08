@@ -478,6 +478,30 @@
                     </div>
                     <div class="row">
                         <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "WP %")
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, autocomplete = "off", @placeholder = "WP %" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "RP %")
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, autocomplete = "off", @placeholder = "RP %" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Allow Negetive Stock")
                             </div>

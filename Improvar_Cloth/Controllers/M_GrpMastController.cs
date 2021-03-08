@@ -534,6 +534,8 @@ namespace Improvar.Controllers
                         MGROUP.CLASS1CD = VE.M_GROUP.CLASS1CD;
                         MGROUP.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "";
                         MGROUP.SAPCODE = VE.M_GROUP.SAPCODE;
+                        MGROUP.WPPER = VE.M_GROUP.WPPER;
+                        MGROUP.RPPER = VE.M_GROUP.RPPER;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
