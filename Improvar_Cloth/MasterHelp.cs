@@ -892,38 +892,7 @@ namespace Improvar
             str = str + "</div>";
             return button + div + str;
         }
-        public void ExcelfromDataTables(DataTable[] dt, string[] sheetname, string filename, bool isRowHighlight)
-        {
-            try
-            {
-                using (ExcelPackage pck = new ExcelPackage())
-                {
-                    for (int i = 0; i < dt.Length; i++)
-                    {
-                        ExcelWorksheet ws = pck.Workbook.Worksheets.Add(sheetname[i]);
-                        if (isRowHighlight)
-                        {
-                            ws.Cells["A1"].LoadFromDataTable(dt[i], true, TableStyles.Medium15); //You can Use TableStyles property of your desire.    
-                        }
-                        else
-                        {
-                            ws.Cells["A1"].LoadFromDataTable(dt[i], true);
-                        }
-                    }
-                    //Read the Excel file in a byte array    
-                    Byte[] fileBytes = pck.GetAsByteArray();
-                    HttpContext.Current.Response.ClearContent();
-                    HttpContext.Current.Response.AddHeader("content-disposition", "attachment;filename=" + filename.retRepname() + ".xlsx");
-                    HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    HttpContext.Current.Response.BinaryWrite(fileBytes);
-                    HttpContext.Current.Response.End();
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-            }
-        }
+
         //public List<DropDown_list> OTHER_REC_MODE()
         //{
         //    List<DropDown_list> DDL = new List<DropDown_list>();
@@ -2293,7 +2262,7 @@ namespace Improvar
                 }
             }
         }
-        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "",string SKIPAUTONO="")
+        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "", string SKIPAUTONO = "")
         {
             var MSYSCNFG = salesfunc.M_SYSCNFG();
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
