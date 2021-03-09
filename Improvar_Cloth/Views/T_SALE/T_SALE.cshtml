@@ -363,9 +363,9 @@
 </script>
 <script>
     $(function () {
+        $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#SHIPDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
@@ -375,6 +375,7 @@
                 $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             }
         }
+
     });
 </script>
 <script>
@@ -527,6 +528,7 @@
         <input type="hidden" id="Defaultbar" value="Bar" />
         <input type="hidden" id="Defaultstyle" value="Style" />
         <input type="hidden" id="Barnohelpopen" value="Y" />
+        <input type="hidden" id="UpDateTransporter" value="N" />
         <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(a => a.Delete, new { id = "Delete" })
@@ -638,7 +640,7 @@
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Transport" value="Update" title="Click to Update Transport Tab" disabled onclick="Update_Transport()" />
                             <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Transport" value="Cancel" title="Click to Cancel" onclick="Cancel_Transport()" />
                         </div>
-                   
+
                     }
                 </div>
                 <div class="row">
@@ -1980,7 +1982,7 @@
                             <div class="Transportdiv col-md-3">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
+                                    <img src="~/Image/search.png" width="20px" height="20px" id="help_translcd" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -1995,10 +1997,10 @@
                                         @Html.Label("", "Porter")
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="Transportdiv col-md-3">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.T_TXNOTH.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Porter Details','MUTSLCD','MUTSLCD=MUTSLCD=1/MUTSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Porter Details','MUTSLCD','MUTSLCD=SLCD=1/MUTSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
-                                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Porter Details','MUTSLCD','MUTSLCD=slcd=1/MUTSLNM=slnm=0','trnsportlinkcd')" />
+                                        <img src="~/Image/search.png" id="help_mutslcd" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Porter Details','MUTSLCD','MUTSLCD=slcd=1/MUTSLNM=slnm=0','trnsportlinkcd')" />
                                     </div>
                                 </div>
                                 <div class="col-md-9">
@@ -2012,7 +2014,7 @@
                                     @Html.Label("", "Transport Mode")
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="Transportdiv col-md-3">
                                 <div class="editor-field">
                                     @Html.DropDownListFor(model => model.T_TXNTRANS.TRANSMODE, new SelectList(Model.TRANSMODE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "TRANSMODE" })
                                 </div>
@@ -2024,7 +2026,7 @@
                                     @Html.Label("", "Eway Bill Number")
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="Transportdiv col-md-7">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
                                 </div>
@@ -2034,7 +2036,7 @@
                                     @Html.Label("", "LR Number")
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="Transportdiv col-md-7">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 15, @placeholder = "LR Number" } })
                                 </div>
@@ -2044,7 +2046,7 @@
                                     @Html.Label("", "LR Date")
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="Transportdiv col-md-3">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
                                 </div>
@@ -2056,7 +2058,7 @@
                                     @Html.Label("", "Vechicle Number")
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="Transportdiv col-md-7">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
                                 </div>
@@ -2066,7 +2068,7 @@
                                     @Html.Label("", "Vehicle Type")
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="Transportdiv col-md-3">
                                 <div class="editor-field">
                                     @Html.DropDownListFor(model => model.T_TXNTRANS.VECHLTYPE, new SelectList(Model.VECHLTYPE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "VECHLTYPE" })
                                 </div>
@@ -2078,7 +2080,7 @@
                                     @Html.Label("", "Gross Weight")
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="Transportdiv col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
                                 </div>
@@ -2088,7 +2090,7 @@
                                     @Html.Label("", "Net Weight")
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="Transportdiv col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
                                 </div>
@@ -2098,7 +2100,7 @@
                                     @Html.Label("", "Tare Weight")
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="Transportdiv col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
                                 </div>
@@ -2110,7 +2112,7 @@
                                     @Html.Label("", "Cases Nos.")
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="Transportdiv col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.CASENOS, new { htmlAttributes = new { @class = "form-control", id = "CASENOS", maxlength = 500, @placeholder = "Cases Nos" } })
                                 </div>
@@ -2120,7 +2122,7 @@
                                     @Html.Label("", "No of Cases")
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="Transportdiv col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
                                 </div>

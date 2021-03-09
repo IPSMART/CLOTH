@@ -1629,9 +1629,10 @@ function BillAmountCalculate(TAG) {
 }
 
 function CalulateTareWt(GRWT, NTWT, TRWT) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
-    if (DefaultAction == "V") return true;
-    var GROSS = document.getElementById(GRWT.id).value;
+    if (DefaultAction != "V" || $("#UpDateTransporter").val()=="Y" )
+    {  var GROSS = document.getElementById(GRWT.id).value;
     if (GROSS == "") {
         GROSS = parseFloat(0);
     }
@@ -1640,7 +1641,9 @@ function CalulateTareWt(GRWT, NTWT, TRWT) {
         NET = parseFloat(0);
     }
     var TARE = GROSS - NET;
-    document.getElementById(TRWT.id).value = TARE.toFixed(3);
+    document.getElementById(TRWT.id).value = TARE.toFixed(3);}
+   
+   
 
 }
 
@@ -3666,12 +3669,17 @@ function SelectUOMCode(id, i) {
 function Edit_Transport() {
     debugger;
     $('.Transportdiv input').attr("readonly", false);
+    $("#help_translcd").show();
+    $("#help_mutslcd").show();
+    $("#TRANSMODE").attr("style", "pointer-events:visible");
+    $("#VECHLTYPE").attr("style", "pointer-events:visible");
+    $("#UpDateTransporter").val("Y");
     $("li").removeClass("active").addClass("");
     $(".nav-tabs li:nth-child(5)").addClass('active');
     //below set the  child sequence
     $(".tab-content div").removeClass("active");
     $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-
+    $("#TRANSLCD").focus();
     $("#edit_Transport").hide();
     $("#update_Transport").show();
     $("#cancel_Transport").show();

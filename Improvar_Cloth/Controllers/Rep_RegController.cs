@@ -83,7 +83,7 @@ namespace Improvar.Controllers
                         VE.DropDown_list1 = RT;
                     }
                     //=========End Report Type===========//
-                    
+
 
                     VE.DropDown_list3 = (from i in DBF.M_LOCA
                                          where i.COMPCD == com
@@ -267,9 +267,9 @@ namespace Improvar.Controllers
                 query1 += " a.autono, a.slno, a.itcd, a.itrem, ";
                 query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  ";
                 query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno ";
-                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle "; query1 += " , b.amtnm itnm, a.hsncode,  ";
-                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL, a.igstper, a.igstamt, ";
-                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,0 NETAMT,0 pageno,0 PAGESLNO,''baleno ";
+                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  ";
+                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, ";
+                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,0 pageno,0 PAGESLNO,''baleno ";
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
                 query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, ";
@@ -307,7 +307,7 @@ namespace Improvar.Controllers
                     exdt[0] = tbl;
                     string[] sheetname = new string[1];
                     sheetname[0] = "Sheet1";
-                    MasterHelp.ExcelfromDataTables(exdt, sheetname, regdsp + " Register", true);
+                    MasterHelp.ExcelfromDataTables(exdt, sheetname, regdsp + " Register".retRepname(), false, "");
                     return null;
                 }
                 else {
@@ -629,9 +629,9 @@ namespace Improvar.Controllers
                                     dr["cgstamt"] = tbl.Rows[i]["cgstamt"].retDbl();
                                     dr["sgstper"] = tbl.Rows[i]["sgstper"].retDbl();
                                     dr["sgstamt"] = tbl.Rows[i]["sgstamt"].retDbl();
-                                    dr["blamt"] = tbl.Rows[i]["NETAMT"].retDbl();
+                                    //dr["blamt"] = tbl.Rows[i]["NETAMT"].retDbl();
                                     if (MSYSCNFG.MNTNBALE == "Y") dr["baleno"] = tbl.Rows[i]["baleno"].retStr();
-                                    dr["pagenoslno"] = tbl.Rows[i]["pageno"].retInt() + "/" + tbl.Rows[i]["pageslno"].retInt();
+                                    dr["pagenoslno"] = (tbl.Rows[i]["pageno"].retInt() == 0 && tbl.Rows[i]["pageslno"].retInt() == 0) ? "" : tbl.Rows[i]["pageno"].retInt() + "/" + tbl.Rows[i]["pageslno"].retInt();
                                     dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
                                     dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
 
