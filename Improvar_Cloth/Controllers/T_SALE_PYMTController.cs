@@ -17,7 +17,7 @@ namespace Improvar.Controllers
         // GET: T_SALE_PYMT
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_TXNPYMT_HDR TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
+        T_TXNPYMT_HDR sl; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
 
@@ -118,7 +118,7 @@ namespace Improvar.Controllers
                                 }
                             }
 
-                            VE.T_TXNPYMT_HDR = TBH;
+                            VE.T_TXNPYMT_HDR = sl;
                             VE.T_CNTRL_HDR = TCH;
                             VE.T_CNTRL_HDR_REM = SLR;
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
@@ -126,7 +126,7 @@ namespace Improvar.Controllers
                         if (op.ToString() == "A")
                         {
                             if (parkID == "")
-                            {
+                            { //
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 VE.T_CNTRL_HDR = TCH;
@@ -140,7 +140,7 @@ namespace Improvar.Controllers
                                 string sql = "";
                                 sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm ";
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
-                                sql += " where a.RTDEBCD=b.RTDEBCD and  a.retdebslcd=d.slcd(+) and a.retdebslcd='DR00021' and  ";
+                                sql += " where a.RTDEBCD=b.RTDEBCD and  a.retdebslcd=d.slcd(+)  and  ";//and a.retdebslcd='DR00021'
                                 sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
                                 DataTable syscnfgdt = masterHelp.SQLquery(sql);
@@ -158,7 +158,7 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
-                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD,"");
+                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD, "");
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
 
@@ -237,7 +237,7 @@ namespace Improvar.Controllers
             string COM_CD = CommVar.Compcd(UNQSNO);
             string LOC_CD = CommVar.Loccd(UNQSNO);
             Cn.getQueryString(VE);
-            TBH = new T_TXNPYMT_HDR(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
+            sl = new T_TXNPYMT_HDR(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
             if (VE.IndexKey.Count != 0)
             {
                 string[] aa = null;
@@ -249,11 +249,11 @@ namespace Improvar.Controllers
                 {
                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                 }
-                TBH = DB.T_TXNPYMT_HDR.Find(aa[0].Trim());
-                TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
+                sl = DB.T_TXNPYMT_HDR.Find(aa[0].Trim());
+                TCH = DB.T_CNTRL_HDR.Find(sl.AUTONO);
 
                 string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT from " + scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
-                str += "where a.SLMSLCD=b.slcd and a.autono='" + TBH.AUTONO + "'";
+                str += "where a.SLMSLCD=b.slcd and a.autono='" + sl.AUTONO + "'";
                 var SALSMN_DATA = masterHelp.SQLquery(str);
                 VE.TTXNSLSMN = (from DataRow dr in SALSMN_DATA.Rows
                                 select new TTXNSLSMN()
@@ -277,7 +277,7 @@ namespace Improvar.Controllers
                 VE.T_BLAMT = T_BILL_AMT.retDbl();
 
                 string str2 = "select a.SLNO,a.PYMTCD,c.PYMTNM,a.AMT,a.CARDNO,a.INSTNO,a.INSTDT,a.PYMTREM,a.GLCD,c.PYMTTYPE from " + scm + ".t_txnpymt a," + scm + ".t_txnpymt_hdr b," + scm + ".m_payment c ";
-                str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + TBH.AUTONO + "' order by a.PYMTCD ";
+                str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + sl.AUTONO + "' order by a.PYMTCD ";
                 var PYMT_DATA = masterHelp.SQLquery(str2);
                 VE.TTXNPYMT = (from DataRow dr in PYMT_DATA.Rows
                                select new TTXNPYMT()
@@ -301,8 +301,22 @@ namespace Improvar.Controllers
 
                 }
                 VE.T_PYMT_AMT = T_PYMT_AMT;
-                VE = GetOutstInvoice(VE, VE.RETDEBSLCD, TBH.AUTONO);
-
+                VE.T_CNTRL_HDR = TCH;
+                VE = GetOutstInvoice(VE, VE.RETDEBSLCD, sl.AUTONO);
+                var TVCHBLADJ = DBF.T_VCH_BL_ADJ.Where(m => m.AUTONO == sl.AUTONO).ToList();
+                double TOT_bill_AMT =0, TOT_PRE_ADJ=0, TOT_ADJ = 0, TOT_BAL=0;
+                foreach (var outs in VE.SLPYMTADJ)
+                {
+                    var adjdet = TVCHBLADJ.Where(t => t.I_AUTONO == outs.I_AUTONO && t.I_SLNO == outs.I_SLNO).FirstOrDefault();
+                    if (adjdet != null)
+                    {
+                        outs.ADJ_AMT = adjdet.ADJ_AMT; // total pending
+                        TOT_ADJ += outs.ADJ_AMT.retDbl();
+                        outs.Checked = true;
+                    }
+                    TOT_bill_AMT += outs.AMT.retDbl(); TOT_PRE_ADJ += outs.PRE_ADJ_AMT.retDbl(); TOT_BAL += outs.BAL_AMT.retDbl();
+                }
+                VE.TOT_AMT = TOT_bill_AMT;VE.TOT_PRE_ADJ = TOT_PRE_ADJ;VE.TOT_ADJ = TOT_ADJ;VE.TOT_BAL = TOT_BAL;          
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
             return VE;
@@ -435,7 +449,7 @@ namespace Improvar.Controllers
             return PartialView("_T_SALE_PYMT_Adjustment", VE);
 
         }
-        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd,string autono)
+        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd, string autono)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             try
@@ -1077,7 +1091,7 @@ namespace Improvar.Controllers
 
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXNPYMT_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-                        
+
                         dbsql = masterHelp.finTblUpdt("T_VCH_BL_ADJ", VE.T_TXNPYMT_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                         dbsql = masterHelp.finTblUpdt("T_VCH_BL", VE.T_TXNPYMT_HDR.AUTONO, "D");
@@ -1088,7 +1102,7 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXNPYMT_HDR.AUTONO, "D", "F", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-                        
+
 
                         ModelState.Clear();
                         OraTrans.Commit();
