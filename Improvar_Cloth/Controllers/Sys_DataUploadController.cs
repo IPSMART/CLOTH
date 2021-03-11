@@ -214,13 +214,16 @@ namespace Improvar.Controllers
                         }
                     }
                     var tepb = TTXN.PREFNO == "" ? " " : TTXN.PREFNO;
+                    var teLR = TXNTRANS.LRNO == "" ? " " : TXNTRANS.LRNO;
+                    var teGO = TTXN.GOCD == "" ? " " : TTXN.GOCD;
                     sql = "";
                     sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
                     sql += " where   a.autono=b.autono and b.docdt=to_date('" + Ddate + "','dd/mm/yyyy') and a.slcd='" + TTXN.SLCD + "' and nvl(a.PREFNO,' ')='" + tepb + "' ";//  and a.LRNO='" + TTXN.LRNO + "' ";
+                    sql += " and nvl(a.GOCD,' ')='" + teGO + "' ";
                     var dt = masterHelp.SQLquery(sql);
                     if (dt.Rows.Count > 0) continue;
                     string PURGLCD = "";
-                    DataTable innerDt = dbfdt.Select("docdt = '" + Ddate + "' and slcd = '" + TTXN.SLCD + "' and PBLNO = '" + TTXN.PREFNO + "'").CopyToDataTable();
+                    DataTable innerDt = dbfdt.Select("docdt = '" + Ddate + "' and slcd = '" + TTXN.SLCD + "' and PBLNO = '" + TTXN.PREFNO + "' and LRNO = '" + TXNTRANS.LRNO + "' and GOCD = '" + TTXN.GOCD + "'").CopyToDataTable();
 
                     double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
