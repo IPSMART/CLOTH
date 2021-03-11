@@ -169,7 +169,7 @@ namespace Improvar.Controllers
                 foreach (DataRow oudr in outerDT.Rows)
                 {
                     ++excelrow; msg = " Excelrow:" + excelrow;
-                    short txnslno = 0;
+                    short txnslno = 0; TXNTRANS = new T_TXNTRANS();
                     List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
                     List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
                     List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
