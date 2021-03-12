@@ -182,5 +182,11 @@ namespace Improvar.ViewModels
         public string BOMITNM { get; set; }
         public string BOMQNTY { get; set; }
         public short? RECPROGSLNO { get; set; }
+        public List<CASHMEMOPOPUP> CASHMEMOPOPUP { get; set; }
+        public string FDT { get; set; }
+        public string TDT { get; set; }
+        public string CSM_DOCNO { get; set; }
+        public string CSM_AUTONO { get; set; }
+        
     }
 }

@@ -41,6 +41,8 @@
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
+        
+        //$("#popup1").hide();
         $("#WaitingMode").hide();
     });
 </script>
@@ -1617,6 +1619,430 @@
         }
     }
 </script>
+<script>
+    function GetCashMemoDetails() {
+        debugger
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        //$("#popup1").show();
+        //var FDT = $("#FDT").val();
+        //var FDT = $("#TDT").val();
+        //var R_DOCNO = $("#R_DOCNO").val();
+        //var R_BARNO = $("#R_BARNO").val();
+        //var R_DOCCD = $("#DOCCD").val();
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("OpenPopUp", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#popup1").animate({ marginTop: '-10px' }, 50);
+                $("#popup1").html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function SelectCashMemoDetails() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var Count = 0;
+        var GridRow = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var Check = document.getElementById("C_Checked_" + i).checked;
+            if (Check == true) {
+                Count = Count + 1;
+            }
+        }
+        if (Count == 0) {
+            msgInfo("Please select a Bar No. !");
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("SelectCashMemoDetails", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                if (result == "0") {
+                    //$("#hiddenpendordJSON").val(result);
+                    //$("#Pending_Order").hide();
+                    //if (Count > 0) {
+                    //    $("#show_order").show();
+                    //}
+                    //msgInfo("Order Data selected ");
+                }
+                else {
+                    $("#partialdivProgramme").html(result);
+                    var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+                    for (var i = 0; i <= GridRow - 1; i++) {
+                        //Sale_GetGstPer(i, '#B_');
+                        //RateUpdate(i);
+                    }
+                    CalculateTotal();
+
+                }
+                $("#popup1").html("");
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+
+    }
+    function CloseCashMemoDetails() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        //$("#popup").html("");
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        if (KeyID == 27) {
+            $("#popup1").html("");
+        }
+        else if (KeyID == undefined) {
+            $("#popup1").html("");
+        }
+    }
+</script>
+<script>
+    function GetPopUpBarnoDetails(barhlpId) {
+        debugger;
+        var ID = $("#" + barhlpId).val();
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var BARNO = "", ITCD = "", duplicate = "", slno = 0;
+        debugger;
+        if (ID == "") {
+           
+            ClearAllTextBoxes("C_BARNO,M_STYLENO,MTRLJOBCD,PARTCD");
+           
+        }
+        else {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            var BARCODE = "";
+            BARCODE = $("#C_BARNO").val();
+            if ($("#TAXGRPCD").val() == "") { $("#C_BARNO").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
+            if ($("#PRCCD").val() == "") { $("#C_BARNO").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+          
+
+            var MTRLJOBCD = $("#C_MTRLJOBCD").val();
+            var PARTCD = $("#C_PARTCD").val();
+            var docdt = $("#DOCDT").val();
+            var taxgrpcd = $("#TAXGRPCD").val();
+            var gocd = $("#GOCD").val();
+            var prccd = $("#PRCCD").val();
+            var allmtrljobcd = $("#C_ALLMTRLJOBCD").val();
+
+            var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
+            hlpfieldid = "C_BARNO";
+                hlpfieldindex = "0";
+                ReferanceFieldID = "/C_STYLENO";
+                ReferanceFieldIndex = "/3";
+                var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + "Bar" + String.fromCharCode(181) + BARCODE;
+
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodePopUpDetails", PageControllerName)",
+                data: "&val=" + ID + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
+                            $('#SearchFldValue').val(hlpfieldid);
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/C_MTRLJOBCD/C_PARTCD');
+                            $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/2/5');
+                            $('#helpDIV_Header').html('Barno Details');
+                        
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
+                                BARNO = returncolvalue(result, "BARNO");
+                                //ITCD = returncolvalue(result, "ITCD");
+                                var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+                                for (j = 0; j <= GridRowMain - 1; j++) {
+                                    if (BARNO == $("#C_BARNO_" + j).val()) {
+                                        slno = $("#C_SLNO_" + j).val();
+
+                                    }
+                                    duplicate = false;
+                                }
+                                if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
+
+                                else { AddMainPopUpGrideRow(result); }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
+                                message_value = hlpfieldid;
+                           
+
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+    function AddMainPopUpGrideRow(hlpstr) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var BARNO = returncolvalue(hlpstr, "BARNO");
+        var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
+        var ITGRPCD = returncolvalue(hlpstr, "ITGRPCD");
+        var ITCD = returncolvalue(hlpstr, "ITCD");
+        var ITSTYLE = returncolvalue(hlpstr, "ITSTYLE");
+        var COLRNM = returncolvalue(hlpstr, "COLRNM");
+        var SIZECD = returncolvalue(hlpstr, "SIZECD");
+        var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
+        var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+        var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+        var QNTY = returncolvalue(hlpstr, "QNTY");
+        var UOM = returncolvalue(hlpstr, "UOMCD");
+        var NOS = returncolvalue(hlpstr, "NOS");
+        var RATE = returncolvalue(hlpstr, "RATE");
+        var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
+        var GLCD = returncolvalue(hlpstr, "GLCD");
+        var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
+        var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
+        var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
+        var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
+        var DECIMAL = returncolvalue(hlpstr, "DECIMAL");
+        var COLRCD = returncolvalue(hlpstr, "COLRCD");
+        var COLRNM = returncolvalue(hlpstr, "COLRNM");
+        var CLRBARCODE = returncolvalue(hlpstr, "CLRBARCODE");
+        var SZBARCODE = returncolvalue(hlpstr, "SZBARCODE");
+        var CUTLENGTH = returncolvalue(hlpstr, "CUTLENGTH");
+        var SHADE = returncolvalue(hlpstr, "SHADE");
+        var PARTCD = returncolvalue(hlpstr, "PARTCD");
+
+        var SLNO = 1;
+        var rowindex = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+        SLNO = rowindex + 1;
+        var tr = "";
+        tr += '<tr style="font-size:12px; font-weight:bold;">';
+        tr += ' <td class="sticky-cell" title="true">';
+        tr += '   <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="C_Checked_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].C_Checked" type="checkbox" value="true"><input name="CASHMEMOPOPUP[' + rowindex + '].C_Checked" type="hidden" value="false">';
+        tr += '   <input data-val="true" data-val-number="The field ITGRPCD must be a number." data-val-required="The ITGRPCD field is required." id="C_ITGRPCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
+        tr += '   <input data-val="true" data-val-number="The field ITGRPNM must be a number." id="C_ITGRPNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITGRPNM" type="hidden" value="' + ITGRPNM + '">';
+       
+        tr += '   <input data-val="true" data-val-number="The field ITNM must be a number." id="C_ITNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITNM" type="hidden" value="">';
+        tr += '   <input data-val="true" data-val-length="The field DECIMAL must be a string with a maximum length of 8." data-val-length-max="8" id="C_DECIMALS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].DECIMAL" type="hidden" value="' + DECIMAL + '">';
+        tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
+      
+        tr += '   <input data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 8." data-val-length-max="8" id="C_PARTCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].PARTCD" type="hidden" value="' + PARTCD + '">';
+        tr += '   <input id="C_COLRCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRCD" type="hidden" value="' + COLRCD + '">';
+        tr += '   <input id="C_COLRNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRNM" type="hidden" value="' + COLRNM + '">';
+        tr += '   <input id="C_CLRBARCODE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].CLRBARCODE" type="hidden" value="' + CLRBARCODE + '">';
+        tr += '   <input id="C_UOM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].UOM" type="hidden" value="' + UOM + '">';
+        tr += '   <input id="C_SIZECD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SIZECD" type="hidden" value="' + SIZECD + '">';
+        tr += '   <input id="C_SZBARCODE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SZBARCODE" type="hidden" value="' + SZBARCODE + '">';
+        tr += '   <input id="C_NOS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].NOS" type="hidden" value="' + NOS + '">';
+        tr += '   <input id="C_CUTLENGTH_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].CUTLENGTH" type="hidden" value="' + CUTLENGTH + '">';
+        tr += '   <input id="C_SHADE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
+      
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="C_SLNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCNO must be a number." data-val-required="The AGDOCNO field is required." id="C_AGDOCNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCNO" readonly="readonly" type="text" value="">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCDT must be a number." data-val-required="The AGDOCDT field is required." id="C_AGDOCDT_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCDT" readonly="readonly" type="text" value="">';
+        tr += ' </td>';
+
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="C_BARNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 10." data-val-length-max="10" data-val-required="The ITCD field is required." id="C_ITCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITCD" readonly="readonly" type="text" value="' + ITCD + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field ITSTYLE must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The ITSTYLE field is required." id="C_ITSTYLE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        //tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field QNTY must be a string with a maximum length of 12." data-val-length-max="12" data-val-required="The QNTY field is required." id="C_QNTY_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" type="text" value="' + QNTY + '">';
+        tr += '  <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="C_QNTY_' + rowindex + '" maxlength="12" name="CASHMEMOPOPUP[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '">';
+        tr += ' </td>';
+
+        tr += '</tr>';
+        $("#_T_OUTISSPROCESS_POPUP_GRID tbody").append(tr);
+        $("#C_BARNO").val('');
+        $("#C_BARNO").focus();
+       
+    }
+    function UpdatePopUpGrideRow(hlpstr, slno) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        var MENU_PARA = $("#MENU_PARA").val();
+        if (DefaultAction == "V") return true;
+
+        var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if ($("#C_SLNO_" + j).val() == slno) {
+                var qnty = $("#C_QNTY_" + j).val();
+                var sumqnty = qnty + (returncolvalue(hlpstr, "QNTY"));
+                $("#C_BARNO_" + j).val($("#C_BARNO_" + j).val());
+                $("#C_ITGRPCD_" + j).val($("#C_ITGRPCD_" + j).val());
+                $("#C_ITGRPNM_" + j).val($("#C_ITGRPNM_" + j).val());
+                $("#C_MTRLJOBCD_" + j).val($("#C_MTRLJOBCD_" + j).val());
+                $("#C_ITCD_" + j).val($("#C_ITCD_" + j).val());
+                $("#C_ITSTYLE_" + j).val($("#C_ITSTYLE_" + j).val());
+                $("#C_STYLENO_" + j).val($("#C_STYLENO_" + j).val());
+                $("#C_PARTNM_" + j).val($("#C_PARTNM_" + j).val());
+                $("#C_COLRNM_" + j).val($("#C_COLRNM_" + j).val());
+                $("#C_SIZECD_" + j).val($("#C_SIZECD_" + j).val());
+                $("#C_SIZENM_" + j).val($("#C_SIZENM_" + j).val());
+                $("#C_SZBARCODE_" + j).val($("#C_SZBARCODE_" + j).val());
+                $("#C_QNTY_" + j).val(sumqnty);
+                $("#C_UOM_" + j).val($("#C_UOM_" + j).val());
+                $("#C_NOS_" + j).val($("#C_NOS_" + j).val());
+                $("#C_RATE_" + j).val($("#C_RATE_" + j).val());
+                $("#C_DECIMALS_" + j).val($("#C_DECIMALS_" + j).val());
+                $("#C_SHADE_" + j).val($("#C_SHADE_" + j).val());
+                $("#C_CUTLENGTH_" + j).val($("#C_CUTLENGTH_" + j).val());
+                $("#C_BARCODE").val('');
+                $("#C_BARCODE").focus();
+                
+            }
+
+        }
+
+
+    }
+</script>
+<script>
+    function GetSelectedCashMemoDetails(barhlpId) {
+        debugger;
+        var ID = $("#" + barhlpId).val();
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var BARNO = "", ITCD = "", duplicate = "", slno = 0;
+        debugger;
+        if (ID == "") {
+           
+            ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+           
+        }
+        else {
+            //if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            var BARCODE = "";
+            BARCODE = $("#CSM_DOCNO").val();
+            var FDT = $("#FDT").val();
+            var TDT = $("#TDT").val();
+            var AUTONO = $("#CSM_AUTONO").val();
+            var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
+            hlpfieldid = "CSM_DOCNO";
+            hlpfieldindex = "0";
+            ReferanceFieldID = "/FDT";
+            ReferanceFieldIndex = "/1";
+        
+            var code = FDT + String.fromCharCode(181) + TDT + String.fromCharCode(181) + AUTONO + String.fromCharCode(181);
+
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetCashMemoNo", PageControllerName)",
+                data: "&val=" + ID + "&Code=" + code,
+            success: function (result) {
+                var MSG = result.indexOf('#helpDIV');
+                if (MSG >= 0) {
+                    ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                    $('#SearchFldValue').val(hlpfieldid);
+                    $('#helpDIV').html(result);
+                    $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/FDT');
+                    $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/1');
+                    $("#TDT") = returncolvalue(hlpstr, "docdt");
+                    $('#helpDIV_Header').html('Cash Memo Details');
+                        
+                }
+                else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                        BARNO = returncolvalue(result, "BARNO");
+                        //ITCD = returncolvalue(result, "ITCD");
+                        var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+                        for (j = 0; j <= GridRowMain - 1; j++) {
+                            if (BARNO == $("#C_BARNO_" + j).val()) {
+                                slno = $("#C_SLNO_" + j).val();
+
+                            }
+                            duplicate = false;
+                        }
+                        if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
+
+                        else { AddMainPopUpGrideRow(result); }
+                    }
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                        message_value = hlpfieldid;
+                           
+
+                    }
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    }
+</script>
+<script>
+    function GetFilterCashMemoDetails() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var FDT = $("#FDT").val();
+        var FDT = $("#TDT").val();
+        var C_BARNO = $("#C_BARNO").val();
+        
+        //var AUTONO = $("#CSM_AUTONO").val();
+        var AUTONO = "";
+
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetFilterCashMemoDetails", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&C_BARNO=" + C_BARNO + "&C_BARNO=" + AUTONO,
+            success: function (result) {
+                $("#popup1").animate({ marginTop: '-10px' }, 50);
+                $("#popup1").html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1720,7 +2146,7 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Party Code")
+                            @Html.Label("", "Jobber Code")
                             <b style="color:Red;">*</b>
                         </div>
                     </div>
@@ -1750,6 +2176,18 @@
                             @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
+                    @if (Model.DefaultAction != "V")
+                    { <div class="col-md-1" style="width:auto;">
+                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Get Cash Memo" title="Click to Get Cash Memo" onclick="GetCashMemoDetails()" />
+                    </div>
+                    <div class="row">
+                        <div id="popup1" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                        
+                        </div>
+                    </div>
+                    }
+                   
+                   
                 </div>
                 <div class="row">
                     <div class="col-md-5">
