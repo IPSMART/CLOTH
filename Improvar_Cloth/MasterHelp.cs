@@ -2747,7 +2747,7 @@ namespace Improvar
                 }
             }
         }
-        public string CashMemoNumber_help(string val)
+        public string CashMemoNumber_help(string val,string fdt="",string tdt="")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO); ;
@@ -2757,6 +2757,8 @@ namespace Improvar
             sql += "from " + scm + ".t_cntrl_hdr b," + scm + ".m_doctype c," + scm + ".T_TXNMEMO d ";
             sql += "where b.autono=d.autono and  b.doccd=c.doccd and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' and c.doctype='SBCM' ";
+            if (fdt != "") sql += " and b.docdt >= to_date(" + fdt + ",'dd/mm/yyyy') ";
+            if (tdt != "") sql += " and b.docdt <= to_date(" + tdt + ",'dd/mm/yyyy') ";
             if (valsrch.retStr() != "") sql += "and ( upper(b.docno) = '" + valsrch + "' ) ";
             sql += "order by docdt, docno ";
             DataTable tbl = SQLquery(sql);

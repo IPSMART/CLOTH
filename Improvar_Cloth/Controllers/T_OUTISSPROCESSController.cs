@@ -730,6 +730,10 @@ namespace Improvar.Controllers
         {
             return BarCodeDetails(val, Code, "SB");
         }
+        public ActionResult GetBarCodePopUpDetails(string val, string Code)
+        {
+            return BarCodeDetails(val, Code, "OTH");
+        }
         public ActionResult BarCodeDetails(string val, string Code, string menupara)
         {
             try
@@ -2546,7 +2550,9 @@ namespace Improvar.Controllers
                     double titamt = 0, titqty = 0;
                     int lastitemno = 0;
                     VE.BALEYR = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).Year.retStr();
-                    for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
+                    if (VE.TTXNDTL != null && VE.TTXNDTL.Count > 0)
+                    {
+                        for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
                     {
                         if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
                         {
@@ -2643,6 +2649,7 @@ namespace Improvar.Controllers
                             duty = duty + Convert.ToDouble(VE.TTXNDTL[i].DUTYAMT);
                         }
                     }
+                }
 
                     COUNTER = 0; int COUNTERBATCH = 0; recoexist = false;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
@@ -2932,6 +2939,169 @@ namespace Improvar.Controllers
                 OraCon.Dispose();
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        
+      public ActionResult OpenPopUp(TransactionOutIssProcess VE)
+        {
+            DataTable PRODGRPDATA = new DataTable();
+            int slno = 0;
+            VE.DefaultView = true;
+            return PartialView("_T_OUTISSPROCESS_POPUP", VE);
+        }
+        public ActionResult SelectCashMemoDetails(TransactionOutIssProcess VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE); ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                var _TTXNDTLPOPUP = VE.CASHMEMOPOPUP.Where(r => r.C_Checked == true).ToList(); int slno = 0, SERIAL = 0;
+                List<TPROGDTL> tsalePosReturnList = new List<TPROGDTL>();
+                for (int i = VE.TPROGDTL.Count - 1; i >= 0; i--)
+                {
+                    if(VE.TPROGDTL[i].ITCD==null)
+                    VE.TPROGDTL.RemoveAt(i);
+                }
+                foreach (var row in _TTXNDTLPOPUP)
+                {
+                    TPROGDTL tprgdtl = new TPROGDTL();
+                    tprgdtl.BARNO = row.BARNO.retStr();
+                    tprgdtl.ITGRPCD = row.ITGRPCD.retStr();
+                    tprgdtl.ITGRPNM = row.ITGRPNM.retStr();
+                    tprgdtl.BARNO = row.BARNO.retStr();
+                    tprgdtl.ITCD = row.ITCD.retStr();
+                    tprgdtl.ITNM = row.ITSTYLE.retStr();
+                    tprgdtl.QNTY = row.QNTY.retDbl();
+                    tprgdtl.UOM = row.UOM.retStr();
+                    tprgdtl.DECIMALS = row.DECIMALS.retShort();
+                    tprgdtl.MTRLJOBCD = row.MTRLJOBCD.retStr();
+                    tprgdtl.MTRLJOBNM = row.MTRLJOBNM.retStr();
+                    tprgdtl.PARTCD = row.PARTCD.retStr();
+                    tprgdtl.COLRCD = row.COLRCD.retStr();
+                    tprgdtl.COLRNM = row.COLRNM.retStr();
+                    tprgdtl.CLRBARCODE = row.CLRBARCODE.retStr();
+                    tprgdtl.SIZECD = row.SIZECD.retStr();
+                    tprgdtl.SZBARCODE = row.SZBARCODE.retStr();
+                    tprgdtl.NOS = row.NOS.retDbl();
+                    tprgdtl.CUTLENGTH = row.CUTLENGTH.retDbl();
+                    tprgdtl.SHADE = row.SHADE.retStr();
+                    if (VE.TPROGDTL.Count==0 || VE.TPROGDTL==null) VE.TPROGDTL = new List<TPROGDTL>();
+                    VE.TPROGDTL.Add(tprgdtl);
+                }
+                if (VE.TPROGDTL.Count != 0||VE.TPROGDTL != null)
+                {
+                    for (int i = 0; i < VE.TPROGDTL.Count; i++)
+                    {
+                        VE.TPROGDTL[i].SLNO = (1 + i).retShort();
+
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+            VE.DefaultView = true;
+            ModelState.Clear();
+            return PartialView("_T_OUTISSPROCESS_Programme", VE);
+
+        }
+        public ActionResult GetCashMemoNo(string val,String CODE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                var data = CODE.Split(Convert.ToChar(Cn.GCS()));
+                
+                string FDT = data[0].retSqlformat();
+                string TDT = data[1].retStr();
+                string AUTONO = data[2].retStr();
+                var sql = masterHelp.CashMemoNumber_help(val,FDT,TDT);
+                if (sql.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", sql);
+                }
+                else
+                {
+                    var gcs = Cn.GCS();
+                    var Getdata = (from i in DB.T_TXNDTL join j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO) join k in DB.M_SITEM on i.ITCD equals(k.ITCD)
+                                   where i.AUTONO == AUTONO.retStr()
+                                   select new {
+                                       AUTONO=i.AUTONO.retStr(),
+                                       COLRCD=  i.COLRCD.retStr(),
+                                       ITCD=  i.ITCD.retStr(),
+                                       MTRLJOBCD=i.MTRLJOBCD.retStr(),
+                                       NOS=i.NOS.retStr(),
+                                       PARTCD=i.PARTCD.retStr(),
+                                       PRCCD=i.PRCCD.retStr(),
+                                       QNTY=i.QNTY.retDbl(),
+                                       RATE=i.RATE.retDbl(),
+                                       SIZECD=i.SIZECD.retStr(),
+                                       BARNO=j.BARNO.retStr(),
+                                       ITSTYLE=k.STYLENO+""+k.ITNM
+                                   }).ToList();
+                    DataTable filterData = ListToDatatable.LINQResultToDataTable(Getdata);
+                        if (filterData.Rows.Count > 0)
+                        {
+                            string str = masterHelp.ToReturnFieldValues("", filterData);
+                            
+                        }
+                    return Content(sql);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetFilterCashMemoDetails(TransactionOutIssProcess VE, string FDT, string TDT, string C_BARNO,string AUTONO)
+        {
+            Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
+            if (C_BARNO == null) C_BARNO = "";
+            if (FDT == null) FDT = "";
+            if (TDT == null) TDT = "";
+            string sql = "select a.autono,b.docno,b.docdt,c.itcd,e.itnm,e.styleno,e.styleno||' '||e.itnm itstyle,e.itgrpcd,f.itgrpnm,c.qnty,e.uomcd,c.rate, ";
+            sql += "d.barno,c.COLRCD,C.MTRLJOBCD from  " + scm + ".T_TXNMEMO a," + scm + ".T_TXN b, ";
+            sql += "" + scm + ".T_TXNDTL c," + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f ";
+            sql += "where a.autono = b.autono and a.autono = c.autono(+) and c.autono = d.autono(+) ";
+            sql += "and c.slno = d.txnslno(+)and c.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+)  ";
+            if (FDT.retDateStr() != "") sql += "and b.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') ";
+            if (TDT.retDateStr() != "") sql += " and b.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
+            if (C_BARNO.retStr() != "") sql += "and d.barno = '" + C_BARNO + "' ";
+            if (AUTONO.retStr() != "") sql += "and a.autono = '" + AUTONO + "' ";
+            sql += "order by b.docdt, b.docno ";
+            DataTable dt = masterHelp.SQLquery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+
+                VE.CASHMEMOPOPUP = (from DataRow dr in dt.Rows
+                                   select new CASHMEMOPOPUP
+                                   {
+                                       ITCD = dr["itcd"].retStr(),
+                                       BARNO = dr["barno"].retStr(),
+                                       ITSTYLE = dr["itstyle"].retStr(),
+                                       QNTY = dr["qnty"].retDbl(),
+                                       AGDOCNO = dr["docno"].retStr(),
+                                       AGDOCDT = dr["docdt"].retDateStr(),
+                                       ITGRPCD = dr["itgrpcd"].retStr(),
+                                       ITGRPNM = dr["itgrpnm"].retStr(),
+                                       MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
+                                       UOM = dr["uomcd"].retStr()
+
+                                   }).ToList();
+                int slno = 0;
+                for (int p = 0; p <= VE.CASHMEMOPOPUP.Count - 1; p++)
+                {
+                    slno++;
+                    VE.CASHMEMOPOPUP[p].SLNO = slno.retShort();
+                }
+
+            }
+
+
+            VE.DefaultView = true;
+            return PartialView("_T_OUTISSPROCESS_POPUP", VE);
         }
     }
 }

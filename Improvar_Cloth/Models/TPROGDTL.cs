@@ -10,8 +10,7 @@ namespace Improvar.Models
     public class TPROGDTL
     {
         public short? EMD_NO { get; set; }
-
-        [Required]
+        
         [StringLength(4)]
         public string CLCD { get; set; }
 
@@ -20,34 +19,25 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string TTAG { get; set; }
-
-        [Key]
-        [Column(Order = 0)]
+        
         [StringLength(30)]
         public string AUTONO { get; set; }
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        
         public short SLNO { get; set; }
-
-        [Required]
+        
         [StringLength(5)]
         public string DOCCD { get; set; }
-
-        [Required]
+        
         [StringLength(6)]
         public string DOCNO { get; set; }
 
         public DateTime? DOCDT { get; set; }
-
-        [Required]
+        
         [StringLength(30)]
         public string PROGAUTONO { get; set; }
 
         public short PROGSLNO { get; set; }
-
-        [Required]
+        
         [StringLength(1)]
         public string STKDRCR { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]

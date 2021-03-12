@@ -1,0 +1,207 @@
+﻿@model Improvar.ViewModels.TransactionOutIssProcess
+@{
+    var haspendorddata = "";
+}
+<script>
+    $("#popup").ready(function () {
+        $("#dragclass").draggable({ cursor: "move" });
+    });
+
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); }
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_OUTISSPROCESS_POPUP_GRID'));
+        FooterFilter('_T_OUTISSPROCESS_POPUP_GRID');
+    });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:500px;height:auto;overflow-x:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1;width: fit-content;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Bar Code")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "C_BARNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodePopUpDetails", "T_OUTISSPROCESS") + "','Bar Code Details','C_BARNO','C_BARNO=BARNO=0/C_MTRLJOBCD=MTRLJOBCD=2/C_PARTCD=PARTCD=5/C_STYLENO=STYLENO=3','C_MTRLJOBCD/C_PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/C_ALLMTRLJOBCD/Defaultbar/C_BARNO')", onblur = "GetPopUpBarnoDetails('C_BARNO');", @placeholder = "Bar Code", maxlength = 25 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodePopUpDetails","T_OUTISSPROCESS")','Bar Code Details','C_BARNO','C_BARNO=BARNO=0/C_MTRLJOBCD=MTRLJOBCD=2/C_PARTCD=PARTCD=5/C_STYLENO=STYLENO=3','C_MTRLJOBCD/C_PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/C_ALLMTRLJOBCD/Defaultbar/C_BARNO')" />
+                        @Html.HiddenFor(a => a.PARTCD, new { id = "C_PARTCD" })
+                        <input type="hidden" id="C_PARTCD" value="" />
+                        <input type="hidden" id="C_STYLENO" value="" />
+                        <input type="hidden" id="C_MTRLJOBCD" value="" />
+                        <input type="hidden" id="C_ALLMTRLJOBCD" value="" />
+                        
+                        @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
+                    </div>
+                </div>
+                <div class="col-md-1" style="width:auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "From Date")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                    </div>
+                </div>
+                <div class="col-md-1" style="width:auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "To Date")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                    </div>
+                </div>
+                <div class="col-md-1" style="width:auto;">
+                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Memo_Search" value="Get Cash Memo Data" title="Click to Get Cash Memo Data" onclick="GetFilterCashMemoDetails()" />
+                </div>
+                @*<div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Agst Memo No.")
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.CSM_DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CSM_DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", "T_OUTISSPROCESS") + "','Cash Memo Details','CSM_DOCNO','CSM_DOCNO=docno=0/FDT=docdt=1/TDT=docdt=1/CSM_AUTONO=autono','FDT/TDT/CSM_AUTONO')", onblur = "GetSelectedCashMemoDetails('CSM_DOCNO');", @placeholder = "Number", maxlength = 6 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", "T_OUTISSPROCESS")','Cash Memo Details','CSM_DOCNO','CSM_DOCNO=docno=0/FDT=docdt=1/TDT=docdt=1/CSM_AUTONO=autono','FDT/TDT/CSM_AUTONO')" />
+                        @Html.HiddenFor(model => model.CSM_AUTONO, new { id = "CSM_AUTONO" })
+                    </div>
+                </div>*@
+            </div>
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="PO_P_IN_FS" name="PO_P_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_OUTISSPROCESS_POPUP_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bar No. Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:381px;">
+                    <table id="_T_OUTISSPROCESS_POPUP_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 947px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;padding-left:7px;padding-right:7px;">
+                                    <input type="checkbox" name="Test" id="allchkord" onclick="SetAllCheckBoxesFilter(this, '_T_OUTISSPROCESS_POPUP_GRID', 'C_Checked_')" />
+                                </th>
+                                <th class="sticky-cell" style="width:27px;">SL No.</th>
+                                <th class="" style="width:129px;">Against Docno.</th>
+                                <th class="" style="width:129px;">Against Doc Date</th>
+                                <th class="" style="width:129px;">Bar No.</th>
+                                <th class="" style="width:88px;">Item code</th>
+                                <th class="">Item Name</th>
+                                <th class="" style="width:50px;text-align:right;">Qnty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.CASHMEMOPOPUP != null)
+                            {
+                                for (int i = 0; i <= Model.CASHMEMOPOPUP.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.CASHMEMOPOPUP[i].C_Checked, new { id = "C_Checked_" + i })
+                                            @*@Html.HiddenFor(model => model.CASHMEMOPOPUP[i].AUTONO, new { id = "P_AUTONO_" + i })*@
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITGRPCD, new { id = "C_ITGRPCD_" + i })
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITGRPNM, new { id = "C_ITGRPNM_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITNM, new { id = "C_ITNM_" + i })
+                                           
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].DECIMALS, new { id = "C_DECIMALS_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].MTRLJOBCD, new { id = "C_MTRLJOBCD_" + i })
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].PARTCD, new { id = "C_PARTCD_" + i })
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].COLRCD, new { id = "C_COLRCD_" + i })
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].COLRNM, new { id = "C_COLRNM_" + i })
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].CLRBARCODE, new { id = "C_CLRBARCODE_" + i })
+                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].UOM, new { id = "C_UOM_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].SIZECD, new { id = "C_SIZECD_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].SZBARCODE, new { id = "C_SZBARCODE_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].NOS, new { id = "C_NOS_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].CUTLENGTH, new { id = "C_CUTLENGTH_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].SHADE, new { id = "C_SHADE_" + i })
+
+
+
+                                        </td>
+                                        <td class="sticky-cell">
+                                            @Html.TextBoxFor(model => Model.CASHMEMOPOPUP[i].SLNO, new { id = "C_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CASHMEMOPOPUP[i].AGDOCNO, new { id = "C_AGDOCNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CASHMEMOPOPUP[i].AGDOCDT, new { id = "C_AGDOCDT_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CASHMEMOPOPUP[i].BARNO, new { id = "C_BARNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CASHMEMOPOPUP[i].ITCD, new { id = "C_ITCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.CASHMEMOPOPUP[i].ITSTYLE, new { id = "C_ITSTYLE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.CASHMEMOPOPUP[i].QNTY, new { htmlattributes = new { id = "C_QNTY_" + i, @class = " atextBoxFor  text-right", onkeypress = "return numericOnly(this,3);" } })
+                                        </td>
+                                
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        @*<tfoot>
+                                <tr class="sticky-footer">
+                                    <th class="sticky-cell"></th>
+                                    <th class="sticky-cell" title="SL No."></th>
+                                    <th title="Order No."></th>
+                                    <th title="Order Date"></th>
+                                    <th title="ItmGrp"></th>
+                                    <th title="Item Design"></th>
+                                    <th title="Color Name"></th>
+                                    <th title="Size"></th>
+                                    <th title="Order Qnty"></th>
+                                    <th title="Bal. Qnty"></th>
+                                    <th title="Current Adj. Qnty"></th>
+                                    <th title="Item Code"></th>
+                                    <th title="Color Code"></th>
+                                    <th title="Party Design"></th>
+                                    <th title="Rate"></th>
+                                </tr>
+                            </tfoot>*@
+
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <input type="hidden" id="pendorderpopup" />
+        <input type="button" class="btn btn-success" id="btnSelectTTXNDTLDetails" value="Select" style="padding: 2px 5px 2px 5px;" onclick="SelectCashMemoDetails();" />
+
+
+        <input type="button" class="btn btn-danger" id="btnCancelTTXNDTLDetails" value="Close" style="padding: 2px 5px 2px 5px;" onclick="CloseCashMemoDetails();" />
+    </div>
+</div>
