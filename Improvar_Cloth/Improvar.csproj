@@ -300,6 +300,7 @@
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_PartyStmtController.cs" />
     <Compile Include="Controllers\Rep_Pend_JobController.cs" />
+    <Compile Include="Controllers\Rep_PorterController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
@@ -1301,6 +1302,7 @@
     <Content Include="Views\Sys_DataUpload\Sys_DataUpload.cshtml" />
     <Content Include="Views\Rep_Supplier\Rep_Supplier.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_POPUP.cshtml" />
+    <Content Include="Views\Rep_Porter\Rep_Porter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
