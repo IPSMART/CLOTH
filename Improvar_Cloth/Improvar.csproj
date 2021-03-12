@@ -350,6 +350,7 @@
     <Compile Include="Models\BarcodePrint.cs" />
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\BulkDocumentAttached.cs" />
+    <Compile Include="Models\CASHMEMOPOPUP.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
     <Compile Include="Models\DateLockRight.cs" />
@@ -1299,6 +1300,7 @@
     <Content Include="Views\T_PBillUpload\T_PBillUpload.cshtml" />
     <Content Include="Views\Sys_DataUpload\Sys_DataUpload.cshtml" />
     <Content Include="Views\Rep_Supplier\Rep_Supplier.cshtml" />
+    <Content Include="Views\Shared\_T_OUTISSPROCESS_POPUP.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1322,17 +1324,6 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>ENVELOPE.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="Microsoft.Office.Core">
-      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>4</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Report\JobIssue.rpt">
