@@ -44,9 +44,9 @@
                         <input type="hidden" id="C_STYLENO" value="" />
                         <input type="hidden" id="C_MTRLJOBCD" value="" />
                         <input type="hidden" id="C_ALLMTRLJOBCD" value="" />
-                        
+
                         @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
-                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                     </div>
                 </div>
                 <div class="col-md-1" style="width:auto;">
@@ -118,17 +118,18 @@
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.CASHMEMOPOPUP[i].C_Checked, new { id = "C_Checked_" + i })
                                             @*@Html.HiddenFor(model => model.CASHMEMOPOPUP[i].AUTONO, new { id = "P_AUTONO_" + i })*@
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITGRPCD, new { id = "C_ITGRPCD_" + i })
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITGRPNM, new { id = "C_ITGRPNM_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITGRPCD, new { id = "C_ITGRPCD_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITGRPNM, new { id = "C_ITGRPNM_" + i })
                                             @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].ITNM, new { id = "C_ITNM_" + i })
-                                           
+
                                             @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].DECIMALS, new { id = "C_DECIMALS_" + i })
                                             @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].MTRLJOBCD, new { id = "C_MTRLJOBCD_" + i })
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].PARTCD, new { id = "C_PARTCD_" + i })
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].COLRCD, new { id = "C_COLRCD_" + i })
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].COLRNM, new { id = "C_COLRNM_" + i })
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].CLRBARCODE, new { id = "C_CLRBARCODE_" + i })
-                                                @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].UOM, new { id = "C_UOM_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].MTRLJOBNM, new { id = "C_MTRLJOBNM_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].PARTCD, new { id = "C_PARTCD_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].COLRCD, new { id = "C_COLRCD_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].COLRNM, new { id = "C_COLRNM_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].CLRBARCODE, new { id = "C_CLRBARCODE_" + i })
+                                            @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].UOM, new { id = "C_UOM_" + i })
                                             @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].SIZECD, new { id = "C_SIZECD_" + i })
                                             @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].SZBARCODE, new { id = "C_SZBARCODE_" + i })
                                             @Html.HiddenFor(model => model.CASHMEMOPOPUP[i].NOS, new { id = "C_NOS_" + i })
@@ -165,7 +166,7 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.CASHMEMOPOPUP[i].QNTY, new { htmlattributes = new { id = "C_QNTY_" + i, @class = " atextBoxFor  text-right", onkeypress = "return numericOnly(this,3);" } })
                                         </td>
-                                
+
 
                                     </tr>
                                 }

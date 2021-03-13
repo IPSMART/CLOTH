@@ -3028,12 +3028,11 @@ namespace Improvar.Controllers
                     var gcs = Cn.GCS();
                     var Getdata = (from h in DB.T_TXN join i in DB.T_TXNDTL on h.AUTONO equals(i.AUTONO) join
                                    j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO) join k in DB.M_SITEM on i.ITCD equals(k.ITCD) join l in DB.M_GROUP on k.ITGRPCD equals(l.ITGRPCD)
-                                   join m in DB.M_MTRLJOBMST on i.MTRLJOBCD equals (m.MTRLJOBCD) join n in DB.M_COLOR on i.COLRCD equals(n.COLRCD)
+                                   join m in DB.M_MTRLJOBMST on i.MTRLJOBCD equals (m.MTRLJOBCD) 
                                    where i.AUTONO == AUTONO
                                    select new {
                                        AUTONO=i.AUTONO,
                                        COLRCD=  i.COLRCD,
-                                       COLRNM=n.COLRNM,
                                        ITCD=  i.ITCD,
                                        MTRLJOBCD=i.MTRLJOBCD,
                                        MTRLJOBNM=m.MTRLJOBNM,
@@ -3049,7 +3048,8 @@ namespace Improvar.Controllers
                                        DOCNO=h.DOCNO,
                                        DOCDT=h.DOCDT,
                                        ITGRPCD=k.ITGRPCD,
-                                       ITGRPNM=l.ITGRPNM
+                                       ITGRPNM=l.ITGRPNM,
+                                       UOMCD=k.UOMCD
 
                                    }).ToList();
                     DataTable filterData = ListToDatatable.LINQResultToDataTable(Getdata);

@@ -1829,6 +1829,7 @@
         var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
         var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
         var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
+        var MTRLJOBNM = returncolvalue(hlpstr, "MTRLJOBNM");
         var DECIMAL = returncolvalue(hlpstr, "DECIMAL");
         var COLRCD = returncolvalue(hlpstr, "COLRCD");
         var COLRNM = returncolvalue(hlpstr, "COLRNM");
@@ -1854,6 +1855,7 @@
         tr += '   <input data-val="true" data-val-number="The field ITNM must be a number." id="C_ITNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITNM" type="hidden" value="">';
         tr += '   <input data-val="true" data-val-length="The field DECIMAL must be a string with a maximum length of 8." data-val-length-max="8" id="C_DECIMALS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].DECIMAL" type="hidden" value="' + DECIMAL + '">';
         tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
+        tr += '   <input data-val="true" data-val-length="The field MTRLJOBNM must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
       
         tr += '   <input data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 8." data-val-length-max="8" id="C_PARTCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].PARTCD" type="hidden" value="' + PARTCD + '">';
         tr += '   <input id="C_COLRCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRCD" type="hidden" value="' + COLRCD + '">';
