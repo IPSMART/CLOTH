@@ -1804,12 +1804,17 @@
         debugger;
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
+        var ITSTYLE="",STYLENO="",ITNM="";
         var BARNO = returncolvalue(hlpstr, "BARNO");
         var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
         var ITGRPCD = returncolvalue(hlpstr, "ITGRPCD");
         var ITCD = returncolvalue(hlpstr, "ITCD");
-        var ITSTYLE = returncolvalue(hlpstr, "ITSTYLE");
-        var COLRNM = returncolvalue(hlpstr, "COLRNM");
+        ITSTYLE = returncolvalue(hlpstr, "ITSTYLE");
+        if (ITSTYLE == "")
+        {
+            STYLENO = returncolvalue(hlpstr, "STYLENO"); ITNM = returncolvalue(hlpstr, "ITNM");
+            ITSTYLE = STYLENO + "" + ITNM;
+        }
         var SIZECD = returncolvalue(hlpstr, "SIZECD");
         var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
         var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
@@ -1832,6 +1837,9 @@
         var CUTLENGTH = returncolvalue(hlpstr, "CUTLENGTH");
         var SHADE = returncolvalue(hlpstr, "SHADE");
         var PARTCD = returncolvalue(hlpstr, "PARTCD");
+        var DOCNO = returncolvalue(hlpstr, "DOCNO");
+        var DOCDT = returncolvalue(hlpstr, "DOCDT").split(' ')[0];
+
 
         var SLNO = 1;
         var rowindex = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
@@ -1863,10 +1871,10 @@
         tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="C_SLNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
         tr += ' </td>';
         tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
-        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCNO must be a number." data-val-required="The AGDOCNO field is required." id="C_AGDOCNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCNO" readonly="readonly" type="text" value="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCNO must be a number." data-val-required="The AGDOCNO field is required." id="C_AGDOCNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCNO" readonly="readonly" type="text" value="' + DOCNO + '">';
         tr += ' </td>';
         tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
-        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCDT must be a number." data-val-required="The AGDOCDT field is required." id="C_AGDOCDT_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCDT" readonly="readonly" type="text" value="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCDT must be a number." data-val-required="The AGDOCDT field is required." id="C_AGDOCDT_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCDT" readonly="readonly" type="text" value="' + DOCDT + '">';
         tr += ' </td>';
 
         tr += ' <td class="sticky-cell" style="left:50px" title="">';
@@ -1899,7 +1907,7 @@
         for (j = 0; j <= GridRowMain - 1; j++) {
             if ($("#C_SLNO_" + j).val() == slno) {
                 var qnty = $("#C_QNTY_" + j).val();
-                var sumqnty = qnty + (returncolvalue(hlpstr, "QNTY"));
+                var sumqnty = parseFloat(qnty) + parseFloat(returncolvalue(hlpstr, "QNTY"));
                 $("#C_BARNO_" + j).val($("#C_BARNO_" + j).val());
                 $("#C_ITGRPCD_" + j).val($("#C_ITGRPCD_" + j).val());
                 $("#C_ITGRPNM_" + j).val($("#C_ITGRPNM_" + j).val());
@@ -1919,6 +1927,8 @@
                 $("#C_DECIMALS_" + j).val($("#C_DECIMALS_" + j).val());
                 $("#C_SHADE_" + j).val($("#C_SHADE_" + j).val());
                 $("#C_CUTLENGTH_" + j).val($("#C_CUTLENGTH_" + j).val());
+                $("#C_AGDOCNO_" + j).val($("#C_AGDOCNO_" + j).val());
+                $("#C_AGDOCDT_" + j).val($("#C_AGDOCDT_" + j).val());
                 $("#C_BARCODE").val('');
                 $("#C_BARCODE").focus();
                 
@@ -1955,7 +1965,7 @@
             ReferanceFieldID = "/FDT";
             ReferanceFieldIndex = "/1";
         
-            var code = FDT + String.fromCharCode(181) + TDT + String.fromCharCode(181) + AUTONO + String.fromCharCode(181);
+            var code = FDT + String.fromCharCode(181) + TDT + String.fromCharCode(181) + AUTONO;
 
             $.ajax({
                 type: 'POST',
@@ -1971,6 +1981,7 @@
                     $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/FDT');
                     $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/1');
                     $("#TDT") = returncolvalue(hlpstr, "docdt");
+                    $("#CSM_AUTONO") = returncolvalue(hlpstr, "autono");
                     $('#helpDIV_Header').html('Cash Memo Details');
                         
                 }

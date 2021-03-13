@@ -39,7 +39,7 @@
                     <div class="editor-field">
                         @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "C_BARNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodePopUpDetails", "T_OUTISSPROCESS") + "','Bar Code Details','C_BARNO','C_BARNO=BARNO=0/C_MTRLJOBCD=MTRLJOBCD=2/C_PARTCD=PARTCD=5/C_STYLENO=STYLENO=3','C_MTRLJOBCD/C_PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/C_ALLMTRLJOBCD/Defaultbar/C_BARNO')", onblur = "GetPopUpBarnoDetails('C_BARNO');", @placeholder = "Bar Code", maxlength = 25 } })
                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodePopUpDetails","T_OUTISSPROCESS")','Bar Code Details','C_BARNO','C_BARNO=BARNO=0/C_MTRLJOBCD=MTRLJOBCD=2/C_PARTCD=PARTCD=5/C_STYLENO=STYLENO=3','C_MTRLJOBCD/C_PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/C_ALLMTRLJOBCD/Defaultbar/C_BARNO')" />
-                        @Html.HiddenFor(a => a.PARTCD, new { id = "C_PARTCD" })
+                        @*@Html.HiddenFor(a => a.PARTCD, new { id = "C_PARTCD" })*@
                         <input type="hidden" id="C_PARTCD" value="" />
                         <input type="hidden" id="C_STYLENO" value="" />
                         <input type="hidden" id="C_MTRLJOBCD" value="" />
@@ -72,18 +72,18 @@
                 <div class="col-md-1" style="width:auto;">
                     <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Memo_Search" value="Get Cash Memo Data" title="Click to Get Cash Memo Data" onclick="GetFilterCashMemoDetails()" />
                 </div>
-                @*<div class="col-md-5">
+                <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Agst Memo No.")
                     </div>
                 </div>
                 <div class="col-md-7">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.CSM_DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CSM_DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", "T_OUTISSPROCESS") + "','Cash Memo Details','CSM_DOCNO','CSM_DOCNO=docno=0/FDT=docdt=1/TDT=docdt=1/CSM_AUTONO=autono','FDT/TDT/CSM_AUTONO')", onblur = "GetSelectedCashMemoDetails('CSM_DOCNO');", @placeholder = "Number", maxlength = 6 } })
-                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", "T_OUTISSPROCESS")','Cash Memo Details','CSM_DOCNO','CSM_DOCNO=docno=0/FDT=docdt=1/TDT=docdt=1/CSM_AUTONO=autono','FDT/TDT/CSM_AUTONO')" />
+                        @Html.EditorFor(model => model.CSM_DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CSM_DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", "T_OUTISSPROCESS") + "','Cash Memo Details','CSM_DOCNO','CSM_DOCNO=docno=0/FDT=docdt=1/TDT=docdt=1/CSM_AUTONO=autono=2','FDT/TDT/CSM_AUTONO')", onblur = "GetSelectedCashMemoDetails('CSM_DOCNO');", @placeholder = "Number", maxlength = 6 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", "T_OUTISSPROCESS")','Cash Memo Details','CSM_DOCNO','CSM_DOCNO=docno=0/FDT=docdt=1/TDT=docdt=1/CSM_AUTONO=autono=2','FDT/TDT/CSM_AUTONO')" />
                         @Html.HiddenFor(model => model.CSM_AUTONO, new { id = "CSM_AUTONO" })
                     </div>
-                </div>*@
+                </div>
             </div>
             <div class="grid_title">
                 <div class="col-md-8">

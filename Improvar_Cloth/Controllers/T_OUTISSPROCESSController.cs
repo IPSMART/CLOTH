@@ -63,6 +63,8 @@ namespace Improvar.Controllers
                     VE.HSN_CODE = (from n in DBF.M_HSNCODE
                                    select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
+                    VE.DropDown_list1 = (from n in DBF.M_PRCLST
+                                         select new DropDown_list1() { text = n.PRCCD, value = n.PRCNM }).OrderBy(s => s.text).Distinct().ToList();
 
                     //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
                     VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
@@ -3012,9 +3014,9 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 var data = CODE.Split(Convert.ToChar(Cn.GCS()));
-                
+                string str = "";
                 string FDT = data[0].retSqlformat();
-                string TDT = data[1].retStr();
+                string TDT = data[1].retSqlformat();
                 string AUTONO = data[2].retStr();
                 var sql = masterHelp.CashMemoNumber_help(val,FDT,TDT);
                 if (sql.IndexOf("='helpmnu'") >= 0)
@@ -3024,29 +3026,39 @@ namespace Improvar.Controllers
                 else
                 {
                     var gcs = Cn.GCS();
-                    var Getdata = (from i in DB.T_TXNDTL join j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO) join k in DB.M_SITEM on i.ITCD equals(k.ITCD)
-                                   where i.AUTONO == AUTONO.retStr()
+                    var Getdata = (from h in DB.T_TXN join i in DB.T_TXNDTL on h.AUTONO equals(i.AUTONO) join
+                                   j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO) join k in DB.M_SITEM on i.ITCD equals(k.ITCD) join l in DB.M_GROUP on k.ITGRPCD equals(l.ITGRPCD)
+                                   join m in DB.M_MTRLJOBMST on i.MTRLJOBCD equals (m.MTRLJOBCD) join n in DB.M_COLOR on i.COLRCD equals(n.COLRCD)
+                                   where i.AUTONO == AUTONO
                                    select new {
-                                       AUTONO=i.AUTONO.retStr(),
-                                       COLRCD=  i.COLRCD.retStr(),
-                                       ITCD=  i.ITCD.retStr(),
-                                       MTRLJOBCD=i.MTRLJOBCD.retStr(),
-                                       NOS=i.NOS.retStr(),
-                                       PARTCD=i.PARTCD.retStr(),
-                                       PRCCD=i.PRCCD.retStr(),
-                                       QNTY=i.QNTY.retDbl(),
-                                       RATE=i.RATE.retDbl(),
-                                       SIZECD=i.SIZECD.retStr(),
-                                       BARNO=j.BARNO.retStr(),
-                                       ITSTYLE=k.STYLENO+""+k.ITNM
+                                       AUTONO=i.AUTONO,
+                                       COLRCD=  i.COLRCD,
+                                       COLRNM=n.COLRNM,
+                                       ITCD=  i.ITCD,
+                                       MTRLJOBCD=i.MTRLJOBCD,
+                                       MTRLJOBNM=m.MTRLJOBNM,
+                                       NOS=i.NOS,
+                                       PARTCD=i.PARTCD,
+                                       PRCCD=i.PRCCD,
+                                       QNTY=i.QNTY,
+                                       RATE=i.RATE,
+                                       SIZECD=i.SIZECD,
+                                       BARNO=j.BARNO,
+                                       STYLENO = k.STYLENO,
+                                       ITNM = k.ITNM,
+                                       DOCNO=h.DOCNO,
+                                       DOCDT=h.DOCDT,
+                                       ITGRPCD=k.ITGRPCD,
+                                       ITGRPNM=l.ITGRPNM
+
                                    }).ToList();
                     DataTable filterData = ListToDatatable.LINQResultToDataTable(Getdata);
                         if (filterData.Rows.Count > 0)
                         {
-                            string str = masterHelp.ToReturnFieldValues("", filterData);
+                             str = masterHelp.ToReturnFieldValues("", filterData);
                             
                         }
-                    return Content(sql);
+                    return Content(str);
                 }
             }
             catch (Exception ex)
@@ -3062,10 +3074,10 @@ namespace Improvar.Controllers
             if (FDT == null) FDT = "";
             if (TDT == null) TDT = "";
             string sql = "select a.autono,b.docno,b.docdt,c.itcd,e.itnm,e.styleno,e.styleno||' '||e.itnm itstyle,e.itgrpcd,f.itgrpnm,c.qnty,e.uomcd,c.rate, ";
-            sql += "d.barno,c.COLRCD,C.MTRLJOBCD from  " + scm + ".T_TXNMEMO a," + scm + ".T_TXN b, ";
-            sql += "" + scm + ".T_TXNDTL c," + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f ";
+            sql += "d.barno,c.COLRCD,h.COLRNM,C.MTRLJOBCD,g.MTRLJOBNM from  " + scm + ".T_TXNMEMO a," + scm + ".T_TXN b, ";
+            sql += "" + scm + ".T_TXNDTL c," + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f, " + scm + ".M_MTRLJOBMST g, " + scm + ".M_COLOR h   ";
             sql += "where a.autono = b.autono and a.autono = c.autono(+) and c.autono = d.autono(+) ";
-            sql += "and c.slno = d.txnslno(+)and c.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+)  ";
+            sql += "and c.slno = d.txnslno(+)and c.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and c.mtrljobcd = g.mtrljobcd(+)and c.COLRCD = h.COLRCD(+)  ";
             if (FDT.retDateStr() != "") sql += "and b.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') ";
             if (TDT.retDateStr() != "") sql += " and b.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
             if (C_BARNO.retStr() != "") sql += "and d.barno = '" + C_BARNO + "' ";
@@ -3087,8 +3099,10 @@ namespace Improvar.Controllers
                                        ITGRPCD = dr["itgrpcd"].retStr(),
                                        ITGRPNM = dr["itgrpnm"].retStr(),
                                        MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
-                                       UOM = dr["uomcd"].retStr()
-
+                                       MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                       UOM = dr["uomcd"].retStr(),
+                                       COLRCD = dr["COLRCD"].retStr(),
+                                       COLRNM = dr["COLRNM"].retStr()
                                    }).ToList();
                 int slno = 0;
                 for (int p = 0; p <= VE.CASHMEMOPOPUP.Count - 1; p++)

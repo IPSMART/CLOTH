@@ -187,6 +187,7 @@ namespace Improvar.ViewModels
         public string TDT { get; set; }
         public string CSM_DOCNO { get; set; }
         public string CSM_AUTONO { get; set; }
-        
+
+        public List<DropDown_list1> DropDown_list1 { get; set; }
     }
 }
