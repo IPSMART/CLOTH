@@ -129,7 +129,7 @@
                                 <th class="" style="width:30px; text-align:center">Img</th>
                                 <th class="">Image Upload</th>
 
-                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                 {
                                     <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:40px;">Rate Hist</th>
                                     <th class="sticky-cell-opposite" style="width:40px;"></th>
@@ -296,13 +296,13 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].BALSTOCK, new { htmlAttributes = new { id = "B_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
-                                        <td class="">
+                                        <td class="PJBLDiv">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
                                         </td>
-                                        <td class="">
+                                        <td class="PJBLDiv">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
-                                        <td class="">
+                                        <td class="PJBLDiv">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12, autocomplete = "off" } })
                                         </td>
                                         <td class="">
@@ -422,7 +422,7 @@
                                                 </datalist>
                                             </td>
                                         }
-                                        <td class="">
+                                        <td class="PJBLDiv">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
                                         </td>
                                         <td class="">
@@ -439,7 +439,7 @@
                                             }
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>
-                                        @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                                        @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                         {
                                             <td class="sticky-cell-opposite" style="right:40px;">
                                                 <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('B_ITCD_@i','B_ITSTYLE_@i','POPUP')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
@@ -571,7 +571,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                 {
                                     <td class="sticky-cell-opposite" style="right:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*rate hist*@
                                     <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>

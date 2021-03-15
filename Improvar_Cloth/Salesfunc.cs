@@ -1396,7 +1396,7 @@ namespace Improvar
                 string szbarcode = SZBARCODE.retStr();
                 SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == szbarcode).Select(b => b.SIZECD).FirstOrDefault();
             }
-            string barno = DB.T_BATCHMST.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).FirstOrDefault();
+            string barno = DB.T_BATCHMST.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD && a.COMMONUNIQBAR == "C").Select(b => b.BARNO).FirstOrDefault();
             if (barno == null)
             {
                 //barno = ITCD.retStr().Substring(1, 8) + CLRBARCODE.retStr() + SZBARCODE.retStr();

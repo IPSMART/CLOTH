@@ -11,7 +11,7 @@
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
 </script>
-<div style="border:5px groove;">
+<div style="border:5px groove;background-color:#c4b9b9;width:340px;">
     <div class="table-responsive">
         @if (Model.DefaultView == true)
         {
@@ -25,7 +25,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:150px;">
-                    <table id="_T_SALE_PendingIssue_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:550px;">
+                    <table id="_T_SALE_PendingIssue_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:310px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="" style="width: 17px;">
@@ -33,7 +33,7 @@
                                     <input type="checkbox" name="Test" style="margin-left:-3px;" onclick="SetAllCheckBoxesFilter(this, '_T_SALE_PendingIssue_GRID', 'ISS_Checked_')" />
                                 </th>
                                 <th class="" style="width: 40px;">SL NO.</th>
-                                <th class="" style="width: 150px;">ISSUE NUMBER</th>
+                                <th class="" >ISSUE NUMBER</th>
                                 <th class="" style="width: 65px;">ISSUE DATE</th>
                             </tr>
                         </thead>
@@ -65,9 +65,9 @@
             </div>
         }
     </div>
-    <div class="row" style="padding:5px;">
+    @*<div class="row" style="padding:5px;">
         <div class="row" id="BTNGETITEM">
-            <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Get Item Details" onclick="GetItems();">Get Items</button>
+            <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Select Issue" onclick="SelectIssue();">Select Issue</button>
         </div>
-    </div>
+    </div>*@
 </div>

@@ -109,6 +109,13 @@
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
             }
+            if (MENU_PARA = "PJBL") {
+                $('.PJBLDiv input').attr('readonly', 'readonly');
+                $('.PJBLDiv input').removeAttr("onblur");
+                $('.PJBLDiv input').attr('TabIndex', '-1');
+                $('.PJBLDiv').find(".Help_image_button_grid").hide();
+                $('.PJBLDiv input').removeAttr("onkeydown");
+            }
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -777,7 +784,6 @@
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
-                    <li id="JobIssue_LI4" class="active"><a data-toggle="tab" href="#JobIssueTab">Job Issue(I)</a></li>
                     <li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab">Bar Code(B)</a></li>
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="L">Detail(L)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="UpdateTaxPer();">Amount(H)</a></li>
@@ -1174,28 +1180,10 @@
                         </div>
 
                     </div>
-                    <div id="JobIssueTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivJobIssue" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_SALE_PendingIssue")*@
-                                </div>
-                            </div>
-                        </div>
-                        @if (Model.DefaultAction != "V")
-                        {
-                            <div class="row">
-                                <div class="col-md-1" style="width:auto;">
-                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="SelectIssue" id="Select_Issue" value="Select Issue" title="Click to SelectIssue" onclick="SelectIssue()" />
-                                </div>
-                            </div>
-                        }
-
-                    </div>
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
                             <div class="row">
-                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                 {
                                     if (Model.M_SYSCNFG.MNTNBARNO == "Y")
                                     {
@@ -1355,7 +1343,7 @@
                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                 }
                             </div>
-                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                     {
                                 <div class="row">
                                     <div class="col-lg-11">
@@ -1832,6 +1820,24 @@
                                 <div class="col-md-3" style="width:auto;">
                                 </div>
                             </div>
+                            @if (Model.MENU_PARA == "PJBL" && Model.DefaultAction != "V")
+                    {
+                                <div class="row">
+                                    <div class="col-lg-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetIssue" id="Get_Issue" value="Get Issue" title="Click to Get Issue" onclick="GetPendingIssueData()" />
+                                        <br/>
+                                        <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Select Issue" onclick="SelectIssue();">Select Issue</button>
+
+                                    </div>
+                                    <div class="col-lg-11">
+                                        <div>
+                                            <div id="partialdivJobIssue" style="margin-top:0px;">
+                                                @Html.Partial("_T_SALE_PendingIssue")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                             <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                 <div id="partialdivBarCodeTab">
                                     @Html.Partial("_T_SALE_BarTab")

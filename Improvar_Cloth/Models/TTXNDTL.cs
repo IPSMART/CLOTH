@@ -212,5 +212,6 @@ namespace Improvar.Models
         public double? OTHRAMT { get; set; }
         [StringLength(3)]
         public string BLUOMCD { get; set; }
+        public string LINKAUTONO { get; set; }
     }
 }
