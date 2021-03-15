@@ -2266,7 +2266,7 @@ namespace Improvar
         {
             var MSYSCNFG = salesfunc.M_SYSCNFG();
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
-            if (menupara == "PB" || menupara == "OP" || menupara == "OTH")
+            if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD);
             }

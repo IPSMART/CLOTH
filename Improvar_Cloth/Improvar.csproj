@@ -530,6 +530,7 @@
     <Compile Include="Models\M_USR_ACS_GRPDTL.cs" />
     <Compile Include="Models\Password.cs" />
     <Compile Include="Models\PENDINGORDER.cs" />
+    <Compile Include="Models\PENDING_ISSUE.cs" />
     <Compile Include="Models\Permission.cs" />
     <Compile Include="Models\Prepare_JSON.cs" />
     <Compile Include="Models\PrintingPageContent.cs" />
@@ -1303,6 +1304,7 @@
     <Content Include="Views\Rep_Supplier\Rep_Supplier.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_POPUP.cshtml" />
     <Content Include="Views\Rep_Porter\Rep_Porter.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PendingIssue.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

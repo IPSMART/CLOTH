@@ -1,0 +1,73 @@
+﻿@model Improvar.ViewModels.TransactionSaleEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            //modeView();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_PendingIssue_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<div style="border:5px groove;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-lg-5">
+                    <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PendingIssue_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;background-color:#c4b9b9;"><b>Pending Issue Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:150px;">
+                    <table id="_T_SALE_PendingIssue_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:550px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="" style="width: 17px;">
+                                    All
+                                    <input type="checkbox" name="Test" style="margin-left:-3px;" onclick="SetAllCheckBoxesFilter(this, '_T_SALE_PendingIssue_GRID', 'ISS_Checked_')" />
+                                </th>
+                                <th class="" style="width: 40px;">SL NO.</th>
+                                <th class="" style="width: 150px;">ISSUE NUMBER</th>
+                                <th class="" style="width: 65px;">ISSUE DATE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PENDING_ISSUE != null)
+                            {
+                                for (int i = 0; i <= Model.PENDING_ISSUE.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="" style="padding-left:2px;padding-right:2px;">
+                                            @Html.CheckBoxFor(model => model.PENDING_ISSUE[i].Checked, new { id = "ISS_Checked_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_ISSUE[i].SLNO, new { id = "ISS_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;font-weight:bold;", maxlength = 3, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.PENDING_ISSUE[i].ISSUEAUTONO, new { id = "ISS_ISSUEAUTONO_" + i })
+                                        </td>
+                                        <td class="" style="font-size:11px;">
+                                            @Html.TextBoxFor(model => Model.PENDING_ISSUE[i].ISSUEDOCNO, new { id = "ISS_ISSUEDOCNO_" + i, @class = " atextBoxFor", @style = "font-weight:bold;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="" style="font-size:11px;">
+                                            @Html.EditorFor(model => Model.PENDING_ISSUE[i].ISSUEDOCDT, new { htmlAttributes = new { id = "ISS_ISSUEDOCDT_" + i, @class = " atextBoxFor", @style = "font-weight:bold;", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row" style="padding:5px;">
+        <div class="row" id="BTNGETITEM">
+            <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Get Item Details" onclick="GetItems();">Get Items</button>
+        </div>
+    </div>
+</div>

@@ -40,6 +40,14 @@
             ViewBag.Title = "Purchase D/N (w/o Qty)"; ViewBag.Partycaption = "Supplier"; break;
         case "OTH":
             ViewBag.Title = "Other Product Opening Stock"; ViewBag.Partycaption = "Party"; break;
+        case "PJRC":
+            ViewBag.Title = "Receive from Party for Job"; ViewBag.Partycaption = "Party"; break;
+        case "PJIS":
+            ViewBag.Title = "Issue to Party after Job"; ViewBag.Partycaption = "Party"; break;
+        case "PJRT":
+            ViewBag.Title = "Return to Party w/o Job"; ViewBag.Partycaption = "Party"; break;
+        case "PJBL":
+            ViewBag.Title = "Job Bill raised to Party"; ViewBag.Partycaption = "Party"; break;
         default: ViewBag.Title = ""; ViewBag.Partycaption = "Party"; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -162,28 +170,28 @@
                 return false;
             }
         }
-        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {
-            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
-            var balenoexist = false;
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    if ($("#D_BALENO_" + i).val() != "") {
-                        balenoexist = true;
-                        break;
-                    }
+        @*if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {*@
+        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        var balenoexist = false;
+        if (GridRow != 0) {
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if ($("#D_BALENO_" + i).val() != "") {
+                    balenoexist = true;
+                    break;
                 }
             }
-            if (balenoexist == true && $("#LRNO").val() == "") {
-                msgInfo("if Bale No. exist then you have to fill LR Number in Transport Tab !!");
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(5)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                message_value = "LRNO";
-                return false;
-            }
         }
+        if (balenoexist == true && $("#LRNO").val() == "") {
+            msgInfo("if Bale No. exist then you have to fill LR Number in Transport Tab !!");
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(5)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            message_value = "LRNO";
+            return false;
+        }
+        //}
         //AMT TAB HSN CHECK
         if ("@Model.MENU_PARA" == "SCN" || "@Model.MENU_PARA" == "SDN" || "@Model.MENU_PARA" == "PCN" || "@Model.MENU_PARA" == "PDN") {
             var GridRowAmt = $("#AMOUNT_GRID > tbody > tr").length;
@@ -413,7 +421,7 @@
             $(".nav-tabs li:first-child").addClass('active');
             $(".tab-content div").removeClass("active");
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {
+            if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH" || "@Model.MENU_PARA" == "PJRC") {
                 $("#PREFNO").focus();
             }
             else {
@@ -517,6 +525,8 @@
         <input type="hidden" id="UrlUpdatePagenoSlno" value="@Url.Action("Update_PagenoSlno", PageControllerName )" />
         <input type="hidden" id="UrlGetUOMDetails" value="@Url.Action("GetUOMDetails", PageControllerName )" />
         <input type="hidden" id="UrlUpdateTransport" value="@Url.Action("Update_Transport", PageControllerName )" />
+        <input type="hidden" id="UrlGetPendingIssueData" value="@Url.Action("GetPendingIssueData", PageControllerName )" />
+        <input type="hidden" id="UrlSelectPendingIssueData" value="@Url.Action("SelectPendingIssueData", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -627,7 +637,7 @@
                         </div>
 
                     </div>
-                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.DefaultAction == "V")
+                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.DefaultAction == "V")
                     {
                         <div class="col-md-3">
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
@@ -720,7 +730,7 @@
                         </div>
                     </div>
 
-                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
+                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
                     {
                         <div class="col-md-1">
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Pending_Order" value="Get Pending Order" title="Click to Get Pending Order" onclick="GetPendOrder()" />
@@ -767,6 +777,7 @@
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
+                    <li id="JobIssue_LI4" class="active"><a data-toggle="tab" href="#JobIssueTab">Job Issue(I)</a></li>
                     <li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab">Bar Code(B)</a></li>
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="L">Detail(L)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="UpdateTaxPer();">Amount(H)</a></li>
@@ -782,7 +793,7 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                         <div class="row">
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                             {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
@@ -1001,7 +1012,7 @@
                                     </datalist>
                                 </div>
                             </div>
-                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
+                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                             {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
@@ -1163,6 +1174,24 @@
                         </div>
 
                     </div>
+                    <div id="JobIssueTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivJobIssue" style="margin-top:0px;">
+                                    @*@Html.Partial("_T_SALE_PendingIssue")*@
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <div class="col-md-1" style="width:auto;">
+                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="SelectIssue" id="Select_Issue" value="Select Issue" title="Click to SelectIssue" onclick="SelectIssue()" />
+                                </div>
+                            </div>
+                        }
+
+                    </div>
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
                             <div class="row">
@@ -1312,7 +1341,7 @@
                                     <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
 
                                     </div>*@
-                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH"))
+                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC"))
                                 { <div class="col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Order Item Filter")
@@ -1465,7 +1494,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                             {
                                                 <div class="col-md-4">
 
@@ -1659,7 +1688,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                             {
                                                 <div class="col-md-4">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
@@ -1703,7 +1732,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH")
+                                    @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                     {
                                         <div class="col-md-6">
                                             <div class="editor-field input-group" style="width:-webkit-fill-available;">
@@ -1777,7 +1806,7 @@
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
                                     <input type="hidden" id="ImageStr" value="" />
-                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                     {
                                         <div id="divImageUpload" style="display:none;">
                                             <div class="col-md-1">
@@ -1815,7 +1844,7 @@
                                 <div>
                                     <div class="col-lg-6">
                                         <div class="row">
-                                            @if (Model.MENU_PARA != "PB" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH")
+                                            @if (Model.MENU_PARA != "PB" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC")
                                             {
                                                 <p class="text-info">* Press <b>F8</b> in Bar Code/Design No (Bar code area) to copy last row of Bar Code Grid</p>
                                             }
@@ -1903,7 +1932,7 @@
                                     @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TCS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
                                 </div>
                             </div>
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                             {
                                 <div class="col-md-2" style="width:auto;">
                                     <div class="editor-label" style="margin-top: 6px;">
@@ -1939,7 +1968,7 @@
                                     @Html.HiddenFor(model => model.AMT, new { id = "AMT" })
                                     @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
                                     @*@if (Model.MENU_PARA == "OP")//*@
-                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                         @*@Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onkeydown = "BillAmountCalculate('TCSON');", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })*@
@@ -1952,7 +1981,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="editor-field">
-                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @placeholder = "TCS Amount", onchange = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }

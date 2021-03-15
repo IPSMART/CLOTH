@@ -252,5 +252,6 @@ namespace Improvar.ViewModels
         public double? RPPERMANUAL { get; set; }
         [AllowHtml]
         public string PCSTYPEVALUE { get; set; }
+        public List<PENDING_ISSUE> PENDING_ISSUE { get; set; }
     }
 }
