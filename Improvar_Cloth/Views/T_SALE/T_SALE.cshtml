@@ -1823,18 +1823,19 @@
                             @if (Model.MENU_PARA == "PJBL" && Model.DefaultAction != "V")
                     {
                                 <div class="row">
-                                    <div class="col-lg-1" style="width:auto;">
-                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetIssue" id="Get_Issue" value="Get Issue" title="Click to Get Issue" onclick="GetPendingIssueData()" />
-                                        <br/>
-                                        <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Select Issue" onclick="SelectIssue();">Select Issue</button>
-
-                                    </div>
-                                    <div class="col-lg-11">
+                                   
+                                    <div class="col-lg-11" style="width:auto;">
                                         <div>
                                             <div id="partialdivJobIssue" style="margin-top:0px;">
                                                 @Html.Partial("_T_SALE_PendingIssue")
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-lg-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetIssue" id="Get_Issue" value="Get Issue" title="Click to Get Issue" onclick="GetPendingIssueData()" />
+                                        <br />
+                                        <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Select Issue" onclick="SelectIssue();">Select Issue</button>
+
                                     </div>
                                 </div>
                             }

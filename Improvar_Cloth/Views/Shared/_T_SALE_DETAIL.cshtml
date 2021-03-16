@@ -365,16 +365,19 @@
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:27px;">
                                     <input type="text" class="atextBoxFor" readonly="readonly" />
-                                    @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
-                                    {
-                                        @Html.HiddenFor(model => model.T_TDDISCAMT, new { id = "T_TDDISCAMT" })
-                                    }
-                                    @if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
-                                    {
-                                        @Html.HiddenFor(model => model.T_DISCAMT, new { id = "T_DISCAMT" })
-                                    }
+                                  
                                     @if (Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PJIS" || Model.MENU_PARA == "PJRT")
                                     {
+                                        @Html.HiddenFor(model => model.T_SCMDISCAMT, new { id = "T_SCMDISCAMT" })
+                                        if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                        {
+                                            @Html.HiddenFor(model => model.T_TDDISCAMT, new { id = "T_TDDISCAMT" })
+                                        }
+                                        if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
+                                        {
+                                            @Html.HiddenFor(model => model.T_DISCAMT, new { id = "T_DISCAMT" })
+                                        }
+                                        @Html.HiddenFor(model => model.T_GROSS_AMT, new { id = "T_GROSS_AMT" })
                                         @Html.HiddenFor(model => model.T_IGST_AMT, new { id = "T_IGST_AMT" })
                                         @Html.HiddenFor(model => model.T_CGST_AMT, new { id = "T_CGST_AMT" })
                                         @Html.HiddenFor(model => model.T_SGST_AMT, new { id = "T_SGST_AMT" })
