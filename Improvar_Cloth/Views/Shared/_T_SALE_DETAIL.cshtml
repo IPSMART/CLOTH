@@ -252,7 +252,7 @@
                                         else
                                         {
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#D_');" } })
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, onblur = "RateUpdate(" + i + ",'#D_');" } })
                                                 @*@Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#D_');" } })*@
                                             </td>
                                         }

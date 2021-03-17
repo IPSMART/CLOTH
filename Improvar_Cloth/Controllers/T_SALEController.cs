@@ -183,7 +183,16 @@ namespace Improvar.Controllers
                             {
                                 VE.T_TXN.AUTONO = "";
                                 if (VE.T_TXN_LINKNO == null) VE.T_TXN_LINKNO = new T_TXN_LINKNO();
-                                VE.LINKDOCNO = loadOrder.retStr();
+                                if (loadOrder.retStr().Split(Convert.ToChar(Cn.GCS())).Length > 1)
+                                {
+                                    VE.LINKDOCNO = loadOrder.retStr().Split(Convert.ToChar(Cn.GCS()))[0].retStr();
+                                    VE.BALENO_HELP = loadOrder.retStr().Split(Convert.ToChar(Cn.GCS()))[1].retStr();
+                                }
+                                else
+                                {
+                                    VE.LINKDOCNO = loadOrder.retStr();
+                                }
+
                                 VE.T_TXN_LINKNO.LINKAUTONO = searchValue.retStr();
                                 VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                             }
@@ -627,6 +636,15 @@ namespace Improvar.Controllers
                 {
                     allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
+                string BALENO_HELP = "";
+                if (loadOrder.retStr() != "N" && VE.DefaultAction=="A")
+                {
+                    if (loadOrder.retStr().Split(Convert.ToChar(Cn.GCS())).Length > 1)
+                    {
+                        BALENO_HELP = loadOrder.retStr().Split(Convert.ToChar(Cn.GCS()))[1].retStr();
+                    }
+                }
+                var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
@@ -666,6 +684,14 @@ namespace Improvar.Controllers
                                         string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
+                                }
+                                if (BALENO_HELP.retStr() != "" && loadOrder != "N" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP"))
+                                {
+                                    v.RATE = tax_data.Rows[0]["rate"].retDbl();
+                                }
+                                if (BALENO_HELP.retStr() != "" && loadOrder != "N" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP") && MSYSCNFG.MNTNLISTPRICE == "Y")
+                                {
+                                    v.LISTPRICE = tax_data.Rows[0]["rate"].retDbl();
                                 }
                             }
                         }
@@ -728,16 +754,22 @@ namespace Improvar.Controllers
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "";
                     var tax_data = (from a in VE.TBATCHDTL
-                                    where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
-                                    && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
-                                     && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
-                                    select new { a.PRODGRPGSTPER, a.ALL_GSTPER, a.FABITCD, a.FABITNM }).FirstOrDefault();
+                                    where a.TXNSLNO == v.SLNO
+                                    select new { a.PRODGRPGSTPER, a.ALL_GSTPER, a.FABITCD, a.FABITNM, a.RATE }).FirstOrDefault();
                     if (tax_data != null)
                     {
                         PRODGRPGSTPER = tax_data.PRODGRPGSTPER.retStr();
                         ALL_GSTPER = tax_data.ALL_GSTPER.retStr();
                         v.FABITCD = tax_data.FABITCD.retStr();
                         v.FABITNM = tax_data.FABITNM.retStr();
+                        if (BALENO_HELP.retStr() != "" && loadOrder != "N" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP"))
+                        {
+                            v.RATE = tax_data.RATE.retDbl();
+                        }
+                        if (BALENO_HELP.retStr() != "" && loadOrder != "N" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP") && MSYSCNFG.MNTNLISTPRICE == "Y")
+                        {
+                            v.LISTPRICE = tax_data.RATE.retDbl();
+                        }
                     }
                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                     v.ALL_GSTPER = ALL_GSTPER;
@@ -1619,6 +1651,49 @@ namespace Improvar.Controllers
                 else
                 {
                     string str = masterHelp.UOM_help(val);
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetBaleNoDetails(string val, string code)
+        {
+            try
+            {
+                var data = code.Split(Convert.ToChar(Cn.GCS()));
+                string tdt = data[0].retStr();
+                string gocd = data[1].retStr() == "" ? "" : data[1].retSqlformat();
+                string autono = data[2].retStr();
+                if (val.retStr() != "")
+                {
+                    string sql = "select distinct baleno||baleyr baleno from " + CommVar.CurSchema(UNQSNO) + ".T_BALE where BALENO like'%" + val + "%'  ";
+                    if (autono.retStr() != "") sql += "and blautono ='" + autono + "'";
+                    DataTable dt = masterHelp.SQLquery(sql);
+                    if (dt.Rows.Count > 0)
+                    {
+                        val = (from DataRow dr in dt.Rows
+                               select dr["baleno"].retStr()).ToArray().retSqlfromStrarray();
+                    }
+                }
+                var str = masterHelp.BaleNo_help(val, tdt, gocd, "", true, true);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    if (str.IndexOf(Cn.GCS()) >= 0)
+                    {
+                        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                        string blautono = str.retCompValue("blautono");
+                        string docno = DB.T_CNTRL_HDR.Where(a => a.AUTONO == blautono).Select(b => b.DOCNO).FirstOrDefault();
+                        str += "^BLDOCNO=^" + docno + Cn.GCS();
+                    }
+
                     return Content(str);
                 }
             }
@@ -4579,7 +4654,18 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                         strblno = ""; strbldt = ""; strduedt = ""; strvtype = ""; strrefno = "";
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH") { strvtype = "BL"; } else if (VE.MENU_PARA == "SD") { strvtype = "DN"; } else { strvtype = "CN"; }
+                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "PCN")
+                        {
+                            strvtype = "CN";
+                        }
+                        else if (VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PDN")
+                        {
+                            strvtype = "DN";
+                        }
+                        else
+                        {
+                            strvtype = "BL";
+                        }
                         strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
                         if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
                         {
@@ -4598,7 +4684,7 @@ namespace Improvar.Controllers
                                 tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(isl),
                                 VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                                 TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
-                                VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName);
+                                VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "", VE.T_TXNOTH.BLTYPE);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                     }
                     if (blgstpost == true)

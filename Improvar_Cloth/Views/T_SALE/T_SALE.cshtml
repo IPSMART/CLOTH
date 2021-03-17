@@ -138,10 +138,26 @@
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
             }
+
+            if ('@Model.BALENO_HELP' != "" && ('@Model.MENU_PARA' == "SBPCK" || '@Model.MENU_PARA' == "SB" || '@Model.MENU_PARA' == "SBDIR" || '@Model.MENU_PARA' == "SBEXP" || '@Model.MENU_PARA' == "PR")) {
+                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if (retStr($("#B_ITCD_" + i).val()) != "") {
+                        RateUpdate(i, '#B_');
+                    }
+                }
+                GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if (retStr($("#D_ITCD_" + i).val()) != "") {
+                        RateUpdate(i, '#D_')
+                    }
+                }
+            }
         }
-        if ("@Model.LINKDOCNO" != "") {
+        if ("@Model.LINKDOCNO" != "" && '@Model.MENU_PARA' == "SB") {
             $('#_T_SALE_DETAIL_GRID input').attr('readonly', 'readonly');
             $('#_T_SALE_PRODUCT_GRID input').attr('readonly', 'readonly');
+            $('#_T_SALE_DETAIL_GRID').find(".Help_image_button_grid").hide();
             $('#_T_SALE_DETAIL_GRID input').removeAttr("onblur");
             $('#_T_SALE_PRODUCT_GRID input').attr('TabIndex', '-1');
             $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
@@ -499,6 +515,18 @@
             url = updateQueryStringParameter(url, "loadOrder", searchValue1);
             window.location = url;
         }
+        function ReloadWithDATA(searchValueID, searchValue1, searchValue2) {
+            var searchValue = $("#" + searchValueID).val();
+            var searchValue1 = $("#" + searchValue1).val();
+            if (searchValue2 != "") {
+                searchValue1 += String.fromCharCode(181) + $("#" + searchValue2).val();
+            }
+            var url = window.location.href;
+            var key1 = "searchValue";
+            url = updateQueryStringParameter(url, key1, searchValue);
+            url = updateQueryStringParameter(url, "loadOrder", searchValue1);
+            window.location = url;
+        }
     </script>
 }
 
@@ -642,8 +670,29 @@
                         <div class="editor-field">
                             @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
                         </div>
-
                     </div>
+                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR") && Model.DefaultAction == "A")
+                    {
+                        <div class="col-md-1" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Bale No.")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.BALENO_HELP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO_HELP", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO');", @placeholder = "Bale No.", maxlength = 30 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')" />
+                                @Html.HiddenFor(model => model.T_TXN_LINKNO.LINKAUTONO, new { id = "LINKAUTONO" })
+                                @Html.HiddenFor(model => model.LINKDOCNO, new { id = "LINKDOCNO" })
+                            </div>
+                        </div>
+                        if (Model.DefaultAction == "A")
+                        {
+                            <div class="col-md-1" style="width:auto;">
+                                <input type="button" class="btn-sm" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBaleNo" value="Get Bale No" title="Click to Get Bale No" onclick="ReloadWithDATA('LINKAUTONO', 'LINKDOCNO','BALENO_HELP')" />
+                            </div>
+                        }
+                    }
                     @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.DefaultAction == "V")
                     {
                         <div class="col-md-3">
@@ -756,12 +805,12 @@
                             <div class="editor-field">
                                 @if (Model.DefaultAction == "A")
                                 {
-                                    @Html.EditorFor(model => model.LINKDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LINKDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetPackingSlip", PageControllerName) + "','Consignee Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetPackingSlip", PageControllerName) + "','Consignee Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD');", @placeholder = "No", maxlength = 30 } })
-                                    <img src="~/Image/search.png" id="PACKSLIP_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPackingSlip", PageControllerName)','Consignee Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD')" />
+                                    @Html.EditorFor(model => model.LINKDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LINKDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetPackingSlip", PageControllerName) + "','Packing Slip No Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetPackingSlip", PageControllerName) + "','Packing Slip No Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD');", @placeholder = "No", maxlength = 30 } })
+                                    <img src="~/Image/search.png" id="PACKSLIP_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPackingSlip", PageControllerName)','Packing Slip No Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD')" />
                                 }
                                 else
                                 {
-                                    @Html.EditorFor(model => model.LINKDOCNO, new { htmlAttributes = new { @class = "form-control", id = "LINKDOCNO", @title = "Area", @placeholder = "No", @readonly = "readonly", tabindex = "-1" } })
+                                    @Html.EditorFor(model => model.LINKDOCNO, new { htmlAttributes = new { @class = "form-control", id = "LINKDOCNO", @title = "Packing Slip No", @placeholder = "No", @readonly = "readonly", tabindex = "-1" } })
                                 }
                                 @Html.HiddenFor(model => model.T_TXN_LINKNO.LINKAUTONO, new { id = "LINKAUTONO" })
                             </div>
@@ -1823,7 +1872,7 @@
                             @if (Model.MENU_PARA == "PJBL" && Model.DefaultAction != "V")
                     {
                                 <div class="row">
-                                   
+
                                     <div class="col-lg-11" style="width:auto;">
                                         <div>
                                             <div id="partialdivJobIssue" style="margin-top:0px;">

@@ -2378,6 +2378,7 @@ function RateUpdate(index, strid) {
     var MNTNWPRPPER = $("#MNTNWPRPPER").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
+
         if (strid == "") {
             var LISTPRICE = retFloat($("#LISTPRICE").val());
             var LISTDISCPER = retFloat($("#LISTDISCPER").val());

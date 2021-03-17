@@ -686,7 +686,7 @@ namespace Improvar
 
         public string InsVch_Bl(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string drcr, string glcd, string slcd, string conslcd,
                 string agslcd, string class1cd, short slno, double amt, string blno, string bldt, string refno, string duedt, string vchtype, double crdays = 0, double itamt = 0,
-                string ordno = "", string orddt = "", double blamt = 0, string lrno = "", string lrdt = "", string transnm = "", string flag = "", string rtdebcd = "")
+                string ordno = "", string orddt = "", double blamt = 0, string lrno = "", string lrdt = "", string transnm = "", string flag = "", string rtdebcd = "", string bltype = "")
         {
             string bl = "";
             try
@@ -697,7 +697,7 @@ namespace Improvar
                 if (blamt == 0) blamt = amt;
 
                 sql = "insert into " + scmf + ".t_vch_bl (emd_no, clcd, dtag, ttag, autono, doccd, docno, docdt, drcr, glcd, slcd, conslcd, agslcd, class1cd, ";
-                sql = sql + "slno, amt, blno, bldt, refno, duedt, crdays, itamt, vchtype, blamt, ordno, orddt, lrno, lrdt, transnm, flag,rtdebcd) values (";
+                sql = sql + "slno, amt, blno, bldt, refno, duedt, crdays, itamt, vchtype, blamt, ordno, orddt, lrno, lrdt, transnm, flag,rtdebcd,bltype) values (";
                 sql = sql + emd_no;
                 sql = sql + "," + filc(clcd);
                 sql = sql + "," + filc(dtag);
@@ -729,6 +729,7 @@ namespace Improvar
                 sql = sql + "," + filc(transnm);
                 sql = sql + "," + filc(flag);
                 sql = sql + "," + filc(rtdebcd);
+                sql = sql + "," + filc(bltype);
                 sql = sql + ")";
 
                 bl = sql;

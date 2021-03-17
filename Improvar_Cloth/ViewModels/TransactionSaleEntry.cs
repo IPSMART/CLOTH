@@ -253,5 +253,7 @@ namespace Improvar.ViewModels
         [AllowHtml]
         public string PCSTYPEVALUE { get; set; }
         public List<PENDING_ISSUE> PENDING_ISSUE { get; set; }
+        [StringLength(30)]
+        public string BALENO_HELP { get; set; }
     }
 }
