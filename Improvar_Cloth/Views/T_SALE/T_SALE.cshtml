@@ -109,7 +109,7 @@
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
             }
-            if (MENU_PARA = "PJBL") {
+            if ('@Model.MENU_PARA' == "PJBL") {
                 $('.PJBLDiv input').attr('readonly', 'readonly');
                 $('.PJBLDiv input').removeAttr("onblur");
                 $('.PJBLDiv input').attr('TabIndex', '-1');
@@ -137,21 +137,6 @@
             else {
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
-            }
-
-            if ('@Model.BALENO_HELP' != "" && ('@Model.MENU_PARA' == "SBPCK" || '@Model.MENU_PARA' == "SB" || '@Model.MENU_PARA' == "SBDIR" || '@Model.MENU_PARA' == "SBEXP" || '@Model.MENU_PARA' == "PR")) {
-                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    if (retStr($("#B_ITCD_" + i).val()) != "") {
-                        RateUpdate(i, '#B_');
-                    }
-                }
-                GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    if (retStr($("#D_ITCD_" + i).val()) != "") {
-                        RateUpdate(i, '#D_')
-                    }
-                }
             }
         }
         if ("@Model.LINKDOCNO" != "" && '@Model.MENU_PARA' == "SB") {
@@ -562,6 +547,8 @@
         <input type="hidden" id="UrlUpdateTransport" value="@Url.Action("Update_Transport", PageControllerName )" />
         <input type="hidden" id="UrlGetPendingIssueData" value="@Url.Action("GetPendingIssueData", PageControllerName )" />
         <input type="hidden" id="UrlSelectPendingIssueData" value="@Url.Action("SelectPendingIssueData", PageControllerName )" />
+        <input type="hidden" id="urlnameGENLEG" value="@Url.Action("GetGeneralLedgerDetails", PageControllerName)" />
+        <input type="hidden" id="UrlGetBaleData" value="@Url.Action("GetBaleData", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -671,28 +658,7 @@
                             @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
                         </div>
                     </div>
-                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR") && Model.DefaultAction == "A")
-                    {
-                        <div class="col-md-1" style="width:auto;">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Bale No.")
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.BALENO_HELP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO_HELP", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO');", @placeholder = "Bale No.", maxlength = 30 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')" />
-                                @Html.HiddenFor(model => model.T_TXN_LINKNO.LINKAUTONO, new { id = "LINKAUTONO" })
-                                @Html.HiddenFor(model => model.LINKDOCNO, new { id = "LINKDOCNO" })
-                            </div>
-                        </div>
-                        if (Model.DefaultAction == "A")
-                        {
-                            <div class="col-md-1" style="width:auto;">
-                                <input type="button" class="btn-sm" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBaleNo" value="Get Bale No" title="Click to Get Bale No" onclick="ReloadWithDATA('LINKAUTONO', 'LINKDOCNO','BALENO_HELP')" />
-                            </div>
-                        }
-                    }
+
                     @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.DefaultAction == "V")
                     {
                         <div class="col-md-3">
@@ -1227,7 +1193,29 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.MENU_PARA == "SCN" || Model.MENU_PARA == "SDN" || Model.MENU_PARA == "PCN" || Model.MENU_PARA == "PDN")
+                        {
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="editor-field" style="margin-top: 4px;">
+                                        @Html.Label("", "Exp. Gen.Ledger")
+                                        <b style="color:red"><sup>*</sup></b>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.EXPGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "EXPGLCD", onkeyup = "GetHelp('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','EXPGLCD/EXPGLNM','1/0','Exp. General Ledger Details','EXPGLCD');toUpper(this);", onblur = "SelectGeneralLedgerCode(this.value,EXPGLCD,EXPGLNM);", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','EXPGLCD/EXPGLNM','1/0','Exp. General Ledger Details','EXPGLCD')" />
 
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.EXPGLNM, new { htmlAttributes = new { @class = "form-control", id = "EXPGLNM", @TabIndex = -1, @placeholder = "Exp. Gen.Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
@@ -1301,7 +1289,28 @@
                                             }
                                         </div>
                                     </div>
-
+                                    if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR") && Model.DefaultAction == "A")
+                                    {
+                                        <div class="col-md-1" style="width:auto;">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Bale No.")
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.BALENO_HELP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO_HELP", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO');", @placeholder = "Bale No.", maxlength = 30 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')" />
+                                                @Html.HiddenFor(model => model.T_TXN_LINKNO.LINKAUTONO, new { id = "LINKAUTONO" })
+                                                @Html.HiddenFor(model => model.LINKDOCNO, new { id = "LINKDOCNO" })
+                                            </div>
+                                        </div>
+                                        if (Model.DefaultAction == "A")
+                                        {
+                                            <div class="col-md-1" style="width:auto;">
+                                                <input type="button" class="btn-sm" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBale" value="Get Bale Data" title="Click to Get Bale Data" onclick="GetBaleData('LINKAUTONO', 'LINKDOCNO', 'BALENO_HELP')" />
+                                            </div>
+                                        }
+                                    }
                                     if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                     {
                                         <div class="col-lg-9" style="border:groove 1px;">

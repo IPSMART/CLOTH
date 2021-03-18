@@ -255,5 +255,9 @@ namespace Improvar.ViewModels
         public List<PENDING_ISSUE> PENDING_ISSUE { get; set; }
         [StringLength(30)]
         public string BALENO_HELP { get; set; }
+        [StringLength(8)]
+        public string EXPGLCD { get; set; }
+        [StringLength(8)]
+        public string EXPGLNM { get; set; }
     }
 }

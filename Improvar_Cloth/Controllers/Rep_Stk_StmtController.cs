@@ -165,7 +165,7 @@ namespace Improvar.Controllers
                 }
                 else if (summary == "B")
                 {
-                    return SummaryWise_Barcode(FC, VE, COM, LOC, asdt, prcd);
+                    return SummaryWise_Barcode(FC, VE, COM, LOC, asdt, prcd, selitgrpcd,selgocd,selitcd);
                 }
                 else
                 {
@@ -592,7 +592,7 @@ namespace Improvar.Controllers
             TempData[repname + "xxx"] = IR;
             return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
         }
-        public ActionResult SummaryWise_Barcode(FormCollection FC, ReportViewinHtml VE, string COM, string LOC, string ASDT, string PRCCD)
+        public ActionResult SummaryWise_Barcode(FormCollection FC, ReportViewinHtml VE, string COM, string LOC, string ASDT, string PRCCD, string ITGRPCD, string GOCD, string ITCD)
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string fdt = CommVar.FinStartDate(UNQSNO);
@@ -608,6 +608,7 @@ namespace Improvar.Controllers
             query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
             query += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
             query += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
+            if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") ";
             query += "group by a.barno, 'OP' ";
             query += "union all ";
             query += "select a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
@@ -617,6 +618,7 @@ namespace Improvar.Controllers
             query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
             query += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
             query += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') ";
+            if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") ";
             query += "group by a.barno, c.doctag ) a, ";
 
             query += "(select barno, effdt, prccd, rate from ( ";
@@ -633,6 +635,8 @@ namespace Improvar.Controllers
             query += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
             query += "a.barno = b.barno(+) and a.barno = c.barno(+) and ";
             query += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) ";
+            if (ITGRPCD.retStr() != "") query += "and f.itgrpcd in (" + ITGRPCD + ") ";
+            if (ITCD.retStr() != "") query += "and e.itcd in (" + ITCD + ") ";
             query += "order by itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
             DataTable tbl1 = MasterHelp.SQLquery(query);
             if (tbl1.Rows.Count == 0) return Content("no records..");

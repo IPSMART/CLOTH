@@ -839,7 +839,7 @@ function Fill_DetailData() {
                     CalculateAmt_Details(i);
                 }
                 $("#bardatachng").val("N");
-                if (MENU_PARA = "PJBL") {
+                if (MENU_PARA == "PJBL") {
                     $('.PJBLDiv input').attr('readonly', 'readonly');
                     $('.PJBLDiv input').removeAttr("onblur");
                     $('.PJBLDiv input').attr('TabIndex', '-1');
@@ -3797,6 +3797,70 @@ function SelectIssue() {
             }
         });
     }
+}
+function SelectGeneralLedgerCode(id, GLCD, GLNM) {
+    if (id == "") {
+        $("#" + GLCD.id).val("");
+        $("#" + GLNM.id).val("");
+    }
+    else {
+        $.ajax({
+            type: 'GET',
+            url: $("#urlnameGENLEG").val(),
+            data: { val: id },
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#tempHDD").val(result);
+                    var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                    $("#" + GLCD.id).val(str[0].toString());
+                    $("#" + GLNM.id).val(str[1].toString());
+                }
+                else {
+                    $("#" + GLCD.id).val("");
+                    $("#" + GLNM.id).val("");
+                    msgInfo(result);
+                    message_value = GLCD.id;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+}
+function GetBaleData() {
+    $.ajax({
+        type: 'post',
+        url: $("#UrlGetBaleData").val(), //"@Url.Action("GetBaleData", PageControllerName)",
+        beforesend: $("#WaitingMode").show(),
+        data: $('form').serialize(),
+        success: function (result) {
+            debugger;
+            $('#partialdivBarCodeTab').html(result);
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if (retStr($("#B_ITCD_" + i).val()) != "") {
+                    RateUpdate(i, '#B_');
+                }
+            }
+            Fill_DetailData();
+            GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if (retStr($("#D_ITCD_" + i).val()) != "") {
+                    RateUpdate(i, '#D_')
+                }
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            //$("#PARTY_HELP").show();
+            //$("#SLCD").attr("readonly", false);
+            msgError("Error: " + textStatus + "," + errorThrown);
+        }
+    });
 }
 
 
