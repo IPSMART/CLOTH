@@ -178,6 +178,15 @@
                 return false;
             }
         }
+        if ("@Model.MENU_PARA" == "SCN" || "@Model.MENU_PARA" == "SDN" || "@Model.MENU_PARA" == "PCN" || "@Model.MENU_PARA" == "PDN") {
+            if (!emptyFieldCheck("Please Enter Exp. Gen.Ledger", "EXPGLCD")) {
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:first-child").addClass('active');
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                return false;
+            }
+        }
         @*if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {*@
         var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         var balenoexist = false;

@@ -435,8 +435,13 @@ namespace Improvar.Controllers
                     VE.TDSNM = DBF.M_TDS_CNTRL.Where(e => e.TDSCODE == TXN.TDSCODE).FirstOrDefault()?.TDSNM;
                 }
                 //
+                if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                {
+                    VE.EXPGLCD = DBF.T_VCH_GST.Where(a => a.AUTONO == TXN.AUTONO).Select(b => b.EXPGLCD).FirstOrDefault();
+                    VE.EXPGLNM = VE.EXPGLCD.retStr() == "" ? "" : DBF.M_GENLEG.Where(a => a.GLCD == VE.EXPGLCD).Select(b => b.GLNM).FirstOrDefault();
+                }
 
-                string Scm = CommVar.CurSchema(UNQSNO);
+                    string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
                 str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
@@ -627,7 +632,7 @@ namespace Improvar.Controllers
                 {
                     allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
-                
+
                 var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                 foreach (var v in VE.TBATCHDTL)
                 {
@@ -3391,7 +3396,7 @@ namespace Improvar.Controllers
                 string scmf = CommVar.FinSchema(UNQSNO);
                 var COMPCD = CommVar.Compcd(UNQSNO);
                 var LOCCD = CommVar.Loccd(UNQSNO);
-                string AUTONO = DB.T_BALE.Where(a=>a.BALENO==VE.BALENO_HELP && a.GOCD==VE.T_TXN.GOCD).Select(a=>a.AUTONO).ToArray().retSqlfromStrarray();
+                string AUTONO = DB.T_BALE.Where(a => a.BALENO == VE.BALENO_HELP && a.GOCD == VE.T_TXN.GOCD).Select(a => a.AUTONO).ToArray().retSqlfromStrarray();
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
                 DataTable tbl = new DataTable();
@@ -3408,7 +3413,7 @@ namespace Improvar.Controllers
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) ";
                 str1 += "and i.autono=s.autono and i.txnslno=s.slno ";
-                str1 += "and i.AUTONO in (" + AUTONO + ") and i.BALENO='"+ VE.BALENO_HELP + "'";
+                str1 += "and i.AUTONO in (" + AUTONO + ") and i.BALENO='" + VE.BALENO_HELP + "'";
                 str1 += "and i.SLNO <= 1000 ";
                 str1 += "group by i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.RATE,i.DISCRATE, ";
@@ -5141,7 +5146,7 @@ namespace Improvar.Controllers
                                     TVCHGST1.EXEMPTEDTYPE = exemptype;
                                     TVCHGST1.GOOD_SERV = good_serv;
                                     //TVCHGST1.EXPGLCD = ((VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") && (VE.TBATCHDTL == null && VE.TTXNDTL == null)) ? VE.TTXNAMT[0].GLCD : expglcd;
-                                    TVCHGST1.EXPGLCD = VE.TTXNAMT[i].GLCD.retStr() == "" ? expglcd : VE.TTXNAMT[i].GLCD.retStr();
+                                    TVCHGST1.EXPGLCD = (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") ? VE.EXPGLCD : expglcd;
                                     TVCHGST1.INPTCLAIM = "Y";
                                     TVCHGST1.LUTNO = VE.T_VCH_GST.LUTNO;
                                     TVCHGST1.LUTDT = VE.T_VCH_GST.LUTDT;
