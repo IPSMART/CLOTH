@@ -125,7 +125,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-       [HttpPost]
+        [HttpPost]
         public ActionResult Rep_EWB_Gen(FormCollection FC, EWayBillReport VE, string Command)
         {
             string msg = "";
@@ -525,7 +525,7 @@ namespace Improvar.Controllers
                 string trntable = "", crslcd = "";
                 if (Module.MODCD == "F") { trntable = "T_TXNewb"; crslcd = "translcd"; } else { trntable = "t_txntrans"; crslcd = "crslcd"; }
                 query = "";
-                query += "select a.autono, b.doccd, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,";
+                query += "select a.autono, b.doccd,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,";
                 query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) add1, decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) add2, d.district, nvl(d.othaddpin,d.pin) pin, ";
                 query += "d.statecd, upper(k.statenm) statenm, translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno, p.add1||' '||p.add2 badd1, ";
                 query += "p.add3||' '||p.add4 badd2, p.district bdistrict, p.pin bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, ";
@@ -538,15 +538,15 @@ namespace Improvar.Controllers
                 query += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
                 query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt ";
                 query += "from " + fdbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + dbnm + "."+ trntable + " c, " + fdbnm + ".m_subleg d, ";
-                query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, " + fdbnm + ".m_uom j, improvar.ms_state k, improvar.ms_gstuom l, ";
-                query += fdbnm + ".m_subleg_locoth m, " + fdbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
-                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c."+ crslcd +   ")=e.slcd(+) and ";
+                query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f,  " + fdbnm + ".m_doctype g," + fdbnm + ".m_uom j, ms_state k, ms_gstuom l, ";
+                query += fdbnm + ".m_subleg_locoth m, " + fdbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "ms_state q ";
+                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c."+ crslcd +   ")=e.slcd(+) and b.doccd=g.doccd and ";
                 query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
                 query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and ";
                 query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is null and ";
                 if (aauto != "") query += "a.autono in(" + aauto + ") and ";
                 query += "b.docdt >= to_date('" + VE.DATEFROM + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "','dd/mm/yyyy') ";
-                query += "group by a.autono, b.doccd, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), ";
+                query += "group by a.autono, b.doccd,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), ";
                 query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) , decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) , nvl(d.othaddpin,d.pin) , ";
                 query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, p.add1||' '||p.add2, ";
                 query += "p.add3||' '||p.add4, p.district, p.pin, p.statecd, upper(q.statenm), ";
@@ -576,8 +576,16 @@ namespace Improvar.Controllers
                     prejson.SLNO = Convert.ToInt16(i + 1);
                     prejson.AUTONO = tbl.Rows[i]["AUTONO"].ToString();
                     prejson.Supply_Type = "O"; //a (Outward)
-                    prejson.SubSupply_Type = "1"; //b(Supply)
-                    prejson.Doctype = "INV"; //c (Tax Invoice)
+                    if (tbl.Rows[i]["doctype"].ToString()== "STRFO" || tbl.Rows[i]["doctype"].ToString()== "TRWB")
+                    {
+                        prejson.SubSupply_Type = "5"; //b (OWN USE)
+                        prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)
+                    }
+                    else
+                    {
+                        prejson.SubSupply_Type = "1"; // b(Supply)
+                        prejson.Doctype = "INV"; //c (Tax Invoice)
+                    }
                     prejson.blno = tbl.Rows[i]["blno"].ToString();//d
                     prejson.bldt = Convert.ToDateTime(tbl.Rows[i]["bldt"]);//e
                     prejson.Transaction_Type = (bltoshipto == true ? "2" : "1");//f
