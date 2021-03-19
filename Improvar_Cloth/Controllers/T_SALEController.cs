@@ -441,7 +441,7 @@ namespace Improvar.Controllers
                     VE.EXPGLNM = VE.EXPGLCD.retStr() == "" ? "" : DBF.M_GENLEG.Where(a => a.GLCD == VE.EXPGLCD).Select(b => b.GLNM).FirstOrDefault();
                 }
 
-                    string Scm = CommVar.CurSchema(UNQSNO);
+                string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
                 str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
@@ -3873,6 +3873,8 @@ namespace Improvar.Controllers
                     }
                     else
                     {
+                        ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO);
+                        if (ContentFlg != "") goto dbnotsave;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
                         TTXN.DOCNO = VE.T_TXN.DOCNO;
                         TTXN.AUTONO = VE.T_TXN.AUTONO;
@@ -4329,7 +4331,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
@@ -5213,6 +5215,7 @@ namespace Improvar.Controllers
                 }
                 else if (VE.DefaultAction == "V")
                 {
+                    ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO); if (ContentFlg != "") goto dbnotsave;
                     dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     if (VE.TBATCHDTL != null)
@@ -5327,7 +5330,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5335,7 +5338,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
@@ -5426,6 +5429,26 @@ namespace Improvar.Controllers
             return result;
         }
 
-
+        private string ChildRecordCheck(string autono)
+        {
+            string message = "";
+            string scm = CommVar.CurSchema(UNQSNO);
+            string fcm = CommVar.FinSchema(UNQSNO);
+            sql = "";
+            sql += "  select a.autono,b.docno,b.docdt,c.docnm ";
+            sql += "  from " + scm + ".T_BALE a,  " + scm + ".t_cntrl_hdr b,  " + scm + ".m_doctype c ";
+            sql += "  where a.autono = B.AUTONO and b.doccd = c.DOCCD and a.blautono = '" + autono + "' ";
+            sql += " union all ";
+            sql += " select a.autono,b.docno,b.docdt,c.docnm  ";
+            sql += " from  " + fcm + ".T_vch_bl_adj a," + scm + ".t_cntrl_hdr b ," + scm + ".m_doctype c  ";
+            sql += " where a.autono=B.AUTONO and b.doccd=c.DOCCD and  a.i_autono='" + autono + "'  ";
+            DataTable dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                message = "Clild record found at docno:" + dt.Rows[0]["docno"].ToString() + " docdt:" + dt.Rows[0]["docdt"].retDateStr() + " docnm:" + dt.Rows[0]["docnm"].ToString() + " autono:" + dt.Rows[0]["autono"].ToString() + " ";
+                return message;
+            }
+            return message;
+        }
     }
 }
