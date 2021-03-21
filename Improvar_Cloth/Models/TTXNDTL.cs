@@ -213,5 +213,6 @@ namespace Improvar.Models
         [StringLength(3)]
         public string BLUOMCD { get; set; }
         public string LINKAUTONO { get; set; }
+        public short? RECPROGSLNO { get; set; }
     }
 }
