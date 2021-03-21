@@ -17,7 +17,7 @@ namespace Improvar.Controllers
         M_CNTRL_HDR sll;
         ImprovarDB DBF;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        // GET: M_Line  
+        // GET: M_Line
         public ActionResult M_Line(string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
             try
