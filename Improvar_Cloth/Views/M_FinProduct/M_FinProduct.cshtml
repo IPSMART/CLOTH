@@ -33,7 +33,6 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if ("@Model.MENU_PARA" == "F") {
             if (!emptyFieldCheck("Enter Design", "STYLENO")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
@@ -42,7 +41,7 @@
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
-        }
+      
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -939,9 +938,7 @@
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Design No")
-                                    @if (Model.MENU_PARA == "F")
-                                    { <b style="color:Red;">*</b> }
-
+                                    <b style="color:Red;">*</b> 
                                 </div>
                             </div>
                             <div class="col-md-7">

@@ -473,7 +473,7 @@ namespace Improvar.Controllers
                         UploadDOC1.Add(UPL);
                         VE.UploadDOC = UploadDOC1;
                     }
-                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + barnosql + ")";
+                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".T_BATCH_IMG_HDR WHERE barno in(" + barnosql + ")";
                     dt = masterHelp.SQLquery(sql);
                     VE.UploadBarImages = (from DataRow dr in dt.Rows
                                           select new UploadDOC
@@ -1461,9 +1461,9 @@ namespace Improvar.Controllers
                 return "";
             }
         }
-        public Tuple<List<M_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
-            List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
+            List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
             int slno = 0;
             try
             {
@@ -1473,7 +1473,7 @@ namespace Improvar.Controllers
                     if (image != "")
                     {
                         var imagedes = image.Split('~');
-                        M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
+                        T_BATCH_IMG_HDR mdoc = new T_BATCH_IMG_HDR();
                         mdoc.CLCD = CommVar.ClientCode(UNQSNO);
                         mdoc.EMD_NO = EMD;
                         mdoc.SLNO = Convert.ToByte(++slno);
@@ -1547,15 +1547,11 @@ namespace Improvar.Controllers
                             var STYLENO = (from x in DB.M_SITEM where x.STYLENO == VE.M_SITEM.STYLENO && x.ITCD != VE.M_SITEM.ITCD select x).ToList();
                             if (STYLENO.Any()) dataexist = true;
                         }
-                        if (VE.MENU_PARA == "F")
-                        {
                             if (dataexist == true)
                             {
                                 transaction.Rollback();
                                 return Content("This Design Already exist");
                             }
-                        }
-
                         if (VE.DefaultAction == "A")
                         {
                             MSITEM.EMD_NO = 0;
@@ -1701,12 +1697,12 @@ namespace Improvar.Controllers
                                 DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                                 DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
                             }
-                            DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
+                            DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.T_BATCH_IMG_HDR_LINK.RemoveRange(DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
 
-                            DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
+                            DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.T_BATCH_IMG_HDR.RemoveRange(DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
@@ -1872,17 +1868,17 @@ namespace Improvar.Controllers
                             if (VE.BarImages.retStr() != "")
                             {
                                 var barimg = SaveBarImage(VE.BarImages, BARNO, MSITEM.EMD_NO.retShort());
-                                DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
+                                DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
                                 DB.SaveChanges();
                                 //var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
                                 foreach (var imgbar in barnos)
                                 {
-                                    M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
+                                    T_BATCH_IMG_HDR_LINK m_batchImglink = new T_BATCH_IMG_HDR_LINK();
                                     m_batchImglink.CLCD = MSITEM.CLCD;
                                     m_batchImglink.EMD_NO = MSITEM.EMD_NO;
                                     m_batchImglink.BARNO = imgbar;
                                     m_batchImglink.MAINBARNO = BARNO;
-                                    DB.M_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+                                    DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
                                 }
                             }
                         }
@@ -1979,10 +1975,10 @@ namespace Improvar.Controllers
                         DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.SaveChanges();
 
-                        DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.T_BATCH_IMG_HDR_LINK.RemoveRange(DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
 
-                        var DOCFLNAMEs = DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).Select(e => new
+                        var DOCFLNAMEs = DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).Select(e => new
                         DropDown_list
                         { text = e.DOC_FLNAME, value = e.BARNO }).ToList();
                         foreach (var DOC_FLNAME in DOCFLNAMEs)
@@ -1997,7 +1993,7 @@ namespace Improvar.Controllers
                         DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
-                        DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.T_BATCH_IMG_HDR.RemoveRange(DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
                         DB.SaveChanges();
