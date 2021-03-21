@@ -333,10 +333,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DSPrintBarcode.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DataSets\DSPrintJobissue.cs">
+      <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
+    </Compile>
     <Compile Include="DataSets\DSPrintJobissue.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSets\DSPrintPartyJobIssueChln.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DSPrintPartyJobIssueChln.xsd</DependentUpon>
     </Compile>
     <Compile Include="DropDownHelp.cs" />
     <Compile Include="EmailControl.cs">
@@ -659,6 +667,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Khasra_BaleTrnf.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\Party_Job_Iss_Chln.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Party_Job_Iss_Chln.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\PrintBarcode.cs">
@@ -1027,6 +1041,17 @@
     <Content Include="DataSets\DSPrintJobissue.xss">
       <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
     </Content>
+    <Content Include="DataSets\DSPrintPartyJobIssueChln.xsc">
+      <DependentUpon>DSPrintPartyJobIssueChln.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSets\DSPrintPartyJobIssueChln.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DSPrintPartyJobIssueChln.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="DataSets\DSPrintPartyJobIssueChln.xss">
+      <DependentUpon>DSPrintPartyJobIssueChln.xsd</DependentUpon>
+    </Content>
     <None Include="Metadata\PublishProfiles\Improvar_ERP.pubxml" />
     <Content Include="Report\CORRES.rpt" />
     <Content Include="Park.ini" />
@@ -1360,6 +1385,12 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_SNFP.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Report\Party_Job_Iss_Chln.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>Party_Job_Iss_Chln.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
