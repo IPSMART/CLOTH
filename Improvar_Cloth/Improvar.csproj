@@ -1075,7 +1075,6 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Templates\Email\Docauth.htm" />
     <Content Include="Templates\Email\Salebill.htm" />
-    <Content Include="UploadDocuments\ForPublish.png" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1309,6 +1308,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="UploadDocuments\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
