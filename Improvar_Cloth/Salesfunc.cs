@@ -1055,11 +1055,9 @@ namespace Improvar
             sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) ";
             sql += ") a where prccd='" + prccd + "') b, ";
 
-
             sql += "(select a.barno, count(*) barimagecount, ";
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
-            sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
             sql += "from " + scm + ".t_batch_img_hdr a ";
