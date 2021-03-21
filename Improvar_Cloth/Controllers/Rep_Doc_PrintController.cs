@@ -270,13 +270,13 @@ namespace Improvar.Controllers
             DataTable tblprgrm = masterHelp.SQLquery(str);
 
             string str1 = "";
-            str1 += "select i.autono,i.SLNO,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
+            str1 += "select i.autono,i.SLNO,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
             str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
             str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,s.itnm fabitnm,i.cutlength ";
             str1 += "from " + scm1 + ".T_BATCHDTL i, " + scm1 + ".T_BATCHMST j, " + scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
             str1 += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".M_STKTYPE q," + scm1 + ".T_CNTRL_HDR r," + scm1 + ".M_SITEM s ";
             str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-            str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+)  and i.autono=r.autono(+)  and k.fabitcd=s.itcd(+) ";
+            str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+)  and i.autono=r.autono(+)  and k.fabitcd=s.itcd(+) ";
             str1 += " and r.doccd = '" + VE.DOCCD + "' and ";
             str1 += "r.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and r.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
             str1 += "r.doconlyno >= '" + VE.FDOCNO + "' and r.doconlyno <= '" + VE.TDOCNO + "' and ";
