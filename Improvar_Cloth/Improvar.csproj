@@ -333,9 +333,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DSPrintBarcode.xsd</DependentUpon>
     </Compile>
-    <Compile Include="DataSets\DSPrintJobissue.cs">
-      <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
-    </Compile>
     <Compile Include="DataSets\DSPrintJobissue.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
