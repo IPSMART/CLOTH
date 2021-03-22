@@ -1069,13 +1069,24 @@ function CalculateTotal() {
 
     }
     if (ROUND_TAG == true) {
-        TOTAL_BILL_AMOUNT = Math.round(blamt);
-        TOTAL_ROUND = TOTAL_BILL_AMOUNT - blamt;
-        R_TOTAL_BILL_AMOUNT = Math.round(totalRbillamt);
-        R_TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalRbillamt;
-        document.getElementById("BLAMT").value = parseFloat(TOTAL_BILL_AMOUNT).toFixed(2);
-        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-        //document.getElementById("RETAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+        var CMROFFTYPE = $("#CMROFFTYPE").val();
+        if (CMROFFTYPE != "") {
+            var billamt = CharmPrice(retStr(CMROFFTYPE).substring(0, 2), retInt(blamt), retStr(CMROFFTYPE).substring(2, retStr(CMROFFTYPE).length));
+            rbillamt = Math.round(blamt);
+            tbillamt = retFloat(billamt) - retFloat(rbillamt);
+
+            document.getElementById("BLAMT").value = parseFloat(billamt).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(tbillamt).toFixed(2);
+        }
+        else {
+            TOTAL_BILL_AMOUNT = Math.round(blamt);
+            TOTAL_ROUND = TOTAL_BILL_AMOUNT - blamt;
+            R_TOTAL_BILL_AMOUNT = Math.round(totalRbillamt);
+            R_TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalRbillamt;
+            document.getElementById("BLAMT").value = parseFloat(TOTAL_BILL_AMOUNT).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+            //document.getElementById("RETAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+        }
     }
     else {
         TOTAL_ROUND = 0;
@@ -1589,7 +1600,6 @@ function GetData() {
         }
     });
 }
-
 //function CheckInclusivRateNetAmt(GridId, i) {
 //    debugger;
 //    var DefaultAction = $("#DefaultAction").val();

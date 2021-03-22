@@ -2816,51 +2816,7 @@ function SelectPendOrder(btnid) {
 
 }
 
-function CharmPrice(ChrmType, Rate, RoundVal) {
-    RoundVal = RoundVal.padStart(2, '0');
-    if (Rate < 10) Rate = 10 + Rate;
-    var RoundAmt = retInt(RoundVal);
-    if (RoundAmt == 0) RoundAmt = 100;
-    var small = ((Rate / RoundAmt) * RoundAmt);
-    var big = small + RoundAmt;
-    if (ChrmType == "RD")//ROUND
-    {
-        var roundValu = (Rate - small >= big - Rate) ? big : small;
-        return roundValu;
-    }
-    else if (ChrmType == "RN")//ROUNDNEXT
-    {
-        return big;
-    }
-    else if (ChrmType == "NT")//NEXT
-    {
-        var last2rate = (Rate % 100);
-        if (last2rate <= retInt(RoundVal)) {
-            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-        }
-        else {
-            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
-        }
-        return retInt(big);
-    }
-    else if (ChrmType == "NR")//NEAR
-    {
-        var last2rate = (Rate % 100);
-        if (last2rate <= retInt(RoundVal)) {
-            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-            small = retInt(retStr(Rate - 100).substring(0, retStr(Rate - 100).length - 2) + RoundVal);
-        }
-        else {
-            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
-            small = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-        }
-        var NEAR = (Rate - small >= big - Rate) ? big : small;
-        return retInt(NEAR);
-    }
-    else {
-        return 0;
-    }
-}
+
 
 function RateHistoryDetails(ITCDId, ITNMId, TAG) {
     debugger;
