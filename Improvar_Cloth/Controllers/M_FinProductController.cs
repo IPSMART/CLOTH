@@ -395,7 +395,7 @@ namespace Improvar.Controllers
                     sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE, ";
                     sql += "case when exists (select autono from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHdtl a where a.BARNO = i.BARNO) then 'Y' else '' end as HASTRANSACTION ";
                     sql += "FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst i, " + CommVar.CurSchema(UNQSNO) + ".M_COLOR j, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k ";
-                    sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.itcd = '" + sl.ITCD + "' ";
+                    sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.COMMONUNIQBAR='C' and i.itcd = '" + sl.ITCD + "' ";
                     sql += " order by COLRCD NULLS first,sizecd NULLS first,K.PRINT_SEQ asc ";
                     dt = masterHelp.SQLquery(sql);
                     VE.MSITEMBARCODE = (from DataRow dr in dt.Rows
