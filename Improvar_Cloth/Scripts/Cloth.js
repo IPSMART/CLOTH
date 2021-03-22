@@ -124,11 +124,11 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     if (Rate < 10) Rate = 10 + Rate;
     var RoundAmt = retInt(RoundVal);
     if (RoundAmt == 0) RoundAmt = 100;
-    var small = (retInt(Rate / RoundAmt) * RoundAmt);
-    var big = small + RoundAmt;
+    var small = retInt(retInt(Rate / RoundAmt) * RoundAmt);
+    var big = retInt(small + RoundAmt);
     if (ChrmType == "RD")//ROUND
     {
-        var roundValu = (Rate - small >= big - Rate) ? big : small;
+        var roundValu = retInt((Rate - small >= big - Rate) ? big : small);
         return roundValu;
     }
     else if (ChrmType == "RN")//ROUNDNEXT
@@ -137,7 +137,7 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
     else if (ChrmType == "NT")//NEXT
     {
-        var last2rate = (Rate % 100);
+        var last2rate = retInt(Rate % 100);
         if (last2rate <= retInt(RoundVal)) {
             big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
         }
@@ -148,7 +148,7 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
     else if (ChrmType == "NR")//NEAR
     {
-        var last2rate = (Rate % 100);
+        var last2rate = retInt(Rate % 100);
         if (last2rate <= retInt(RoundVal)) {
             big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
             small = retInt(retStr(Rate - 100).substring(0, retStr(Rate - 100).length - 2) + RoundVal);
@@ -157,7 +157,7 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
             big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
             small = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
         }
-        var NEAR = (Rate - small >= big - Rate) ? big : small;
+        var NEAR = retInt((Rate - small >= big - Rate) ? big : small);
         return retInt(NEAR);
     }
     else {
