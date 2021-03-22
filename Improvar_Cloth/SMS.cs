@@ -4,40 +4,65 @@ using System.Data;
 using System.Net;
 using System.IO;
 using Improvar.Models;
+using System.Collections.Generic;
 
 namespace Improvar
 {
     public class SMS : MasterHelpFa
     {
         Connection Cn = new Connection();
-        M_SUBLEG MSUBLEG; string UNQSNO = CommVar.getQueryStringUNQSNO();
-        MasterHelpFa MasterHelpFa = new MasterHelpFa(); Salesfunc Salesfunc = new Salesfunc();
-        public string SMSSend(string slcd, string msg, string altmobno = "", bool usealtmobno = false)
+        M_SUBLEG MSUBLEG;
+        MasterHelp masterHelp = new MasterHelp();
+        public string SMSsend(string mobno, string msg, string TemplateID)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-
             string sql = "", scmf = CommVar.FinSchema(UNQSNO);
             string smsurl = "", smsurlsend = "";
             try
             {
                 sql = "select a.smsurl from " + scmf + ".m_sms_config a where (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
-                DataTable tbl = SQLquery(sql);
+                DataTable tbl = masterHelp.SQLquery(sql);
                 if (tbl.Rows.Count > 0) smsurl = tbl.Rows[0]["smsurl"].ToString();
+                string datastring = "";
+                smsurlsend = smsurl;
+                smsurlsend = smsurlsend.Replace("#MOBILENO#", mobno);
+                smsurlsend = smsurlsend.Replace("#MESSAGE#", msg);
+                smsurlsend = smsurlsend.Replace("#TEMPID#", TemplateID);
 
-                MSUBLEG = DBF.M_SUBLEG.Find(slcd);
-                string regmobno = "";
-                if (MSUBLEG != null) regmobno = MSUBLEG.REGMOBILE.ToString();
-                if (altmobno.retStr() != "") regmobno += "," + altmobno;
+                WebRequest rqst = HttpWebRequest.Create(smsurlsend);
+                HttpWebResponse rspns = (HttpWebResponse)rqst.GetResponse();
+                Stream strm = (Stream)rspns.GetResponseStream();
+                StreamReader strmrdr = new StreamReader(strm);
+                datastring = strmrdr.ReadToEnd();
+                rspns.Close();
+                strm.Close();
+                strmrdr.Close();
+
+                return "";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, smsurl);
+                return ex.Message;
+            }
+        }
+        public string SMSfromIpSmart(string msg, string regmobno, string TemplateID)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string sql = "", scmf = CommVar.FinSchema(UNQSNO);
+            string smsurl = "", smsurlsend = "";
+            try
+            {
+                smsurl = "http://info.nkinfo.in/sendsms?uname=ipsmart&pwd=ipsmart12345&senderid=IPSMRT&to=#MOBILENO#&msg=#MESSAGE# IPSMART&route=T&peid=1701159188145376946&tempid=#TEMPID#";
+                //smsurl = "http://59.162.167.52/api/MessageCompose?admin=info@nkinfo.in&user=ipsmart@nkinfo.in:ipsmart12345&senderID=IPSMRT&receipientno=#MOBILENO#&msgtxt=#MESSAGE#&state=4";
                 string datastring = "";
                 if (regmobno == "") datastring = "Reg.Mob.No. not set=XXX";
                 else
                 {
-                    msg = msg.Replace("&", " ");
                     smsurlsend = smsurl;
                     smsurlsend = smsurlsend.Replace("#MOBILENO#", regmobno);
                     smsurlsend = smsurlsend.Replace("#MESSAGE#", msg);
-                    string rtval = "";
+                    smsurlsend = smsurlsend.Replace("#TEMPID#", TemplateID);
 
                     WebRequest rqst = HttpWebRequest.Create(smsurlsend);
                     HttpWebResponse rspns = (HttpWebResponse)rqst.GetResponse();
@@ -52,35 +77,45 @@ namespace Improvar
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, smsurlsend);
                 return ex.Message;
             }
         }
-        public string SMSMessGen(string slcd, string reptype, string[,] smsvar)
+        public List<string> SMSMessContectGen(string slcd, string reptype, string[,] smsvar)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            string sql = "", scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "", scmf = CommVar.FinSchema(UNQSNO); string tempid = "";
             string smsmsg = "", smsmsgsend = "";
-            sql = "select a.smsmsg from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
-            DataTable tbl = SQLquery(sql);
-            if (tbl.Rows.Count > 0) smsmsg = tbl.Rows[0]["smsmsg"].ToString();
+            sql = "select a.smsmsg,tempid from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
+            DataTable tbl = masterHelp.SQLquery(sql);
+            if (tbl.Rows.Count > 0)
+            {
+                smsmsg = tbl.Rows[0]["smsmsg"].ToString();
+                tempid = tbl.Rows[0]["tempid"].ToString();
+            }
             smsmsgsend = smsmsg;
             for (int i = 0; i <= (smsvar.Length / 2) - 1; i++)
             {
                 smsmsgsend = smsmsgsend.Replace(smsvar[i, 0], smsvar[i, 1]);
             }
-            MSUBLEG = DBF.M_SUBLEG.Find(slcd);
             string slnm = "";
-            if (MSUBLEG != null) slnm = MSUBLEG.FULLNAME == null ? MSUBLEG.SLNM : MSUBLEG.FULLNAME;
+            if (!string.IsNullOrEmpty(slcd))
+            {
+                MSUBLEG = DBF.M_SUBLEG.Find(slcd);
+                if (MSUBLEG != null) slnm = MSUBLEG.FULLNAME == null ? MSUBLEG.SLNM : MSUBLEG.FULLNAME;
+                slnm = CommFunc.TruncateWord(slnm, 25);
+            }
             smsmsgsend = smsmsgsend.Replace("&slnm&", slnm);
-            return smsmsgsend;
+            List<string> smslist = new List<string>();
+            smslist.Add(smsmsgsend);
+            smslist.Add(tempid);
+            return smslist;
         }
         public void insT_TXNSTATUS(string Auto_Number, string ststype, string flag1, string stsrem)
         {
-           
-            Connection Cn = new Connection();
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
+            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             Models.T_TXNSTATUS TCH = new Models.T_TXNSTATUS();
 
             var MAXEMDNO = (from p in DB.T_TXNSTATUS where (p.AUTONO == Auto_Number && p.FLAG1 == flag1 && p.STSTYPE == ststype) select p.EMD_NO).Max();
@@ -113,11 +148,42 @@ namespace Improvar
             DB.SaveChanges();
             return;
         }
+        public string SMSPara(string reptype, string slcd = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "", scmf = CommVar.FinSchema(UNQSNO);
+            string smsautosend = "N", smsurl = "", smsretval = "", slcdregmob = "";
+
+            sql = "select a.smsurl from " + scmf + ".m_sms_config a where (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
+            DataTable tbl = masterHelp.SQLquery(sql);
+            if (tbl.Rows.Count > 0) smsurl = "Y";
+
+            if (smsurl != "")
+            {
+                sql = "select nvl(a.autosend,'N') autosend from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
+                tbl = masterHelp.SQLquery(sql);
+                if (tbl.Rows.Count > 0) smsautosend = tbl.Rows[0]["autosend"].ToString();
+            }
+
+            if (slcd != "" && smsurl != "")
+            {
+                sql = "select a.regemailid, a.regmobile from " + scmf + ".m_subleg a where slcd='" + slcd + "'";
+                tbl = masterHelp.SQLquery(sql);
+                if (tbl.Rows.Count > 0)
+                {
+                    if (tbl.Rows[0]["regmobile"].ToString() != "") slcdregmob = "Y";
+                }
+            }
+
+            smsretval = smsurl + Cn.GCS() + smsautosend + Cn.GCS() + slcdregmob;
+            return smsretval;
+        }
         public string retSMSSendInfo(string autono, string ststype, string flag1)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string rval = "";
-            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
+            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var sms = DB.T_TXNSTATUS.Where(a => a.AUTONO == autono && a.STSTYPE == ststype && a.FLAG1 == flag1).SingleOrDefault();
             if (sms != null)
             {
@@ -125,61 +191,6 @@ namespace Improvar
             }
             return rval;
         }
-        public string sendSaleSMS(string autono = "", string doccd = "", string slcd = "", string fdocdt = "", string tdocdt = "", string fdocno = "", string tdocno = "")
-        {
-            string sql = "", scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-            sql = "select a.autono, a.docno, a.docdt, c.blamt, b.lrno, b.lrdt, d.agslcd, c.slcd, d.nopkgs, ";
-            sql += "b.ewaybillno, nvl(f.slnm,g.slnm) trslnm, e.regmobile ";
-            sql += "from " + scm + ".t_cntrl_hdr a, " + scm + ".t_txntrans b, " + scm + ".t_txn c, " + scm + ".t_txnoth d, ";
-            sql += scmf + ".m_subleg e, " + scmf + ".m_subleg f, " + scmf + ".m_subleg g ";
-            sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and ";
-            if (autono.retStr() != "") sql += "a.autono in (" + autono + ") and ";
-            if (fdocno.retStr() != "") sql += "a.doconlyno >= '" + fdocno + "' and a.doconlyno <= '" + tdocno + "' and ";
-            if (fdocdt.retStr() != "") sql += "a.docdt >= to_date('" + fdocdt + "','dd/mm/yyyy') and ";
-            if (tdocdt.retStr() != "") sql += "a.docdt <= to_date('" + tdocdt + "','dd/mm/yyyy') and ";
-            if (slcd.retStr() != "") sql += "c.slcd='" + slcd + "' and ";
-            if (doccd.retStr() != "") sql += "a.doccd='" + doccd + "' and ";
-            if (autono.retStr() == "")
-            {
-                sql += "a.autono not in (select autono from " + scm + ".t_txnstatus where ststype='S' and flag1='SALE' ) and ";
-            }
-            sql += "d.agslcd=e.slcd(+) and b.translcd=f.slcd(+) and b.crslcd=g.slcd(+) ";
-            DataTable tbl = MasterHelpFa.SQLquery(sql);
 
-            DataTable comptbl = Salesfunc.retComptbl();
-
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-            string[,] smsaryMsg = new string[8, 2];
-            string sendmsg = "", agmobno = "", retmsgtxt = "";
-            string msgresult = "";
-            if (tbl.Rows.Count == 0) return "-1=No Records";
-
-            for (int i = 0; i <= tbl.Rows.Count - 1; i++)
-            {
-                if (tbl.Rows.Count > 0)
-                {
-                    slcd = tbl.Rows[i]["slcd"].ToString();
-                    smsaryMsg[0, 0] = "&nopkgs&"; smsaryMsg[0, 1] = tbl.Rows[i]["nopkgs"].ToString();
-                    smsaryMsg[1, 0] = "&lrno&"; smsaryMsg[1, 1] = tbl.Rows[i]["lrno"].ToString();
-                    smsaryMsg[2, 0] = "&lrdt&"; smsaryMsg[2, 1] = tbl.Rows[i]["lrdt"].ToString().retDateStr();
-                    smsaryMsg[3, 0] = "&trslnm&"; smsaryMsg[3, 1] = tbl.Rows[i]["trslnm"].ToString();
-                    smsaryMsg[4, 0] = "&docno&"; smsaryMsg[4, 1] = tbl.Rows[i]["docno"].ToString();
-                    smsaryMsg[5, 0] = "&docdt&"; smsaryMsg[5, 1] = tbl.Rows[i]["docdt"].ToString().retDateStr();
-                    smsaryMsg[6, 0] = "&docamt&"; smsaryMsg[6, 1] = Convert.ToDouble(tbl.Rows[i]["blamt"]).ToINRFormat();
-                    smsaryMsg[7, 0] = "&compnm&"; smsaryMsg[7, 1] = comptbl.Rows[0]["compnm"].ToString();
-                    if (tbl.Rows[i]["regmobile"].ToString().retStr() != "") agmobno = tbl.Rows[i]["regmobile"].ToString();
-                    sendmsg = SMSMessGen(slcd, "SALE", smsaryMsg);
-                    msgresult = SMSSend(tbl.Rows[i]["slcd"].ToString(), sendmsg, agmobno);
-
-                    string[] msgretval = msgresult.Split('=');
-                    if (msgretval[1].ToString().Substring(0, 1) == "0")
-                    {
-                        //insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "SALE", msgresult);
-                      MasterHelpFa.insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S",  msgresult);
-                    }
-                }
-            }
-            return msgresult;
-        }
-    }
+}
 }
