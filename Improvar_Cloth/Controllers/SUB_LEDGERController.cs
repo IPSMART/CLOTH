@@ -380,7 +380,6 @@ namespace Improvar.Controllers
                     v.Designation = Designation();
                 }
 
-
                 if (VE.DefaultAction == "E")
                 {
                     if (VE.MSUBLEGCONT.Count == 0)

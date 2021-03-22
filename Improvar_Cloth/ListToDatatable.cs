@@ -38,14 +38,5 @@ namespace Improvar
             }
             return dt;
         }
-        public static DataTable selDatatable(DataTable tbl, string selcond="")
-        {
-            DataTable dt = new DataTable();
-            var vtbl = tbl.Select(selcond);
-            if (vtbl == null) return dt;
-
-            dt = ListToDatatable.LINQResultToDataTable(vtbl);
-            return dt;
-        }
     }
 }

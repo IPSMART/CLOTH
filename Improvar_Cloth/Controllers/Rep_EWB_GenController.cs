@@ -178,8 +178,8 @@ namespace Improvar.Controllers
                                         sql += "where autono='" + auto_eway.autono + "' and trim(ewaybillno) is null ";
                                         Cn.com = new OracleCommand(sql, Cn.con);
                                         Cn.com.ExecuteNonQuery();
-                                        
-                                        sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + workSheet.Cells[rowIterator, 9].Value.ToString() + "' " 
+
+                                        sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + workSheet.Cells[rowIterator, 9].Value.ToString() + "' "
                                             + " where autono='" + auto_eway.autono + "'";
                                         Cn.com = new OracleCommand(sql, Cn.con);
                                         Cn.com.ExecuteNonQuery();
@@ -537,10 +537,10 @@ namespace Improvar.Controllers
                 query += "nvl((select sum(blamt) blamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, ";
                 query += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
                 query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt ";
-                query += "from " + fdbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + dbnm + "."+ trntable + " c, " + fdbnm + ".m_subleg d, ";
+                query += "from " + fdbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + dbnm + "." + trntable + " c, " + fdbnm + ".m_subleg d, ";
                 query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f,  " + fdbnm + ".m_doctype g," + fdbnm + ".m_uom j, ms_state k, ms_gstuom l, ";
                 query += fdbnm + ".m_subleg_locoth m, " + fdbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "ms_state q ";
-                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c."+ crslcd +   ")=e.slcd(+) and b.doccd=g.doccd and ";
+                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c." + crslcd + ")=e.slcd(+) and b.doccd=g.doccd and ";
                 query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
                 query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and ";
                 query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is null and ";
@@ -576,7 +576,7 @@ namespace Improvar.Controllers
                     prejson.SLNO = Convert.ToInt16(i + 1);
                     prejson.AUTONO = tbl.Rows[i]["AUTONO"].ToString();
                     prejson.Supply_Type = "O"; //a (Outward)
-                    if (tbl.Rows[i]["doctype"].ToString()== "STRFO" || tbl.Rows[i]["doctype"].ToString()== "TRWB")
+                    if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB")
                     {
                         prejson.SubSupply_Type = "5"; //b (OWN USE)
                         prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)
@@ -647,11 +647,8 @@ namespace Improvar.Controllers
                     prejson.lrno = tbl.Rows[i]["lrno"].ToString();//ao 
                     if (tbl.Rows[i]["lrdt"].ToString() == "" && tbl.Rows[i]["lrno"].ToString() != "")
                     {
-                        if (tbl == null)
-                        {
-                            PJSON.ForEach(e => e.message = "LR DATE NOT FOUND AT DOCNO=" + prejson.blno + ",ITEM NAME=" + prejson.itnm + "<BR/> <H3>Please put 'lr date' at the invoice</H3>");
-                            return PJSON;
-                        }
+                        PJSON.ForEach(e => e.message = "LR DATE NOT FOUND AT DOCNO=" + prejson.blno + ",ITEM NAME=" + prejson.itnm + "<BR/> <H3>Please put 'lr date' at the invoice</H3>");
+                        return PJSON;
                     }
                     else
                     {

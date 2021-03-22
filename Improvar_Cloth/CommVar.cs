@@ -457,21 +457,41 @@ namespace Improvar
         }
         public static string SaveFolderPath()
         {
-            string path= @"\\ipsmart-ibm\C\IPSMART";
-            if (System.IO.Directory.Exists(path))
+            try
             {
-                return path;
+                var configDT = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
+                string DESIGNPATH = configDT.Rows[0]["DESIGNPATH"].retStr();
+                string path = @"\\ipsmart-ibm\C\IPSMART";
+                if (DESIGNPATH != "" && System.IO.Directory.Exists(DESIGNPATH))
+                {
+                    return DESIGNPATH;
+                }
+                if (System.IO.Directory.Exists(path))
+                {
+                    return path;
+                }
             }
-            else
+            catch
             {
-                return @"C:\Ipsmart";
             }
+            return @"C:\Ipsmart";
         }
         public static string GSTNO(string unqsno)
         {
             try
             {
                 return System.Web.HttpContext.Current.Session["GSTNO" + unqsno].retStr();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+        public static string ShowLoccd(string unqsno)
+        {
+            try
+            {
+                return System.Web.HttpContext.Current.Session["SHOWLOCCD" + unqsno].ToString();
             }
             catch
             {
@@ -486,10 +506,8 @@ namespace Improvar
         public static string WebUploadDocURL(string FileName = "")
         {
             string WebHostPath = System.Web.HttpContext.Current.Session["WebHostPath"].retStr();
-            WebHostPath = WebHostPath + "UploadDocuments/" + FileName;
+            WebHostPath = WebHostPath.TrimEnd('/') + "/UploadDocuments/" + FileName;
             return WebHostPath;
         }
-
-
     }
 }

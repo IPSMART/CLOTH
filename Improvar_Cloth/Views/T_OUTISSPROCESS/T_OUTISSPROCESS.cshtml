@@ -41,7 +41,7 @@
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
-        
+
         //$("#popup1").hide();
         $("#WaitingMode").hide();
     });
@@ -315,7 +315,7 @@
 
     function CalculateTotalProgBomQnty() {
         if ("@Model.DefaultAction" == "V") return true;
-        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0, T_QQTY1=0;
+        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0, T_QQTY1 = 0;
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var QQTY1 = document.getElementById("Q_QNTY1_" + i).value;
@@ -661,11 +661,11 @@
 
 </script>
 <script>
-    function Program_GetBarnoDetails(id, P_BARNO_, P_MTRLJOBCD_, P_PARTCD_, P_ITCD_, P_ITNM_, P_UOM_, P_ITGRPCD_, P_ITGRPNM_, P_COLRCD_, P_SIZECD_, P_COLRNM_, P_MTRLJOBNM_, P_BarImages_, BarImagesCount_, P_DECIMALS_, P_CLRBARCODE_, P_SZBARCODE_,tag) {
+    function Program_GetBarnoDetails(id, P_BARNO_, P_MTRLJOBCD_, P_PARTCD_, P_ITCD_, P_ITNM_, P_UOM_, P_ITGRPCD_, P_ITGRPNM_, P_COLRCD_, P_SIZECD_, P_COLRNM_, P_MTRLJOBNM_, P_BarImages_, BarImagesCount_, P_DECIMALS_, P_CLRBARCODE_, P_SZBARCODE_, tag) {
         debugger;
         if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
-            ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_+"," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
+            ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
         }
         else {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -686,40 +686,38 @@
                 url: "@Url.Action("GetBarCodeDetailsGrid", PageControllerName)",
                 data: "&val=" + id + "&Code=" + code,
                 success: function (result) {
-                        var MSG = result.indexOf(String.fromCharCode(181));
-                        if (MSG >= 0) {
-                            var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
-                            if (_mtrljbcd == "")
-                            {
-                                $("#" + P_MTRLJOBCD_).val(returncolvalue(result, "MTRLJOBCD_NEW"));
-                                $("#" + P_MTRLJOBNM_).val(returncolvalue(result, "MTRLJOBNM_NEW"));
-                            }
-                            $("#" + P_BARNO_).val(returncolvalue(result, "BARNO"));
-                            $("#" + P_PARTCD_).val(returncolvalue(result, "PARTCD"));
-                            $("#" + P_ITCD_).val(returncolvalue(result, "ITCD"));
-                            $("#" + P_ITNM_).val(returncolvalue(result, "ITSTYLE"));
-                            $("#" + P_UOM_).val(returncolvalue(result, "UOMCD"));
-                            $("#" + P_ITGRPCD_).val(returncolvalue(result, "ITGRPCD"));
-                            $("#" + P_ITGRPNM_).val(returncolvalue(result, "ITGRPNM"));
-                            $("#" + P_COLRCD_).val(returncolvalue(result, "COLRCD"));
-                            $("#" + P_SIZECD_).val(returncolvalue(result, "SIZECD"));
-                            $("#" + P_COLRNM_).val(returncolvalue(result, "COLRNM"));
-                            if (tag != "QTY")
-                            {
-                                $("#" + P_BarImages_).val(returncolvalue(result, "BARIMAGE"));
-                                $("#" + BarImagesCount_).val(returncolvalue(result, "barimagecount"));
-                                $("#" + P_DECIMALS_).val(returncolvalue(result, "DECIMALS"));
-                                $("#" + P_CLRBARCODE_).val(returncolvalue(result, "clrbarcode"));
-                                $("#" + P_SZBARCODE_).val(returncolvalue(result, "szbarcode"));
-                            }
-                        
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
+                        if (_mtrljbcd == "") {
+                            $("#" + P_MTRLJOBCD_).val(returncolvalue(result, "MTRLJOBCD_NEW"));
+                            $("#" + P_MTRLJOBNM_).val(returncolvalue(result, "MTRLJOBNM_NEW"));
                         }
-                        else {
-                            msgInfo("" + result + " !");
-                            ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
-                            message_value = P_BARNO_;
+                        $("#" + P_BARNO_).val(returncolvalue(result, "BARNO"));
+                        $("#" + P_PARTCD_).val(returncolvalue(result, "PARTCD"));
+                        $("#" + P_ITCD_).val(returncolvalue(result, "ITCD"));
+                        $("#" + P_ITNM_).val(returncolvalue(result, "ITSTYLE"));
+                        $("#" + P_UOM_).val(returncolvalue(result, "UOMCD"));
+                        $("#" + P_ITGRPCD_).val(returncolvalue(result, "ITGRPCD"));
+                        $("#" + P_ITGRPNM_).val(returncolvalue(result, "ITGRPNM"));
+                        $("#" + P_COLRCD_).val(returncolvalue(result, "COLRCD"));
+                        $("#" + P_SIZECD_).val(returncolvalue(result, "SIZECD"));
+                        $("#" + P_COLRNM_).val(returncolvalue(result, "COLRNM"));
+                        if (tag != "QTY") {
+                            $("#" + P_BarImages_).val(returncolvalue(result, "BARIMAGE"));
+                            $("#" + BarImagesCount_).val(returncolvalue(result, "barimagecount"));
+                            $("#" + P_DECIMALS_).val(returncolvalue(result, "DECIMALS"));
+                            $("#" + P_CLRBARCODE_).val(returncolvalue(result, "clrbarcode"));
+                            $("#" + P_SZBARCODE_).val(returncolvalue(result, "szbarcode"));
                         }
-                    
+
+                    }
+                    else {
+                        msgInfo("" + result + " !");
+                        ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
+                        message_value = P_BARNO_;
+                    }
+
                     $("#WaitingMode").hide();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1166,6 +1164,20 @@
         tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
         tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
         tr += '        <input id="B_RECPROGSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO" type="hidden" value="' + RECPROGSLNO + '">';
+
+        tr += '        <input id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" type="hidden" value="' + DISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
+        tr += '        <input id="B_DISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCRATE" type="hidden" value="' + DISCRATE + '">';
+
+        tr += '        <input id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" type="hidden" value="' + TDDISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
+        tr += '        <input id="B_TDDISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" type="hidden" value="' + TDDISCRATE + '">';
+
+        tr += '        <input id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" type="hidden" value="' + SCMDISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
+        tr += '        <input id="B_SCMDISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" type="hidden" value="' + SCMDISCRATE + '">';
+
+
         tr += '    </td>';
         tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
@@ -1230,7 +1242,7 @@
         tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="Sale_GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ');HasChangeBarSale();" value="' + RATE + '" >';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="Sale_GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ',\'#B_\');HasChangeBarSale();" value="' + RATE + '" >';
         tr += '    </td>';
         if (MENU_PARA == "PB") {
             tr += '    <td class="">';
@@ -1248,27 +1260,27 @@
         tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
         tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
         tr += '    </td>';
-        tr += '    <td class="" title="' + DISCTYPE_DESC + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
-        tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
-        tr += '    </td>';
-        tr += '    <td class="" title="' + DISCRATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + DISCRATE + '">';
-        tr += '    </td>';
-        tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="' + TDDISCTYPE_DESC + '">';
-        tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
-        tr += '                              </td>';
-        tr += '    <td class="" title="' + TDDISCRATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + TDDISCRATE + '">';
-        tr += '    </td>';
-        tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
-        tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
-        tr += '    </td>';
-        tr += '    <td class="" title="' + SCMDISCRATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
-        tr += '    </td>';
+        //tr += '    <td class="" title="' + DISCTYPE_DESC + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
+        //tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
+        //tr += '    </td>';
+        //tr += '    <td class="" title="' + DISCRATE + '">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + DISCRATE + '">';
+        //tr += '    </td>';
+        //tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="' + TDDISCTYPE_DESC + '">';
+        //tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
+        //tr += '                              </td>';
+        //tr += '    <td class="" title="' + TDDISCRATE + '">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + TDDISCRATE + '">';
+        //tr += '    </td>';
+        //tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
+        //tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
+        //tr += '    </td>';
+        //tr += '    <td class="" title="' + SCMDISCRATE + '">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
+        //tr += '    </td>';
         if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
             tr += '    <td class="" title="' + ORDDOCNO + '">';
             tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCNO" readonly="readonly" type="text" value="' + ORDDOCNO + '">';
@@ -1562,7 +1574,7 @@
         }
 
     }
-    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id,CALLFRM) {
+    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id, CALLFRM) {
         debugger;
         if ("@Model.DefaultAction" == "V") return true;
         var STOCKQNTY = retFloat($("#" + STOCKQNTY_Id).val());
@@ -1719,9 +1731,9 @@
         var BARNO = "", ITCD = "", duplicate = "", slno = 0;
         debugger;
         if (ID == "") {
-           
+
             ClearAllTextBoxes("C_BARNO,M_STYLENO,MTRLJOBCD,PARTCD");
-           
+
         }
         else {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -1729,7 +1741,7 @@
             BARCODE = $("#C_BARNO").val();
             if ($("#TAXGRPCD").val() == "") { $("#C_BARNO").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
             if ($("#PRCCD").val() == "") { $("#C_BARNO").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
-          
+
 
             var MTRLJOBCD = $("#C_MTRLJOBCD").val();
             var PARTCD = $("#C_PARTCD").val();
@@ -1741,10 +1753,10 @@
 
             var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
             hlpfieldid = "C_BARNO";
-                hlpfieldindex = "0";
-                ReferanceFieldID = "/C_STYLENO";
-                ReferanceFieldIndex = "/3";
-                var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + "Bar" + String.fromCharCode(181) + BARCODE;
+            hlpfieldindex = "0";
+            ReferanceFieldID = "/C_STYLENO";
+            ReferanceFieldIndex = "/3";
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + "Bar" + String.fromCharCode(181) + BARCODE;
 
             $.ajax({
                 type: 'POST',
@@ -1755,37 +1767,37 @@
                     var MSG = result.indexOf('#helpDIV');
                     if (MSG >= 0) {
                         ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
-                            $('#SearchFldValue').val(hlpfieldid);
-                            $('#helpDIV').html(result);
-                            $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/C_MTRLJOBCD/C_PARTCD');
-                            $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/2/5');
-                            $('#helpDIV_Header').html('Barno Details');
-                        
+                        $('#SearchFldValue').val(hlpfieldid);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/C_MTRLJOBCD/C_PARTCD');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/2/5');
+                        $('#helpDIV_Header').html('Barno Details');
+
                     }
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
                             ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
-                                BARNO = returncolvalue(result, "BARNO");
-                                //ITCD = returncolvalue(result, "ITCD");
-                                var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
-                                for (j = 0; j <= GridRowMain - 1; j++) {
-                                    if (BARNO == $("#C_BARNO_" + j).val()) {
-                                        slno = $("#C_SLNO_" + j).val();
+                            BARNO = returncolvalue(result, "BARNO");
+                            //ITCD = returncolvalue(result, "ITCD");
+                            var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+                            for (j = 0; j <= GridRowMain - 1; j++) {
+                                if (BARNO == $("#C_BARNO_" + j).val()) {
+                                    slno = $("#C_SLNO_" + j).val();
 
-                                    }
-                                    duplicate = false;
                                 }
-                                if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
+                                duplicate = false;
+                            }
+                            if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
 
-                                else { AddMainPopUpGrideRow(result); }
+                            else { AddMainPopUpGrideRow(result); }
                         }
                         else {
                             $('#helpDIV').html("");
                             msgInfo("" + result + " !");
                             ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
-                                message_value = hlpfieldid;
-                           
+                            message_value = hlpfieldid;
+
 
                         }
                     }
@@ -1804,14 +1816,13 @@
         debugger;
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
-        var ITSTYLE="",STYLENO="",ITNM="";
+        var ITSTYLE = "", STYLENO = "", ITNM = "";
         var BARNO = returncolvalue(hlpstr, "BARNO");
         var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
         var ITGRPCD = returncolvalue(hlpstr, "ITGRPCD");
         var ITCD = returncolvalue(hlpstr, "ITCD");
         ITSTYLE = returncolvalue(hlpstr, "ITSTYLE");
-        if (ITSTYLE == "")
-        {
+        if (ITSTYLE == "") {
             STYLENO = returncolvalue(hlpstr, "STYLENO"); ITNM = returncolvalue(hlpstr, "ITNM");
             ITSTYLE = STYLENO + "" + ITNM;
         }
@@ -1851,12 +1862,12 @@
         tr += '   <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="C_Checked_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].C_Checked" type="checkbox" value="true"><input name="CASHMEMOPOPUP[' + rowindex + '].C_Checked" type="hidden" value="false">';
         tr += '   <input data-val="true" data-val-number="The field ITGRPCD must be a number." data-val-required="The ITGRPCD field is required." id="C_ITGRPCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
         tr += '   <input data-val="true" data-val-number="The field ITGRPNM must be a number." id="C_ITGRPNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITGRPNM" type="hidden" value="' + ITGRPNM + '">';
-       
+
         tr += '   <input data-val="true" data-val-number="The field ITNM must be a number." id="C_ITNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITNM" type="hidden" value="">';
         tr += '   <input data-val="true" data-val-length="The field DECIMAL must be a string with a maximum length of 8." data-val-length-max="8" id="C_DECIMALS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].DECIMAL" type="hidden" value="' + DECIMAL + '">';
         tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
         tr += '   <input data-val="true" data-val-length="The field MTRLJOBNM must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
-      
+
         tr += '   <input data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 8." data-val-length-max="8" id="C_PARTCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].PARTCD" type="hidden" value="' + PARTCD + '">';
         tr += '   <input id="C_COLRCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRCD" type="hidden" value="' + COLRCD + '">';
         tr += '   <input id="C_COLRNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRNM" type="hidden" value="' + COLRNM + '">';
@@ -1867,7 +1878,7 @@
         tr += '   <input id="C_NOS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].NOS" type="hidden" value="' + NOS + '">';
         tr += '   <input id="C_CUTLENGTH_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].CUTLENGTH" type="hidden" value="' + CUTLENGTH + '">';
         tr += '   <input id="C_SHADE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
-      
+
         tr += ' </td>';
         tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
         tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="C_SLNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
@@ -1897,7 +1908,7 @@
         $("#_T_OUTISSPROCESS_POPUP_GRID tbody").append(tr);
         $("#C_BARNO").val('');
         $("#C_BARNO").focus();
-       
+
     }
     function UpdatePopUpGrideRow(hlpstr, slno) {
         debugger;
@@ -1933,7 +1944,7 @@
                 $("#C_AGDOCDT_" + j).val($("#C_AGDOCDT_" + j).val());
                 $("#C_BARCODE").val('');
                 $("#C_BARCODE").focus();
-                
+
             }
 
         }
@@ -1950,9 +1961,9 @@
         var BARNO = "", ITCD = "", duplicate = "", slno = 0;
         debugger;
         if (ID == "") {
-           
+
             ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
-           
+
         }
         else {
             //if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -1966,7 +1977,7 @@
             hlpfieldindex = "0";
             ReferanceFieldID = "/FDT";
             ReferanceFieldIndex = "/1";
-        
+
             var code = FDT + String.fromCharCode(181) + TDT + String.fromCharCode(181) + AUTONO;
 
             $.ajax({
@@ -1974,55 +1985,55 @@
                 beforesend: $("#WaitingMode").show(),
                 url: "@Url.Action("GetCashMemoNo", PageControllerName)",
                 data: "&val=" + ID + "&Code=" + code,
-            success: function (result) {
-                var MSG = result.indexOf('#helpDIV');
-                if (MSG >= 0) {
-                    ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
-                    $('#SearchFldValue').val(hlpfieldid);
-                    $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/FDT');
-                    $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/1');
-                    $("#TDT") = returncolvalue(hlpstr, "docdt");
-                    $("#CSM_AUTONO") = returncolvalue(hlpstr, "autono");
-                    $('#helpDIV_Header').html('Cash Memo Details');
-                        
-                }
-                else {
-                    var MSG = result.indexOf(String.fromCharCode(181));
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
                     if (MSG >= 0) {
                         ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
-                        BARNO = returncolvalue(result, "BARNO");
-                        //ITCD = returncolvalue(result, "ITCD");
-                        var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
-                        for (j = 0; j <= GridRowMain - 1; j++) {
-                            if (BARNO == $("#C_BARNO_" + j).val()) {
-                                slno = $("#C_SLNO_" + j).val();
+                        $('#SearchFldValue').val(hlpfieldid);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/FDT');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/1');
+                        $("#TDT") = returncolvalue(hlpstr, "docdt");
+                        $("#CSM_AUTONO") = returncolvalue(hlpstr, "autono");
+                        $('#helpDIV_Header').html('Cash Memo Details');
 
-                            }
-                            duplicate = false;
-                        }
-                        if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
-
-                        else { AddMainPopUpGrideRow(result); }
                     }
                     else {
-                        $('#helpDIV').html("");
-                        msgInfo("" + result + " !");
-                        ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
-                        message_value = hlpfieldid;
-                           
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                            BARNO = returncolvalue(result, "BARNO");
+                            //ITCD = returncolvalue(result, "ITCD");
+                            var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+                            for (j = 0; j <= GridRowMain - 1; j++) {
+                                if (BARNO == $("#C_BARNO_" + j).val()) {
+                                    slno = $("#C_SLNO_" + j).val();
 
+                                }
+                                duplicate = false;
+                            }
+                            if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
+
+                            else { AddMainPopUpGrideRow(result); }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                            message_value = hlpfieldid;
+
+
+                        }
                     }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
-                $("#WaitingMode").hide();
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
+            });
+        }
     }
 </script>
 <script>
@@ -2032,7 +2043,7 @@
         var FDT = $("#FDT").val();
         var FDT = $("#TDT").val();
         var C_BARNO = $("#C_BARNO").val();
-        
+
         //var AUTONO = $("#CSM_AUTONO").val();
         var AUTONO = "";
 
@@ -2195,12 +2206,12 @@
                     </div>
                     <div class="row">
                         <div id="popup1" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
-                        
+
                         </div>
                     </div>
                     }
-                   
-                   
+
+
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -2344,6 +2355,12 @@
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", onkeydown = "T_OUTISSPROCESS_FillBarcodeArea('', 'COPYLROW')", @placeholder = "Bill Sl", @title = "Bill Sl" } })
                                                     @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
+                                                    @Html.HiddenFor(model => model.DISCRATE, new { id = "DISCRATE" })
+                                                    @Html.HiddenFor(model => model.DISCTYPE, new { id = "DISCTYPE" })
+                                                    @Html.HiddenFor(model => model.TDDISCTYPE, new { id = "TDDISCTYPE" })
+                                                    @Html.HiddenFor(model => model.TDDISCRATE, new { id = "TDDISCRATE" })
+                                                    @Html.HiddenFor(model => model.SCMDISCTYPE, new { id = "SCMDISCTYPE" })
+                                                    @Html.HiddenFor(model => model.SCMDISCRATE, new { id = "SCMDISCRATE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -2477,16 +2494,16 @@
                                                     @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @onchange = "Sale_GetGstPer('','');" } })
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
+                                            @*<div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
-                                                </div>
-                                            </div>
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
+                                                    </div>
+                                                </div>*@
                                             <div class="col-md-6">
                                                 <div class="editor-field">
                                                     @*@Html.DropDownListFor(model => model.HSNCODE, new SelectList(Model.HSN_CODE, "Value", "Text"), new { @class = "form-control", id = "HSNCODE" })*@
@@ -2556,26 +2573,26 @@
                                         @*</div>
                                             </div>*@
                                     }
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
+                                    @*<div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE", @title = "Disc1 Rate" } })
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE", @title = "Disc1 Rate" } })
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc2" })
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc2" })
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE", @title = "Disc2 Rate" } })
-                                        </div>
-                                    </div>
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE", @title = "Disc2 Rate" } })
+                                            </div>
+                                        </div>*@
                                     <div class="col-md-4">
                                         <div class="editor-field">
                                             @*@Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })

@@ -30,7 +30,7 @@
                                 <input type="checkbox" name="AllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, '_Gen_EinvIRN_GRID', 'Checked_', 'Gen_EinvIRN_GRIDsrc')" />
                             </th>
                             <th class="" style="width: 39px;">SL No</th>
-                            @*<th class="" style="width: 89px;">Document Type</th>*@
+                            <th class="" style="width: 69px;">Loccd</th>
                             <th class="" style="width: 111px;">Document No.</th>
                             <th class="" style="width: 74px;">Document Date</th>
                             <th class="" style="width: 245px;">SLNM</th>
@@ -40,7 +40,8 @@
                             <th class="" style="width: 89px;text-align:right;">IRN No</th>
                             <th class="" style="width: 89px;">EWB</th>
                             <th class="" style="">Message</th>
-                            <th class="" style="width: 30px;">EWB
+                            <th class="" style="width: 30px;">
+                                EWB
                                 <input type="checkbox" name="SelectAllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, '_Gen_EinvIRN_GRID', 'WAYBILLChecked_', 'Gen_EinvIRN_GRIDsrc')" />
                             </th>
                         </tr>
@@ -60,9 +61,9 @@
                                         @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         @Html.HiddenFor(model => Model.GenEinvIRNGrid[i].AUTONO, new { id = "AUTONO_" + i })
                                     </td>
-                                    @*<td class="">
-                                        @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].DOCTYPE, new { id = "DOCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                     </td>*@
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].LOCCD, new { id = "LOCCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].BLNO, new { id = "BLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @style = "text-align: right;", @readonly = "readonly" })
                                     </td>
@@ -70,7 +71,7 @@
                                         @Html.EditorFor(model => Model.GenEinvIRNGrid[i].BLDT, new { htmlAttributes = new { id = "BLDT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
                                     </td>
                                     <td class="">
-                                        @Html.EditorFor(model => Model.GenEinvIRNGrid[i].SLNM, new { htmlAttributes = new { id = "SLNM_" + i,  @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
+                                        @Html.EditorFor(model => Model.GenEinvIRNGrid[i].SLNM, new { htmlAttributes = new { id = "SLNM_" + i, @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
                                     </td>
                                     <td class="">
                                         @Html.EditorFor(model => Model.GenEinvIRNGrid[i].BLAMT, new { htmlAttributes = new { id = "BLAMT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })

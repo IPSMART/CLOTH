@@ -79,7 +79,7 @@ namespace Improvar.Controllers
                 string fdt = VE.FROMDT, tdt = VE.TODT;
                 ExcelPackage ExcelPkg = new ExcelPackage();
                 ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
-                if (submitbutton == "Download IRN Excel")
+                if (submitbutton == "Generated IRN Excel" || submitbutton == "Grid to Excel")
                 {
                     if (CommVar.Compcd(UNQSNO) == "CDET")
                     {
@@ -93,7 +93,7 @@ namespace Improvar.Controllers
                     else
                     {
 
-                        string Excel_Header = "SLNO" + "|" + "DOCUMENT NO." + "|" + "DOCUMENT DATE " + "|" + "SLNM" + "|" + "BILL AMOUNT" + "|" + "Transporter Name" + "|" + "Vehicle No" + "|" + "IRN NO." + "|" + "EWB" + "|" + "MESSAGE"; 
+                        string Excel_Header = "SLNO" + "|" + "DOCUMENT NO." + "|" + "DOCUMENT DATE " + "|" + "SLNM" + "|" + "BILL AMOUNT" + "|" + "Transporter Name" + "|" + "Vehicle No" + "|" + "IRN NO." + "|" + "EWB" + "|" + "MESSAGE";
                         using (ExcelRange Rng = wsSheet1.Cells["A1:J1"])
                         {
                             Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -134,19 +134,39 @@ namespace Improvar.Controllers
                         {
                             for (int i = 0; i <= VE.GenEinvIRNGrid.Count - 1; i++)
                             {
-                                if (VE.GenEinvIRNGrid[i].IRNNO != null)
+                                if (submitbutton == "Generated IRN Excel")
                                 {
-                                    wsSheet1.Cells[er1, 1].Value = VE.GenEinvIRNGrid[i].SLNO;
-                                    wsSheet1.Cells[er1, 2].Value = VE.GenEinvIRNGrid[i].BLNO;
-                                    wsSheet1.Cells[er1, 3].Value = VE.GenEinvIRNGrid[i].BLDT;
-                                    wsSheet1.Cells[er1, 4].Value = VE.GenEinvIRNGrid[i].SLNM;
-                                    wsSheet1.Cells[er1, 5].Value = VE.GenEinvIRNGrid[i].BLAMT;
-                                    wsSheet1.Cells[er1, 6].Value = VE.GenEinvIRNGrid[i].TRANSLNM;
-                                    wsSheet1.Cells[er1, 7].Value = VE.GenEinvIRNGrid[i].LORRYNO;
-                                    wsSheet1.Cells[er1, 8].Value = VE.GenEinvIRNGrid[i].IRNNO;
-                                    wsSheet1.Cells[er1, 9].Value = VE.GenEinvIRNGrid[i].EWB;
-                                    wsSheet1.Cells[er1, 10].Value = VE.GenEinvIRNGrid[i].MESSAGE;
-                                    er1++;
+                                    if (VE.GenEinvIRNGrid[i].IRNNO != null)
+                                    {
+                                        wsSheet1.Cells[er1, 1].Value = VE.GenEinvIRNGrid[i].SLNO;
+                                        wsSheet1.Cells[er1, 2].Value = VE.GenEinvIRNGrid[i].BLNO;
+                                        wsSheet1.Cells[er1, 3].Value = VE.GenEinvIRNGrid[i].BLDT;
+                                        wsSheet1.Cells[er1, 4].Value = VE.GenEinvIRNGrid[i].SLNM;
+                                        wsSheet1.Cells[er1, 5].Value = VE.GenEinvIRNGrid[i].BLAMT;
+                                        wsSheet1.Cells[er1, 6].Value = VE.GenEinvIRNGrid[i].TRANSLNM;
+                                        wsSheet1.Cells[er1, 7].Value = VE.GenEinvIRNGrid[i].LORRYNO;
+                                        wsSheet1.Cells[er1, 8].Value = VE.GenEinvIRNGrid[i].IRNNO;
+                                        wsSheet1.Cells[er1, 9].Value = VE.GenEinvIRNGrid[i].EWB;
+                                        wsSheet1.Cells[er1, 10].Value = VE.GenEinvIRNGrid[i].MESSAGE;
+                                        er1++;
+                                    }
+                                }
+                                if (submitbutton == "Grid to Excel")
+                                {
+                                    if (VE.GenEinvIRNGrid[i].IRNNO == null)
+                                    {
+                                        wsSheet1.Cells[er1, 1].Value = VE.GenEinvIRNGrid[i].SLNO;
+                                        wsSheet1.Cells[er1, 2].Value = VE.GenEinvIRNGrid[i].BLNO;
+                                        wsSheet1.Cells[er1, 3].Value = VE.GenEinvIRNGrid[i].BLDT;
+                                        wsSheet1.Cells[er1, 4].Value = VE.GenEinvIRNGrid[i].SLNM;
+                                        wsSheet1.Cells[er1, 5].Value = VE.GenEinvIRNGrid[i].BLAMT;
+                                        wsSheet1.Cells[er1, 6].Value = VE.GenEinvIRNGrid[i].TRANSLNM;
+                                        wsSheet1.Cells[er1, 7].Value = VE.GenEinvIRNGrid[i].LORRYNO;
+                                        wsSheet1.Cells[er1, 8].Value = VE.GenEinvIRNGrid[i].IRNNO;
+                                        wsSheet1.Cells[er1, 9].Value = VE.GenEinvIRNGrid[i].EWB;
+                                        wsSheet1.Cells[er1, 10].Value = VE.GenEinvIRNGrid[i].MESSAGE;
+                                        er1++;
+                                    }
                                 }
                             }
                         }
@@ -244,26 +264,26 @@ namespace Improvar.Controllers
 
                 sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO);
-                sql = "select distinct a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM,sum(a.BLAMT ) BLAMT,e.TRANSLCD,f.slnm TRANSLNM,e.LORRYNO from " + scmf + ".t_vch_gst a, "
+                sql = "select distinct a.autono,c.doctype,d.loccd,d.docno,d.docdt,b.SLCD,b.SLNM,sum(a.BLAMT ) BLAMT,e.TRANSLCD,f.slnm TRANSLNM,e.LORRYNO from " + scmf + ".t_vch_gst a, "
                 + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f  "
                 + " where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.TRANSLCD=f.SLCD(+) and a.autono=e.autono(+) and ";
                 sql += " A.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND A.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY') AND  ";
                 sql += " b.regntype in ('R') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null ";
                 sql += " and a.autono not in (select autono from " + scmf + ".t_txneinv) ";
-                sql += " and d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "'  and b.gstno is not null ";
-                sql += " group by a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM,e.TRANSLCD,f.slnm,e.LORRYNO ";
+                sql += " and d.compcd='" + CommVar.Compcd(UNQSNO) + "' and b.gstno is not null ";
+                sql += " group by a.autono,c.doctype,d.loccd,d.docno,d.docdt,b.SLCD,b.SLNM,e.TRANSLCD,f.slnm,e.LORRYNO ";
                 sql += " order by docdt,autono ";
                 DataTable txn = masterHelp.SQLquery(sql);
                 VE.GenEinvIRNGrid = (from DataRow dr in txn.Rows
                                      select new GenEinvIRNGrid
                                      {
+                                         LOCCD = dr["LOCCD"].retStr(),
                                          AUTONO = dr["AUTONO"].retStr(),
-                                         //DOCTYPE = dr["doctype"].retStr(),
                                          BLNO = dr["docno"].retStr(),
                                          BLDT = dr["docdt"].retDateStr(),
                                          SLNM = dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]",
                                          BLAMT = dr["BLAMT"].retDbl(),
-                                         TRANSLNM= dr["TRANSLCD"].retStr() == "" ? "" : dr["TRANSLNM"].retStr(),
+                                         TRANSLNM = dr["TRANSLCD"].retStr() == "" ? "" : dr["TRANSLNM"].retStr(),
                                          LORRYNO = dr["LORRYNO"].retStr()
                                      }).OrderBy(a => a.BLDT).Distinct().ToList();
                 int slno = 1;
@@ -302,15 +322,15 @@ namespace Improvar.Controllers
             try
             {
                 AdaequareGSP adaequareGSP = new AdaequareGSP();
+                string fdbnm = CommVar.FinSchema(UNQSNO);
+                string comp = CommVar.Compcd(UNQSNO);
                 for (int gridindex = 0; gridindex < VE.GenEinvIRNGrid.Count; gridindex++)
                 {
                     string autono = VE.GenEinvIRNGrid[gridindex].AUTONO;
                     if (VE.GenEinvIRNGrid[gridindex].Checked == true)
                     {
-                        string dbnm = CommVar.SaleSchema(UNQSNO);
-                        string fdbnm = CommVar.FinSchema(UNQSNO);
-                        string comp = CommVar.Compcd(UNQSNO);
-                        string loc = CommVar.Loccd(UNQSNO);
+
+                        string loc = VE.GenEinvIRNGrid[gridindex].LOCCD;
                         var sql = "";
                         DataTable rsComp;
                         sql = "select a.locnm, a.gstno, a.add1||' '||a.add2 add1, a.add3||' '||a.add4 add2, a.district, a.pin,"
@@ -556,7 +576,8 @@ namespace Improvar.Controllers
                         {
                             adaequareIRN.DispDtls = dispDtls;
                         }
-                        if (string.IsNullOrEmpty(shipDtls.Gstin) && shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
+                        //if (!string.IsNullOrEmpty(shipDtls.Gstin) && shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
+                        if (shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
                         {
                             adaequareIRN.ShipDtls = shipDtls;
                         }
@@ -572,10 +593,10 @@ namespace Improvar.Controllers
                             {
                                 VE.GenEinvIRNGrid[gridindex].MESSAGE = "Transid or Transdocno or Vehno  add into your bill for generate EWB"; continue;
                             }
-                            else if (buyerDtls.Gstin == shipDtls.Gstin)
-                            {
-                                VE.GenEinvIRNGrid[gridindex].MESSAGE = " EWB will not generate in Regular type because of buyerDtls.Gstin == shipDtls.Gstin "; continue;
-                            }
+                            //else if (adaequareIRN.ShipDtls != null && buyerDtls.Gstin == shipDtls.Gstin && buyerDtls.Pin == shipDtls.Pin)
+                            //{
+                            //    VE.GenEinvIRNGrid[gridindex].MESSAGE = " EWB will not generate in Regular type because of buyerDtls.Gstin == shipDtls.Gstin "; continue;
+                            //}
                             else
                             {
                                 adaequareIRN.EwbDtls = ewbDtls;
@@ -604,11 +625,10 @@ namespace Improvar.Controllers
                                     }
                                     if (adqrRespGenIRN.result.EwbNo.retStr() != "")
                                     {
-                                        if (Module.MODCD == "S" || Module.MODCD == "I")
-                                        {
-                                            sql = "update " + CommVar.SaleSchema(UNQSNO) + ".t_txntrans set ewaybillno='" + adqrRespGenIRN.result.EwbNo.retStr() + "' where autono='" + autono + "' ";
-                                            masterHelp.SQLNonQuery(sql);
-                                        }
+                                        sql = "update " + CommVar.SaleSchema(UNQSNO) + ".t_txntrans set ewaybillno='" + adqrRespGenIRN.result.EwbNo.retStr() + "' where autono='" + autono + "' ";
+                                        masterHelp.SQLNonQuery(sql);
+                                        sql = "update " + CommVar.InvSchema(UNQSNO) + ".t_txntrans set ewaybillno='" + adqrRespGenIRN.result.EwbNo.retStr() + "' where autono='" + autono + "' ";
+                                        masterHelp.SQLNonQuery(sql);
                                         sql = "update " + CommVar.FinSchema(UNQSNO) + ".T_TXNEWB set EWAYBILLNO='" + adqrRespGenIRN.result.EwbNo.retStr()
                                             + "',  EWAYBILLDT=to_date('" + adqrRespGenIRN.result.EwbDt.retStr() + "','yyyy-mm-dd hh24:mi:ss'),  EWAYBILLVALID=to_date('"
                                             + adqrRespGenIRN.result.EwbValidTill.retStr() + "','yyyy-mm-dd hh24:mi:ss') where autono='" + autono + "' ";
@@ -629,12 +649,17 @@ namespace Improvar.Controllers
                                     VE.GenEinvIRNGrid[gridindex].IRNNO = adqrRespGenIRN.result.Irn.ToString();
                                     VE.GenEinvIRNGrid[gridindex].Checked = false;
                                 }
+                                else
+                                {//If error found then stop loop
+                                    VE.GenEinvIRNGrid[gridindex].MESSAGE = msg;
+                                    break;
+                                }
                             }
                             VE.GenEinvIRNGrid[gridindex].MESSAGE = msg;
                         }
-                    }
-                }
-            }
+                    }//if checked
+                }//grid loop
+            }//try
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
@@ -695,23 +720,26 @@ namespace Improvar.Controllers
 
         private void SaveSignedInvoice(string SignedInvoice, string autono)
         {
-            long length = SignedInvoice.Length;
-            long count = length / 4000;
-            int index = 0;
-            for (int i = 0; i <= count; i++)
+            if (!string.IsNullOrEmpty(SignedInvoice))
             {
-                string file = "";
-                if (length - index > 4000)
+                long length = SignedInvoice.Length;
+                long count = length / 4000;
+                int index = 0;
+                for (int i = 0; i <= count; i++)
                 {
-                    file = SignedInvoice.Substring(index, 4000);
+                    string file = "";
+                    if (length - index > 4000)
+                    {
+                        file = SignedInvoice.Substring(index, 4000);
+                    }
+                    else
+                    {
+                        file = SignedInvoice.Substring(index, SignedInvoice.Length - index);
+                    }
+                    sql = " INSERT INTO " + CommVar.FinSchema(UNQSNO) + ".T_TXNEINV_SIGN (EMD_NO, CLCD, AUTONO, SLNO, SIGNINV) VALUES(0,'" + CommVar.ClientCode(UNQSNO) + "','" + autono + "'," + (i + 1) + ",'" + file + "')";
+                    masterHelp.SQLNonQuery(sql);
+                    index += 4000;
                 }
-                else
-                {
-                    file = SignedInvoice.Substring(index, SignedInvoice.Length - index);
-                }
-                sql = " INSERT INTO " + CommVar.FinSchema(UNQSNO) + ".T_TXNEINV_SIGN (EMD_NO, CLCD, AUTONO, SLNO, SIGNINV) VALUES(0,'" + CommVar.ClientCode(UNQSNO) + "','" + autono + "'," + (i + 1) + ",'" + file + "')";
-                masterHelp.SQLNonQuery(sql);
-                index += 4000;
             }
         }
     }

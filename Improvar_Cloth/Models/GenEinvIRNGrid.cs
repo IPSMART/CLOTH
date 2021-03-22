@@ -7,9 +7,9 @@ namespace Improvar.Models
 {
     public class GenEinvIRNGrid
     {
+        public string LOCCD { get; set; }
         public string AUTONO { get; set; }
         public int SLNO { get; set; }
-        //public string DOCTYPE { get; set; }
         public string BLNO { get; set; }
         public string BLDT { get; set; }
         public string SLNM { get; set; }

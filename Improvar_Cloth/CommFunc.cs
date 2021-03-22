@@ -162,8 +162,15 @@ namespace Improvar
         public static decimal retDcml(this object val)
         {
             decimal rtval = 0;
-            if (val == null || val.retStr() == "") rtval = 0;
-            else rtval = Convert.ToDecimal(val);
+            try
+            {
+                if (val == null || val.retStr() == "") rtval = 0;
+                else rtval = Convert.ToDecimal(val);
+            }
+            catch
+            {
+                rtval = Convert.ToDecimal(Regex.Replace(val.retStr(), @"[^0-9.]+", ""));
+            }
             return rtval;
         }
         public static short retShort(this object val)

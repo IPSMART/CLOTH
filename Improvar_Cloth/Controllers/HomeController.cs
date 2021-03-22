@@ -314,6 +314,7 @@ namespace Improvar.Controllers
                 Session.Add("CompanyLocationCode", VE.LOCCD);
                 Session.Add("CompanyCode" + UNIQUESESSION, VE.COMPCD);
                 Session.Add("CompanyCode", VE.COMPCD);
+
                 Session.Add("CLIENT_CODE" + UNIQUESESSION, tbl.Rows[0]["CLIENT_CODE"].ToString());
                 Session.Add("CLIENT_CODE", tbl.Rows[0]["CLIENT_CODE"].ToString());
                 Session.Add("YEAR_CODE" + UNIQUESESSION, tbl.Rows[0]["YEAR_CODE"].ToString());
@@ -321,12 +322,14 @@ namespace Improvar.Controllers
                 Session.Add("IMPORT_TAG", tbl.Rows[0]["IMPORT_TAG"].ToString());
                 Session.Add("MIRROR_TAG", tbl.Rows[0]["MIRROR_TAG"].ToString());
                 sql = "";
-                sql = "select GSTNO from " + tbl.Rows[0]["fin_schema"].ToString() + ".M_loca a where loccd='" + VE.LOCCD + "' and compcd='" + VE.COMPCD + "'";
+                sql = "select GSTNO, nvl(showloccd,loccd) showloccd from " + tbl.Rows[0]["fin_schema"].ToString() + ".M_loca a where loccd='" + VE.LOCCD + "' and compcd='" + VE.COMPCD + "'";
                 var dt = masterHelp.SQLquery(sql);
                 if (dt.Rows.Count > 0)
                 {
                     Session.Add("GSTNO" + UNIQUESESSION, dt.Rows[0]["GSTNO"].ToString());
                     Session.Add("GSTNO", dt.Rows[0]["GSTNO"].ToString());
+                    Session.Add("SHOWLOCCD" + UNIQUESESSION, dt.Rows[0]["showloccd"].ToString());
+                    Session.Add("SHOWLOCCD", dt.Rows[0]["showloccd"].ToString());
                 }
                 if (version < dataversion)
                 {

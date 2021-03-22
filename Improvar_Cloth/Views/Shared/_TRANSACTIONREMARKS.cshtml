@@ -13,11 +13,12 @@
             @if (Model.DefaultView == true)
             {
                 @Html.ValidationSummary(true)
+                <input type="hidden" id="tempHDD" name="tempHDD" value="" />
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-md-1">
                         <div class="editor-field">
                             @Html.Label("", "Note : ")
-                            @Html.TextAreaFor(model => model.T_CNTRL_HDR_REM.DOCREM, new { @class = "TextAreaRemarks", id = "DOCREM", @placeholder = "Remarks" })
+                            @Html.TextAreaFor(model => model.T_CNTRL_HDR_REM.DOCREM, new { @class = "TextAreaRemarks", id = "REMARKS", @placeholder = "Remarks" })
                         </div>
                     </div>
                 </div>
