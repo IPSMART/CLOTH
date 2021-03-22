@@ -106,6 +106,8 @@ namespace Improvar.Models
         public string COMMONUNIQBAR { get; set; }
         [StringLength(11)]
         public string PRICEINCODECOST { get; set; }
-        
+        [StringLength(5)]
+        public string CMROFFTYPE { get; set; }
+
     }
 }

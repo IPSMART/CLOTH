@@ -2465,34 +2465,12 @@ function UploadBarnoImage(i) {
         success: function (result) {
             $("#WaitingMode").hide(); var newid = '';
             if ($("#B_BarImages_" + i).val() != "") {
-                newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
+                newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result + '~' + ImageDesc);
             }
             else {
-                newid = (result.split('/')[2] + '~' + ImageDesc);
+                newid = (result + '~' + ImageDesc);
             }
             $("#B_BarImages_" + i).val(newid);
-            //var htm = '';
-            //htm += '<div class="item ' + actt + '">';
-            //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
-            //htm += '    <span class="carousel-caption">';
-            //htm += '    <p> ' + ImageDesc + ' </p>';
-            //htm += '    </span>';
-            //htm += '</div>';
-            //$("#div_carousel_inner").append(htm);
-
-            //$('.carousel').carousel(); // $("#carousel").carousel();
-            //htm += '<div class="col-lg-4" id="' + id + '">';
-            //htm += '       <div class="thumbnail">';
-            //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
-            //htm += '           <a href="' + result + '" target="_blank">';
-            //htm += '                <img src="' + result + '" alt="" style="width:100%">';
-            //htm += '                <div class="caption">';
-            //htm += '                   ' + ImageDesc;
-            //htm += '          </div>';
-            //htm += '      </a>';
-            //htm += '  </div>';
-            //htm += '</div>';
-            //$("#divUploadImage").append(htm);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -2528,6 +2506,12 @@ function T_Sale_FillImageModal(index) {
     $.each(arr, function (index, value) {
         var imgname = (value.split('~')[0]);
         var id = (imgname).split('.')[0];
+
+        var addarr = value.split('/');
+        var id = (addarr[addarr.length - 1]).split('.')[0];
+        var newid = $("#BarImages").val() + String.fromCharCode(181) + (result + '~' + ImageDesc);
+        $("#BarImages").val(newid);
+
         var ImageDesc = (value.split('~')[1]);
         var htm = ''; if (index == 0) { actt = "active"; } else {
             actt = "";
@@ -2816,51 +2800,7 @@ function SelectPendOrder(btnid) {
 
 }
 
-function CharmPrice(ChrmType, Rate, RoundVal) {
-    RoundVal = RoundVal.padStart(2, '0');
-    if (Rate < 10) Rate = 10 + Rate;
-    var RoundAmt = retInt(RoundVal);
-    if (RoundAmt == 0) RoundAmt = 100;
-    var small = ((Rate / RoundAmt) * RoundAmt);
-    var big = small + RoundAmt;
-    if (ChrmType == "RD")//ROUND
-    {
-        var roundValu = (Rate - small >= big - Rate) ? big : small;
-        return roundValu;
-    }
-    else if (ChrmType == "RN")//ROUNDNEXT
-    {
-        return big;
-    }
-    else if (ChrmType == "NT")//NEXT
-    {
-        var last2rate = (Rate % 100);
-        if (last2rate <= retInt(RoundVal)) {
-            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-        }
-        else {
-            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
-        }
-        return retInt(big);
-    }
-    else if (ChrmType == "NR")//NEAR
-    {
-        var last2rate = (Rate % 100);
-        if (last2rate <= retInt(RoundVal)) {
-            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-            small = retInt(retStr(Rate - 100).substring(0, retStr(Rate - 100).length - 2) + RoundVal);
-        }
-        else {
-            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
-            small = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-        }
-        var NEAR = (Rate - small >= big - Rate) ? big : small;
-        return retInt(NEAR);
-    }
-    else {
-        return 0;
-    }
-}
+
 
 function RateHistoryDetails(ITCDId, ITNMId, TAG) {
     debugger;

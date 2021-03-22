@@ -769,6 +769,7 @@
         }
     }
 </script>
+
 <script>
     function fileTypeCheck(id) {
         var fileUpload = $(id).get(0);
@@ -793,9 +794,11 @@
             beforesend: $("#WaitingMode").show(),
             data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
             success: function (result) {
+                debugger;
                 $("#WaitingMode").hide();
-                var id = (result.split('/')[2]).split('.')[0];
-                var newid = $("#BarImages").val() + String.fromCharCode(181) + (result.split('/')[2] + '~' + ImageDesc);
+                var addarr = result.split('/');
+                var id = (addarr[addarr.length - 1]).split('.')[0];
+                var newid = $("#BarImages").val() + String.fromCharCode(181) + (result + '~' + ImageDesc);
                 $("#BarImages").val(newid);
                 var htm = '';
                 htm += '<div class="col-lg-4" id="' + id + '">';
@@ -822,7 +825,8 @@
         debugger;
         var arr = $("#BarImages").val().split(String.fromCharCode(181)); var deleteindex = 0;
         $.each(arr, function (index, value) {
-            var divid = (value.split('~')[0]).split('.')[0];
+            var addarr = value.split('/');
+            var divid = (addarr[addarr.length - 1]).split('.')[0];
             if (id == divid) {
                 deleteindex = index;
             }
