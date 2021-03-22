@@ -478,6 +478,18 @@ namespace Improvar
                 return "";
             }
         }
-       
+        public static string LocalUploadDocPath(string FileName = "")
+        {
+            string path = System.Web.HttpContext.Current.Server.MapPath("~/UploadDocuments/" + FileName);
+            return path;
+        }
+        public static string WebUploadDocURL(string FileName = "")
+        {
+            string WebHostPath = System.Web.HttpContext.Current.Session["WebHostPath"].retStr();
+            WebHostPath = WebHostPath + "UploadDocuments/" + FileName;
+            return WebHostPath;
+        }
+
+
     }
 }

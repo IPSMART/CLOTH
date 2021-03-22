@@ -671,9 +671,9 @@ namespace Improvar.Controllers
                                         string barfilename = barimg.Split('~')[0];
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
                                         Cn.CopyImage(FROMpath, TOPATH);
-                                    }
+                                    }                                   
                                 }
                             }
                         }
@@ -2099,7 +2099,7 @@ namespace Improvar.Controllers
                                     string barfilename = barimg.Split('~')[0];
                                     string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                     FROMpath = Path.Combine(FROMpath, "");
-                                    string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                    string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("~/UploadDocuments/" + barfilename);
                                     Cn.CopyImage(FROMpath, TOPATH);
                                 }
                             }
@@ -3331,7 +3331,7 @@ namespace Improvar.Controllers
                                         string barfilename = barimg.Split('~')[0];
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("~/UploadDocuments/" + barfilename);
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
                                 }
@@ -3602,7 +3602,7 @@ namespace Improvar.Controllers
                                         string barfilename = barimg.Split('~')[0];
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("~/UploadDocuments/" + barfilename);
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
                                 }
@@ -5432,7 +5432,8 @@ namespace Improvar.Controllers
                 var extension = Path.GetExtension(ImageName);
                 string filename = "I".retRepname() + extension;
                 var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
-                return Content("/UploadDocuments/" + filename);
+                var path = CommVar.WebUploadDocURL(filename);
+                return Content(path);
             }
             catch (Exception ex)
             {
@@ -5440,7 +5441,8 @@ namespace Improvar.Controllers
             }
 
         }
-        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+
+       public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
             List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
             int slno = 0;
