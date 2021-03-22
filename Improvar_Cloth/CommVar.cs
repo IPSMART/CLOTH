@@ -495,10 +495,8 @@ namespace Improvar
         public static string WebUploadDocURL(string FileName = "")
         {
             string WebHostPath = System.Web.HttpContext.Current.Session["WebHostPath"].retStr();
-            WebHostPath = WebHostPath.TrimEnd('/') + "UploadDocuments/" + FileName;
+            WebHostPath = WebHostPath.TrimEnd('/') + "/UploadDocuments/" + FileName;
             return WebHostPath;
         }
-
-
     }
 }

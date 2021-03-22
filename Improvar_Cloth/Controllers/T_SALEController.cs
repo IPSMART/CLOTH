@@ -5442,9 +5442,7 @@ namespace Improvar.Controllers
             {
                 return Content("//.");
             }
-
         }
-
         public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
             List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
@@ -5470,7 +5468,9 @@ namespace Improvar.Controllers
                         doc.Add(mdoc);
                         string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
                         topath = Path.Combine(topath, "");
-                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        var addarr = imagedes[0].Split('/');
+                        var tempimgName = (addarr[addarr.Length - 1]);
+                        string frompath = CommVar.LocalUploadDocPath(tempimgName);
                         Cn.CopyImage(frompath, topath);
                     }
                 }

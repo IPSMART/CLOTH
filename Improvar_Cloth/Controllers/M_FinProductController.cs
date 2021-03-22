@@ -524,7 +524,7 @@ namespace Improvar.Controllers
 
             return VE;
         }
-     
+
         public ActionResult SearchPannelData()
         {
             try
@@ -532,7 +532,7 @@ namespace Improvar.Controllers
                 ItemMasterEntry VE = new ItemMasterEntry();
                 Cn.getQueryString(VE);
                 string MNUP = VE.MENU_PARA;
-       
+
                 string scm = CommVar.CurSchema(UNQSNO);
                 string str = "select distinct a.itcd, d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, d.uomcd, nvl(b.rate, 0) wprate from ";
                 str += "(select a.itcd, b.barno ";
@@ -545,7 +545,7 @@ namespace Improvar.Controllers
                 str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
                 str += "where a.barno = b.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
-                if(MNUP=="F"|| MNUP == "C") str += " and e.itgrptype='"+ MNUP + "'";
+                if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "'";
                 else str += " and e.itgrptype NOT IN ('F','C')";
                 DataTable MDT = masterHelp.SQLquery(str);
 
@@ -1445,7 +1445,9 @@ namespace Improvar.Controllers
                         mdoc.BARNO = BARNO;
                         mdoc.DOC_EXTN = extension;
                         doc.Add(mdoc);
-                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
+                        string tmpdir = CommVar.SaveFolderPath() + "/ItemImages/";
+                        if (!Directory.Exists(tmpdir)) Directory.CreateDirectory(tmpdir);
+                        string topath = tmpdir + mdoc.DOC_FLNAME;
                         topath = Path.Combine(topath, "");
                         var addarr = imagedes[0].Split('/');
                         var tempimgName = (addarr[addarr.Length - 1]);
@@ -1511,11 +1513,11 @@ namespace Improvar.Controllers
                             var STYLENO = (from x in DB.M_SITEM where x.STYLENO == VE.M_SITEM.STYLENO && x.ITCD != VE.M_SITEM.ITCD select x).ToList();
                             if (STYLENO.Any()) dataexist = true;
                         }
-                            if (dataexist == true)
-                            {
-                                transaction.Rollback();
-                                return Content("This Design Already exist");
-                            }
+                        if (dataexist == true)
+                        {
+                            transaction.Rollback();
+                            return Content("This Design Already exist");
+                        }
                         if (VE.DefaultAction == "A")
                         {
                             MSITEM.EMD_NO = 0;
@@ -1766,7 +1768,7 @@ namespace Improvar.Controllers
                                     //MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     //MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
                                     //MSITEMBARCODE1.BARNO = barno.retStr();
-                               
+
                                     //DB.T_BATCHmst.Add(MSITEMBARCODE1);
                                     //if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
 
