@@ -273,7 +273,7 @@
     function GetBarnoDetails(id) {
         debugger;
         if (id == "") {
-            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
+            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE,PROGUNIQNO");
         }
         else {
             var progautoslno = $("#PROGAUTOSLNO").val();
@@ -285,13 +285,13 @@
                 success: function (result) {
                     var MSG = result.indexOf('id="_T_OUTRECPROCESS_Programme_GRID"');
                     if (MSG >= 0) {
-                        ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
+                        ClearAllTextBoxes("PROGAUTOSLNO,BARCODE,PROGUNIQNO");
                         $("#partialdivProgramme").html(result);
                     }
                     else {
                         var MSG = result.indexOf('#helpDIV');
                         if (MSG >= 0) {
-                            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
+                            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE,PROGUNIQNO");
                             $('#SearchFldValue').val("BARCODE");
                             $('#helpDIV').html(result);
                             $('#ReferanceFieldID').val("BARCODE/PROGAUTOSLNO");
@@ -301,7 +301,7 @@
                         else {
                             $('#helpDIV').html("");
                             msgInfo("" + result + " !");
-                            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
+                            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE,PROGUNIQNO");
                             message_value = "BARCODE";
                         }
                     }
@@ -1635,9 +1635,10 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')" />
+                                            @Html.EditorFor(model => model.PROGUNIQNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PROGUNIQNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','PROGUNIQNO','PROGUNIQNO=proguniqno=2/BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','PROGUNIQNO','PROGUNIQNO=proguniqno=2/BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')" />
                                             @Html.HiddenFor(model => model.PROGAUTOSLNO, new { id = "PROGAUTOSLNO" })
+                                            @Html.HiddenFor(model => model.BARCODE, new { id = "BARCODE" })
                                         </div>
                                     </div>
                                 </div>

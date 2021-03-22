@@ -2190,19 +2190,19 @@
                             @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-5">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-1">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     @if (Model.DefaultAction != "V")
                     { <div class="col-md-1" style="width:auto;">
-                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Get Cash Memo" title="Click to Get Cash Memo" onclick="GetCashMemoDetails()" />
+                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Get Data From Cash Memo" title="Click to Get Data From Cash Memo" onclick="GetCashMemoDetails()" />
                     </div>
                     <div class="row">
                         <div id="popup1" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
@@ -2271,8 +2271,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <p class="text-info"><b>* (Quantity=Nos*Cut Length)</b> If decimal,Nos,Cut Length is not zero (0)</p>
-                            <p class="text-info" style="margin-top:-10px;"><b>** (Nos=Quantity)</b> If decimal is zero (0) and Nos is zero (0) unless <b>(Quantity=Nos)</b></p>
+                            <p class="text-info"><b>* (Quantity=Nos*Cut Length)</b> If uom is not 'PCS' and Nos,Cut Length is not zero (0)</p>
+                            <p class="text-info" style="margin-top:-10px;"><b>** (Nos=Quantity)</b> If uom is 'PCS' and Nos is zero (0) unless <b>(Quantity=Nos)</b></p>
 
                         </div>
                     </div>

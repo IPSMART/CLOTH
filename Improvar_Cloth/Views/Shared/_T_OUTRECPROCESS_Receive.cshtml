@@ -107,7 +107,8 @@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "HasChangeBarSale();" } })
-                                        </td>
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLCOST, new { id = "B_MTRLCOST_" + i })
+                                         </td>
                                         <td class="">
                                             @Html.DropDownListFor(model => Model.TBATCHDTL[i].DISCTYPE, new SelectList(Model.DISC_TYPE, "value", "text", Model.DISC_TYPE), new { id = "B_DISCTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
                                         </td>

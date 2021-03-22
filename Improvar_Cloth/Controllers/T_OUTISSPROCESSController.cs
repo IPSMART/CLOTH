@@ -753,7 +753,7 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
                 string BOMITCD = "";
-                if(GOCD == "")
+                if (GOCD == "")
                 {
                     return Content("Please Select Godown !!");
                 }
@@ -778,7 +778,14 @@ namespace Improvar.Controllers
                     mtrljobcd = str.retCompValue("MTRLJOBCD");
                     if (mtrljobcd == "")
                     {
-                        cd = "FS";
+                        if (VE.MENU_PARA == "DY" && menupara == "PB")
+                        {
+                            cd = "DY";
+                        }
+                        else
+                        {
+                            cd = "FS";
+                        }
                         mtrljobnm = (from i in DB.M_MTRLJOBMST where i.MTRLJOBCD == cd select i.MTRLJOBNM).FirstOrDefault();
                     }
                     else { cd = mtrljobcd; mtrljobnm = str.retCompValue("MTRLJOBNM"); }
@@ -942,7 +949,7 @@ namespace Improvar.Controllers
                 {
                     return Content("Please Select Document Date !!");
                 }
-                var str = masterHelp.SLCD_help(val);
+                var str = masterHelp.SLCD_help(val, "J");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1520,6 +1527,7 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Cn.getQueryString(VE);
+                List<TPROGBOM> itemdata = new List<TPROGBOM>();
                 if (VE.T_TXN.JOBCD == "DY")
                 {
                     VE.TPROGBOM = (from x in VE.TPROGDTL
@@ -1530,6 +1538,7 @@ namespace Improvar.Controllers
                                        QITNM = x.ITNM,
                                        QUOM = x.UOM,
                                        QQNTY = x.QNTY,
+                                       BOMQNTY = x.QNTY,
                                        BARNO = x.BARNO,
                                        ITGRPCD = x.ITGRPCD,
                                        ITGRPNM = x.ITGRPNM,
@@ -1539,7 +1548,7 @@ namespace Improvar.Controllers
                                        COLRCD = x.COLRCD,
                                        COLRNM = x.COLRNM,
                                        UOM = x.UOM,
-                                       MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "DY",
+                                       MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "PL",
                                        //MTRLJOBNM = x.MTRLJOBNM,
                                        Q_CheckedSample = x.CheckedSample == true ? true : false,
                                    }).ToList();
@@ -1567,6 +1576,20 @@ namespace Improvar.Controllers
                                        SLNO = dr["slno"].retShort(),
                                        RSLNO = dr["rslno"].retShort(),
                                    }).ToList();
+                    string[] itcdarr = VE.TPROGBOM.Select(a => a.ITCD).Distinct().ToArray();
+                    itemdata = (from a in DB.M_SITEM
+                                join b in DB.M_GROUP on a.ITGRPCD equals b.ITGRPCD into x
+                                from b in x.DefaultIfEmpty()
+                                where itcdarr.Contains(a.ITCD)
+                                select new TPROGBOM()
+                                {
+                                    ITCD = a.ITCD,
+                                    ITNM = a.ITNM,
+                                    ITGRPCD = a.ITGRPCD,
+                                    ITGRPNM = b.ITGRPNM,
+                                    STYLENO = a.STYLENO,
+                                    UOM = a.UOMCD,
+                                }).ToList();
                     //VE.TPROGBOM = (from x in VE.TPROGDTL
                     //               group x by new
                     //               {
@@ -1594,6 +1617,15 @@ namespace Improvar.Controllers
                         string mtrljobcd = VE.TPROGBOM[p].MTRLJOBCD;
                         var mtrljobnm = DB.M_MTRLJOBMST.Where(a => a.MTRLJOBCD == mtrljobcd).Select(b => b.MTRLJOBNM).FirstOrDefault();
                         VE.TPROGBOM[p].MTRLJOBNM = mtrljobnm;
+                    }
+                    else
+                    {
+                        string itcd = VE.TPROGBOM[p].ITCD;
+                        var data = (from a in itemdata where a.ITCD == itcd select new { a.ITNM, a.ITGRPCD, a.ITGRPNM, a.STYLENO ,a.UOM}).FirstOrDefault();
+                        VE.TPROGBOM[p].ITNM = data.STYLENO + " " + data.ITNM;
+                        VE.TPROGBOM[p].ITGRPCD = data.ITGRPCD;
+                        VE.TPROGBOM[p].ITGRPNM = data.ITGRPNM;
+                        VE.TPROGBOM[p].UOM = data.UOM;
                     }
                     //else
                     //{

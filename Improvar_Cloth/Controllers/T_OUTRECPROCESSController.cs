@@ -414,7 +414,7 @@ namespace Improvar.Controllers
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
-                str1 += "n.WPPRICEGEN,i.RECPROGAUTONO,i.RECPROGSLNO ";
+                str1 += "n.WPPRICEGEN,i.RECPROGAUTONO,i.RECPROGSLNO,i.MTRLCOST ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
@@ -482,6 +482,7 @@ namespace Improvar.Controllers
                                     //RPPRICEGEN = VE.MENU_PARA == "PB" ? dr["RPPRICEGEN"].retStr() : "",
                                     RECPROGAUTONO = dr["RECPROGAUTONO"].retStr(),
                                     RECPROGSLNO = dr["RECPROGSLNO"].retShort(),
+                                    MTRLCOST = dr["MTRLCOST"].retDbl(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
@@ -1226,7 +1227,7 @@ namespace Improvar.Controllers
                 {
                     return Content("Please Select Document Date !!");
                 }
-                var str = masterHelp.SLCD_help(val);
+                var str = masterHelp.SLCD_help(val,"J");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1424,7 +1425,7 @@ namespace Improvar.Controllers
                 if (val.retStr() != "")
                 {
                     string valsrch = val.ToUpper().Trim();
-                    string str = "(barno = '" + valsrch + "' or styleno like('%" + valsrch + "%')) ";
+                    string str = "(proguniqno = '" + valsrch + "' or barno = '" + valsrch + "' or styleno like('%" + valsrch + "%')) ";
                     if (Code.retStr() != "") { str += "and progautoslno = '" + Code + "'"; }
                     var filterdata = tbl.Select(str);
                     if (filterdata != null && filterdata.Count() > 0)
@@ -1445,11 +1446,11 @@ namespace Improvar.Controllers
                         SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"].retStr().Remove(10) + " </td><td>" + tbl.Rows[i]["proguniqno"] + " </td><td>"
                             + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " [" + tbl.Rows[i]["itgrpcd"] + "]" + " </td><td>" + tbl.Rows[i]["itnm"] + " [" + tbl.Rows[i]["itcd"] + "]" + " </td><td>"
                             + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["balnos"] + " </td><td>" + tbl.Rows[i]["balqnty"] + " </td><td>"
-                            + tbl.Rows[i]["progautoslno"] + " </td></tr>");
+                            + tbl.Rows[i]["progautoslno"] + " </td><td>" + tbl.Rows[i]["itremark"] + " </td></tr>");
                     }
                     var hdr = "Doc No." + Cn.GCS() + "Doc Dt." + Cn.GCS() + "Uniq. No." + Cn.GCS() + "Bar Code No" + Cn.GCS()
                         + "Item Group" + Cn.GCS() + "Item" + Cn.GCS() + "Style No" + Cn.GCS() + "bal. Nos." + Cn.GCS() + "bal. Qnty."
-                        + Cn.GCS() + "progautoslno";
+                        + Cn.GCS() + "progautoslno" + Cn.GCS() + "Item Remarks";
                     string str = masterHelp.Generate_help(hdr, SB.ToString(), "9");
                     return PartialView("_Help2", str);
                 }
@@ -1509,6 +1510,8 @@ namespace Improvar.Controllers
                             VE.TPROGDTL[p].BALNOS = balnosqnty.balnos.retDbl();
                             VE.TPROGDTL[p].BALQNTY = balnosqnty.balqnty.retDbl();
                             slno++;
+                           
+                           
                         }
                         VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
                         VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();
@@ -1611,6 +1614,13 @@ namespace Improvar.Controllers
                     VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
                     VE.TBATCHDTL[p].TXNSLNO = Convert.ToInt16(p + 1);
                     //VE.TBATCHDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
+                    if (VE.TBATCHDTL[p].QNTY.retDbl() != 0 && VE.TBATCHDTL[p].SAMPLE.retStr() != "Y")
+                    {
+                        string progautono = VE.TBATCHDTL[p].RECPROGAUTONO;
+                        short progslno = VE.TBATCHDTL[p].RECPROGSLNO.retShort();
+                        var progtotalamt = DB.T_KARDTL.Where(a => a.PROGAUTONO == progautono && a.PROGSLNO == progslno).Select(a => (a.QNTY * a.RATE)).Sum();
+                        VE.TBATCHDTL[p].MTRLCOST = (progtotalamt.retDbl() / VE.TBATCHDTL[p].QNTY.retDbl()).toRound(2);
+                    }
                 }
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -2687,6 +2697,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.RECPROGAUTONO = VE.TBATCHDTL[i].RECPROGAUTONO;
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
                                 TBATCHDTL.STKTYPE = "F";
+                                TBATCHDTL.MTRLCOST = VE.TBATCHDTL[i].MTRLCOST;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

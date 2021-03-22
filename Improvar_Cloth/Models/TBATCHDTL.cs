@@ -197,5 +197,6 @@ namespace Improvar.Models
         public string COMMONUNIQBAR { get; set; }
         public double? WPPER { get; set; }
         public double? RPPER { get; set; }
+        public double? MTRLCOST { get; set; }
     }
 }

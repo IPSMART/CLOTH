@@ -2153,7 +2153,7 @@ namespace Improvar
 
             sql = "";
             sql += "select a.autono, a.slno, a.autono||a.slno autoslno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, ";
-            sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate, a.txblval + nvl(a.othramt,0) netamt, ";
+            sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate, a.txblval + + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, ";
             sql += sqld;
             sql += "a.qnty, a.nos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, ";
