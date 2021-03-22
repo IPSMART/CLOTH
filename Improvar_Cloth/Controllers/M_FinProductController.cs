@@ -480,16 +480,17 @@ namespace Improvar.Controllers
                                           {
                                               docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
                                               DOC_DESC = dr["DOC_DESC"].retStr(),
-                                              DOC_FILE = "/UploadDocuments/" + dr["DOC_FLNAME"].retStr(),
+                                              DOC_FILE = CommVar.WebUploadDocURL(dr["DOC_FLNAME"].retStr()),
                                               DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
                                           }).ToList();
                     foreach (var v in VE.UploadBarImages)
                     {
                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
                         FROMpath = Path.Combine(FROMpath, "");
-                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath(v.DOC_FILE);
+                        string TOPATH = CommVar.LocalUploadDocPath() + v.DOC_FILE_NAME;
+                        var tyy = Url.Action();
                         Cn.CopyImage(FROMpath, TOPATH);
-                        VE.BarImages += Cn.GCS() + v.DOC_FILE_NAME + "~" + v.DOC_DESC;
+                        VE.BarImages += Cn.GCS() + CommVar.WebUploadDocURL(v.DOC_FILE_NAME) + "~" + v.DOC_DESC;
                     }
 
                     if (VE.DefaultAction == "A")
@@ -514,14 +515,6 @@ namespace Improvar.Controllers
                     MIS.SRLNO = "1";
                     ITEMSIZE.Add(MIS);
                     VE.MSITEMSLCD = ITEMSIZE;
-                    //List<MSITEMSLCD> MSITEMSLCD = new List<MSITEMSLCD>();
-                    //for (int i = 0; i < 5; i++)
-                    //{
-                    //    MSITEMSLCD ITEMSIZE = new MSITEMSLCD();
-                    //    ITEMSIZE.SRLNO = Convert.ToString(i + 1);
-                    //    MSITEMSLCD.Add(ITEMSIZE);
-                    //}
-                    //VE.MSITEMSLCD = MSITEMSLCD;
                 }
             }
             catch (Exception ex)
@@ -531,39 +524,7 @@ namespace Improvar.Controllers
 
             return VE;
         }
-        //public ActionResult SearchPannelData()
-        //{
-        //    try
-        //    {
-        //        ItemMasterEntry VE = new ItemMasterEntry();
-        //        Cn.getQueryString(VE);
-        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-        //        var MDT = (from j in DB.M_SITEM
-        //                   join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
-        //                   join q in DB.M_GROUP on j.ITGRPCD equals (q.ITGRPCD)
-        //                   where (j.M_AUTONO == p.M_AUTONO && q.ITGRPTYPE == VE.MENU_PARA)
-        //                   select new
-        //                   {
-        //                       ITCD = j.ITCD,
-        //                       STYLENO = j.STYLENO,
-        //                       ITNM = j.ITNM,
-        //                       ITGRPCD = j.ITGRPCD,
-        //                       ITGRPNM = q.ITGRPNM
-        //                   }).OrderBy(s => s.ITCD).ToList();
-        //        System.Text.StringBuilder SB = new System.Text.StringBuilder();
-        //        var hdr = "Design No" + Cn.GCS() + "Item Name" + Cn.GCS() + "ItemCd" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group";
-        //        for (int j = 0; j <= MDT.Count - 1; j++)
-        //        {
-        //            SB.Append("<tr><td>" + MDT[j].STYLENO + "</td><td>" + MDT[j].ITNM + "</td><td>" + MDT[j].ITCD + "</td><td>" + MDT[j].ITGRPNM + "</td><td>" + MDT[j].ITGRPCD + "</td></tr>");
-        //        }
-        //        return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "2"));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
+     
         public ActionResult SearchPannelData()
         {
             try
@@ -1486,7 +1447,9 @@ namespace Improvar.Controllers
                         doc.Add(mdoc);
                         string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
                         topath = Path.Combine(topath, "");
-                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        var addarr = imagedes[0].Split('/');
+                        var tempimgName = (addarr[addarr.Length - 1]);
+                        string frompath = CommVar.LocalUploadDocPath(tempimgName);
                         Cn.CopyImage(frompath, topath);
                     }
                 }
@@ -1505,7 +1468,8 @@ namespace Improvar.Controllers
                 var extension = Path.GetExtension(ImageName);
                 string filename = "I".retRepname() + extension;
                 var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
-                return Content("/UploadDocuments/" + filename);
+                var path = CommVar.WebUploadDocURL(filename);
+                return Content(path);
             }
             catch (Exception ex)
             {
