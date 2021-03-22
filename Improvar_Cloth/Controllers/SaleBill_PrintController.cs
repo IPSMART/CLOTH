@@ -48,6 +48,7 @@ namespace Improvar.Controllers
                     string reptype = "SALEBILL";
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
+                    if (VE.MENU_PARA == "PJBL") reptype = "PJBILL";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
                     if (repformat != null)
@@ -2122,54 +2123,54 @@ namespace Improvar.Controllers
                             string cfld = "", rfld = ""; int rf = 0;
                             //if (tbl.Rows[i]["prtynm"].retStr() != "")
                             //{
-                                dr1["slcd"] = tbl.Rows[i]["rtdebcd"].ToString();
-                                dr1["slnm"] = tbl.Rows[i]["nm"].ToString();
-                                dr1["sladd1"] = tbl.Rows[i]["addr"].ToString();
-                                dr1["sladd2"] = tbl.Rows[i]["city"].ToString();
-                                if (tbl.Rows[i]["mobile"].ToString() != "")
-                                {
-                                    dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
-                                }
+                            dr1["slcd"] = tbl.Rows[i]["rtdebcd"].ToString();
+                            dr1["slnm"] = tbl.Rows[i]["nm"].ToString();
+                            dr1["sladd1"] = tbl.Rows[i]["addr"].ToString();
+                            dr1["sladd2"] = tbl.Rows[i]["city"].ToString();
+                            if (tbl.Rows[i]["mobile"].ToString() != "")
+                            {
+                                dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
+                            }
 
-                                //dr1["slnm"] = tbl.Rows[i]["prtynm"].ToString();
+                            //dr1["slnm"] = tbl.Rows[i]["prtynm"].ToString();
 
-                                //for (int f = 1; f <= 6; f++)
-                                //{
-                                //    cfld = "prtyadd" + Convert.ToString(f).ToString();
-                                //    if (tbl.Rows[i][cfld].ToString() != "")
-                                //    {
-                                //        rf = rf + 1;
-                                //        rfld = "sladd" + Convert.ToString(rf);
-                                //        dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                                //    }
-                                //}
-                                //rf = rf + 1;
-                                //rfld = "sladd" + Convert.ToString(rf);
-                                //dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
-                                //if (tbl.Rows[i]["gstno"].ToString() != "")
-                                //{
-                                //    rf = rf + 1;
-                                //    rfld = "sladd" + Convert.ToString(rf);
-                                //    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
-                                //}
-                                //if (tbl.Rows[i]["panno"].ToString() != "")
-                                //{
-                                //    rf = rf + 1;
-                                //    rfld = "sladd" + Convert.ToString(rf);
-                                //    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                                //}
-                                //if (tbl.Rows[i]["prtymob"].ToString() != "")
-                                //{
-                                //    rf = rf + 1;
-                                //    rfld = "sladd" + Convert.ToString(rf);
-                                //    dr1[rfld] = "Ph. # " + tbl.Rows[i]["prtymob"].ToString();
-                                //}
-                                //if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                                //{
-                                //    rf = rf + 1;
-                                //    rfld = "sladd" + Convert.ToString(rf);
-                                //    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                                //}
+                            //for (int f = 1; f <= 6; f++)
+                            //{
+                            //    cfld = "prtyadd" + Convert.ToString(f).ToString();
+                            //    if (tbl.Rows[i][cfld].ToString() != "")
+                            //    {
+                            //        rf = rf + 1;
+                            //        rfld = "sladd" + Convert.ToString(rf);
+                            //        dr1[rfld] = tbl.Rows[i][cfld].ToString();
+                            //    }
+                            //}
+                            //rf = rf + 1;
+                            //rfld = "sladd" + Convert.ToString(rf);
+                            //dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
+                            //if (tbl.Rows[i]["gstno"].ToString() != "")
+                            //{
+                            //    rf = rf + 1;
+                            //    rfld = "sladd" + Convert.ToString(rf);
+                            //    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
+                            //}
+                            //if (tbl.Rows[i]["panno"].ToString() != "")
+                            //{
+                            //    rf = rf + 1;
+                            //    rfld = "sladd" + Convert.ToString(rf);
+                            //    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
+                            //}
+                            //if (tbl.Rows[i]["prtymob"].ToString() != "")
+                            //{
+                            //    rf = rf + 1;
+                            //    rfld = "sladd" + Convert.ToString(rf);
+                            //    dr1[rfld] = "Ph. # " + tbl.Rows[i]["prtymob"].ToString();
+                            //}
+                            //if (tbl.Rows[i]["slactnameof"].ToString() != "")
+                            //{
+                            //    rf = rf + 1;
+                            //    rfld = "sladd" + Convert.ToString(rf);
+                            //    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
+                            //}
                             //}
                             //else
                             //{
@@ -3264,6 +3265,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("upiimgpath", typeof(string), "");
                 IR.Columns.Add("ackno", typeof(string), "");
                 IR.Columns.Add("mutslnm", typeof(string), "");
+                if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -3828,6 +3830,12 @@ namespace Improvar.Controllers
                                 if (tbl.Rows[i]["itcd"].ToString() != "") dr1["caltype"] = 1; else dr1["caltype"] = 0;
                                 dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
                                 dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
+                                if (VE.MENU_PARA == "PJBL")
+                                {
+                                    if (doctotprint == false && totalreadyprint == false)
+                                    { dr1["BL_TOP_DSC"] = "Being job changes for the following."; }
+                                }
+
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
@@ -4143,6 +4151,7 @@ namespace Improvar.Controllers
                 string compfixlogosrc = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "fix.jpg";
                 string sendemailids = "";
                 string rptfile = "SaleBill.rpt";
+                //if (VE.MENU_PARA == "PJBL") rptfile = "SaleBill_Job.rpt";
                 if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                 if (VE.maxdate == "CHALLAN") blhead = "CHALLAN";
