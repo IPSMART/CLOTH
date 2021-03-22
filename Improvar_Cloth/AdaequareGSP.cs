@@ -180,6 +180,7 @@ namespace Improvar
                 if (string.IsNullOrEmpty(AI.SellerDtls.Em) || CommFunc.IsValidEmail(AI.SellerDtls.Em) == false) { AI.SellerDtls.Em = null; }
 
                 // BuyerDtls
+                if (string.IsNullOrEmpty(AI.BuyerDtls.Addr1)) msg += "(" + AI.BuyerDtls.Addr1 + ")BuyerDtls.Addr1 should not empty. ";
                 if (AI.BuyerDtls.Addr1.retStr().Length > 100) { AI.BuyerDtls.Addr1 = AI.BuyerDtls.Addr1.Substring(0, 100); }
                 if (AI.BuyerDtls.Addr2.retStr().Length > 100) { AI.BuyerDtls.Addr2 = AI.BuyerDtls.Addr2.Substring(0, 100); }
                 if (string.IsNullOrEmpty(AI.BuyerDtls.Gstin)) { AI.BuyerDtls.Gstin = null; }
@@ -194,6 +195,7 @@ namespace Improvar
                 //DispDtls
                 if (AI.DispDtls != null)
                 {
+                    if (string.IsNullOrEmpty(AI.DispDtls.Addr1)) msg += "(" + AI.DispDtls.Addr1 + ")DispDtls.Addr1 should not empty. ";
                     if (AI.DispDtls.Addr1.retStr().Length > 100) { AI.DispDtls.Addr1 = AI.DispDtls.Addr1.Substring(0, 100); }
                     if (AI.DispDtls.Addr2.retStr().Length > 100) { AI.DispDtls.Addr2 = AI.DispDtls.Addr2.Substring(0, 100); }
                     if (AI.DispDtls.Addr1.Trim() == "") { msg += "DispDtls.Addr1 should not blank; "; }
@@ -356,6 +358,7 @@ namespace Improvar
             IPSAPICODE = "GSTINFO";
             Dictionary<string, string> AdaequareIRNHdr = AdaequareIRNHeaderTest();
             url = "https://gsp.adaequare.com/test/enriched/ei/api/master/gstin?gstin=" + gstin + "";
+            //url = "https://gsp.adaequare.com/test/enriched/ewb/master/GetGSTINDetails?GSTIN=" + gstin + "";
             string jsonstr = ConsumeAdqrAPI(url, "", AdaequareIRNHdr);
             AdqrRespGstInfo adqrRespExtractInvoice = JsonConvert.DeserializeObject<AdqrRespGstInfo>(jsonstr);
             return adqrRespExtractInvoice;
@@ -428,7 +431,7 @@ namespace Improvar
                     Cn.SaveTextFile(hdrString);
                     if (jsonStr == "")
                     {
-                        response = client.PostAsync(url, data).GetAwaiter().GetResult(); //Make sure it is synchonrous  //   response = client.GetAsync(url).Result;
+                        response = client.GetAsync(url).GetAwaiter().GetResult(); //Make sure it is synchonrous  //   response = client.GetAsync(url).Result;
                     }
                     else
                     {
