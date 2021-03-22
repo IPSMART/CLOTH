@@ -434,8 +434,6 @@
     <Compile Include="Models\MUSRACSGRPDTL.cs" />
     <Compile Include="Models\M_AMTTYPE.cs" />
     <Compile Include="Models\M_AREACD.cs" />
-    <Compile Include="Models\M_BATCH_IMG_HDR.cs" />
-    <Compile Include="Models\M_BATCH_IMG_HDR_LINK.cs" />
     <Compile Include="Models\M_BLTYPE.cs" />
     <Compile Include="Models\M_BRAND.cs" />
     <Compile Include="Models\M_CLASS1.cs" />

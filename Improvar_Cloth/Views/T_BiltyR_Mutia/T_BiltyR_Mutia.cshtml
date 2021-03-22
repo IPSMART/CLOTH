@@ -243,10 +243,11 @@
                 beforesend: $("#WaitingMode").show(),
                 data: $('form').serialize()+"&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
-                    //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 
                     $("#partialdivMain").animate({ marginTop: '0px' }, 50);
-                    $("#partialdivMain").html(result);
+                    $("#partialdivMain").html(res[0]);
+                    $("#BALECOUNT").val(res[1]);
                     $("#WaitingMode").hide();
                     @*$('#partialdivMain').html(res[0]);
                     if ("@Session["CLIENT_CODE"]" == "ADHU") {
@@ -404,6 +405,19 @@
                                 @Html.Partial("_T_BiltyR_Mutia_Main")
                             </div>
 
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Bale")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BALECOUNT, new { htmlAttributes = new { @class = "form-control", id = "BALECOUNT", @placeholder = "Total Bale", @readonly = "readonly", tabindex = "-1" } })
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="Remarks" class="tab-pane fade">

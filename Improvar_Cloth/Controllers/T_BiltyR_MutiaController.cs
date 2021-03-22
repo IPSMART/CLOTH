@@ -243,7 +243,7 @@ namespace Improvar.Controllers
                     VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
 
                 }
-
+                VE.BALECOUNT = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count().retStr();
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
@@ -472,23 +472,24 @@ namespace Improvar.Controllers
                     int j = 0;
                     while (j <= tbilyr.Count - 1)
                     {
-                        TBILTYR MLI1 = new TBILTYR();
-                        //int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
-                        int SERIAL = 0;
+                       
+                        int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
+                        int RSERIAL = 0;
                         string baleno = tbilyr[j].BALENO.retStr();
-                        var data = MLocIFSC1.Where(a => a.BALENO == baleno).Select(a => a.SLNO).ToList();
+                        var data = MLocIFSC1.Where(a => a.BALENO == baleno).Select(a => a.RSLNO).ToList();
                         if (data.Count > 0)
                         {
-                            SERIAL = data.Max(a => a).retInt();
+                            RSERIAL = data.Max(a => a).retInt();
                         }
                         else
                         {
-                            SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
+                            RSERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.RSLNO)));
+                            RSERIAL++;
                         }
-
-                        startno = (startno + (SERIAL + 1)).retShort();
                         while (tbilyr[j].BALENO == baleno)
                         {
+                            TBILTYR MLI1 = new TBILTYR();
+                            SERIAL++;
                             MLI1.Checked = true;
                             MLI1.BLAUTONO = tbilyr[j].BLAUTONO.retStr();
                             MLI1.ITCD = tbilyr[j].ITCD.retStr();
@@ -508,8 +509,8 @@ namespace Improvar.Controllers
                             MLI1.PBLDT = tbilyr[j].PBLDT.retDateStr();
                             if (tbilyr[j].PAGENO != "" && tbilyr[j].PAGESLNO != "") concatStr = "/"; else concatStr = "";
                             MLI1.PAGENO = MLI1.PAGENO + concatStr + MLI1.PAGESLNO;
-                            MLI1.SLNO = (SERIAL + 1).retShort();
-                            MLI1.RSLNO = (startno + (SERIAL + 1)).retShort();
+                            MLI1.SLNO = SERIAL.retShort();
+                            MLI1.RSLNO = RSERIAL.retShort();
 
                             MLocIFSC1.Add(MLI1);
 
@@ -521,12 +522,12 @@ namespace Improvar.Controllers
                     }
                     VE.TBILTYR = MLocIFSC1;
                 }
-
+                var balecnt = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count();
 
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyR_Mutia_Main", VE);
-                return Content(GRN_MAIN);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
             }
             catch (Exception ex)
             {
