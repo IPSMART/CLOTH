@@ -663,17 +663,20 @@ namespace Improvar.Controllers
                                 }
                                 if (tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
-                                    v.BarImages = tax_data.Rows[0]["barimage"].retStr();
-                                    var brimgs = v.BarImages.retStr().Split((char)179);
+                                    string barimage = tax_data.Rows[0]["barimage"].retStr();
+                                    var brimgs = barimage.Split((char)179);
                                     v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                                     foreach (var barimg in brimgs)
                                     {
                                         string barfilename = barimg.Split('~')[0];
+                                        string barimgdesc = barimg.Split('~')[1];
+                                        v.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
                                         string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
                                         Cn.CopyImage(FROMpath, TOPATH);
-                                    }                                   
+                                    }
+                                    v.BarImages = v.BarImages.retStr().TrimStart((char)179);
                                 }
                             }
                         }
@@ -4345,7 +4348,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
@@ -5352,7 +5355,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5360,7 +5363,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
@@ -5439,10 +5442,8 @@ namespace Improvar.Controllers
             {
                 return Content("//.");
             }
-
         }
-
-       public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
             List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
             int slno = 0;
@@ -5467,7 +5468,9 @@ namespace Improvar.Controllers
                         doc.Add(mdoc);
                         string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
                         topath = Path.Combine(topath, "");
-                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        var addarr = imagedes[0].Split('/');
+                        var tempimgName = (addarr[addarr.Length - 1]);
+                        string frompath = CommVar.LocalUploadDocPath(tempimgName);
                         Cn.CopyImage(frompath, topath);
                     }
                 }

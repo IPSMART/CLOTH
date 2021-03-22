@@ -186,13 +186,6 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
-                                //string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                                //string sql = "";
-                                //sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm ";
-                                //sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
-                                //sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('"++"','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
-                                //sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
-
                                 DataTable syscnfgdt = salesfunc.GetSyscnfgData(TTXN.DOCDT.retDateStr());
                                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
@@ -620,17 +613,32 @@ namespace Improvar.Controllers
                                 }
                                 if (tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
-                                    v.BarImages = tax_data.Rows[0]["barimage"].retStr();
-                                    var brimgs = v.BarImages.retStr().Split((char)179);
+                                    string barimage = tax_data.Rows[0]["barimage"].retStr();
+                                    var brimgs = barimage.Split((char)179);
                                     v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                                     foreach (var barimg in brimgs)
                                     {
                                         string barfilename = barimg.Split('~')[0];
+                                        string barimgdesc = barimg.Split('~')[1];
+                                        v.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
+                                    v.BarImages = v.BarImages.retStr().TrimStart((char)179);
+                                    //
+                                    //v.BarImages = tax_data.Rows[0]["barimage"].retStr();
+                                    //var brimgs = v.BarImages.retStr().Split((char)179);
+                                    //v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                                    //foreach (var barimg in brimgs)
+                                    //{
+                                    //    string barfilename = barimg.Split('~')[0];
+                                    //    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                    //    FROMpath = Path.Combine(FROMpath, "");
+                                    //    string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                    //    Cn.CopyImage(FROMpath, TOPATH);
+                                    //}
                                 }
                             }
                         }
@@ -686,17 +694,20 @@ namespace Improvar.Controllers
                                 }
                                 if (R_tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
-                                    v.BarImages = R_tax_data.Rows[0]["barimage"].retStr();
-                                    var brimgs = v.BarImages.retStr().Split((char)179);
+                                    string barimage = R_tax_data.Rows[0]["barimage"].retStr();
+                                    var brimgs = barimage.Split((char)179);
                                     v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                                     foreach (var barimg in brimgs)
                                     {
                                         string barfilename = barimg.Split('~')[0];
+                                        string barimgdesc = barimg.Split('~')[1];
+                                        v.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
+                                    v.BarImages = v.BarImages.retStr().TrimStart((char)179);
                                 }
                             }
                         }
@@ -3731,7 +3742,8 @@ namespace Improvar.Controllers
                 var extension = Path.GetExtension(ImageName);
                 string filename = "I".retRepname() + extension;
                 var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
-                return Content("/UploadDocuments/" + filename);
+                var path = CommVar.WebUploadDocURL(filename);
+                return Content(path);
             }
             catch (Exception ex)
             {

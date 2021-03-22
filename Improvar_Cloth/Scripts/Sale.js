@@ -2485,7 +2485,9 @@ function deleteBarImages() {
     var id = $("#div_carousel_inner div.active").attr('id')
     var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
     $.each(arr, function (index, value) {
-        var divid = (value.split('~')[0]).split('.')[0];
+        var imgurl = (value.split('~')[0]);
+        var addarr = imgurl.split('/');
+        var divid = (addarr[addarr.length - 1]).split('.')[0];
         if (id == divid) {
             deleteindex = index;
         }
@@ -2504,20 +2506,16 @@ function T_Sale_FillImageModal(index) {
     var arr = $("#B_BarImages_" + index).val();
     arr = arr.split(String.fromCharCode(179));
     $.each(arr, function (index, value) {
-        var imgname = (value.split('~')[0]);
-        var id = (imgname).split('.')[0];
-
-        var addarr = value.split('/');
-        var id = (addarr[addarr.length - 1]).split('.')[0];
-        var newid = $("#BarImages").val() + String.fromCharCode(181) + (result + '~' + ImageDesc);
-        $("#BarImages").val(newid);
-
+        var imgurl = (value.split('~')[0]);
         var ImageDesc = (value.split('~')[1]);
+        var imgurlarr = imgurl.split('/');
+        var id = (imgurlarr[imgurlarr.length - 1]).split('.')[0];
+
         var htm = ''; if (index == 0) { actt = "active"; } else {
             actt = "";
         }
         htm += '<div id="' + id + '" class="item ' + actt + '">';
-        htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+        htm += '    <img src="' + imgurl + '"  alt="Img Not Found" style="width:100%;">';
         htm += '    <span class="carousel-caption">';
         htm += '    <p> ' + ImageDesc + ' </p>';
         htm += '    </span>';
