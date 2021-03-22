@@ -1,0 +1,121 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "Job Work Register";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string PageControllerName = "Rep_Jobreg";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    });
+</script>
+<script>
+    function Show_rep() {
+        debugger;
+        //if (!emptyFieldCheck("Enter/Select To Date ", "TDT")) { return false; }
+        $("#form1").attr('target', '_blank');
+        $("#form1").attr('action', 'Rep_Jobreg');
+        $("#form1").submit();
+
+    }
+</script>
+
+@using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 0% 22% 2% 22%;">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                            <sup style="color:red">*</sup>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Doc Code")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.TEXTBOX2))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Party")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.Slnm))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Porter")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.TEXTBOX1))
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-8" style="border: 2px groove;width:auto;">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "N", new { @checked = "checked" })  @Html.Label("Normal")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "S")  @Html.Label("Standard")
+                        </label>
+                    </div>
+                    <div class="row" style="margin-top:10PX">
+                        <div class="col-lg-2">
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="button" value="Show Report" name="command" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
+                            @*<input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}

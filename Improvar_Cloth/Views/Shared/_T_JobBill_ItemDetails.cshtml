@@ -1,0 +1,219 @@
+﻿@model Improvar.ViewModels.TJobBillEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_PND_ITEM_GRID'));
+    });
+</script>
+@if (Model.MSG.Length <= 0)
+{
+    <div style="background-color:#c4b9b9;border:5px groove;">
+        <div class="table-responsive">
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                @*<img src="~/Image/Plus.png" id="btnAddMain" class="Help_image_buttonAddRemove" title="Add Row" onclick="AddRow()" />
+                    <img src="~/Image/Minus.png" id="btnDeleteMain" class="Help_image_buttonAddRemove" title="Delete Row" onclick="DeleteRow()" />*@
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_PND_ITEM_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Pending Challan Entry Item Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells" style="transform: translate(0%, 0%)">
+                <div style="height:auto;overflow-y:auto;max-height:160px;">
+                    @Html.HiddenFor(model => model.BackupCESSTPER, new { id = "BackupCESSTPER" })
+                    @Html.HiddenFor(model => model.BackupCGSTPER, new { id = "BackupCGSTPER" })
+                    @Html.HiddenFor(model => model.BackupIGSTPER, new { id = "BackupIGSTPER" })
+                    @Html.HiddenFor(model => model.BackupSGSTPER, new { id = "BackupSGSTPER" })
+                    @Html.HiddenFor(model => model.ChildData_PendingSlip, new { id = "ChildData_PendingSlip" })                  
+                    <table id="_T_PND_ITEM_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2003px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 50px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 100px;">Item Code</th>
+                                <th class="" style="width: 150px;">Style No</th>
+                                <th class="" style="width: 200px;">Item Name</th>
+                                @*<th class="" style="width: 80px;">Part</th>*@
+                                <th class="" style="width:81px;text-align:right;">Pieces/Box</th>
+                                <th class="" style="width:70px;">UOM</th>
+                                <th class="" style="width:80px;text-align:right;">Receive Qnt.</th>
+                                <th class="" style="width:75px;text-align:right;">Bill Qnt.</th>
+                                <th class="" style="width:75px;text-align:right;">Pass Qnt.</th>
+                                <th class="" style="width:60px;text-align:right;">Rate</th>
+                                <th class="" style="width:80px;text-align:right;">Amount</th>
+                                <th class="" style="width:75px;text-align:right;">Short Qnt.</th>
+                                <th class="" style="width:60px;text-align:right;">Disc%</th>
+                                <th class="" style="width:90px;text-align:right;">Disc. Amount</th>
+                                <th class="" style="width:90px;text-align:right;">Add/Less</th>
+                                <th class="" style="width:80px;text-align:right;">Taxable</th>
+                                <th class="" style="width:40px;text-align:right;">IGST%</th>
+                                <th class="" style="width:80px;text-align:right;">IGST AMT.</th>
+                                <th class="" style="width:40px;text-align:right;">CGST%</th>
+                                <th class="" style="width:80px;text-align:right;">CGST AMT.</th>
+                                <th class="" style="width:40px;text-align:right;">SGST%</th>
+                                <th class="" style="width:80px;text-align:right;">SGST AMT.</th>
+                                <th class="" style="width:40px;text-align:right;">CESS%</th>
+                                <th class="" style="width:80px;text-align:right;">CESS AMT.</th>
+                                <th class="sticky-cell-opposite" style="width:80px;text-align:right;">Net Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ItemDetails != null)
+                            {
+                                for (int i = 0; i <= Model.ItemDetails.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.ItemDetails[i].Checked, new { id = "chkid" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].ITCD, new { id = "ITCD_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => model.ItemDetails[i].STYLENO, new { id = "STYLENO_" + i, @class = " atextBoxFor ", maxlength = 12, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => model.ItemDetails[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        @*<td class="">
+                                            @Html.TextBoxFor(model => model.ItemDetails[i].PARTCD, new { id = "PARTCD_" + i, @class = " atextBoxFor ", maxlength = 6, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>*@
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].PCSPERBOX, new { id = "PCSPERBOX_" + i, @style = "text-align:right;", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.ItemDetails[i].EFFDT, new { id = "EFFDT_" + i })
+                                            @Html.HiddenFor(model => model.ItemDetails[i].AUTONO, new { id = "AUTONO_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => Model.ItemDetails[i].qtncalcon, new SelectList(Model.ItemDetails[i].QNTY_UNIT_PC, "value", "text", Model.ItemDetails[i].qtncalcon), new { id = "qtncalcon_" + i, @class = "atextBoxFor select_3d", onclick = "GetPriviousVALUE(0,this);", onchange = "UOMCONVERTION(this.value,0," + i + "),CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].RECQNTY_DISPLAY, new { id = "RECQNTY_DISPLAY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @TabIndex = -1, @readonly = "readonly", @onkeypress = "return numericOnly(this,2);" })
+                                            @Html.HiddenFor(model => model.ItemDetails[i].RECQNTY, new { id = "RECQNTY_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].BillQNTY, new { id = "BillQNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].PASSQNTY, new { id = "PASSQNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,2);" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.ItemDetails[i].RATE, new { htmlAttributes = new { id = "RATE_" + i, @class = " atextBoxFor", @style = "text-align: right;", autocomplete = "off", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.ItemDetails[i].AMOUNT, new { htmlAttributes = new { id = "AMOUNT_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].ShortQNTY_DISPLAY, new { id = "ShortQNTY_DISPLAY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.ItemDetails[i].ShortQNTY, new { id = "ShortQNTY_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].DISCPER, new { id = "DISCPER_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", onkeyup = "Caldiscount('" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "', '" + "DISCAMT_" + i + "');", @onkeypress = "return  numericOnly(this,2);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].DISCAMT, new { id = "DISCAMT_" + i, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 10, @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].addless, new { id = "addless_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                        </td>
+
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].TAXABLE, new { id = "TAXABLE_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].igstper, new { id = "igstper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                           
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].igstamt, new { id = "igstamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].cgstper, new { id = "cgstper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                           
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].cgstamt, new { id = "cgstamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].sgstper, new { id = "sgstper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                          
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].sgstamt, new { id = "sgstamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].cessper, new { id = "cessper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ");" })
+                                           
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].cessamt, new { id = "cessamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="sticky-cell-opposite">
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].NETAMOUNT, new { id = "NETAMOUNT_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;font-weight:800", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Round Off")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.Roundoff_Item, new { id = "R_Checked", onclick = "BillAmount();" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Round Off Amount")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.RoundoffAMT_Item, new { htmlAttributes = new { @class = "form-control", id = "ROAMT_ITEM", @style = "text-align:right;font-weight:800", @placeholder = "Amount", maxlength = 10, @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Total Taxable Amount")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TAXABLEVAL_ITEM, new { htmlAttributes = new { @class = "form-control", id = "TAXABLEVAL_ITEM", @placeholder = "Amount", maxlength = 10, @readonly = "readonly", @style = "text-align:right;font-weight:800" } })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Total Bill Amount")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TOTALBILLAMT_ITEM, new { htmlAttributes = new { @class = "form-control", id = "TOTALBILLAMT_ITEM", @placeholder = "Amount", maxlength = 10, @readonly = "readonly", @style = "text-align:right;font-weight:800" } })
+                        <script>ReverceCharges();</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <span>@Model.MSG</span>
+}

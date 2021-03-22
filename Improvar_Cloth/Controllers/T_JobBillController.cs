@@ -594,7 +594,7 @@ namespace Improvar.Controllers
                             string UOMNM = (from u in DB1.M_UOM where (u.UOMCD == i.UOMCD) select u.UOMNM).SingleOrDefault();
                             string EXPGLNM = (from u in DB1.M_GENLEG where (u.GLCD == i.EXPGLCD) select u.GLNM).SingleOrDefault();
                             string SLGLNM = (from u in DB1.M_GENLEG where (u.GLCD == i.SCGLCD) select u.GLNM).SingleOrDefault();
-                            //str = i.JOBCD + Cn.GCS() + i.JOBNM + Cn.GCS() + i.HSNSACCD + Cn.GCS() + i.PRODGRPCD + Cn.GCS() + i.UOMCD + Cn.GCS() + UOMNM + Cn.GCS() + i.EXPGLCD + Cn.GCS() + EXPGLNM + Cn.GCS() + i.SCGLCD + Cn.GCS() + SLGLNM;
+                            str = i.JOBCD + Cn.GCS() + i.JOBNM + Cn.GCS() + i.HSNCODE + Cn.GCS() + i.PRODGRPCD + Cn.GCS() + i.UOMCD + Cn.GCS() + UOMNM + Cn.GCS() + i.EXPGLCD + Cn.GCS() + EXPGLNM + Cn.GCS() + i.SCGLCD + Cn.GCS() + SLGLNM;
                         }
                         return Content(str);
                     }

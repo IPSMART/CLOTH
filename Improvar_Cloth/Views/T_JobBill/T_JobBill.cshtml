@@ -14,6 +14,11 @@
             ViewBag.Title = "Job Bill"; break;
         default: ViewBag.Title = ""; break;
     }
+    int DOCOUNT = 0;
+    if (Model.DocumentType != null)
+    {
+        DOCOUNT = Model.DocumentType.Count;
+    }
 }
 <script src="~/Scripts/jquery.min.js"></script>
 <link rel="stylesheet" href="~/Content/jquery.stickytable.css">
@@ -302,7 +307,7 @@
                 }
             });
         }
-    
+
     }
     function SelectCurrencyCode(id, CURR_CD, CURRNM) {
         if (id == "") {
@@ -476,7 +481,7 @@
                     $('#outerP').html(result);
                     $("#BuyerHelp").hide();
                     $("#SLCD").attr("readonly", "readonly");
-                    $("#outerP").show();
+                    //$("#outerP").show();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -490,7 +495,7 @@
             $("#Msgdiv1").show();
             $("#info").show();
             $("#msg_ok_info").focus();
-            $("#msgbody_info").html("Party / Document Date / Job / Party Bill No / Party Bill Date  not Available ! Please Select / Enter a Valid Party / Document Date / Job / Party Bill No / Party Bill Date to get Challan Details !! ");
+            $("#msgbody_info").html("Please Select Valid Party /Document Date /Job /Party Bill No /Party Bill Date to get Challan Details !! ");
             message_value = "SLCD";
             return false;
         }
@@ -533,11 +538,11 @@
             data: $('form').serialize() + "&DOCDT=" + docdt + "&JOB=" + JOB,
             success: function (result) {
                 $("#WaitingMode").hide();
+                $("#outerP").fadeOut();
                 if (result != "0") {
                     var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
                     $("#partialdivItem").html(res[0]);
                     $("#partialdivSbill").html(res[1]);
-                    $("#outerP").fadeOut();
                     $("#BuyerHelp").hide();
                     $("#SLCD").attr("readonly", "readonly");
                     // ==================== set focus on desire tab ==================
@@ -1789,7 +1794,7 @@
                                     {
                                         if (Model.ItemDetails != null)
                                         {
-                                            @Html.Partial("_T_JBill_ItemDetails")
+                                            @Html.Partial("_T_JobBill_ItemDetails")
                                         }
                                     }
                                 </div>
@@ -1802,7 +1807,7 @@
                                     {
                                         if (Model.SBillSortage != null)
                                         {
-                                            @Html.Partial("_T_JBill_SBillDetails")
+                                            @Html.Partial("_T_JobBill_SBillDetails")
                                         }
                                     }
                                 </div>
@@ -1812,7 +1817,7 @@
                     <div id="DCNote" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;">
                             <div id="partialdivDRCRNOTE" style="margin-top:0px;">
-                                @Html.Partial("_T_JBill_Dr_Cr_Note")
+                                @Html.Partial("_T_JobBill_Dr_Cr_Note")
                                 <script>ReverceCharges();</script>
                             </div>
                         </div>
