@@ -1527,6 +1527,7 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Cn.getQueryString(VE);
+                List<TPROGBOM> itemdata = new List<TPROGBOM>();
                 if (VE.T_TXN.JOBCD == "DY")
                 {
                     VE.TPROGBOM = (from x in VE.TPROGDTL
@@ -1575,6 +1576,20 @@ namespace Improvar.Controllers
                                        SLNO = dr["slno"].retShort(),
                                        RSLNO = dr["rslno"].retShort(),
                                    }).ToList();
+                    string[] itcdarr = VE.TPROGBOM.Select(a => a.ITCD).Distinct().ToArray();
+                    itemdata = (from a in DB.M_SITEM
+                                join b in DB.M_GROUP on a.ITGRPCD equals b.ITGRPCD into x
+                                from b in x.DefaultIfEmpty()
+                                where itcdarr.Contains(a.ITCD)
+                                select new TPROGBOM()
+                                {
+                                    ITCD = a.ITCD,
+                                    ITNM = a.ITNM,
+                                    ITGRPCD = a.ITGRPCD,
+                                    ITGRPNM = b.ITGRPNM,
+                                    STYLENO = a.STYLENO,
+                                    UOM = a.UOMCD,
+                                }).ToList();
                     //VE.TPROGBOM = (from x in VE.TPROGDTL
                     //               group x by new
                     //               {
@@ -1602,6 +1617,15 @@ namespace Improvar.Controllers
                         string mtrljobcd = VE.TPROGBOM[p].MTRLJOBCD;
                         var mtrljobnm = DB.M_MTRLJOBMST.Where(a => a.MTRLJOBCD == mtrljobcd).Select(b => b.MTRLJOBNM).FirstOrDefault();
                         VE.TPROGBOM[p].MTRLJOBNM = mtrljobnm;
+                    }
+                    else
+                    {
+                        string itcd = VE.TPROGBOM[p].ITCD;
+                        var data = (from a in itemdata where a.ITCD == itcd select new { a.ITNM, a.ITGRPCD, a.ITGRPNM, a.STYLENO ,a.UOM}).FirstOrDefault();
+                        VE.TPROGBOM[p].ITNM = data.STYLENO + " " + data.ITNM;
+                        VE.TPROGBOM[p].ITGRPCD = data.ITGRPCD;
+                        VE.TPROGBOM[p].ITGRPNM = data.ITGRPNM;
+                        VE.TPROGBOM[p].UOM = data.UOM;
                     }
                     //else
                     //{
