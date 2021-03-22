@@ -2322,14 +2322,19 @@ namespace Improvar
         }
         public string retCompLogo()
         {
-            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png";
-            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg";
+            string complogo = "C:\\IpSmart\\Logo\\" + CommVar.Compcd(UNQSNO) + ".png";
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\IpSmart\\Logo\\" + CommVar.Compcd(UNQSNO) + ".jpg"; else { return complogo; }
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png"; else { return complogo; }
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg"; else { return complogo; }
+            if (!System.IO.File.Exists(complogo)) complogo = "";
             return complogo;
         }
         public string retCompLogo1()
         {
-            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "1.png";
-            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "1.jpg";
+            string complogo = "C:\\IpSmart\\Logo\\" + CommVar.Compcd(UNQSNO) + "1.png";
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\IpSmart\\Logo\\" + CommVar.Compcd(UNQSNO) + "1.jpg"; else { return complogo; }
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "1.jpg"; else { return complogo; }
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "1.jpg"; else { return complogo; }
             if (!System.IO.File.Exists(complogo)) complogo = "";
             return complogo;
         }

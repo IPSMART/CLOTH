@@ -243,7 +243,7 @@ namespace Improvar.Controllers
                     VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
 
                 }
-
+                VE.BALECOUNT = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count().retStr();
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
@@ -405,14 +405,37 @@ namespace Improvar.Controllers
                                       PBLDT = dr["prefdt"].retDateStr()
                                   }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                     var startno = VE.T_BALE_HDR.STARTNO;
-                    if (startno == null) startno = 0;
-                    for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
+                    if (startno == null) startno = 1;
+
+                    int i = 0;
+                    while (i <= VE.TBILTYR.Count - 1)
                     {
-                        if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
-                        VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
-                        VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
-                        VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                        string baleno = VE.TBILTYR[i].BALENO.retStr();
+                        while (VE.TBILTYR[i].BALENO == baleno)
+                        {
+                            if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                            VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
+                            VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
+                            //VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                            VE.TBILTYR[i].RSLNO = startno.retShort();
+
+                            i++;
+                            if (i > VE.TBILTYR.Count - 1) break;
+                        }
+                        startno++;
+                        if (i > VE.TBILTYR.Count - 1) break;
                     }
+
+                    //for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
+                    //{
+                    //    if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                    //    VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
+                    //    VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
+                    //    //VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                    //    VE.TBILTYR[i].RSLNO = startno.retShort();
+                    //    startno++;
+
+                    //}
                 }
                 else
                 {
@@ -446,42 +469,65 @@ namespace Improvar.Controllers
                     }
                     var startno = VE.T_BALE_HDR.STARTNO;
                     if (startno == null) startno = 0;
-                    foreach (var j in tbilyr)
+                    int j = 0;
+                    while (j <= tbilyr.Count - 1)
                     {
-                        TBILTYR MLI1 = new TBILTYR();
+                       
                         int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
-                        MLI1.Checked = true;
-                        MLI1.BLAUTONO = j.BLAUTONO.retStr();
-                        MLI1.ITCD = j.ITCD.retStr();
-                        MLI1.ITNM = j.ITNM.retStr();
-                        MLI1.NOS = j.NOS.retStr();
-                        MLI1.QNTY = j.QNTY.retStr();
-                        MLI1.UOMCD = j.UOMCD.retStr();
-                        MLI1.SHADE = j.SHADE.retStr();
-                        MLI1.BALENO = j.BALENO.retStr();
-                        MLI1.PAGENO = j.PAGENO.retStr();
-                        MLI1.PAGESLNO = j.PAGESLNO.retStr();
-                        MLI1.LRNO = j.LRNO.retStr();
-                        MLI1.LRDT = j.LRDT.retDateStr();
-                        MLI1.BALEYR = j.BALEYR.retStr();
-                        MLI1.BLSLNO = j.BLSLNO.retShort();
-                        MLI1.PBLNO = j.PBLNO.retStr();
-                        MLI1.PBLDT = j.PBLDT.retDateStr();
-                        if (j.PAGENO != "" && j.PAGESLNO != "") concatStr = "/"; else concatStr = "";
-                        MLI1.PAGENO = MLI1.PAGENO + concatStr + MLI1.PAGESLNO;
-                        MLI1.SLNO = (SERIAL + 1).retShort();
-                        MLI1.RSLNO = (startno + (SERIAL + 1)).retShort();
+                        int RSERIAL = 0;
+                        string baleno = tbilyr[j].BALENO.retStr();
+                        var data = MLocIFSC1.Where(a => a.BALENO == baleno).Select(a => a.RSLNO).ToList();
+                        if (data.Count > 0)
+                        {
+                            RSERIAL = data.Max(a => a).retInt();
+                        }
+                        else
+                        {
+                            RSERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.RSLNO)));
+                            RSERIAL++;
+                        }
+                        while (tbilyr[j].BALENO == baleno)
+                        {
+                            TBILTYR MLI1 = new TBILTYR();
+                            SERIAL++;
+                            MLI1.Checked = true;
+                            MLI1.BLAUTONO = tbilyr[j].BLAUTONO.retStr();
+                            MLI1.ITCD = tbilyr[j].ITCD.retStr();
+                            MLI1.ITNM = tbilyr[j].ITNM.retStr();
+                            MLI1.NOS = tbilyr[j].NOS.retStr();
+                            MLI1.QNTY = tbilyr[j].QNTY.retStr();
+                            MLI1.UOMCD = tbilyr[j].UOMCD.retStr();
+                            MLI1.SHADE = tbilyr[j].SHADE.retStr();
+                            MLI1.BALENO = tbilyr[j].BALENO.retStr();
+                            MLI1.PAGENO = tbilyr[j].PAGENO.retStr();
+                            MLI1.PAGESLNO = tbilyr[j].PAGESLNO.retStr();
+                            MLI1.LRNO = tbilyr[j].LRNO.retStr();
+                            MLI1.LRDT = tbilyr[j].LRDT.retDateStr();
+                            MLI1.BALEYR = tbilyr[j].BALEYR.retStr();
+                            MLI1.BLSLNO = tbilyr[j].BLSLNO.retShort();
+                            MLI1.PBLNO = tbilyr[j].PBLNO.retStr();
+                            MLI1.PBLDT = tbilyr[j].PBLDT.retDateStr();
+                            if (tbilyr[j].PAGENO != "" && tbilyr[j].PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                            MLI1.PAGENO = MLI1.PAGENO + concatStr + MLI1.PAGESLNO;
+                            MLI1.SLNO = SERIAL.retShort();
+                            MLI1.RSLNO = RSERIAL.retShort();
 
-                        MLocIFSC1.Add(MLI1);
+                            MLocIFSC1.Add(MLI1);
+
+                            j++;
+                            if (j > tbilyr.Count - 1) break;
+                        }
+                        if (j > tbilyr.Count - 1) break;
+
                     }
                     VE.TBILTYR = MLocIFSC1;
                 }
-
+                var balecnt = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count();
 
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyR_Mutia_Main", VE);
-                return Content(GRN_MAIN);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
             }
             catch (Exception ex)
             {
@@ -858,12 +904,12 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                    dbnotsave:;
+                dbnotsave:;
                     transaction.Rollback();
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                    dbok:;
+                dbok:;
                 }
                 catch (Exception ex)
                 {

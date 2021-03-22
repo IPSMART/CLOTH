@@ -774,7 +774,7 @@ namespace Improvar
             sql = "";
 
 
-            sql += "select a.gocd,m.gonm, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
+            sql += "select a.gocd,m.gonm, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
             sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
@@ -782,7 +782,7 @@ namespace Improvar
             sql += "from ";
 
             sql += "( ";
-            sql += "select b.gocd, nvl(b.mtrljobcd,'FS') mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, b.balqnty, b.balnos from ";
+            sql += "select b.gocd, b.mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, b.balqnty, b.balnos from ";
 
             sql += "( select a.barno, a.itcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia from ";
             sql += scm + ".t_batchmst a ";
@@ -1055,22 +1055,10 @@ namespace Improvar
             sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) ";
             sql += ") a where prccd='" + prccd + "') b, ";
 
-
             sql += "(select a.barno, count(*) barimagecount, ";
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
-            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-            sql += "from " + scm + ".m_batch_img_hdr a ";
-            sql += "union ";
-            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-            sql += "from " + scm + ".m_batch_img_hdr_link a, " + scm + ".m_batch_img_hdr b ";
-            sql += "where a.mainbarno=b.barno(+) ) a, ";
-            sql += "" + scm + ".m_batch_img_hdr b ";
-            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
-            sql += "union ";
-            sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
             sql += "from " + scm + ".t_batch_img_hdr a ";
             sql += "union ";
@@ -1082,7 +1070,6 @@ namespace Improvar
             sql += "group by a.barno ) y, ";
 
             sql += "(select a.prodgrpcd, ";
-            //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
             sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
             sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
             sql += "from ";
