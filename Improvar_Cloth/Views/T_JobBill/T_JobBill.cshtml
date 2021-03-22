@@ -1,0 +1,1855 @@
+﻿@model Improvar.ViewModels.TJobBillEntry
+@{
+    ViewBag.Title = "T_JobBill";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string PageControllerName = "T_JobBill";
+    string MP = Model.MENU_PARA;
+    switch (MP)
+    {
+        case "CN":
+            ViewBag.Title = "Credit Note"; break;
+        case "DN":
+            ViewBag.Title = "Debit Note"; break;
+        case "JB":
+            ViewBag.Title = "Job Bill"; break;
+        default: ViewBag.Title = ""; break;
+    }
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<style>
+    .TextAreaRemarks {
+        height: 200px;
+    }
+
+    #outerP {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.70);
+        display: none;
+        /*transform: translate(0%, 0%);
+                z-index: 1100;*/
+    }
+
+    #innerP {
+        top: 26%;
+        margin: 0 auto;
+        position: relative;
+        background-color: #f8fbb3;
+        border-radius: 15px;
+        border: 4px solid #86abd8;
+        padding: 15px;
+        width: 400px;
+        height: 200px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#btnChallan").hide();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#DOCDT").attr("readonly", "readonly");
+            ChangeDoctype();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            if ("@Model.DocumentType.Count" > 0) {
+                ChangeDoctype();
+            }
+        }
+        window.onkeydown = function (event) {
+            if (event.keyCode == 27) {
+                $("#outerP").fadeOut();
+                $("#outerP").html("");
+                if ("@Model.DefaultAction" == "A") {
+                    $("#BuyerHelp").show();
+                    $("#SLCD").attr("readonly", false);
+                }
+            }
+        };
+        $("#WaitingMode").hide();
+    });
+</script>
+
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({
+                dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate', onSelect: function () { this.focus(); }
+            });
+            $("#PBLDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', onSelect: function () { this.focus(); } });
+        }
+    });
+</script>
+<script>
+    function ChangeDoctype() {
+        var docdt = $("#DOCDT").val();
+        var DOC_CD = document.getElementById("DOCCD").value;
+        $.ajax({
+            type: 'GET',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("changeDocumentType", PageControllerName)',
+            data:
+            {
+                DOC_CD: DOC_CD,
+                DOCDT: docdt,
+                AllowBDATE: '@Model.AllowBackDate',
+                DOCNO: '@Model.T_JBILL.DOCNO'
+            },
+            success: function (result) {
+                if (result != "") {
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    var maxdocdt = result.split(String.fromCharCode(181) + '^' + String.fromCharCode(181));
+                    var dt = maxdocdt[1].split('~');
+                    if (dt.length > 2) {
+                        disableddates = dt[2].split(',');
+                    }
+                    else {
+                        disableddates = "";
+                    }
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    $("#DOCDT").datepicker("option", "minDate", dt[0]);
+                    $("#DOCDT").datepicker("option", "maxDate", dt[1]);
+                    $("#DOCDT").datepicker("option", "beforeShowDay", DisableSpecificDates);
+                }
+                $("#WaitingMode").hide();
+                return false;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function inputHB(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectLedgerCode(glcd, glnm, valtext, tag) {
+        if (valtext == "") {
+            $("#" + glcd).val("");
+            $("#" + glnm).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetLedgerCode", PageControllerName)',
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    TAG: tag,
+                    val: valtext
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + glcd).val("");
+                        $("#" + glnm).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Ledger Code ! Please Select / Enter a Valid Ledger Code !!");
+                        message_value = glcd;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        $("#" + glcd).val(str[0]);
+                        $("#" + glnm).val(str[1].toString());
+                    }
+                }
+            });
+        }
+    }
+    function SelectJobCode(id, JOBCD, JOBNM, HSNCODE, PRODGRPCD, UOMCD, UOMNM, EXPGLCD, EXPGLNM, SLGLCD, SLGLNM) {
+        if (id == "") {
+            $("#JOBNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#btnSelectJOBCD").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#JOBCD").val("");
+                        $("#JOBNM").val("");
+                        $("#" + HSNCODE.id).val("");
+                        $("#" + PRODGRPCD.id).val("");
+                        $("#" + UOMCD.id).val("");
+                        $("#" + UOMNM.id).val("");
+                        $("#" + EXPGLCD.id).val("");
+                        $("#" + EXPGLNM.id).val("");
+                        $("#" + SLGLCD.id).val("");
+                        $("#" + SLGLNM.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Job Code !! ");
+                        message_value = "JOBCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        $("#" + JOBCD.id).val(str[0]);
+                        $("#" + JOBNM.id).val(str[1].toString());
+                        $("#" + HSNCODE.id).val(str[2].toString());
+                        $("#" + PRODGRPCD.id).val(str[3].toString());
+                        $("#" + UOMCD.id).val(str[4].toString());
+                        $("#" + UOMNM.id).val(str[5].toString());
+                        $("#" + EXPGLCD.id).val(str[6].toString());
+                        $("#" + EXPGLNM.id).val(str[7].toString());
+                        $("#" + SLGLCD.id).val(str[8].toString());
+                        $("#" + SLGLNM.id).val(str[9].toString());
+                    }
+                }
+            });
+        }
+    }
+    function SelectBuyerCode(id, SLCD, BuyerName, Tag) {
+        var ID_VAL = document.getElementById(id.id).value;
+        if (ID_VAL == "") {
+            $("#" + SLCD.id).val("");
+            $("#" + BuyerName.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameBUYER").val(),
+                data:
+                    {
+                        val: ID_VAL,
+                        TAG: Tag,
+                        DOC_DT: $("#DOCDT").val()
+                    },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        if (Tag == "A") {
+                            document.getElementById("BROKSLCD").value = returncolvalue(findstr, "SLCD");
+                            document.getElementById("BrokerSLNM").value = returncolvalue(findstr, "SLNM");
+                        }
+                        else {
+                            debugger;
+                            document.getElementById("SLCD").value = returncolvalue(findstr, "SLCD");
+                            document.getElementById("SLNM").value = returncolvalue(findstr, "SLNM");
+                            document.getElementById("TAXGRPCD").value = returncolvalue(findstr, "TAXGRPCD");
+                            document.getElementById("TAXGRPNM").value = returncolvalue(findstr, "TAXGRPNM");
+                            var vv = returncolvalue(findstr, "GSTNO");
+                            if (returncolvalue(findstr, "GSTNO") != "") {
+                                document.getElementById("REVCHG").value = "";
+                            }
+                            else {
+                                document.getElementById("REVCHG").value = "N";
+                            }
+                        } CheckBillNumber();
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + SLCD.id).val("");
+                        $("#" + BuyerName.id).val("");
+                        $("#TAXGRPCD").val("");
+                        $("#TAXGRPNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = "SLCD";
+                    }
+                }
+            });
+        }
+    }
+    function CheckBillNumber() {
+        debugger;
+        var MPARA = "@Model.MENU_PARA";
+        var BILL_NO = document.getElementById("PBLNO").value;
+        var SUPPLIER = document.getElementById("SLCD").value;
+        var AUTO_NO = document.getElementById("AUTONO").value;
+        if (BILL_NO == "") {
+
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("CheckBillNumber", PageControllerName)",
+                data:
+            {
+                BILL_NO: BILL_NO, SUPPLIER: SUPPLIER, AUTO_NO: AUTO_NO,
+            },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Bill Number Already Exists, for Particular Party : Please Enter a Different Bill Number !! ");
+                        message_value = "PBLNO";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    
+    }
+    function SelectCurrencyCode(id, CURR_CD, CURRNM) {
+        if (id == "") {
+            $("#CURR_CD").val("");
+            $("#CURRNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameCURRENCY").val(),
+                data:
+                    {
+                        val: id
+                    },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#CURR_CD").val("");
+                        $("#CURRNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Currency Code ! Please Enter a Valid Currency Code !! ");
+                        message_value = "CURR_CD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById("CURR_CD").value = str[0].toString();
+                        document.getElementById("CURRNM").value = str[1].toString();
+                    }
+                }
+            });
+        }
+    }
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function GetTDSDescription(code) {
+        $.ajax({
+            type: 'POST',
+            url: $("#urlnameGetTDSDescription").val(),
+            data: { CODE: code },
+            success: function (result) {
+                document.getElementById("LOW_TDS_DESC").value = result;
+            }
+        });
+    }
+    function SelectTDSCode(id, TDSHD, TDSNM, TDSPER) {
+        if (id == "") {
+            $("#" + TDSHD.id).val("");
+            $("#" + TDSNM.id).val("");
+            $("#" + TDSPER.id).val("");
+        }
+        else {
+            if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
+            if (!emptyFieldCheck("Enter Supplier Code", "SLCD")) { return false; }
+            var PARTY = document.getElementById("SLCD").value;
+            var DOCDT = document.getElementById("DOCDT").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetTDSDetails", PageControllerName)",
+                data:
+            {
+                val: id,
+                PARTY: PARTY,
+                TAG: DOCDT
+            },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        document.getElementById(TDSHD.id).value = returncolvalue(result, "TDSCODE");
+                        document.getElementById(TDSNM.id).value = returncolvalue(result, "TDSNM");
+                        var CMPNONCMP = returncolvalue(result, "CMPNONCMP");
+                        if (CMPNONCMP == "C") {
+                            document.getElementById(TDSPER.id).value = returncolvalue(result, "TDSPER");
+                        } else {
+                            document.getElementById(TDSPER.id).value = returncolvalue(result, "TDSPERNONCMP");
+                        }
+                        TDSAMTCAL();
+                    }
+                    else {
+                        $("#" + TDSHD.id).val("");
+                        $("#" + TDSNM.id).val("");
+                        $("#" + TDSPER.id).val("");
+                        msgInfo(result);
+                        message_value = TDSHD.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+    function TDSAMTCAL() {
+        var TDS_ROUND = $("#TDSROUND").val();
+        var TDS_PER = document.getElementById("TDSPER").value;
+        var TDS_ON = document.getElementById("TDSON").value;
+        if (TDS_PER == "") { TDS_PER = parseFloat(0); } else { TDS_PER = parseFloat(TDS_PER) }
+        if (TDS_ON == "") { TDS_ON = parseFloat(0); } else { TDS_ON = parseFloat(TDS_ON) }
+        var tdsamt1 = parseFloat(parseFloat(TDS_ON) * parseFloat(TDS_PER) / 100).toFixed(2);
+        var tdsamt2 = tdsamt1.toString().split('.');
+        if (tdsamt2[1] > 0) {
+
+            @*if ("@CommVar.ClientCode(Model.UNQSNO)" == "CHEM") {
+                tdsamt1 = Math.round(tdsamt1);
+            }
+            else {
+                tdsamt1 = Math.round(tdsamt1);
+            }*@
+            if (TDS_ROUND == "Y") {
+                tdsamt1 = Math.round(tdsamt1); //==yes
+            }
+            else
+                if (TDS_ROUND == "N") {
+                    tdsamt1 = Math.ceil(tdsamt1); //==nxt
+                }
+                else
+                    if (TDS_ROUND == "L") {
+                        tdsamt1 = Math.floor(tdsamt1); //==least
+                    }
+        }
+        document.getElementById("TDSAMT").value = parseFloat(tdsamt1).toFixed(2);
+        document.getElementById("DTDSAMT").value = parseFloat(tdsamt1).toFixed(2);
+        var Bl = $("#BLAMT").val();
+        var AD = $("#ADVAMT").val();
+        var TD = $("#TDSAMT").val();
+        var DNCN = $("#DNCNAMT").val();
+        var shortage = $("#DNCNAMT1").val();
+        var netpay = parseFloat(Bl) - (parseFloat(AD) + parseFloat(TD) + parseFloat(DNCN) + parseFloat(shortage));
+        $("#NETPAYAMT").val(parseFloat(netpay).toFixed(2));
+    }
+</script>
+<script>
+    function GetChallanData() {
+        var PARTY = document.getElementById("SLCD").value;
+        var DOCDT = document.getElementById("DOCDT").value;
+        var JOB = document.getElementById("JOBCD").value;
+        var PBLNO = document.getElementById("PBLNO").value;
+        var PBLDT = document.getElementById("PBLDT").value;
+        if (PARTY != "" && DOCDT != "" && JOB != "" && PBLNO != "" && PBLDT != "") {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("GetPendingChallan", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&PARTY=" + PARTY + "&DOCDT=" + DOCDT + "&JOB=" + JOB,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $('#outerP').html(result);
+                    $("#BuyerHelp").hide();
+                    $("#SLCD").attr("readonly", "readonly");
+                    $("#outerP").show();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    $("#BuyerHelp").show();
+                    $("#SLCD").attr("readonly", false);
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+        else {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Party / Document Date / Job / Party Bill No / Party Bill Date  not Available ! Please Select / Enter a Valid Party / Document Date / Job / Party Bill No / Party Bill Date to get Challan Details !! ");
+            message_value = "SLCD";
+            return false;
+        }
+    }
+    function closeOuterP() {
+        $("#outerP").fadeOut();
+        $("#outerP").html("");
+        if ("@Model.DefaultAction" == "A") {
+            $("#BuyerHelp").show();
+            $("#SLCD").attr("readonly", false);
+        }
+    }
+    function GetItems() {
+        var GridRowMain = $("#_T_SALE_PACKINGSLIP_GRID > tbody > tr").length;
+        var COUNT = 0;
+        var chkid = "";
+        var docdt = $("#DOCDT").val();
+        var JOB = document.getElementById("JOBCD").value;
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            var ITEM = document.getElementById("P_Checked_" + i).checked;
+            if (ITEM == true) {
+                COUNT = 1;
+            }
+            else {
+                chkid = document.getElementById("P_Checked_" + i);
+            }
+        }
+        if (COUNT == 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("First Select Challan !! ");
+            message_value = chkid.id;
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("GetItemsDetails", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&DOCDT=" + docdt + "&JOB=" + JOB,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result != "0") {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    $("#partialdivItem").html(res[0]);
+                    $("#partialdivSbill").html(res[1]);
+                    $("#outerP").fadeOut();
+                    $("#BuyerHelp").hide();
+                    $("#SLCD").attr("readonly", "readonly");
+                    // ==================== set focus on desire tab ==================
+                    $("li").removeClass("active").addClass("");
+                    $(".tab-content div").removeClass("active");
+                    $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    $("#Items_LI").addClass("active");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                $("#outerP").fadeOut();
+                $("#outerP").html("");
+                $("#BuyerHelp").show();
+                $("#SLCD").attr("readonly", false);
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function CalculateRowAmt(rateid, qtnid, amtid, discper, discamtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, index) {
+        var round = false;
+        var rate = $("#" + rateid).val(); rate = parseFloat((rate == "" ? 0 : rate)); $("#" + rateid).val(rate);
+        var qtn = $("#" + qtnid).val(); qtn = parseFloat((qtn == "" ? 0 : qtn)); $("#" + qtnid).val(qtn);
+        var uom = $("#qtncalcon_" + index).val();
+        if (uom == "D") {
+            var chk = parseFloat(qtn).toFixed(2).toString();
+            var sbefd = chk.substring(0, chk.length - 3);
+            var saftd = chk.substring(chk.length - 2);
+            var box = parseFloat(sbefd);
+            var lpcs = parseFloat(saftd);
+            //qtn = parseFloat(box * 12 + lpcs);
+        }
+        else if (uom == "B") {
+            var pcsperbox = $("#PCSPERBOX_" + index).val();
+            if (pcsperbox == "0") {
+                pcsperbox = "1";
+            }
+            var chk = parseFloat(qtn).toFixed(2).toString();
+            var sbefd = chk.substring(0, chk.length - 3);
+            var saftd = chk.substring(chk.length - 2);
+            var box = parseFloat(sbefd);
+            var lpcs = parseFloat(saftd);
+            //qtn = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+        }
+        var dper = $("#" + discper).val(); dper = parseFloat((dper == "" ? 0 : dper)); $("#" + discper).val(dper);
+        var damt = $("#" + discamtid).val(); damt = parseFloat((damt == "" ? 0 : damt)); $("#" + discamtid).val(damt);
+        var addless = $("#addless_" + index).val(); addless = parseFloat((addless == "" ? 0 : addless)); $("#addless_" + index).val(addless);
+        var amt = parseFloat(rate * qtn).toFixed(2);
+        $("#" + amtid).val(amt);
+        var taxableamt = 0;
+        if (damt > 0) {
+            var dpersenteg = (round == true ? parseFloat(damt / amt * 100).toFixed(2) : (damt / amt * 100));
+            $("#" + discper).val(dpersenteg);
+            taxableamt = parseFloat(amt - damt).toFixed(2);
+            taxableamt = parseFloat(parseFloat(taxableamt) + addless).toFixed(2);
+            $("#" + taxableid).val(taxableamt);
+            $("#" + discamtid).val(parseFloat(damt).toFixed(2));
+        }
+        else {
+            var discamount = parseFloat(amt * dper / 100).toFixed(2);
+            $("#" + discamtid).val(discamount);
+            taxableamt = parseFloat(amt - discamount).toFixed(2);
+            taxableamt = parseFloat(parseFloat(taxableamt) + addless).toFixed(2);
+            $("#" + taxableid).val(taxableamt);
+        }
+        var igstp = $("#" + igstper).val(); igstp = (igstp == "" ? 0 : igstp); $("#" + igstper).val(igstp);
+        var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+        $("#" + igstamt).val(igstamount);
+        var cgstp = $("#" + cgstper).val(); cgstp = (cgstp == "" ? 0 : cgstp); $("#" + cgstper).val(cgstp);
+        var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+        $("#" + cgstamt).val(cgstamount);
+        var sgstp = $("#" + sgstper).val(); sgstp = (sgstp == "" ? 0 : sgstp); $("#" + sgstper).val(sgstp);
+        var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+        $("#" + sgstamt).val(sgstamount);
+        var cessp = $("#" + cessper).val(); cessp = (cessp == "" ? 0 : cessp); $("#" + cessper).val(cessp);
+        var cessamount = parseFloat(taxableamt * cessp / 100).toFixed(2);
+        $("#" + cessamt).val(cessamount);
+        var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+        netamount = parseFloat(netamount).toFixed(2);
+        $("#" + netamt).val(netamount);
+        BillAmount();
+    }
+    function CalculateRowAmtDrCr(rateid, qtnid, amtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, roundoff, index) {
+        var round = false;
+        var amt1 = $("#" + amtid).val(); amt = parseFloat((amt == "" ? 0 : amt)).toFixed(2); $("#" + amtid).val(amt);
+        if (amt1 == 0) {
+            var rate = $("#" + rateid).val(); rate = parseFloat((rate == "" ? 0 : rate)); $("#" + rateid).val(rate);
+            var qtn = $("#" + qtnid).val(); qtn = parseFloat((qtn == "" ? 0 : qtn)); $("#" + qtnid).val(qtn);
+            var uom = $("#Dqtncalcon_" + index).val();
+            if (uom == "D") {
+                var chk = parseFloat(qtn).toFixed(2).toString();
+                var sbefd = chk.substring(0, chk.length - 3);
+                var saftd = chk.substring(chk.length - 2);
+                var box = parseFloat(sbefd);
+                var lpcs = parseFloat(saftd);
+                qtn = parseFloat(box * 12 + lpcs);
+            }
+            else if (uom == "B") {
+                var pcsperbox = $("#DPCSPERBOX_" + index).val();
+                if (pcsperbox == "0") {
+                    pcsperbox = "1";
+                }
+                var chk = parseFloat(qtn).toFixed(2).toString();
+                var sbefd = chk.substring(0, chk.length - 3);
+                var saftd = chk.substring(chk.length - 2);
+                var box = parseFloat(sbefd);
+                var lpcs = parseFloat(saftd);
+                qtn = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+            }
+            var amt = parseFloat(rate * qtn).toFixed(2);
+            $("#" + amtid).val(amt);
+        }
+        else {
+            $("#" + amtid).val(amt1);
+        }
+        var amt = $("#" + amtid).val(); amt = parseFloat((amt == "" ? 0 : amt)).toFixed(2); $("#" + amtid).val(amt);
+        var taxableamt = amt;
+        $("#" + taxableid).val(taxableamt);
+
+        var igstp = $("#" + igstper).val(); igstp = (igstp == "" ? 0 : igstp); $("#" + igstper).val(igstp);
+        var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+        $("#" + igstamt).val(igstamount);
+        var cgstp = $("#" + cgstper).val(); cgstp = (cgstp == "" ? 0 : cgstp); $("#" + cgstper).val(cgstp);
+        var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+        $("#" + cgstamt).val(cgstamount);
+        var sgstp = $("#" + sgstper).val(); sgstp = (sgstp == "" ? 0 : sgstp); $("#" + sgstper).val(sgstp);
+        var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+        $("#" + sgstamt).val(sgstamount);
+        var cessp = $("#" + cessper).val(); cessp = (cessp == "" ? 0 : cessp); $("#" + cessper).val(cessp);
+        var cessamount = parseFloat(taxableamt * cessp / 100).toFixed(2);
+        $("#" + cessamt).val(cessamount);
+        var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+        netamount = parseFloat(netamount).toFixed(2);
+        $("#" + netamt).val(netamount);
+        DRCRBillAmount();
+    }
+    function CalculateRowAmtSBILL(rateid, qtnid, amtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, roundoff, index) {
+        var round = false;
+        var rate = $("#" + rateid).val(); rate = parseFloat((rate == "" ? 0 : rate)); $("#" + rateid).val(rate);
+        var qtn = $("#" + qtnid).val(); qtn = parseFloat((qtn == "" ? 0 : qtn)); $("#" + qtnid).val(qtn);
+        var uom = $("#Sqtncalcon_" + index).val();
+        if (uom == "D") {
+            var chk = parseFloat(qtn).toFixed(2).toString();
+            var sbefd = chk.substring(0, chk.length - 3);
+            var saftd = chk.substring(chk.length - 2);
+            var box = parseFloat(sbefd);
+            var lpcs = parseFloat(saftd);
+            //qtn = parseFloat(box * 12 + lpcs);
+        }
+        else if (uom == "B") {
+            var pcsperbox = $("#SPCSPERBOX_" + index).val();
+            if (pcsperbox == "0") {
+                pcsperbox = "1";
+            }
+            var chk = parseFloat(qtn).toFixed(2).toString();
+            var sbefd = chk.substring(0, chk.length - 3);
+            var saftd = chk.substring(chk.length - 2);
+            var box = parseFloat(sbefd);
+            var lpcs = parseFloat(saftd);
+            //qtn = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+        }
+        var amt = parseFloat(rate * qtn).toFixed(2);
+        $("#" + amtid).val(amt);
+        var taxableamt = amt;
+        $("#" + taxableid).val(taxableamt);
+
+        var igstp = $("#" + igstper).val(); igstp = (igstp == "" ? 0 : igstp); $("#" + igstper).val(igstp);
+        var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+        $("#" + igstamt).val(igstamount);
+        var cgstp = $("#" + cgstper).val(); cgstp = (cgstp == "" ? 0 : cgstp); $("#" + cgstper).val(cgstp);
+        var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+        $("#" + cgstamt).val(cgstamount);
+        var sgstp = $("#" + sgstper).val(); sgstp = (sgstp == "" ? 0 : sgstp); $("#" + sgstper).val(sgstp);
+        var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+        $("#" + sgstamt).val(sgstamount);
+        var cessp = $("#" + cessper).val(); cessp = (cessp == "" ? 0 : cessp); $("#" + cessper).val(cessp);
+        var cessamount = parseFloat(taxableamt * cessp / 100).toFixed(2);
+        $("#" + cessamt).val(cessamount);
+        var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+        netamount = parseFloat(netamount).toFixed(2);
+        $("#" + netamt).val(netamount);
+        SBILLBillAmount();
+    }
+    function Caldiscount(amount, val1, disamt) {
+        var amt = document.getElementById(amount).value;
+        var disper = document.getElementById(val1).value;
+        var disamtval = parseFloat(amt * disper / 100).toFixed(2);
+        $("#" + disamt).val(disamtval);
+    }
+    function BillAmount() {
+        var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+        var TOTTaxvalue = 0;
+        var TOTNetvalue = 0;
+        var REVCHG = $("#REVCHG").val();
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            var Taxvalue = document.getElementById("TAXABLE_" + i).value;
+            if (Taxvalue == "") {
+                Taxvalue = parseFloat(0);
+            }
+            else {
+                Taxvalue = parseFloat(Taxvalue);
+            }
+            TOTTaxvalue = TOTTaxvalue + Taxvalue;
+            var Netvalue = document.getElementById("NETAMOUNT_" + i).value;
+            if (Netvalue == "") {
+                Netvalue = parseFloat(0);
+            }
+            else {
+                Netvalue = parseFloat(Netvalue);
+            }
+            TOTNetvalue = TOTNetvalue + Netvalue;
+        }
+        var ADVAMT = $("#ADVAMT").val();
+        if (ADVAMT == "") {
+            ADVAMT = parseFloat(0);
+        }
+        else {
+            ADVAMT = parseFloat(ADVAMT);
+        }
+        $("#ADVAMT").val(parseFloat(ADVAMT).toFixed(2));
+        $("#TAXABLEVAL_ITEM").val(parseFloat(TOTTaxvalue).toFixed(2));
+        var RoundChk = document.getElementById("R_Checked") == null ? false : document.getElementById("R_Checked").checked;
+        if (REVCHG == "Y") {
+            if (RoundChk) {
+                var round = Math.round(TOTTaxvalue);
+                $("#BLAMT").val(parseFloat(round).toFixed(2));
+                $("#TOTALBILLAMT_ITEM").val(parseFloat(round).toFixed(2));
+                $("#TDSON").val(parseFloat(round - ADVAMT).toFixed(2));
+                var balance = (round - TOTTaxvalue);
+                $("#ROAMT_ITEM").val(parseFloat(balance).toFixed(2));
+            }
+            else {
+                $("#BLAMT").val(parseFloat(TOTTaxvalue).toFixed(2));
+                $("#TOTALBILLAMT_ITEM").val(parseFloat(TOTTaxvalue).toFixed(2));
+                $("#TDSON").val(parseFloat(TOTTaxvalue - ADVAMT).toFixed(2));
+                $("#ROAMT_ITEM").val(0);
+            }
+        }
+        else {
+            if (RoundChk) {
+                var round = Math.round(TOTNetvalue);
+                $("#BLAMT").val(parseFloat(round).toFixed(2));
+                $("#TOTALBILLAMT_ITEM").val(parseFloat(round).toFixed(2));
+                $("#TDSON").val(parseFloat(TOTTaxvalue - ADVAMT).toFixed(2));
+                var balance = (round - TOTNetvalue);
+                $("#ROAMT_ITEM").val(parseFloat(balance).toFixed(2));
+            }
+            else {
+                $("#BLAMT").val(parseFloat(TOTNetvalue).toFixed(2));
+                $("#TDSON").val(parseFloat(TOTTaxvalue - ADVAMT).toFixed(2));
+                $("#TOTALBILLAMT_ITEM").val(parseFloat(TOTNetvalue).toFixed(2));
+                $("#ROAMT_ITEM").val(0);
+            }
+        }
+        TDSAMTCAL();
+    }
+    function DRCRBillAmount() {
+        var GridRowMain = $("#_T_PND_ITEM_GRID_DRCR > tbody > tr").length;
+        var TOTTaxvalue = 0;
+        var TOTNetvalue = 0;
+        var REVCHG = $("#REVCHG").val();
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            var Taxvalue = document.getElementById("DTAXABLE_" + i).value;
+            if (Taxvalue == "") {
+                Taxvalue = parseFloat(0);
+            }
+            else {
+                Taxvalue = parseFloat(Taxvalue);
+            }
+            TOTTaxvalue = TOTTaxvalue + Taxvalue;
+            var Netvalue = document.getElementById("DNETAMOUNT_" + i).value;
+            if (Netvalue == "") {
+                Netvalue = parseFloat(0);
+            }
+            else {
+                Netvalue = parseFloat(Netvalue);
+            }
+            TOTNetvalue = TOTNetvalue + Netvalue;
+        }
+        $("#TAXABLEVAL_DNCNNOTE").val(parseFloat(TOTTaxvalue).toFixed(2));
+        var RoundChk = document.getElementById("D_Checked") == null ? false : document.getElementById("D_Checked").checked;
+        if (RoundChk) {
+            var round = Math.round(TOTNetvalue);
+            $("#DNCNAMT").val(parseFloat(round).toFixed(2));
+            $("#TOTALBILLAMT_DRCRNOTE").val(parseFloat(round).toFixed(2));
+            var balance = (round - TOTNetvalue);
+            $("#ROAMT_DCNOTE").val(parseFloat(balance).toFixed(2));
+        }
+        else {
+            $("#DNCNAMT").val(parseFloat(TOTNetvalue).toFixed(2));
+            $("#TOTALBILLAMT_DRCRNOTE").val(parseFloat(TOTNetvalue).toFixed(2));
+            $("#ROAMT_DCNOTE").val(0);
+        }
+        TDSAMTCAL();
+    }
+    function SBILLBillAmount() {
+        var GridRowMain = $("#_T_PND_ITEM_GRID_SBILL > tbody > tr").length;
+        var TOTTaxvalue = 0;
+        var TOTNetvalue = 0;
+        var REVCHG = $("#REVCHG").val();
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            var Taxvalue = document.getElementById("STAXABLE_" + i).value;
+            if (Taxvalue == "") {
+                Taxvalue = parseFloat(0);
+            }
+            else {
+                Taxvalue = parseFloat(Taxvalue);
+            }
+            TOTTaxvalue = TOTTaxvalue + Taxvalue;
+            var Netvalue = document.getElementById("SNETAMOUNT_" + i).value;
+            if (Netvalue == "") {
+                Netvalue = parseFloat(0);
+            }
+            else {
+                Netvalue = parseFloat(Netvalue);
+            }
+            TOTNetvalue = TOTNetvalue + Netvalue;
+        }
+        $("#TAXABLEVAL_SBILL").val(parseFloat(TOTTaxvalue).toFixed(2));
+        var RoundChk = document.getElementById("S_Checked") == null ? false : document.getElementById("S_Checked").checked;
+        if (RoundChk) {
+            var round = Math.round(TOTNetvalue);
+            $("#DNCNAMT1").val(parseFloat(round).toFixed(2));
+            $("#TOTALBILLAMT_SBILL").val(parseFloat(round).toFixed(2));
+            var balance = (round - TOTNetvalue);
+            $("#ROAMT_SBILL").val(parseFloat(balance).toFixed(2));
+        }
+        else {
+            $("#DNCNAMT1").val(parseFloat(TOTNetvalue).toFixed(2));
+            $("#TOTALBILLAMT_SBILL").val(parseFloat(TOTNetvalue).toFixed(2));
+            $("#ROAMT_SBILL").val(0);
+        }
+        TDSAMTCAL();
+    }
+
+    function ReverceCharges() {
+        var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+        var REVCHG = $("#REVCHG").val();
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+
+            if (REVCHG == "N") {
+                $("#igstper_" + i).val(0);
+                $("#igstamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#cgstper_" + i).val(0);
+                $("#cgstamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#sgstper_" + i).val(0);
+                $("#sgstamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#cessper_" + i).val(0);
+                $("#cessamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#igstper_" + i).attr('readonly', 'readonly');
+                $("#igstamt_" + i).attr('readonly', 'readonly');
+                $("#cgstper_" + i).attr('readonly', 'readonly');
+                $("#cgstamt_" + i).attr('readonly', 'readonly');
+                $("#sgstper_" + i).attr('readonly', 'readonly');
+                $("#sgstamt_" + i).attr('readonly', 'readonly');
+                $("#cessper_" + i).attr('readonly', 'readonly');
+                $("#cessamt_" + i).attr('readonly', 'readonly');
+                var taxableamt = $("#TAXABLE_" + i).val();
+                var netamount = parseFloat(taxableamt).toFixed(2);
+                $("#NETAMOUNT_" + i).val(netamount);
+            }
+            else {
+                var taxableamt = $("#TAXABLE_" + i).val();
+                $("#igstper_" + i).removeAttr('readonly');
+                $("#igstamt_" + i).removeAttr('readonly');
+                $("#cgstper_" + i).removeAttr('readonly');
+                $("#cgstamt_" + i).removeAttr('readonly');
+                $("#sgstper_" + i).removeAttr('readonly');
+                $("#sgstamt_" + i).removeAttr('readonly');
+                $("#cessper_" + i).removeAttr('readonly');
+                $("#cessamt_" + i).removeAttr('readonly');
+                var igstp = $("#BackupIGSTPER").val();
+                $("#igstper_" + i).val(igstp);
+                var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+                $("#igstamt_" + i).val(igstamount);
+
+                var cgstp = $("#BackupCGSTPER").val();
+                $("#cgstper_" + i).val(cgstp);
+                var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+                $("#cgstamt_" + i).val(cgstamount);
+
+                var sgstp = $("#BackupSGSTPER").val();
+                $("#sgstper_" + i).val(sgstp);
+                var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+                $("#sgstamt_" + i).val(sgstamount);
+
+                var cessper = $("#BackupCESSTPER").val();
+                $("#cessper_" + i).val(cessper);
+                var cessamount = parseFloat(taxableamt * cessper / 100).toFixed(2);
+                $("#cessamt_" + i).val(cessamount);
+                var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+                netamount = parseFloat(netamount).toFixed(2);
+                $("#NETAMOUNT_" + i).val(netamount);
+            }
+        }
+        BillAmount();
+        DRCRBillAmount();
+        SBILLBillAmount();
+    }
+    function SelectItemCode(code, itemnm, val, pesperid) {
+        if (val == "") {
+            $("#" + itemnm).val("");
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("GetItems", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: { Sval: val, Flag: "1" },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + code).val("");
+                        $("#" + itemnm).val("");
+                        $("#" + pesperid).val("");
+                        $("#msgbody_info").html("Invalid Item Code !! ");
+                        message_value = code;
+                        return false;
+                    }
+                    else {
+                        var res = result.split('‡');
+                        $("#" + code).val(res[0]);
+                        $("#" + itemnm).val(res[1]);
+                        $("#" + pesperid).val(res[2]);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddRow(urlstring, id) {
+        var PARTY = document.getElementById("SLCD").value;
+        var DOCDT = document.getElementById("DOCDT").value;
+        var JOB = document.getElementById("JOBCD").value;
+        var PBLNO = document.getElementById("PBLNO").value;
+        var PBLDT = document.getElementById("PBLDT").value;
+        if (PARTY != "" && DOCDT != "" && JOB != "" && PBLNO != "" && PBLDT != "") {
+            $.ajax({
+                type: 'POST',
+                url: $("#btnAdd").val(),
+                data: $('form').serialize() + "&DOCDT=" + DOCDT,
+                success: function (result) {
+                    $("#partialdivDRCRNOTE").html("");
+                    $("#partialdivDRCRNOTE").html(result);
+                }
+            });
+        }
+        else {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Party / Document Date / Job / Party Bill No / Party Bill Date  not Available ! Please Select / Enter a Valid Party / Document Date / Job / Party Bill No / Party Bill Date to add Debit or Credit Note Details !! ");
+            message_value = "SLCD";
+            return false;
+        }
+    }
+    function DeleteRow(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDelete").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDRCRNOTE").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDRCRNOTE").html(result);
+                DRCRBillAmount();
+            }
+        });
+    }
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
+        if (!emptyFieldCheck("Enter or Select Party", "SLCD")) { return false; }
+        if (!emptyFieldCheck("Enter Party Bill No", "PBLNO")) { return false; }
+        if (!emptyFieldCheck("Enter Party Bill Date", "PBLDT")) { return false; }
+        if (!emptyFieldCheck("Enter TDS Head", "TDSHD")) { return false; }
+        if (!emptyFieldCheck("Select Due Calculate From", "DUECALCON")) { return false; }
+        if ('@Model.MENU_PARA' == "JB") {
+            var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+            if (GridRowMain == 0) {
+                msgInfo("Item Grid Not Found!!");
+                $("li").removeClass("active").addClass("");
+                $(".tab-content div").removeClass("active");
+                $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $("#Items_LI").addClass("active");
+                return false;
+            }
+            else {
+                for (var i = 0; i <= GridRowMain - 1; i++) {
+                    var Rate = document.getElementById("RATE_" + i).value;
+                    if (Rate == "0") {
+                        msgInfo("Rate Can't be 0 in Item Grid Row No " + (i + 1) + " !!");
+                        $("li").removeClass("active").addClass("");
+                        $(".tab-content div").removeClass("active");
+                        $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                        $("#Items_LI").addClass("active");
+                        message_value = "RATE_" + i;
+                        return false;
+                    }
+                }
+            }
+            GridRowMain = $("#_T_PND_ITEM_GRID_SBILL > tbody > tr").length;
+            //for (var i = 0; i <= GridRowMain - 1; i++) {
+            //    var Rate = document.getElementById("SRATE_" + i).value;
+            //    if (Rate == "0") {
+            //        msgInfo("Rate Can't be 0 in Sale Bill Shortage Grid Row No " + (i + 1) + " !!");
+            //        $("li").removeClass("active").addClass("");
+            //        $(".tab-content div").removeClass("active");
+            //        $("#Sbill").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            //        $("#Sbill_LI").addClass("active");
+            //        message_value = "RATE_" + i;
+            //        return false;
+            //    }
+            //}
+            if (GridRowMain > 0) {
+                var glcd = $("#EXPGLCD1").val();
+                if (glcd == "") {
+                    msgInfo("Select Expenses Code!!");
+                    $("li").removeClass("active").addClass("");
+                    $(".tab-content div").removeClass("active");
+                    $("#Sbill").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    $("#Sbill_LI").addClass("active");
+                    message_value = "EXPGLCD1";
+                    return false;
+                }
+            }
+        }
+        var GridRowMain = $("#_T_PND_ITEM_GRID_DRCR > tbody > tr").length;
+        if (GridRowMain == 0) {
+            if ('@Model.MENU_PARA' != "JB") {
+                msgInfo("DN/CN Grid Not Found!!");
+                $("li").removeClass("active").addClass("");
+                $(".tab-content div").removeClass("active");
+                $("#DCNote").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $("#DCNote_LI").addClass("active");
+                return false;
+            }
+        }
+        else {
+            for (var i = 0; i <= GridRowMain - 1; i++) {
+                var Rate = document.getElementById("DAMOUNT_" + i).value;
+                if (Rate == "0") {
+                    msgInfo("Amount Can't be 0 in DN/CN Grid Row No " + (i + 1) + " !!");
+                    $("li").removeClass("active").addClass("");
+                    $(".tab-content div").removeClass("active");
+                    $("#DCNote").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    $("#DCNote_LI").addClass("active");
+                    message_value = "DRATE_" + i;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    function UOMCONVERTION(selectvalue, flag, rowindex) {
+        if (flag == 0) {
+            var picbox = $("#PCSPERBOX_" + rowindex).val();
+            var recqty = UOMSUB(selectvalue, $("#RECQNTY_DISPLAY_" + rowindex).val(), picbox, itemdropdownPriviousValue);
+
+            var shortqty = UOMSUB(selectvalue, $("#ShortQNTY_DISPLAY_" + rowindex).val(), picbox, itemdropdownPriviousValue);
+
+            var passqty = UOMSUB(selectvalue, $("#PASSQNTY_" + rowindex).val(), picbox, itemdropdownPriviousValue);
+
+            var billqty = UOMSUB(selectvalue, $("#BillQNTY_" + rowindex).val(), picbox, itemdropdownPriviousValue);
+
+            $("#RECQNTY_DISPLAY_" + rowindex).val(recqty);
+            $("#ShortQNTY_DISPLAY_" + rowindex).val(shortqty);
+            $("#PASSQNTY_" + rowindex).val(passqty);
+            $("#BillQNTY_" + rowindex).val(billqty);
+            var QNTY = $("#BillQNTY_" + rowindex).val();
+            var RATE = $("#RATE_" + rowindex).val();
+            var QNTYIN = $("#qtncalcon_" + rowindex).val();
+            var PCSPERBOX = $("#PCSPERBOX_" + rowindex).val();
+
+            RateCalculation(QNTY, RATE, QNTYIN, PCSPERBOX, rowindex, "AMOUNT_");
+        }
+        else {
+            var picbox = $("#SPCSPERBOX_" + rowindex).val();
+            var qty = UOMSUB(selectvalue, $("#SQUAN_" + rowindex).val(), picbox, dncnitemdropdownPriviousValue);
+            $("#SQUAN_" + rowindex).val(qty);
+            var QNTY = $("#SQUAN_" + rowindex).val();
+            var RATE = $("#SRATE_" + rowindex).val();
+            var QNTYIN = $("#Sqtncalcon_" + rowindex).val();
+            var PCSPERBOX = $("#SPCSPERBOX_" + rowindex).val();
+
+            RateCalculation(QNTY, RATE, QNTYIN, PCSPERBOX, rowindex, "SAMOUNT_");
+        }
+
+    }
+    function RateCalculation(QNTY, RATE, QNTYIN, PCSPERBOX, i, amtid) {
+        var PCSBOX = 0; var AMOUNT = 0;
+        if (QNTYIN == "D") { PCSBOX = 12; } else { PCSBOX = PCSPERBOX; }
+        PCSBOX = parseInt(PCSBOX);
+        var QUANTITY = QNTY.toString().split('.');
+        if (QUANTITY.length > 1) {
+            AMOUNT = parseFloat(RATE) * parseFloat(QUANTITY[0]);
+            var AMT = parseFloat(parseFloat(RATE) / PCSBOX).toFixed(4) * parseInt(QUANTITY[1]);
+            AMOUNT = AMOUNT + AMT;
+        }
+        else {
+            AMOUNT = parseFloat(RATE) * parseFloat(QNTY);
+        }
+        document.getElementById(amtid + i).value = parseFloat(AMOUNT).toFixed(2);
+    }
+    function UOMSUB(qtyin, stkqnty, pcsperbox, priviousQTN) {
+        pcsperbox = pcsperbox == "0" ? "1" : pcsperbox;
+        var rtvL = 0;
+        var chk = parseFloat(stkqnty).toFixed(2).toString();
+        var sbefd = chk.substring(0, chk.length - 3);
+        var saftd = chk.substring(chk.length - 2);
+        var box = parseFloat(sbefd);
+        var lpcs = parseFloat(saftd);
+        if (qtyin == "P") {
+            if (priviousQTN == "D") {
+                rtvL = parseFloat(box * 12 + lpcs);
+            }
+            else if (priviousQTN == "B") {
+                rtvL = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+            }
+        }
+        else if (qtyin == "D") {
+            if (priviousQTN == "P") {
+                var temp = parseFloat((box + lpcs) / 12);
+                var chk1 = parseFloat(temp).toFixed(2).toString();
+                var sbefd1 = chk1.substring(0, chk1.length - 3);
+                var box1 = parseFloat(sbefd1);
+                var lpcs1 = (box + lpcs) - (box1 * 12);
+                if (lpcs1 > 0) {
+                    var pp = lpcs1.toString();
+                    pp = pp.padStart(2, '0');
+                    rtvL = parseFloat(box1 + "." + pp);
+                }
+                else {
+                    rtvL = box1;
+                }
+            }
+            else if (priviousQTN == "B") {
+                var pic = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+                var temp = parseFloat(pic / 12);
+                var chk1 = parseFloat(temp).toFixed(2).toString();
+                var sbefd1 = chk1.substring(0, chk1.length - 3);
+                var box1 = parseFloat(sbefd1);
+                var lpcs1 = pic - parseFloat(box1 * 12);
+                if (lpcs1 > 0) {
+                    var pp = lpcs1.toString();
+                    pp = pp.padStart(2, '0');
+                    rtvL = parseFloat(box1 + "." + pp);
+                }
+                else {
+                    rtvL = box1;
+                }
+            }
+        }
+        else if (qtyin == "B") {
+            if (priviousQTN == "P") {
+                var temp = parseFloat((box + lpcs) / parseFloat(pcsperbox));
+                var chk1 = parseFloat(temp).toFixed(2).toString();
+                var sbefd1 = chk1.substring(0, chk1.length - 3);
+                var box1 = parseFloat(sbefd1);
+                var lpcs1 = box - (box1 * parseFloat(pcsperbox));
+                if (lpcs1 > 0) {
+                    var pp = lpcs1.toString();
+                    pp = pp.padStart(2, '0');
+                    rtvL = parseFloat(box1 + "." + pp);
+                }
+                else {
+                    rtvL = box1;
+                }
+            }
+            else if (priviousQTN == "D") {
+                var temppic = parseFloat(box * 12 + lpcs);
+                var temp = parseFloat(temppic / parseFloat(pcsperbox));
+                var chk1 = parseFloat(temp).toFixed(2).toString();
+                var sbefd1 = chk1.substring(0, chk1.length - 3);
+                var box1 = parseFloat(sbefd1);
+                var lpcs1 = temppic - (box1 * parseFloat(pcsperbox));
+                if (lpcs1 > 0) {
+                    var pp = lpcs1.toString();
+                    pp = pp.padStart(2, '0');
+                    rtvL = parseFloat(box1 + "." + pp);
+                }
+                else {
+                    rtvL = box1;
+                }
+            }
+        }
+        return rtvL;
+    }
+    var itemdropdownPriviousValue = "";
+    var dncnitemdropdownPriviousValue = "";
+    function GetPriviousVALUE(flad, element) {
+        if (flad == 0) {
+            itemdropdownPriviousValue = element.value;
+        }
+        else {
+            dncnitemdropdownPriviousValue = element.value;
+        }
+    }
+    function pageprinting() {
+        $.ajax({
+            type: 'post',
+            url: $("#printurl").val(),
+            data: $('form').serialize() + "&DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_DnCn_Print", "Rep_DnCn_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            }
+        });
+    }
+</script>
+<script>
+    function DueDateCalculation() {
+        var dueF = $("#DUECALCON").val();
+        var dueD = $("#CRDAYS").val();
+
+        if (dueF == "P") {
+            if (dueD == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msg_ok_info").focus();
+                $("#msgbody_info").html("Enter Due Days for Due Date Calculation!");
+                message_value = "CRDAYS";
+                return false;
+            }
+            var dueP = $("#PBLDT").val();
+            if (dueP == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msg_ok_info").focus();
+                $("#msgbody_info").html("Enter Bill Date for Party!");
+                message_value = "PBLDT";
+                return false;
+            }
+            var splitDT = dueP.split('/');
+            var date = new Date(splitDT[2] + '-' + splitDT[1] + '-' + splitDT[0]);
+            var next_date = new Date(date.setDate(date.getDate() + parseInt(dueD)));
+            var formatted = next_date.getUTCDate().toString().padStart(2, '0') + '/' + (next_date.getUTCMonth() + 1).toString().padStart(2, '0') + '/' + next_date.getUTCFullYear();
+            $("#DUEDT").val(formatted);
+        }
+        else if (dueF == "D") {
+            if (dueD == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msg_ok_info").focus();
+                $("#msgbody_info").html("Enter Due Days for Due Date Calculation!");
+                message_value = "CRDAYS";
+                return false;
+            }
+            var dueP = $("#DOCDT").val();
+            if (dueP == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msg_ok_info").focus();
+                $("#msgbody_info").html("Enter Document Date!");
+                message_value = "DOCDT";
+                return false;
+            }
+            var splitDT = dueP.split('/');
+            var date = new Date(splitDT[2] + '-' + splitDT[1] + '-' + splitDT[0]);
+            var next_date = new Date(date.setDate(date.getDate() + parseInt(dueD)));
+            var formatted = next_date.getUTCDate().toString().padStart(2, '0') + '/' + (next_date.getUTCMonth() + 1).toString().padStart(2, '0') + '/' + next_date.getUTCFullYear();
+            $("#DUEDT").val(formatted);
+        }
+        else {
+            $("#DUEDT").val("");
+        }
+
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <input type="hidden" id="btnAdd" value="@Url.Action("AddRow", PageControllerName)" />
+        <input type="hidden" id="btnDelete" value="@Url.Action("DeleteRow", PageControllerName)" />
+        <input type="hidden" id="urlnameBUYER" value="@Url.Action("GetSubLedgerDetails", PageControllerName)" />
+        <input type="hidden" id="urlnameCURRENCY" value="@Url.Action("GetCurrencyDetails", PageControllerName)" />
+        <input type="hidden" id="btnSelectJOBCD" value="@Url.Action("JobCode", PageControllerName)" />
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="btnAdd" value="@Url.Action("AddRow", PageControllerName)" />
+        <input type="hidden" id="btnDelete" value="@Url.Action("DeleteRow", PageControllerName)" />
+        <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName)" />
+        <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
+        <input type="hidden" id="printurl" value="@Url.Action("Print", PageControllerName)" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="urlnameGetTDSDescription" value="@Url.Action("GETTDSNAME", PageControllerName)" />
+        <input type="hidden" id="urlnameTDS" value="@Url.Action("TDSCode", PageControllerName)" />
+        <input type="hidden" id="tempHDD" value="" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(model => Model.T_CNTRL_HDR.MNTHCD, new { id = "MNTHCD" })
+        @Html.HiddenFor(model => model.TDSROUND, new { id = "TDSROUND" })
+        @Html.HiddenFor(model => Model.T_CNTRL_HDR.DOCNO)
+        @Html.HiddenFor(model => Model.T_JBILL.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(model => Model.MENU_PARA, new { id = "MENU_PARA" })
+        @Html.HiddenFor(model => Model.DOC_CODE, new { id = "DOC_CODE" })
+        @Html.HiddenFor(model => model.BackupTable, new { id = "BackupTable" })
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;margin-top: -15px;">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document Code")
+                    </div>
+                </div>
+                <div class="col-md-7" style="width:auto;">
+                    <div class="editor-field">
+                        @Html.DropDownListFor(model => Model.T_JBILL.DOCCD, new SelectList(Model.DocumentType, "Value", "Text", Model.T_JBILL.DOCCD), "====Select Document====", new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document Date")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 10, @placeholder = "dd/mm/yyyy", autocomplete = "off", onblur = "DocumentDateCHK(this),DueDateCalculation()" } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document No.")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 6, @placeholder = "Doc. No.", @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Job Code")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", @placeholder = "Code", autocomplete = "off", maxlength = 2, onkeyup = "GetHelp('" + @Url.Action("GetJobCode", PageControllerName) + "','JOBCD/JOBNM','1/0','Job Details','JOBCD');", onblur = "SelectJobCode(this.value,JOBCD,JOBNM,HSNCODE,PRODGRPCD,UOMCD,UOMNM,EXPGLCD,EXPGLNM,CREGLCD,CREGLNM);" } })
+                        <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetJobCode", PageControllerName)','JOBCD/JOBNM','1/0','Job Details')" />
+                        @Html.HiddenFor(a => a.PRODGRPCD)
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control ", id = "JOBNM", @placeholder = "Name", maxlength = 15, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Party")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_JBILL.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", autocomplete = "off", id = "SLCD", maxlength = 8, onblur = "SelectBuyerCode(this,SLCD,SLNM,'J');", @placeholder = "Code" } })
+                            <img src="~/Image/search.png" id="BuyerHelp" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetSubLedgerDetails", PageControllerName)','SLCD/SLNM','1/0','Party Details','SLCD','J')" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control ", id = "SLNM", @placeholder = "Name", maxlength = 15, @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Party Bill No.")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.PBLNO, new { htmlAttributes = new { @class = "form-control", id = "PBLNO", onblur = "CheckBillNumber();", maxlength = 16, @placeholder = "Bill No." } })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Bill Date")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.PBLDT, new { htmlAttributes = new { @class = "form-control", id = "PBLDT", maxlength = 10, @placeholder = "dd/mm/yyyy", autocomplete = "off", onblur = "DueDateCalculation()" } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Reverse Charge")
+                    </div>
+                </div>
+                <div class="col-md-7" style="width:auto;">
+                    <div class="editor-field">
+                        @Html.DropDownListFor(model => Model.T_JBILL.REVCHG, new SelectList(Model.Reverse_Charge, "Value", "Text", Model.T_JBILL.REVCHG), "No", new { @class = "form-control", id = "REVCHG", onchange = "ReverceCharges();" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Due days")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.CRDAYS, new { htmlAttributes = new { @class = "form-control", id = "CRDAYS", maxlength = 3, @placeholder = "Days", onblur = "DueDateCalculation();", oninput = "javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" } })
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Due Calculate From")
+                    </div>
+                </div>
+                <div class="col-md-7" style="width:auto;">
+                    <div class="editor-field">
+                        @Html.DropDownListFor(model => Model.T_JBILL.DUECALCON, new SelectList(Model.DueCal, "Value", "Text", Model.T_JBILL.DUECALCON), "====Due From====", new { @class = "form-control", id = "DUECALCON", onchange = "DueDateCalculation();" })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Due Date")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.DUEDT, new { htmlAttributes = new { @class = "form-control", id = "DUEDT", maxlength = 10, @placeholder = "dd/mm/yyyy", @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Broker")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_JBILL.BROKSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", autocomplete = "off", id = "BROKSLCD", maxlength = 8, onblur = "SelectBuyerCode(this,BROKSLCD,BrokerSLNM,'A');", @placeholder = "Code" } })
+                            <img src="~/Image/search.png" id="BuyerHelp" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetSubLedgerDetails", PageControllerName)','BROKSLCD/BrokerSLNM','1/0','Broker Details','BROKSLCD','A')" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.BrokerSLNM, new { htmlAttributes = new { @class = "form-control ", id = "BrokerSLNM", @placeholder = "Name", maxlength = 15, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Currency")
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.CURR_CD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CURR_CD", autocomplete = "off", maxlength = 3, onkeyup = "GetHelp('" + @Url.Action("GetCurrencyDetails", PageControllerName) + "','CURR_CD/CURRNM','1/0','Currency Details','CURR_CD')", onblur = "SelectCurrencyCode(this.value,CURR_CD,CURRNM);", @placeholder = "Code" } })
+                        <img src="~/Image/search.png" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetCurrencyDetails", PageControllerName)','CURR_CD/CURRNM','1/0','Currency Details','CURR_CD')" />
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.CURRNM, new { htmlAttributes = new { @class = "form-control", id = "CURRNM", maxlength = 20, @TabIndex = -1, @placeholder = "Currency Name", @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Currency Rate")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.CURRRT, new { htmlAttributes = new { @class = "form-control", id = "CURRRT", maxlength = 15, @placeholder = "Currency Rate", @onkeypress = "return numericOnly(this,2);" } })
+                    </div>
+                </div>
+                @if (Model.MENU_PARA == "JB")
+                {
+                    <div class="col-md-4">
+                        <input type="button" id="btnChallan" value="Get Challans" class="btn btn-success" style="height:26px;margin-top:2px;padding-top:2px;" onclick="GetChallanData();" title="Get Challans" />
+                    </div>
+                }
+            </div>
+            <div class="row" style="margin-top:5px">
+                <ul class="nav nav-tabs">
+                    <li id="Main_LI" class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                    @if (Model.MENU_PARA == "JB")
+                    {
+                        <li id="Items_LI" class=""><a data-toggle="tab" href="#Items">Items</a></li>
+                        <li id="Sbill_LI" class=""><a data-toggle="tab" href="#Sbill">Shortage Sale Bill</a></li>
+                    }
+                    <li id="DCNote_LI" class=""><a data-toggle="tab" href="#DCNote">Debit/Credit Note</a></li>
+                    <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
+                        <div class="row">
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "UOM")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_JBILL.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", maxlength = 20, @TabIndex = -1, @placeholder = "Code", @readonly = "readonly" } })
+                                    @Html.HiddenFor(model => model.T_JBILL.OTHAUTONO, new { id = "OTHAUTONO" })
+                                    @Html.HiddenFor(model => model.T_JBILL.OTHAUTONO1, new { id = "OTHAUTONO1" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.UOMNM, new { htmlAttributes = new { @class = "form-control", id = "UOMNM", maxlength = 20, @TabIndex = -1, @placeholder = "UOM Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "HSN Code")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_JBILL.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 20, @TabIndex = -1, @placeholder = "Code", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Creditor Ledger Code")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_JBILL.CREGLCD, new { htmlAttributes = new { @class = "form-control", id = "CREGLCD", style = "font-size:12px", maxlength = 15, @placeholder = "Code", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CREGLNM, new { htmlAttributes = new { @class = "form-control", id = "CREGLNM", style = "font-size:12px", maxlength = 15, @placeholder = "Creditor Name", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Expenses Code")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_JBILL.EXPGLCD, new { htmlAttributes = new { @class = "form-control", id = "EXPGLCD", style = "font-size:12px", maxlength = 15, @placeholder = "Code", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.EXPGLNM, new { htmlAttributes = new { @class = "form-control", id = "EXPGLNM", style = "font-size:12px", maxlength = 15, @placeholder = "Exporter Name", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-lg-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Bill Amount")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 20, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Advance Paid")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.ADVAMT, new { htmlAttributes = new { @class = "form-control", id = "ADVAMT", maxlength = 20, @placeholder = "Advance Amount", style = "text-align:right;font-weight:bold", autocomplete = "off", @onkeypress = "return numericOnly(this,2);", onblur = "BillAmount();" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "TDS")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "DTDSAMT", maxlength = 20, @TabIndex = -1, @placeholder = "TDS Amount", @readonly = "readonly", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "DN/CN Amt.")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.DNCNAMT, new { htmlAttributes = new { @class = "form-control", id = "DNCNAMT", maxlength = 20, @TabIndex = -1, @placeholder = "DN/CN Amount.", @readonly = "readonly", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Sale Bill Shortage Amt.")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.DNCNAMT1, new { htmlAttributes = new { @class = "form-control", id = "DNCNAMT1", maxlength = 20, @TabIndex = -1, @placeholder = "SBill Amount.", @readonly = "readonly", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Net Payable")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.NETPAYAMT, new { htmlAttributes = new { @class = "form-control", id = "NETPAYAMT", maxlength = 20, @TabIndex = -1, @placeholder = "Net Amount", @readonly = "readonly", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Tax Code")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", maxlength = 20, @TabIndex = -1, @placeholder = "Code", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.TAXGRPNM, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPNM", maxlength = 20, @TabIndex = -1, @placeholder = "Tax Name", @readonly = "readonly" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-body" style="height:209px">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "TDS Head")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.TDSHD, new { htmlAttributes = new { @class = "form-control textbox_image", autocomplete = "off", id = "TDSHD", onkeyup = "GetHelp('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSHD,TDSNM,TDSPER);", @placeholder = "Code", maxlength = 3 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD',DOCDT.value)" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TDS Name", @readonly = "readonly", @title = "Only for View" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="editor-label" style="margin-top: 3px;">
+                                                    @Html.Label("", "TDS Percentage")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="editor-field" style="margin-top:3px;">
+                                                    @Html.EditorFor(model => model.T_JBILL.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="editor-label" style="margin-top:3px;">
+                                                    @Html.Label("", "TDS Deducted on Amount")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="editor-field" style="margin-top:3px;">
+                                                    @Html.EditorFor(model => model.T_JBILL.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="editor-label" style="margin-top:3px;">
+                                                    @Html.Label("", "TDS Amount")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.T_JBILL.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly", style = "text-align:right;font-weight:bold" } })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="editor-label" style="margin-top:3px;">
+                                                    @Html.Label("", "Lower TDS Detd. Type")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="editor-field">
+                                                    @Html.DropDownListFor(model => Model.T_JBILL.LOWTDS, new SelectList(Model.LowerTDSType, "Value", "Text", Model.T_JBILL.LOWTDS), new { @class = "form-control", id = "LOWTDS", @style = "height:32px", onchange = "GetTDSDescription(this.value);", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="editor-field">
+                                                    @Html.TextAreaFor(model => Model.LOW_TDS_DESC, new { @class = "form-control", id = "LOW_TDS_DESC", @style = "width: 165px;font-size:11px;height:32px", @placeholder = "Description", @readonly = "readonly" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.MENU_PARA == "JB")
+                    {
+                        <div id="Items" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;">
+                                <div id="partialdivItem" style="margin-top:0px;">
+                                    @if (Model.MENU_PARA == "JB")
+                                    {
+                                        if (Model.ItemDetails != null)
+                                        {
+                                            @Html.Partial("_T_JBill_ItemDetails")
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Sbill" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;">
+                                <div id="partialdivSbill" style="margin-top:0px;">
+                                    @if (Model.MENU_PARA == "JB")
+                                    {
+                                        if (Model.SBillSortage != null)
+                                        {
+                                            @Html.Partial("_T_JBill_SBillDetails")
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div id="DCNote" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;">
+                            <div id="partialdivDRCRNOTE" style="margin-top:0px;">
+                                @Html.Partial("_T_JBill_Dr_Cr_Note")
+                                <script>ReverceCharges();</script>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Remarks" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                            <div id="partialdivDocument">
+                                @Html.Partial("_UPLOADDOCUMENTS")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="outerP">
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

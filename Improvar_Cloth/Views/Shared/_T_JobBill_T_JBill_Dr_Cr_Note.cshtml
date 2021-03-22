@@ -1,0 +1,209 @@
+﻿@model Improvar.ViewModels.TJobBillEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_PND_ITEM_GRID_DRCR'));
+    });
+</script>
+@if (Model.MSG.Length <= 0)
+{
+    <div style="background-color:#c4b9b9;border:5px groove;">
+        <div class="table-responsive">
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" id="btnAddMain" class="Help_image_buttonAddRemove" title="Add Row" onclick="AddRow()" />
+                    <img src="~/Image/Minus.png" id="btnDeleteMain" class="Help_image_buttonAddRemove" title="Delete Row" onclick="DeleteRow()" />
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_PND_ITEM_GRID_DRCR');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Debit/Credit Note Item Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells" style="transform: translate(0%, 0%)">
+                <div style="height:auto;overflow-y:auto;max-height:160px;">
+                    <table id="_T_PND_ITEM_GRID_DRCR" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1743px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>                               
+                                <th class="" style="width: 50px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 100px;">Against Doc.Code</th>
+                                <th class="" style="width: 100px;">Against Doc Date</th>
+                                <th class="" style="width: 120px;">Select Entry Type</th>
+                                <th class="" style="width: 200px;">Item Code</th>
+                                <th class="" style="width: 200px;">Item Name</th> 
+                                <th class="" style="width:81px;text-align:right;">Pieces/Box</th>                              
+                                <th class="" style="width:70px;">UOM</th>                               
+                                <th class="" style="width:75px;text-align:right;">Quantity</th>                                
+                                <th class="" style="width:60px;text-align:right;">Rate</th>
+                                <th class="" style="width:80px;text-align:right;">Amount</th>                                
+                                <th class="" style="width:80px;text-align:right;">Taxable</th>
+                                <th class="" style="width:40px;text-align:right;">IGST%</th>
+                                <th class="" style="width:80px;text-align:right;">IGST AMT.</th>
+                                <th class="" style="width:40px;text-align:right;">CGST%</th>
+                                <th class="" style="width:80px;text-align:right;">CGST AMT.</th>
+                                <th class="" style="width:40px;text-align:right;">SGST%</th>
+                                <th class="" style="width:80px;text-align:right;">SGST AMT.</th>
+                                <th class="" style="width:40px;text-align:right;">CESS%</th>
+                                <th class="" style="width:80px;text-align:right;">CESS AMT.</th>
+                                <th class="sticky-cell-opposite" style="width:80px;text-align:right;">Net Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.DRCRDetails != null)
+                            {
+                                for (int i = 0; i <= Model.DRCRDetails.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.DRCRDetails[i].Checked, new { id = "Dchkid" })
+                                        </td>                                        
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].SLNO, new { id = "DSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].ADOCNO, new { id = "ADOCNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 10 })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.DRCRDetails[i].ADOCDT, new { htmlAttributes = new { id = "ADOCDT_" + i, @class = " atextBoxFor ",autocomplete="off", @style = "text-align:center;", maxlength = 10, @placeholder = "dd/mm/yyyy", onblur = "DocumentDateCHK(this)" } })
+                                            <script>
+                                                $(function () {
+                                                    if ("@Model.DefaultAction" != "V") {                                                        
+                                                        $("#ADOCDT_@i").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+                                                    }
+                                                });
+                                            </script>
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => Model.DRCRDetails[i].DcodeDRCR, new SelectList(Model.DRCRDetails[i].DocumentCode, "value", "text", Model.DRCRDetails[i].DcodeDRCR), new { id = "DcodeDRCR_" + i, @class = "atextBoxFor select_3d" })
+                                        </td> 
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].ITCD, new { id = "DITCD_" + i, @class = "atextBoxFor textbox_image", @style = "text-align:left;", autocomplete = "off", maxlength = 10, onblur = "SelectItemCode('" + "DITCD_"+i + "','" + "DITNM_" + i + "',this.value,'" + "DPCSPERBOX_" + i +"');" })
+                                            <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top:2px;height:17px;width:18px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetItems", "T_JobBill")','DITCD_@i/DITNM_@i','2/1','Item Details')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => model.DRCRDetails[i].ITNM, new { id = "DITNM_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].EFFDT, new { id = "DEFFDT_" + i })
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].PARTCD, new { id = "DPARTCD_" + i })
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].AUTONO, new { id = "DAUTONO_" + i })
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].ADOCNO_AUTONO, new { id = "DADOCNO_AUTONO_" + i })
+                                            @*@Html.HiddenFor(model => model.DRCRDetails[i].PCSPERBOX, new { id = "DPCSPERBOX_" + i })
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].qtncalcon, new { id = "Dqtncalcon_" + i })
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].QUAN, new { id = "DQUAN_" + i })*@
+                                            @Html.HiddenFor(model => model.DRCRDetails[i].RelWithItem, new { id = "RelWithItem_" + i })
+                                            @*@Html.HiddenFor(model => model.DRCRDetails[i].RATE, new { id = "DRATE_" + i })*@
+                                        </td> 
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].PCSPERBOX, new { id = "DPCSPERBOX_" + i, @style = "text-align:right;", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })                                                                                      
+                                        </td>                                       
+                                        <td class="">
+                                            @Html.DropDownListFor(model => Model.DRCRDetails[i].qtncalcon, new SelectList(Model.DRCRDetails[i].QNTY_UNIT_DNCN, "value", "text", Model.DRCRDetails[i].qtncalcon), new { id = "Dqtncalcon_" + i, @class = "atextBoxFor select_3d", onclick = "GetPriviousVALUE(1,this);", onchange = "UOMCONVERTION(this.value,1,"+i+");" })                                                                                      
+                                        </td>                                       
+                                        <td class="">
+                                            @if (Model.DRCRDetails[i].RelWithItem == true)
+                                            {
+                                                @Html.TextBoxFor(model => Model.DRCRDetails[i].QUAN, new { id = "DQUAN_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @TabIndex = -1, @readonly = "readonly", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => Model.DRCRDetails[i].QUAN, new { id = "DQUAN_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" })
+                                            }                                           
+                                        </td>                                        
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.DRCRDetails[i].RATE, new { htmlAttributes = new { id = "DRATE_" + i, @class = " atextBoxFor", @style = "text-align: right;", autocomplete = "off", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" } })                                           
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.DRCRDetails[i].AMOUNT, new { htmlAttributes = new { id = "DAMOUNT_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" } })
+                                        </td>                                       
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].TAXABLE, new { id = "DTAXABLE_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].igstper, new { id = "Digstper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].igstamt, new { id = "Digstamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].cgstper, new { id = "Dcgstper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].cgstamt, new { id = "Dcgstamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].sgstper, new { id = "Dsgstper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].sgstamt, new { id = "Dsgstamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].cessper, new { id = "Dcessper_" + i, @class = " atextBoxFor", maxlength = 6, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateRowAmtDrCr('" + "DRATE_" + i + "','" + "DQUAN_" + i + "','" + "DAMOUNT_" + i + "','" + "DTAXABLE_" + i + "','" + "Digstper_" + i + "','" + "Digstamt_" + i + "','" + "Dcgstper_" + i + "','" + "Dcgstamt_" + i + "','" + "Dsgstper_" + i + "','" + "Dsgstamt_" + i + "','" + "Dcessper_" + i + "','" + "Dcessamt_" + i + "','" + "DNETAMOUNT_" + i + "','" + "Droundoff_" + i + "'," + i + ");" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].cessamt, new { id = "Dcessamt_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="sticky-cell-opposite">
+                                            @Html.TextBoxFor(model => Model.DRCRDetails[i].NETAMOUNT, new { id = "DNETAMOUNT_" + i, @class = " atextBoxFor", maxlength = 10, @style = "text-align:right;font-weight:bold", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Round Off")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.Roundoff_DCNote, new { id = "D_Checked", onclick = "DRCRBillAmount();" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Round Off Amount")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.RoundoffAMT_DCNote, new { htmlAttributes = new { @class = "form-control", id = "ROAMT_DCNOTE", @style = "text-align:right;font-weight:800", @placeholder = "Amount", maxlength = 10, @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Total Taxable Amount")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TAXABLEVAL_DNCNNOTE, new { htmlAttributes = new { @class = "form-control", id = "TAXABLEVAL_DNCNNOTE", @placeholder = "Amount", maxlength = 10, @readonly = "readonly", @style = "text-align:right;font-weight:800" } })
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Total Debit/Credit Note Amount")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TOTALBILLAMT_DRCRNOTE, new { htmlAttributes = new { @class = "form-control", id = "TOTALBILLAMT_DRCRNOTE", @placeholder = "Amount", maxlength = 10, @readonly = "readonly", @style = "text-align:right;font-weight:800" } })
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>
+}
+else
+{
+    <span>@Model.MSG</span>
+}
+

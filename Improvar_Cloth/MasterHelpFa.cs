@@ -862,9 +862,9 @@ namespace Improvar
         }
 
         public string InsVch_TdsTxn(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string blno, string bldt, string glcd, string slcd, string tdscode,
-            short slno, double blamt, double tdson, double tdsper, double tdsamt, string tdsdt, string low_tds, string class1cd, string tdstcs = "")
+            short slno, double blamt, double tdson, double tdsper, double tdsamt, string tdsdt, string low_tds, string class1cd, string tdstcs = "", double advadj = 0, string expglcd = null)
         {
-            string bl = "";
+            string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
             try
             {
                 string scmf = CommVar.FinSchema(UNQSNO), clcd = CommVar.ClientCode(UNQSNO);
@@ -872,7 +872,7 @@ namespace Improvar
                 if (tdstcs == "") tdstcs = "";
 
                 sql = "insert into " + scmf + ".t_tdstxn (emd_no, clcd, dtag, ttag, autono, doccd, docno, docdt, blno, bldt, glcd, slcd, tdscode, ";
-                sql = sql + "slno, blamt, tdson, tdsper, tdsamt, tdsdt, low_tds, class1cd, tdstcs) values (";
+                sql = sql + "slno, blamt, tdson, tdsper, tdsamt, tdsdt, low_tds, class1cd, tdstcs, advadj,expglcd) values (";
                 sql = sql + emd_no;
                 sql = sql + "," + filc(clcd);
                 sql = sql + "," + filc(dtag);
@@ -895,6 +895,8 @@ namespace Improvar
                 sql = sql + "," + filc(low_tds);
                 sql = sql + "," + filc(class1cd);
                 sql = sql + "," + filc(tdstcs);
+                sql = sql + "," + advadj;
+                sql = sql + "," + expglcd;
                 sql = sql + ")";
 
                 bl = sql;
@@ -907,7 +909,6 @@ namespace Improvar
                 return bl;
             }
         }
-
         public string Instcntrl_hdr(string autono, string vchrmod, string modcd, string mnthcd, string doccd, string docno, string docdt, short emd_no, string dtag, string doconlyno, double vchrno,
                 string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double docamt = 0, string cancel = null)
 
