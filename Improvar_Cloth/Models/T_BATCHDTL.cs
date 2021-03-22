@@ -133,5 +133,6 @@ namespace Improvar.Models
         public string PCSTYPE { get; set; }
         public double? OTHRAMT { get; set; }
         public double? TXBLVAL { get; set; }
+        public double? MTRLCOST { get; set; }
     }
 }

@@ -753,7 +753,7 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
                 string BOMITCD = "";
-                if(GOCD == "")
+                if (GOCD == "")
                 {
                     return Content("Please Select Godown !!");
                 }
@@ -778,7 +778,14 @@ namespace Improvar.Controllers
                     mtrljobcd = str.retCompValue("MTRLJOBCD");
                     if (mtrljobcd == "")
                     {
-                        cd = "FS";
+                        if (VE.MENU_PARA == "DY" && menupara == "PB")
+                        {
+                            cd = "DY";
+                        }
+                        else
+                        {
+                            cd = "FS";
+                        }
                         mtrljobnm = (from i in DB.M_MTRLJOBMST where i.MTRLJOBCD == cd select i.MTRLJOBNM).FirstOrDefault();
                     }
                     else { cd = mtrljobcd; mtrljobnm = str.retCompValue("MTRLJOBNM"); }
@@ -942,7 +949,7 @@ namespace Improvar.Controllers
                 {
                     return Content("Please Select Document Date !!");
                 }
-                var str = masterHelp.SLCD_help(val);
+                var str = masterHelp.SLCD_help(val, "J");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1530,6 +1537,7 @@ namespace Improvar.Controllers
                                        QITNM = x.ITNM,
                                        QUOM = x.UOM,
                                        QQNTY = x.QNTY,
+                                       BOMQNTY = x.QNTY,
                                        BARNO = x.BARNO,
                                        ITGRPCD = x.ITGRPCD,
                                        ITGRPNM = x.ITGRPNM,
@@ -1539,7 +1547,7 @@ namespace Improvar.Controllers
                                        COLRCD = x.COLRCD,
                                        COLRNM = x.COLRNM,
                                        UOM = x.UOM,
-                                       MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "DY",
+                                       MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "PL",
                                        //MTRLJOBNM = x.MTRLJOBNM,
                                        Q_CheckedSample = x.CheckedSample == true ? true : false,
                                    }).ToList();

@@ -23,10 +23,10 @@ function modeView() {
     $(".Help_image_buttonAddRemove").hide();
     $("input[type='file']").attr("disabled", "true");
     $("input[type='radio']").attr("disabled", "true");
-    $("input[type='checkbox']").attr("disabled", "true");
+    $("input[type='checkbox']").css('pointer-events', 'none');
     $("input").attr("placeholder", "");
     $("textarea").attr("readonly", "readonly");
-    $('.grid_title_box').prop('readonly', false)
+    $('.grid_title_box').prop('readonly', false);
     $(".grid_title_box").removeAttr('readonly');
 }
 
