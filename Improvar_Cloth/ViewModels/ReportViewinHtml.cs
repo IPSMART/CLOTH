@@ -35,7 +35,6 @@ namespace Improvar.ViewModels
         public string DOCNO { get; set; }
         public string FDOCNO { get; set; }
         public string TDOCNO { get; set; }
-        public string DOCDT { get; set; }
         public string DOCCD { get; set; }
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
@@ -90,6 +89,7 @@ namespace Improvar.ViewModels
         public string Gonm { get; set; }
         public string PRCCD { get; set; }
         public string PRCNM { get; set; }
+        public string JOBCD { get; set; }
 
     }
 }
