@@ -78,6 +78,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_DOCCD> DropDown_list_DOCCD { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
+        public List<DropDown_list_JOBCD> DropDown_list_JOBCD { get; set; }
         public string SubLeg_Grp { get; set; }
         public string Agslnm { get; set; }
         public string Brandnm { get; set; }
