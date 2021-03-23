@@ -651,6 +651,213 @@ namespace Improvar
             if (rtval < 0) rtval = 0;
             return rtval;
         }
+        //public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false)
+        //{
+        //    //showbatchno = true;
+        //    string UNQSNO = CommVar.getQueryStringUNQSNO();
+        //    DataTable tbl = new DataTable();
+        //    string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+        //    string sql = "";
+        //    //bool showallitems = true;
+
+        //    if (curschema != "") scm = curschema;
+        //    if (finschema != "") scmf = finschema;
+        //    string itcdqry = "a.itcd ", itcdpipe = "a.itcd";
+        //    if (mergeitem == true)
+        //    {
+        //        itcdqry = "nvl(e.linkitcd,a.itcd) ";
+        //        itcdpipe = "nvl(e.linkitcd,a.itcd)";
+        //    }
+        //    #region Generate Stock Table
+        //    DataTable rsstk = new DataTable();
+        //    rsstk.Columns.Add("key", typeof(string), "");
+        //    rsstk.Columns.Add("itcd", typeof(string), "");
+        //    rsstk.Columns.Add("partcd", typeof(string), "");
+        //    rsstk.Columns.Add("partnm", typeof(string), "");
+        //    rsstk.Columns.Add("mtrljobcd", typeof(string), "");
+        //    rsstk.Columns.Add("jobnm", typeof(string), "");
+        //    rsstk.Columns.Add("jobseq", typeof(string), "");
+        //    rsstk.Columns.Add("stktype", typeof(string), "");
+        //    rsstk.Columns.Add("sizecd", typeof(string), "");
+        //    rsstk.Columns.Add("colrcd", typeof(string), "");
+        //    rsstk.Columns.Add("itcolsize", typeof(string), "");
+        //    rsstk.Columns.Add("rate", typeof(double), "");
+        //    rsstk.Columns.Add("itnm", typeof(string), "");
+        //    rsstk.Columns.Add("styleno", typeof(string), "");
+        //    rsstk.Columns.Add("mixsize", typeof(string), "");
+        //    rsstk.Columns.Add("uomcd", typeof(string), "");
+        //    rsstk.Columns.Add("uomnm", typeof(string), "");
+        //    rsstk.Columns.Add("pcsperbox", typeof(double), "");
+        //    rsstk.Columns.Add("decimals", typeof(double), "");
+        //    rsstk.Columns.Add("pcsperset", typeof(double), "");
+        //    rsstk.Columns.Add("mergepcs", typeof(double), "");
+        //    rsstk.Columns.Add("itgrpcd", typeof(string), "");
+        //    rsstk.Columns.Add("itgrpnm", typeof(string), "");
+        //    rsstk.Columns.Add("brandcd", typeof(string), "");
+        //    rsstk.Columns.Add("brandnm", typeof(string), "");
+        //    rsstk.Columns.Add("slcd", typeof(string), "");
+        //    rsstk.Columns.Add("slnm", typeof(string), "");
+        //    rsstk.Columns.Add("docno", typeof(string), "");
+        //    rsstk.Columns.Add("doccd", typeof(string), "");
+        //    rsstk.Columns.Add("doconlyno", typeof(string), "");
+        //    rsstk.Columns.Add("docdt", typeof(string), "");
+        //    rsstk.Columns.Add("dia", typeof(double), "");
+        //    rsstk.Columns.Add("ll", typeof(double), "");
+        //    rsstk.Columns.Add("orgbatchno", typeof(string), "");
+        //    rsstk.Columns.Add("orgbatchslno", typeof(double), "");
+        //    rsstk.Columns.Add("batchautono", typeof(string), "");
+        //    rsstk.Columns.Add("batchslno", typeof(double), "");
+        //    rsstk.Columns.Add("batchno", typeof(string), "");
+        //    rsstk.Columns.Add("orgbatchdocno", typeof(string), "");
+        //    rsstk.Columns.Add("orgbatchdocdt", typeof(string), "");
+        //    rsstk.Columns.Add("orgbatchdoccd", typeof(string), "");
+        //    rsstk.Columns.Add("texture", typeof(string), "");
+        //    rsstk.Columns.Add("gsm", typeof(string), "");
+        //    rsstk.Columns.Add("mchnname", typeof(string), "");
+        //    rsstk.Columns.Add("fabtype", typeof(string), "");
+        //    rsstk.Columns.Add("colrnm", typeof(string), "");
+        //    rsstk.Columns.Add("millnm", typeof(string), "");
+        //    rsstk.Columns.Add("sizecdgrp", typeof(string), "");
+        //    rsstk.Columns.Add("sizenm", typeof(string), "");
+        //    rsstk.Columns.Add("print_seq", typeof(string), "");
+        //    rsstk.Columns.Add("nos", typeof(double), "");
+        //    rsstk.Columns.Add("qnty", typeof(double), "");
+        //    #endregion
+
+        //    sql = "";
+
+
+        //    sql += "select a.gocd,m.gonm, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
+        //    sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
+        //    sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
+        //    sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
+        //    sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen ";
+        //    sql += "from ";
+
+        //    sql += "( ";
+        //    sql += "select b.gocd, b.mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, b.balqnty, b.balnos from ";
+
+        //    sql += "( select a.barno, a.itcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia from ";
+        //    sql += scm + ".t_batchmst a ";
+        //    sql += "where a.barno is not null and ";
+        //    if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
+        //    if (itcd.retStr() != "") sql += "a.itcd in (" + itcd + ") and ";
+        //    sql += "a.barno is not null ";
+        //    sql += ") a, ";
+
+        //    sql += "( select gocd, mtrljobcd, stktype, barno, partcd, sum(balqnty) balqnty, sum(balnos) balnos from ";
+        //    sql += "( ";
+        //    sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, ";
+        //    sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 end) balqnty, ";
+        //    sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 end) balnos ";
+        //    sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
+        //    sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
+        //    sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
+        //    if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
+        //    if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
+        //    if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
+        //    if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+        //    if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+        //    sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+        //    sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
+        //    if (pendpslipconsider == true)
+        //    {
+        //        sql += "union all ";
+        //        sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, ";
+        //        sql += "sum(a.qnty*-1) balqnty, sum(a.nos*-1) balnos ";
+        //        sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, ";
+        //        sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e ";
+        //        sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
+        //        sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and ";
+        //        sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
+        //        if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
+        //        if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
+        //        if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
+        //        if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+        //        if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+        //        sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+        //        sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
+        //    }
+        //    sql += ") group by gocd, mtrljobcd, stktype, barno, partcd ";
+        //    sql += " ) b ";
+        //    sql += "where a.barno=b.barno(+) ";
+        //    if (shownilstock == false) sql += "and nvl(b.balqnty,0) <> 0 ";
+        //    sql += ") a, ";
+
+        //    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
+        //    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+        //    sql += "(select a.barno, a.prccd, a.effdt, ";
+        //    sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+        //    sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) ";
+        //    sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c ";
+        //    sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) ";
+        //    sql += ") a where prccd='" + prccd + "') b, ";
+
+        //    sql += "(select a.barno, count(*) barimagecount,";
+        //    sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
+        //    //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
+        //    sql += "within group (order by a.barno) as barimage from ";
+        //    sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+        //    sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+        //    sql += "from " + scm + ".m_batch_img_hdr a ";
+        //    sql += "union ";
+        //    sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+        //    sql += "from " + scm + ".m_batch_img_hdr_link a, " + scm + ".m_batch_img_hdr b ";
+        //    sql += "where a.mainbarno=b.barno(+) ) a, ";
+        //    sql += "" + scm + ".m_batch_img_hdr b ";
+        //    sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
+        //    sql += "union ";
+        //    sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+        //    sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+        //    sql += "from " + scm + ".t_batch_img_hdr a ";
+        //    sql += "union ";
+        //    sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+        //    sql += "from " + scm + ".t_batch_img_hdr_link a, " + scm + ".t_batch_img_hdr b ";
+        //    sql += "where a.mainbarno=b.barno(+) ) a, ";
+        //    sql += "" + scm + ".t_batch_img_hdr b ";
+        //    sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
+        //    sql += "group by a.barno ) y, ";
+
+        //    sql += "(select a.prodgrpcd, ";
+        //    //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+        //    sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
+        //    sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
+        //    sql += "from ";
+        //    sql += "(select prodgrpcd, effdt from ";
+        //    sql += "(select a.prodgrpcd, a.effdt, ";
+        //    sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
+        //    sql += "from " + scm + ".m_prodtax a where a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) ";
+        //    sql += "where rn=1 ) a, " + scm + ".m_prodtax b ";
+        //    sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + taxgrpcd + "' ";
+        //    sql += "group by a.prodgrpcd ) z, ";
+
+        //    sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
+        //    sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
+        //    sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, "+ scm + ".m_sitem n ";
+        //    sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
+        //    sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and c.fabitcd=n.itcd(+) and ";
+        //    if (stylelike.retStr() != "")
+        //    {
+        //        if (exactbarno == true)
+        //        {
+        //            sql += " (a.barno=" + stylelike + ") and ";
+        //        }
+        //        else
+        //        {
+        //            sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
+        //        }
+        //    }
+        //    //if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
+        //    //if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
+        //    if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
+        //    if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
+        //    sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
+        //    sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) and a.gocd=m.gocd(+)  ";
+        //    if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  ";
+        //    tbl = masterHelpFa.SQLquery(sql);
+        //    return tbl;
+
+        //}
         public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false)
         {
             //showbatchno = true;
@@ -795,19 +1002,8 @@ namespace Improvar
 
             sql += "(select a.barno, count(*) barimagecount,";
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
-            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-            sql += "from " + scm + ".m_batch_img_hdr a ";
-            sql += "union ";
-            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-            sql += "from " + scm + ".m_batch_img_hdr_link a, " + scm + ".m_batch_img_hdr b ";
-            sql += "where a.mainbarno=b.barno(+) ) a, ";
-            sql += "" + scm + ".m_batch_img_hdr b ";
-            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
-            sql += "union ";
-            sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
             sql += "from " + scm + ".t_batch_img_hdr a ";
             sql += "union ";
@@ -833,7 +1029,7 @@ namespace Improvar
 
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
-            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, "+ scm + ".m_sitem n ";
+            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, " + scm + ".m_sitem n ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and c.fabitcd=n.itcd(+) and ";
             if (stylelike.retStr() != "")

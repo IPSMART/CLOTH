@@ -259,5 +259,8 @@ namespace Improvar.ViewModels
         public string EXPGLCD { get; set; }
         [StringLength(8)]
         public string EXPGLNM { get; set; }
+        public string JOBNM { get; set; }
+        public string JOBEXPGLCD { get; set; }
+        public string JOBHSNCODE { get; set; }
     }
 }

@@ -2109,7 +2109,7 @@ namespace Improvar
             string scm = CommVar.CurSchema(UNQSNO);
             string valsrch = val.ToUpper().Trim();
             string sql = "";
-            sql += "select c.jobcd,c.jobnm from " + scm + ".M_JOBMST c," + scm + ".M_CNTRL_HDR i where c.M_AUTONO= i.M_AUTONO(+) ";
+            sql += "select c.jobcd,c.jobnm,c.expglcd,c.scglcd,c.jbatchnini,c.prodgrpcd,c.hsncode,c.uomcd,c.rmtrljobcd,c.imtrljobcd,c.issmtrldesc,c.jobseq from " + scm + ".M_JOBMST c," + scm + ".M_CNTRL_HDR i where c.M_AUTONO= i.M_AUTONO(+) ";
             sql += "and i.INACTIVE_TAG ='N' ";
             if (valsrch.retStr() != "") sql += "and upper(c.jobcd) = '" + valsrch + "'  ";
             DataTable tbl = SQLquery(sql);
