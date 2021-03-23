@@ -39,6 +39,11 @@ namespace Improvar.ViewModels
         public bool MNTNBARNO { get; set; }
         public bool COMMONUIQBAR { get; set; }
         public bool Checked_DataExsist { get; set; }
+        public long? PRICEINCODERATE { get; set; }
+        public long? PRICEINCODERATENCOD { get; set; }
+        public long? PRICEINCODECOSTRATE { get; set; }
+        public long? PRICEINCODECOSTRATENCOD { get; set; }
+
     }
 
 }
