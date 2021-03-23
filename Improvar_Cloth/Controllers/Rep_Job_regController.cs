@@ -36,13 +36,24 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     string com = CommVar.Compcd(UNQSNO); string gcs = Cn.GCS();
-                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
+                    VE.TDT = CommVar.CurrDate(UNQSNO);
+
+                    //VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
+                    VE.JOBCD = MasterHelp.ComboFill("jobcd", DropDownHelp.DropDown_JOBCD(), 0, 1);
+
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("J");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+
+                    VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
+                    VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
+
+
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("T");
                     VE.TEXTBOX1 = MasterHelp.ComboFill("porter", VE.DropDown_list_SLCD, 0, 1);
                     VE.DropDown_list_DOCCD = DropDownHelp.GetDocCdforSelection("'SBILD','SPSLP'");
                     VE.TEXTBOX2 = MasterHelp.ComboFill("doccd", VE.DropDown_list_DOCCD, 0, 1);
-                    VE.TDT = CommVar.CurrDate(UNQSNO);
+
+
 
                     VE.DefaultView = true;
                     return View(VE);
@@ -76,7 +87,7 @@ namespace Improvar.Controllers
                 sql += " (select a.autono, a.slno, a.autono || a.slno autoslno ";
                 sql += " from " + scm + ".t_progmast a, " + scm + ".t_cntrl_hdr b ";
                 sql += " where a.autono = b.autono(+) and ";
-                sql += " b.compcd = '"+ COM + "' and nvl(b.cancel, 'N') = 'N' and ";
+                sql += " b.compcd = '" + COM + "' and nvl(b.cancel, 'N') = 'N' and ";
                 sql += " b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) a, ";
                 sql += "  ";
                 sql += "  ";
@@ -95,14 +106,14 @@ namespace Improvar.Controllers
                 sql += " b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
                 sql += " group by a.progautono || a.progslno ) y, ";
                 sql += "  ";
-                sql += "  "; 
-                 sql += " " + scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, ";
+                sql += "  ";
+                sql += " " + scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, ";
                 sql += " " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k ";
                 sql += " where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and ";
                 sql += " a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and ";
                 sql += " c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) ";
                 sql += " order by slnm, slcd, docdt, docno, slno, recdocdt, recdocno ";
-                
+
                 //string sql = "select a.docdt,g.docno,a.doccd,a.slcd partycd,e.slnm partynm,c.mutslcd portercd,f.slnm porternm,e.slarea,c.noofcases,b.nos,b.qnty,d.uomcd ";
                 //sql += " from " + scm + ".t_txn a ," + scm + ".t_txndtl b, " + scm + ".t_txnoth c, " + scm + ".M_SITEM d, " + scmf + ".M_SUBLEG e, " + scmf + ".M_SUBLEG f," + scm + ".t_cntrl_hdr g  ";
                 //sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and b.itcd = d.itcd and a.slcd = e.slcd(+) and c.mutslcd=f.slcd(+)and  a.autono=g.autono and a.doccd in('SSPSL','SSBIL') ";

@@ -304,6 +304,19 @@ namespace Improvar
             LineList = (from a in DB.M_LINEMAST join i in DB.M_CNTRL_HDR on a.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new DropDown_list_LINECD() { text = a.LINENM, value = a.LINECD }).ToList();
             return LineList;
         }
+        public List<DropDown_list_JOBCD> DropDown_JOBCD()
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            var LineList = (from c in DB.M_JOBMST
+                         join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                         where i.INACTIVE_TAG == "N"
+                         select new DropDown_list_JOBCD
+                         {
+                             value = c.JOBCD,
+                             text = c.JOBNM
+                         }).ToList();
+            return LineList;
+        }
 
     }
 }

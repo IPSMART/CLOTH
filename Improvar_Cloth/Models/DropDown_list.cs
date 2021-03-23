@@ -215,6 +215,11 @@ namespace Improvar.Models
         public string text { get; set; }
         public string value { get; set; }
     }
+    public class DropDown_list_JOBCD
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+    }
     public class DropDown_Grid_SLCD
     {
         public string text { get; set; }
