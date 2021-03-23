@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Job Work Register";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
-    string PageControllerName = "Rep_Jobreg";
+    string PageControllerName = "Rep_Job_reg";
 }
 <script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
@@ -20,7 +20,7 @@
         debugger;
         //if (!emptyFieldCheck("Enter/Select To Date ", "TDT")) { return false; }
         $("#form1").attr('target', '_blank');
-        $("#form1").attr('action', 'Rep_Jobreg');
+        $("#form1").attr('action', 'Rep_Job_reg');
         $("#form1").submit();
 
     }

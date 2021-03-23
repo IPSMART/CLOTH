@@ -300,7 +300,7 @@
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_PartyStmtController.cs" />
     <Compile Include="Controllers\Rep_Pend_JobController.cs" />
-    <Compile Include="Controllers\Rep_JobregController.cs" />
+    <Compile Include="Controllers\Rep_Job_regController.cs" />
     <Compile Include="Controllers\Rep_PorterController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
@@ -1341,7 +1341,7 @@
     <Content Include="Views\T_JobBill\T_JobBill.cshtml" />
     <Content Include="Views\Shared\_T_JobBill_ItemDetails.cshtml" />
     <Content Include="Views\Shared\_T_JobBill_SBillDetails.cshtml" />
-    <Content Include="Views\Rep_Jobreg\Rep_Jobreg.cshtml" />
+    <Content Include="Views\Rep_Job_reg\Rep_Job_reg.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -11,16 +11,16 @@ using OfficeOpenXml.Style;
 
 namespace Improvar.Controllers
 {
-    public class Rep_JobregController : Controller
+    public class Rep_Job_regController : Controller
     {
-        // GET: Rep_Jobreg
+        // GET: Rep_Job_reg
         Connection Cn = new Connection();
         MasterHelp MasterHelp = new MasterHelp();
         DropDownHelp DropDownHelp = new DropDownHelp();
         string fdt = ""; string tdt = ""; bool showpacksize = false, showrate = false;
         string modulecode = CommVar.ModuleCode();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        public ActionResult Rep_Jobreg()
+        public ActionResult Rep_Job_reg()
         {
             try
             {
@@ -55,7 +55,7 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult Rep_Jobreg(FormCollection FC, ReportViewinHtml VE)
+        public ActionResult Rep_Job_reg(FormCollection FC, ReportViewinHtml VE)
         {
             try
             {
