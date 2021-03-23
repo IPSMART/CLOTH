@@ -706,7 +706,49 @@ namespace Improvar.Controllers
             }
             return VE;
         }
-
+        public string RateEncode(int rate, string PRICEINCODE)
+        {
+            PRICEINCODE = PRICEINCODE.ToUpper();
+            string str = ""; string rptchar = "";
+            string[,] arr = new string[11, 2];
+            //G A N A S H R //11th charecter can repeat eg 1122=ARNR
+            //0 1 2 3 4 5 H
+            if (PRICEINCODE != "")
+            {
+                int i = 0;
+                foreach (char c in PRICEINCODE)
+                {
+                    arr[i, 0] = c.ToString();
+                    arr[i, 1] = i.ToString(); i++;
+                }
+                var strate = rate.ToString(); string lastchar = "";
+                if (PRICEINCODE.Length == 11) rptchar = arr[10, 0];
+                foreach (char c in strate)
+                {
+                    for (int k = 0; k < arr.GetLength(0) - rptchar.Length; k++)
+                    {
+                        if (c.ToString() == arr[k, 1])
+                        {
+                            if (lastchar == arr[k, 0] && rptchar != "")
+                            {
+                                str += rptchar;
+                                lastchar = "";
+                            }
+                            else
+                            {
+                                str += arr[k, 0];
+                                lastchar = arr[k, 0];
+                            }
+                        }
+                    }
+                }
+                return str;
+            }
+            else
+            {
+                return rate.ToString();
+            }
+        }
 
     }
 }

@@ -35,7 +35,6 @@ namespace Improvar.ViewModels
         public string DOCNO { get; set; }
         public string FDOCNO { get; set; }
         public string TDOCNO { get; set; }
-        public string DOCDT { get; set; }
         public string DOCCD { get; set; }
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
@@ -79,6 +78,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_DOCCD> DropDown_list_DOCCD { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
+        public List<DropDown_list_JOBCD> DropDown_list_JOBCD { get; set; }
         public string SubLeg_Grp { get; set; }
         public string Agslnm { get; set; }
         public string Brandnm { get; set; }
@@ -90,6 +90,7 @@ namespace Improvar.ViewModels
         public string Gonm { get; set; }
         public string PRCCD { get; set; }
         public string PRCNM { get; set; }
+        public string JOBCD { get; set; }
 
     }
 }

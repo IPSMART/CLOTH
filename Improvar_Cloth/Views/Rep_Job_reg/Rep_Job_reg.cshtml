@@ -13,6 +13,7 @@
     $(function () {
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TEXTBOX1").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
 </script>
 <script>
@@ -25,7 +26,6 @@
 
     }
 </script>
-
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "From Date")
+                            @Html.Label("", "From Issue Doc Date")
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -45,9 +45,9 @@
                             @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
                         </div>
                     </div>
-                    <div class="col-lg-1">
+                    <div class="col-lg-3">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "To Date")
+                            @Html.Label("", "To Issue Doc Date")
                             <sup style="color:red">*</sup>
                         </div>
                     </div>
@@ -57,20 +57,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" style="margin-top:6px">
+                <div class="row">
                     <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Doc Code")
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Job Name")
                         </div>
                     </div>
-                    <div class="col-md-11">
-                        @(new HtmlString(Model.TEXTBOX2))
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => Model.JOBCD, new SelectList(Model.DropDown_list_JOBCD, "Value", "Text", Model.JOBCD), new { @class = "form-control" })
+                        </div>
                     </div>
                 </div>
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Party")
+                            @Html.Label("", "Jobber")
                         </div>
                     </div>
                     <div class="col-md-11">
@@ -80,11 +82,50 @@
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Porter")
+                            @Html.Label("", "Item/Style")
                         </div>
                     </div>
                     <div class="col-md-11">
-                        @(new HtmlString(Model.TEXTBOX1))
+                        @(new HtmlString(Model.Itnm))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Receive Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX1", @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Value")
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="border: 2px groove;">
+                        <label class="checkbox-inline">
+                            @Html.CheckBoxFor(model => model.Checkbox1)  @Html.Label("Show Value")
+                        </label>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show")
+                        </div>
+                    </div>
+                    <div class="col-lg-8" style="border: 2px groove;width:auto;">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX2, "SHOWALL", new { @checked = "checked" })  @Html.Label("Show All")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX2, "PENDING")  @Html.Label("Pending")
+                        </label>
                     </div>
                 </div>
                 <div class="row" style="margin-top: 8px;">
@@ -95,19 +136,33 @@
                     </div>
                     <div class="col-lg-8" style="border: 2px groove;width:auto;">
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX1, "N", new { @checked = "checked" })  @Html.Label("Normal")
+                            @Html.RadioButtonFor(g => g.TEXTBOX3, "DETAIL", new { @checked = "checked" })  @Html.Label("Detail")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX1, "S")  @Html.Label("Standard")
+                            @Html.RadioButtonFor(g => g.TEXTBOX3, "SUMARRY")  @Html.Label("Summary")
                         </label>
                     </div>
-                    <div class="row" style="margin-top:10PX">
-                        <div class="col-lg-2">
+                </div>
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Format")
                         </div>
-                        <div class="col-lg-6">
-                            <input type="button" value="Show Report" name="command" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
-                            @*<input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />*@
-                        </div>
+                    </div>
+                    <div class="col-lg-8" style="border: 2px groove;width:auto;">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX4, "STANDARD")  @Html.Label("Standard")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX4, "PARTYWISE", new { @checked = "checked" })  @Html.Label("Jobber Wise")
+                        </label>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="button" value="Show Report" name="command" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
                     </div>
                 </div>
             </div>
