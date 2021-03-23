@@ -300,7 +300,7 @@ namespace Improvar.Controllers
                             }
                         }
                         VE.SHOWMTRLJOBCD = mtrljobcd.Count() > 1 ? "Y" : "N";
-                        VE.SHOWBLTYPE = VE.BL_TYPE.Count > 1 ? "Y" : "N";
+                        VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
                     }
                     else
                     {

@@ -2258,7 +2258,7 @@ namespace Improvar
         }
         public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string schema = "", string LOCCD = "")
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string sql = "", sqlc = "";
@@ -2343,7 +2343,7 @@ namespace Improvar
             }).DistinctBy(s => s.GOCD).ToList().Select(q => new
             {
                 GOCD = q.GOCD,
-                GONM = (from W in DB.M_GODOWN where W.GOCD == q.GOCD select W.GONM).SingleOrDefault()
+                GONM = (from W in DBF.M_GODOWN where W.GOCD == q.GOCD select W.GONM).SingleOrDefault()
             }).ToList();
 
             #region //Create Datatable rsstock

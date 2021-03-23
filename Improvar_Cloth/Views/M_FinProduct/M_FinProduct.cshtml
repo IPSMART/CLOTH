@@ -58,7 +58,14 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         } 
-
+        if (!emptyFieldCheck("Enter HSN Code", "HSNCODE")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
         if (!emptyFieldCheck("Enter UOM", "UOMCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -1126,6 +1133,7 @@
                             <div class="col-md-6">
                                 <div class="editor-labelemp" style="margin-top:0px;margin-bottom: -5px;">
                                     @Html.Label("", "HSN Code")
+                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
                             <div class="col-md-6">

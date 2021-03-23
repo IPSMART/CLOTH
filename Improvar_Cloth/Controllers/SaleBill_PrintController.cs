@@ -2948,7 +2948,7 @@ namespace Improvar.Controllers
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,z.totdiscamt,  ";
                 sql += "(case when nvl(h.cancel,'N')='Y' then 'C' when r.autono is not null then 'A' ";
                 sql += "when nvl(s.einvappl,'N')='Y' and p.irnno is null and e.gstno is not null and s.expcd is null and s.salpur='S' then 'I' end) cancel,p.irnno, ";
-                sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm from  ";
+                sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype from  ";
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, o.pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
@@ -3130,12 +3130,12 @@ namespace Improvar.Controllers
                 IR.Columns.Add("rateuomnm", typeof(string), "");
                 IR.Columns.Add("amt", typeof(double), "");
                 IR.Columns.Add("stddisc", typeof(string), "");
-                IR.Columns.Add("tddiscamt", typeof(double), "");
+                IR.Columns.Add("tddiscamt", typeof(string), "");
                 IR.Columns.Add("disc", typeof(string), "");
-                IR.Columns.Add("discamt", typeof(double), "");
+                IR.Columns.Add("discamt", typeof(string), "");
                 IR.Columns.Add("scmdisctype", typeof(string), "");
                 IR.Columns.Add("scmdiscrate", typeof(double), "");
-                IR.Columns.Add("scmdiscamt", typeof(double), "");
+                IR.Columns.Add("scmdiscamt", typeof(string), "");
                 IR.Columns.Add("tddisctype", typeof(string), "");
                 IR.Columns.Add("tddiscrate", typeof(double), "");
                 IR.Columns.Add("txblval", typeof(string), "");
@@ -3265,6 +3265,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("upiimgpath", typeof(string), "");
                 IR.Columns.Add("ackno", typeof(string), "");
                 IR.Columns.Add("mutslnm", typeof(string), "");
+                IR.Columns.Add("flagmtr", typeof(double), "");
+                IR.Columns.Add("bltype", typeof(string), "");
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
 
@@ -3536,7 +3538,7 @@ namespace Improvar.Controllers
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
-                            //payterms = tbl.Rows[i]["payterms"].ToString();
+                            payterms = tbl.Rows[i]["payterms"].ToString();
                             if (payterms == "")
                             {
                                 if (duedays == 0) payterms = ""; else payterms = duedays.ToString() + " days.";
@@ -3721,6 +3723,7 @@ namespace Improvar.Controllers
                             dr1["ntwt"] = tbl.Rows[i]["ntwt"] == DBNull.Value ? 0 : tbl.Rows[i]["ntwt"].retDbl();
                             dr1["agentnm"] = tbl.Rows[i]["agslnm"].ToString();
                             dr1["mutslnm"] = tbl.Rows[i]["mutslnm"].ToString();
+                            dr1["bltype"] = tbl.Rows[i]["bltype"].ToString();
 
                             dr1["revchrg"] = "N";
                             dr1["roamt"] = tbl.Rows[i]["roamt"] == DBNull.Value ? 0 : tbl.Rows[i]["roamt"].retDbl();
@@ -3842,7 +3845,7 @@ namespace Improvar.Controllers
                                 //dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
                                 dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
                                 dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
-
+                                dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
                                 //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
@@ -3857,6 +3860,7 @@ namespace Improvar.Controllers
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : (tbl.Rows[i]["qnty"]).retDbl();
+                                dr1["flagmtr"] = tbl.Rows[i]["flagmtr"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
                                 string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());
                                 if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
@@ -3965,7 +3969,7 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 dr1["stddisc"] = strdsc;
-                                dr1["tddiscamt"] = (tbl.Rows[i]["tddiscamt"]).retDbl();
+                                dr1["tddiscamt"] = (tbl.Rows[i]["tddiscamt"]).retDbl().ToINRFormat();
                                 if ((tbl.Rows[i]["discamt"]).retDbl() != 0)
                                 {
                                     switch (tbl.Rows[i]["disctype"].ToString())
@@ -3983,7 +3987,8 @@ namespace Improvar.Controllers
                                 }
                                 dr1["disc"] = strdsc;
                                 dr1["titdiscamt"] = (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
-                                dr1["discamt"] = (tbl.Rows[i]["discamt"]).retDbl();
+                                dr1["discamt"] = (tbl.Rows[i]["discamt"]).retDbl().ToINRFormat();
+                                dr1["scmdiscamt"] = (tbl.Rows[i]["scmdiscamt"]).retDbl().ToINRFormat();
                                 dr1["txblval"] = ((tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl() - (tbl.Rows[i]["scmdiscamt"]).retDbl()).ToINRFormat();
 
                                 dr1["cgstdsp"] = flagi == true ? "IGST" : "CGST";
@@ -4051,8 +4056,9 @@ namespace Improvar.Controllers
                                             if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                             dr1["qdecimal"] = uommaxdecimal;
                                             dr1["amt"] = dbasamt;
-                                            dr1["tddiscamt"] = ddisc1;
-                                            dr1["discamt"] = ddisc2;
+                                            dr1["scmdiscamt"] = ddisc1.ToINRFormat();
+                                            dr1["tddiscamt"] = ddisc2.ToINRFormat();
+                                            dr1["discamt"] = ddisc3.ToINRFormat();
                                             dr1["txblval"] = dtxblval.ToINRFormat();
                                             dr1["cgstamt"] = dcgstamt;
                                             dr1["sgstamt"] = dsgstamt;
@@ -4087,8 +4093,9 @@ namespace Improvar.Controllers
                                         if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                         dr1["qdecimal"] = uommaxdecimal;
                                         dr1["amt"] = dbasamt;
-                                        dr1["tddiscamt"] = ddisc1;
-                                        dr1["discamt"] = ddisc2;
+                                        dr1["scmdiscamt"] = ddisc1.ToINRFormat();
+                                        dr1["tddiscamt"] = ddisc2.ToINRFormat();
+                                        dr1["discamt"] = ddisc3.ToINRFormat();
                                         dr1["txblval"] = dtxblval.ToINRFormat();
                                         dr1["cgstamt"] = dcgstamt;
                                         dr1["sgstamt"] = dsgstamt;
@@ -4116,8 +4123,9 @@ namespace Improvar.Controllers
                                     if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                     dr1["qdecimal"] = uommaxdecimal;
                                     dr1["amt"] = dbasamt;
-                                    dr1["tddiscamt"] = ddisc1;
-                                    dr1["discamt"] = ddisc2;
+                                    dr1["scmdiscamt"] = ddisc1.ToINRFormat();
+                                    dr1["tddiscamt"] = ddisc2.ToINRFormat();
+                                    dr1["discamt"] = ddisc3.ToINRFormat();
                                     dr1["txblval"] = dtxblval.ToINRFormat();
                                     dr1["cgstamt"] = dcgstamt;
                                     dr1["sgstamt"] = dsgstamt;

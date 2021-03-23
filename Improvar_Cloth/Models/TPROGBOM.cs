@@ -47,7 +47,7 @@ namespace Improvar.Models
         public double? NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QQNTY { get; set; }
 
         public double? FLAGMTR { get; set; }
