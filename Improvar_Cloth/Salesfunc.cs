@@ -118,95 +118,48 @@ namespace Improvar
             string sql = "";
             if (fdt == null) fdt = "";
             if (tdt == null) tdt = "";
-            if (jobcd == "CT")
-            {
-                sql += "select a.autono, b.itcd, b.partcd, f.styleno, f.itnm, f.hsnsaccd, f.uomcd, f.pcsperbox, g.partnm, c.slcd, e.slnm, ";
-                if (shortallowadj == false) sql += "b.qnty, nvl(b.shortqnty,0) shortqnty, 0 short_allow, ";
-                else sql += "b.qnty qnty, nvl(b.shortqnty,0) shortqnty, 0 short_allow, ";
-                sql += "d.docno, d.docdt, c.prefno, c.prefdt, b.progautono, b.progautono issautono, h.docno issdocno, h.docdt issdocdt from ";
+            sql += "select a.autono, b.itcd, b.partcd, f.itgrpcd, i.itgrpnm, f.styleno, f.itnm, f.hsncode, f.uomcd, j.uomnm, j.decimals, g.partnm, c.slcd, e.slnm, ";
+            if (shortallowadj == false) sql += "b.qnty, nvl(b.shortqnty,0) shortqnty, nvl(y.short_allow,0) short_allow, ";
+            else sql += "b.qnty+nvl(y.short_allow,0) qnty, nvl(b.shortqnty,0)-nvl(y.short_allow,0) shortqnty, nvl(y.short_allow,0) short_allow, ";
+            sql += "d.docno, d.docdt, c.prefno, c.prefdt, b.progautono, b.progautono issautono, h.docno issdocno, h.docdt issdocdt from ";
 
-                sql += "(select a.autono ";
-                sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b ";
-                sql += "where a.autono=b.autono and b.compcd='" + COM + "' and ";
-                sql += "b.docdt <= to_date('" + chlnpupto + "','dd/mm/yyyy') and a.doctag in ('JR') and ";
-                if (jobcd.retStr() != "") sql += "a.jobcd ='" + jobcd + "' and ";
-                if (slcd.retStr() != "") sql += "a.slcd in (" + slcd + ") and ";
-                if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
-                sql += "nvl(b.cancel,'N')='N' ) a, ";
+            sql += "(select a.autono ";
+            sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b ";
+            sql += "where a.autono=b.autono and b.compcd='" + COM + "' and ";
+            sql += "b.docdt <= to_date('" + chlnpupto + "','dd/mm/yyyy') and a.doctag in ('JR') and ";
+            if (jobcd.retStr() != "") sql += "a.jobcd ='" + jobcd + "' and ";
+            if (slcd.retStr() != "") sql += "a.slcd in (" + slcd + ") and ";
+            if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
+            sql += "nvl(b.cancel,'N')='N' ) a, ";
 
-                sql += "(select b.autono, b.autono progautono, b.itcd, b.partcd, b.autono||b.itcd||nvl(b.partcd,'') progitcd, sum(b.qnty) qnty, sum(b.shortqnty) shortqnty ";
-                sql += "from " + scm1 + ".t_txndtl b, " + scm1 + ".m_sitem c, " + scm1 + ".m_group d ";
-                sql += "where b.itcd=c.itcd(+) and c.itgrpcd=d.itgrpcd(+) and d.itgrptype in ('F') ";
-                sql += "group by b.autono, b.autono, b.itcd, b.partcd, b.autono||b.itcd||nvl(b.partcd,'') ) b, ";
+            sql += "(select a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,'') progitcd, sum(b.nos) nos, sum(b.qnty) qnty, sum(b.shortqnty) shortqnty ";
+            sql += "from " + scm1 + ".t_progdtl a, " + scm1 + ".t_batchdtl b, " + scm1 + ".t_progmast c, " + scm1 + ".t_batchmst d ";
+            sql += "where a.autono=b.autono(+) and a.progautono=b.recprogautono(+) and a.progslno=b.recprogslno(+) and a.progautono||a.progslno=c.autono||c.slno and b.barno=d.barno(+) and nvl(c.sample,'N') <> 'Y' ";
+            sql += "group by a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,'') ) b, ";
 
-                sql += "" + scm1 + ".t_txn c, " + scm1 + ".t_cntrl_hdr d, " + scmf + ".m_subleg e, " + scm1 + ".m_sitem f, " + scm1 + ".m_parts g, " + scm1 + ".t_cntrl_hdr h ";
-                sql += "where a.autono=b.autono(+) and b.progautono=h.autono(+) and b.qnty <> 0 and ";
-                sql += "a.autono=c.autono and a.autono=d.autono and c.slcd=e.slcd(+) and ";
-                sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) ";
+            sql += "(select a.recautono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') progitcd, sum(a.short_allow) short_allow ";
+            sql += "from " + scm1 + ".t_prog_close a, " + scm1 + ".t_progmast b where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.recautono is not null ";
+            sql += "group by a.recautono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') ) y, ";
 
-                if (blautono.retStr() == "")
-                {
-                    sql += "and a.autono not in ( ";
-                    sql += "select a.linkautono ";
-                    sql += "from " + scm1 + ".t_txn_linkno a, " + scm1 + ".t_cntrl_hdr b ";
-                    sql += "where a.autono=b.autono and ";
-                    if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "',dd/mm/yyyy') and ";
-                    sql += "nvl(b.cancel,'N')='N' ) ";
-                }
-                else
-                {
-                    sql += "and a.autono in ( ";
-                    sql += "select a.linkautono ";
-                    sql += "from " + scm1 + ".t_txn_linkno a, " + scm1 + ".t_cntrl_hdr b ";
-                    sql += "where a.autono=b.autono and ";
-                    if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "',dd/mm/yyyy') and ";
-                    sql += "a.autono = '" + blautono + "' ) ";
-                }
-                sql += "order by docdt, docno ";
-            }
-            else
-            {
-                sql += "select a.autono, b.itcd, b.partcd, f.styleno, f.itnm, f.hsnsaccd, f.uomcd, f.pcsperbox, g.partnm, c.slcd, e.slnm, ";
-                if (shortallowadj == false) sql += "b.qnty, nvl(b.shortqnty,0) shortqnty, nvl(y.short_allow,0) short_allow, ";
-                else sql += "b.qnty+nvl(y.short_allow,0) qnty, nvl(b.shortqnty,0)-nvl(y.short_allow,0) shortqnty, nvl(y.short_allow,0) short_allow, ";
-                sql += "d.docno, d.docdt, c.prefno, c.prefdt, b.progautono, b.progautono issautono, h.docno issdocno, h.docdt issdocdt from ";
+            sql += "(select a.linkautono, max(a.autono) autono ";
+            sql += "from " + scm1 + ".t_txn_linkno a, " + scm1 + ".t_cntrl_hdr b ";
+            sql += "where a.autono=b.autono and ";
+            if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "',dd/mm/yyyy') and ";
+            if (blautono.retStr() != "") sql += "a.autono = '" + blautono + "' and ";
+            sql += "nvl(b.cancel,'N')='N' group by a.linkautono ) z, ";
 
-                sql += "(select a.autono ";
-                sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b ";
-                sql += "where a.autono=b.autono and b.compcd='" + COM + "' and ";
-                sql += "b.docdt <= to_date('" + chlnpupto + "','dd/mm/yyyy') and a.doctag in ('JR') and ";
-                if (jobcd.retStr() != "") sql += "a.jobcd ='" + jobcd + "' and ";
-                if (slcd.retStr() != "") sql += "a.slcd in (" + slcd + ") and ";
-                if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
-                sql += "nvl(b.cancel,'N')='N' ) a, ";
-
-                sql += "(select a.autono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') progitcd, sum(b.qnty) qnty, sum(b.shortqnty) shortqnty ";
-                sql += "from " + scm1 + ".t_progdtl a, " + scm1 + ".t_txndtl b ";
-                sql += "where a.autono=b.recprogautono(+) and a.slno=b.recprogslno(+) ";
-                sql += "group by a.autono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') ) b, ";
-
-                sql += "(select a.recautono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') progitcd, sum(a.short_allow) short_allow ";
-                sql += "from " + scm1 + ".t_prog_close a, " + scm1 + ".t_progmast b where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.recautono is not null ";
-                sql += "group by a.recautono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') ) y, ";
-
-                sql += "(select a.linkautono, max(a.autono) autono ";
-                sql += "from " + scm1 + ".t_txn_linkno a, " + scm1 + ".t_cntrl_hdr b ";
-                sql += "where a.autono=b.autono and ";
-                if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "',dd/mm/yyyy') and ";
-                if (blautono.retStr() != "") sql += "a.autono = '" + blautono + "' and ";
-                sql += "nvl(b.cancel,'N')='N' group by a.linkautono ) z, ";
-
-                sql += "" + scm1 + ".t_txn c, " + scm1 + ".t_cntrl_hdr d, " + scmf + ".m_subleg e, " + scm1 + ".m_sitem f, " + scm1 + ".m_parts g, " + scm1 + ".t_cntrl_hdr h ";
-                sql += "where a.autono=b.autono(+) and b.progautono=h.autono(+) and ";
-                sql += "a.autono=c.autono and a.autono=d.autono and c.slcd=e.slcd(+) and ";
-                sql += "b.itcd is not null and ";
-                if (fdt != "") sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                if (tdt != "") sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
-                sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) and b.autono=y.recautono(+) and "; // and b.progitcd=y.progitcd(+) ";
-                sql += "a.autono=z.linkautono(+) and ";
-                if (blautono.retStr() == "") sql += "z.autono is null "; else sql += "z.autono is not null ";
-                sql += "order by docdt, docno ";
-            }
+            sql += "" + scm1 + ".t_txn c, " + scm1 + ".t_cntrl_hdr d, " + scmf + ".m_subleg e, " + scm1 + ".m_sitem f, " + scm1 + ".m_parts g, ";
+            sql += scm1 + ".t_cntrl_hdr h, " + scm1 + ".m_group i, " + scmf + ".m_uom j ";
+            sql += "where a.autono=b.autono(+) and b.progautono=h.autono(+) and ";
+            sql += "a.autono=c.autono and a.autono=d.autono and c.slcd=e.slcd(+) and ";
+            sql += "b.itcd is not null and f.itgrpcd=i.itgrpcd(+) and f.uomcd=j.uomcd(+) and ";
+            if (fdt != "") sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+            if (tdt != "") sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
+            sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) and ";
+            sql += "b.autono=y.recautono(+) and b.progitcd=y.progitcd(+) and ";
+            sql += "a.autono=z.linkautono(+) and ";
+            if (blautono.retStr() == "") sql += "z.autono is null "; else sql += "z.autono is not null ";
+            sql += "order by docdt, docno ";
 
             tbl = SQLquery(sql);
 

@@ -98,7 +98,7 @@ namespace Improvar.Controllers
                 sql += "  "; 
                  sql += " " + scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, ";
                 sql += " " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k ";
-                sql += " where a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and ";
+                sql += " where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and ";
                 sql += " a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and ";
                 sql += " c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) ";
                 sql += " order by slnm, slcd, docdt, docno, slno, recdocdt, recdocno ";
