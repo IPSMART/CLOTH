@@ -186,6 +186,24 @@ namespace Improvar.Controllers
 
                                 var mtrljob = (from i in DB.M_MTRLJOBMST where i.MTRLJOBCD == jobcd select new { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).FirstOrDefault();
                                 if (mtrljob != null) { VE.MTRLJOBCD = mtrljob.MTRLJOBCD; VE.MTRLJOBNM = mtrljob.MTRLJOBNM; }
+
+                                TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                TempData.Keep();
+                                if (TTXN.GOCD.retStr() == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        TTXN.GOCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.GOCD).FirstOrDefault();
+                                    }
+                                }
+                                string gocd = TTXN.GOCD.retStr();
+
+                                if (gocd != "")
+                                {
+                                    VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
+                                }
+
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;

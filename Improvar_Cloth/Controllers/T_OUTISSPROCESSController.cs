@@ -70,12 +70,22 @@ namespace Improvar.Controllers
                     VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
+
                     foreach (var v in VE.DropDown_list_MTRLJOBCD)
                     {
-
-                        if (v.MTRLJOBCD == "FS")
+                        if (VE.MENU_PARA == "DY")
                         {
-                            v.Checked = true;
+                            if (v.MTRLJOBCD == "PL")
+                            {
+                                v.Checked = true;
+                            }
+                        }
+                        else {
+                            if (v.MTRLJOBCD == "FS")
+                            {
+                                v.Checked = true;
+                                break;
+                            }
                         }
 
                     }
@@ -172,6 +182,24 @@ namespace Improvar.Controllers
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 var jobcd = (from i in DB.M_JOBMST where i.JOBCD == VE.MENU_PARA select new { JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
                                 if (jobcd != null) { TTXN.JOBCD = jobcd.JOBCD; VE.JOBNM = jobcd.JOBNM; }
+
+                                TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                TempData.Keep();
+                                if (TTXN.GOCD.retStr() == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        TTXN.GOCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.GOCD).FirstOrDefault();
+                                    }
+                                }
+                                string gocd = TTXN.GOCD.retStr();
+
+                                if (gocd != "")
+                                {
+                                    VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
+                                }
+
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
@@ -760,7 +788,7 @@ namespace Improvar.Controllers
                 if (menupara == "SB")
                 {
                     BOMITCD = data[7].retStr() == "" ? "" : data[7].retStr().retSqlformat();
-                    if (BOMITCD == "") return Content("Please select Bom Item Code ");
+                    //if (BOMITCD == "") return Content("Please select Bom Item Code ");
                 }
 
                 //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
@@ -1726,7 +1754,7 @@ namespace Improvar.Controllers
                                    select new TPROGBOM
                                    {
                                        SLNO = x.SLNO.retShort(),//progslno
-                                       RSLNO = x.SLNO.retShort(),//progslno
+                                       RSLNO = 1,//progslno
                                        QITNM = x.ITNM,
                                        QUOM = x.UOM,
                                        QQNTY = x.QNTY,
@@ -2140,6 +2168,117 @@ namespace Improvar.Controllers
             ModelState.Clear();
             return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
         }
+        public ActionResult UpdateQntyPrgrm(TransactionOutIssProcess VE, string TAG = "Y")
+        {
+            Cn.getQueryString(VE);
+            try
+            {
+                if(TAG == "Y")
+                {
+                    #region Programme
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    VE.TPROGDTL = (from a in VE.TBATCHDTL
+                                   join b in DBF.M_UOM on a.UOM equals b.UOMCD into x
+                                   from b in x.DefaultIfEmpty()
+                                   select new TPROGDTL()
+                                   {
+                                       SLNO = a.SLNO,
+                                       NOS = a.NOS.retDbl(),
+                                       QNTY = a.QNTY.retDbl(),
+                                       ITGRPCD = a.ITGRPCD.retStr(),
+                                       ITGRPNM = a.ITGRPNM.retStr(),
+                                       ITCD = a.ITCD.retStr(),
+                                       ITNM = a.ITSTYLE.retStr(),
+                                       UOM = a.UOM.retStr(),
+                                       SIZECD = a.SIZECD.retStr(),
+                                       SIZENM = a.SIZENM.retStr(),
+                                       PARTCD = a.PARTCD.retStr(),
+                                       PARTNM = a.PARTNM.retStr(),
+                                       COLRCD = a.COLRCD.retStr(),
+                                       COLRNM = a.COLRNM.retStr(),
+                                       MTRLJOBCD = a.MTRLJOBCD.retStr(),
+                                       MTRLJOBNM = a.MTRLJOBNM.retStr(),
+                                       ITREMARK = a.ITREM.retStr(),
+                                       SHADE = a.SHADE.retStr(),
+                                       CUTLENGTH = a.CUTLENGTH.retDbl(),
+                                       SAMPLE = a.SAMPLE.retStr(),
+                                       BARNO = a.BARNO.retStr(),
+                                       DECIMALS = b.DECIMALS.retShort(),
+                                       CLRBARCODE = a.CLRBARCODE.retStr(),
+                                       SZBARCODE = a.SZBARCODE.retStr(),
+                                       BarImages = a.BarImages.retStr(),
+                                       BarImagesCount = a.BarImagesCount.retStr(),
+                                       CheckedSample = a.SAMPLE.retStr() == "Y" ? true : false,
+                                   }).OrderBy(s => s.SLNO).ToList();
+
+                    VE.P_T_NOS = VE.TPROGDTL.Select(a => a.NOS).Sum().retInt();
+                    VE.P_T_QNTY = VE.TPROGDTL.Select(a => a.QNTY).Sum().retInt();
+
+                    #endregion
+                }
+
+                #region QtyRequirement
+                VE.TPROGBOM = (from a in VE.TBATCHDTL
+                               select new TPROGBOM()
+                               {
+                                   SLNO = a.SLNO.retShort(),
+                                   RSLNO = a.SLNO.retShort(),
+                                   QQNTY = a.QNTY.retDbl(),
+                                   QNTY = a.QNTY.retDbl(),
+                                   QITNM = a.ITSTYLE.retStr(),
+                                   QUOM = a.UOM.retStr(),
+                                   BARNO = a.BARNO.retStr(),
+                                   ITGRPCD = a.ITGRPCD.retStr(),
+                                   ITGRPNM = a.ITGRPNM.retStr(),
+                                   ITCD = a.ITCD.retStr(),
+                                   ITNM = a.ITSTYLE.retStr(),
+                                   SIZECD = a.SIZECD.retStr(),
+                                   SIZENM = a.SIZENM.retStr(),
+                                   PARTCD = a.PARTCD.retStr(),
+                                   PARTNM = a.PARTNM.retStr(),
+                                   COLRCD = a.COLRCD.retStr(),
+                                   COLRNM = a.COLRNM.retStr(),
+                                   MTRLJOBCD = a.MTRLJOBCD.retStr(),
+                                   MTRLJOBNM = a.MTRLJOBNM.retStr(),
+                                   UOM = a.UOM.retStr(),
+                                   BOMQNTY = VE.T_TXN.JOBCD == "DY" ? a.QNTY.retDbl() : a.BOMQNTY.retDbl(),
+                                   //EXTRAQNTY = a.extraqnty.retDbl(),
+                                   Q_SAMPLE = a.SAMPLE.retStr(),
+                                   Q_CheckedSample = a.SAMPLE.retStr() == "Y" ? true : false,
+                               }).OrderBy(s => s.SLNO).ToList();
+
+                VE.T_QQNTY = VE.TPROGBOM.Select(a => a.QQNTY).Sum().retDbl();
+                VE.T_BOMQNTY = VE.TPROGBOM.Select(a => a.BOMQNTY).Sum().retDbl();
+                VE.T_EXTRAQNTY = VE.TPROGBOM.Select(a => a.EXTRAQNTY).Sum().retDbl();
+                #endregion
+
+                ModelState.Clear();
+                VE.DefaultView = true;
+                var GRID_Programme = RenderRazorViewToString(ControllerContext, "_T_OUTISSPROCESS_Programme", VE);
+                var GRID_QtyRequirement = RenderRazorViewToString(ControllerContext, "_T_OUTISSPROCESS_QtyRequirement", VE);
+                return Content(GRID_Programme + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + GRID_QtyRequirement);
+            }
+            catch (Exception ex)
+            {
+                VE.DefaultView = false;
+                VE.DefaultDay = 0;
+                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
+                Cn.SaveException(ex, "");
+                return View(VE);
+            }
+        }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
+            }
+        }
         public ActionResult cancelRecords(TransactionOutIssProcess VE, string par1)
         {
             try
@@ -2319,6 +2458,7 @@ namespace Improvar.Controllers
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
+                        TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
                     }
                     else
                     {
