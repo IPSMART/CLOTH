@@ -17,7 +17,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection();
         MasterHelp MasterHelp = new MasterHelp();
         DropDownHelp DropDownHelp = new DropDownHelp();
-        string fdt = ""; string tdt = ""; bool showpacksize = false, showrate = false; bool showValue = false;
+        string fdt = ""; string tdt = ""; bool showpacksize = false, showrate = false; bool showValue = false; string ReportType = "";
         string modulecode = CommVar.ModuleCode(); string repname = "";
         string pghdr1 = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -68,7 +68,7 @@ namespace Improvar.Controllers
                 string recdt = VE.TEXTBOX1.retDateStr();
                 showValue = VE.Checkbox1;
                 string ShowPending = VE.TEXTBOX2.retStr();
-                string ReportType = VE.TEXTBOX3.retStr();
+                ReportType = VE.TEXTBOX3.retStr();
                 string RepFormat = VE.TEXTBOX4.retStr();
                 string jobslcd = "", itcd = "";
                 string JOBCD = VE.JOBCD;
@@ -117,42 +117,63 @@ namespace Improvar.Controllers
                     return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
                 }
                 string lastautono = ""; string nextautono = ""; double totrecqnty = 0;
+
+                DataTable SummaryDt = tbl.Clone();
                 int maxR = tbl.Rows.Count - 1;
                 for (int i = 0; i <= maxR; i++)
                 {
                     string autono = tbl.Rows[i]["autono"].retStr();
                     totrecqnty += tbl.Rows[i]["recqnty"].retDbl();
                     double issqnty = tbl.Rows[i]["qnty"].retDbl();
-                    double balqnty = issqnty-totrecqnty;
+                    double balqnty = issqnty - totrecqnty;
                     if (maxR >= (i + 1))
                     {
                         if (autono != tbl.Rows[i + 1]["autono"].retStr())
                         {
                             tbl.Rows[i]["balqnty"] = balqnty;
                             totrecqnty = 0;
+                            DataRow allrow = tbl.Rows[i];
+                            SummaryDt.ImportRow(allrow);
                         }
                     }
                     else
                     {
                         tbl.Rows[i]["balqnty"] = balqnty;
+                        DataRow allrow = tbl.Rows[i];
+                        SummaryDt.ImportRow(allrow);
                     }
                     if (autono != lastautono)
                     {
                         lastautono = autono;
                     }
                 }
-
+                if (ReportType == "SUMARRY")
+                {
+                    tbl = SummaryDt;
+                }
+                if (ShowPending == "PENDING")
+                {
+                    maxR = tbl.Rows.Count - 1;
+                    DataTable PendingDt = tbl.Clone();
+                    for (int i = 0; i <= maxR; i++)
+                    {
+                        string autono = tbl.Rows[i]["autono"].retStr();
+                        DataRow dr = SummaryDt.Select("autono='" + autono + "'").FirstOrDefault();
+                        if (dr != null)
+                        {
+                            double balqnty = dr["balqnty"].retDbl();
+                            if (balqnty != 0)
+                            {
+                                DataRow allrow = tbl.Rows[i];
+                                PendingDt.ImportRow(allrow);
+                            }
+                        }
+                    }
+                    tbl = PendingDt;
+                }
                 repname = "Job Work register".retRepname();
-                pghdr1 = "Job Work register " + (recdt != "" ? " Received date: " + recdt + "" : " ") + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
-
-                if (ReportType == "DETAIL")
-                {
-                    return Detail(tbl, RepFormat);
-                }
-                else
-                {
-                    return Sumarry(tbl);
-                }
+                pghdr1 = (ShowPending == "PENDING" ? "Pending " : " ") + "Job Work register "+ (ReportType == "SUMARRY" ? "Sumarry " : "Details ") + (recdt != "" ? " Received date: " + recdt + "" : " ") + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
+                return GenerateIR(tbl, RepFormat);
             }
             catch (Exception ex)
             {
@@ -160,7 +181,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-        private ActionResult Detail(DataTable tbl, string RepFormat)
+        private ActionResult GenerateIR(DataTable tbl, string RepFormat)
         {
             DataTable IR = new DataTable("mstrep");
             Models.PrintViewer PV = new Models.PrintViewer();
@@ -185,8 +206,16 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "issamt", "double", "c,15,3", "Iss Amt.");
             }
             HC.GetPrintHeader(IR, "itremarks", "string", "c,15", "itremark");
-            HC.GetPrintHeader(IR, "recnos", "double", "c,9", "Rec Nos.");
-            HC.GetPrintHeader(IR, "recqnty", "double", "c,15,3", "Rec Qnty.");
+            if (ReportType == "SUMARRY")
+            {
+                HC.GetPrintHeader(IR, "recnos", "double", "c,9", "Last Rec Nos.");
+                HC.GetPrintHeader(IR, "recqnty", "double", "c,15,3", "Last Rec Qnty.");
+            }
+            else
+            {
+                HC.GetPrintHeader(IR, "recnos", "double", "c,9", "Rec Nos.");
+                HC.GetPrintHeader(IR, "recqnty", "double", "c,15,3", "Rec Qnty.");
+            }
             HC.GetPrintHeader(IR, "balqnty", "double", "c,15,3", "Bal Qnty.");
 
             Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
@@ -233,56 +262,6 @@ namespace Improvar.Controllers
             TempData[repname] = PV;
             return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
         }
-        private ActionResult Sumarry(DataTable tbl)
-        {
-            DataTable IR = new DataTable("mstrep");
 
-            Models.PrintViewer PV = new Models.PrintViewer();
-            HtmlConverter HC = new HtmlConverter();
-
-            HC.RepStart(IR, 2);
-            HC.GetPrintHeader(IR, "docno", "string", "c,12", "Bill No.");
-            HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Bill Date");
-            HC.GetPrintHeader(IR, "partynm", "string", "c,25", "Part Name");
-            HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
-            HC.GetPrintHeader(IR, "noofcases", "double", "c,15", "NO OF PACKAGE");
-            HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
-            HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "QUANTITY");
-            HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
-
-            Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
-            i = 0; maxR = tbl.Rows.Count - 1;
-
-            while (i <= maxR)
-            {
-
-                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
-                IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
-                IR.Rows[rNo]["partynm"] = tbl.Rows[i]["partynm"].retStr();
-                IR.Rows[rNo]["slarea"] = tbl.Rows[i]["slarea"].retStr();
-                IR.Rows[rNo]["noofcases"] = tbl.Rows[i]["noofcases"].retDbl();
-                IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
-                IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
-                IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
-                IR.Rows[rNo]["recqnty"] = tbl.Rows[i]["recqnty"].retStr();
-
-                i = i + 1;
-                if (i > maxR) break;
-
-            }
-
-            string pghdr1 = "";
-            pghdr1 = repname + (fdt != "" ? " from " + fdt + " to " : "as on ") + tdt;
-
-            PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
-
-            TempData[repname] = PV;
-            return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
-
-
-            return null;
-        }
     }
 }

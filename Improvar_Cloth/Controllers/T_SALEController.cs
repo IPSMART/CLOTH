@@ -5492,7 +5492,8 @@ namespace Improvar.Controllers
             {
                 var extension = Path.GetExtension(ImageName);
                 string filename = "I".retRepname() + extension;
-                var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
+                var folderpath = CommVar.LocalUploadDocPath(filename);
+                var link = Cn.SaveImage(ImageStr, folderpath);
                 var path = CommVar.WebUploadDocURL(filename);
                 return Content(path);
             }
@@ -5500,6 +5501,7 @@ namespace Improvar.Controllers
             {
                 return Content("//.");
             }
+
         }
         public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {

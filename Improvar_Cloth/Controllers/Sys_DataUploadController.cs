@@ -363,6 +363,11 @@ namespace Improvar.Controllers
                     TMPVE.TBATCHDTL = TBATCHDTLlist;
                     TMPVE.TTXNAMT = TTXNAMTlist;
                     TMPVE.T_VCH_GST = new T_VCH_GST();
+                    double blqnty = TTXNDTLlist.Sum(m => m.QNTY).retDbl();
+                    if (blqnty == 0)
+                    {
+                        continue;
+                    }
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "OpStock");
                     tslCont = tslCont.retStr().Split('~')[0];
                     if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1")
