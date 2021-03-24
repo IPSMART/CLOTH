@@ -692,6 +692,12 @@
       <DependentUpon>SaleBillHalf.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\SaleBill_BHURA.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SaleBill_BHURA.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\SaleBill_Cloth.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1402,6 +1408,10 @@
     <EmbeddedResource Include="Report\Party_Job_Iss_Chln.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Party_Job_Iss_Chln.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\SaleBill_BHURA.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SaleBill_BHURA.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\SaleBill_Job.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

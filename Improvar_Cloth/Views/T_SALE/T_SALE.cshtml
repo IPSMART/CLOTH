@@ -155,6 +155,9 @@
         debugger;
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter @ViewBag.Partycaption", "SLCD")) { return false; }
+        if ("@Model.MENU_PARA" == "PJBL") {
+            if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
+        }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -799,6 +802,30 @@
                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPackingSlip" value="Get Packing Slip" title="Click to Get Packing Slip" onclick="ReloadWithPSLIP()" />
                             </div>
                         }
+                    </div>
+                }
+                @if (Model.MENU_PARA == "PJBL")
+                {
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Job")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD');", @placeholder = "Job Code", maxlength = 2 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
+                                @Html.HiddenFor(model => model.JOBHSNCODE, new { id = "JOBHSNCODE" })
+                                @Html.HiddenFor(model => model.JOBEXPGLCD, new { id = "JOBEXPGLCD" })
+                            </div>
+                        </div>
                     </div>
                 }
             </div>

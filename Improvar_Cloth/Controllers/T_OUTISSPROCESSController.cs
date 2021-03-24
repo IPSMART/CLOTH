@@ -1521,6 +1521,131 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        //public ActionResult FillQtyRequirementData(TransactionOutIssProcess VE)
+        //{
+        //    try
+        //    {
+        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+        //        Cn.getQueryString(VE);
+        //        List<TPROGBOM> itemdata = new List<TPROGBOM>();
+        //        if (VE.T_TXN.JOBCD == "DY")
+        //        {
+        //            VE.TPROGBOM = (from x in VE.TPROGDTL
+        //                           select new TPROGBOM
+        //                           {
+        //                               SLNO = x.SLNO.retShort(),//progslno
+        //                               RSLNO = x.SLNO.retShort(),//progslno
+        //                               QITNM = x.ITNM,
+        //                               QUOM = x.UOM,
+        //                               QQNTY = x.QNTY,
+        //                               BOMQNTY = x.QNTY,
+        //                               BARNO = x.BARNO,
+        //                               ITGRPCD = x.ITGRPCD,
+        //                               ITGRPNM = x.ITGRPNM,
+        //                               ITCD = x.ITCD,
+        //                               ITNM = x.ITNM,
+        //                               SIZECD = x.SIZECD,
+        //                               COLRCD = x.COLRCD,
+        //                               COLRNM = x.COLRNM,
+        //                               UOM = x.UOM,
+        //                               MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "PL",
+        //                               //MTRLJOBNM = x.MTRLJOBNM,
+        //                               Q_CheckedSample = x.CheckedSample == true ? true : false,
+        //                           }).ToList();
+        //        }
+        //        else
+        //        {
+        //            var PROGRAMME_DATA = VE.TPROGDTL.Where(A => A.ITCD != null).Distinct().ToList();
+        //            var finitems = ListToDatatable.LINQResultToDataTable(PROGRAMME_DATA);
+        //            var PROG_BOM_DATA = finitems != null && finitems.Rows.Count > 0 ? salesfunc.GetSemiItems(finitems, VE.MENU_PARA, "", VE.T_TXN.DOCDT.ToString().retDateStr()) : null;
+
+        //            VE.TPROGBOM = (from DataRow dr in PROG_BOM_DATA.Rows
+        //                           select new TPROGBOM
+        //                           {
+        //                               QITNM = dr["itnm"].ToString(),
+        //                               QUOM = dr["ruomnm"].ToString(),
+        //                               QQNTY = Convert.ToDouble(dr["rqty"] == DBNull.Value ? null : dr["rqty"].ToString()),
+        //                               ITCD = dr["ritcd"].ToString(),
+        //                               ITNM = dr["ritnm"].ToString(),
+        //                               PARTCD = dr["partcd"].ToString(),
+        //                               COLRCD = dr["colrcd"].ToString(),
+        //                               SIZECD = dr["sizecd"].ToString(),
+        //                               BOMQNTY = Convert.ToDouble(dr["rqty"] == DBNull.Value ? null : dr["rqty"].ToString()),
+        //                               MTRLJOBCD = dr["mtrljobcd"].ToString(),
+        //                               MTRLJOBNM = dr["mtrljobnm"].ToString(),
+        //                               SLNO = dr["slno"].retShort(),
+        //                               RSLNO = dr["rslno"].retShort(),
+        //                           }).ToList();
+        //            string[] itcdarr = VE.TPROGBOM.Select(a => a.ITCD).Distinct().ToArray();
+        //            itemdata = (from a in DB.M_SITEM
+        //                        join b in DB.M_GROUP on a.ITGRPCD equals b.ITGRPCD into x
+        //                        from b in x.DefaultIfEmpty()
+        //                        where itcdarr.Contains(a.ITCD)
+        //                        select new TPROGBOM()
+        //                        {
+        //                            ITCD = a.ITCD,
+        //                            ITNM = a.ITNM,
+        //                            ITGRPCD = a.ITGRPCD,
+        //                            ITGRPNM = b.ITGRPNM,
+        //                            STYLENO = a.STYLENO,
+        //                            UOM = a.UOMCD,
+        //                        }).ToList();
+        //            //VE.TPROGBOM = (from x in VE.TPROGDTL
+        //            //               group x by new
+        //            //               {
+        //            //                   x.SLNO,
+        //            //                   x.ITCD,
+        //            //                   x.ITNM,
+        //            //                   x.UOM,
+        //            //                   x.QNTY
+        //            //               } into P
+        //            //               select new TPROGBOM
+        //            //               {
+        //            //                   SLNO = P.Key.SLNO.retShort(),
+        //            //                   QITNM = P.Key.ITNM,
+        //            //                   QUOM = P.Key.UOM,
+        //            //                   QQNTY = P.Key.QNTY,
+        //            //                   //qnty = P.Sum(A => A.QNTY)
+        //            //               }).ToList();
+
+        //        }
+
+        //        for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
+        //        {
+        //            if (VE.T_TXN.JOBCD == "DY")
+        //            {
+        //                string mtrljobcd = VE.TPROGBOM[p].MTRLJOBCD;
+        //                var mtrljobnm = DB.M_MTRLJOBMST.Where(a => a.MTRLJOBCD == mtrljobcd).Select(b => b.MTRLJOBNM).FirstOrDefault();
+        //                VE.TPROGBOM[p].MTRLJOBNM = mtrljobnm;
+        //            }
+        //            else
+        //            {
+        //                string itcd = VE.TPROGBOM[p].ITCD;
+        //                var data = (from a in itemdata where a.ITCD == itcd select new { a.ITNM, a.ITGRPCD, a.ITGRPNM, a.STYLENO ,a.UOM}).FirstOrDefault();
+        //                VE.TPROGBOM[p].ITNM = data.STYLENO + " " + data.ITNM;
+        //                VE.TPROGBOM[p].ITGRPCD = data.ITGRPCD;
+        //                VE.TPROGBOM[p].ITGRPNM = data.ITGRPNM;
+        //                VE.TPROGBOM[p].UOM = data.UOM;
+        //            }
+        //            //else
+        //            //{
+        //            //    VE.TPROGBOM[p].SLNO = Convert.ToInt16(p + 1);
+        //            //}
+        //            //VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
+
+
+        //        }
+        //        VE.T_QQNTY = VE.TPROGBOM.Sum(a => a.QQNTY).retDbl();
+        //        ModelState.Clear();
+        //        VE.DefaultView = true;
+        //        return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
         public ActionResult FillQtyRequirementData(TransactionOutIssProcess VE)
         {
             try
@@ -1528,32 +1653,8 @@ namespace Improvar.Controllers
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Cn.getQueryString(VE);
                 List<TPROGBOM> itemdata = new List<TPROGBOM>();
-                if (VE.T_TXN.JOBCD == "DY")
-                {
-                    VE.TPROGBOM = (from x in VE.TPROGDTL
-                                   select new TPROGBOM
-                                   {
-                                       SLNO = x.SLNO.retShort(),//progslno
-                                       RSLNO = x.SLNO.retShort(),//progslno
-                                       QITNM = x.ITNM,
-                                       QUOM = x.UOM,
-                                       QQNTY = x.QNTY,
-                                       BOMQNTY = x.QNTY,
-                                       BARNO = x.BARNO,
-                                       ITGRPCD = x.ITGRPCD,
-                                       ITGRPNM = x.ITGRPNM,
-                                       ITCD = x.ITCD,
-                                       ITNM = x.ITNM,
-                                       SIZECD = x.SIZECD,
-                                       COLRCD = x.COLRCD,
-                                       COLRNM = x.COLRNM,
-                                       UOM = x.UOM,
-                                       MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "PL",
-                                       //MTRLJOBNM = x.MTRLJOBNM,
-                                       Q_CheckedSample = x.CheckedSample == true ? true : false,
-                                   }).ToList();
-                }
-                else
+
+                if (VE.T_TXN.JOBCD != "DY")
                 {
                     var PROGRAMME_DATA = VE.TPROGDTL.Where(A => A.ITCD != null).Distinct().ToList();
                     var finitems = ListToDatatable.LINQResultToDataTable(PROGRAMME_DATA);
@@ -1607,33 +1708,51 @@ namespace Improvar.Controllers
                     //                   QQNTY = P.Key.QNTY,
                     //                   //qnty = P.Sum(A => A.QNTY)
                     //               }).ToList();
+                    for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
+                    {
+                        string itcd = VE.TPROGBOM[p].ITCD;
+                        var data = (from a in itemdata where a.ITCD == itcd select new { a.ITNM, a.ITGRPCD, a.ITGRPNM, a.STYLENO, a.UOM }).FirstOrDefault();
+                        VE.TPROGBOM[p].ITNM = data.STYLENO + " " + data.ITNM;
+                        VE.TPROGBOM[p].ITGRPCD = data.ITGRPCD;
+                        VE.TPROGBOM[p].ITGRPNM = data.ITGRPNM;
+                        VE.TPROGBOM[p].UOM = data.UOM;
+
+                    }
 
                 }
-
+                if (VE.T_TXN.JOBCD == "DY" || VE.TPROGBOM == null || VE.TPROGBOM.Count == 0)
+                {
+                    VE.TPROGBOM = (from x in VE.TPROGDTL
+                                   select new TPROGBOM
+                                   {
+                                       SLNO = x.SLNO.retShort(),//progslno
+                                       RSLNO = x.SLNO.retShort(),//progslno
+                                       QITNM = x.ITNM,
+                                       QUOM = x.UOM,
+                                       QQNTY = x.QNTY,
+                                       BOMQNTY = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.QNTY : (double?)null,
+                                       BARNO = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.BARNO : "",
+                                       ITGRPCD = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.ITGRPCD : "",
+                                       ITGRPNM = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.ITGRPNM : "",
+                                       ITCD = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.ITCD : "",
+                                       ITNM = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.ITNM : "",
+                                       SIZECD = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.SIZECD : "",
+                                       COLRCD = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.COLRCD : "",
+                                       COLRNM = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.COLRNM : "",
+                                       UOM = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? x.UOM : "",
+                                       MTRLJOBCD = VE.T_TXN.JOBCD == "DY" ? (x.CheckedSample == true ? x.MTRLJOBCD : "PL") : x.CheckedSample == true ? x.MTRLJOBCD : "",
+                                       //MTRLJOBNM = x.MTRLJOBNM,
+                                       Q_CheckedSample = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? (x.CheckedSample == true ? true : false) : false,
+                                   }).ToList();
+                }
                 for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
                 {
-                    if (VE.T_TXN.JOBCD == "DY")
+                    if (VE.TPROGBOM[p].MTRLJOBNM.retStr() == "")
                     {
                         string mtrljobcd = VE.TPROGBOM[p].MTRLJOBCD;
                         var mtrljobnm = DB.M_MTRLJOBMST.Where(a => a.MTRLJOBCD == mtrljobcd).Select(b => b.MTRLJOBNM).FirstOrDefault();
                         VE.TPROGBOM[p].MTRLJOBNM = mtrljobnm;
                     }
-                    else
-                    {
-                        string itcd = VE.TPROGBOM[p].ITCD;
-                        var data = (from a in itemdata where a.ITCD == itcd select new { a.ITNM, a.ITGRPCD, a.ITGRPNM, a.STYLENO ,a.UOM}).FirstOrDefault();
-                        VE.TPROGBOM[p].ITNM = data.STYLENO + " " + data.ITNM;
-                        VE.TPROGBOM[p].ITGRPCD = data.ITGRPCD;
-                        VE.TPROGBOM[p].ITGRPNM = data.ITGRPNM;
-                        VE.TPROGBOM[p].UOM = data.UOM;
-                    }
-                    //else
-                    //{
-                    //    VE.TPROGBOM[p].SLNO = Convert.ToInt16(p + 1);
-                    //}
-                    //VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
-
-
                 }
                 VE.T_QQNTY = VE.TPROGBOM.Sum(a => a.QQNTY).retDbl();
                 ModelState.Clear();
@@ -2210,7 +2329,8 @@ namespace Improvar.Controllers
                         TTXN.EMD_NO = Convert.ToInt16((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
                         DOCPATTERN = VE.T_CNTRL_HDR.DOCNO;
                     }
-                    TTXN.DOCTAG = "AA";// VE.MENU_PARA;
+                    TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
+                    //TTXN.DOCTAG = "AA";// VE.MENU_PARA;
                     TTXN.SLCD = VE.T_TXN.SLCD;
                     //TTXN.CONSLCD = VE.T_TXN.CONSLCD;
                     //TTXN.CURR_CD = VE.T_TXN.CURR_CD;
