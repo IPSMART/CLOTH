@@ -995,7 +995,7 @@
             message_value = "HSNCODE";
             return false;
         }
-     
+
 
         var BARCODE = $("#BARCODE").val();
         var ITGRPCD = $("#ITGRPCD").val();
@@ -1024,7 +1024,7 @@
 
         var DISCRATE = $("#DISCRATE").val();
         var DISCTYPE = $("#DISCTYPE").val();
-        var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" :DISCTYPE == "F" ? "Fixed":"";
+        var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : DISCTYPE == "F" ? "Fixed" : "";
         var HSNCODE = $("#HSNCODE").val();
         var GSTPER = $("#GSTPER").val();
         var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
@@ -1043,10 +1043,10 @@
             RPPRICEGEN = $("#RPPRICEGEN").val();
         }
         var TDDISCTYPE = $("#TDDISCTYPE").val();
-        var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" :TDDISCTYPE == "F" ? "Fixed":"";
+        var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : TDDISCTYPE == "F" ? "Fixed" : "";
         var TDDISCRATE = $("#TDDISCRATE").val();
         var SCMDISCTYPE = $("#SCMDISCTYPE").val();
-        var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : SCMDISCTYPE == "A" ? "AftDsc%" : SCMDISCTYPE == "F" ? "Fixed":"";
+        var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : SCMDISCTYPE == "A" ? "AftDsc%" : SCMDISCTYPE == "F" ? "Fixed" : "";
         var SCMDISCRATE = $("#SCMDISCRATE").val();
         var LOCABIN = $("#LOCABIN").val();
         var GLCD = $("#GLCD").val();
@@ -1075,6 +1075,9 @@
         var NEGSTOCK = $("#NEGSTOCK").val();
         var BOMQNTY = $("#BOMQNTY").val();
         var RECPROGSLNO = $("#RECPROGSLNO").val();
+        if (RECPROGSLNO == "") {
+            RECPROGSLNO = SLNO;
+        }
 
         //get bill slno
         var TXNSLNO = "";
@@ -1498,9 +1501,9 @@
                 $("#B_SCMDISCTYPE_" + j).val($("#SCMDISCTYPE").val());
                 $("#B_SCMDISCRATE_" + j).val($("#SCMDISCRATE").val());
                 $("#B_LOCABIN_" + j).val($("#LOCABIN").val());
-                var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "F" ? "Fixed":"";
-                var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" :$("#TDDISCTYPE").val() == "F" ? "Fixed":"";
-                var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : $("#SCMDISCTYPE").val() == "F" ? "Fixed":"";
+                var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "F" ? "Fixed" : "";
+                var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : $("#TDDISCTYPE").val() == "F" ? "Fixed" : "";
+                var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : $("#SCMDISCTYPE").val() == "F" ? "Fixed" : "";
                 $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE);
                 $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
                 $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
@@ -2072,7 +2075,7 @@
 </script>
 
 <script>
-    function UpdateQntyPrgrmData(TAG) {
+    function UpdateQntyPrgrmData() {
         debugger;
         var Count = 0;
         var Grid = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -2085,31 +2088,24 @@
         if (Count > 0) {
             $.ajax({
                 type: 'post',
-                url: "@Url.Action("UpdateQntyPrgrm", PageControllerName )",
+                url: "@Url.Action("UpdateQntyPrgrmFrmIssue", PageControllerName )",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&TAG=" + TAG,
+                data: $('form').serialize(),
                 success: function (result) {
                     var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-                    if (TAG == "Y") {
-                        $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
-                        $("#partialdivProgramme").html(res[0]);
-                    }
+
+                    $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivProgramme").html(res[0]);
+
                     $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
                     $("#partialdivQtyRequirement").html(res[1]);
-                    if (TAG == "Y") {
-                        $("li").removeClass("active").addClass("");
-                        $(".nav-tabs li:first-child").addClass('active');
-                        $(".tab-content div").removeClass("active");
-                        $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                        
-                    }
-                    else {
-                        $("li").removeClass("active").addClass("");
-                        $(".nav-tabs li:nth-child(2)").addClass('active');
-                        //below set the  child sequence
-                        $(".tab-content div").removeClass("active");
-                        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    }
+
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:first-child").addClass('active');
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+
+
                     $("#WaitingMode").hide();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -2121,6 +2117,45 @@
         }
 
     }
+    function UpdateQtyReqData() {
+        debugger;
+        var Count = 0;
+        var Grid = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (var i = 0; i <= Grid - 1; i++) {
+            var itcd = $("#B_ITCD_" + i).val();
+            if (itcd != "") {
+                Count = Count + 1;
+            }
+        }
+        if (Count > 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("UpdateQtyReqFrmIssue", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+
+                    $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivQtyRequirement").html(result);
+
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:nth-child(2)").addClass('active');
+                    //below set the  child sequence
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+
+    }
+
 </script>
 @using (Html.BeginForm())
 {
@@ -2707,13 +2742,13 @@
                                         @if (Model.MENU_PARA == "DY")
                                         {
                                             <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update_QntyPrgrm" value="Update Data in Programme and Qty Requirement Tab" title="Click to Update Data in Programme and Qty Requirement Tab" onclick="UpdateQntyPrgrmData('Y')" />
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update_QntyPrgrm" value="Update Data in Programme and Qty Requirement Tab" title="Click to Update Data in Programme and Qty Requirement Tab" onclick="UpdateQntyPrgrmData()" />
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update_QntyPrgrm" value="Update Data in Qty Requirement Tab" title="Click to Update Data in Qty Requirement Tab" onclick="UpdateQntyPrgrmData('N')" />
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update_QntyPrgrm" value="Update Data in Qty Requirement Tab" title="Click to Update Data in Qty Requirement Tab" onclick="UpdateQtyReqData()" />
                                             </div>
                                         }
                                         <div class="col-md-1" style="width:auto;">

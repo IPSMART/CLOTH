@@ -63,6 +63,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGAUTONO, new { id = "B_RECPROGAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].SAMPLE, new { id = "B_SAMPLE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].COMMONUNIQBAR, new { id = "B_COMMONUNIQBAR_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
