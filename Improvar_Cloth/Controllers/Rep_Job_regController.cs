@@ -67,7 +67,7 @@ namespace Improvar.Controllers
                 tdt = VE.TDT.retDateStr();
                 string recdt = VE.TEXTBOX1.retDateStr();
                 showValue = VE.Checkbox1;
-                string Show = VE.TEXTBOX2.retStr();
+                string ShowPending = VE.TEXTBOX2.retStr();
                 string ReportType = VE.TEXTBOX3.retStr();
                 string RepFormat = VE.TEXTBOX4.retStr();
                 string jobslcd = "", itcd = "";
@@ -122,9 +122,9 @@ namespace Improvar.Controllers
                 {
                     string autono = tbl.Rows[i]["autono"].retStr();
                     totrecqnty += tbl.Rows[i]["recqnty"].retDbl();
-                    double qnty = tbl.Rows[i]["recqnty"].retDbl();
-                    double balqnty = totrecqnty - qnty;
-                    if (maxR > (i + 1))
+                    double issqnty = tbl.Rows[i]["qnty"].retDbl();
+                    double balqnty = issqnty-totrecqnty;
+                    if (maxR >= (i + 1))
                     {
                         if (autono != tbl.Rows[i + 1]["autono"].retStr())
                         {
@@ -143,7 +143,7 @@ namespace Improvar.Controllers
                 }
 
                 repname = "Job Work register".retRepname();
-                pghdr1 = "Job Work register " + (recdt != "" ? " Received date: " + recdt + "" : " ") + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : "as on ") + tdt;
+                pghdr1 = "Job Work register " + (recdt != "" ? " Received date: " + recdt + "" : " ") + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
 
                 if (ReportType == "DETAIL")
                 {
@@ -169,23 +169,23 @@ namespace Improvar.Controllers
             HC.RepStart(IR, 2);
             if (RepFormat == "STANDARD")
             {
-                HC.GetPrintHeader(IR, "Slnm", "string", "c,12", "Jobber Name.");
+                HC.GetPrintHeader(IR, "Slnm", "string", "c,25", "Jobber Name.");
             }
             HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Iss. Date.");
-            HC.GetPrintHeader(IR, "docno", "string", "c,12", "Iss Doc No");
-            HC.GetPrintHeader(IR, "itgrpnm", "string", "c,25", "Group");
+            HC.GetPrintHeader(IR, "docno", "string", "c,13", "Iss Doc No");
+            HC.GetPrintHeader(IR, "itgrpnm", "string", "c,12", "Group");
             HC.GetPrintHeader(IR, "itnm", "string", "c,10", "Item");
-            HC.GetPrintHeader(IR, "styleno", "string", "c,10", "Styleno");
-            HC.GetPrintHeader(IR, "uom", "string", "c,15", "Uom");
-            HC.GetPrintHeader(IR, "Nos", "string", "c,10", "Nos");
-            HC.GetPrintHeader(IR, "cutlength", "double", "c,15", "cutlength");
+            HC.GetPrintHeader(IR, "styleno", "string", "c,14", "Styleno");
+            HC.GetPrintHeader(IR, "uom", "string", "c,10", "Uom");
+            HC.GetPrintHeader(IR, "Nos", "string", "c,9", "Nos");
+            HC.GetPrintHeader(IR, "cutlength", "double", "c,9", "cut length");
             HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Prog.Qnty");
             if (showValue == true)
             {
                 HC.GetPrintHeader(IR, "issamt", "double", "c,15,3", "Iss Amt.");
             }
             HC.GetPrintHeader(IR, "itremarks", "string", "c,15", "itremark");
-            HC.GetPrintHeader(IR, "recnos", "double", "c,15,3", "Rec Nos.");
+            HC.GetPrintHeader(IR, "recnos", "double", "c,9", "Rec Nos.");
             HC.GetPrintHeader(IR, "recqnty", "double", "c,15,3", "Rec Qnty.");
             HC.GetPrintHeader(IR, "balqnty", "double", "c,15,3", "Bal Qnty.");
 

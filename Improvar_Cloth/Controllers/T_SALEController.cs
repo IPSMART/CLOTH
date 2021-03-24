@@ -3886,7 +3886,10 @@ namespace Improvar.Controllers
                     sql += "where c.slcd in('" + VE.T_TXN.SLCD + "',null) and ";
                     sql += "c.compcd in ('" + COM + "',null) ";
                     DataTable tbl = masterHelp.SQLquery(sql);
-
+                    if (tbl.Rows.Count == 0)
+                    {
+                        ContentFlg = " Please add Tax/Price code master for this location "; goto dbnotsave;
+                    }
                     parglcd = tbl.Rows[0]["parglcd"].retStr(); parclass1cd = tbl.Rows[0]["class1cd"].retStr();
 
                     //Calculate Others Amount from amount tab to distrubute into txndtl table
@@ -5576,11 +5579,11 @@ namespace Improvar.Controllers
             }
             //string slcd = VE.T_TXN.SLCD;
             //string compcd = CommVar.Compcd(UNQSNO);
-            var m_subleg_com = DB.M_SUBLEG_COM.Count();
-            if (m_syscnfg == 0)
-            {
-                str += Cn.GCS() + "M_SUBLEG_COM";
-            }
+            //var m_subleg_com = DB.M_SUBLEG_COM.wher.Count();
+            //if (m_syscnfg == 0)
+            //{
+            //    str += Cn.GCS() + "M_SUBLEG_COM";
+            //}
             return str;
         }
     }
