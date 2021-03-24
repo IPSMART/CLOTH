@@ -292,6 +292,7 @@
     <Compile Include="Controllers\Rep_BarcodeImageController.cs" />
     <Compile Include="Controllers\Rep_BarcodePrintController.cs" />
     <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
+    <Compile Include="Controllers\Rep_DnCn_PrintController.cs" />
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
@@ -678,6 +679,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PrintBarcode.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\Rep_JobBill.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Rep_JobBill.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\SaleBill.cs">
@@ -1348,6 +1355,7 @@
     <Content Include="Views\Shared\_T_JobBill_ItemDetails.cshtml" />
     <Content Include="Views\Shared\_T_JobBill_SBillDetails.cshtml" />
     <Content Include="Views\Rep_Job_reg\Rep_Job_reg.cshtml" />
+    <Content Include="Views\Rep_DnCn_Print\Rep_DnCn_Print.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1408,6 +1416,10 @@
     <EmbeddedResource Include="Report\Party_Job_Iss_Chln.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Party_Job_Iss_Chln.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\Rep_JobBill.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>Rep_JobBill.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\SaleBill_BHURA.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

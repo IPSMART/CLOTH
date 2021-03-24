@@ -33,8 +33,6 @@
                                 <th class="" style="width: 100px;">Item Code</th>
                                 <th class="" style="width: 150px;">Style No</th>
                                 <th class="" style="width: 200px;">Item Name</th>
-                                @*<th class="" style="width: 50px;">Part</th>*@
-                                <th class="" style="width:81px;text-align:right;">P/Box</th>
                                 <th class="" style="width:70px;">UOM</th>
                                 <th class="" style="width:75px;text-align:right;">Quantity</th>
                                 <th class="" style="width:60px;text-align:right;">Rate</th>
@@ -76,13 +74,7 @@
                                             @Html.HiddenFor(model => model.SBillSortage[i].AUTONO, new { id = "SAUTONO_" + i })
                                             @Html.HiddenFor(model => model.SBillSortage[i].ADOCNO_AUTONO, new { id = "SADOCNO_AUTONO_" + i })
                                         </td>
-                                        @*<td class="">
-                                            @Html.TextBoxFor(model => model.SBillSortage[i].PARTCD, new { id = "SPARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>*@
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.SBillSortage[i].PCSPERBOX, new { id = "SPCSPERBOX_" + i, @style = "text-align:right;", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
-                                        <td class="">
+                                                               <td class="">
                                             @Html.DropDownListFor(model => Model.SBillSortage[i].qtncalcon, new SelectList(Model.SBillSortage[i].QNTY_UNIT_DNCN, "value", "text", Model.SBillSortage[i].qtncalcon), new { id = "Sqtncalcon_" + i, @class = "atextBoxFor select_3d", onclick = "GetPriviousVALUE(1,this);", onchange = "UOMCONVERTION(this.value,1," + i + "),CalculateRowAmtSBILL('" + "SRATE_" + i + "','" + "SQUAN_" + i + "','" + "SAMOUNT_" + i + "','" + "STAXABLE_" + i + "','" + "Sigstper_" + i + "','" + "Sigstamt_" + i + "','" + "Scgstper_" + i + "','" + "Scgstamt_" + i + "','" + "Ssgstper_" + i + "','" + "Ssgstamt_" + i + "','" + "Scessper_" + i + "','" + "Scessamt_" + i + "','" + "SNETAMOUNT_" + i + "','" + "Sroundoff_" + i + "'," + i + ")" })
                                         </td>
                                         <td class="">

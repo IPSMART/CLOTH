@@ -96,7 +96,6 @@ namespace Improvar.ViewModels
         public string ITCD { get; set; }
         public string STYLENO { get; set; }
         public string ITNM { get; set; }
-        public int PCSPERBOX { get; set; }
         public List<DocumentType> QNTY_UNIT_PC { get; set; }
         public string qtncalcon { get; set; }       
         public double RECQNTY { get; set; }
@@ -171,7 +170,6 @@ namespace Improvar.ViewModels
         public string ITCD { get; set; }
         public string STYLENO { get; set; }
         public string ITNM { get; set; }
-        public int PCSPERBOX { get; set; }
         public double QNTY { get; set; }
         public string DOCNO { get; set; }
         public string DOCDT { get; set; }
@@ -201,7 +199,6 @@ namespace Improvar.ViewModels
         public string ITCD { get; set; }
         public string STYLENO { get; set; }
         public string ITNM { get; set; }
-        public int PCSPERBOX { get; set; }
         public List<DocumentType> QNTY_UNIT_DNCN { get; set; }
         public string qtncalcon { get; set; }
         public double QUAN { get; set; }

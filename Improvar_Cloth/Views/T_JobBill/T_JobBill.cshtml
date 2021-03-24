@@ -21,7 +21,6 @@
     }
 }
 <script src="~/Scripts/jquery.min.js"></script>
-<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
 <style>
     .TextAreaRemarks {
         height: 200px;
@@ -78,9 +77,89 @@
             }
         };
         $("#WaitingMode").hide();
+
+        $("#btnChallan").keydown(function (event) {
+            if (event.keyCode === 13) {
+                $("#btnChallan").click();
+            }
+        });
     });
 </script>
-
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
+        if (!emptyFieldCheck("Enter or Select Party", "SLCD")) { return false; }
+        if (!emptyFieldCheck("Enter Party Bill No", "PBLNO")) { return false; }
+        if (!emptyFieldCheck("Enter Party Bill Date", "PBLDT")) { return false; }
+        if (!emptyFieldCheck("Enter TDS Head", "TDSHD")) { return false; }
+        if (!emptyFieldCheck("Select Due Calculate From", "DUECALCON")) { return false; }
+        if ('@Model.MENU_PARA' == "JB") {
+            var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+            if (GridRowMain == 0) {
+                msgInfo("Item Grid Not Found!!");
+                $("li").removeClass("active").addClass("");
+                $(".tab-content div").removeClass("active");
+                $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $("#Items_LI").addClass("active");
+                return false;
+            }
+            else {
+                for (var i = 0; i <= GridRowMain - 1; i++) {
+                    var Rate = document.getElementById("RATE_" + i).value;
+                    if (Rate == "0") {
+                        msgInfo("Rate Can't be 0 in Item Grid Row No " + (i + 1) + " !!");
+                        $("li").removeClass("active").addClass("");
+                        $(".tab-content div").removeClass("active");
+                        $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                        $("#Items_LI").addClass("active");
+                        message_value = "RATE_" + i;
+                        return false;
+                    }
+                }
+            }
+            GridRowMain = $("#_T_PND_ITEM_GRID_SBILL > tbody > tr").length;
+            if (GridRowMain > 0) {
+                var glcd = $("#EXPGLCD1").val();
+                if (glcd == "") {
+                    msgInfo("Select Expenses Code!!");
+                    $("li").removeClass("active").addClass("");
+                    $(".tab-content div").removeClass("active");
+                    $("#Sbill").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    $("#Sbill_LI").addClass("active");
+                    message_value = "EXPGLCD1";
+                    return false;
+                }
+            }
+        }
+        var GridRowMain = $("#_T_PND_ITEM_GRID_DRCR > tbody > tr").length;
+        if (GridRowMain == 0) {
+            if ('@Model.MENU_PARA' != "JB") {
+                msgInfo("DN/CN Grid Not Found!!");
+                $("li").removeClass("active").addClass("");
+                $(".tab-content div").removeClass("active");
+                $("#DCNote").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $("#DCNote_LI").addClass("active");
+                return false;
+            }
+        }
+        else {
+            for (var i = 0; i <= GridRowMain - 1; i++) {
+                var Rate = document.getElementById("DAMOUNT_" + i).value;
+                if (Rate == "0") {
+                    msgInfo("Amount Can't be 0 in DN/CN Grid Row No " + (i + 1) + " !!");
+                    $("li").removeClass("active").addClass("");
+                    $(".tab-content div").removeClass("active");
+                    $("#DCNote").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    $("#DCNote_LI").addClass("active");
+                    message_value = "DRATE_" + i;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+</script>
 <script>
     $(function () {
         if ("@Model.DefaultAction" != "V") {
@@ -465,10 +544,15 @@
 </script>
 <script>
     function GetChallanData() {
+        if (!emptyFieldCheck("Enter SLCD", "SLCD")) { return false; }
         var PARTY = document.getElementById("SLCD").value;
+        if (!emptyFieldCheck("Enter DOCDT", "DOCDT")) { return false; }
         var DOCDT = document.getElementById("DOCDT").value;
+        if (!emptyFieldCheck("Enter JOBCDd", "JOBCD")) { return false; }
         var JOB = document.getElementById("JOBCD").value;
+        if (!emptyFieldCheck("Enter PBLNO", "PBLNO")) { return false; }
         var PBLNO = document.getElementById("PBLNO").value;
+        if (!emptyFieldCheck("Enter PBLDT", "PBLDT")) { return false; }
         var PBLDT = document.getElementById("PBLDT").value;
         if (PARTY != "" && DOCDT != "" && JOB != "" && PBLNO != "" && PBLDT != "") {
             $.ajax({
@@ -477,11 +561,18 @@
                 beforesend: $("#WaitingMode").show(),
                 data: $('form').serialize() + "&PARTY=" + PARTY + "&DOCDT=" + DOCDT + "&JOB=" + JOB,
                 success: function (result) {
-                    $("#WaitingMode").hide();
-                    $('#outerP').html(result);
-                    $("#BuyerHelp").hide();
-                    $("#SLCD").attr("readonly", "readonly");
-                    //$("#outerP").show();
+                    var isErrorIndex = result.indexOf('tblPendingJobBill');
+                    if (isErrorIndex != -1) {
+                        $("#WaitingMode").hide();
+                        $('#outerP').html(result);
+                        $("#BuyerHelp").hide();
+                        $("#SLCD").attr("readonly", "readonly");
+                        $("#outerP").show();
+                    }
+                    else {
+                        msgWarning(result);
+                        message_value = 'btnChallan';
+                    }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -509,7 +600,7 @@
         }
     }
     function GetItems() {
-        var GridRowMain = $("#_T_SALE_PACKINGSLIP_GRID > tbody > tr").length;
+        var GridRowMain = $("#tblPendingJobBill > tbody > tr").length;
         var COUNT = 0;
         var chkid = "";
         var docdt = $("#DOCDT").val();
@@ -576,16 +667,11 @@
             //qtn = parseFloat(box * 12 + lpcs);
         }
         else if (uom == "B") {
-            var pcsperbox = $("#PCSPERBOX_" + index).val();
-            if (pcsperbox == "0") {
-                pcsperbox = "1";
-            }
             var chk = parseFloat(qtn).toFixed(2).toString();
             var sbefd = chk.substring(0, chk.length - 3);
             var saftd = chk.substring(chk.length - 2);
             var box = parseFloat(sbefd);
             var lpcs = parseFloat(saftd);
-            //qtn = parseFloat(box * parseFloat(pcsperbox) + lpcs);
         }
         var dper = $("#" + discper).val(); dper = parseFloat((dper == "" ? 0 : dper)); $("#" + discper).val(dper);
         var damt = $("#" + discamtid).val(); damt = parseFloat((damt == "" ? 0 : damt)); $("#" + discamtid).val(damt);
@@ -641,16 +727,12 @@
                 qtn = parseFloat(box * 12 + lpcs);
             }
             else if (uom == "B") {
-                var pcsperbox = $("#DPCSPERBOX_" + index).val();
-                if (pcsperbox == "0") {
-                    pcsperbox = "1";
-                }
-                var chk = parseFloat(qtn).toFixed(2).toString();
+                  var chk = parseFloat(qtn).toFixed(2).toString();
                 var sbefd = chk.substring(0, chk.length - 3);
                 var saftd = chk.substring(chk.length - 2);
                 var box = parseFloat(sbefd);
                 var lpcs = parseFloat(saftd);
-                qtn = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+                qtn = parseFloat(box * parseFloat(1) + lpcs);
             }
             var amt = parseFloat(rate * qtn).toFixed(2);
             $("#" + amtid).val(amt);
@@ -693,16 +775,13 @@
             //qtn = parseFloat(box * 12 + lpcs);
         }
         else if (uom == "B") {
-            var pcsperbox = $("#SPCSPERBOX_" + index).val();
-            if (pcsperbox == "0") {
-                pcsperbox = "1";
-            }
+
             var chk = parseFloat(qtn).toFixed(2).toString();
             var sbefd = chk.substring(0, chk.length - 3);
             var saftd = chk.substring(chk.length - 2);
             var box = parseFloat(sbefd);
             var lpcs = parseFloat(saftd);
-            //qtn = parseFloat(box * parseFloat(pcsperbox) + lpcs);
+            //qtn = parseFloat(box * parseFloat(1) + lpcs);
         }
         var amt = parseFloat(rate * qtn).toFixed(2);
         $("#" + amtid).val(amt);
@@ -1019,94 +1098,10 @@
             }
         });
     }
-    function requiredFieldValidator() {
-        if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
-        if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
-        if (!emptyFieldCheck("Enter or Select Party", "SLCD")) { return false; }
-        if (!emptyFieldCheck("Enter Party Bill No", "PBLNO")) { return false; }
-        if (!emptyFieldCheck("Enter Party Bill Date", "PBLDT")) { return false; }
-        if (!emptyFieldCheck("Enter TDS Head", "TDSHD")) { return false; }
-        if (!emptyFieldCheck("Select Due Calculate From", "DUECALCON")) { return false; }
-        if ('@Model.MENU_PARA' == "JB") {
-            var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
-            if (GridRowMain == 0) {
-                msgInfo("Item Grid Not Found!!");
-                $("li").removeClass("active").addClass("");
-                $(".tab-content div").removeClass("active");
-                $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                $("#Items_LI").addClass("active");
-                return false;
-            }
-            else {
-                for (var i = 0; i <= GridRowMain - 1; i++) {
-                    var Rate = document.getElementById("RATE_" + i).value;
-                    if (Rate == "0") {
-                        msgInfo("Rate Can't be 0 in Item Grid Row No " + (i + 1) + " !!");
-                        $("li").removeClass("active").addClass("");
-                        $(".tab-content div").removeClass("active");
-                        $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                        $("#Items_LI").addClass("active");
-                        message_value = "RATE_" + i;
-                        return false;
-                    }
-                }
-            }
-            GridRowMain = $("#_T_PND_ITEM_GRID_SBILL > tbody > tr").length;
-            //for (var i = 0; i <= GridRowMain - 1; i++) {
-            //    var Rate = document.getElementById("SRATE_" + i).value;
-            //    if (Rate == "0") {
-            //        msgInfo("Rate Can't be 0 in Sale Bill Shortage Grid Row No " + (i + 1) + " !!");
-            //        $("li").removeClass("active").addClass("");
-            //        $(".tab-content div").removeClass("active");
-            //        $("#Sbill").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            //        $("#Sbill_LI").addClass("active");
-            //        message_value = "RATE_" + i;
-            //        return false;
-            //    }
-            //}
-            if (GridRowMain > 0) {
-                var glcd = $("#EXPGLCD1").val();
-                if (glcd == "") {
-                    msgInfo("Select Expenses Code!!");
-                    $("li").removeClass("active").addClass("");
-                    $(".tab-content div").removeClass("active");
-                    $("#Sbill").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    $("#Sbill_LI").addClass("active");
-                    message_value = "EXPGLCD1";
-                    return false;
-                }
-            }
-        }
-        var GridRowMain = $("#_T_PND_ITEM_GRID_DRCR > tbody > tr").length;
-        if (GridRowMain == 0) {
-            if ('@Model.MENU_PARA' != "JB") {
-                msgInfo("DN/CN Grid Not Found!!");
-                $("li").removeClass("active").addClass("");
-                $(".tab-content div").removeClass("active");
-                $("#DCNote").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                $("#DCNote_LI").addClass("active");
-                return false;
-            }
-        }
-        else {
-            for (var i = 0; i <= GridRowMain - 1; i++) {
-                var Rate = document.getElementById("DAMOUNT_" + i).value;
-                if (Rate == "0") {
-                    msgInfo("Amount Can't be 0 in DN/CN Grid Row No " + (i + 1) + " !!");
-                    $("li").removeClass("active").addClass("");
-                    $(".tab-content div").removeClass("active");
-                    $("#DCNote").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    $("#DCNote_LI").addClass("active");
-                    message_value = "DRATE_" + i;
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+
     function UOMCONVERTION(selectvalue, flag, rowindex) {
         if (flag == 0) {
-            var picbox = $("#PCSPERBOX_" + rowindex).val();
+            var picbox = 1;
             var recqty = UOMSUB(selectvalue, $("#RECQNTY_DISPLAY_" + rowindex).val(), picbox, itemdropdownPriviousValue);
 
             var shortqty = UOMSUB(selectvalue, $("#ShortQNTY_DISPLAY_" + rowindex).val(), picbox, itemdropdownPriviousValue);
@@ -1122,18 +1117,18 @@
             var QNTY = $("#BillQNTY_" + rowindex).val();
             var RATE = $("#RATE_" + rowindex).val();
             var QNTYIN = $("#qtncalcon_" + rowindex).val();
-            var PCSPERBOX = $("#PCSPERBOX_" + rowindex).val();
+            var PCSPERBOX = 1;
 
             RateCalculation(QNTY, RATE, QNTYIN, PCSPERBOX, rowindex, "AMOUNT_");
         }
         else {
-            var picbox = $("#SPCSPERBOX_" + rowindex).val();
+            var picbox = 1;
             var qty = UOMSUB(selectvalue, $("#SQUAN_" + rowindex).val(), picbox, dncnitemdropdownPriviousValue);
             $("#SQUAN_" + rowindex).val(qty);
             var QNTY = $("#SQUAN_" + rowindex).val();
             var RATE = $("#SRATE_" + rowindex).val();
             var QNTYIN = $("#Sqtncalcon_" + rowindex).val();
-            var PCSPERBOX = $("#SPCSPERBOX_" + rowindex).val();
+            var PCSPERBOX = 1;
 
             RateCalculation(QNTY, RATE, QNTYIN, PCSPERBOX, rowindex, "SAMOUNT_");
         }
@@ -1317,6 +1312,9 @@
         }
 
     }
+</script>
+<script>
+ 
 </script>
 @using (Html.BeginForm())
 {

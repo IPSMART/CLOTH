@@ -3530,7 +3530,7 @@ namespace Improvar
                 {
                     DBImgString = DBImgString.Substring(DBImgString.IndexOf(',') + 1);
                 }
-                var sPath = System.Web.Hosting.HostingEnvironment.MapPath(ImgPath);
+                var sPath = ImgPath;
                 //String path = @"c:/IPSMART";
                 if (System.IO.File.Exists(sPath))
                 {
@@ -3538,11 +3538,11 @@ namespace Improvar
                     {
                         System.IO.File.Delete(sPath);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        SaveException(ex, "Delete problem");
                         return sPath;
                     }
-                    System.IO.File.Delete(sPath);
                 }
                 //byte[] imageBytes = Encoding.ASCII.GetBytes(DBImgString);
                 DBImgString = DBImgString.Replace(" ", "+");

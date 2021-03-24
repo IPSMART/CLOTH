@@ -14,7 +14,7 @@
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }                    
         $("#BackupTable").val("@tableBBK");
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_PACKINGSLIP_GRID'));
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('tblPendingJobBill'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });        
     });
 </script>
@@ -25,19 +25,19 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 <div class="col-lg-5">
-                    <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PACKINGSLIP_GRID');" />
+                    <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'tblPendingJobBill');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;background-color:#c4b9b9;"><b>Pending Challan Details</b></center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:auto;overflow-x:hidden;max-height:265px;">                   
-                    <table id="_T_SALE_PACKINGSLIP_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                    <table id="tblPendingJobBill" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width:27px;text-align:center;">
                                     ALL
-                                    <input type="checkbox" name="Test" style="margin-left:-3px;" onclick="SetAllCheckBoxesFilter(this, '_T_SALE_PACKINGSLIP_GRID', 'P_Checked_')" />
+                                    <input type="checkbox" name="Test" style="margin-left:-3px;" onclick="SetAllCheckBoxesFilter(this, 'tblPendingJobBill', 'P_Checked_')" />
                                 </th>
                                 <th class="" style="width: 50px;">Sl.</th>
                                 <th class="" style="width: 180px;">Doc. No.</th>
@@ -62,7 +62,6 @@
                                             @Html.HiddenFor(model => model.Pending_SLIP[i].AUTONO, new { id = "P_DOAUTONO_" + i })
                                             @Html.HiddenFor(model => model.Pending_SLIP[i].ITCD, new { id = "P_ITCD_" + i })
                                             @Html.HiddenFor(model => model.Pending_SLIP[i].ITNM, new { id = "P_ITNM_" + i })
-                                            @Html.HiddenFor(model => model.Pending_SLIP[i].PCSPERBOX, new { id = "P_PCSPERBOX_" + i })
                                             @Html.HiddenFor(model => model.Pending_SLIP[i].QNTY, new { id = "P_QNTY_" + i })
                                             @Html.HiddenFor(model => model.Pending_SLIP[i].SHORTQNTY, new { id = "P_SHORTQNTY_" + i })
                                             @Html.HiddenFor(model => model.Pending_SLIP[i].SLCD, new { id = "P_SLCD_" + i })
