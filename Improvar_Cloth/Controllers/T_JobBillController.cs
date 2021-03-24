@@ -136,6 +136,7 @@ namespace Improvar.Controllers
                                 VE.T_JBILL = TJBILL;
                                 VE.T_CNTRL_HDR = TCH;
                                 VE.T_CNTRL_HDR_REM = SLR;
+                                ViewBag.formname = ViewBag.formname+" ["+ TCH .DOCNO+ "]";
                             }
                         }
                         if (op.ToString() == "A")
@@ -346,7 +347,7 @@ namespace Improvar.Controllers
                                                ISSDOCNO = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCNO = i.Field<string>("issdocno") }).FirstOrDefault(),
                                                ISSDOCDT = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCDT = i.Field<DateTime>("issdocdt") == null ? "" : i.Field<DateTime>("issdocdt").ToString().retDateStr() }).FirstOrDefault(),
                                                STYLENO = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { STYLENO = i.Field<string>("styleno") }).FirstOrDefault(),
-                                              SLCD = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { SLCD = i.Field<string>("slcd") }).FirstOrDefault(),
+                                               SLCD = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { SLCD = i.Field<string>("slcd") }).FirstOrDefault(),
 
                                            }).DistinctBy(a => a.AUTONO).OrderBy(a => a.AUTONO).ToList();
 
@@ -781,7 +782,7 @@ namespace Improvar.Controllers
                 return Content(Ex.Message + Ex.InnerException);
             }
         }
-       public ActionResult GetPendingChallan(TJobBillEntry VE, string PARTY, string DOCDT, string JOB)
+        public ActionResult GetPendingChallan(TJobBillEntry VE, string PARTY, string DOCDT, string JOB)
         {
             try
             {
@@ -2051,6 +2052,12 @@ namespace Improvar.Controllers
                                             dncntag = "";
                                             salpur = "S";
                                             //expglcd = "10050008";
+                                            sql = "select shortage_glcd from " + CommVar.CurSchema(UNQSNO) + ".M_syscnfg";
+                                            DataTable msyscnfg = Master_Help.SQLquery(sql);
+                                            if (msyscnfg.Rows.Count > 0)
+                                            {
+                                                expglcd = msyscnfg.Rows[0]["shortage_glcd"].retStr();
+                                            }
                                             break;
                                         case "JD":
                                             dr = "D"; cr = "C";
@@ -2109,21 +2116,37 @@ namespace Improvar.Controllers
                                     //dbamt = TJB[j].TAXABLEVAL.Value;
                                     if (blactpost == true)
                                     {
-
+                                        if (string.IsNullOrEmpty(expglcd))
+                                        {
+                                            dberrmsg = "Shortage/Bill Should not empty."; goto dbnotsave;
+                                        }
                                         dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), cr,
                                             expglcd, sslcd, dbamt, strrem, "",
                                             null, dbqty, 0, dbcurramt);
                                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                         if (cr == "D") dbDrAmt = dbDrAmt + dbamt;
                                         else dbCrAmt = dbCrAmt + dbamt;
-                                        dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(1), Convert.ToSByte(isl), sslcd,
-                                                tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), dbamt, dbcurramt, strrem);
-                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        if (IsClassMandatoryInGlcd(expglcd) == "Y")
+                                        {
+                                            dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(1), Convert.ToSByte(isl), sslcd,
+                                                                                          tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), dbamt, dbcurramt, strrem);
+                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        }
                                     }
+                                    bool IsClassMandatInGlcd = false;
 
                                     #region  GST Financial Part
                                     if (blactpost == true)
                                     {
+                                        if (string.IsNullOrEmpty(tbl.Rows[0]["parglcd"].ToString()))
+                                        {
+                                           
+                                            dberrmsg = "tcsglcd Should not empty."; goto dbnotsave;
+                                        }
+                                        if (IsClassMandatoryInGlcd(expglcd) == "Y")
+                                        {
+                                            IsClassMandatInGlcd = true;
+                                        }
                                         string[] gstpostcd = new string[5];
                                         double[] gstpostamt = new double[5];
                                         for (int gt = 0; gt < 5; gt++)
@@ -2153,6 +2176,7 @@ namespace Improvar.Controllers
                                         {
                                             if (gstpostamt[gt] != 0)
                                             {
+
                                                 isl = isl + 1;
                                                 dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), cr, gstpostcd[gt], null,
                                                         gstpostamt[gt], strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, dbqty, 0, 0, postdt);
@@ -2160,9 +2184,13 @@ namespace Improvar.Controllers
                                                 OraCmd.ExecuteNonQuery();
                                                 if (cr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
                                                 else dbCrAmt = dbCrAmt + gstpostamt[gt];
-                                                dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), null,
-                                                        tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), gstpostamt[gt], 0, strrem);
-                                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                                if (IsClassMandatInGlcd)
+                                                {
+                                                    dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), null,
+                                                                                              tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), gstpostamt[gt], 0, strrem);
+                                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                                }
+                                  
                                             }
                                         }
 
@@ -2185,9 +2213,12 @@ namespace Improvar.Controllers
                                                     OraCmd.ExecuteNonQuery();
                                                     if (dr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
                                                     else dbCrAmt = dbCrAmt + gstpostamt[gt];
-                                                    dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), null,
+                                                    if (IsClassMandatInGlcd)
+                                                    {
+                                                        dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), null,
                                                             tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), gstpostamt[gt], 0, strrem);
-                                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                                    }
                                                 }
                                             }
                                         }
@@ -2197,10 +2228,15 @@ namespace Improvar.Controllers
                                     string blconslcd = TJB[j].SLCD;
                                     if (blactpost == true)
                                     {
+                                        if (string.IsNullOrEmpty(tbl.Rows[0]["parglcd"].ToString()))
+                                        {
+                                            dberrmsg = "Glcd m_post Should not empty."; goto dbnotsave;
+                                        }
                                         // Ronded off
                                         dbamt = Convert.ToDouble(TJB[j].ROAMT);
                                         if (dbamt != 0)
                                         {
+
                                             string adrcr = cr;
                                             string rglcd = tbl.Rows[0]["rogl"].ToString();
                                             if (rglcd == "") rglcd = TJB[j].EXPGLCD;
@@ -2222,10 +2258,12 @@ namespace Improvar.Controllers
                                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                         if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(TJB[j].BLAMT);
                                         else dbCrAmt = dbCrAmt + Convert.ToDouble(TJB[j].BLAMT);
-                                        dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(1), null,
+                                        if (IsClassMandatInGlcd)
+                                        {
+                                            dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(1), null,
                                                 tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), dbamt, dbcurramt, strrem);
-                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
+                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        }
                                         strvtype = TJB[j].DOCTAG == "JD" ? "DN" : TJB[j].DOCTAG == "JC" ? "CN" : "BL";
                                         strduedt = TJB[j].DUEDT.ToString().retDateStr();
 
@@ -2243,7 +2281,6 @@ namespace Improvar.Controllers
                                         if (TJB[j].SLCD != sslcd) blconslcd = TJB[j].SLCD;
                                         blconslcd = "";
                                         if (blconslcd == sslcd) blconslcd = "";
-
                                         dbsql = Master_Help.InsVch_Bl(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, dr,
                                                 tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(1),
                                                 Convert.ToDouble(TJB[j].BLAMT), strblno, strbldt, strrefno, strduedt, strvtype, TJB[j].CRDAYS == null ? 0 : Convert.ToDouble(TJB[j].CRDAYS), itamt);
@@ -2321,7 +2358,7 @@ namespace Improvar.Controllers
                                                 TVCHGST.APPLTAXRATE = 0;
                                                 TVCHGST.EXEMPTEDTYPE = exemptype;
                                                 TVCHGST.GSTREGNTYPE = "";
-                                                TVCHGST.GOOD_SERV = (TJB[j].DOCTAG == "JS"?"G":"S");
+                                                TVCHGST.GOOD_SERV = (TJB[j].DOCTAG == "JS" ? "G" : "S");
                                                 TVCHGST.EXPGLCD = expglcd;
                                                 TVCHGST.INPTCLAIM = "Y";
                                                 TVCHGST.DELVSLCD = "";
@@ -2370,10 +2407,12 @@ namespace Improvar.Controllers
                                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                             if (cr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(TJB[j].TDSAMT);
                                             else dbCrAmt = dbCrAmt + Convert.ToDouble(TJB[j].TDSAMT);
-                                            dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), null,
+                                            if (IsClassMandatInGlcd)
+                                            {
+                                                dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), null,
                                                     tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), Convert.ToDouble(TJB[j].TDSAMT), dbcurramt, strrem);
-                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
+                                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                            }
                                             isl++;
                                             dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), dr,
                                                 tdsglcd, sslcd, Convert.ToDouble(TJB[j].TDSAMT), strrem, tbl.Rows[0]["parglcd"].ToString(),
@@ -2381,10 +2420,12 @@ namespace Improvar.Controllers
                                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                             if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(TJB[j].TDSAMT);
                                             else dbCrAmt = dbCrAmt + Convert.ToDouble(TJB[j].TDSAMT);
-                                            dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), TJB[j].SLCD,
+                                            if (IsClassMandatInGlcd)
+                                            {
+                                                dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, 1, Convert.ToSByte(isl), TJB[j].SLCD,
                                                     tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), Convert.ToDouble(TJB[j].TDSAMT), dbcurramt, strrem);
-                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
+                                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                            }
                                             strvtype = "";
                                             //strduedt = Convert.ToDateTime(TJB[j].DOCDT.Value).AddDays(Convert.ToDouble(TJB[j].DUEDAYS)).ToString().Substring(0, 10);
                                             strblno = TJB[j].PBLNO;
@@ -2492,31 +2533,22 @@ namespace Improvar.Controllers
                             {
                                 return Content(ContentFlg);
                             }
-                            goto dbok;
                             dbnotsave:;
                             transaction.Rollback();
                             OraTrans.Rollback();
                             OraCon.Dispose();
                             return Content(dberrmsg);
-                            dbok:;
                         }
                         catch (DbEntityValidationException ex)
                         {
                             transaction.Rollback();
                             OraTrans.Rollback();
                             OraCon.Dispose();
-                            // Retrieve the error messages as a list of strings.
                             var errorMessages = ex.EntityValidationErrors
                                     .SelectMany(x => x.ValidationErrors)
                                     .Select(x => x.ErrorMessage);
-
-                            // Join the list to a single string.
                             var fullErrorMessage = string.Join("&quot;", errorMessages);
-
-                            // Combine the original exception message with the new one.
                             var exceptionMessage = string.Concat(ex.Message, "<br/> &quot; The validation errors are: &quot;", fullErrorMessage);
-
-                            // Throw a new DbEntityValidationException with the improved exception message.
                             throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
                         }
                     }
@@ -2567,6 +2599,17 @@ namespace Improvar.Controllers
             }
             TempData["printparameter"] = ind;
             return Content("");
+        }
+        private string IsClassMandatoryInGlcd(string glcd)
+        {
+            string sql = "";
+            sql = "select CLASS1CDMUST from " + CommVar.FinSchema(UNQSNO) + ".M_genleg where glcd='" + glcd + "'";
+            DataTable gldt = Master_Help.SQLquery(sql);
+            if (gldt.Rows.Count > 0)
+            {
+                return gldt.Rows[0]["CLASS1CDMUST"].retStr();
+            }
+            return "";
         }
     }
 }
