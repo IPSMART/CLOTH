@@ -1740,7 +1740,7 @@ namespace Improvar.Controllers
                         //    MSITEMBARCODE.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD);
                         //}
                         //DB.T_BATCHmst.Add(MSITEMBARCODE);
-                        List<string> barnos = new List<string>(); string BARNO = "";
+                        List<string> barnos = new List<string>(); string MAINBARNO = "";
                         string sql1 = "";
                         DataTable recoexist = new DataTable();
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
@@ -1757,7 +1757,8 @@ namespace Improvar.Controllers
                                 {
                                     barno = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
                                 }
-                                if (i == 0) BARNO = barno;
+                                barnos.Add(barno);
+                                if (i == 0) MAINBARNO = barno;
                                 sql1 = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                 recoexist = masterHelp.SQLquery(sql1);
                                 if (recoexist.Rows.Count == 0)
@@ -1777,21 +1778,14 @@ namespace Improvar.Controllers
                                     TBATCHMST.EMD_NO = MSITEM.EMD_NO;
                                     TBATCHMST.CLCD = MSITEM.CLCD;
                                     TBATCHMST.DTAG = MSITEM.DTAG;
-                                    TBATCHMST.TTAG = MSITEM.TTAG;
-                                    if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
-                                    {
-                                        TBATCHMST.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
-                                    }
-                                    else
-                                    {
-                                        TBATCHMST.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
-                                    }
+                                    TBATCHMST.TTAG = MSITEM.TTAG;                                 
+                                        TBATCHMST.BARNO =barno.retStr();                                  
                                     TBATCHMST.ITCD = MSITEM.ITCD;
                                     TBATCHMST.FABITCD = MSITEM.FABITCD;
                                     TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
                                     TBATCHMST.COMMONUNIQBAR = "C";
-                                    barnos.Add(TBATCHMST.BARNO);
+              
                                     DB.T_BATCHMST.Add(TBATCHMST);
                                 }
                             }
@@ -1834,7 +1828,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
                             if (VE.BarImages.retStr() != "")
                             {
-                                var barimg = SaveBarImage(VE.BarImages, BARNO, MSITEM.EMD_NO.retShort());
+                                var barimg = SaveBarImage(VE.BarImages, MAINBARNO, MSITEM.EMD_NO.retShort());
                                 DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
                                 DB.SaveChanges();
                                 //var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
@@ -1844,7 +1838,7 @@ namespace Improvar.Controllers
                                     m_batchImglink.CLCD = MSITEM.CLCD;
                                     m_batchImglink.EMD_NO = MSITEM.EMD_NO;
                                     m_batchImglink.BARNO = imgbar;
-                                    m_batchImglink.MAINBARNO = BARNO;
+                                    m_batchImglink.MAINBARNO = MAINBARNO;
                                     DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
                                 }
                             }
