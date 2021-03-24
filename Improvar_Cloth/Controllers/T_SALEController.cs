@@ -5573,7 +5573,7 @@ namespace Improvar.Controllers
                 str += Cn.GCS() + "Posting/Terms Setup in Sales module(M_SYSCNFG)";
             }
             var m_post = DBF.M_POST.Select(m => m.CGST_S).ToList();
-            if (m_post.Count > 0)
+            if (m_post.Count == 0)
             {
                 str += Cn.GCS() + "A/c Code Setup in Finance module (M_POST)";
             }
