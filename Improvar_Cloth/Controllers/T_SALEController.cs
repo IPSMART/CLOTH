@@ -3752,7 +3752,7 @@ namespace Improvar.Controllers
                     {
                         if (a != "")
                         {
-                            msg += a+", ";
+                            msg += a + ", ";
                         }
                     }
                     ContentFlg = msg; goto dbnotsave;
@@ -4405,7 +4405,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
@@ -5413,7 +5413,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5421,7 +5421,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
@@ -5572,8 +5572,8 @@ namespace Improvar.Controllers
             {
                 str += Cn.GCS() + "Posting/Terms Setup in Sales module(M_SYSCNFG)";
             }
-            var m_post = DBF.M_POST.Count();
-            if (m_syscnfg == 0)
+            var m_post = DBF.M_POST.Select(m => m.CGST_S).ToList();
+            if (m_post.Count > 0)
             {
                 str += Cn.GCS() + "A/c Code Setup in Finance module (M_POST)";
             }
