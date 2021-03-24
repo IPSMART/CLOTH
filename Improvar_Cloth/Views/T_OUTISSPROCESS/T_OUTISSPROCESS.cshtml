@@ -950,6 +950,8 @@
     function T_OUTISSPROCESS_AddBarCodeGrid() {
         if ("@Model.DefaultAction" == "V") return true;
         var MENU_PARA = $("#MENU_PARA").val();
+        var ModuleCode = $("#ModuleCode").val();
+
         if ($("#ITGRPCD").val() == "") {
             msgInfo("Please enter/select Item Group Code !");
             message_value = "ITGRPCD";
@@ -993,6 +995,87 @@
             message_value = "HSNCODE";
             return false;
         }
+     
+
+        var BARCODE = $("#BARCODE").val();
+        var ITGRPCD = $("#ITGRPCD").val();
+        var ITGRPNM = $("#ITGRPNM").val();
+        var MTRLJOBCD = $("#MTRLJOBCD").val();
+        var MTRLJOBNM = $("#MTRLJOBNM").val();
+        var MTBARCODE = $("#MTBARCODE").val();
+        var ITCD = $("#ITCD").val();
+        var ITSTYLE = $("#ITSTYLE").val();
+        var STYLENO = $("#STYLENO").val();
+        var STKTYPE = $("#STKTYPE").val();
+        var PARTCD = $("#PARTCD").val();
+        var PARTNM = $("#PARTNM").val();
+        var PRTBARCODE = $("#PRTBARCODE").val();
+        var COLRCD = $("#COLRCD").val();
+        var COLRNM = $("#COLRNM").val();
+        var CLRBARCODE = $("#CLRBARCODE").val();
+        var SIZECD = $("#SIZECD").val();
+        var SIZENM = $("#SIZENM").val();
+        var SZBARCODE = $("#SZBARCODE").val();
+
+        var BALSTOCK = $("#BALSTOCK").val();
+        var UOM = $("#UOM").val();
+        var NOS = $("#NOS").val();
+        var RATE = $("#RATE").val();
+
+        var DISCRATE = $("#DISCRATE").val();
+        var DISCTYPE = $("#DISCTYPE").val();
+        var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" :DISCTYPE == "F" ? "Fixed":"";
+        var HSNCODE = $("#HSNCODE").val();
+        var GSTPER = $("#GSTPER").val();
+        var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
+        var SHADE = $("#SHADE").val();
+        var BALENO = "";
+        var OURDESIGN = "";
+        var PDESIGN = "";
+
+        var WPPRICEGEN = "";
+        var RPPRICEGEN = "";
+        if (MENU_PARA == "PB") {
+            BALENO = $("#BALENO").val();
+            OURDESIGN = $("#OURDESIGN").val();
+            PDESIGN = $("#PDESIGN").val();
+            WPPRICEGEN = $("#WPPRICEGEN").val();
+            RPPRICEGEN = $("#RPPRICEGEN").val();
+        }
+        var TDDISCTYPE = $("#TDDISCTYPE").val();
+        var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" :TDDISCTYPE == "F" ? "Fixed":"";
+        var TDDISCRATE = $("#TDDISCRATE").val();
+        var SCMDISCTYPE = $("#SCMDISCTYPE").val();
+        var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : SCMDISCTYPE == "A" ? "AftDsc%" : SCMDISCTYPE == "F" ? "Fixed":"";
+        var SCMDISCRATE = $("#SCMDISCRATE").val();
+        var LOCABIN = $("#LOCABIN").val();
+        var GLCD = $("#GLCD").val();
+        var ITMBARGENTYPE = $("#BARGENTYPETEMP").val();
+        var ENTRYBARGENTYPE = $("#BARGENTYPE").val();
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
+            var ORDDOCNO = $("#ORDDOCNO").val();
+            var ORDDOCDT = $("#ORDDOCDT").val();
+            var ORDAUTONO = $("#ORDAUTONO").val();
+            var ORDSLNO = $("#ORDSLNO").val();
+        }
+        var BarImages = $("#BarImages").val();
+        if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+            BarImages = "";
+        }
+        var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
+        if (BarImages == '') { NoOfBarImages = ''; }
+        var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        var SLNO = 1;
+        if (parseInt(rowindex) != 0) {
+            var LASTROWINDEX = parseInt(rowindex) - 1;
+            var LASTSLNO = $("#B_SLNO_" + LASTROWINDEX).val();
+            SLNO = parseInt(LASTSLNO) + 1;
+        }
+        var BALSTOCK = $("#BALSTOCK").val();
+        var NEGSTOCK = $("#NEGSTOCK").val();
+        var BOMQNTY = $("#BOMQNTY").val();
+        var RECPROGSLNO = $("#RECPROGSLNO").val();
+
         //get bill slno
         var TXNSLNO = "";
         var PAGENO = "";
@@ -1070,84 +1153,6 @@
             TXNSLNO = retInt($("#TXNSLNO").val());
         }
 
-        var BARCODE = $("#BARCODE").val();
-        var ITGRPCD = $("#ITGRPCD").val();
-        var ITGRPNM = $("#ITGRPNM").val();
-        var MTRLJOBCD = $("#MTRLJOBCD").val();
-        var MTRLJOBNM = $("#MTRLJOBNM").val();
-        var MTBARCODE = $("#MTBARCODE").val();
-        var ITCD = $("#ITCD").val();
-        var ITSTYLE = $("#ITSTYLE").val();
-        var STYLENO = $("#STYLENO").val();
-        var STKTYPE = $("#STKTYPE").val();
-        var PARTCD = $("#PARTCD").val();
-        var PARTNM = $("#PARTNM").val();
-        var PRTBARCODE = $("#PRTBARCODE").val();
-        var COLRCD = $("#COLRCD").val();
-        var COLRNM = $("#COLRNM").val();
-        var CLRBARCODE = $("#CLRBARCODE").val();
-        var SIZECD = $("#SIZECD").val();
-        var SIZENM = $("#SIZENM").val();
-        var SZBARCODE = $("#SZBARCODE").val();
-
-        var BALSTOCK = $("#BALSTOCK").val();
-        var UOM = $("#UOM").val();
-        var NOS = $("#NOS").val();
-        var RATE = $("#RATE").val();
-
-        var DISCRATE = $("#DISCRATE").val();
-        var DISCTYPE = $("#DISCTYPE").val();
-        var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : "Fixed";
-        var HSNCODE = $("#HSNCODE").val();
-        var GSTPER = $("#GSTPER").val();
-        var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
-        var SHADE = $("#SHADE").val();
-        var BALENO = "";
-        var OURDESIGN = "";
-        var PDESIGN = "";
-
-        var WPPRICEGEN = "";
-        var RPPRICEGEN = "";
-        if (MENU_PARA == "PB") {
-            BALENO = $("#BALENO").val();
-            OURDESIGN = $("#OURDESIGN").val();
-            PDESIGN = $("#PDESIGN").val();
-            WPPRICEGEN = $("#WPPRICEGEN").val();
-            RPPRICEGEN = $("#RPPRICEGEN").val();
-        }
-        var TDDISCTYPE = $("#TDDISCTYPE").val();
-        var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : "Fixed";
-        var TDDISCRATE = $("#TDDISCRATE").val();
-        var SCMDISCTYPE = $("#SCMDISCTYPE").val();
-        var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : "Fixed";
-        var SCMDISCRATE = $("#SCMDISCRATE").val();
-        var LOCABIN = $("#LOCABIN").val();
-        var GLCD = $("#GLCD").val();
-        var ITMBARGENTYPE = $("#BARGENTYPETEMP").val();
-        var ENTRYBARGENTYPE = $("#BARGENTYPE").val();
-        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
-            var ORDDOCNO = $("#ORDDOCNO").val();
-            var ORDDOCDT = $("#ORDDOCDT").val();
-            var ORDAUTONO = $("#ORDAUTONO").val();
-            var ORDSLNO = $("#ORDSLNO").val();
-        }
-        var BarImages = $("#BarImages").val();
-        if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
-            BarImages = "";
-        }
-        var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
-        if (BarImages == '') { NoOfBarImages = ''; }
-        var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-        var SLNO = 1;
-        if (parseInt(rowindex) != 0) {
-            var LASTROWINDEX = parseInt(rowindex) - 1;
-            var LASTSLNO = $("#B_SLNO_" + LASTROWINDEX).val();
-            SLNO = parseInt(LASTSLNO) + 1;
-        }
-        var BALSTOCK = $("#BALSTOCK").val();
-        var NEGSTOCK = $("#NEGSTOCK").val();
-        var BOMQNTY = $("#BOMQNTY").val();
-        var RECPROGSLNO = $("#RECPROGSLNO").val();
         var tr = "";
         tr += ' <tr style="font-size:12px; font-weight:bold;">';
         tr += '    <td class="sticky-cell">';
@@ -1493,9 +1498,9 @@
                 $("#B_SCMDISCTYPE_" + j).val($("#SCMDISCTYPE").val());
                 $("#B_SCMDISCRATE_" + j).val($("#SCMDISCRATE").val());
                 $("#B_LOCABIN_" + j).val($("#LOCABIN").val());
-                var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : "Fixed";
-                var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
-                var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
+                var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "F" ? "Fixed":"";
+                var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" :$("#TDDISCTYPE").val() == "F" ? "Fixed":"";
+                var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : $("#SCMDISCTYPE").val() == "F" ? "Fixed":"";
                 $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE);
                 $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
                 $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
@@ -1615,16 +1620,16 @@
                 }
             }
         }
-        else {
-            var balancestock = balqnty - QNTY;
-            if (balancestock < 0) {
-                if (NEGSTOCK != "Y") {
-                    msgInfo("QNTY (" + QNTY + ") grater than BOMQNTY (" + balqnty + ") !!");
-                    message_value = QNTY_Id;
-                    return false;
-                }
-            }
-        }
+        //else {
+        //    var balancestock = balqnty - QNTY;
+        //    if (balancestock < 0) {
+        //        if (NEGSTOCK != "Y") {
+        //            msgInfo("QNTY (" + QNTY + ") grater than BOMQNTY (" + balqnty + ") !!");
+        //            message_value = QNTY_Id;
+        //            return false;
+        //        }
+        //    }
+        //}
         if (CALLFRM == "GRID") {
             CalculateTotal_Barno();
             HasChangeBarSale();
@@ -2066,7 +2071,57 @@
     }
 </script>
 
+<script>
+    function UpdateQntyPrgrmData(TAG) {
+        debugger;
+        var Count = 0;
+        var Grid = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (var i = 0; i <= Grid - 1; i++) {
+            var itcd = $("#B_ITCD_" + i).val();
+            if (itcd != "") {
+                Count = Count + 1;
+            }
+        }
+        if (Count > 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("UpdateQntyPrgrm", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&TAG=" + TAG,
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    if (TAG == "Y") {
+                        $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                        $("#partialdivProgramme").html(res[0]);
+                    }
+                    $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivQtyRequirement").html(res[1]);
+                    if (TAG == "Y") {
+                        $("li").removeClass("active").addClass("");
+                        $(".nav-tabs li:first-child").addClass('active');
+                        $(".tab-content div").removeClass("active");
+                        $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                        
+                    }
+                    else {
+                        $("li").removeClass("active").addClass("");
+                        $(".nav-tabs li:nth-child(2)").addClass('active');
+                        //below set the  child sequence
+                        $(".tab-content div").removeClass("active");
+                        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
 
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -2649,6 +2704,18 @@
                                         <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
                                     </div>
                                     <div class="row">
+                                        @if (Model.MENU_PARA == "DY")
+                                        {
+                                            <div class="col-md-1" style="width:auto;">
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update_QntyPrgrm" value="Update Data in Programme and Qty Requirement Tab" title="Click to Update Data in Programme and Qty Requirement Tab" onclick="UpdateQntyPrgrmData('Y')" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-1" style="width:auto;">
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update_QntyPrgrm" value="Update Data in Qty Requirement Tab" title="Click to Update Data in Qty Requirement Tab" onclick="UpdateQntyPrgrmData('N')" />
+                                            </div>
+                                        }
                                         <div class="col-md-1" style="width:auto;">
                                             <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
                                         </div>
