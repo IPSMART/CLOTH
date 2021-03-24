@@ -19,7 +19,7 @@ namespace Improvar.Controllers
         MasterHelp Master_Help = new MasterHelp();
         MasterHelpFa masfa = new MasterHelpFa();
         Salesfunc SALES_FUNC = new Salesfunc();
-        T_CNTRL_HDR TCH; T_JBILL TJBILL; T_CNTRL_HDR_REM SLR; M_SITEM MSITM; M_SUBLEG MSUBLEG;
+        T_CNTRL_HDR TCH; T_JBILL TJBILL; T_CNTRL_HDR_REM SLR; M_SITEM MSITM;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_JobBill
         public ActionResult T_JobBill(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "")
