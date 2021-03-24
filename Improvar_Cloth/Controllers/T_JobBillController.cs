@@ -269,7 +269,6 @@ namespace Improvar.Controllers
                                                   PARTCD = i.PARTCD,
                                                   PASSQNTY = ((double)(i.PQNTY == null ? 0 : i.PQNTY)),
                                                   addless = ((double)(i.ADDLESSAMT == null ? 0 : i.ADDLESSAMT)),
-                                                  //PCSPERBOX = ((int)(p.PCSPERBOX == null ? 0 : p.PCSPERBOX)),
                                                   RECQNTY = ((double)(i.RQNTY == null ? 0 : i.RQNTY)),
                                                   RECQNTY_DISPLAY = ((double)(i.RQNTY == null ? 0 : i.RQNTY)),
                                                   SLNO = i.SLNO,
@@ -305,29 +304,7 @@ namespace Improvar.Controllers
                         VE.Roundoff_Item = TJBILL.ROYN == "Y" ? true : false;
                         if (VE.MENU_PARA == "JB")
                         {
-                            //string scm1 = CommVar.CurSchema(UNQSNO).ToString();
-                            //string sqlt = "select a.autono, b.itcd,f.itnm, b.partcd, f.styleno, g.partnm,  b.qnty, b.shortqnty, c.slcd, d.docno, d.docdt, c.prefno, c.prefdt,f.PCSPERBOX from ";
-                            //sqlt += "(select a.autono ";
-                            //sqlt += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b ";
-                            //sqlt += "where a.autono=b.autono and b.compcd='" + COM_CD + "' and ";
-                            //sqlt += "b.docdt <= to_date('" + TJBILL.DOCDT.Value.ToString("dd/MM/yyyy") + "','dd/mm/yyyy') and ";
-                            //sqlt += "a.jobcd ='" + TJBILL.JOBCD + "' and ";
-                            //sqlt += "nvl(b.cancel,'N')='N' ) a, ";
-                            //sqlt += "(select a.autono, a.itcd, a.partcd, sum(a.qnty) qnty, sum(a.shortqnty) shortqnty ";
-                            //sqlt += "from " + scm1 + ".t_txndtl a ";
-                            //sqlt += "group by a.autono, a.itcd, a.partcd) b, ";
-                            //sqlt += "" + scm1 + ".t_txn c, " + scm1 + ".t_cntrl_hdr d, "  + scm1 + ".m_sitem f, " + scm1 + ".m_parts g ";
-                            //sqlt += "where a.autono=b.autono(+) and a.autono=c.autono and a.autono=d.autono and ";
-                            //sqlt += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) ";
-                            //sqlt += "and a.autono in ( ";
-                            //sqlt += "select a.linkautono ";
-                            //sqlt += "from " + scm1 + ".t_txn_linkno a, " + scm1 + ".t_cntrl_hdr b ";
-                            //sqlt += "where a.autono='"+ TJBILL.AUTONO + "' and ";                    
-                            //sqlt += "nvl(b.cancel,'N')='N' ) ";
-                            //sqlt += "order by docdt, docno ";
-                            //DataTable Attached_CHALLANS = masfa.SQLquery(sqlt);
                             DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true);
-                            Type tt = Attached_CHALLANS.Rows[0]["PCSPERBOX"].GetType();
                             var temptable = (from DataRow dr in Attached_CHALLANS.Rows
                                              select new Pending_Challan_SLIP
                                              {
@@ -343,7 +320,6 @@ namespace Improvar.Controllers
                                                  ITCD = dr["itcd"].ToString(),
                                                  ITNM = dr["itnm"].ToString(),
                                                  STYLENO = dr["styleno"].ToString(),
-                                                 PCSPERBOX = dr["PCSPERBOX"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSPERBOX"]),
                                                  SHORTQNTY = dr["SHORTQNTY"] == DBNull.Value ? 0 : Convert.ToDouble(dr["SHORTQNTY"]),
                                                  SLCD = dr["slcd"].ToString(),
                                                  PARTCD = dr["PARTCD"].ToString()
@@ -370,8 +346,7 @@ namespace Improvar.Controllers
                                                ISSDOCNO = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCNO = i.Field<string>("issdocno") }).FirstOrDefault(),
                                                ISSDOCDT = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCDT = i.Field<DateTime>("issdocdt") == null ? "" : i.Field<DateTime>("issdocdt").ToString().retDateStr() }).FirstOrDefault(),
                                                STYLENO = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { STYLENO = i.Field<string>("styleno") }).FirstOrDefault(),
-                                               PCSPERBOX = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { PCSPERBOX = tt.Name == "DBNull" ? (i.Field<string>("PCSPERBOX") == null ? 0 : Convert.ToInt32(i.Field<string>("PCSPERBOX"))) : (Convert.ToInt32(i.Field<Int16?>("PCSPERBOX") ?? 0)) }).FirstOrDefault(),
-                                               SLCD = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { SLCD = i.Field<string>("slcd") }).FirstOrDefault(),
+                                              SLCD = (from DataRow i in Attached_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { SLCD = i.Field<string>("slcd") }).FirstOrDefault(),
 
                                            }).DistinctBy(a => a.AUTONO).OrderBy(a => a.AUTONO).ToList();
 
@@ -390,7 +365,6 @@ namespace Improvar.Controllers
                                             ITCD = "",
                                             ITNM = "",
                                             STYLENO = dr.STYLENO.STYLENO,
-                                            PCSPERBOX = dr.PCSPERBOX.PCSPERBOX,
                                             SHORTQNTY = dr.SHORTQNTY,
                                             SLCD = dr.SLCD.SLCD,
                                             PARTCD = dr.PARTCD
@@ -431,10 +405,6 @@ namespace Improvar.Controllers
                                                        ITNM = p.ITNM,
                                                        PARTCD = i.PARTCD,
                                                        SLNO = i.SLNO,
-                                                       //HSNSACCD = p.HSNSACCD,
-                                                       //RelWithItem = i.AGDOCAUTONO.Length > 0 ? true : false,
-                                                       //ADOCNO_AUTONO = i.AGDOCAUTONO,
-                                                       //PCSPERBOX = ((int)(p.PCSPERBOX == null ? 0 : p.PCSPERBOX)),
                                                        EFFDT = ((DateTime)(i.EFFDT)),
                                                        igstper = ((double)(i.IGSTPER == null ? 0 : i.IGSTPER)),
                                                        cgstper = ((double)(i.CGSTPER == null ? 0 : i.CGSTPER)),
@@ -454,7 +424,7 @@ namespace Improvar.Controllers
                                 foreach (var i in VE.SBillSortage)
                                 {
                                     i.QNTY_UNIT_DNCN = DDL;
-                                    i.QUAN = UOMCOnvertionFromPices(i.qtncalcon, i.QUAN, i.PCSPERBOX);
+                                    i.QUAN = UOMCOnvertionFromPices(i.qtncalcon, i.QUAN);
                                 }
                             }
                         }
@@ -498,7 +468,6 @@ namespace Improvar.Controllers
                                                   SLNO = i.SLNO,
                                                   RelWithItem = i.AGDOCAUTONO.Length > 0 ? true : false,
                                                   ADOCNO_AUTONO = i.AGDOCAUTONO,
-                                                  //PCSPERBOX = ((int)(p.PCSPERBOX == null ? 0 : p.PCSPERBOX)),
                                                   EFFDT = ((DateTime)(i.EFFDT)),
                                                   igstper = ((double)(i.IGSTPER == null ? 0 : i.IGSTPER)),
                                                   cgstper = ((double)(i.CGSTPER == null ? 0 : i.CGSTPER)),
@@ -520,7 +489,7 @@ namespace Improvar.Controllers
                             foreach (var i in VE.DRCRDetails)
                             {
                                 i.QNTY_UNIT_DNCN = DDL;
-                                i.QUAN = UOMCOnvertionFromPices(i.qtncalcon, i.QUAN, i.PCSPERBOX);
+                                i.QUAN = UOMCOnvertionFromPices(i.qtncalcon, i.QUAN);
                                 i.DocumentCode = doccd;
                                 i.DcodeDRCR = DNCNJB.DOCCD;
                             }
@@ -534,10 +503,10 @@ namespace Improvar.Controllers
                             foreach (var i in VE.ItemDetails)
                             {
                                 i.QNTY_UNIT_PC = DDL;
-                                i.BillQNTY = UOMCOnvertionFromPices(i.qtncalcon, i.BillQNTY, i.PCSPERBOX);
-                                i.PASSQNTY = UOMCOnvertionFromPices(i.qtncalcon, i.PASSQNTY, i.PCSPERBOX);
-                                i.RECQNTY_DISPLAY = UOMCOnvertionFromPices(i.qtncalcon, i.RECQNTY_DISPLAY, i.PCSPERBOX);
-                                i.ShortQNTY_DISPLAY = UOMCOnvertionFromPices(i.qtncalcon, i.ShortQNTY_DISPLAY, i.PCSPERBOX);
+                                i.BillQNTY = UOMCOnvertionFromPices(i.qtncalcon, i.BillQNTY);
+                                i.PASSQNTY = UOMCOnvertionFromPices(i.qtncalcon, i.PASSQNTY);
+                                i.RECQNTY_DISPLAY = UOMCOnvertionFromPices(i.qtncalcon, i.RECQNTY_DISPLAY);
+                                i.ShortQNTY_DISPLAY = UOMCOnvertionFromPices(i.qtncalcon, i.ShortQNTY_DISPLAY);
                             }
                         }
                         string DOCDT = TJBILL.DOCDT.Value.ToString("dd/MM/yyyy");
@@ -812,134 +781,7 @@ namespace Improvar.Controllers
                 return Content(Ex.Message + Ex.InnerException);
             }
         }
-        //public ActionResult GetPendingChallan(TJobBillEntry VE, string PARTY, string DOCDT, string JOB)
-        //{
-        //    try
-        //    {
-        //        Cn.getQueryString(VE);
-        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-        //        DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true);
-        //        var temptable = (from DataRow dr in PENDING_CHALLANS.Rows
-        //                         select new Pending_Challan_SLIP
-        //                         {
-        //                             AUTONO = dr["autono"].ToString(),
-        //                             DOCNO = dr["docno"].ToString(),
-        //                             DOCDT = dr["docdt"] == null ? "" : dr["docdt"].ToString().retDateStr(),
-        //                             PREFNO = dr["prefno"].ToString(),
-        //                             ISSAUTONO = dr["issautono"].ToString(),
-        //                             ISSDOCNO = dr["issdocno"].ToString(),
-        //                             ISSDOCDT = dr["issdocdt"] == null ? "" : dr["issdocdt"].ToString().retDateStr(),
-        //                             Checked = false,
-        //                             QNTY = dr["qnty"] == null ? 0 : Convert.ToDouble(dr["qnty"]),
-        //                             ITCD = dr["itcd"].ToString(),
-        //                             ITNM = dr["itnm"].ToString(),
-        //                             STYLENO = dr["styleno"].ToString(),
-        //                             HSNSACCD = dr["hsnsaccd"].ToString(),
-        //                             PCSPERBOX = dr["PCSPERBOX"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSPERBOX"]),
-        //                             SHORTQNTY = dr["SHORTQNTY"] == DBNull.Value ? 0 : Convert.ToDouble(dr["SHORTQNTY"]),
-        //                             SLCD = dr["slcd"].ToString(),
-        //                             PARTCD = dr["PARTCD"].ToString()
-        //                         }).OrderBy(a => a.AUTONO).ToList();
-        //        if (VE.BackupTable != null)
-        //        {
-        //            if (VE.BackupTable.Length > 0)
-        //            {
-        //                var helpMT2 = new List<Pending_Challan_SLIP>();
-        //                var javaScriptSerializer2 = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                helpMT2 = javaScriptSerializer2.Deserialize<List<Pending_Challan_SLIP>>(VE.BackupTable.Replace("&quot;", "\""));
-        //                var yy = helpMT2.Union(temptable).DistinctBy(a => a.AUTONO + a.ITCD + a.QNTY + a.SHORTQNTY).ToList();
-        //                temptable = yy;
-        //            }
-        //        }
-        //        Type tt = PENDING_CHALLANS.Rows[0]["PCSPERBOX"].GetType();
-        //        var itmdata = (from DataRow dr in PENDING_CHALLANS.Rows
-        //                       group dr by new
-        //                       {
-        //                           AUTONO = dr["autono"].ToString(),
-        //                           PARTCD = dr["PARTCD"].ToString()
-        //                       } into X
-        //                       select new
-        //                       {
-        //                           AUTONO = X.Key.AUTONO,
-        //                           SHORTQNTY = Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("SHORTQNTY"))),
-        //                           QNTY = Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("qnty"))),
-        //                           DOCNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { DOCNO = i.Field<string>("docno") }).FirstOrDefault(),
-        //                           DOCDT = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { DOCDT = i.Field<DateTime>("docdt") == null ? "" : i.Field<DateTime>("docdt").ToString().retDateStr() }).FirstOrDefault(),
-        //                           PREFNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { PREFNO = i.Field<string>("prefno") }).FirstOrDefault(),
-        //                           PARTCD = X.Key.PARTCD,
-        //                           ISSAUTONO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSAUTONO = i.Field<string>("issautono") }).FirstOrDefault(),
-        //                           ISSDOCNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCNO = i.Field<string>("issdocno") }).FirstOrDefault(),
-        //                           ISSDOCDT = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCDT = i.Field<DateTime>("issdocdt") == null ? "" : i.Field<DateTime>("issdocdt").ToString().retDateStr() }).FirstOrDefault(),
-        //                           STYLENO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { STYLENO = i.Field<string>("styleno") }).FirstOrDefault(),
-        //                           HSNSACCD = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { HSNSACCD = i.Field<string>("hsnsaccd") }).FirstOrDefault(),
-        //                           PCSPERBOX = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { PCSPERBOX = tt.Name == "DBNull" ? (i.Field<string>("PCSPERBOX") == null ? 0 : Convert.ToInt32(i.Field<string>("PCSPERBOX"))) : (Convert.ToInt32(i.Field<Int16?>("PCSPERBOX") ?? 0)) }).FirstOrDefault(),
-        //                           SLCD = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { SLCD = i.Field<string>("slcd") }).FirstOrDefault(),
-
-        //                       }).DistinctBy(a => a.AUTONO).OrderBy(a => a.AUTONO).ToList();
-
-        //        var javaScriptSerializer1 = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //        string JR = javaScriptSerializer1.Serialize(temptable);
-
-        //        VE.Pending_SLIP = (from dr in itmdata
-        //                           select new Pending_Challan_SLIP
-        //                           {
-        //                               AUTONO = dr.AUTONO,
-        //                               DOCNO = dr.DOCNO.DOCNO,
-        //                               DOCDT = dr.DOCDT.DOCDT,
-        //                               PREFNO = dr.PREFNO.PREFNO,
-        //                               ISSAUTONO = dr.ISSAUTONO.ISSAUTONO,
-        //                               ISSDOCNO = dr.ISSDOCNO.ISSDOCNO,
-        //                               ISSDOCDT = dr.ISSDOCDT.ISSDOCDT,
-        //                               Checked = false,
-        //                               QNTY = dr.QNTY,
-        //                               ITCD = "",
-        //                               ITNM = "",
-        //                               STYLENO = dr.STYLENO.STYLENO,
-        //                               HSNSACCD = dr.HSNSACCD.HSNSACCD,
-        //                               PCSPERBOX = dr.PCSPERBOX.PCSPERBOX,
-        //                               SHORTQNTY = dr.SHORTQNTY,
-        //                               SLCD = dr.SLCD.SLCD,
-        //                               PARTCD = dr.PARTCD
-        //                           }).DistinctBy(a => a.AUTONO).OrderBy(a => a.AUTONO).ToList();
-        //        VE.BackupTable = JR;
-        //        var helpMT = new List<Pending_Challan_SLIP>();
-        //        var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //        if (VE.ChildData_PendingSlip != null)
-        //        {
-        //            helpMT = javaScriptSerializer.Deserialize<List<Pending_Challan_SLIP>>(VE.ChildData_PendingSlip);
-        //            if (helpMT.Any())
-        //            {
-        //                if (VE.DefaultAction == "A")
-        //                {
-        //                    VE.Pending_SLIP = helpMT;
-        //                }
-        //                else
-        //                {
-        //                    var yy = helpMT.Union(VE.Pending_SLIP).DistinctBy(a => a.AUTONO).ToList();
-        //                    VE.Pending_SLIP = yy;
-        //                }
-        //            }
-        //        }
-        //        short SL_NO = 0;
-        //        if (VE.Pending_SLIP != null && VE.Pending_SLIP.Count > 0)
-        //        {
-        //            VE.Pending_SLIP.ForEach(a =>
-        //            {
-        //                a.SLNO = ++SL_NO;
-        //            });
-        //        }
-        //        var QTN = VE.Pending_SLIP.Sum(a => a.QNTY);
-        //        VE.TOTAL_P_QNTY = Convert.ToDouble(QTN);
-        //        VE.DefaultView = true;
-        //        ModelState.Clear();
-        //        return PartialView("_Pending_Challan_Grid", VE);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        public ActionResult GetPendingChallan(TJobBillEntry VE, string PARTY, string DOCDT, string JOB)
+       public ActionResult GetPendingChallan(TJobBillEntry VE, string PARTY, string DOCDT, string JOB)
         {
             try
             {
@@ -962,8 +804,7 @@ namespace Improvar.Controllers
                                          ITCD = dr["itcd"] == DBNull.Value ? "" : dr["itcd"].ToString(),
                                          ITNM = dr["itnm"] == DBNull.Value ? "" : dr["itnm"].ToString(),
                                          STYLENO = dr["styleno"] == DBNull.Value ? "" : dr["styleno"].ToString(),
-                                         HSNSACCD = dr["hsnsaccd"] == DBNull.Value ? "" : dr["hsnsaccd"].ToString(),
-                                         PCSPERBOX = dr["PCSPERBOX"] == DBNull.Value ? 0 : Convert.ToInt32(dr["PCSPERBOX"]),
+                                         HSNSACCD = dr["hsncode"] == DBNull.Value ? "" : dr["hsncode"].ToString(),
                                          SHORTQNTY = dr["SHORTQNTY"] == DBNull.Value ? 0 : Convert.ToDouble(dr["SHORTQNTY"]),
                                          SLCD = dr["slcd"] == DBNull.Value ? "" : dr["slcd"].ToString(),
                                          PARTCD = dr["PARTCD"] == DBNull.Value ? "" : dr["PARTCD"].ToString()
@@ -981,7 +822,6 @@ namespace Improvar.Controllers
                     }
                     if (PENDING_CHALLANS != null && PENDING_CHALLANS.Rows.Count > 0)
                     {
-                        Type tt = PENDING_CHALLANS.Rows[0]["PCSPERBOX"].GetType();
                         Type DT1 = PENDING_CHALLANS.Rows[0]["issdocdt"].GetType();
                         var itmdata = (from DataRow dr in PENDING_CHALLANS.Rows
                                        group dr by new
@@ -1002,8 +842,7 @@ namespace Improvar.Controllers
                                            ISSDOCNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCNO = i.Field<string>("issdocno") }).FirstOrDefault(),
                                            ISSDOCDT = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { ISSDOCDT = DT1.Name == "DBNull" ? "" : i.Field<DateTime>("issdocdt").ToString().retDateStr() }).FirstOrDefault(),
                                            STYLENO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { STYLENO = i.Field<string>("styleno") }).FirstOrDefault(),
-                                           HSNSACCD = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { HSNSACCD = i.Field<string>("hsnsaccd") }).FirstOrDefault(),
-                                           PCSPERBOX = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { PCSPERBOX = tt.Name == "DBNull" ? (i.Field<string>("PCSPERBOX") == null ? 0 : Convert.ToInt32(i.Field<string>("PCSPERBOX"))) : (Convert.ToInt32(i.Field<Int16?>("PCSPERBOX") ?? 0)) }).FirstOrDefault(),
+                                           HSNSACCD = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { HSNSACCD = i.Field<string>("hsncode") }).FirstOrDefault(),
                                            SLCD = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { SLCD = i.Field<string>("slcd") }).FirstOrDefault(),
 
                                        }).DistinctBy(a => a.AUTONO).OrderBy(a => a.AUTONO).ToList();
@@ -1027,7 +866,6 @@ namespace Improvar.Controllers
                                                ITNM = "",
                                                STYLENO = dr.STYLENO.STYLENO,
                                                HSNSACCD = dr.HSNSACCD.HSNSACCD,
-                                               PCSPERBOX = dr.PCSPERBOX.PCSPERBOX,
                                                SHORTQNTY = dr.SHORTQNTY,
                                                SLCD = dr.SLCD.SLCD,
                                                PARTCD = dr.PARTCD
@@ -1065,7 +903,7 @@ namespace Improvar.Controllers
                     }
                     VE.DefaultView = true;
                     ModelState.Clear();
-                    return PartialView("_Pending_Challan_Grid", VE);
+                    return PartialView("_T_JobBill_Pending_Challan_Grid", VE);
                 }
             }
             catch (Exception ex)
@@ -1126,7 +964,6 @@ namespace Improvar.Controllers
                                {
                                    ITCD = dr.ITCD,
                                    ITNM = dr.ITNM,
-                                   PCSPERBOX = dr.PCSPERBOX,
                                    STYLENO = dr.STYLENO,
                                    HSNSACCD = dr.HSNSACCD
                                } into X
@@ -1138,7 +975,6 @@ namespace Improvar.Controllers
                                    QNTY = Convert.ToDouble(X.Sum(Z => Z.QNTY)),
                                    STYLENO = X.Key.STYLENO,
                                    HSNSACCD = X.Key.HSNSACCD,
-                                   PCSPERBOX = X.Key.PCSPERBOX
                                }).ToList();
                 foreach (var i in itmdata)
                 {
@@ -1150,17 +986,16 @@ namespace Improvar.Controllers
                         PC.QNTY_UNIT_PC = DDL;
                         PC.qtncalcon = qtyCalcAs;
                         PC.AUTONO = "";
-                        PC.BillQNTY = retCalcQnty(i.QNTY + i.SHORTQNTY, qtyCalcAs, i.PCSPERBOX);
+                        PC.BillQNTY = i.QNTY + i.SHORTQNTY;
                         PC.ShortQNTY = i.SHORTQNTY;
-                        PC.ShortQNTY_DISPLAY = retCalcQnty(i.SHORTQNTY, qtyCalcAs, i.PCSPERBOX);
+                        PC.ShortQNTY_DISPLAY = i.SHORTQNTY;
                         PC.ITCD = i.ITCD;
                         PC.ITNM = i.ITNM;
                         PC.STYLENO = i.STYLENO;
                         //PC.PARTCD = i.PARTCD;
-                        PC.PASSQNTY = retCalcQnty(i.QNTY, qtyCalcAs, i.PCSPERBOX);
-                        PC.PCSPERBOX = i.PCSPERBOX;
+                        PC.PASSQNTY = i.QNTY;
                         PC.RECQNTY = i.QNTY;
-                        PC.RECQNTY_DISPLAY = retCalcQnty(i.QNTY, qtyCalcAs, i.PCSPERBOX);
+                        PC.RECQNTY_DISPLAY = i.QNTY;
                         PC.SLNO = SLNO;
                         PC.HSNSACCD = i.HSNSACCD;
                         if (Dt != null && Dt.Rows.Count > 0)
@@ -1190,7 +1025,6 @@ namespace Improvar.Controllers
                             PCND.HSNSACCD = i.HSNSACCD;
                             PCND.RelWithItem = true;
                             PCND.ADOCNO_AUTONO = SLNO.ToString();
-                            PCND.PCSPERBOX = i.PCSPERBOX;
                             //PCND.PARTCD = i.PARTCD;
                             PCND.QNTY_UNIT_DNCN = DDL;
                             PCND.SLNO = SLNO1;
@@ -1210,8 +1044,8 @@ namespace Improvar.Controllers
                 VE.Roundoff_Item = true;
                 VE.Roundoff_sbill = true;
                 ModelState.Clear();
-                var Itemdetails = RenderRazorViewToString(ControllerContext, "_T_JBill_ItemDetails", VE);
-                var SbillDetails = RenderRazorViewToString(ControllerContext, "_T_JBill_SBillDetails", VE);
+                var Itemdetails = RenderRazorViewToString(ControllerContext, "_T_JobBill_ItemDetails", VE);
+                var SbillDetails = RenderRazorViewToString(ControllerContext, "_T_JobBill_SBillDetails", VE);
                 return Content(Itemdetails + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + SbillDetails);
             }
             catch (Exception ex)
@@ -1545,29 +1379,7 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", masfa.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
         }
-        public double UOMCOnvertion(string uom, double qty, int picperbox)
-        {
-            double rtvL = 0;
-            string chk = qty.ToString("0.00");
-            string sbefd = chk.Substring(0, chk.Length - 3);
-            string saftd = chk.Substring(chk.Length - 2, 2);
-            double box = Convert.ToDouble(sbefd);
-            double lpcs = Convert.ToDouble(saftd);
-            if (uom == "D")
-            {
-                rtvL = box * 12 + lpcs;
-            }
-            else if (uom == "B")
-            {
-                rtvL = box * picperbox + lpcs;
-            }
-            else
-            {
-                rtvL = qty;
-            }
-            return rtvL;
-        }
-        public double UOMCOnvertionFromPices(string uom, double qty, int picperbox)
+        public double UOMCOnvertionFromPices(string uom, double qty)
         {
             double rtvL = 0;
             string chk = qty.ToString("0.00");
@@ -1589,24 +1401,6 @@ namespace Improvar.Controllers
                     rtvL = Convert.ToDouble(box1 + "." + pp);
                 }
                 else {
-                    rtvL = box1;
-                }
-            }
-            else if (uom == "B")
-            {
-                var temp = (box + lpcs) / picperbox;
-                var chk1 = temp.ToString("0.00");
-                var sbefd1 = chk1.Substring(0, chk1.Length - 3);
-                var box1 = Convert.ToDouble(sbefd1);
-                var lpcs1 = box - (box1 * picperbox);
-                if (lpcs1 > 0)
-                {
-                    var pp = lpcs1.ToString();
-                    pp = pp.PadLeft(2, '0');
-                    rtvL = Convert.ToDouble(box1 + "." + pp);
-                }
-                else
-                {
                     rtvL = box1;
                 }
             }
@@ -1645,14 +1439,6 @@ namespace Improvar.Controllers
                 case "ST":
                     rval = "B"; break;
             }
-            return rval;
-        }
-        public double retCalcQnty(double qnty, string QtyCalcas, double pcsperbox = 0)
-        {
-            double rval = qnty;
-            if (QtyCalcas == "D") pcsperbox = 12;
-            if (QtyCalcas == "P") rval = qnty;
-            else if (QtyCalcas == "B" || QtyCalcas == "D") rval = SALES_FUNC.ConvPcstoBox(qnty, pcsperbox);
             return rval;
         }
         public ActionResult SAVE(FormCollection FC, TJobBillEntry VE)
@@ -1822,8 +1608,8 @@ namespace Improvar.Controllers
                                         TD.PARTCD = i.PARTCD;
                                         TD.QNTYCALCON = i.qtncalcon;
                                         TD.DNCNQNTY = i.ShortQNTY;
-                                        TD.PQNTY = UOMCOnvertion(i.qtncalcon, i.PASSQNTY, i.PCSPERBOX);
-                                        TD.BQNTY = UOMCOnvertion(i.qtncalcon, i.BillQNTY, i.PCSPERBOX);
+                                        TD.PQNTY = i.PASSQNTY;
+                                        TD.BQNTY = i.BillQNTY;
                                         TD.ADDLESSAMT = i.addless;
                                         //TD.PQNTY = i.PASSQNTY;
                                         //TD.BQNTY = i.BillQNTY;
@@ -1900,7 +1686,7 @@ namespace Improvar.Controllers
                                                 TD.ITCD = i.ITCD;
                                                 TD.PARTCD = i.PARTCD;
                                                 TD.QNTYCALCON = i.qtncalcon;
-                                                TD.DNCNQNTY = UOMCOnvertion(i.qtncalcon, i.QUAN, i.PCSPERBOX);
+                                                TD.DNCNQNTY = i.QUAN;
                                                 TD.RATE = i.RATE;
                                                 TD.AMT = i.AMOUNT;
                                                 TD.TAXABLEVAL = i.TAXABLE;
@@ -2022,7 +1808,7 @@ namespace Improvar.Controllers
                                             TD.ITCD = i.ITCD;
                                             TD.PARTCD = i.PARTCD;
                                             TD.QNTYCALCON = i.qtncalcon;
-                                            TD.DNCNQNTY = UOMCOnvertion(i.qtncalcon, i.QUAN, i.PCSPERBOX);
+                                            TD.DNCNQNTY = i.PCSPERBOX;
 
                                             //TD.DNCNQNTY = i.QUAN;
                                             TD.RATE = i.RATE;
@@ -2264,7 +2050,7 @@ namespace Improvar.Controllers
                                             trcd = "SB";
                                             dncntag = "";
                                             salpur = "S";
-                                            expglcd = "10050008";
+                                            //expglcd = "10050008";
                                             break;
                                         case "JD":
                                             dr = "D"; cr = "C";
@@ -2295,11 +2081,12 @@ namespace Improvar.Controllers
                                     if (recoins == false) blactpost = false;
                                     if (blactpost == true)
                                     {
-                                        //dbsql = Master_Help.Instcntrl_hdr(TCH[j].AUTONO, VE.DefaultAction, "F", TCH[j].MNTHCD, TCH[j].DOCCD, TCH[j].DOCNO, TCH[j].DOCDT.ToString(), TCH[j].EMD_NO.Value, TCH[j].DTAG, TCH[j].DOCONLYNO, TCH[j].VCHRNO, "Y", TCH[j].VCHRSUFFIX, TCH[j].GLCD, TCH[j].SLCD, TCH[j].DOCAMT.Value);
-                                        //OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        short emdno = TCH[j].EMD_NO.retShort();
+                                        dbsql = Master_Help.Instcntrl_hdr(TCH[j].AUTONO, VE.DefaultAction, "F", TCH[j].MNTHCD, TCH[j].DOCCD, TCH[j].DOCNO, TCH[j].DOCDT.ToString(), emdno, TCH[j].DTAG, TCH[j].DOCONLYNO, TCH[j].VCHRNO, "Y", TCH[j].VCHRSUFFIX, TCH[j].GLCD, TCH[j].SLCD, TCH[j].DOCAMT.Value);
+                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-                                        //dbsql = Master_Help.InsVch_Hdr(TCH[j].AUTONO, TCH[j].DOCCD, TCH[j].DOCONLYNO, TCH[j].DOCDT.ToString(), TCH[j].EMD_NO.Value, TCH[j].DTAG, null, null, "Y", null, trcd);
-                                        //OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        dbsql = Master_Help.InsVch_Hdr(TCH[j].AUTONO, TCH[j].DOCCD, TCH[j].DOCONLYNO, TCH[j].DOCDT.ToString(), emdno, TCH[j].DTAG, null, null, "Y", null, trcd);
+                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                     }
 
                                     if (TJBD != null)
@@ -2322,6 +2109,7 @@ namespace Improvar.Controllers
                                     //dbamt = TJB[j].TAXABLEVAL.Value;
                                     if (blactpost == true)
                                     {
+
                                         dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), cr,
                                             expglcd, sslcd, dbamt, strrem, "",
                                             null, dbqty, 0, dbcurramt);
