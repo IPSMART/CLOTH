@@ -1,0 +1,278 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "DnCn_Print";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    var REP_PARA = Model.maxdate;
+}
+@{
+    string PageControllerName = "Rep_DnCn_Print";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/Custom.js"></script>
+
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    });
+</script>
+<script>
+
+    function SelectDOCCode(id) {
+        if (id == "") {
+            $("#DOCCD").val("");
+            $("#TEXTBOX1").val("");
+            $("#FDOCNO").val("");
+            $("#TDOCNO").val("");
+            $("#TDT").val("");
+            $("#FDT").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Code", PageControllerName)",
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById("DOCCD").value = returncolvalue(findstr, "DOCCD");
+                        document.getElementById("TEXTBOX1").value = returncolvalue(findstr, "DOCNM");
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#DOCCD").val("");
+                        $("#TEXTBOX1").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = "DOCCD";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+    function SelectSLCDCode(valu, fld1, fld2) {
+        if (valu == "") {
+            $("#" + fld1.id).val("");
+            $("#" + fld2.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetSLCDhelp", PageControllerName)",
+                data: {
+                    val: valu
+                },
+                success: function (result) {
+                    debugger;
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById(fld1.id).value = returncolvalue(findstr, "SLCD");
+                        document.getElementById(fld2.id).value = returncolvalue(findstr, "SLNM");
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + fld1.id).val("");
+                        $("#" + fld2.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = fld1.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+
+    function SelectDOCNumber(id, DOCNO, DOCDT) {
+        if (id == "") {
+            $("#" + DOCNO.id).val("");
+            $("#" + DOCDT).val("");
+        }
+        else {
+            var DOC_CODE = document.getElementById("DOCCD").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Number", PageControllerName)",
+                data: { val: id, Code: DOC_CODE, },
+
+                success: function (result) {
+
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181))
+                        $("#" + DOCNO.id).val(str[0].toString());
+                        $("#" + DOCDT.id).val(str[1].toString());
+                    }
+
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + DOCNO.id).val("");
+                        $("#" + DOCDT).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = DOCNO.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(model => model.maxdate)
+            @Html.HiddenFor(model => model.MENU_PARA)
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Doc Code")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOC_Code", PageControllerName)','DOCCD/TEXTBOX1','1/0','Select Document Type Details','DOCCD')" />
+                            @Html.EditorFor(model => model.DOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCCD", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','DOCCD/TEXTBOX1','1/0','Select Document Type Details','DOCCD');", onblur = "SelectDOCCode(this.value);", @placeholder = "Code", required = "required" } })
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX1", @TabIndex = -1, @placeholder = "Document Name", maxlength = 45, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Doc No")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOC_Number", PageControllerName) + "','FDOCNO/FDT','1/0','Select Document Number','FDOCNO','DOCCD')", onblur = "SelectDOCNumber(this.value,'FDOCNO','FDT');", @placeholder = "DocNo.", maxlength = 8 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetDOC_Number", PageControllerName)','FDOCNO/FDT','0/1','Select Docno and Docdt Details','FDOCNO','DOCCD')" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Doc No")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOC_Number", PageControllerName) + "','TDOCNO/TDT','1/0','Select Document Number','TDOCNO','DOCCD')", onblur = "SelectDOCNumber(this.value,'TDOCNO','TDT');", @placeholder = "DocNo.", maxlength = 8 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetDOC_Number", PageControllerName)','TDOCNO/TDT','0/1','Select Docno and Docdt Details','TDOCNO','DOCCD')" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Party")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp('" + @Url.Action("GetSLCDhelp", PageControllerName) + "','SLCD/SLNM','1/0','Select Party Details','SLCD');", onblur = "SelectSLCDCode(this.value,SLCD,SLNM);", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetSLCDhelp", PageControllerName)','SLCD/SLNM','1/0','Select Party Details','SLCD')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control", id = "SLNM", @TabIndex = -1, @placeholder = "Party Name", maxlength = 45, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Format")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.TEXTBOX6, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-lg-2"></div>
+                    <table style="border:1px solid">
+                        <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox1, true)</td><td style="border:1px groove;">Original For Receipent</td></tr>
+                        <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox2)</td><td style="border:1px groove;">Duplicate For Transporter</td></tr>
+                        <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3)</td><td style="border:1px groove;">Triplicate For Suppler</td></tr>
+                        <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4)</td><td style="border:1px groove;">Extra Copy</td></tr>
+                        <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5)</td><td style="border:1px groove;">Extra Copy</td></tr>
+                        <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6)</td><td style="border:1px groove;">Extra Copy</td></tr>
+                    </table>
+                </div>
+
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-LG-10">
+                        <input type="submit" value="Print" name="submitbutton" class="btn btn-default" style="width:66px;" formtarget="_blank" />
+                        <input type="submit" value="Email" name="submitbutton" class="btn btn-default" style="width:66px;" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}
