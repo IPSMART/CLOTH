@@ -882,6 +882,7 @@
                 $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
                 $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
                 $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
+                $("#CUTLENGTH").val($(FieldidStarting + "CUTLENGTH_" + i).val());
             }
             $("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
             $("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
@@ -1078,6 +1079,7 @@
         if (RECPROGSLNO == "") {
             RECPROGSLNO = SLNO;
         }
+        var CUTLENGTH = $("#CUTLENGTH").val();
 
         //get bill slno
         var TXNSLNO = "";
@@ -1236,15 +1238,18 @@
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_BALSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
         tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
         tr += '    </td>';
+        tr += '    <td class="" title="' + CUTLENGTH + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + NOS + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
+        tr += '    </td>';
         tr += '    <td class="" title="' + QNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\',\'GRID\');" value="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\',\'GRID\');" value="' + QNTY + '">';
         tr += '        <input id="B_BOMQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BOMQNTY" type="hidden" value="' + BOMQNTY + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + UOM + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
-        tr += '    </td>';
-        tr += '    <td class="" title="' + NOS + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateTotal_Barno();HasChangeBarSale();" value="' + NOS + '">';
         tr += '    </td>';
         tr += '    <td class="">';
         tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
@@ -1475,6 +1480,7 @@
                 $("#B_SZBARCODE_" + j).val($("#SZBARCODE").val());
                 $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
                 $("#B_QNTY_" + j).val($("#QNTY").val());
+                $("#B_CUTLENGTH_" + j).val($("#CUTLENGTH").val());
                 $("#B_BOMQNTY_" + j).val($("#BOMQNTY").val());
                 $("#B_RECPROGSLNO_" + j).val($("#RECPROGSLNO").val());
                 $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
@@ -1557,7 +1563,7 @@
     function T_OUTISSPROCESS_ClearBarcodeArea(TAG) {
         if ("@Model.DefaultAction" == "V") return true;
         var MENU_PARA = $("#MENU_PARA").val();
-        ClearAllTextBoxes("BARCODE,TXNSLNO,SLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
+        ClearAllTextBoxes("BARCODE,TXNSLNO,SLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,CUTLENGTH");
         if (MENU_PARA == "PB") {
             ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
         }
@@ -2558,20 +2564,24 @@
                                                 </div>
                                             </div>
 
-
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity" } })
+                                                    @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Cutlength", @title = "Cutlength", @onchange = "CalculateBargridQnty();" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos", @onchange = "CalculateBargridQnty();" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onchange = "CalculateBargridQnty();" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "UOM", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos" } })
                                                 </div>
                                             </div>
                                             @*<div class="col-md-1">

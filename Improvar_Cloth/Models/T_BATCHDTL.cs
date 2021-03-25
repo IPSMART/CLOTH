@@ -134,5 +134,6 @@ namespace Improvar.Models
         public double? OTHRAMT { get; set; }
         public double? TXBLVAL { get; set; }
         public double? MTRLCOST { get; set; }
+        public double? SHORTQNTY { get; set; }
     }
 }

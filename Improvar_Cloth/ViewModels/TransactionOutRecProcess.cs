@@ -192,5 +192,7 @@ namespace Improvar.ViewModels
         public string POS { get; set; }
         public string PROGAUTOSLNO { get; set; }
         public string PROGUNIQNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double B_T_SHORTQNTY { get; set; }
     }
 }

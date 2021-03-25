@@ -189,5 +189,6 @@ namespace Improvar.ViewModels
         public string CSM_AUTONO { get; set; }
 
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        public double? CUTLENGTH { get; set; }
     }
 }

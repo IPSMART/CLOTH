@@ -5432,6 +5432,7 @@ namespace Improvar.Controllers
             }
 
         }
+        [ValidateInput(false)]
         public ActionResult Print(TransactionSaleEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
         {
             try
