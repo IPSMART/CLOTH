@@ -36,7 +36,6 @@ namespace Improvar.Models
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
-        [Required]
         [StringLength(10)]
         public string ITCD { get; set; }
 
