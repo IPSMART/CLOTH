@@ -4,8 +4,37 @@
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
 <script src="~/Scripts/jquery.min.js"></script>
-
-@using (Html.BeginForm("T_PBillUpload", "T_PBillUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<script>
+$(document).ready(function(){
+    $('#btnExtractDBF').click(function () {
+        if (window.FormData !== undefined) {
+            var fileUpload = $("#fileRaymondPurchaseDBF").get(0);
+            var files = fileUpload.files;
+            var fileData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+            //fileData.append('username', ‘Manas’);
+            $.ajax({
+                url: '/T_PBillUpload/ExtractRaymondPurchaseDBF',
+                type: "POST",
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: fileData,
+                success: function (result) {
+                    alert(result);
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+        } else {
+            alert("FormData is not supported.");
+        }
+    });
+});
+</script>  
+@using (Html.BeginForm("T_PBillUpload", "T_PBillUpload", new { US = @Model.UNQSNO_ENCRYPTED }, FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
         @if (Model != null && Model.STATUS == null)
@@ -19,12 +48,12 @@
                 </div>
                 <div class="col-md-8">
                     <div class="editor-field" style="margin-top: 4px;">
-                        <input type="file" name="RaymondPurchaseDBF" required accept=".dbf" />
+                        <input type="file" id="fileRaymondPurchaseDBF" name="RaymondPurchaseDBF" required accept=".dbf" />
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="editor-field">
-                        <input type="submit" value="Upload" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                        <input id="btnExtractDBF" type="button" value="Upload" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
                     </div>
                 </div>
             </div>

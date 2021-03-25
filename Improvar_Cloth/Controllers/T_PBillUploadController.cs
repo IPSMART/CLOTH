@@ -40,6 +40,70 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
+        public ActionResult ExtractRaymondPurchaseDBF()
+        {
+            if (Session["UR_ID"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            else
+            {
+                string Path = "C:\\IPSMART\\Temp";
+                //if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
+                //Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
+                //if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
+                //GC.Collect();
+                //Request.Files["RaymondPurchaseDBF"].SaveAs(Path);
+
+                if (Request.Files.Count > 0)
+                {
+                    try
+                    {
+                        //  Get all files from Request object  
+                        HttpFileCollectionBase files = Request.Files;
+                        for (int i = 0; i < files.Count; i++)
+                        {
+                            //string path = AppDomain.CurrentDomain.BaseDirectory + "Uploads/";  
+                            //string filename = Path.GetFileName(Request.Files[i].FileName);  
+
+                            HttpPostedFileBase file = files[i];
+                            string fname;
+
+                            // Checking for Internet Explorer  
+                            if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                            {
+                                string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                                fname = testfiles[testfiles.Length - 1];
+                            }
+                            else
+                            {
+                                fname = file.FileName;
+                            }
+
+                            // Get the complete folder path and store the file inside it.  
+                            //fname = Path.Combine(Server.MapPath("~/Uploads/"), fname);
+                            file.SaveAs(fname);
+                        }
+                        // Returns message that successfully uploaded  
+                        return Json("File Uploaded Successfully!");
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json("Error occurred. Error details: " + ex.Message);
+                    }
+                }
+                else
+                {
+                    return Json("No files selected.");
+                }
+
+                ViewBag.formname = "Data Upload";
+                DataUploadVM VE = new DataUploadVM();
+                return View(VE);
+            }
+        }
+
+        [HttpPost]
         public ActionResult T_PBillUpload(DataUploadVM VE, FormCollection FC, String Command)
         {
             if (Session["UR_ID"] == null)
