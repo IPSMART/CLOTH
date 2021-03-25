@@ -98,5 +98,8 @@ namespace Improvar.Models
         public short? DECIMALS { get; set; }
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
+        public double TOTALREQQTY { get; set; }
+        public double USEDQTY { get; set; }
+        public string COMMONUNIQBAR { get; set; }
     }
 }

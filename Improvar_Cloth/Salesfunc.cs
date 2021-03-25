@@ -27,6 +27,7 @@ namespace Improvar
             sql += "select z.slcd, b.taxgrpcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.gstno, a.docth, b.trslcd, b.courcd, nvl(c.agslcd,a.agslcd) agslcd, ";
             sql += "g.slnm,nvl(g.slarea,g.district) slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
+            sql += "y.docdt lastbldt, y.scmdiscrate, y.scmdisctype, ";
             sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
             sql += "from ";
 
@@ -44,6 +45,15 @@ namespace Improvar
             sql += "from " + scm + ".m_subleg_brand b ";
             sql += "where b.slcd='" + slcd + "' and b.compcd='" + COM + "' ) c, ";
 
+            sql += "( select slcd,docdt, scmdiscrate, scmdisctype from ( ";
+            sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, ";
+            sql += "row_number() over(partition by b.slcd order by c.docdt desc) as rn ";
+            sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d ";
+            sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and ";
+            if (docdt != "") sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') and ";
+            sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
+            sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype) where rn = 1 ) y, ";
+
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc from ";
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc, ";
             //sql += "row_number() over (partition by a.prccd order by a.effdt desc) as rn ";
@@ -54,7 +64,7 @@ namespace Improvar
 
             sql += "" + scmf + ".m_taxgrp e, " + scmf + ".m_prclst f, " + scmf + ".m_subleg g, " + scmf + ".m_subleg h, " + scmf + ".m_subleg i, " + scmf + ".m_subleg j ";
             sql += "where z.slcd=a.slcd(+) and z.slcd=b.slcd(+) and z.slcd=c.slcd(+) and ";
-            sql += "b.taxgrpcd=e.taxgrpcd(+) and a.prccd=f.prccd(+) and ";
+            sql += "b.taxgrpcd=e.taxgrpcd(+) and a.prccd=f.prccd(+) and a.slcd=y.slcd(+) and ";
             sql += "z.slcd=g.slcd(+) and a.agslcd=h.slcd(+) and b.trslcd=i.slcd(+) and b.courcd=j.slcd(+) ";
 
             tbl = SQLquery(sql);
@@ -185,7 +195,7 @@ namespace Improvar
             sql += "select a.progautono, a.progslno, a.progautoslno, d.slcd, i.slnm, nvl(i.slarea,i.district) slarea, ";
             sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
             sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm,g.bargentype, f.uomcd, j.itnm fabitnm, ";
-            sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, d.linecd, l.print_seq, ";
+            sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, m.commonuniqbar, d.linecd, l.print_seq, ";
             sql += "a.balqnty, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm from ";
 
             sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno, ";
@@ -201,14 +211,15 @@ namespace Improvar
             sql += "group by a.progautono, a.progslno, a.progautono||a.progslno ) a, ";
 
             sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";
-            sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, " + scm + ".m_linemast k, " + scm + ".m_size l ";
-            sql += "where a.progautono=d.autono(+) and a.progslno=d.slno(+) and a.progautono=e.autono(+) and ";
+            sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, ";
+            sql += scm + ".m_linemast k, " + scm + ".m_size l, " + scm + ".t_batchmst m ";
+            sql += "where a.progautono=d.autono(+) and a.progslno=d.slno(+) and a.progautono=e.autono(+) and d.barno=m.barno(+) and ";
             sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and ";
             if (progfromdt.retStr() != "") sql += "e.docdt >= to_date('" + progfromdt + "', 'dd/mm/yyyy') and ";
             if (slcd.retStr() != "") sql += "d.slcd in (" + slcd + ") and ";
             if (linecd.retStr() != "") sql += "d.linecd in (" + linecd + ") and ";
             if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
-            sql += "nvl(a.balnos,0) <> 0 ";
+            sql += "nvl(a.balqnty,0) <> 0 ";
             sql += "and f.fabitcd=j.itcd(+) and d.linecd=k.linecd(+) and d.sizecd=l.sizecd(+) ";
             sql += "order by styleno, itnm, itcd, partcd, print_seq, sizenm ";
             DataTable tbl = SQLquery(sql);
@@ -2302,14 +2313,14 @@ namespace Improvar
 
             sql = "";
             sql += "select a.autono, a.slno, a.autono||a.slno autoslno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, ";
-            sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate, a.txblval + + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, ";
+            sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate, nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, ";
             sql += sqld;
             sql += "a.qnty, a.nos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, ";
             sql += scm + ".m_sitem d, " + scm + ".m_group e ";
             sql += sqlc;
             if (skipStkTrnf == true) sql += "c.doctag not in ('SI','SO') and ";
-            sql += "c.doctag in ('PB','OP','PD','SI') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') ";
+            sql += "c.doctag in ('PB','OP','PD','JR','SI') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') ";
             sql += "order by itcd, docdt, autono, slno ";
             if (calctype == "LIFO") sql += "desc ";
 
@@ -2327,7 +2338,7 @@ namespace Improvar
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, ";
             sql += scm + ".m_sitem d, " + scm + ".m_group e ";
             sql += sqlc;
-            if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD') and "; else sql += "c.doctag not in ('PB','OP','PD','SI') and ";
+            if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI') and ";
             sql += "a.stkdrcr in ('D','C') ";
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno ";
             sql += sqldgrp;
