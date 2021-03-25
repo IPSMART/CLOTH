@@ -44,6 +44,7 @@
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
+                                <th class="" style="width:50px;text-align:right;">Short Quantity</th>
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 <th class="" style="width:50px;">Disc Type</th>
                                 <th class="" style="width:50px;text-align:right;">Disc Rate</th>
@@ -107,6 +108,9 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].SHORTQNTY, new { htmlAttributes = new { id = "B_SHORTQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
+                                        </td>
+                                        <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "HasChangeBarSale();" } })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLCOST, new { id = "B_MTRLCOST_" + i })
                                          </td>
@@ -150,6 +154,9 @@
                                 </td>
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.B_T_QNTY, new { htmlAttributes = new { id = "B_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.B_T_SHORTQNTY, new { htmlAttributes = new { id = "B_T_SHORTQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

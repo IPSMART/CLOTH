@@ -433,7 +433,7 @@ namespace Improvar.Controllers
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
-                str1 += "n.WPPRICEGEN,i.RECPROGAUTONO,i.RECPROGSLNO,i.MTRLCOST,j.COMMONUNIQBAR ";
+                str1 += "n.WPPRICEGEN,i.RECPROGAUTONO,i.RECPROGSLNO,i.MTRLCOST,j.COMMONUNIQBAR,i.SHORTQNTY ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
@@ -503,6 +503,7 @@ namespace Improvar.Controllers
                                     RECPROGSLNO = dr["RECPROGSLNO"].retShort(),
                                     MTRLCOST = dr["MTRLCOST"].retDbl(),
                                     COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                    SHORTQNTY = dr["SHORTQNTY"].retDbl(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
@@ -566,6 +567,7 @@ namespace Improvar.Controllers
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
+                VE.B_T_SHORTQNTY = VE.TBATCHDTL.Sum(a => a.SHORTQNTY).retDbl();
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
                 VE.T_NOS = VE.TTXNDTL.Sum(a => a.NOS).retDbl();
                 VE.T_QNTY = VE.TTXNDTL.Sum(a => a.QNTY).retDbl();
@@ -2569,7 +2571,7 @@ namespace Improvar.Controllers
                             {
                                 bool isNewBatch = false;
                                 string barno = "";
-                                string Action = "", SqlCondition = "";
+                                string Action = "A", SqlCondition = "";
                                 if (VE.TBATCHDTL[i].SAMPLE == "Y")
                                 {
                                     barno = VE.TBATCHDTL[i].BARNO;
@@ -2736,6 +2738,8 @@ namespace Improvar.Controllers
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
                                 TBATCHDTL.STKTYPE = "F";
                                 TBATCHDTL.MTRLCOST = VE.TBATCHDTL[i].MTRLCOST;
+                                TBATCHDTL.TXBLVAL = (VE.TBATCHDTL[i].QNTY.retDbl()* VE.TBATCHDTL[i].RATE.retDbl()).toRound(2);
+                                TBATCHDTL.SHORTQNTY = VE.TBATCHDTL[i].SHORTQNTY;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

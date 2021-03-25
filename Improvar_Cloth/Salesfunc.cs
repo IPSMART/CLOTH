@@ -2328,6 +2328,7 @@ namespace Improvar
             str = "select autono, slno, autoslno, doctag, conslcd, doctag, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, ";
             str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (";
             str += sql + ") ";
+            if (barno.retStr() != "") str += "where barno in (" + barno + ") ";
             DataTable rsIn = SQLquery(str);
 
             sql = "";

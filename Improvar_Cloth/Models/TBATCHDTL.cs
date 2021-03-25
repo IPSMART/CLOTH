@@ -198,5 +198,7 @@ namespace Improvar.Models
         public double? WPPER { get; set; }
         public double? RPPER { get; set; }
         public double? MTRLCOST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? SHORTQNTY { get; set; }
     }
 }

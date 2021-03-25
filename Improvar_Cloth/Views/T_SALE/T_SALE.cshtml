@@ -309,7 +309,7 @@
                 message_value = "B_TXNSLNO_" + i;
                 return false;
             }
-            if (qntyblank == true) {
+            if (qntyblank == true && "@Model.MENU_PARA" != "SCN" && "@Model.MENU_PARA" != "SDN" && "@Model.MENU_PARA" != "PCN" && "@Model.MENU_PARA" != "PDN") {
                 var slno = $("#B_SLNO_" + i).val();
                 msgInfo("Please Fill Quantity in Barcode Grid at slno " + slno + " !!");
                 $("li").removeClass("active").addClass("");
@@ -407,7 +407,7 @@
     });
 </script>
 <script>
-  function pageprinting() {
+    function pageprinting() {
         debugger;
         var ty = $("#DOCCD").val();
         $.ajax({
@@ -415,9 +415,12 @@
             url: "@Url.Action("Print", PageControllerName)",
             data: $('form').serialize() + "&DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
             success: function (result) {
-                if ('@Model.MENU_PARA' == "PJIS" || '@Model.MENU_PARA' == "PJRC" || '@Model.MENU_PARA' == "PJRT")
-                { window.open("@Url.Action("Rep_Doc_Print", "Rep_Doc_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank") }
-                else{window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")}
+                if ('@Model.MENU_PARA' == "PJIS" || '@Model.MENU_PARA' == "PJRC" || '@Model.MENU_PARA' == "PJRT") {
+                    window.open("@Url.Action("Rep_Doc_Print", "Rep_Doc_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+                }
+                else {
+                    window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+                }
 
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

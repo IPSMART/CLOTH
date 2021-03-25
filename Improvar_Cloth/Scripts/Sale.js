@@ -798,7 +798,7 @@ function Fill_DetailData() {
         message_value = "B_TXNSLNO_" + i;
         return false;
     }
-    if (qntyblank == true) {
+    if (qntyblank == true && MENU_PARA != "SCN" && MENU_PARA != "SDN" && MENU_PARA != "PCN" && MENU_PARA != "PDN") {
         var slno = $("#B_SLNO_" + i).val();
         msgInfo("Please Fill Quantity in Barcode Grid at slno " + slno + " !!");
         $("li").removeClass("active").addClass("");
@@ -958,6 +958,8 @@ function CalculateTotal_Barno() {
 function CalculateAmt_Details(i) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+
     var BLQNTY = $("#D_BLQNTY_" + i).val();
     if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
 
@@ -1000,7 +1002,10 @@ function CalculateAmt_Details(i) {
 
     //AMOUNT CALCULATION
     var amount = 0;
-    if (BLQNTY == 0) {
+    if (MENU_PARA == "SCN" || MENU_PARA == "SDN" || MENU_PARA == "PCN" || MENU_PARA == "PDN") {
+        amount = parseFloat(RATE);
+    }
+    else if (BLQNTY == 0) {
         amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
     }
     else {

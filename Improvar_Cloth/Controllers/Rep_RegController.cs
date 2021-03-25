@@ -366,7 +366,9 @@ namespace Improvar.Controllers
                     if (showpbill == true) HC.GetPrintHeader(IR, "prefno", "string", "c,16", "Party;Bill No");
                     if (itmdtl == true)
                     {
-                        HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name;Item Name");
+                        //HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name;Item Name");
+                        HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party;Name");
+                        HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
 
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
 
@@ -603,7 +605,8 @@ namespace Improvar.Controllers
                             {
                                 ino = ino + 1;
                                 DataRow dr = IR.NewRow();
-                                dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
+                                //dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
+                                dr["itnm"] = tbl.Rows[i]["itstyle"].ToString();
                                 if (VE.TEXTBOX1 == "Sales Cash Memo") dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 if (itemrem == true && itmdtl == true) dr["itrem"] = tbl.Rows[i]["itrem"].ToString();
                                 dr["hsncode"] = tbl.Rows[i]["hsncode"].ToString();

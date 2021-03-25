@@ -96,6 +96,7 @@
 
         if ("@Model.MENU_PARA" == "TRWB") {
             if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
+            if (!emptyFieldCheck("Please Select / Enter Subledger","SLCD")) { return false; }
         }
         return true;
     }
@@ -541,7 +542,7 @@
                 {
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Godown")
+                            @Html.Label("", "From Godown")
                         </div>
                     </div>
                     <div class="col-md-1">
@@ -611,8 +612,9 @@
                 {
                     <div class="col-md-4" style="width:auto">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Subledger")
-                            @*<b style="color:Red;">*</b>*@
+                         @Html.Label("", "Subledger")
+                           @if (Model.MENU_PARA == "TRWB")
+                           { <b style="color:Red;">*</b>}
                         </div>
                     </div>
                                     <div class="col-md-3">
