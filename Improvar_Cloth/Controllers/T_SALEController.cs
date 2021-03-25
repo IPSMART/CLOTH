@@ -3845,7 +3845,7 @@ namespace Improvar.Controllers
                         case "PR":
                             stkdrcr = "C"; parglcd = "purdebglcd"; trcd = "PD"; strrem = "PRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "OP":
-                            stkdrcr = "D"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; break;
                         case "OTH":
                             stkdrcr = "D"; blactpost = false; blgstpost = true; break;
                         case "PJRC":
@@ -4261,7 +4261,7 @@ namespace Improvar.Controllers
                     {
                         for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
                         {
-                            if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "" && VE.TTXNDTL[i].QNTY.retDbl() != 0)
+                            if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "")
                             {
                                 if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
                                 else
@@ -4405,10 +4405,10 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
-                            if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                            if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
                             int txnsln = VE.TBATCHDTL[i].TXNSLNO;
                             var TTXNDTLmp = (from x in VE.TTXNDTL
                                              where x.SLNO == VE.TBATCHDTL[i].TXNSLNO
@@ -4422,7 +4422,7 @@ namespace Improvar.Controllers
                             _baldisttxblval_b = TTXNDTLmp.TXBLVAL.retDbl(); _baldist_b = TTXNDTLmp.OTHRAMT.retDbl();
                             while (VE.TBATCHDTL[i].TXNSLNO == txnsln)
                             {
-                                if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                                if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
                                 int j = i;
 
                                 int bi = 1, maxBi = 0;
@@ -5413,7 +5413,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5421,7 +5421,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

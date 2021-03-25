@@ -2571,7 +2571,7 @@ namespace Improvar.Controllers
                             {
                                 bool isNewBatch = false;
                                 string barno = "";
-                                string Action = "", SqlCondition = "";
+                                string Action = "A", SqlCondition = "";
                                 if (VE.TBATCHDTL[i].SAMPLE == "Y")
                                 {
                                     barno = VE.TBATCHDTL[i].BARNO;
