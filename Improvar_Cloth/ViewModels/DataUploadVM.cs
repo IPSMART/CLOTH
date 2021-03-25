@@ -20,6 +20,8 @@ namespace Improvar.ViewModels
     }
     public class DUpGrid
     {
+        public bool Checked { get; set; }
+        public int Slno { get; set; }
         public string CUSTOMERNO { get; set; }
         public string BLNO { get; set; }
         public string BLDT { get; set; }
