@@ -13,7 +13,8 @@ namespace Improvar.Controllers
 {
     public class T_PBillUploadController : Controller
     {
-        string CS = null; string sql = ""; string dbsql = ""; string[] dbsql1;
+        string tmpPath = "C:\\IPSMART\\Temp";
+        string sql = ""; string dbsql = ""; string[] dbsql1;
         string dberrmsg = "";
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
@@ -36,9 +37,11 @@ namespace Improvar.Controllers
             {
                 ViewBag.formname = "Data Upload";
                 DataUploadVM VE = new DataUploadVM();
+                if (!System.IO.Directory.Exists(tmpPath)) { System.IO.Directory.CreateDirectory(tmpPath); }
                 return View(VE);
             }
         }
+
         [HttpPost]
         public ActionResult ExtractRaymondPurchaseDBF()
         {
@@ -46,60 +49,85 @@ namespace Improvar.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
-            else
+            try
             {
-                string Path = "C:\\IPSMART\\Temp";
-                //if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
-                //Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
-                //if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
-                //GC.Collect();
-                //Request.Files["RaymondPurchaseDBF"].SaveAs(Path);
-
+                DataUploadVM VE = new DataUploadVM();
                 if (Request.Files.Count > 0)
                 {
-                    try
+                    if (!System.IO.Directory.Exists(tmpPath)) { System.IO.Directory.CreateDirectory(tmpPath); }
+                    tmpPath = "C:\\IPSMART\\Temp\\Raymond.dbf";
+                    if (System.IO.File.Exists(tmpPath)) { System.IO.File.Delete(tmpPath); }
+                    GC.Collect();
+                    HttpFileCollectionBase files = Request.Files;
+                    HttpPostedFileBase file = files[0];
+                    string fname;
+                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
                     {
-                        //  Get all files from Request object  
-                        HttpFileCollectionBase files = Request.Files;
-                        for (int i = 0; i < files.Count; i++)
-                        {
-                            //string path = AppDomain.CurrentDomain.BaseDirectory + "Uploads/";  
-                            //string filename = Path.GetFileName(Request.Files[i].FileName);  
-
-                            HttpPostedFileBase file = files[i];
-                            string fname;
-
-                            // Checking for Internet Explorer  
-                            if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
-                            {
-                                string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                                fname = testfiles[testfiles.Length - 1];
-                            }
-                            else
-                            {
-                                fname = file.FileName;
-                            }
-
-                            // Get the complete folder path and store the file inside it.  
-                            //fname = Path.Combine(Server.MapPath("~/Uploads/"), fname);
-                            file.SaveAs(fname);
-                        }
-                        // Returns message that successfully uploaded  
-                        return Json("File Uploaded Successfully!");
+                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
+                        fname = testfiles[testfiles.Length - 1];
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        return Json("Error occurred. Error details: " + ex.Message);
+                        fname = file.FileName;
                     }
-                }
-                else
-                {
-                    return Json("No files selected.");
-                }
+                    fname = System.IO.Path.Combine(tmpPath, "");
+                    file.SaveAs(fname);
 
-                ViewBag.formname = "Data Upload";
-                DataUploadVM VE = new DataUploadVM();
-                return View(VE);
+                    System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
+                    obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + tmpPath + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
+                    obdcconn.Open();
+                    System.Data.Odbc.OdbcCommand oCmd = obdcconn.CreateCommand();
+                    oCmd.CommandText = "SELECT * FROM " + tmpPath;
+                    DataTable dbfdt = new DataTable();
+                    dbfdt.Load(oCmd.ExecuteReader());
+                    obdcconn.Close();
+                    if (System.IO.File.Exists(tmpPath)) { System.IO.File.Delete(tmpPath); }
+                    var outerDT = dbfdt.AsEnumerable()
+                   .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
+                   .Select(g =>
+                   {
+                       var row = dbfdt.NewRow();
+                       row["CUSTOMERNO"] = g.Key.CUSTOMERNO;
+                       row["INV_NO"] = g.Key.INV_NO;
+                       row["INVDATE"] = g.Key.INVDATE;
+                       row["LR_NO"] = g.Key.LR_NO;
+                       row["LR_DATE"] = g.Key.LR_DATE;
+                       row["CARR_NO"] = g.Key.CARR_NO;
+                       row["CARR_NAME"] = g.Key.CARR_NAME;
+                       row["FREIGHT"] = g.Sum(r => r.Field<double>("FREIGHT"));
+                       row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
+                       row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
+                       row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
+                       row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+                       row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
+                       row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
+                       row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
+                       row["CENT_AMT"] = g.Sum(r => r.Field<double>("CENT_AMT"));
+                       row["STATE_TAX"] = g.Average(r => r.Field<double>("STATE_TAX"));
+                       row["STATE_AMT"] = g.Sum(r => r.Field<double>("STATE_AMT"));
+                       return row;
+                   }).CopyToDataTable();
+
+                    List<DUpGrid> DUGridlist = new List<DUpGrid>();
+                    int slno = 0;
+                    foreach (DataRow oudr in outerDT.Rows)
+                    {
+                        DUpGrid dupgrid = new DUpGrid();
+                        dupgrid.Slno = ++slno;
+                        dupgrid.BLNO = oudr["INV_NO"].retStr();
+                        dupgrid.BLDT = oudr["INVDATE"].retDateStr();
+                        DUGridlist.Add(dupgrid);
+                    }
+                    VE.DUpGrid = DUGridlist;
+                }
+                VE.DefaultView = true;
+                ModelState.Clear();
+                return PartialView("_T_PBillUpload_Bill", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Json("Error occurred. Error details: " + ex.Message);
             }
         }
 
@@ -111,6 +139,10 @@ namespace Improvar.Controllers
                 return RedirectToAction("Login", "Login");
             }
             if (Request.Files.Count == 0) return Content("No File Selected");
+            if (VE.DUpGrid.Where(m => m.Checked == true).FirstOrDefault() == null)
+            {
+                return Content("Please Select a Purchase bill For upload");
+            }
             sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".m_group ";
             var dt = masterHelp.SQLquery(sql);
             if (dt.Rows.Count == 0)
@@ -120,6 +152,7 @@ namespace Improvar.Controllers
             VE = ReadRaymondPurchaseDBF(VE);
             return View(VE);
         }
+
         public DataUploadVM ReadRaymondPurchaseDBF(DataUploadVM VE)
         {
             List<DUpGrid> DUGridlist = new List<DUpGrid>();
@@ -189,6 +222,11 @@ namespace Improvar.Controllers
                     TTXN.GOCD = "TR";
                     TTXN.DOCTAG = "PB";
                     TTXN.PREFNO = oudr["INV_NO"].ToString();
+
+                    if (VE.DUpGrid.Where(m => m.Checked == true & m.BLNO == TTXN.PREFNO).FirstOrDefault() == null)
+                    {//Selected row will upload only
+                        continue;
+                    }
                     TTXN.TCSPER = 0.075;
                     dupgrid.BLNO = TTXN.PREFNO;
                     string Ddate = DateTime.ParseExact(oudr["INVDATE"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");

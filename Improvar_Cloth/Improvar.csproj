@@ -1356,6 +1356,7 @@
     <Content Include="Views\Shared\_T_JobBill_SBillDetails.cshtml" />
     <Content Include="Views\Rep_Job_reg\Rep_Job_reg.cshtml" />
     <Content Include="Views\Rep_DnCn_Print\Rep_DnCn_Print.cshtml" />
+    <Content Include="Views\Shared\_T_PBillUpload_Bill.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
