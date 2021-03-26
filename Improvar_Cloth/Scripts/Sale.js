@@ -2350,6 +2350,11 @@ function AddBarCodeGrid() {
     tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
     tr += '   </td> ';
     if (MENU_PARA != "SB") {
+        if (MENU_PARA == "PB" && COMMONUNIQBAR == "E") {
+            tr += '<td class="sticky-cell-opposite" style="right:80px;">';
+            tr += '<input class=" atextBoxFor text-box single-line" id="B_NOOFROWCOPY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NOOFROWCOPY" onkeydown="CopyRow(' + rowindex + ')" onkeypress="return numericOnly(this,0);" type="text" value="">';
+            tr += '</td>';
+        }
         tr += '    <td class="sticky-cell-opposite" style="right:40px;">';
         tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
         tr += '    </td>';
@@ -3248,7 +3253,7 @@ function GetItcd(id) {
 }
 function CalculateBargridQnty(tableid, index) {
     debugger;
-    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID="";
+    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CUTLENGTHID = "B_CUTLENGTH_" + index;
         NOSID = "B_NOS_" + index;
@@ -3259,7 +3264,7 @@ function CalculateBargridQnty(tableid, index) {
         CUTLENGTHID = "CUTLENGTH";
         NOSID = "NOS";
         QNTYID = "QNTY";
-        UOMID = "UOM" ;
+        UOMID = "UOM";
     }
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
@@ -3829,6 +3834,38 @@ function GetBaleData() {
             $("#WaitingMode").hide();
             //$("#PARTY_HELP").show();
             //$("#SLCD").attr("readonly", false);
+            msgError("Error: " + textStatus + "," + errorThrown);
+        }
+    });
+}
+function CopyRow(index) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    if (event.key != "F8") {
+        return true;
+    }
+    var NOOFROWCOPY = retFloat($("#B_NOOFROWCOPY_" + index).val());
+    var SLNO = retInt($("#B_SLNO_" + index).val());
+    if (NOOFROWCOPY == 0) {
+        msgInfo("Please Enter No Of Row to copy at slno " + $("#B_SLNO_" + index).val() + " !!");
+        message_value = "B_SLNO_" + index;
+        return false;
+    }
+    $.ajax({
+        type: 'post',
+        url: $("#UrlCopyRow").val(), //"@Url.Action("CopyBarGridRow", PageControllerName)",
+        beforesend: $("#WaitingMode").show(),
+        data: $('form').serialize() + "&NOOFROWCOPY=" + NOOFROWCOPY + "&BarSlno=" + SLNO,
+        success: function (result) {
+            debugger;
+            $('#partialdivBarCodeTab').html(result);
+            CalculateTotal_Barno();
+            $("#B_NOOFROWCOPY_" + index).val("")
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
             msgError("Error: " + textStatus + "," + errorThrown);
         }
     });

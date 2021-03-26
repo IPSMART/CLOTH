@@ -10,8 +10,7 @@ namespace Improvar.Models
     public class TBATCHDTL
     {
         public short? EMD_NO { get; set; }
-
-        [Required]
+        
         [StringLength(4)]
         public string CLCD { get; set; }
 
@@ -20,27 +19,20 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string TTAG { get; set; }
-
-        [Key]
-        [Column(Order = 0)]
+        
         [StringLength(30)]
         public string AUTONO { get; set; }
 
         public short TXNSLNO { get; set; }
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        
         public short SLNO { get; set; }
-
-        [Required]
+        
         [StringLength(25)]
         public string BARNO { get; set; }
 
         [StringLength(8)]
         public string HSNCODE { get; set; }
-
-        [Required]
+        
         [StringLength(1)]
         public string STKDRCR { get; set; }
         public double? NOS { get; set; }
@@ -200,5 +192,6 @@ namespace Improvar.Models
         public double? MTRLCOST { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
+        public string NOOFROWCOPY { get; set; }
     }
 }
