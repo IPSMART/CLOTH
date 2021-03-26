@@ -55,7 +55,10 @@
                                 {
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
+@if (Model.SHOWSTKTYPE == "Y")
+{
                                 <th class="" style="width: 34px;">Stock Type</th>
+}
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
@@ -163,6 +166,10 @@
                                             {  @Html.HiddenFor(model => model.TTXNDTL[i].BALENO, new { id = "D_BALENO_" + i })
 
                                             }
+                                            @if (Model.SHOWSTKTYPE != "Y")
+                                            {  @Html.HiddenFor(model => model.TTXNDTL[i].STKTYPE, new { id = "D_STKTYPE_" + i })
+
+                                            }
                                             @if (Model.SHOWMTRLJOBCD != "Y")
                                             {
                                                 @Html.HiddenFor(model => model.TTXNDTL[i].MTRLJOBCD, new { id = "D_MTRLJOBCD_" + i })
@@ -211,10 +218,13 @@
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
                                             </td>
                                         }
+@if (Model.SHOWSTKTYPE == "Y")
+{
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].STKTYPE, new { id = "D_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @*@Html.HiddenFor(model => model.TTXNDTL[i].STKTYPE, new { id = "D_STKTYPE_" + i })*@
                                         </td>
+}
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].UOM, new { id = "D_UOM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
@@ -404,7 +414,10 @@
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
+@if (Model.SHOWSTKTYPE == "Y")
+{
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+}
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
                                 </td>

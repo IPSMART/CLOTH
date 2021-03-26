@@ -262,5 +262,6 @@ namespace Improvar.ViewModels
         public string JOBNM { get; set; }
         public string JOBEXPGLCD { get; set; }
         public string JOBHSNCODE { get; set; }
+        public string SHOWSTKTYPE { get; set; }
     }
 }

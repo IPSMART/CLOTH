@@ -129,6 +129,16 @@ namespace Improvar.Controllers
                             }
                         }
 
+                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        if (MSYSCNFG == null)
+                        {
+
+                            VE.DefaultView = false;
+                            VE.DefaultDay = 0;
+                            ViewBag.ErrorMessage = "Data add in Configuaration Setup->Posting/Terms Setup";
+                            return View(VE);
+                        }
+                        VE.M_SYSCNFG = MSYSCNFG;
 
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                         if (op == "E" || op == "D" || op == "V" || loadOrder.retStr().Length > 1)
@@ -217,15 +227,32 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
 
-                                if (ROUNDOFF == "")
+                                //if (ROUNDOFF == "")
+                                //{
+                                //    if (VE.DocumentType.Count() > 0)
+                                //    {
+                                //        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                //        ROUNDOFF = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.ROYN).FirstOrDefault();
+                                //    }
+                                //}
+                                //VE.RoundOff = ROUNDOFF == "Y" ? true : false;
+                                VE.RoundOff = true;
+                                if (VE.MENU_PARA == "PJBL")
                                 {
-                                    if (VE.DocumentType.Count() > 0)
+                                    string menudoccd = VE.DOC_CODE;
+                                    var M_JOBMST = (from a in DB.M_JOBMST where a.FLAG1 == menudoccd select new { a.JOBCD, a.JOBNM, a.HSNCODE, a.EXPGLCD }).FirstOrDefault();
+                                    if (M_JOBMST != null)
                                     {
-                                        string doccd = VE.DocumentType.FirstOrDefault().value;
-                                        ROUNDOFF = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.ROYN).FirstOrDefault();
+                                        TXN.JOBCD = M_JOBMST.JOBCD;
+                                        VE.JOBNM = M_JOBMST.JOBNM;
+                                        VE.JOBHSNCODE = M_JOBMST.HSNCODE;
+                                        VE.JOBEXPGLCD = M_JOBMST.EXPGLCD;
                                     }
                                 }
-                                VE.RoundOff = ROUNDOFF == "Y" ? true : false;
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
+                                {
+                                    TTXN.BARGENTYPE = VE.M_SYSCNFG.COMMONUNIQBAR.retStr() == "E" ? "E" : "C";
+                                }
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
@@ -270,16 +297,7 @@ namespace Improvar.Controllers
                         {
                             FreightCharges(VE, VE.T_TXN.AUTONO);
                         }
-                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                        if (MSYSCNFG == null)
-                        {
 
-                            VE.DefaultView = false;
-                            VE.DefaultDay = 0;
-                            ViewBag.ErrorMessage = "Data add in Configuaration Setup->Posting/Terms Setup";
-                            return View(VE);
-                        }
-                        VE.M_SYSCNFG = MSYSCNFG;
                         var mtrljobcd = (from a in DB.M_MTRLJOBMST
                                          join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
                                          where b.INACTIVE_TAG == "N"
@@ -301,6 +319,7 @@ namespace Improvar.Controllers
                         }
                         VE.SHOWMTRLJOBCD = mtrljobcd.Count() > 1 ? "Y" : "N";
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
+                        VE.SHOWSTKTYPE = VE.DropDown_list_StkType.Count > 1 ? "Y" : "N";
                     }
                     else
                     {
@@ -643,7 +662,7 @@ namespace Improvar.Controllers
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
-                    allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+                    allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA,"","",false,false,true,"",false);
 
                 }
                 else
@@ -1722,7 +1741,9 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.JOBCD_help(val);
+                TransactionSaleEntry VE = new TransactionSaleEntry();
+                Cn.getQueryString(VE);
+                var str = masterHelp.JOBCD_JOBMST_help(val, VE.DOC_CODE.retStr().retSqlformat());
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3991,6 +4012,8 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
+                        dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         //dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -4013,10 +4036,8 @@ namespace Improvar.Controllers
                                     dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "E", "", "barno='" + v.BARNO + "'");
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                                 }
+                             
                                 dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "' and SLNO = '" + v.SLNO + "' ");
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                                dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                             }
                         }
@@ -4606,7 +4627,6 @@ namespace Improvar.Controllers
                                 //add price
                                 if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
-                                    SqlCondition = Action == "A" ? "" : "barno = '" + barno + "' and prccd= 'CP' and autono='" + TTXN.AUTONO + "' ";
                                     T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
                                     TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
                                     TBATCHMSTPRICE.CLCD = TTXN.CLCD;
@@ -4618,12 +4638,11 @@ namespace Improvar.Controllers
                                     TBATCHMSTPRICE.AUTONO = TTXN.AUTONO;
                                     TBATCHMSTPRICE.RATE = VE.TBATCHDTL[i].RATE;
 
-                                    dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE, Action, "", SqlCondition);
+                                    dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                                     if (VE.TBATCHDTL[i].WPRATE.retDbl() != 0)
                                     {
-                                        SqlCondition = Action == "A" ? "" : "barno = '" + barno + "' and prccd= 'WP' and autono='" + TTXN.AUTONO + "' ";
                                         //WPRATE
                                         T_BATCHMST_PRICE TBATCHMSTPRICE1 = new T_BATCHMST_PRICE();
                                         TBATCHMSTPRICE1.EMD_NO = TTXN.EMD_NO;
@@ -4636,13 +4655,12 @@ namespace Improvar.Controllers
                                         TBATCHMSTPRICE1.AUTONO = TTXN.AUTONO;
                                         TBATCHMSTPRICE1.RATE = VE.TBATCHDTL[i].WPRATE;
 
-                                        dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE1, Action, "", SqlCondition);
+                                        dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE1);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     }
 
                                     if (VE.TBATCHDTL[i].RPRATE.retDbl() != 0)
                                     {
-                                        SqlCondition = Action == "A" ? "" : "barno = '" + barno + "' and prccd= 'RP' and autono='" + TTXN.AUTONO + "' ";
                                         //RPRATE
                                         T_BATCHMST_PRICE TBATCHMSTPRICE2 = new T_BATCHMST_PRICE();
                                         TBATCHMSTPRICE2.EMD_NO = TTXN.EMD_NO;
@@ -4655,7 +4673,7 @@ namespace Improvar.Controllers
                                         TBATCHMSTPRICE2.AUTONO = TTXN.AUTONO;
                                         TBATCHMSTPRICE2.RATE = VE.TBATCHDTL[i].RPRATE;
 
-                                        dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE2, Action, "", SqlCondition);
+                                        dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE2);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     }
                                 }
@@ -5301,6 +5319,12 @@ namespace Improvar.Controllers
                     ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO); if (ContentFlg != "") goto dbnotsave;
                     dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    {
+                        dbsql = masterHelp.TblUpdt("t_batchmst_price", VE.T_TXN.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    }
                     if (VE.TBATCHDTL != null)
                     {
                         foreach (var v in VE.TBATCHDTL)
@@ -5331,11 +5355,7 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     //dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
-                    {
-                        dbsql = masterHelp.TblUpdt("t_batchmst_price", VE.T_TXN.AUTONO, "D");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    }
+                   
                     dbsql = masterHelp.TblUpdt("t_txnamt", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txntrans", VE.T_TXN.AUTONO, "D");

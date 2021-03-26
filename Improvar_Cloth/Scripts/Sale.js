@@ -225,6 +225,9 @@ function FillBarcodeArea(str, Table, i) {
             $("#QNTY").val(returncolvalue(str, "QNTY"));
             $("#NOS").val(returncolvalue(str, "NOS"));
         }
+        if (retStr(returncolvalue(str, "uomcd")) == "PCS" && retFloat(returncolvalue(str, "NOS")) != 0) {
+            $("#QNTY").val(returncolvalue(str, "NOS"));
+        }
         $("#UOM").val(returncolvalue(str, "uomcd"));
         $("#CUTLENGTH").val(returncolvalue(str, "CUTLENGTH"));
         $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
@@ -289,7 +292,17 @@ function FillBarcodeArea(str, Table, i) {
                 }
             }
         }
-        $("#COMMONUNIQBAR").val($(FieldidStarting + "COMMONUNIQBAR_" + i).val());
+        if (DefaultAction == "A") {
+            $("#COMMONUNIQBAR").val($(FieldidStarting + "COMMONUNIQBAR_" + i).val());
+        }
+        else {
+            if (Table == "COPYLROW") {
+                $("#COMMONUNIQBAR").val("C");
+            }
+            else {
+                $("#COMMONUNIQBAR").val($(FieldidStarting + "COMMONUNIQBAR_" + i).val());
+            }
+        }
         $("#DISCRATE").val($(FieldidStarting + "DISCRATE_" + i).val());
         $("#DISCTYPE").val($(FieldidStarting + "DISCTYPE_" + i).val());
         $("#TDDISCTYPE").val($(FieldidStarting + "TDDISCTYPE_" + i).val());
@@ -375,7 +388,8 @@ function FillBarcodeArea(str, Table, i) {
         }
         else {
             if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-                $("#ITCD").focus();
+                //$("#ITCD").focus();
+                $("#QNTY").focus();
             } else {
                 if ($("#MNTNBARNO").val() == "Y") {
                     $("#BARCODE").focus();
@@ -663,26 +677,27 @@ function UpdateBarCodeRow() {
     //$("#SCMDISCTYPE").val("P");*@
     $("#AddRow_Barcode").show();
     $("#UpdateRow_Barcode").hide();
-    if (MNTNOURDESIGN != "Y") {
-        if ($("#MNTNBARNO").val() == "Y") {
-            $("#BARCODE").focus();
-        }
-        else {
-            $("#STYLENO").focus();
-        }
+    //if (MNTNOURDESIGN != "Y") {
+    if ($("#MNTNBARNO").val() == "Y") {
+        $("#BARCODE").focus();
     }
     else {
-        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-            $("#ITCD").focus();
-        } else {
-            if ($("#MNTNBARNO").val() == "Y") {
-                $("#BARCODE").focus();
-            }
-            else {
-                $("#STYLENO").focus();
-            }
-        }
+        $("#STYLENO").focus();
     }
+    //}
+    //else {
+    //    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+    //        //$("#ITCD").focus();
+    //        $("#QNTY").focus();
+    //    } else {
+    //        if ($("#MNTNBARNO").val() == "Y") {
+    //            $("#BARCODE").focus();
+    //        }
+    //        else {
+    //            $("#STYLENO").focus();
+    //        }
+    //    }
+    //}
     $("#bardatachng").val("Y");
 }
 
@@ -1825,6 +1840,7 @@ function AddBarCodeGrid() {
     var MNTNBALE = $("#MNTNBALE").val();
     var MNTNOURDESIGN = $("#MNTNOURDESIGN").val();
     var SHOWMTRLJOBCD = $("#SHOWMTRLJOBCD").val();
+    var SHOWSTKTYPE = $("#SHOWSTKTYPE").val();
     if ($("#ITGRPCD").val() == "") {
         msgInfo("Please enter/select Item Group Code !");
         message_value = "ITGRPCD";
@@ -2059,6 +2075,7 @@ function AddBarCodeGrid() {
     else {
         TXNSLNO = retInt($("#TXNSLNO").val());
     }
+
     var tr = "";
     tr += ' <tr style="font-size:12px; font-weight:bold;">';
     tr += '    <td class="sticky-cell">';
@@ -2119,6 +2136,9 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
     }
     tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
+    if (SHOWSTKTYPE != "Y") {
+        tr += '        <input id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" type="hidden" value="' + STKTYPE + '">';
+    }
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
@@ -2164,9 +2184,11 @@ function AddBarCodeGrid() {
         tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" onblur="HasChangeBarSale();" value="' + BALENO + '">';
         tr += '     </td>';
     }
-    tr += '    <td class="" title="' + STKTYPE + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
-    tr += '     </td>';
+    if (SHOWSTKTYPE == "Y") {
+        tr += '    <td class="" title="' + STKTYPE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
+        tr += '     </td>';
+    }
 
     if (MNTNPART == "Y") {
         tr += '    <td class="" title="' + PARTCD + '">';
@@ -2353,26 +2375,27 @@ function AddBarCodeGrid() {
     }
 
     ClearBarcodeArea();
-    if (MNTNOURDESIGN != "Y") {
-        if ($("#MNTNBARNO").val() == "Y") {
-            $("#BARCODE").focus();
-        }
-        else {
-            $("#STYLENO").focus();
-        }
+    //if (MNTNOURDESIGN != "Y") {
+    if ($("#MNTNBARNO").val() == "Y") {
+        $("#BARCODE").focus();
     }
     else {
-        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-            $("#ITCD").focus();
-        } else {
-            if ($("#MNTNBARNO").val() == "Y") {
-                $("#BARCODE").focus();
-            }
-            else {
-                $("#STYLENO").focus();
-            }
-        }
+        $("#STYLENO").focus();
     }
+    //}
+    //else {
+    //    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+    //        //$("#ITCD").focus();
+    //        $("#QNTY").focus();
+    //    } else {
+    //        if ($("#MNTNBARNO").val() == "Y") {
+    //            $("#BARCODE").focus();
+    //        }
+    //        else {
+    //            $("#STYLENO").focus();
+    //        }
+    //    }
+    //}
 
     $("#bardatachng").val("Y");
     scrollToEnd('BARGRID');
@@ -3225,20 +3248,25 @@ function GetItcd(id) {
 }
 function CalculateBargridQnty(tableid, index) {
     debugger;
-    var CUTLENGTHID = "", NOSID = "", QNTY = "";
+    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID="";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CUTLENGTHID = "B_CUTLENGTH_" + index;
         NOSID = "B_NOS_" + index;
         QNTYID = "B_QNTY_" + index;
+        UOMID = "B_UOM_" + index;
     }
     else {
         CUTLENGTHID = "CUTLENGTH";
         NOSID = "NOS";
         QNTYID = "QNTY";
+        UOMID = "UOM" ;
     }
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
         $("#" + QNTYID).val(retFloat(qnty));
+    }
+    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
+        $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
     }
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CalculateTotal_Barno();

@@ -3000,5 +3000,40 @@ namespace Improvar
             }
 
         }
+        public string JOBCD_JOBMST_help(string val, string menu_doccd)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO);
+            string valsrch = val.ToUpper().Trim();
+            string sql = "";
+            sql += "select c.jobcd,c.jobnm,c.expglcd,c.scglcd,c.jbatchnini,c.prodgrpcd,c.hsncode,c.uomcd,c.rmtrljobcd,c.imtrljobcd,c.issmtrldesc,c.jobseq from " + scm + ".M_JOBMST c," + scm + ".M_CNTRL_HDR i where c.M_AUTONO= i.M_AUTONO(+) ";
+            sql += "and i.INACTIVE_TAG ='N' ";
+            if (valsrch.retStr() != "") sql += "and upper(c.jobcd) = '" + valsrch + "'  ";
+            if (menu_doccd.retStr() != "") sql += "and (c.flag1 in (" + menu_doccd + ") or c.flag1 is null) ";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["jobnm"] + "</td><td>" + tbl.Rows[i]["jobcd"] + " </td></tr>");
+                }
+                var hdr = "Job Name" + Cn.GCS() + "Job Code";
+                return (Generate_help(hdr, SB.ToString()));
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Job Code ! Please Enter a Valid Job Code !!";
+                }
+            }
+
+        }
     }
 }

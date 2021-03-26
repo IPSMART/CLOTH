@@ -1224,7 +1224,7 @@ namespace Improvar.Controllers
                 //        Code = agent[0];
                 //    }
                 //}
-                var str = masterHelp.JOBCD_help(val);
+                var str = masterHelp.JOBCD_JOBMST_help(val,"");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
