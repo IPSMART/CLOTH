@@ -61,5 +61,7 @@ namespace Improvar.Models
         public string ISSMTRLDESC { get; set; }
 
         public byte? JOBSEQ { get; set; }
+        [StringLength(5)]
+        public string FLAG1 { get; set; }
     }
 }

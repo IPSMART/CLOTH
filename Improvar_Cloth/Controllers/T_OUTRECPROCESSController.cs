@@ -2167,23 +2167,23 @@ namespace Improvar.Controllers
                         case "DY":
                             stkdrcr = "D"; blactpost = false; blgstpost = false; break;
                         case "PR":
-                            stkdrcr = "D"; trcd = "SB"; strrem = "Sale" + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "ST":
-                            stkdrcr = "D"; trcd = "SB"; strrem = "Sale" + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "EM":
-                            stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SC"; strrem = "SRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; dr = "C"; cr = "D"; trcd = "SC"; strrem = "SRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "JW":
-                            stkdrcr = "D"; trcd = "SB"; strrem = "Cash Sale" + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; trcd = "SB"; strrem = "Cash Sale" + strqty; break;
                         case "DYU":
-                            stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SC"; strrem = "Cash Sale Return" + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; dr = "C"; cr = "D"; trcd = "SC"; strrem = "Cash Sale Return" + strqty; break;
                         case "PRU":
-                            stkdrcr = "D"; trcd = "SB"; strrem = "Sale Export" + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; trcd = "SB"; strrem = "Sale Export" + strqty; break;
                         case "STU":
-                            stkdrcr = "D"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; break;
                         case "EMU":
-                            stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "JWU":
-                            stkdrcr = "D"; parglcd = "purdebglcd"; trcd = "PD"; strrem = "PRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
+                            stkdrcr = "D"; blactpost = false; blgstpost = false; parglcd = "purdebglcd"; trcd = "PD"; strrem = "PRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                     }
 
                     string slcdlink = "", slcdpara = VE.MENU_PARA;

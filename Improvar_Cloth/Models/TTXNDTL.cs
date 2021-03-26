@@ -33,7 +33,6 @@ namespace Improvar.Models
 
         public short? BLSLNO { get; set; }
 
-        [Required]
         [StringLength(10)]
         public string ITCD { get; set; }
 
