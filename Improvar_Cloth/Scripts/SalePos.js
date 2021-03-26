@@ -233,6 +233,7 @@ function AddMainRow(hlpstr) {
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
+    var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
@@ -255,7 +256,7 @@ function AddMainRow(hlpstr) {
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
     tr += '   <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="">';
     tr += '   <input id="B_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';

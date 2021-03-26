@@ -17,7 +17,6 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO;
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: Rep_BarcodePrint
@@ -33,26 +32,27 @@ namespace Improvar.Controllers
                 else
                 {
                     ViewBag.formname = "Barcode Printing";
-                    RepBarcodePrint VE = new RepBarcodePrint(); ;
-                    //if (TempData["printparameter"] == null)
-                    //{
-                    //    VE = new RepBarcodePrint();
-                    //}
-                    //else
-                    //{
-                    //    VE = (RepBarcodePrint)TempData["printparameter"];
-                    //}
+                    RepBarcodePrint VE = new RepBarcodePrint();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     var Schnm = CommVar.CurSchema(UNQSNO);
-                    ////GenerateBarcode();
-                    ////barcodeTest();
-                    VE.DropDown_list1 = (from i in DB.M_REPFORMAT
-                                         select new DropDown_list1()
-                                         { value = i.REPTYPE, text = i.REPTYPE }).Distinct().OrderBy(s => s.text).ToList();
-                    //var sql = "select distinct '123456789' BARNO,a.SLNO,b.itnm FABITNM ,b.STYLENO,c.ITGRPNM  from " + Schnm + ".t_txndtl a," + Schnm + ".M_SITEM b," + Schnm + ".M_GROUP c where a.itcd=b.itcd(+) and b.itgrpcd=c.itgrpcd(+)";
+                    string reptype = "BARPRN";
+                    DataTable repformat = salesfunc.getRepFormat(reptype);
 
-                    //DataTable ttxndtl = masterHelp.SQLquery(sql);
+                    if (repformat != null)
+                    {
+                        VE.DropDown_list1 = (from DataRow dr in repformat.Rows
+                                             select new DropDown_list1()
+                                             {
+                                                 text = dr["text"].ToString(),
+                                                 value = dr["value"].ToString()
+                                             }).ToList();
+                    }
+                    else
+                    {
+                        List<DropDown_list1> drplst = new List<DropDown_list1>();
+                        VE.DropDown_list1 = drplst;
+                    }
                     DataTable ttxndtl = retBarPrn(docdt, autono, barno);
                     if (ttxndtl.Rows.Count == 0) return Content("No Records..");
                     VE.BarcodePrint = (from DataRow dr in ttxndtl.Rows
@@ -64,9 +64,9 @@ namespace Improvar.Controllers
                                            FABITNM = dr["FABITNM"].retStr(),
                                            STYLENO = dr["itnm"].retStr(),
                                            NOS = dr["barnos"].retStr(),
-                                           WPRATE = dr["wprate"].retStr(),
-                                           CPRATE = dr["cprate"].retStr(),
-                                           RPRATE = dr["rprate"].retStr(),
+                                           WPRATE = dr["wprate"].retDbl(),
+                                           CPRATE = dr["cprate"].retDbl(),
+                                           RPRATE = dr["rprate"].retDbl(),
                                            DESIGN = dr["design"].retStr(),
                                            PDESIGN = dr["pdesign"].retStr(),
                                            COLRNM = dr["colrnm"].retStr(),
@@ -76,19 +76,10 @@ namespace Improvar.Controllers
                                            ITREM = dr["itrem"].retStr(),
                                            PARTNM = dr["partnm"].retStr(),
                                            SIZECD = dr["sizecd"].retStr(),
-
-                                           //WPPRICE = dr["wpprice"].retStr(),
-                                           //WPPRICECODE = dr["wppricecode"].retStr(),
-                                           //RPPRICE = dr["rpprice"].retStr(),
-                                           //RPPRICECODE = dr["rppricecode"].retStr(),
-                                           //COST = dr["cost"].retStr(),
-                                           //COSTCODE = dr["costcode"].retStr(),
                                            DOCNO = dr["docno"].retStr(),
                                            DOCDT = dr["docdt"].retStr(),
                                            PREFNO = dr["blno"].retStr(),
-                                           PREFDT = dr["docdt"].retStr(),
-                                           //DOCDTCODE = dr["docdtcode"].retStr()
-
+                                           PREFDT = dr["docdt"].retStr()
                                        }).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
@@ -203,7 +194,7 @@ namespace Improvar.Controllers
 
                 IR.Columns.Add("sizenm", typeof(string));
 
-                IR.Columns.Add("txslno", typeof(string));
+                IR.Columns.Add("txnslno", typeof(string));
                 IR.Columns.Add("wprate", typeof(string));
                 IR.Columns.Add("wprate_paisa", typeof(string));
 
@@ -236,6 +227,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("itrem", typeof(string));
                 IR.Columns.Add("partnm", typeof(string));
                 IR.Columns.Add("sizecd", typeof(string));
+                IR.Columns.Add("recdt_code", typeof(string));
 
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -260,21 +252,35 @@ namespace Improvar.Controllers
                             dr["mtr"] = VE.BarcodePrint[i].MTR.retStr();
                             dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
                             dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
-                            dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
-                            dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
-                            var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
+                            dr["txnslno"] = "("+VE.BarcodePrint[i].TAXSLNO.retStr()+")";
+
+                            var wpp = VE.BarcodePrint[i].WPRATE.retDbl().retStr();
+                            dr["wprate"] = (wpp.PadRight(2) == "00" ? wpp.Substring(0, wpp.Length - 2) : wpp);
                             dr["wprate_paisa"] = wpp;
-                            dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
-                            var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
+                            var cpp = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
+                            dr["cprate"] = (cpp.PadRight(2) == "00" ? cpp.Substring(0, cpp.Length - 2) : cpp);
                             dr["cprate_paisa"] = cpp;
-                            dr["cprate_code"] = RateEncode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
-                            dr["wprate_code"] = RateEncode(VE.BarcodePrint[i].WPRATE.retInt(), PRICEINCODE);
-                            dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
-                            var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
+
+                            var rpp = VE.BarcodePrint[i].RPRATE.retDbl().retStr();
+                            dr["rprate"] = (rpp.PadRight(2) == "00" ? rpp.Substring(0, rpp.Length - 2) : rpp);
                             dr["rprate_paisa"] = rpp;
-                            dr["rprate_code"] = RateEncode(VE.BarcodePrint[i].RPRATE.retInt(), PRICEINCODE);
-                            dr["cost"] = VE.BarcodePrint[i].CPRATE.retStr();
-                            dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
+                            
+                            //dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
+                            //var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
+                            //dr["wprate_paisa"] = wpp;
+                            //dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
+                            //var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
+                            //dr["cprate_paisa"] = cpp;
+                            //dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
+                            //var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
+                            //dr["rprate_paisa"] = rpp;
+                            dr["cprate_code"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
+                            dr["wprate_code"] = RateEncode(VE.BarcodePrint[i].WPRATE.retDbl().retInt(), PRICEINCODE);
+                            dr["rprate_code"] = RateEncode(VE.BarcodePrint[i].RPRATE.retDbl().retInt(), PRICEINCODE);
+                            var recdtrate = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
+                            dr["recdt_code"] = RateEncode(recdtrate.retInt(), PRICEINCODE); ;
+                            dr["cost"] = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
+                            dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
                             dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                             dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
@@ -288,8 +294,9 @@ namespace Improvar.Controllers
                         }
                     }
                 }
-                string rptfile = "PrintBarcode";
-                string rptname = "~/Report/" + rptfile + ".rpt";
+                string rptfile = "";
+                if (VE.Reptype != null) rptfile = VE.Reptype;
+                string rptname = "~/Report/" + rptfile;
 
                 ReportDocument reportdocument = new ReportDocument();
                 reportdocument.Load(Server.MapPath(rptname));

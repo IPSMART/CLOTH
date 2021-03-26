@@ -50,6 +50,7 @@
               <xs:element name="itgrpshortnm" msprop:Generator_ColumnVarNameInTable="columnitgrpshortnm" msprop:Generator_ColumnPropNameInRow="itgrpshortnm" msprop:Generator_ColumnPropNameInTable="itgrpshortnmColumn" msprop:Generator_UserColumnName="itgrpshortnm" type="xs:string" minOccurs="0" />
               <xs:element name="docno" msprop:Generator_ColumnVarNameInTable="columndocno" msprop:Generator_ColumnPropNameInRow="docno" msprop:Generator_ColumnPropNameInTable="docnoColumn" msprop:Generator_UserColumnName="docno" type="xs:string" minOccurs="0" />
               <xs:element name="doconlyno" msprop:Generator_ColumnVarNameInTable="columndoconlyno" msprop:Generator_ColumnPropNameInRow="doconlyno" msprop:Generator_ColumnPropNameInTable="doconlynoColumn" msprop:Generator_UserColumnName="doconlyno" type="xs:string" minOccurs="0" />
+              <xs:element name="recdt_code" msprop:Generator_ColumnVarNameInTable="columnrecdt_code" msprop:Generator_ColumnPropNameInRow="recdt_code" msprop:Generator_ColumnPropNameInTable="recdt_codeColumn" msprop:Generator_UserColumnName="recdt_code" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

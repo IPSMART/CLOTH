@@ -681,6 +681,18 @@
       <DependentUpon>PrintBarcode.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\PrintBarcode_Sachi.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintBarcode_Sachi.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\PrintBarcode_Tres.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintBarcode_Tres.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\Rep_JobBill.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1417,6 +1429,14 @@
     <EmbeddedResource Include="Report\Party_Job_Iss_Chln.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Party_Job_Iss_Chln.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\PrintBarcode_Sachi.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PrintBarcode_Sachi.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\PrintBarcode_Tres.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PrintBarcode_Tres1.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\Rep_JobBill.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
