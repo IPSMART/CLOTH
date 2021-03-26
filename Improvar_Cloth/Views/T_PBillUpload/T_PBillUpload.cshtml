@@ -25,7 +25,7 @@
                     data: fileData,
                     success: function (result) {
                         $("#WaitingMode").hide();
-                        $("#partialdivBillSelection").animate({ marginTop: '-10px' }, 50);
+                        //$("#partialdivBillSelection").animate({ marginTop: '-10px' }, 50);
                         $("#partialdivBillSelection").html(result);
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -65,7 +65,7 @@
                 </div>
             </div>
         }
-        <div class="row" style="background-color:#c4b9b9;border:5px groove;width: 733px;" >
+        <div class="row">
             <div id="partialdivBillSelection">
                 @*@Html.Partial("_T_PBillUpload_Bill")*@
             </div>

@@ -211,7 +211,11 @@ namespace Improvar.Controllers
                 TTXN.EMD_NO = 0;
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-
+                // freai j, pf=i,ins k
+                string AMTCD_FREIGHT = DB.M_AMTTYPE.Where(m => m.CALCCODE == "J").FirstOrDefault()?.AMTCD;
+                string AMTCD_INSURANCE = DB.M_AMTTYPE.Where(m => m.CALCCODE == "K").FirstOrDefault()?.AMTCD;
+                string AMTCD_PackFordng = DB.M_AMTTYPE.Where(m => m.CALCCODE == "I").FirstOrDefault()?.AMTCD;
+                //
                 foreach (DataRow oudr in outerDT.Rows)
                 {
                     short txnslno = 0;
@@ -296,8 +300,6 @@ namespace Improvar.Controllers
                     TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     //----------------------------------------------------------//
                     string PURGLCD = "";
-
-
 
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     double txable = 0, gstamt = 0; short batchslno = 0;
@@ -458,7 +460,7 @@ namespace Improvar.Controllers
                         TTXNAMT TTXNAMT = new TTXNAMT();
                         TTXNAMT.SLNO = 1;
                         TTXNAMT.GLCD = PURGLCD;
-                        TTXNAMT.AMTCD = "0001";
+                        TTXNAMT.AMTCD = AMTCD_FREIGHT;
                         TTXNAMT.AMTDESC = "FREIGHT";
                         TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
                         TTXNAMT.HSNCODE = "";
@@ -482,7 +484,7 @@ namespace Improvar.Controllers
                         TTXNAMT TTXNAMT = new TTXNAMT();
                         TTXNAMT.SLNO = 2;
                         TTXNAMT.GLCD = PURGLCD;
-                        TTXNAMT.AMTCD = "0002";
+                        TTXNAMT.AMTCD = AMTCD_INSURANCE;
                         TTXNAMT.AMTDESC = "INSURANCE";
                         TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
                         TTXNAMT.HSNCODE = "";
