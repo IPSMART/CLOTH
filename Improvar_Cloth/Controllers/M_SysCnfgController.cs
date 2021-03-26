@@ -247,11 +247,19 @@ namespace Improvar.Controllers
                                 VE.Checked_DataExsist = true;
                             }
                             else { VE.Checked_DataExsist = false; }
-                            //List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
-                            //UploadDOC UPL = new UploadDOC();
-                            //UPL.DocumentType = doctP;
-                            //UploadDOC1.Add(UPL);
-                            //VE.UploadDOC = UploadDOC1;
+                            List<MMGROUPSPL> MSUBLEGlocth = new List<MMGROUPSPL>();
+                            VE.MMGROUPSPL = (from j in DBF.M_COMP
+                                             select new MMGROUPSPL()
+                                             {
+                                                 COMPCD = j.COMPCD,
+                                                 COMPNM = j.COMPNM,
+                                             }).Distinct().OrderBy(s => s.COMPCD).ToList();
+                            int k = 0;
+                            foreach (var v in VE.MMGROUPSPL)
+                            {
+                                v.SLNO = Convert.ToInt16(k + 1);
+                                k++;
+                            }
                         }
                         else if (op.ToString() == "E")
                         {
@@ -370,6 +378,51 @@ namespace Improvar.Controllers
                     {
                         sl.EFFDT = System.DateTime.Now.Date;
                     }
+                    //string sql = "";
+                    //sql += " select j.COMPCD,k.COMPNM,j.DEALSIN,j.INSPOLDESC,j.BLTERMS,j.DUEDATECALCON,j.BANKSLNO ";
+                    //sql += " from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL j, " + CommVar.FinSchema(UNQSNO) + ".M_COMP k where j.COMPCD = k.COMPCD and j.COMPCD = '" + sl.COMPCD + "' union all ";
+                    //sql += " select k.COMPCD,k.COMPNM,''DEALSIN,''INSPOLDESC,''BLTERMS,''DUEDATECALCON,0BANKSLNO ";
+                    //sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP k ";
+                    //sql += " where k.COMPCD not in (select compcd from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL where COMPCD = '" + sl.COMPCD + "'  ) ";
+                    string sql = "";
+                    sql += " select k.COMPCD,j.COMPNM,k.DEALSIN,k.INSPOLDESC,k.BLTERMS,k.DUEDATECALCON,k.BANKSLNO ";
+                    sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP j, " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL k where j.COMPCD = k.COMPCD(+) and k.COMPCD = '" + sl.COMPCD + "' union all ";
+                    sql += " select k.COMPCD,k.COMPNM,''DEALSIN,''INSPOLDESC,''BLTERMS,''DUEDATECALCON,0BANKSLNO ";
+                    sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP k ";
+                    sql += " where k.COMPCD not in (select compcd from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL where COMPCD = '" + sl.COMPCD + "'  ) ";
+
+                    var mmgrpspl = Master_Help.SQLquery(sql);
+                    if (mmgrpspl != null && mmgrpspl.Rows.Count > 0)
+                    {
+                        VE.MMGROUPSPL = (from DataRow dr in mmgrpspl.Rows
+                                         select new MMGROUPSPL
+                                         {
+                                             //T_REM = dr["trem"].retStr(),
+                                             COMPCD = dr["COMPCD"].retStr(),
+                                             COMPNM = dr["COMPNM"].ToString(),
+                                             DEALSIN = dr["DEALSIN"].ToString(),
+                                             INSPOLDESC = dr["INSPOLDESC"].ToString(),
+                                             BLTERMS = dr["BLTERMS"].ToString(),
+                                             DUEDATECALCON = dr["DUEDATECALCON"].ToString(),
+                                             BANKSLNO = (dr["BANKSLNO"]).retInt() == 0 ? (Int32?)null : dr["BANKSLNO"].retInt(),
+
+                                         }).OrderBy(a => a.COMPCD).ToList();
+                        for (int i = 0; i <= VE.MMGROUPSPL.Count - 1; i++)
+                        {
+                            VE.MMGROUPSPL[i].SLNO = Convert.ToInt16(i + 1);
+
+                        }
+                    }
+                    else {
+                        List<MMGROUPSPL> MMGROUPSPL = new List<MMGROUPSPL>();
+                        MMGROUPSPL UPL = new MMGROUPSPL();
+                        UPL.SLNO = 1;
+                        MMGROUPSPL.Add(UPL);
+                        VE.MMGROUPSPL = MMGROUPSPL;
+
+
+
+                    }
 
                 }
             }
@@ -484,6 +537,7 @@ namespace Improvar.Controllers
                     {
                         string compcd = CommVar.Compcd(UNQSNO);
                         M_SYSCNFG MSYSCNFG = new M_SYSCNFG();
+                        M_MGROUP_SPL MMGROUPSPL = new M_MGROUP_SPL();
                         MSYSCNFG.CLCD = CommVar.ClientCode(UNQSNO);
                         MSYSCNFG.COMPCD = CommVar.Compcd(UNQSNO);
                         MSYSCNFG.EFFDT = VE.M_SYSCNFG.EFFDT;
@@ -510,8 +564,9 @@ namespace Improvar.Controllers
                             else
                             {
                                 MSYSCNFG.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
-                            }
-                        }
+                            }                        }
+                        var Chk_MGRP_SPL_data = (from i in DB.M_MGROUP_SPL where i.COMPCD == MSYSCNFG.COMPCD select i).ToList();
+                        if(Chk_MGRP_SPL_data.Count>0) DB.M_MGROUP_SPL.RemoveRange(DB.M_MGROUP_SPL.Where(x => x.COMPCD == MSYSCNFG.COMPCD));
                         MSYSCNFG.SALDEBGLCD = VE.M_SYSCNFG.SALDEBGLCD;
                         MSYSCNFG.PURDEBGLCD = VE.M_SYSCNFG.PURDEBGLCD;
                         MSYSCNFG.CLASS1CD = VE.M_SYSCNFG.CLASS1CD;
@@ -563,6 +618,24 @@ namespace Improvar.Controllers
                             DB.Entry(MSYSCNFG).State = System.Data.Entity.EntityState.Modified;
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         }
+                        if (VE.MMGROUPSPL != null)
+                        {
+                            for (int i = 0; i <= VE.MMGROUPSPL.Count - 1; i++)
+                            {
+                                if (VE.MMGROUPSPL[i].SLNO != 0)
+                                {
+                                    M_MGROUP_SPL MGROUPSPL = new M_MGROUP_SPL();
+                                    MGROUPSPL.COMPCD = VE.MMGROUPSPL[i].COMPCD;
+                                    MGROUPSPL.DEALSIN = VE.MMGROUPSPL[i].DEALSIN.retStr();
+                                    MGROUPSPL.INSPOLDESC = VE.MMGROUPSPL[i].INSPOLDESC.retStr();
+                                    MGROUPSPL.BLTERMS = VE.MMGROUPSPL[i].BLTERMS.retStr();
+                                    MGROUPSPL.DUEDATECALCON = VE.MMGROUPSPL[i].DUEDATECALCON.retStr();
+                                    MGROUPSPL.BANKSLNO = VE.MMGROUPSPL[i].BANKSLNO;
+                                    //if (VE.MMGROUPSPL[i].DUEDATECALCONChecked == true) { MGROUPSPL.DUEDATECALCON = "Y"; } else { MGROUPSPL.DUEDATECALCON = "N"; }
+                                    DB.M_MGROUP_SPL.Add(MGROUPSPL);
+                                }
+                            }
+                        }
                         DB.SaveChanges();
                         transaction.Commit();
                         string ContentFlg = "";
@@ -585,6 +658,8 @@ namespace Improvar.Controllers
 
                         DB.M_SYSCNFG.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
+                        DB.SaveChanges();
+                        DB.M_MGROUP_SPL.RemoveRange(DB.M_MGROUP_SPL.Where(x => x.COMPCD == VE.M_SYSCNFG.COMPCD));
                         DB.SaveChanges();
                         DB.M_SYSCNFG.RemoveRange(DB.M_SYSCNFG.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
                         DB.SaveChanges();

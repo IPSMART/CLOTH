@@ -387,6 +387,7 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
+    <Compile Include="Models\MMGROUPSPL.cs" />
     <Compile Include="Models\MSHRMKTRATE.cs" />
     <Compile Include="Models\MSIGNAUTHUSER.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
@@ -479,6 +480,7 @@
     <Compile Include="Models\M_LOCA.cs" />
     <Compile Include="Models\M_LOCKDATA.cs" />
     <Compile Include="Models\M_MACHINE.cs" />
+    <Compile Include="Models\M_MGROUP_SPL.cs" />
     <Compile Include="Models\M_MONTH.cs" />
     <Compile Include="Models\M_MTRLJOBMST.cs" />
     <Compile Include="Models\M_PARTS.cs" />
@@ -1369,6 +1371,7 @@
     <Content Include="Views\Rep_Job_reg\Rep_Job_reg.cshtml" />
     <Content Include="Views\Rep_DnCn_Print\Rep_DnCn_Print.cshtml" />
     <Content Include="Views\Shared\_T_PBillUpload_Bill.cshtml" />
+    <Content Include="Views\Shared\_M_GrpMast_Others.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

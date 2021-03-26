@@ -43,6 +43,7 @@ namespace Improvar.ViewModels
         public long? PRICEINCODERATENCOD { get; set; }
         public long? PRICEINCODECOSTRATE { get; set; }
         public long? PRICEINCODECOSTRATENCOD { get; set; }
+        public List<MMGROUPSPL> MMGROUPSPL { get; set; }
 
     }
 

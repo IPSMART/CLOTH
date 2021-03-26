@@ -1,0 +1,69 @@
+﻿@model Improvar.ViewModels.SysCnfgMasterEntry
+
+<div style="width: 1120px;height:auto; overflow-y:auto;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+
+            <div class="grid_title">
+                @*<img src="~/Image/Plus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnAdd" title="Add Row" onclick="AddRowCompany()" />
+                    <img src="~/Image/Minus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnDelete" title="Delete Row" onclick="DeleteRowCompany()" />*@
+
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleM_GrpMastOther');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Group Master Others Details</b></center>
+            </div>
+                <table id="exampleM_GrpMastOther" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                    <thead>
+                        <tr style="height:30px;">
+                            <th class="grid_th" style="width:27px;">SL. No.</th>
+                            <th class="grid_th" style="width:75px;">Company Code</th>
+                            <th class="grid_th" style="width:500px">Company Name</th>
+                            <th class="grid_th" style="width:331px;">Dealsin</th>
+                            <th class="grid_th" style="width:331px">Insurence</th>
+                            <th class="grid_th" style="width:331px">Bill terms</th>
+                            <th class="grid_th" style="width:50px">Due date cancel on</th>
+                            <th class="grid_th">Bank slno</th>
+                            @*<th class="grid_th" style="width:50px">C/M</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i <= Model.MMGROUPSPL.Count - 1; i++)
+                        {
+                            <tr style="font-size:12px; font-weight:bold;">
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].COMPCD, new { maxlength = 4, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].COMPNM, new { maxlength = 35, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].DEALSIN, new { id = "DEALSIN_" + i, maxlength = 200, @class = " atextBoxFor " })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].INSPOLDESC, new { id = "INSPOLDESC_" + i, maxlength = 200, @class = " atextBoxFor " })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].BLTERMS, new { id = "BLTERMS_" + i, maxlength = 2000, @class = "atextBoxFor ", onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].DUEDATECALCON, new { id = "DUEDATECALCON_" + i, maxlength = 1, @class = "atextBoxFor " })
+
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MMGROUPSPL[i].BANKSLNO, new { id = "BANKSLNO_" + i, maxlength = 1, @onkeypress = "return numericOnly(this);", @class = "atextBoxFor text-right " })
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+        }
+    </div>
+</div>
