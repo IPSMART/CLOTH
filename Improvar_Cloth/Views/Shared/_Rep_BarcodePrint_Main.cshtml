@@ -38,6 +38,7 @@
                                 <th class="grid_th" style="width:111px;text-align:right;">Nos</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Wprate</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Cprate</th>
+                                <th class="grid_th" style="width:111px;text-align:right;">Rprate</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Mtr</th>
 
                             </tr>
@@ -67,7 +68,6 @@
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].PREFNO, new { id = "PREFNO_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].PREFDT, new { id = "PREFDT_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].DOCDTCODE, new { id = "DOCDTCODE_" + i })
-                                            @Html.HiddenFor(model => Model.BarcodePrint[i].RPRATE, new { id = "RPRATE_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].GRPNM, new { id = "GRPNM_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].ITREM, new { id = "ITREM_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].PARTNM, new { id = "PARTNM_" + i })
@@ -101,6 +101,10 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.EditorFor(model => Model.BarcodePrint[i].CPRATE, new { htmlAttributes = new { id = "CPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 12 } })
+
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.EditorFor(model => Model.BarcodePrint[i].RPRATE, new { htmlAttributes = new { id = "RPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 12 } })
 
                                         </td>
                                         <td class="grid_td">

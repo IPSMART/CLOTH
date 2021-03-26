@@ -16,11 +16,11 @@ namespace Improvar.Models
         public string STYLENO { get; set; }
         public string NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public string WPRATE { get; set; }
+        public double? WPRATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public string CPRATE { get; set; }
+        public double? CPRATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public string RPRATE { get; set; }
+        public double? RPRATE { get; set; }
         public string MTR { get; set; }
         public string ITGRPSHORTNM { get; set; }
         public string DESIGN { get; set; }
