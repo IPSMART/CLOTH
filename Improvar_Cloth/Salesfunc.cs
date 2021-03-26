@@ -1150,7 +1150,7 @@ namespace Improvar
             return rtval;
         }
 
-        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara = "", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "")
+        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara = "", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showonlycommonbar = true)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1264,7 +1264,8 @@ namespace Improvar
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             if (partcd.retStr() != "") sql += "a.partcd='" + partcd + "' and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and c.fabitcd=n.itcd(+) and ";
-            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+) ";
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+)  ";
+            if (showonlycommonbar == true) sql += "and c.commonuniqbar <> 'E' ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
@@ -2102,7 +2103,7 @@ namespace Improvar
                 MGROUP.ITGRPTYPE = ITGRPTYPE == "" ? "F" : ITGRPTYPE;
                 MGROUP.PRODGRPCD = "G001";
                 MGROUP.BARGENTYPE = BARGENTYPE == "" ? "C" : BARGENTYPE;//c=common,e=entry
-        
+
                 OraCon.Open();
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -2576,7 +2577,7 @@ namespace Improvar
             string sql = "";
             sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
             sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
-            sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('"+ EFFDT + "','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
+            sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('" + EFFDT + "','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
             sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
             DataTable syscnfgdt = masterHelpFa.SQLquery(sql);
