@@ -111,21 +111,20 @@
     function CalculateBlamt() {
         var TAXABVAL = retFloat($("#TAXABVAL").val());
         var GSTPER = retFloat($("#GSTPER").val());
-        var TOTTAX = (TAXABVAL * GSTPER / 100);
-        TOTTAX = RoundOff(TOTTAX, 2);
+        var TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
         $("#TOTTAX").val(TOTTAX);
         var blamt = 0;
-        var RoundOff = document.getElementById("RoundOff").checked;
-        if (RoundOff) {
+        var RoundOfchk = document.getElementById("RoundOff").checked;
+        if (RoundOfchk) {
             blamt = TAXABVAL + TOTTAX;
-            var blafterround = RoundOff(TAXABVAL, 0);
+            var blafterround = retFloat(RoundOff(blamt, 0));
             var roundamt = blafterround - blamt;
             $("#ROAMT").val(roundamt.toFixed(2));
             $("#BLAMT").val(blafterround);
         }
         else {
             blamt = TAXABVAL + TOTTAX;
-            var blafterround = RoundOff(TAXABVAL, 2);
+            var blafterround = blamt;
             var roundamt = 0;
             $("#ROAMT").val(roundamt.toFixed(2));
             $("#BLAMT").val(blafterround);

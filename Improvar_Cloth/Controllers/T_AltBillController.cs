@@ -689,7 +689,7 @@ namespace Improvar.Controllers
                         TTXNEWB.LORRYNO = null;
                         TTXNEWB.TRANSMODE = null;
                         TTXNEWB.VECHLTYPE = null;
-                        TTXNEWB.GOCD = VE.T_TXN.GOCD;
+                        TTXNEWB.GOCD = TTXN.GOCD;
                         //----------------------------------------------------------//
 
                         dbsql = masterHelp.RetModeltoSql(TTXNEWB, action, CommVar.FinSchema(UNQSNO));
@@ -709,7 +709,7 @@ namespace Improvar.Controllers
                     TTXNDTL.STKDRCR = cr;
                     TTXNDTL.STKTYPE = "F";
                     TTXNDTL.HSNCODE = VE.HSNCODE;
-                    TTXNDTL.GOCD = VE.T_TXN.GOCD;
+                    TTXNDTL.GOCD = TTXN.GOCD;
                     TTXNDTL.TXBLVAL = VE.TAXABVAL; // IGSTPER
                     double GSTPER = 0, GSTAMT = 0; ;
                     if (VE.IGSTPER == 0)
@@ -956,7 +956,7 @@ namespace Improvar.Controllers
                         //  Party wise posting
                         isl = 1;
 
-                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), "",
+                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), cr,
                             parglcd, sslcd, dbamt, prodrem, prodglcd,
                             null, dbqty, 0, dbcurramt);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
@@ -981,7 +981,7 @@ namespace Improvar.Controllers
                         string blconslcd = TTXN.CONSLCD;
                         if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
                         if (blconslcd == sslcd) blconslcd = "";
-                        dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, "",
+                        dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG,cr,
                                parglcd, sslcd, blconslcd, TTXNOTH.AGSLCD, parclass1cd, Convert.ToSByte(isl),
                                 dbamt, strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                                 TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), dbamt.retDbl(),
