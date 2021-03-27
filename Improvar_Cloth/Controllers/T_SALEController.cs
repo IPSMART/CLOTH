@@ -1540,7 +1540,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/HelpFrom
+                //sequence of Code variable MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/HelpFrom
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
@@ -1565,36 +1565,29 @@ namespace Improvar.Controllers
                 {
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
                     string glcd = "";
-                    //switch (VE.MENU_PARA)
-                    //{
-                    //    case "SBPCK"://Packing Slip
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SB"://Sales Bill (Agst Packing Slip)
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SBDIR"://Sales Bill
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SR"://Sales Return (SRM)
-                    //        glcd = str.retCompValue("SALRETGLCD"); break;
-                    //    case "SBCM"://Cash Memo
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SBCMR"://Cash Memo Return Note
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SBEXP"://Sales Bill (Export)
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "PI"://Proforma Invoice
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "PB"://Purchase Bill
-                    //        glcd = str.retCompValue("PURGLCD"); break;
-                    //    case "PR"://Purchase Return (PRM)
-                    //        glcd = str.retCompValue("PURRETGLCD"); break;
-                    //    case "OP"://Opening Stock
-                    //        glcd = str.retCompValue("PURGLCD"); break;
-                    //    case "OTH"://Opening Stock
-                    //        glcd = str.retCompValue("PURGLCD"); break;
-                    //    default: glcd = ""; break;
-                    //}
                     glcd = str.retCompValue(MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr());
                     str += "^GLCD=^" + glcd + Cn.GCS();
+
+                    string tnpBARIMAGE = str.retCompValue("BARIMAGE");
+                    if (tnpBARIMAGE != "")
+                    {// start Image section
+                        string newBarImgstr = "";
+                        string barimage = tnpBARIMAGE;
+                        var brimgs = barimage.Split((char)179);
+                        foreach (var barimg in brimgs)
+                        {//27600455_1.jpg~wew*27600455_1.jpg~wew*27600455_1.jpg~wew
+                            string barfilename = barimg.Split('~')[0];
+                            string barimgdesc = barimg.Split('~')[1];
+                            newBarImgstr += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                            FROMpath = Path.Combine(FROMpath, "");
+                            string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                            Cn.CopyImage(FROMpath, TOPATH);
+                        }
+                        newBarImgstr = newBarImgstr.TrimStart((char)179);
+                        str = str.Replace(tnpBARIMAGE, newBarImgstr);
+                    }// end Image section
+
                     //pricegen
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
