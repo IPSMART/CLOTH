@@ -61,11 +61,7 @@ namespace Improvar.Controllers
                                           where n.PCSTYPE != null
                                           select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                     VE.PCSTYPEVALUE = PCSTYPE_BIND(VE.Database_Combo4);
-                    //VE.HSN_CODE = (from n in DBF.M_HSNCODE
-                    //               select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
 
-
-                    //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
                     VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
                     if (VE.DropDown_list_MTRLJOBCD.Count() == 1)
                     {
@@ -258,7 +254,6 @@ namespace Improvar.Controllers
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
 
-                                //VE.RoundOff = true;
                                 //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
                                 //{
                                 //    DataTable data = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
@@ -429,6 +424,14 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
                     VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
                     panno = subleg.PANNO;
+
+                    string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
+                    var party_data = salesfunc.GetSlcdDetails(TXN.SLCD.retStr(), TXN.DOCDT.retStr().Remove(10), "", DOCTAG);
+                    if (party_data != null && party_data.Rows.Count > 0)
+                    {
+                        string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
+                        VE.SLDISCDESC = (party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
+                    }
                 }
 
                 VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -1089,7 +1092,8 @@ namespace Improvar.Controllers
                         string TCSPER = "", TCSCODE = "", TCSNM = "", TDSLIMIT = "", TDSCALCON = "", AMT = "", TDSROUNDCAL = "";
                         if (str.IndexOf(Cn.GCS()) > 0)
                         {
-                            var party_data = salesfunc.GetSlcdDetails(val, code_data[1]);
+                            string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
+                            var party_data = salesfunc.GetSlcdDetails(val, code_data[1], "", DOCTAG);
                             if (party_data != null && party_data.Rows.Count > 0)
                             {
                                 if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") party_data.Rows[0]["TCSAPPL"] = "N";
@@ -1119,6 +1123,9 @@ namespace Improvar.Controllers
                                 str += "^" + "TDSROUNDCAL" + "=^" + TDSROUNDCAL + Cn.GCS();
                                 str += "^" + "TCSCODE" + "=^" + TCSCODE + Cn.GCS();
                                 str += "^" + "TCSNM" + "=^" + TCSNM + Cn.GCS();
+
+                                string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
+                                str += "^" + "SLDISCDESC" + "=^" + (party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10))) + Cn.GCS();
                                 return Content(str);
                             }
                             else
@@ -1199,34 +1206,7 @@ namespace Improvar.Controllers
                 else
                 {
                     string glcd = "";
-                    //switch (VE.MENU_PARA)
-                    //{
-                    //    case "SBPCK"://Packing Slip
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SB"://Sales Bill (Agst Packing Slip)
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SBDIR"://Sales Bill
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SR"://Sales Return (SRM)
-                    //        glcd = str.retCompValue("SALRETGLCD"); break;
-                    //    case "SBCM"://Cash Memo
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SBCMR"://Cash Memo Return Note
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "SBEXP"://Sales Bill (Export)
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "PI"://Proforma Invoice
-                    //        glcd = str.retCompValue("SALGLCD"); break;
-                    //    case "PB"://Purchase Bill
-                    //        glcd = str.retCompValue("PURGLCD"); break;
-                    //    case "PR"://Purchase Return (PRM)
-                    //        glcd = str.retCompValue("PURRETGLCD"); break;
-                    //    case "OP"://Opening Stock 
-                    //        glcd = str.retCompValue("PURGLCD"); break;
-                    //    case "OTH"://Opening Stock 
-                    //        glcd = str.retCompValue("PURGLCD"); break;
-                    //    default: glcd = ""; break;
-                    //}
+
                     glcd = str.retCompValue(MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr());
                     str += "^GLCD=^" + glcd + Cn.GCS();
                     //pricegen
@@ -1367,34 +1347,7 @@ namespace Improvar.Controllers
                                 GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
                             }
                         }
-                        //switch (VE.MENU_PARA)
-                        //{
-                        //    case "SBPCK"://Packing Slip
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "SB"://Sales Bill (Agst Packing Slip)
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "SBDIR"://Sales Bill
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "SR"://Sales Return (SRM)
-                        //        glcd = tax_data.Rows[0]["SALRETGLCD"].retStr(); break;
-                        //    case "SBCM"://Cash Memo
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "SBCMR"://Cash Memo Return Note
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "SBEXP"://Sales Bill (Export)
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "PI"://Proforma Invoice
-                        //        glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
-                        //    case "PB"://Purchase Bill
-                        //        glcd = tax_data.Rows[0]["PURGLCD"].retStr(); break;
-                        //    case "PR"://Purchase Return (PRM)
-                        //        glcd = tax_data.Rows[0]["PURRETGLCD"].retStr(); break;
-                        //    case "OP"://Opening Stock
-                        //        glcd = tax_data.Rows[0]["PURGLCD"].retStr(); break;
-                        //    case "OTH"://Opening Stock
-                        //        glcd = tax_data.Rows[0]["PURGLCD"].retStr(); break;
-                        //    default: glcd = ""; break;
-                        //}
+
                         glcd = tax_data.Rows[0][MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr()].retStr();
 
                     }
@@ -1900,15 +1853,7 @@ namespace Improvar.Controllers
                         }
                     }
                 }
-                //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
-                //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
-                //VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();
-                //VE.T_GROSS_AMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
-                //VE.T_IGST_AMT = VE.TTXNDTL.Select(a => a.IGSTAMT).Sum().retDbl();
-                //VE.T_CGST_AMT = VE.TTXNDTL.Select(a => a.CGSTAMT).Sum().retDbl();
-                //VE.T_SGST_AMT = VE.TTXNDTL.Select(a => a.SGSTAMT).Sum().retDbl();
-                //VE.T_CESS_AMT = VE.TTXNDTL.Select(a => a.CESSAMT).Sum().retDbl();
-                //VE.T_NET_AMT = VE.TTXNDTL.Select(a => a.NETAMT).Sum().retDbl();
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_DETAIL", VE);
@@ -2004,10 +1949,6 @@ namespace Improvar.Controllers
                     VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
 
                     VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
-                    //VE.TTXNAMT[p].IGSTPER = IGST_PER;
-                    //VE.TTXNAMT[p].CGSTPER = CGST_PER;
-                    //VE.TTXNAMT[p].SGSTPER = SGST_PER;
-                    //VE.TTXNAMT[p].CESSPER = CESS_PER;
                     A_T_CURR_AMT = A_T_CURR_AMT + VE.TTXNAMT[p].CURR_AMT.Value;
                     A_T_AMT = A_T_AMT + VE.TTXNAMT[p].AMT.Value;
                     A_T_IGST_AMT = A_T_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
@@ -4044,13 +3985,6 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                        //dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
-                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
-                        //{
-                        //    dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E");
-                        //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        //}
                         ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                         var comp = DB1.T_BATCHMST.Where(x => x.AUTONO == TTXN.AUTONO).OrderBy(s => s.AUTONO).ToList();
                         foreach (var v in comp)
@@ -5382,8 +5316,6 @@ namespace Improvar.Controllers
                     }
                     dbsql = masterHelp.TblUpdt("t_txnoth", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    //dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
-                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                     dbsql = masterHelp.TblUpdt("t_txnamt", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -5630,13 +5562,7 @@ namespace Improvar.Controllers
             {
                 str += Cn.GCS() + "A/c Code Setup in Finance module (M_POST)";
             }
-            //string slcd = VE.T_TXN.SLCD;
-            //string compcd = CommVar.Compcd(UNQSNO);
-            //var m_subleg_com = DB.M_SUBLEG_COM.wher.Count();
-            //if (m_syscnfg == 0)
-            //{
-            //    str += Cn.GCS() + "M_SUBLEG_COM";
-            //}
+
             return str;
         }
     }
