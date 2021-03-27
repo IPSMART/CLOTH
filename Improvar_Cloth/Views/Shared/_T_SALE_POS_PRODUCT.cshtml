@@ -57,7 +57,7 @@
                                 else {
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 }
-
+                                <th class="" style="width:60px;">Hsn Code</th>
                                 <th class="" style="width:50px;">Disc Type</th>
                                 <th class="" style="width:42px;text-align:right;">Disc Rate</th>
                                 <th class="" style="width:86px;text-align:right;">Taxable Value</th>
@@ -99,7 +99,7 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BLQNTY, new { id = "B_BLQNTY_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
+                                            @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })*@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
@@ -193,6 +193,9 @@
                                                 @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
                                             </td>
                                         }
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].HSNCODE, new { htmlattributes = new { id = "B_HSNCODE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                                 @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })*@
@@ -306,7 +309,7 @@
                                 }
                                 else {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> }
-
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td>

@@ -3,7 +3,7 @@
     var ID = $("#" + barhlpId).val();
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    var BARNO = "",ITCD="",duplicate="",slno=0;
+    var BARNO = "", ITCD = "", duplicate = "", slno = 0;
     debugger;
     if (ID == "") {
         if (barhlpId == 'M_BARCODE' || barhlpId == 'M_STYLENO') {
@@ -15,7 +15,7 @@
     }
     else {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        var BARCODE="";
+        var BARCODE = "";
         if (barhlpId == 'M_BARCODE' || barhlpId == 'M_STYLENO') {
             BARCODE = $("#M_BARCODE").val();
             if ($("#TAXGRPCD").val() == "") { $("#M_BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
@@ -73,15 +73,15 @@
                         ClearAllTextBoxes("M_BARCODE,M_STYLENO,MTRLJOBCD,PARTCD");
                         $('#SearchFldValue').val(hlpfieldid);
                         $('#helpDIV').html(result);
-                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID +'/MTRLJOBCD/PARTCD');
-                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex +'/2/5');
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/MTRLJOBCD/PARTCD');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/2/5');
                         $('#helpDIV_Header').html('Barno Details');
                     } else if (barhlpId == 'R_BARCODE' || barhlpId == 'R_STYLENO') {
                         ClearAllTextBoxes("R_BARCODE,R_STYLENO,MTRLJOBCD,PARTCD");
                         $('#SearchFldValue').val(hlpfieldid);
                         $('#helpDIV').html(result);
-                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID +'/MTRLJOBCD/PARTCD');
-                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex +'/2/5');
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/MTRLJOBCD/PARTCD');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/2/5');
                         $('#helpDIV_Header').html('Barno Details');
                     }
 
@@ -94,18 +94,20 @@
                             BARNO = returncolvalue(result, "BARNO");
                             //ITCD = returncolvalue(result, "ITCD");
                             var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
-                            for (j = 0; j <= GridRowMain - 1; j++)
-                            {
-                                if (BARNO == $("#B_BARNO_" + j).val())
-                                {
+                            for (j = 0; j <= GridRowMain - 1; j++) {
+                                if (BARNO == $("#B_BARNO_" + j).val()) {
                                     slno = $("#B_SLNO_" + j).val();
-                                    
+
                                 }
                                 duplicate = false;
                             }
-                            if (slno > 0) { UpdateBarCodeRow(result, slno); }
+                            if (slno > 0) {
+                                UpdateBarCodeRow(result, slno);
+                            }
 
-                            else { AddMainRow(result); }
+                            else {
+                                AddMainRow(result);
+                            }
 
                         } else if (barhlpId == 'R_BARCODE' || barhlpId == 'R_STYLENO') {
                             ClearAllTextBoxes("R_BARCODE,R_STYLENO,MTRLJOBCD,PARTCD");
@@ -222,9 +224,11 @@ function AddMainRow(hlpstr) {
     var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
     var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
     var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
-
-    var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
+    var QNTY = returncolvalue(hlpstr, "QNTY");
+    if (UOM == "PCS") {
+        QNTY = "1";
+    }
     var NOS = returncolvalue(hlpstr, "NOS");
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
@@ -256,7 +260,7 @@ function AddMainRow(hlpstr) {
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
+    //tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
     tr += '   <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="">';
     tr += '   <input id="B_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
@@ -318,7 +322,7 @@ function AddMainRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -333,11 +337,13 @@ function AddMainRow(hlpstr) {
         //tr += ' </td>';
     }
     else {
- tr += ' <td class="" title="">';
- tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
+        tr += ' <td class="" title="">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
+        tr += ' </td>';
+    }
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
     tr += ' </td>';
-}
-   
     tr += ' <td class="">';
     tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCTYPE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" ><option value="P">%</option>';
     tr += '         <option value="N">Nos</option>';
@@ -413,7 +419,7 @@ function AddMainRow(hlpstr) {
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
     CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
-   // CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
+    // CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
     if (INCLRATEASK != "Y") {
         $("#M_STYLENO").val('');
         $("#M_STYLENO").focus();
@@ -444,6 +450,9 @@ function AddReturnRow(hlpstr) {
     var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
+    if (UOM == "PCS") {
+        QNTY = 1;
+    }
     var NOS = returncolvalue(hlpstr, "NOS");
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
@@ -474,7 +483,7 @@ function AddReturnRow(hlpstr) {
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="R_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="R_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BLQNTY" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
+    //tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
     tr += '   <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="R_LOCABIN_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].LOCABIN" type="hidden" value="">';
     tr += '   <input id="R_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="R_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
@@ -527,9 +536,9 @@ function AddReturnRow(hlpstr) {
         tr += ' </td>';
     }
     if (MNTNSHADE == "Y") {
-    tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="text" value="">';
-    tr += ' </td>';
+        tr += ' <td class="" title="">';
+        tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="text" value="">';
+        tr += ' </td>';
     }
     else {
         tr += '   <input id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="hidden" value="">';
@@ -542,20 +551,20 @@ function AddReturnRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
     tr += '     <input id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" type="hidden" value="' + BALSTOCK + '">';
     tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="R_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
     tr += ' </td>';
-  
+
     if (INCLRATEASK == "Y") {
         tr += '     <td class="" title="">';
         tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="R_INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].INCLRATE" onchange = "CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,2);" style="font-weight:bold;background-color: bisque;" type="text" value="' + INCLRATE + '">';
         tr += '     </td>';
- //tr += ' <td class="" title="">';
- //tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
+        //tr += ' <td class="" title="">';
+        //tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
         //   tr += ' </td>';
         tr += '     <input id="R_RATE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" type="hidden" value="' + RATE + '">';
     }
@@ -563,8 +572,10 @@ function AddReturnRow(hlpstr) {
         tr += ' <td class="" title="">';
         tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
         tr += ' </td>';
-}
-   
+    }
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
+    tr += ' </td>';
     tr += ' <td class="">';
     tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="R_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCTYPE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" ><option value="P">%</option>';
     tr += '         <option value="N">Nos</option>';
@@ -640,8 +651,8 @@ function AddReturnRow(hlpstr) {
     tr += '</tr>';
     $("#_T_SALE_POS_RETURN_GRID tbody").append(tr);
     CalculateInclusiveRate(rowindex, '_T_SALE_POS_RETURN_GRID')
-   // CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
-   
+    // CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
+
     if (INCLRATEASK != "Y") {
         $("#R_STYLENO").val('');
         $("#R_STYLENO").focus();
@@ -694,7 +705,7 @@ function CalculateRowAmt(GridId, i) {
         //        $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
         //    }
         //}
-      
+
         var B_RATE_ = retFloat($("#B_RATE_" + i).val());
         var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
         $("#B_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
@@ -761,7 +772,7 @@ function CalculateRowAmt(GridId, i) {
         //$("#INCLRATE_" + i).val(rownetamt);
         $("#B_NETAMT_" + i).val(netamt);
         //if (B_NETAMT_ != INCLRATE_) { CheckInclusivRateNetAmt(GridId, i); }
-        
+
     }
     else if (GridId == "_T_SALE_POS_AMOUNT_GRID") {
         var A_NOS = retFloat($("#B_T_NOS").val());
@@ -1047,7 +1058,7 @@ function CalculateTotal() {
         totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
         totalRbillamt = parseFloat(totalRbillamt) - parseFloat(totaltax);
     }
-   
+
     document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
     var RETAMT = document.getElementById("RETAMT").value;
     if (RETAMT == "") { RETAMT = parseFloat(0); } else { RETAMT = parseFloat(RETAMT) }
@@ -1059,14 +1070,14 @@ function CalculateTotal() {
     document.getElementById("OTHAMT").value = parseFloat(T_NET_AMT).toFixed(2);
     document.getElementById("MEMOAMT").value = parseFloat(totalbillamt).toFixed(2);
     //document.getElementById("BLAMT").value = retFloat(parseFloat(document.getElementById("MEMOAMT").value) - parseFloat(RETAMT) + parseFloat(T_NET_AMT)).toFixed(2);
-   
+
     var blamt = 0;
     if (MENU_PARA == "SBCM") {
         blamt = retFloat(parseFloat(totalbillamt) - parseFloat(RETAMT) + parseFloat(T_NET_AMT));
 
     }
     else {
-        blamt = retFloat((parseFloat(RETAMT) + parseFloat(T_NET_AMT))* -1);
+        blamt = retFloat((parseFloat(RETAMT) + parseFloat(T_NET_AMT)) * -1);
 
     }
     if (ROUND_TAG == true) {
@@ -1478,7 +1489,7 @@ function UpdateTaxPer() {
     }
 
 }
-function UpdateBarCodeRow(hlpstr,slno) {
+function UpdateBarCodeRow(hlpstr, slno) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
@@ -1489,12 +1500,16 @@ function UpdateBarCodeRow(hlpstr,slno) {
     if (INCLRATEASK == "Y") {
         INCLRATE = returncolvalue(hlpstr, "RATE");
     }
-  
+
     var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
     for (j = 0; j <= GridRowMain - 1; j++) {
         if ($("#B_SLNO_" + j).val() == slno) {
             var qnty = $("#B_QNTY_" + j).val();
-            var sumqnty = qnty + (returncolvalue(hlpstr, "QNTY"));
+            var newqnty = (returncolvalue(hlpstr, "QNTY"));
+            if (returncolvalue(hlpstr, "UOMCD") == "PCS") {
+                newqnty = "1";
+            }
+            var sumqnty = retFloat(qnty) + retFloat(newqnty);
             $("#B_BARNO_" + j).val($("#B_BARNO_" + j).val());
             //$("#B_TXNSLNO_" + j).val(TXNSLNO);
             $("#B_ITGRPCD_" + j).val($("#B_ITGRPCD_" + j).val());
@@ -1522,7 +1537,7 @@ function UpdateBarCodeRow(hlpstr,slno) {
             $("#B_GLCD_" + j).val($("#B_GLCD_" + j).val());
             var RATE = returncolvalue(hlpstr, "RATE");
             var GROSSAMT = retFloat(sumqnty) * retFloat(RATE);
-            $("#B_GROSSAMT_" + j).val(GROSSAMT); 
+            $("#B_GROSSAMT_" + j).val(GROSSAMT);
             $("#B_PRODGRPGSTPER_" + j).val($("#B_PRODGRPGSTPER_" + j).val());
             //var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
             //var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0; var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
@@ -1532,8 +1547,8 @@ function UpdateBarCodeRow(hlpstr,slno) {
             //if (BarImages == '') { NoOfBarImages = ''; }
             $("#B_GSTPER_" + j).val($("#B_GSTPER_" + j).val());
             $("#OpenImageModal_" + j).val($("#OpenImageModal_" + j).val());
-            $("#B_BarImages_" + j).val( $("#B_BarImages_" + j).val());
-          
+            $("#B_BarImages_" + j).val($("#B_BarImages_" + j).val());
+
             var DISCTYPE = $("#B_DISCTYPE_DESC_" + j).val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
             var TDDISCTYPE = $("#B_TDDISCTYPE_DESC_" + j).val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
             var SCMDISCTYPE = $("#B_SCMDISCTYPE_DESC_" + j).val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
@@ -1541,7 +1556,7 @@ function UpdateBarCodeRow(hlpstr,slno) {
             $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
             CalculateInclusiveRate(j, '_T_SALE_POS_PRODUCT_GRID')
-            
+
             if (INCLRATEASK != "Y") {
                 $("#M_STYLENO").val('');
                 $("#M_STYLENO").focus();
@@ -1549,12 +1564,12 @@ function UpdateBarCodeRow(hlpstr,slno) {
                 $("#M_BARCODE").val('');
                 $("#M_BARCODE").focus();
             }
-          
+
         }
 
     }
-   
-   
+
+
 }
 function GetData() {
     var DOCDT = $("#DOCDT").val();
@@ -1622,7 +1637,7 @@ function GetData() {
 //                var RateAdjust = retFloat(B_RATE_) - retFloat(diffrate);
 //            $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
 //        }
-               
+
 //        }
 //        CalculateRowAmt(GridId, i);
 //    }
@@ -1636,14 +1651,14 @@ function GetData() {
 //            if (B_NETAMT_ < INCLRATE_) {
 //                var RateAdjust = retFloat(B_RATE_) + retFloat(diffrate);
 //                $("#R_RATE_" + i).val(RateAdjust.toFixed(2));
-               
-          
+
+
 //            }
 //        }
 //        CalculateRowAmt(GridId, i);
 //    }
-   
-   
+
+
 //}
 
 
