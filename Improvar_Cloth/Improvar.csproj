@@ -1375,6 +1375,8 @@
     <Content Include="Views\Shared\_T_PBillUpload_Bill.cshtml" />
     <Content Include="Views\Shared\_M_GrpMast_Others.cshtml" />
     <Content Include="Views\T_AltBill\T_AltBill.cshtml" />
+    <Content Include="Views\Shared\_T_AltBill_AMOUNT.cshtml" />
+    <Content Include="Views\Shared\_T_AltBill_PAYMENT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
