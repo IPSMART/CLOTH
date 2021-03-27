@@ -182,7 +182,7 @@ namespace Improvar.Controllers
                 int maxR = 0; string blhead = "", gocd = "", grpemailid = "";
 
 
-                if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR")
+                if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR"|| VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT")
                 {
                     return ReportCashMemoPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm);
                 }

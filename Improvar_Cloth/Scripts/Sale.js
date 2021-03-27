@@ -168,6 +168,7 @@ function FillBarcodeArea(str, Table, i) {
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+    var MNTNCOLOR = $("#MNTNCOLOR").val();
     if (DefaultAction == "V") return true;
     if (Table == "COPYLROW") {
         if (event.key != "F8") {
@@ -205,6 +206,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#PARTNM").val(returncolvalue(str, "PARTNM"));
         $("#PRTBARCODE").val(returncolvalue(str, "PRTBARCODE"));
         $("#COLRCD").val(returncolvalue(str, "COLRCD"));
+        $("#COLRCDHLP").val(returncolvalue(str, "COLRCD"));
         $("#COLRNM").val(returncolvalue(str, "COLRNM"));
         $("#CLRBARCODE").val(returncolvalue(str, "CLRBARCODE"));
         $("#SIZECD").val(returncolvalue(str, "SIZECD"));
@@ -337,6 +339,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
         $("#PRTBARCODE").val($(FieldidStarting + "PRTBARCODE_" + i).val());
         $("#COLRCD").val($(FieldidStarting + "COLRCD_" + i).val());
+        $("#COLRCDHLP").val($(FieldidStarting + "COLRCD_" + i).val());
         $("#COLRNM").val($(FieldidStarting + "COLRNM_" + i).val());
         $("#CLRBARCODE").val($(FieldidStarting + "CLRBARCODE_" + i).val());
         $("#SIZECD").val($(FieldidStarting + "SIZECD_" + i).val());
@@ -420,10 +423,18 @@ function FillBarcodeArea(str, Table, i) {
     if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#BARGENTYPETEMP").val() == "E"))) {
         $(".fabitcdhlpdiv").show();
         $(".fabitcddiv").hide();
+        if (MNTNCOLOR == "Y") {
+            $(".colrcdhlpdiv").show();
+            $(".colrcddiv").hide();
+        }
     }
     else {
         $(".fabitcdhlpdiv").hide();
         $(".fabitcddiv").show();
+        if (MNTNCOLOR == "Y") {
+            $(".colrcdhlpdiv").hide();
+            $(".colrcddiv").show();
+        }
     }
 }
 function changeBARGENTYPE() {
@@ -708,7 +719,8 @@ function ClearBarcodeArea(TAG) {
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var MNTNDISC2 = $("#MNTNDISC2").val();
     var MNTNDISC1 = $("#MNTNDISC1").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP");
+    var MNTNCOLOR = $("#MNTNCOLOR").val();
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN,WPPER,RPPER");
     }
@@ -749,10 +761,18 @@ function ClearBarcodeArea(TAG) {
     if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP") {
         $(".fabitcdhlpdiv").show();
         $(".fabitcddiv").hide();
+        if (MNTNCOLOR == "Y") {
+            $(".colrcdhlpdiv").show();
+            $(".colrcddiv").hide();
+        }
     }
     else {
         $(".fabitcdhlpdiv").hide();
         $(".fabitcddiv").show();
+        if (MNTNCOLOR == "Y") {
+            $(".colrcdhlpdiv").hide();
+            $(".colrcddiv").show();
+        }
     }
 }
 function Fill_DetailData() {
@@ -2562,7 +2582,7 @@ function GetPartyDetails(id) {
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -2586,7 +2606,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -2600,6 +2620,7 @@ function GetPartyDetails(id) {
                         $("#SLNM").val(returncolvalue(result, "slnm"));
                         $("#SLAREA").val(returncolvalue(result, "slarea"));
                         $("#GSTNO").val(returncolvalue(result, "gstno"));
+                        $("#SLDISCDESC").val(returncolvalue(result, "SLDISCDESC"));
                         $("#TAXGRPCD").val(returncolvalue(result, "TAXGRPCD"));
                         $("#PRCCD").val(returncolvalue(result, "PRCCD"));
                         $("#PRCNM").val(returncolvalue(result, "PRCNM"));
@@ -2652,7 +2673,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC");
                         message_value = "SLCD";
                     }
                 }

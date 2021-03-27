@@ -790,7 +790,7 @@ namespace Improvar.Controllers
                 {
                     return Content("Please Select Godown !!");
                 }
-                if (menupara == "SB")
+                if (menupara == "SB" && VE.MENU_PARA == "DY")
                 {
                     BOMITCD = data[7].retStr() == "" ? "" : data[7].retStr().retSqlformat();
                     //if (BOMITCD == "") return Content("Please select Bom Item Code ");

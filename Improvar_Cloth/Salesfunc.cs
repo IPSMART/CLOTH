@@ -14,7 +14,7 @@ namespace Improvar
         Connection Cn = new Connection();
         MasterHelpFa masterHelpFa = new MasterHelpFa();
         string UNQSNO = CommVar.getQueryStringUNQSNO();//
-        public DataTable GetSlcdDetails(string slcd, string docdt, string linkcd = "")
+        public DataTable GetSlcdDetails(string slcd, string docdt, string linkcd = "", string doctag = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
@@ -51,7 +51,10 @@ namespace Improvar
             sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d ";
             sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and ";
             if (docdt != "") sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') and ";
-            sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
+            //sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
+            sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
+            if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
+
             sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype) where rn = 1 ) y, ";
 
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc from ";
