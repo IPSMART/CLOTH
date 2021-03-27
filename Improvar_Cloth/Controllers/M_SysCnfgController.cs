@@ -604,8 +604,8 @@ namespace Improvar.Controllers
                         if (VE.MNTNOURDESIGN == true) { MSYSCNFG.MNTNOURDESIGN = "Y"; } else { MSYSCNFG.MNTNOURDESIGN = "N"; }
                         if (VE.MNTNPCSTYPE == true) { MSYSCNFG.MNTNPCSTYPE = "Y"; } else { MSYSCNFG.MNTNPCSTYPE = "N"; }
                         if (VE.MNTNBARNO == true) { MSYSCNFG.MNTNBARNO = "Y"; } else { MSYSCNFG.MNTNBARNO = "N"; }
-                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "E"; }
-                       
+                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "E"; } else { MSYSCNFG.MNTNBARNO = "C"; }
+
                         if (VE.DefaultAction == "A")
                         {
                             M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());

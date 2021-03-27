@@ -134,9 +134,9 @@
 
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                 {
-                                    if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E")
+                                    if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                     {
-                                        <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:80px;">Copy Row</th>
+                                        <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:84px;">Copy Row</th>
                                     }
                                     <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:40px;">Rate Hist</th>
                                     <th class="sticky-cell-opposite" style="width:40px;"></th>
@@ -456,9 +456,9 @@
                                         </td>
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                         {
-                                            if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E")
+                                            if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                             {
-                                                <td class="sticky-cell-opposite" style="right:80px;">
+                                                <td class="sticky-cell-opposite" style="right:84px;">
                                                     @Html.EditorFor(model => Model.TBATCHDTL[i].NOOFROWCOPY, new { htmlAttributes = new { id = "B_NOOFROWCOPY_" + i, @class = " atextBoxFor", @onkeypress = "return numericOnly(this,0);", onkeydown= "CopyRow("+i+")" } })
                                                 </td>
                                             }
@@ -597,9 +597,9 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                                 {
-                                    if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E")
+                                    if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                     {
-                                        <td class="sticky-cell-opposite" style="right:80px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td class="sticky-cell-opposite" style="right:84px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     }
                                     <td class="sticky-cell-opposite" style="right:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*rate hist*@
                                     <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>

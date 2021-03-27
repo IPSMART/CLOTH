@@ -228,16 +228,15 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
 
-                                //if (ROUNDOFF == "")
-                                //{
-                                //    if (VE.DocumentType.Count() > 0)
-                                //    {
-                                //        string doccd = VE.DocumentType.FirstOrDefault().value;
-                                //        ROUNDOFF = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.ROYN).FirstOrDefault();
-                                //    }
-                                //}
-                                //VE.RoundOff = ROUNDOFF == "Y" ? true : false;
-                                VE.RoundOff = true;
+                                if (ROUNDOFF == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        ROUNDOFF = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.ROYN).FirstOrDefault();
+                                    }
+                                }
+                                VE.RoundOff = ROUNDOFF == "Y" ? true : false;
                                 if (VE.MENU_PARA == "PJBL")
                                 {
                                     string menudoccd = VE.DOC_CODE;
