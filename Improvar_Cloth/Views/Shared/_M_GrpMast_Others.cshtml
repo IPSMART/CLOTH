@@ -16,22 +16,24 @@
                 </div>
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Group Master Others Details</b></center>
             </div>
-                <table id="exampleM_GrpMastOther" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
-                    <thead>
-                        <tr style="height:30px;">
-                            <th class="grid_th" style="width:27px;">SL. No.</th>
-                            <th class="grid_th" style="width:75px;">Company Code</th>
-                            <th class="grid_th" style="width:500px">Company Name</th>
-                            <th class="grid_th" style="width:331px;">Dealsin</th>
-                            <th class="grid_th" style="width:331px">Insurence</th>
-                            <th class="grid_th" style="width:331px">Bill terms</th>
-                            <th class="grid_th" style="width:50px">Due date cancel on</th>
-                            <th class="grid_th">Bank slno</th>
-                            @*<th class="grid_th" style="width:50px">C/M</th>*@
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i <= Model.MMGROUPSPL.Count - 1; i++)
+            <table id="exampleM_GrpMastOther" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th" style="width:27px;">SL. No.</th>
+                        <th class="grid_th" style="width:75px;">Company Code</th>
+                        <th class="grid_th" style="width:500px">Company Name</th>
+                        <th class="grid_th" style="width:331px;">Dealsin</th>
+                        <th class="grid_th" style="width:331px">Insurence</th>
+                        <th class="grid_th" style="width:331px">Bill terms</th>
+                        <th class="grid_th" style="width:50px">Due date cancel on</th>
+                        <th class="grid_th">Bank slno</th>
+                        @*<th class="grid_th" style="width:50px">C/M</th>*@
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MMGROUPSPL != null)
+                    {
+                        for (int i = 0; i <= Model.MMGROUPSPL.Count - 1; i++)
                         {
                             <tr style="font-size:12px; font-weight:bold;">
                                 <td class="grid_td">
@@ -62,8 +64,9 @@
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
         }
     </div>
 </div>
