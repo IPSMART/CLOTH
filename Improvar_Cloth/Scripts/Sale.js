@@ -1990,6 +1990,7 @@ function AddBarCodeGrid() {
     var FABITCD = $("#FABITCD").val();
     var FABITNM = $("#FABITNM").val();
     var PCSTYPEVALUE = $("#PCSTYPEVALUE").val();
+    var SYSCNFGCOMMONUNIQBAR = $("#SYSCNFGCOMMONUNIQBAR").val();
     //get bill slno
     var TXNSLNO = "";
     var PAGENO = "";
@@ -2350,8 +2351,8 @@ function AddBarCodeGrid() {
     tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
     tr += '   </td> ';
     if (MENU_PARA != "SB") {
-        if (MENU_PARA == "PB" && COMMONUNIQBAR == "E") {
-            tr += '<td class="sticky-cell-opposite" style="right:80px;">';
+        if (MENU_PARA == "PB" && SYSCNFGCOMMONUNIQBAR == "E" && DefaultAction == "A") {
+            tr += '<td class="sticky-cell-opposite" style="right:84px;">';
             tr += '<input class=" atextBoxFor text-box single-line" id="B_NOOFROWCOPY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NOOFROWCOPY" onkeydown="CopyRow(' + rowindex + ')" onkeypress="return numericOnly(this,0);" type="text" value="">';
             tr += '</td>';
         }
