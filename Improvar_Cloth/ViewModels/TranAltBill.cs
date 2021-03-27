@@ -43,8 +43,12 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? OTHAMT { get; set; }
         public double TOTTAX { get; set; }
-        public double TOTTAXVAL { get; set; }
+        public double GSTPER { get; set; }
+        public double IGSTPER { get; set; }
+
+        public double TAXABVAL { get; set; }
         public bool RoundOff { get; set; }
+        public List<TTXNAMT> TTXNAMT { get; set; }
         public string ADDR { get; set; }
         public string PSLCD { get; set; }
         public string EXPGLNM { get; set; }
@@ -62,7 +66,7 @@ namespace Improvar.ViewModels
         public string PRODGRPGSTPER { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double B_T_QNTY { get; set; }
-        public string MTBARCODE { get; set; }
+        public string HSNCODE { get; set; }
         public string PRTBARCODE { get; set; }
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
@@ -133,7 +137,6 @@ namespace Improvar.ViewModels
         public double? R_T_IGST_AMT { get; set; }
         public string FDT { get; set; }
         public string TDT { get; set; }
-        public string BARNO { get; set; }
         public string R_DOCNO { get; set; }
         public string EFFDT { get; set; }
 
@@ -141,7 +144,23 @@ namespace Improvar.ViewModels
         public List<PCSection> PCSActionList { get; set; }
         public List<DropDown_list2> TDDISC_TYPE { get; set; }
         public List<DropDown_list3> SCMDISC_TYPE { get; set; }
-
-
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_CURR { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_AMOUNT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_IGST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_SGST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_CGST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_CESS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_DUTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_NET { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_PYMT_AMT { get; set; }
     }
 }
