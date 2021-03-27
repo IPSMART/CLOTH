@@ -77,40 +77,49 @@ namespace Improvar.Controllers
 
 
                 string sql = "";
-                sql += " select a.autono, c.slcd, a.slno, c.nos, c.qnty, c.cutlength, i.itnm, i.styleno,h.ourdesign, h.pdesign, i.itgrpcd, j.itgrpnm,k.uomnm, ";
-                sql += " c.itremark, c.sample, g.slnm, ptch.docno , ptch.docdt, y.issamt, ";
-                sql += " b.autono recautono, rtch.docno recdocno, rtch.docdt recdocdt, b.prefno, b.prefdt, b.doctag,b.nos recnos,b.qnty recqnty,0 balqnty from ";
-                sql += "  ";
-                sql += " (select a.autono, a.slno, a.autono || a.slno autoslno ";
-                sql += " from " + scm + ".t_progmast a, " + scm + ".t_cntrl_hdr b ";
-                sql += " where a.autono = b.autono(+) and ";
-                sql += " b.compcd = '" + COM + "' and nvl(b.cancel, 'N') = 'N' ";
-                if (jobslcd != "") sql += " and a.slcd in(" + jobslcd + ") ";
-                if (itcd != "") sql += " and a.slcd in(" + itcd + ") ";
-                if (fdt != "") sql += " and b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
-                sql += " and b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) a, ";
-                sql += "  ";
-                sql += "  ";
-                sql += " (select a.progautono || a.progslno progautoslno,  ";
-                sql += " a.nos, a.qnty, a.autono, a.rate, c.prefno, c.prefdt, c.doctag ";
-                sql += " from " + scm + ".t_progdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c ";
-                sql += " where a.autono = b.autono(+) and a.autono = c.autono(+)  and a.autono<>a.progautono and ";
-                sql += " b.compcd = '" + COM + "' and nvl(b.cancel, 'N')= 'N' and  C.JOBCD='" + JOBCD + "' and  ";
-                sql += " b.docdt <= to_date('" + (recdt == "" ? tdt : recdt) + "', 'dd/mm/yyyy') ) b, ";
-                sql += "  ";
-                sql += " (select a.progautono || a.progslno progautoslno, sum(round(a.qnty * a.rate, 2)) issamt ";
-                sql += "     from " + scm + ".t_kardtl a, " + scm + ".t_cntrl_hdr b ";
-                sql += " where a.autono = b.autono(+) and ";
-                sql += " b.compcd = '" + COM + "' and nvl(b.cancel, 'N')= 'N' and ";
-                sql += " b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
-                sql += " group by a.progautono || a.progslno ) y, ";
-                sql += "  ";
-                sql += " " + scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, ";
-                sql += " " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k ";
-                sql += " where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and ";
-                sql += " a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and ";
-                sql += " c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) ";
-                sql += " order by slnm, slcd, docdt, docno, slno, recdocdt, recdocno ";
+                sql += "select a.autono, c.slcd, a.slno, c.nos, c.qnty, c.cutlength, i.itnm, i.styleno,h.ourdesign, h.pdesign, i.itgrpcd, j.itgrpnm,k.uomnm, ";
+                sql += "c.itremark, c.sample, g.slnm, ptch.docno , ptch.docdt, y.issamt, ";
+                sql += "b.autono recautono, rtch.docno recdocno, rtch.docdt recdocdt, b.prefno, b.prefdt, b.doctag,b.nos recnos, b.qnty recqnty, ";
+                sql += "c.nos, c.qnty, c.nos-nvl(z.nos,0) balnos, c.qnty-nvl(z.qnty,0) balqnty from ";
+
+                sql += "(select a.autono, a.slno, a.autono || a.slno autoslno ";
+                sql += "from " + scm + ".t_progmast a, " + scm + ".t_cntrl_hdr b ";
+                sql += "where a.autono = b.autono(+) and ";
+                sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N') = 'N' and ";
+                if (jobslcd != "") sql += "a.slcd in(" + jobslcd + ") and ";
+                if (itcd != "") sql += "a.slcd in(" + itcd + ") and ";
+                if (fdt != "") sql += "b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
+                sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) a, ";
+
+                sql += "(select a.progautono||a.progslno progautoslno,  ";
+                sql += "a.nos, a.qnty, a.autono, a.rate, c.prefno, c.prefdt, c.doctag ";
+                sql += "from " + scm + ".t_progdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c ";
+                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+)  and a.autono<>a.progautono and ";
+                sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N')= 'N' and  C.JOBCD='" + JOBCD + "' and  ";
+                sql += "b.docdt <= to_date('" + (recdt == "" ? tdt : recdt) + "', 'dd/mm/yyyy') ) b, ";
+
+                sql += "(select a.progautono||a.progslno progautoslno, sum(round(a.qnty * a.rate, 2)) issamt ";
+                sql += "from " + scm + ".t_kardtl a, " + scm + ".t_cntrl_hdr b ";
+                sql += "where a.autono = b.autono(+) and ";
+                sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N')= 'N' and ";
+                sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+                sql += "group by a.progautono || a.progslno ) y, ";
+
+                sql += "(select a.progautono||a.progslno progautoslno,  ";
+                sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
+                sql += "from " + scm + ".t_progdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c ";
+                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+)  and a.autono<>a.progautono and ";
+                sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N')= 'N' and  C.JOBCD='" + JOBCD + "' and  ";
+                sql += "b.docdt <= to_date('" + (recdt == "" ? tdt : recdt) + "', 'dd/mm/yyyy') ";
+                sql += "group by a.progautono||a.progslno ) z, ";
+
+                sql += scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, ";
+                sql += scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k ";
+                sql += "where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and a.autoslno = z.progautoslno(+) and ";
+                sql += "a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and ";
+                if (ShowPending == "PENDING") sql += "c.qnty-nvl(z.qnty,0) <> 0 ";
+                sql += "c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) ";
+                sql += "order by slnm, slcd, docdt, docno, slno, recdocdt, recdocno ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0)
                 {
