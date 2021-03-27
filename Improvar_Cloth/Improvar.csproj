@@ -1439,7 +1439,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Report\PrintBarcode_Tres.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
-      <LastGenOutput>PrintBarcode_Tres1.cs</LastGenOutput>
+      <LastGenOutput>PrintBarcode_Tres.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\Rep_JobBill.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
