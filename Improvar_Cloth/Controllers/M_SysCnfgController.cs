@@ -223,7 +223,7 @@ namespace Improvar.Controllers
                                     if (chkdata.MNTNOURDESIGN == "Y") { VE.MNTNOURDESIGN = true; } else { VE.MNTNOURDESIGN = false; }
                                     if (chkdata.MNTNPCSTYPE == "Y") { VE.MNTNPCSTYPE = true; } else { VE.MNTNPCSTYPE = false; }
                                     if (chkdata.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
-                                    if (chkdata.COMMONUNIQBAR == "Y") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
+                                    if (chkdata.COMMONUNIQBAR == "E") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
                                     if (chkdata.WPPRICEGEN != null)
                                     {
                                         VE.WPPRICEGENCD = chkdata.WPPRICEGEN.Substring(0, 2);
@@ -355,7 +355,7 @@ namespace Improvar.Controllers
                     if (sl.MNTNOURDESIGN == "Y"){VE.MNTNOURDESIGN = true;}else{VE.MNTNOURDESIGN = false;}
                     if (sl.MNTNPCSTYPE == "Y"){VE.MNTNPCSTYPE = true;}else{VE.MNTNPCSTYPE = false;}
                     if (sl.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
-                    if (sl.COMMONUNIQBAR == "Y") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
+                    if (sl.COMMONUNIQBAR == "E") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
@@ -604,7 +604,7 @@ namespace Improvar.Controllers
                         if (VE.MNTNOURDESIGN == true) { MSYSCNFG.MNTNOURDESIGN = "Y"; } else { MSYSCNFG.MNTNOURDESIGN = "N"; }
                         if (VE.MNTNPCSTYPE == true) { MSYSCNFG.MNTNPCSTYPE = "Y"; } else { MSYSCNFG.MNTNPCSTYPE = "N"; }
                         if (VE.MNTNBARNO == true) { MSYSCNFG.MNTNBARNO = "Y"; } else { MSYSCNFG.MNTNBARNO = "N"; }
-                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "Y"; } else { MSYSCNFG.COMMONUNIQBAR = "N"; }
+                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "E"; }
                        
                         if (VE.DefaultAction == "A")
                         {
