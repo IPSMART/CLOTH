@@ -274,7 +274,8 @@ namespace Improvar.Controllers
                         }
                         if (parkID == "" && loadOrder == "N")
                         {
-                            var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                            //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                            var MSYSCNFG = salesfunc.M_SYSCNFG();
                             VE.M_SYSCNFG = MSYSCNFG;
                             FreightCharges(VE, VE.T_TXN?.AUTONO); VE.RETAMT = VE.RETAMT.retStr() == "" ? 0 : VE.RETAMT.retDbl().toRound(2);
                             //VE.RETAMT = VE.R_T_NET;
