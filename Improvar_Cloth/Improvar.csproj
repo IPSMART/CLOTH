@@ -315,6 +315,7 @@
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
     <Compile Include="Controllers\SaleBill_PrintController.cs" />
     <Compile Include="Controllers\T_AckController.cs" />
+    <Compile Include="Controllers\T_AltBillController.cs" />
     <Compile Include="Controllers\T_AltOrderController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
@@ -816,6 +817,7 @@
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TJobBillEntry.cs" />
+    <Compile Include="ViewModels\TranAltBill.cs" />
     <Compile Include="ViewModels\TransactionAlterOrder.cs" />
     <Compile Include="ViewModels\TransactionAltOrder.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
@@ -1372,6 +1374,7 @@
     <Content Include="Views\Rep_DnCn_Print\Rep_DnCn_Print.cshtml" />
     <Content Include="Views\Shared\_T_PBillUpload_Bill.cshtml" />
     <Content Include="Views\Shared\_M_GrpMast_Others.cshtml" />
+    <Content Include="Views\T_AltBill\T_AltBill.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
