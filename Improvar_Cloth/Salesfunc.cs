@@ -1076,7 +1076,7 @@ namespace Improvar
             string sql = "";
             sql += "select a.prodgrpcd, a.effdt, b.fromrt, b.tort, ";
             sql += "b.igstper, b.cgstper, b.sgstper, ";
-            sql += "nvl(b.igstper, 0) + nvl(b.igstper, 0) + nvl(b.sgstper, 0) gstper from ";
+            sql += "nvl(b.igstper, 0) + nvl(b.cgstper, 0) + nvl(b.sgstper, 0) gstper from ";
             sql += "(select prodgrpcd, effdt from ";
             sql += "(select a.prodgrpcd, a.effdt, ";
             sql += "row_number() over(partition by a.prodgrpcd order by a.effdt desc) as rn ";
