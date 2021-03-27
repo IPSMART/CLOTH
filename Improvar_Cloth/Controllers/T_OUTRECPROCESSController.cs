@@ -1224,7 +1224,7 @@ namespace Improvar.Controllers
                 //        Code = agent[0];
                 //    }
                 //}
-                var str = masterHelp.JOBCD_JOBMST_help(val,"");
+                var str = masterHelp.JOBCD_JOBMST_help(val, "");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -2738,7 +2738,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
                                 TBATCHDTL.STKTYPE = "F";
                                 TBATCHDTL.MTRLCOST = VE.TBATCHDTL[i].MTRLCOST;
-                                TBATCHDTL.TXBLVAL = (VE.TBATCHDTL[i].QNTY.retDbl()* VE.TBATCHDTL[i].RATE.retDbl()).toRound(2);
+                                TBATCHDTL.TXBLVAL = (VE.TBATCHDTL[i].QNTY.retDbl() * VE.TBATCHDTL[i].RATE.retDbl()).toRound(2);
                                 TBATCHDTL.SHORTQNTY = VE.TBATCHDTL[i].SHORTQNTY;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -3165,28 +3165,34 @@ namespace Improvar.Controllers
                 }
                 else if (VE.DefaultAction == "V")
                 {
+                    ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO); if (ContentFlg != "") goto dbnotsave;
                     dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                    foreach (var v in VE.TBATCHDTL)
+                    if (VE.TBATCHDTL != null)
                     {
-                        var IsTransactionFound = salesfunc.IsTransactionFound("", v.BARNO.retSqlformat(), VE.T_TXN.AUTONO.retSqlformat());
-                        if (VE.MENU_PARA == "PB" && IsTransactionFound != "")
+                        foreach (var v in VE.TBATCHDTL)
                         {
-                            dberrmsg = "We cant delete this Bill. Transaction found at " + IsTransactionFound; goto dbnotsave;
-                        }
-                        else if ((VE.T_TXN.BARGENTYPE == "E" || v.BARGENTYPE == "E") && v.SAMPLE.retStr() != "Y")
-                        {
-                            dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "D", "", "barno='" + v.BARNO + "'");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                            var IsTransactionFound = salesfunc.IsTransactionFound("", v.BARNO.retSqlformat(), VE.T_TXN.AUTONO.retSqlformat());
+                            if (IsTransactionFound != "")
+                            {
+                                ContentFlg = "We cant delete this Bill. Transaction found at " + IsTransactionFound; goto dbnotsave;
+                            }
+                            else if ((VE.T_TXN.BARGENTYPE == "E" || v.BARGENTYPE == "E") && v.SAMPLE.retStr() != "Y" && IsTransactionFound == "")
+                            {
+                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "D", "", "barno='" + v.BARNO + "'");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
-                            dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR_LINK", "", "D", "", "barno='" + v.BARNO + "'");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR_LINK", "", "D", "", "barno='" + v.BARNO + "'");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
+                            }
+                            if (IsTransactionFound == "")
+                            {
+                                dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D", "", "barno='" + v.BARNO + "' and autono='" + VE.T_TXN.AUTONO + "'");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                            dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D", "", "barno='" + v.BARNO + "'");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
+                            }
                         }
                     }
 
@@ -3257,6 +3263,28 @@ namespace Improvar.Controllers
                 OraCon.Dispose();
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        private string ChildRecordCheck(string autono)
+        {
+            string message = "";
+            string scm = CommVar.CurSchema(UNQSNO);
+            string fcm = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            sql += "select a.autono,b.docno,b.docdt,c.docnm ";
+            sql += "from " + scm + ".T_BALE a,  " + scm + ".t_cntrl_hdr b,  " + scm + ".m_doctype c ";
+            sql += "where a.autono = B.AUTONO and b.doccd = c.DOCCD and a.blautono = '" + autono + "' ";
+            sql += "and a.autono not in ('" + autono + "')";
+            sql += "union all ";
+            sql += "select a.autono,b.docno,b.docdt,c.docnm  ";
+            sql += "from  " + fcm + ".T_vch_bl_adj a," + scm + ".t_cntrl_hdr b ," + scm + ".m_doctype c  ";
+            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD and  a.i_autono='" + autono + "'  ";
+            DataTable dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                message = "Clild record found at docno:" + dt.Rows[0]["docno"].ToString() + " docdt:" + dt.Rows[0]["docdt"].retDateStr() + " docnm:" + dt.Rows[0]["docnm"].ToString() + " autono:" + dt.Rows[0]["autono"].ToString() + " ";
+                return message;
+            }
+            return message;
         }
         //public ActionResult SAVE(FormCollection FC, TransactionOutRecProcess VE)
         //{

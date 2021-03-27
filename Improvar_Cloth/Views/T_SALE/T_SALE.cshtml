@@ -570,6 +570,7 @@
         <input type="hidden" id="UrlSelectPendingIssueData" value="@Url.Action("SelectPendingIssueData", PageControllerName )" />
         <input type="hidden" id="urlnameGENLEG" value="@Url.Action("GetGeneralLedgerDetails", PageControllerName)" />
         <input type="hidden" id="UrlGetBaleData" value="@Url.Action("GetBaleData", PageControllerName)" />
+        <input type="hidden" id="UrlCopyRow" value="@Url.Action("CopyBarGridRow", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -605,6 +606,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
         @Html.HiddenFor(a => a.SHOWMTRLJOBCD, new { id = "SHOWMTRLJOBCD" })
         @Html.HiddenFor(a => a.SHOWSTKTYPE, new { id = "SHOWSTKTYPE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.COMMONUNIQBAR, new { id = "COMMONUNIQBAR" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -1967,6 +1969,10 @@
                                                 ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
                                                 *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
                                             </p>
+                                            @if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E")
+                                                {
+                                                <p class="text-info" style="margin-top:-10px;">**** Enter the no. of rows in the copy row column and press <b>F8</b> for copy this row</p>
+                                            }
                                         </div>
                                         <div class="row">
                                             <div class="col-md-1" style="width:auto;">
