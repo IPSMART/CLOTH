@@ -130,7 +130,8 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        var MSYSCNFG = salesfunc.M_SYSCNFG();
                         if (MSYSCNFG == null)
                         {
 
@@ -374,7 +375,7 @@ namespace Improvar.Controllers
             dt.Rows.Add("PJRT", "Return to Party w/o Job", "PURGLCD", "", "", "", "", "", "", "JU");
             dt.Rows.Add("PJBL", "Job Bill raised to Party", "SALGLCD", "", "", "", "", "", "D", "JB");
             var dr = dt.Select("MENUPARA='" + MENU_PARA + "'");
-            if (dr != null) return dr.CopyToDataTable(); else return dt;
+            if (dr != null && dr.Count() > 0) return dr.CopyToDataTable(); else return dt;
         }
         public TransactionSaleEntry Navigation(TransactionSaleEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
@@ -670,7 +671,8 @@ namespace Improvar.Controllers
                     allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
 
-                var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                var MSYSCNFG = salesfunc.M_SYSCNFG();
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
@@ -3618,7 +3620,8 @@ namespace Improvar.Controllers
                 {
                     allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
-                var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                var MSYSCNFG = salesfunc.M_SYSCNFG();
                 foreach (var v in VE.TBATCHDTL)
                 {
                     PRODGRPGSTPER = "";
@@ -3914,7 +3917,8 @@ namespace Improvar.Controllers
 
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
                     if (VE.MENU_PARA == "PR") slcdpara = "PB";
-                    M_SYSCNFG MSYSCNFG = DB.M_SYSCNFG.FirstOrDefault();
+                    //M_SYSCNFG MSYSCNFG = DB.M_SYSCNFG.FirstOrDefault();
+                    M_SYSCNFG MSYSCNFG = salesfunc.M_SYSCNFG();
                     string sql = "";
                     if (MSYSCNFG == null)
                     {
@@ -5615,8 +5619,9 @@ namespace Improvar.Controllers
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             string str = "";
-            var m_syscnfg = DB.M_SYSCNFG.Count();
-            if (m_syscnfg == 0)
+            //var m_syscnfg = DB.M_SYSCNFG.Count();
+            var m_syscnfg = salesfunc.M_SYSCNFG();
+            if (m_syscnfg == null)
             {
                 str += Cn.GCS() + "Posting/Terms Setup in Sales module(M_SYSCNFG)";
             }
