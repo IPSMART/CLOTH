@@ -139,7 +139,7 @@
         $.ajax({
             type: 'get',
             url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val() + "&MENUPARA=" + MENUPARA,
+            data: "DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val() + "&MENUPARA=" + MENUPARA,
             success: function (result) {
                 window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
@@ -166,6 +166,7 @@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -349,7 +350,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Taxable Value")
                     </div>
