@@ -68,7 +68,7 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -107,17 +107,42 @@
         });
     }
 </script>
-
+<script>
+    function CalculateBlamt() {
+        var TAXABVAL = retFloat($("#TAXABVAL").val());
+        var GSTPER = retFloat($("#GSTPER").val());
+        var TOTTAX = (TAXABVAL * GSTPER / 100);
+        TOTTAX = RoundOff(TOTTAX, 2);
+        $("#TOTTAX").val(TOTTAX);
+        var blamt = 0;
+        var RoundOff = document.getElementById("RoundOff").checked;
+        if (RoundOff) {
+            blamt = TAXABVAL + TOTTAX;
+            var blafterround = RoundOff(TAXABVAL, 0);
+            var roundamt = blafterround - blamt;
+            $("#ROAMT").val(roundamt.toFixed(2));
+            $("#BLAMT").val(blafterround);
+        }
+        else {
+            blamt = TAXABVAL + TOTTAX;
+            var blafterround = RoundOff(TAXABVAL, 2);
+            var roundamt = 0;
+            $("#ROAMT").val(roundamt.toFixed(2));
+            $("#BLAMT").val(blafterround);
+        }
+    }
+</script>
 <script>
     function pageprinting() {
         debugger;
         var ty = $("#DOCCD").val();
+        var MENUPARA = '@Model.MENU_PARA';
         $.ajax({
-            type: 'POST',
+            type: 'get',
             url: "@Url.Action("Print", PageControllerName)",
-            data: $('form').serialize() + "&DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val() + "&MENUPARA=" + MENUPARA,
             success: function (result) {
-                window.open("@Url.Action("Khasra_BaleTrnf_Print", "Khasra_BaleTrnf_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+                window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -257,8 +282,8 @@
                 </div>
                 <div class="col-md-3">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD');", @placeholder = "Job Code", maxlength = 2 } })
-                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')" />
+                        @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD/GSTPER=GSTPER/IGSTPER=IGSTPER','DOCDT/TAXGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD/GSTPER=GSTPER/IGSTPER=IGSTPER','DOCDT/TAXGRPCD');", @placeholder = "Job Code", maxlength = 2 } })
+                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD/GSTPER=GSTPER/IGSTPER=IGSTPER','DOCDT/TAXGRPCD')" />
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -268,29 +293,31 @@
                         @Html.HiddenFor(model => model.JOBEXPGLCD, new { id = "JOBEXPGLCD" })
                     </div>
                 </div>
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Inclusive Rate")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top: 6px;">
+                        @Html.CheckBoxFor(model => model.INC_RATE, new { htmlAttributes = new { @class = "form-control", id = "INC_RATE" } })
+                    </div>
+                </div>
             </div>
-            @*Order No			t_txnoth.porefno
-            Due On			t_txnoth.porefdt
-            Remarks	T_TXNOTH.DOCREM
-            Amount	t_txndtl.inclrate
-            Taxable	t_txndtl.txblval
-            GST	t_txndtl.igstamt+sgstamt+cgstamt
-            R/off	checkbox (defaul tick)			t_txn.roffamt
-            Bill Amt	t_txn.blamt*@
             <div class="row">
                 <div class="col-md-5">
                     <div class="editor-field" style="margin-top: 6px;">
                         @Html.Label("", "Party Order No")
                     </div>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-4">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.T_TXNOTH.POREFNO, new { htmlAttributes = new { @class = "form-control", id = "POREFNO", maxlength = 30, @placeholder = "POREFNO" } })
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="editor-field" style="margin-top: 6px;">
-                        @Html.Label("", "Party Order dt/ Due On")
+                        @Html.Label("", "Order dt/ Due On")
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -311,15 +338,15 @@
                     </div>
                 </div>
                 @*<div class="col-md-4">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Payment Remarks")
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Payment Remarks")
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-10">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.T_TXNOTH.PAYTERMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTERMS", @placeholder = "Payment Remarks", maxlength = 30 } })
-                    </div>
-                </div>*@
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXNOTH.PAYTERMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTERMS", @placeholder = "Payment Remarks", maxlength = 30 } })
+                        </div>
+                    </div>*@
             </div>
 
             <div class="row">
@@ -330,7 +357,18 @@
                 </div>
                 <div class="col-md-3">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.TOTTAXVAL, new { htmlAttributes = new { @class = "form-control", id = "TOTTAXVAL", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Taxable Value", @readonly = "readonly" } })
+                        @Html.EditorFor(model => model.TAXABVAL, new { htmlAttributes = new { @class = "form-control", id = "TAXABVAL", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Taxable Value", onblur = "CalculateBlamt();" } })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Tax%")
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.GSTPER, new { htmlAttributes = new { @class = "form-control", id = "GSTPER", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                        @Html.HiddenFor(model => model.IGSTPER)
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -350,7 +388,7 @@
                 </div>
                 <div class="col-md-1" style="margin-right: -41px;">
                     <div class="editor-field" style="margin-top:6px;">
-                        @*@Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "CalculateTotal();" })*@
+                        @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "CalculateBlamt();" })
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -372,17 +410,25 @@
 
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
+                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:750px;">
                 </div>
                 <div class="tab-content">
-                    <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div id="partialdivAmounts" style="margin-top:0px;">
+                                @Html.Partial("_T_AltBill_AMOUNT")
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                            <div id="partialdivMain">
-                                @*@Html.Partial("_T_AltBill_Main")*@
+                            <div id="partialdivPayment" style="margin-top:0px;">
+                                @Html.Partial("_T_AltBill_PAYMENT")
                             </div>
                         </div>
                     </div>
