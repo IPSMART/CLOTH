@@ -420,7 +420,7 @@
 
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
+                    <li id="Amounts_LI" class="active"><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
                     <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
@@ -428,7 +428,7 @@
                 <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:750px;">
                 </div>
                 <div class="tab-content">
-                    <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="Amount" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div id="partialdivAmounts" style="margin-top:0px;">
                                 @Html.Partial("_T_AltBill_AMOUNT")

@@ -210,8 +210,6 @@ namespace Improvar.Controllers
                         VE.DefaultDay = 0;
                     }
 
-
-
                     FreightCharges(VE, VE.T_TXN?.AUTONO);
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
@@ -293,6 +291,33 @@ namespace Improvar.Controllers
                 VE.INCLRATEASK = sl.INCL_RATE.retStr();
 
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
+                string Scm = CommVar.CurSchema(UNQSNO);
+                string str2 = "select a.SLNO,a.PYMTCD,c.PYMTNM,a.AMT,a.CARDNO,a.INSTNO,a.INSTDT,a.PYMTREM,a.GLCD,c.PYMTTYPE from " + Scm + ".t_txnpymt a," + Scm + ".t_txnpymt_hdr b," + Scm + ".m_payment c ";
+                str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + sl.AUTONO + "' order by a.PYMTCD ";
+                var PYMT_DATA = masterHelp.SQLquery(str2);
+                VE.TTXNPYMT = (from DataRow dr in PYMT_DATA.Rows
+                               select new TTXNPYMT()
+                               {
+                                   SLNO = dr["SLNO"].retShort(),
+                                   PYMTCD = dr["PYMTCD"].retStr(),
+                                   PYMTNM = dr["PYMTNM"].retStr(),
+                                   AMT = dr["AMT"].retDbl(),
+                                   CARDNO = dr["CARDNO"].retStr(),
+                                   INSTNO = dr["INSTNO"].retStr(),
+                                   INSTDT = dr["INSTDT"].retDateStr(),
+                                   PYMTREM = dr["PYMTREM"].retStr(),
+                                   GLCD = dr["GLCD"].retStr(),
+                                   PYMTTYPE = dr["PYMTTYPE"].retStr(),
+                               }).ToList();
+                double T_PYMT_AMT = 0;
+
+                for (int p = 0; p <= VE.TTXNPYMT.Count - 1; p++)
+                {
+                    T_PYMT_AMT = T_PYMT_AMT + VE.TTXNPYMT[p].AMT.Value;
+
+                }
+                VE.T_PYMT_AMT = T_PYMT_AMT;
+                VE.PAYAMT = T_PYMT_AMT.toRound(2);
             }
             return VE;
         }
