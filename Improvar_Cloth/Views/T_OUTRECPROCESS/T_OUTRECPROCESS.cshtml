@@ -457,6 +457,7 @@
         //}
         if (T_QNTY > BALQNTY) {
             msgInfo("total Qnty is grater than balance qnty..");
+            ClearAllTextBoxes("P_NOS_" + i + ",P_QNTY_" + i);
             message_value = "P_QNTY_" + i;
             return false;
         }
@@ -469,6 +470,7 @@
     function CalculateTotalProgramme() {
         var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
         var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
+        var T_SHORTQNTY = 0;
         var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var NOS = document.getElementById("P_NOS_" + i).value;
@@ -477,11 +479,12 @@
             var QNTY = document.getElementById("P_QNTY_" + i).value;
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
             else { T_QNTY = T_QNTY + parseFloat(0); }
-
+            T_SHORTQNTY += retFloat($("#P_SHORTQNTY_" + i).val());
 
         }
         document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
-        document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
+        document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(3);
+        document.getElementById("P_T_SHORTQNTY").value = parseFloat(T_SHORTQNTY).toFixed(3);
     }
 </script>@*Programme calculation*@
 <script>
@@ -1235,6 +1238,40 @@
     }
 </script>
 <script>
+    function CalculateBargridQnty(tableid, index) {
+        debugger;
+        var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
+        if (tableid == "_T_OUTRECPROCESS_Programme_GRID") {
+            CUTLENGTHID = "P_CUTLENGTH_" + index;
+            NOSID = "P_NOS_" + index;
+            QNTYID = "P_QNTY_" + index;
+            UOMID = "P_UOM_" + index;
+        }
+        else {
+            CUTLENGTHID = "B_CUTLENGTH_" + index;
+            NOSID = "B_NOS_" + index;
+            QNTYID = "B_QNTY_" + index;
+            UOMID = "B_UOM_" + index;
+        }
+       
+        if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
+            var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
+            $("#" + QNTYID).val(retFloat(qnty));
+        }
+        if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
+            $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
+        }
+        if (tableid == "_T_OUTRECPROCESS_Programme_GRID") {
+            CalculateTotalProgramme();
+            ChkQntyNosProgramme(index);
+        }
+        else {
+            CalculateTotal_Barno();
+            HasChangeBarSale();
+        }
+    }
+</script>
+<script>
     function DeleteRow() {
         $.ajax({
             type: 'POST',
@@ -1311,7 +1348,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            <input type="hidden" id="partylinkcd" value="D" />
+        <input type="hidden" id="partylinkcd" value="D" />
             <input type="hidden" id="agentlinkcd" value="A" />
             <input type="hidden" id="courierlinkcd" value="U" />
             <input type="hidden" id="trnsportlinkcd" value="T" />
@@ -1569,7 +1606,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="display:none;">
                                 <div class="col-md-5">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Rounded off")

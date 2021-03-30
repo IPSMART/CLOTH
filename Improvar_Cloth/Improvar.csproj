@@ -292,6 +292,7 @@
     <Compile Include="Controllers\Rep_BarcodeImageController.cs" />
     <Compile Include="Controllers\Rep_BarcodePrintController.cs" />
     <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
+    <Compile Include="Controllers\Rep_BlWiseController.cs" />
     <Compile Include="Controllers\Rep_DnCn_PrintController.cs" />
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
@@ -1377,6 +1378,7 @@
     <Content Include="Views\T_AltBill\T_AltBill.cshtml" />
     <Content Include="Views\Shared\_T_AltBill_AMOUNT.cshtml" />
     <Content Include="Views\Shared\_T_AltBill_PAYMENT.cshtml" />
+    <Content Include="Views\Rep_BlWise\Rep_BlWise.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

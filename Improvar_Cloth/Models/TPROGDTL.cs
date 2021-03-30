@@ -101,5 +101,9 @@ namespace Improvar.Models
         public double TOTALREQQTY { get; set; }
         public double USEDQTY { get; set; }
         public string COMMONUNIQBAR { get; set; }
+        public string RECPROGITCD { get; set; }
+        public string RECPROGITSTYLE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? SHORTQNTY { get; set; }
     }
 }

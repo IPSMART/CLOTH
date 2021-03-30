@@ -49,6 +49,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
                     if (VE.MENU_PARA == "PJBL") reptype = "PJBILL";
+                    if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT") reptype = "";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
                     if (repformat != null)
@@ -1559,13 +1560,13 @@ namespace Improvar.Controllers
                 if (tbl.Rows.Count == 0) return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
 
                 DataTable rsStkPrcDesc;
-                sql = "";
-                sql += "select distinct a.autono, a.autono||a.itcd autoitcd, e.prcdesc stkprcdesc ";
-                sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_batchmst d, " + Scm1 + ".t_txn b, " + Scm1 + ".m_itemplist e, " + Scm1 + ".t_cntrl_hdr c ";
-                sql += "where a.batchautono=d.batchautono(+) and d.itmprccd=e.itmprccd(+) and a.autono=b.autono(+) and ";
-                sql += sqlc;
-                sql += "a.autono=c.autono ";
-                rsStkPrcDesc = masterHelp.SQLquery(sql);
+                //sql = "";
+                //sql += "select distinct a.autono, a.autono||a.itcd autoitcd, e.prcdesc stkprcdesc ";
+                //sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_batchmst d, " + Scm1 + ".t_txn b, " + Scm1 + ".m_itemplist e, " + Scm1 + ".t_cntrl_hdr c ";
+                //sql += "where a.batchautono=d.batchautono(+) and d.itmprccd=e.itmprccd(+) and a.autono=b.autono(+) and ";
+                //sql += sqlc;
+                //sql += "a.autono=c.autono ";
+                //rsStkPrcDesc = masterHelp.SQLquery(sql);
 
                 //string blterms = "", inspoldesc = "", dealsin = "";
                 //Int16 bankslno = 0;
@@ -3890,11 +3891,11 @@ namespace Improvar.Controllers
 
                                     if (batch_data[a]["nos"].retDbl() == 1)
                                     {
-                                        pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr();
+                                        pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retDbl().ToString("0.00");
                                     }
                                     else if (batch_data[a]["nos"].retDbl() == 0 || batch_data[a]["cutlength"].retDbl() == 0)
                                     {
-                                        pcsdesc += (batch_data[a]["nos"].retDbl() == 0 ? "" : batch_data[a]["nos"].retStr()) + (batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr());
+                                        pcsdesc += (batch_data[a]["nos"].retDbl() == 0 ? "" : batch_data[a]["nos"].retStr()) + (batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retDbl().ToString("0.00"));
                                     }
                                     else {
                                         if (VE.Checkbox9 == true)
@@ -3902,12 +3903,12 @@ namespace Improvar.Controllers
                                             for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
                                             {
                                                 pcsdesc += v == 0 ? "" : "+";
-                                                pcsdesc += batch_data[a]["cutlength"].retStr();
+                                                pcsdesc += batch_data[a]["cutlength"].retDbl().ToString("0.00");
                                             }
                                         }
                                         else
                                         {
-                                            pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                            pcsdesc += batch_data[a]["cutlength"].retDbl().ToString("0.00") + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
                                         }
                                     }
                                     if (batch_data[a]["flagmtr"].retStr() != "")
@@ -3935,11 +3936,11 @@ namespace Improvar.Controllers
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
                                     }
-                                    if (batch_data[a]["itrem"].retStr() != "")
-                                    {
-                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
-                                    }
+                                    //if (batch_data[a]["itrem"].retStr() != "")
+                                    //{
+                                    //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
+                                    //    pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
+                                    //}
                                     if (batch_data[a]["baleno"].retStr() != "")
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
@@ -4419,7 +4420,7 @@ namespace Improvar.Controllers
                 sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,  ";
                 sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,  ";
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,  ";
-                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile from  ";
+                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,z.TXBLVAL from  ";
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
@@ -4797,7 +4798,7 @@ namespace Improvar.Controllers
                             //rupinwords = Cn.AmountInWords((tbl.Rows[i]["blamt"].retDbl() - tbl.Rows[i]["advrecdamt"].retDbl()).ToString());
                             string oslcd = "", oglcd = "", odocdt = "", oclass1cd = "";
 
-                            if (doctype == "SBILL" && VE.Checkbox7 == true)
+                            if (doctype == "SATB" && VE.Checkbox7 == true)
                             {
                                 oslcd = tbl.Rows[i]["oslcd"].ToString();
                                 oglcd = tbl.Rows[i]["debglcd"].ToString();
@@ -4821,7 +4822,9 @@ namespace Improvar.Controllers
                             DataTable ptmy = masterHelp.SQLquery(qry);
                             if (ptmy.Rows.Count > 0) payamt = ptmy.Rows[0]["payamt"].retDbl();
                             Type A_T = tbl.Rows[0]["amt"].GetType(); var P_A = payamt.retDbl();
-                            Type Q_T = tbl.Rows[0]["qnty"].GetType(); Type N_S = tbl.Rows[0]["nos"].GetType(); Type I_T = tbl.Rows[0]["igstamt"].GetType();
+                            Type Q_T = tbl.Rows[0]["qnty"].GetType();
+                            //Type N_S = tbl.Rows[0]["nos"].GetType();
+                            Type I_T = tbl.Rows[0]["igstamt"].GetType();
                             Type C_T = tbl.Rows[0]["cgstamt"].GetType(); Type S_T = tbl.Rows[0]["sgstamt"].GetType();
 
                             var GST_DATA = (from DataRow DR in tbl.Rows
@@ -4836,7 +4839,7 @@ namespace Improvar.Controllers
                                                 TPAMT = P_A,
                                                 TAMT = A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("amt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("amt").retDbl())),
                                                 TQNTY = Q_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("qnty").retDbl()) : (X.Sum(Z => Z.Field<decimal>("qnty").retDbl())),
-                                                TNOS = N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos").retDbl()) : (X.Sum(Z => Z.Field<decimal>("nos").retDbl())),
+                                                //TNOS = N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos").retDbl()) : (X.Sum(Z => Z.Field<decimal>("nos").retDbl())),
                                                 IGSTAMT = I_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("igstamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("igstamt").retDbl())),
                                                 CGSTAMT = C_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("cgstamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("cgstamt").retDbl())),
                                                 SGSTAMT = S_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("sgstamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("sgstamt").retDbl())),
@@ -4847,24 +4850,13 @@ namespace Improvar.Controllers
                             {
                                 foreach (var k in GST_DATA)
                                 {
-                                    //if (k.IGSTAMT != 0) { dtldsc += "(+) IGST @ " + Cn.Indian_Number_format(k.IGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.IGSTAMT).ToINRFormat() + "~"; }
-                                    //if (k.CGSTAMT != 0) { dtldsc += "(+) CGST @ " + Cn.Indian_Number_format(k.CGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.CGSTAMT).ToINRFormat() + "~"; }
-                                    //if (k.SGSTAMT != 0) { dtldsc += "(+) SGST @ " + Cn.Indian_Number_format(k.SGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.SGSTAMT).ToINRFormat() + "~"; }
                                     tpaymt = k.TPAMT.retDbl();
-                                    //if (k.TPAMT.retDbl() != 0) { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(k.TPAMT).ToINRFormat(); }
                                     tqnty = tqnty + Convert.ToDouble(k.TQNTY);
-                                    tnos = tnos + Convert.ToDouble(k.TNOS);
                                     tamt = tamt + Convert.ToDouble(k.TAMT);
                                     tpamt = k.TPAMT.retDbl();
-                                    //tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
                                 }
                             }
                             if (tpaymt != 0) { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
-                            //if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
-                            //{
-                            //    dtldsc += "(-) " + tbl.Rows[0]["ADVRECDREM"].retStr() + "~";
-                            //    dtlamt += tbl.Rows[0]["ADVRECDAMT"].retDbl().ToINRFormat() + "~";
-                            //}
 
                             var HSN_DATA = (from a in DBF.T_VCH_GST
                                             where a.AUTONO == auto1
@@ -4881,10 +4873,6 @@ namespace Improvar.Controllers
                                                 TSGSTAMT = x.Sum(s => s.SGSTAMT),
                                                 TAMT = x.Sum(s => s.AMT),
                                                 TQNTY = x.Sum(s => s.QNTY)
-                                                //DECIMAL = (from z in DBF.M_UOM
-                                                //           where z.UOMCD == (from y in DBF.T_VCH_GST where y.AUTONO == auto1 select y.UOM).FirstOrDefault()
-                                                //           select z.DECIMALS).FirstOrDefault()
-                                                //DECIMALS = (from c in DBF.M_UOM where c.UOMCD ==  select c.DECIMALS)
                                             }).ToList();
 
                             if (HSN_DATA != null && HSN_DATA.Count > 0)
@@ -4912,8 +4900,8 @@ namespace Improvar.Controllers
                                     if (k.TQNTY != 0) { hsnqnty += Convert.ToDouble(k.TQNTY).ToString("n" + DECIMAL.ToString()) + " " + umnm + "~"; }
                                     if (k.TCGSTAMT + k.TIGSTAMT != 0)
                                     {
-                                        if (k.IGSTPER != 0) hsngstper1 += Cn.Indian_Number_format(k.IGSTPER.ToString(), "0.00") + " %~";
-                                        if (k.TIGSTAMT != 0) hsngstamt1 += Convert.ToDouble(k.TIGSTAMT).ToINRFormat() + "~";
+                                        if (k.IGSTPER != 0) hsngstper1 += Cn.Indian_Number_format(k.IGSTPER.retDbl().retStr(), "0.00") + " %~";
+                                        if (k.TIGSTAMT != 0) hsngstamt1 += Convert.ToDouble(k.TIGSTAMT.retDbl().retStr()).ToINRFormat() + "~";
                                     }
                                     else
                                     {
@@ -4922,8 +4910,8 @@ namespace Improvar.Controllers
                                     }
                                     if (k.TCGSTAMT + k.TCGSTAMT != 0)
                                     {
-                                        if (k.CGSTPER != 0) hsngstper2 += Cn.Indian_Number_format(k.CGSTPER.ToString(), "0.00") + " %~";
-                                        if (k.TCGSTAMT != 0) hsngstamt2 += Convert.ToDouble(k.TCGSTAMT).ToINRFormat() + "~";
+                                        if (k.CGSTPER != 0) hsngstper2 += Cn.Indian_Number_format(k.CGSTPER.retDbl().retStr(), "0.00") + " %~";
+                                        if (k.TCGSTAMT != 0) hsngstamt2 += Convert.ToDouble(k.TCGSTAMT.retDbl().retStr()).ToINRFormat() + "~";
                                     }
                                     else
                                     {
@@ -4933,8 +4921,8 @@ namespace Improvar.Controllers
                                     if (k.TSGSTAMT != 0)
                                     {
                                         flags = true;
-                                        if (k.SGSTPER != 0) hsngstper3 += Cn.Indian_Number_format(k.SGSTPER.ToString(), "0.00") + " %~";
-                                        if (k.TSGSTAMT != 0) hsngstamt3 += Convert.ToDouble(k.TSGSTAMT).ToINRFormat() + "~";
+                                        if (k.SGSTPER != 0) hsngstper3 += Cn.Indian_Number_format(k.SGSTPER.retDbl().retStr(), "0.00") + " %~";
+                                        if (k.TSGSTAMT != 0) hsngstamt3 += Convert.ToDouble(k.TSGSTAMT.retDbl().retStr()).ToINRFormat() + "~";
                                     }
                                     else
                                     {
@@ -4983,7 +4971,7 @@ namespace Improvar.Controllers
                                 default: copymode = ""; break;
                             }
 
-                            string negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            string negamt = (menupara == "ST"|| menupara == "AT" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
 
                             DataRow dr1 = IR.NewRow();
                         docstart:
@@ -4995,9 +4983,7 @@ namespace Improvar.Controllers
                             {
                                 if (duedays == 0) payterms = ""; else payterms = duedays.ToString() + " days.";
                             }
-
-                            //dr1["menu_para"] = VE.MENU_PARA;
-                            //dr1["pvtag"] = VE.Checkbox7 == true ? "Y" : "N";
+                            
                             dr1["menu_para"] = VE.MENU_PARA;
                             //dr1["pvtag"] = tbl.Rows[i]["pv_tag"].ToString();
                             dr1["autono"] = auto1 + ic.ToString();
@@ -5009,7 +4995,7 @@ namespace Improvar.Controllers
                             dr1["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
                             dr1["upiimg"] = "";
                             dr1["upidesc"] = "";
-                            //dr1["areacd"] = tbl.Rows[i]["areacd"].ToString();
+                           
                             dr1["invisstime"] = tbl.Rows[i]["invisstime"].retDbl();
                             dr1["duedays"] = duedays;
                             //dr1["itmprccd"] = tbl.Rows[i]["itmprccd"].ToString();
@@ -5041,90 +5027,7 @@ namespace Improvar.Controllers
                                 dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
                             }
 
-                            //dr1["slnm"] = tbl.Rows[i]["prtynm"].ToString();
-
-                            //for (int f = 1; f <= 6; f++)
-                            //{
-                            //    cfld = "prtyadd" + Convert.ToString(f).ToString();
-                            //    if (tbl.Rows[i][cfld].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                            //    }
-                            //}
-                            //rf = rf + 1;
-                            //rfld = "sladd" + Convert.ToString(rf);
-                            //dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
-                            //if (tbl.Rows[i]["gstno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["panno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["prtymob"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "Ph. # " + tbl.Rows[i]["prtymob"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                            //}
-                            //}
-                            //else
-                            //{
-                            //    dr1["slcd"] = tbl.Rows[i]["RTDEBCD"].ToString();
-                            //    dr1["slnm"] = tbl.Rows[i]["RTDEBNM"].ToString();
-                            //    dr1["regemailid"] = tbl.Rows[i]["rtdebemail"].ToString();
-
-                            //    for (int f = 1; f <= 6; f++)
-                            //    {
-                            //        cfld = "rtdebadd" + Convert.ToString(f).ToString();
-                            //        if (tbl.Rows[i][cfld].ToString() != "")
-                            //        {
-                            //            rf = rf + 1;
-                            //            rfld = "sladd" + Convert.ToString(rf);
-                            //            dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                            //        }
-                            //    }
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = tbl.Rows[i]["rtdebstnm"].ToString() + " [ Code - " + tbl.Rows[i]["rtdebstcd"].ToString() + " ]";
-                            //    if (tbl.Rows[i]["gstno"].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
-                            //    }
-                            //    if (tbl.Rows[i]["panno"].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                            //    }
-                            //    if (tbl.Rows[i]["phno"].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = "Ph. # " + tbl.Rows[i]["rtdebmob"].ToString();
-                            //    }
-                            //    if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                            //    }
-                            //}
+                           
 
 
 
@@ -5396,7 +5299,7 @@ namespace Improvar.Controllers
                                 //dr1["makenm"] = tbl.Rows[i]["makenm"].ToString();
                                 //dr1["mrp"] = tbl.Rows[i]["mrp"];
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") dr1["batchdtl"] = "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
-                                dr1["nos"] = tbl.Rows[i]["nos"].ToString();
+                                //dr1["nos"] = tbl.Rows[i]["nos"].retDbl();
                                 dr1["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
@@ -5457,7 +5360,7 @@ namespace Improvar.Controllers
                                 dr1["disc"] = strdsc;
                                 dr1["titdiscamt"] = (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["tddiscamt"]).retDbl();
                                 dr1["discamt"] = negamt == "Y" ? tbl.Rows[i]["discamt"].retDbl() * -1 : tbl.Rows[i]["discamt"].retDbl();
-                                double txblval = (tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl();
+                                double txblval = tbl.Rows[i]["TXBLVAL"].retDbl();
                                 dr1["txblval"] = (negamt == "Y" ? txblval.retDbl() * -1 : txblval.retDbl()).ToINRFormat();
 
                                 dr1["cgstdsp"] = flagi == true ? "IGST" : "CGST";
@@ -5625,10 +5528,12 @@ namespace Improvar.Controllers
                 string compfixlogosrc = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "fix.jpg";
                 string sendemailids = "";
                 string rptfile = "SaleBillHalf.rpt";
-                if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
+                //if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                                                  /* if (VE.maxdate == "CHALLAN")*/
-                blhead = "CASH MEMO";
+                blhead = "Stiching";
+                if(VE.MENU_PARA== "AT")
+                { blhead = "Alteration"; }
                 ReportDocument reportdocument = new ReportDocument();
                 if (printemail == "Email")
                 {

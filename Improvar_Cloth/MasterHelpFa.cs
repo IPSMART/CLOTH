@@ -1227,9 +1227,9 @@ namespace Improvar
             return rsTmp;
         }
         public DataTable GenOSTbl(string selglcd = "", string selslcd = "", string billupto = "", string txnupto = "", string currautono = "",
-        string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
-        string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
-        string selslgrpcd = "", bool showagent = false, string blno = "", string skipautono = "", string selrtdebcd = "")
+             string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
+             string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
+             string selslgrpcd = "", bool showagent = false, string blno = "", string skipautono = "", string selrtdebcd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "", sqlc = "";
@@ -1269,11 +1269,11 @@ namespace Improvar
                 //sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.adj_amt when a.autono in (" + skipautono + ") and (a.autono <> a.i_autono or a.autono <> a.r_autono) then a.adj_amt else 0 end) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
                 //sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then 0 when a.autono in (" + skipautono + ")  and (a.autono <> a.i_autono or a.autono <> a.r_autono) then 0 else a.adj_amt end) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
                 //sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.adj_amt else 0 end) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
-                sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then 0 else a.adj_amt end) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
+                sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then 0 when a.autono in (" + (skipautono.retStr() == "" ? "null" : skipautono) + ") then 0 else a.adj_amt end) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
                 sqlc += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".m_genleg d ";
                 sqlc += "where a.i_autono||a.i_slno=c.autono||c.slno and c.glcd=d.glcd and ";
                 if (txnupto.retStr() != "") sqlc += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-                if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and ";
+                //if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and ";
                 sqlc += "a.autono=b.autono and nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' ";
                 sqlc += "group by a.i_autono||a.i_slno ";
 
@@ -1282,12 +1282,12 @@ namespace Improvar
 
                 sql = "";
                 sql += "select a.glslcd, a.glslagcd, a.glcd, a.slcd, a.slcdclass1cd, s.parentcd, s.parentnm, s.grpcdfull, a.glslagdrcr, ";
-                sql += "a.rtdebcd, l.rtdebnm, l.mobile rtdebmobile, ";
+                sql += "a.rtdebcd, l.rtdebnm, l.mobile rtdebmobile, nvl(l.area,l.city) retdebarea, m.docno tchdocno, ";
                 sql += "a.drcr, a.autono, a.autoslno, a.doccd, a.docno, a.docdt, a.slno, nvl(a.blamt,0)-nvl(a.amt,0) oprecdamt, a.amt, a.blamt, a.itamt, a.lrno, a.lrdt, a.transnm, ";
                 if (selslgrpcd.retStr() != "") sql += "s.parentcd agslcd, s.parentnm agslnm, '' agslcity, '' agphno, ";
                 else sql += "a.agslcd, i.slnm agslnm, i.district agslcity, nvl(i.regmobile,i.phno1) agphno, ";
                 sql += "a.blno, a.bldt, nvl(a.bldt1,a.docdt) bldt1, a.ordno, a.orddt, to_char(nvl(a.duedt,a.docdt),'dd/mm/yyyy') duedt, a.crdays, a.bal_amt, a.class1cd, a.prv_adj, a.cur_adj, ";
-                sql += "g.class1nm, a.vchtype, a.loccd, a.conslcd, a.pymtrem, a.blrem, b.blrem billrem, ";
+                sql += "g.class1nm, a.vchtype, a.bltype, a.loccd, a.conslcd, a.pymtrem, a.blrem, b.blrem billrem, ";
                 sql += "e.glnm, e.linkcd, f.slnm, nvl(f.slarea,f.district) slcity, nvl(f.regmobile,f.phno1) phno, j.slnm conslnm, nvl(j.slarea,j.district) conslarea from ";
 
                 //single query starts
@@ -1301,7 +1301,7 @@ namespace Improvar
                 sql += "a.blno, to_char(a.bldt,'dd/mm/yyyy') bldt, a.bldt bldt1, a.ordno, nvl(to_char(a.orddt,'dd/mm/yyyy'),'') orddt, ";
                 sql += "nvl(a.duedt,a.bldt) duedt, nvl(a.crdays,0) crdays, ";
                 sql += "nvl(c.adj_amt,0) * decode(a.drcr,e.linkcd,1,-1) prv_adj, nvl(f.cur_adj,0) * decode(a.drcr,e.linkcd,1,-1) cur_adj, ";
-                sql += "nvl(a.class1cd,d.class1cda) class1cd, a.vchtype, b.loccd ";
+                sql += "nvl(a.class1cd,d.class1cda) class1cd, a.vchtype, a.bltype, b.loccd ";
                 sql += "from " + scmf + ".t_vch_bl a, " + scmf + ".t_cntrl_hdr b, ";
                 sql += "( ";
                 sql += "select a.autoslno, a.pymtrem, sum(a.adj_amt) adj_amt from ( ";
@@ -1319,11 +1319,11 @@ namespace Improvar
                 sql += "group by a.autono||a.dslno ) d, ";
 
                 sql += "( select a.autoslno, a.adj_amt cur_adj from ";
-                sql += "(select a.i_autono||i_slno autoslno, sum(a.adj_amt) adj_amt from " + scmf + ".t_vch_bl_adj a where a.autono in (";
+                sql += "(select a.i_autono||i_slno autoslno, sum(case when nvl(a.adj_amt,0) < 0 then a.adj_amt*-1 else a.adj_amt end) adj_amt from " + scmf + ".t_vch_bl_adj a where a.autono in (";
                 if (skipautono.retStr() != "") sql += skipautono; else sql += "'xx'";
                 sql += ") group by a.i_autono||i_slno ";
                 sql += "union all ";
-                sql += "select a.r_autono||r_slno autoslno, sum(a.adj_amt) adj_amt from " + scmf + ".t_vch_bl_adj a where a.autono in (";
+                sql += "select a.r_autono||r_slno autoslno, sum(case when nvl(a.adj_amt,0) < 0 then a.adj_amt*-1 else a.adj_amt end) adj_amt from " + scmf + ".t_vch_bl_adj a where a.autono in (";
                 if (skipautono.retStr() != "") sql += skipautono; else sql += "'xx'";
                 sql += ") group by a.r_autono||r_slno ) a ";
                 sql += " ) f, ";
@@ -1347,8 +1347,8 @@ namespace Improvar
                 sql += "nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' and ";
                 sql += "a.autono||a.slno=d.autoslno(+) and a.autono||a.slno=f.autoslno(+) ) a, ";
                 //single query end
-                //Get Bill wise Remarks
 
+                //Get Bill wise Remarks
                 sql += "( select a.autono, a.slno, a.autoslno, nvl(b.pymtrem, a.blrem) blrem from ";
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, a.blrem ";
                 sql += "from " + scmf + ".t_vch_bl a, " + scmf + ".t_cntrl_hdr b ";
@@ -1383,8 +1383,8 @@ namespace Improvar
                 //sql += "where a.parentcd||a.slcdgrpcd = c.grpcdfull(+) and a.parentcd = d.grpcdfull(+) and a.grpcd=b.grpcd and a.slcd is not null ) s, ";
 
                 sql += scmf + ".m_genleg e, " + scmf + ".m_subleg f, " + scmf + ".m_class1 g, ";
-                sql += scmf + ".m_subleg i, " + scmf + ".m_subleg j, " + scmf + ".m_subleg k, " + scmf + ".m_retdeb l ";
-                sql += "where a.glcd=e.glcd(+) and a.slcd=f.slcd and a.class1cd=g.class1cd(+) and ";
+                sql += scmf + ".m_subleg i, " + scmf + ".m_subleg j, " + scmf + ".m_subleg k, " + scmf + ".m_retdeb l, " + scmf + ".t_cntrl_hdr m ";
+                sql += "where a.glcd=e.glcd(+) and a.slcd=f.slcd and a.class1cd=g.class1cd(+) and a.autono=m.autono(+) and ";
                 sql += "a.autoslno=b.autoslno(+) and a.rtdebcd=l.rtdebcd(+) and ";
                 if (selstate.retStr() != "") sql += "f.state in (" + selstate + ") and ";
                 if (seldistrict.retStr() != "") sql += "f.district in (" + seldistrict + ") and ";
@@ -1408,6 +1408,7 @@ namespace Improvar
                     tbl.Columns.Add("autono", typeof(string));
                     tbl.Columns.Add("autoslno", typeof(string));
                     tbl.Columns.Add("doccd", typeof(string));
+                    tbl.Columns.Add("tchdocno", typeof(string));
                     tbl.Columns.Add("docno", typeof(string));
                     tbl.Columns.Add("docdt", typeof(DateTime));
                     tbl.Columns.Add("slno", typeof(double));
@@ -1437,6 +1438,7 @@ namespace Improvar
                     tbl.Columns.Add("class1cd", typeof(string));
                     tbl.Columns.Add("class1nm", typeof(string));
                     tbl.Columns.Add("vchtype", typeof(string));
+                    tbl.Columns.Add("bltype", typeof(string));
                     tbl.Columns.Add("glnm", typeof(string));
                     tbl.Columns.Add("linkcd", typeof(string));
                     tbl.Columns.Add("slnm", typeof(string));
@@ -1451,6 +1453,7 @@ namespace Improvar
                     tbl.Columns.Add("blrem", typeof(string));
                     tbl.Columns.Add("billrem", typeof(string));
                     tbl.Columns.Add("rtdebcd", typeof(string));
+                    tbl.Columns.Add("rtdebarea", typeof(string));
                     tbl.Columns.Add("rtdebnm", typeof(string));
                     tbl.Columns.Add("rtdebmobile", typeof(string));
 
@@ -1511,6 +1514,7 @@ namespace Improvar
                                 tbl.Rows[rNo]["autono"] = tbldr.Rows[i]["autono"].ToString();
                                 tbl.Rows[rNo]["autoslno"] = tbldr.Rows[i]["autoslno"].ToString();
                                 tbl.Rows[rNo]["doccd"] = tbldr.Rows[i]["doccd"].ToString();
+                                tbl.Rows[rNo]["tchdocno"] = tbldr.Rows[i]["tchdocno"].ToString();
                                 tbl.Rows[rNo]["docno"] = tbldr.Rows[i]["docno"].ToString();
                                 tbl.Rows[rNo]["docdt"] = Convert.ToDateTime(tbldr.Rows[i]["docdt"]);
                                 tbl.Rows[rNo]["slno"] = Convert.ToDouble(tbldr.Rows[i]["slno"] == DBNull.Value ? 0 : tbldr.Rows[i]["slno"]);
@@ -1542,6 +1546,7 @@ namespace Improvar
                                 tbl.Rows[rNo]["class1cd"] = tbldr.Rows[i]["class1cd"].ToString();
                                 tbl.Rows[rNo]["class1nm"] = tbldr.Rows[i]["class1nm"].ToString();
                                 tbl.Rows[rNo]["vchtype"] = tbldr.Rows[i]["vchtype"].ToString();
+                                tbl.Rows[rNo]["bltype"] = tbldr.Rows[i]["bltype"].ToString();
                                 tbl.Rows[rNo]["glnm"] = tbldr.Rows[i]["glnm"].ToString();
                                 tbl.Rows[rNo]["linkcd"] = tbldr.Rows[i]["linkcd"].ToString();
                                 tbl.Rows[rNo]["slnm"] = tbldr.Rows[i]["slnm"].ToString();
@@ -1589,6 +1594,7 @@ namespace Improvar
                                     tbl.Rows[rNo]["autono"] = tblcr.Rows[i]["autono"].ToString();
                                     tbl.Rows[rNo]["autoslno"] = tblcr.Rows[i]["autoslno"].ToString();
                                     tbl.Rows[rNo]["doccd"] = tblcr.Rows[i]["doccd"].ToString();
+                                    tbl.Rows[rNo]["tchdocno"] = tblcr.Rows[i]["docno"].ToString();
                                     tbl.Rows[rNo]["docno"] = tblcr.Rows[i]["docno"].ToString();
                                     tbl.Rows[rNo]["docdt"] = Convert.ToDateTime(tblcr.Rows[i]["docdt"]);
                                     tbl.Rows[rNo]["slno"] = Convert.ToDouble(tblcr.Rows[i]["slno"] == DBNull.Value ? 0 : tblcr.Rows[i]["slno"]);
@@ -1617,6 +1623,7 @@ namespace Improvar
                                     tbl.Rows[rNo]["class1cd"] = tblcr.Rows[i]["class1cd"].ToString();
                                     tbl.Rows[rNo]["class1nm"] = tblcr.Rows[i]["class1nm"].ToString();
                                     tbl.Rows[rNo]["vchtype"] = tblcr.Rows[i]["vchtype"].ToString();
+                                    tbl.Rows[rNo]["bltype"] = tblcr.Rows[i]["bltype"].ToString();
                                     tbl.Rows[rNo]["glnm"] = tblcr.Rows[i]["glnm"].ToString();
                                     tbl.Rows[rNo]["linkcd"] = tblcr.Rows[i]["linkcd"].ToString();
                                     tbl.Rows[rNo]["slnm"] = tblcr.Rows[i]["slnm"].ToString();
@@ -2448,5 +2455,6 @@ namespace Improvar
             DB.SaveChanges();
             return;
         }
+      
     }
 }

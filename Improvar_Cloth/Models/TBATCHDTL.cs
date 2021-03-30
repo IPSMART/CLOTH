@@ -193,5 +193,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
         public string NOOFROWCOPY { get; set; }
+        public string RECPROGITCD { get; set; }
+        public string RECPROGITSTYLE { get; set; }
     }
 }
