@@ -355,7 +355,7 @@ namespace Improvar.Controllers
 
                         sql = "";
                         sql += "select a.autono, a.slno, b.doccd, a.blno, a.bldt, a.pos,a.gstslnm posslnm,a.gstno posgstno,a.gstslpin pospin,a.gstsldist posdist ,a.gstsladd1 posadd1,a.gstsladd2 posadd2,";
-                        sql += "a.SHIPDOCNO,a.SHIPDOCDT,a.PORTCD, a.basamt , a.discamt,a.GOOD_SERV,dncnsalpur, ";
+                        sql += "a.SHIPDOCNO,a.SHIPDOCDT,a.PORTCD, a.basamt , a.discamt, a.GOOD_SERV,dncnsalpur, ";
                         sql += " translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,p.PROPNAME LegalNm, d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
 
                         sql += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno,p.PROPNAME bLegalNm, p.add1||' '||p.add2 badd1, ";
@@ -484,9 +484,9 @@ namespace Improvar.Controllers
                             itemlst.FreeQty = 0;
                             itemlst.Unit = dt.Rows[i]["guomcd"].retStr();
                             itemlst.UnitPrice = dt.Rows[i]["rate"].retDbl().toRound(3);
-                            itemlst.TotAmt = dt.Rows[i]["basamt"].retDbl();
-                            itemlst.Discount = dt.Rows[i]["discamt"].retDbl();
-                            itemlst.PreTaxVal = dt.Rows[i]["txablamt"].retDbl();
+                            itemlst.TotAmt = dt.Rows[i]["basamt"].retDbl() + (dt.Rows[i]["discamt"].retDbl() < 0 ? dt.Rows[i]["discamt"].retDbl() * -1 : 0);
+                            itemlst.Discount = (dt.Rows[i]["discamt"].retDbl() < 0?0:dt.Rows[i]["discamt"].retDbl());
+                            itemlst.PreTaxVal = dt.Rows[i]["txablamt"].retDbl() ;
                             itemlst.AssAmt = dt.Rows[i]["txablamt"].retDbl();
                             tottxablamt += dt.Rows[i]["txablamt"].retDbl();
                             itemlst.GstRt = dt.Rows[i]["cgstper"].retDbl() + dt.Rows[i]["sgstper"].retDbl() + dt.Rows[i]["igstper"].retDbl();

@@ -23,10 +23,8 @@ namespace Improvar.Models
 
         [StringLength(20)]
         public string MENU_PROGCALL { get; set; }
-
         [StringLength(10)]
         public string MENU_PARA { get; set; }
-
         [StringLength(5)]
         public string FLAG1 { get; set; }
         [StringLength(15)]
