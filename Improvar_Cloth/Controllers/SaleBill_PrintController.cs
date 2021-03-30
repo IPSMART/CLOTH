@@ -5531,7 +5531,9 @@ namespace Improvar.Controllers
                 //if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                                                  /* if (VE.maxdate == "CHALLAN")*/
-                blhead = "CASH MEMO";
+                blhead = "Stiching";
+                if(VE.MENU_PARA== "AT")
+                { blhead = "Alteration"; }
                 ReportDocument reportdocument = new ReportDocument();
                 if (printemail == "Email")
                 {
