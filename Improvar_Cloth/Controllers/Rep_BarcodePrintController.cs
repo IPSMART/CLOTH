@@ -239,7 +239,7 @@ namespace Improvar.Controllers
                         {
                             DataRow dr = IR.NewRow();
                             string barno = VE.BarcodePrint[i].BARNO.retStr();
-                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte");
+                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte",false);
                             dr["brcodeImage"] = brcodeImage;
                             dr["barno"] = barno;
                             dr["compinit"] = "";

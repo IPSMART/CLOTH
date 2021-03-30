@@ -407,7 +407,7 @@ namespace Improvar.Controllers
                     IR_PROG.Rows[rNo]["nos"] = tbl.Rows[i]["nos"];
                     IR_PROG.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"];
                     IR_PROG.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"];
-                    byte[] brcodeImage = (byte[])Cn.GenerateBarcode(tbl.Rows[i]["proguniqno"].retStr(), "byte");
+                    byte[] brcodeImage = (byte[])Cn.GenerateBarcode(tbl.Rows[i]["proguniqno"].retStr(), "byte",false);
                     IR_PROG.Rows[rNo]["progunqbarimg"] = brcodeImage;
                     IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
                     IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
