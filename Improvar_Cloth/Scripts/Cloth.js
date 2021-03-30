@@ -49,12 +49,14 @@ function FillImageModal(FieldId) {
     var arr = $("#" + FieldId).val();
     arr = arr.split(String.fromCharCode(179));
     $.each(arr, function (index, value) {
-        var imgname = (value.split('~')[0]);
-        var id = (imgname).split('.')[0];
+        var imgurl = (value.split('~')[0]);
         var ImageDesc = (value.split('~')[1]);
+        var imgurlarr = imgurl.split('/');
+        var id = (imgurlarr[imgurlarr.length - 1]).split('.')[0];
+
         var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
         htm += '<div id="' + id + '" class="item ' + actt + '">';
-        htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+        htm += '    <img src="' + imgurl + '" alt="Img Not Found" style="width:100%;">';
         htm += '    <span class="carousel-caption">';
         htm += '    <p> ' + ImageDesc + ' </p>';
         htm += '    </span>';

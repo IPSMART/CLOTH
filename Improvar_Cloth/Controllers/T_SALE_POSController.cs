@@ -192,7 +192,7 @@ namespace Improvar.Controllers
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
                                     TXNMEMO.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
                                     TXNMEMO.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
-                                   
+
                                     VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
                                     var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
                                     VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
@@ -591,7 +591,7 @@ namespace Improvar.Controllers
                         //             BALSTOCK = dr["BALQNTY"].retDbl(),
                         //             NEGSTOCK = dr["negstock"].retStr()
                         //         }).FirstOrDefault();
-                      
+
                         var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (DATA.Count() > 0)
                         {
@@ -628,18 +628,6 @@ namespace Improvar.Controllers
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
                                     v.BarImages = v.BarImages.retStr().TrimStart((char)179);
-                                    //
-                                    //v.BarImages = tax_data.Rows[0]["barimage"].retStr();
-                                    //var brimgs = v.BarImages.retStr().Split((char)179);
-                                    //v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
-                                    //foreach (var barimg in brimgs)
-                                    //{
-                                    //    string barfilename = barimg.Split('~')[0];
-                                    //    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
-                                    //    FROMpath = Path.Combine(FROMpath, "");
-                                    //    string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
-                                    //    Cn.CopyImage(FROMpath, TOPATH);
-                                    //}
                                 }
                             }
                         }
@@ -672,7 +660,7 @@ namespace Improvar.Controllers
                         //             BALSTOCK = dr["BALQNTY"].retDbl(),
                         //             NEGSTOCK = dr["negstock"].retStr()
                         //         }).FirstOrDefault();
-                      
+
                         var R_DATA = R_allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (R_DATA.Count() > 0)
                         {
@@ -3698,11 +3686,11 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
-            dbok:;
+                dbok:;
             }
             catch (Exception ex)
             {
