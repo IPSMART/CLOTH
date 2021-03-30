@@ -109,9 +109,19 @@
 </script>
 <script>
     function CalculateBlamt() {
+        var TOTTAX = 0;
         var TAXABVAL = retFloat($("#TAXABVAL").val());
         var GSTPER = retFloat($("#GSTPER").val());
-        var TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
+        var IGSTPER = retFloat($("#IGSTPER").val());
+        if (IGSTPER == 0) {
+            GSTPER = GSTPER / 2;
+            TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
+            TOTTAX = TOTTAX * 2;
+        }
+        else {
+            TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
+        }
+        
         $("#TOTTAX").val(TOTTAX);
         var blamt = 0;
         var RoundOfchk = document.getElementById("RoundOff").checked;
