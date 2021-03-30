@@ -249,7 +249,7 @@ namespace Improvar.Controllers
                         ItemDet ItemDet = new ItemDet();
                         if (BARGENTYPE == "E")
                         {
-                            ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
+                            ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "", "F", BARGENTYPE, itnm);
                         }
                         else
                         {
@@ -331,6 +331,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.TXNSLNO = TTXNDTL.SLNO;
                         TBATCHDTL.SLNO = ++batchslno;
                         TBATCHDTL.BARNO = TTXNDTL.BARNO;
+                        TBATCHDTL.COMMONUNIQBAR = BARGENTYPE;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
                         if (BARGENTYPE == "E")
                         {

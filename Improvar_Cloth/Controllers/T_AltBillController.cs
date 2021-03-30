@@ -905,16 +905,16 @@ namespace Improvar.Controllers
                         GSTAMT = (VE.TAXABVAL * GSTPER / 100).toRound(2);
                         TTXNDTL.CGSTAMT = GSTAMT;
                         TTXNDTL.SGSTAMT = GSTAMT;
+                        TTXNDTL.CGSTPER = GSTPER;
+                        TTXNDTL.SGSTPER = GSTPER;
                     }
                     else
                     {
                         GSTPER = VE.GSTPER;
                         GSTAMT = (VE.TAXABVAL * GSTPER / 100).toRound(2);
                         TTXNDTL.IGSTAMT = GSTAMT;
+                        TTXNDTL.IGSTPER = GSTPER;
                     }
-                    TTXNDTL.IGSTPER = GSTPER;
-                    TTXNDTL.CGSTPER = GSTPER;
-                    TTXNDTL.SGSTPER = GSTPER;
                     igst = igst + Convert.ToDouble(TTXNDTL.IGSTAMT);
                     cgst = cgst + Convert.ToDouble(TTXNDTL.CGSTAMT);
                     sgst = sgst + Convert.ToDouble(TTXNDTL.SGSTAMT);
