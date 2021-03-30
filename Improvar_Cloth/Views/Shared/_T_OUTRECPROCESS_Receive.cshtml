@@ -104,10 +104,10 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_OUTRECPROCESS_Receive_Grid', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_OUTRECPROCESS_Receive_Grid', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SHORTQNTY, new { htmlAttributes = new { id = "B_SHORTQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })

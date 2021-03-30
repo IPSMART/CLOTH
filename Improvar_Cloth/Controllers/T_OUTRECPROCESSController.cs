@@ -393,10 +393,10 @@ namespace Improvar.Controllers
                 //                   SAMPLE = dr["sample"].retStr(),
                 //                   CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
                 //               }).OrderBy(s => s.SLNO).ToList();
-               
+
                 VE.TPROGDTL = (from dr in Progdtltbl.AsEnumerable()
-                               join dr1 in pendprogramme.AsEnumerable() on dr.Field<string>("PROGAUTOSLNO") equals dr1.Field<string>("PROGAUTOSLNO") into Z
-                               from dr1 in Z.DefaultIfEmpty()
+                               //join dr1 in pendprogramme.AsEnumerable() on dr["PROGAUTOSLNO"] equals dr1["PROGAUTOSLNO"] into Z
+                               //from dr1 in Z.DefaultIfEmpty()
                                select new TPROGDTL()
                                {
                                    SLNO = dr["SLNO"].retShort(),
@@ -421,12 +421,35 @@ namespace Improvar.Controllers
                                    ITREMARK = dr["ITREMARK"].retStr(),
                                    SAMPLE = dr["sample"].retStr(),
                                    CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
-                                   BALNOS = dr1["BALNOS"].retDbl(),
-                                   BALQNTY = dr1["BALQNTY"].retDbl(),
-                                   COMMONUNIQBAR = dr1["COMMONUNIQBAR"].retStr(),
-                                   CUTLENGTH = dr1["CUTLENGTH"].retDbl(),
+                                   //BALNOS = dr1["BALNOS"].retDbl(),
+                                   //BALQNTY = dr1["BALQNTY"].retDbl(),
+                                   //COMMONUNIQBAR = dr1["COMMONUNIQBAR"].retStr(),
+                                   //CUTLENGTH = dr1["CUTLENGTH"].retDbl(),
                                    SHORTQNTY = dr["SHORTQNTY"].retDbl(),
                                }).OrderBy(s => s.SLNO).ToList();
+                if (pendprogramme != null && pendprogramme.Rows.Count > 0)
+                {
+                    foreach (var v in VE.TPROGDTL)
+                    {
+                        string PROGAUTOSLNO = v.PROGAUTOSLNO;
+                        var data = (from DataRow dr in pendprogramme.Rows
+                                    where dr["PROGAUTOSLNO"].retStr() == PROGAUTOSLNO
+                                    select new
+                                    {
+                                        BALNOS = dr["BALNOS"].retDbl(),
+                                        BALQNTY = dr["BALQNTY"].retDbl(),
+                                        COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                        CUTLENGTH = dr["CUTLENGTH"].retDbl()
+                                    }).ToList();
+                        if (data != null && data.Count() > 0)
+                        {
+                            v.BALNOS = data[0].BALNOS.retDbl();
+                            v.BALQNTY = data[0].BALQNTY.retDbl();
+                            v.COMMONUNIQBAR = data[0].COMMONUNIQBAR.retStr();
+                            v.CUTLENGTH = data[0].CUTLENGTH.retDbl();
+                        }
+                    }
+                }
 
                 VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
                 VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();

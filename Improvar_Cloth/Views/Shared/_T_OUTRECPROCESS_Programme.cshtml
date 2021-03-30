@@ -20,7 +20,7 @@
                     <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
                 }
                 <div class="col-md-8">
-                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_OUTRECPROCESS_Programme_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 @if (Model.DefaultAction != "V")
@@ -155,15 +155,15 @@
                                         @if (Model.MENU_PARA == "DY")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", onblur = "CalculateQNTY('" + i + "');", @style = "text-align:right;", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);",  @style = "text-align:right;", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                         }
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgramme();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_OUTRECPROCESS_Programme_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].BALNOS, new { id = "P_BALNOS_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "ChkQntyNosProgramme('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_OUTRECPROCESS_Programme_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].BALQNTY, new { id = "P_BALQNTY_" + i })
                                         </td>
                                         <td class="">

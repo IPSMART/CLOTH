@@ -457,6 +457,7 @@
         //}
         if (T_QNTY > BALQNTY) {
             msgInfo("total Qnty is grater than balance qnty..");
+            ClearAllTextBoxes("P_NOS_" + i + ",P_QNTY_" + i);
             message_value = "P_QNTY_" + i;
             return false;
         }
@@ -1234,6 +1235,40 @@
             document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
         }
 
+    }
+</script>
+<script>
+    function CalculateBargridQnty(tableid, index) {
+        debugger;
+        var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
+        if (tableid == "_T_OUTRECPROCESS_Programme_GRID") {
+            CUTLENGTHID = "P_CUTLENGTH_" + index;
+            NOSID = "P_NOS_" + index;
+            QNTYID = "P_QNTY_" + index;
+            UOMID = "P_UOM_" + index;
+        }
+        else {
+            CUTLENGTHID = "B_CUTLENGTH_" + index;
+            NOSID = "B_NOS_" + index;
+            QNTYID = "B_QNTY_" + index;
+            UOMID = "B_UOM_" + index;
+        }
+       
+        if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
+            var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
+            $("#" + QNTYID).val(retFloat(qnty));
+        }
+        if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
+            $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
+        }
+        if (tableid == "_T_OUTRECPROCESS_Programme_GRID") {
+            CalculateTotalProgramme();
+            ChkQntyNosProgramme(index);
+        }
+        else {
+            CalculateTotal_Barno();
+            HasChangeBarSale();
+        }
     }
 </script>
 <script>
