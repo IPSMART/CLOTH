@@ -1528,6 +1528,7 @@ namespace Improvar.Controllers
                             MSUBLEG.OTHADDPIN = VE.M_SUBLEG.OTHADDPIN;
                             MSUBLEG.OTHADDREM = VE.M_SUBLEG.OTHADDREM;
                             MSUBLEG.ACTNAMEOF = VE.M_SUBLEG.ACTNAMEOF;
+                            MSUBLEG.SUBDISTRICT = VE.M_SUBLEG.SUBDISTRICT;
 
                             MSUBLEG.ADD1 = VE.M_SUBLEG.ADD1.retStr().Trim();
                             MSUBLEG.ADD2 = VE.M_SUBLEG.ADD2.retStr().Trim();
@@ -1547,7 +1548,8 @@ namespace Improvar.Controllers
                             MSUBLEG.ADD4 = VE.M_SUBLEG.EXTADDR;
                             MSUBLEG.ADD5 = VE.M_SUBLEG.LANDMARK;
                             MSUBLEG.ADD6 = (VE.M_SUBLEG.DISTRICT + " " + VE.M_SUBLEG.PIN).Trim();
-                            MSUBLEG.ADD7 = VE.M_SUBLEG.STATE; if (VE.DefaultAction == "E")
+                            MSUBLEG.ADD7 = (VE.M_SUBLEG.SUBDISTRICT.retStr() != ""?"DIST " + VE.M_SUBLEG.SUBDISTRICT.retStr() + " , "+VE.M_SUBLEG.STATE: VE.M_SUBLEG.STATE).Trim();
+                            if (VE.DefaultAction == "E")
                             {
                                 MSUBLEG.SLCD = VE.M_SUBLEG.SLCD;
                                 MSUBLEG.M_AUTONO = VE.M_SUBLEG.M_AUTONO;

@@ -116,7 +116,7 @@ namespace Improvar.Models
         [StringLength(2)]
         public string SLCOMPTYPE { get; set; }
 
-        [StringLength(60)]
+        [StringLength(100)]
         public string PROPNAME { get; set; }
 
         [StringLength(20)]
@@ -243,6 +243,7 @@ namespace Improvar.Models
         public string PARTYCD { get; set; }
         [StringLength(15)]
         public string CENNO { get; set; }
-
+        [StringLength(40)]
+        public string SUBDISTRICT { get; set; }
     }
 }

@@ -29,5 +29,7 @@ namespace Improvar.Models
 
         [StringLength(5)]
         public string FLAG1 { get; set; }
+        [StringLength(15)]
+        public string MODULE_CODE { get; set; }
     }
 }

@@ -317,6 +317,33 @@ namespace Improvar
                          }).ToList();
             return LineList;
         }
+        public List<DropDown_list_RTCD> GetRtDebCdforSelection()
+        {
+            List<DropDown_list_RTCD> sllist = new List<DropDown_list_RTCD>();
+            using (ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string sql = "";
+
+                sql = "select distinct a.rtdebcd, a.rtdebnm, a.mobile, a.area ";
+                sql += "from " + scmf + ".m_retdeb a, " + scmf + ".m_cntrl_hdr b, " + scmf + ".m_cntrl_loca c ";
+                sql += "where a.m_autono=b.m_autono(+) and a.m_autono=c.m_autono(+) and ";
+                sql += "nvl(b.inactive_tag,'N')='N' and ";
+                sql += "(c.compcd='" + COM + "' or c.compcd is null) and (c.loccd='" + LOC + "' or c.loccd is null) ";
+                sql += "order by rtdebnm ";
+                DataTable tbl = MasterHelp.SQLquery(sql);
+
+                sllist = (from DataRow dr in tbl.Rows
+                          select new DropDown_list_RTCD()
+                          {
+                              text = dr["rtdebnm"].ToString(),
+                              value = dr["rtdebcd"].ToString(),
+                              mobile = dr["mobile"].ToString(),
+                              add = dr["area"].ToString(),
+                          }).ToList();
+            }
+            return sllist;
+        }
 
     }
 }
