@@ -336,7 +336,7 @@ namespace Improvar.Controllers
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C","");
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-                        TTXNDTL.ITNM = style;
+                        TTXNDTL.ITSTYLE = style;
                         TTXNDTL.MTRLJOBCD = "FS";
 
                         TTXNDTL.STKDRCR = "D";

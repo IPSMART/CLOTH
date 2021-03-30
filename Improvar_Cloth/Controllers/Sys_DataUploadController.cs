@@ -233,21 +233,24 @@ namespace Improvar.Controllers
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
                         string style = inrdr["STYLENO"].ToString();
+                        string itnm = inrdr["ITNM"].ToString();
                         string grpnm = inrdr["ITGRPNM"].ToString();
                         string HSNCODE = inrdr["HSNCODE"].ToString();
                         string BARGENTYPE = inrdr["COMMONUNIQBAR"].ToString();
                         TTXNDTL.UOM = inrdr["UOMCD"].ToString();
                         TTXNDTL.BARNO = inrdr["BARNO"].ToString();
+                        
+
                         string FABITNM = inrdr["FABITNM"].ToString(); string fabitcd = "";
                         if (FABITNM != "")
                         {
                             ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "C", BARGENTYPE,"");
                             fabitcd = FABITDet.ITCD;
                         }
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE,"");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
 
-                        TTXNDTL.ITNM = style;
+                        TTXNDTL.ITSTYLE = style+ " "+itnm;
                         TTXNDTL.MTRLJOBCD = "FS";
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
