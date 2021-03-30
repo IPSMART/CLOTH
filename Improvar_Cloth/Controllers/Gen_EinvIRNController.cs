@@ -22,7 +22,7 @@ namespace Improvar.Controllers
         string LOC = CommVar.Loccd(CommVar.getQueryStringUNQSNO()), COM = CommVar.Compcd(CommVar.getQueryStringUNQSNO()), scm1 = CommVar.CurSchema(CommVar.getQueryStringUNQSNO()), scmf = CommVar.FinSchema(CommVar.getQueryStringUNQSNO());
         // GET: Gen_EinvIRN
         public ActionResult Gen_EinvIRN(string reptype = "")
-        {
+        {  
             try
             {
                 if (Session["UR_ID"] == null)
