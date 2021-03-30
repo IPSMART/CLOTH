@@ -184,8 +184,20 @@ namespace Improvar.Controllers
                             {
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
-                                var jobcd = (from i in DB.M_JOBMST where i.JOBCD == VE.MENU_PARA select new { JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
-                                if (jobcd != null) { TTXN.JOBCD = jobcd.JOBCD; VE.JOBNM = jobcd.JOBNM; }
+                                if(VE.MENU_PARA == "JW")
+                                {
+                                    string doccd = VE.DocumentType.FirstOrDefault().value;
+                                    var jobcd = (from i in DB.T_TXN
+                                                 join j in DB.M_JOBMST on i.JOBCD equals j.JOBCD
+                                                 orderby i.AUTONO descending
+                                                 where i.DOCCD == doccd select new { JOBCD = i.JOBCD, JOBNM = j.JOBNM }).FirstOrDefault();
+                                    if (jobcd != null) { TTXN.JOBCD = jobcd.JOBCD; VE.JOBNM = jobcd.JOBNM; }
+                                }
+                                else
+                                {
+                                    var jobcd = (from i in DB.M_JOBMST where i.JOBCD == VE.MENU_PARA select new { JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
+                                    if (jobcd != null) { TTXN.JOBCD = jobcd.JOBCD; VE.JOBNM = jobcd.JOBNM; }
+                                }
 
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 TempData.Keep();
@@ -634,6 +646,12 @@ namespace Improvar.Controllers
                             }).ToList();
                 foreach (var v in VE.TBATCHDTL)
                 {
+                    var progdata = (from a in VE.TPROGDTL where a.SLNO == v.RECPROGSLNO select new { a.ITCD, a.ITNM }).FirstOrDefault();
+                    if (progdata != null)
+                    {
+                        v.RECPROGITCD = progdata.ITCD;
+                        v.RECPROGITSTYLE = progdata.ITNM;
+                    }
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
@@ -882,6 +900,8 @@ namespace Improvar.Controllers
                                 TOTALREQQTY = (P.Sum(A => A.QNTY.retDbl())).retDbl(),
                                 USEDQTY = (P.Sum(A => A.QNTY.retDbl())).retDbl(),
                                 QNTY = (P.Sum(A => A.QNTY.retDbl())).retDbl(),
+                                RECPROGITCD = P.Key.ITCD.retStr(),
+                                RECPROGITSTYLE = P.Key.ITNM.retStr(),
                             }).ToList();
                 }
                 else
@@ -893,7 +913,8 @@ namespace Improvar.Controllers
                                 x.ITCD,
                                 x.ITNM,
                                 x.UOM,
-                                x.SLNO
+                                x.SLNO,
+                                x.QITNM,
                             } into P
                             select new TPROGDTL
                             {
@@ -904,6 +925,8 @@ namespace Improvar.Controllers
                                 TOTALREQQTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl(),
                                 USEDQTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl(),
                                 QNTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl(),
+                                RECPROGITCD = "",
+                                RECPROGITSTYLE = P.Key.QITNM.retStr(),
                             }).ToList();
 
                 }
@@ -928,7 +951,9 @@ namespace Improvar.Controllers
                     {
                         string itcd = bomdata.Rows[i]["itcd"].retStr();
                         short progslno = bomdata.Rows[i]["progslno"].retShort();
-                        currentadjqnty = VE.TBATCHDTL.Where(a => a.ITCD == itcd && a.RECPROGSLNO == progslno).Sum(b => b.QNTY).retDbl();
+                        currentadjqnty = VE.TBATCHDTL.Where(a => a.RECPROGSLNO == progslno).Sum(b => b.QNTY).retDbl();
+
+                        //currentadjqnty = VE.TBATCHDTL.Where(a => a.ITCD == itcd && a.RECPROGSLNO == progslno).Sum(b => b.QNTY).retDbl();
                     }
                     bomdata.Rows[i]["USEDQTY"] = currentadjqnty.retDbl();
                     bomdata.Rows[i]["TOTALQNTY"] = (bomdata.Rows[i]["TOTALREQQTY"].retDbl() - currentadjqnty.retDbl()) + "~~" + bomdata.Rows[i]["TOTALREQQTY"].retDbl();
@@ -2306,15 +2331,17 @@ namespace Improvar.Controllers
             {
 
                 #region QtyRequirement
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 VE.TPROGBOM = (from a in VE.TBATCHDTL
+                               join b in DB.M_SITEM on a.RECPROGITCD equals b.ITCD
                                select new TPROGBOM()
                                {
                                    SLNO = a.RECPROGSLNO.retShort(),
                                    //RSLNO = a.SLNO.retShort(),
                                    QQNTY = a.BOMQNTY.retStr() == "" ? 0 : Regex.Split(a.BOMQNTY, @"\~\~")[1].retDbl(),
                                    QNTY = a.QNTY.retDbl(),
-                                   QITNM = a.ITSTYLE.retStr(),
-                                   QUOM = a.UOM.retStr(),
+                                   QITNM = a.RECPROGITSTYLE.retStr(),
+                                   QUOM = b.UOMCD.retStr(),
                                    BARNO = a.BARNO.retStr(),
                                    ITGRPCD = a.ITGRPCD.retStr(),
                                    ITGRPNM = a.ITGRPNM.retStr(),
@@ -3342,7 +3369,7 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_progmast", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                 
+
 
                     dbsql = masterHelp.TblUpdt("T_TXNOTH", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }

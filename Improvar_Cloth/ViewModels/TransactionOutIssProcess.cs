@@ -190,5 +190,7 @@ namespace Improvar.ViewModels
 
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public double? CUTLENGTH { get; set; }
+        public string RECPROGITCD { get; set; }
+        public string RECPROGITSTYLE { get; set; }
     }
 }

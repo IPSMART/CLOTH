@@ -883,9 +883,21 @@
                 $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
                 $("#CUTLENGTH").val($(FieldidStarting + "CUTLENGTH_" + i).val());
             }
-            $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
-            $("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
-            $("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
+            if (MENU_PARA == "DY") {
+                if (Table != "COPYLROW") {
+                    $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
+                }
+            }
+            else {
+                $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
+            }
+            //$("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
+            $("#RECPROGITCD").val($(FieldidStarting + "RECPROGITCD_" + i).val());
+            $("#RECPROGITSTYLE").val($(FieldidStarting + "RECPROGITSTYLE_" + i).val());
+            //$("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
+            //$("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
+            $("#BOMITCD").val($(FieldidStarting + "RECPROGITCD_" + i).val());
+            $("#BOMITNM").val($(FieldidStarting + "RECPROGITSTYLE_" + i).val());
             $("#BOMQNTY").val($(FieldidStarting + "BOMQNTY_" + i).val());
             $("#DISCRATE").val($(FieldidStarting + "DISCRATE_" + i).val());
             $("#DISCTYPE").val($(FieldidStarting + "DISCTYPE_" + i).val());
@@ -1079,6 +1091,14 @@
         if (RECPROGSLNO == "") {
             RECPROGSLNO = SLNO;
         }
+        var RECPROGITCD = $("#BOMITCD").val();
+        if (RECPROGITCD == "") {
+            RECPROGITCD = ITCD;
+        }
+        var RECPROGITSTYLE = $("#BOMITNM").val();
+        if (RECPROGITSTYLE == "") {
+            RECPROGITSTYLE = ITSTYLE;
+        }
         var CUTLENGTH = $("#CUTLENGTH").val();
 
         //get bill slno
@@ -1173,8 +1193,8 @@
         tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
         tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
         tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
-        tr += '        <input id="B_RECPROGSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO" type="hidden" value="' + RECPROGSLNO + '">';
-
+        //tr += '        <input id="B_RECPROGSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO" type="hidden" value="' + RECPROGSLNO + '">';
+        tr += '        <input id="B_TXNSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="' + TXNSLNO + '">';
         tr += '        <input id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" type="hidden" value="' + DISCTYPE_DESC + '">';
         tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
         tr += '        <input id="B_DISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCRATE" type="hidden" value="' + DISCRATE + '">';
@@ -1192,13 +1212,21 @@
         tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
         tr += '    </td>';
-        tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
+        //tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
+        //tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:40px" title="' + RECPROGSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field RECPROGSLNO must be a number." data-val-required="The RECPROGSLNO field is required." id="B_RECPROGSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" readonly="readonly" type="text" value="' + RECPROGSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + RECPROGITSTYLE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_RECPROGITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGITSTYLE" readonly="readonly" type="text" value="' + RECPROGITSTYLE + '">';
+        tr += '        <input id="B_RECPROGITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGITCD" type="hidden" value="' + RECPROGITCD + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + ITGRPNM + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
         tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
         tr += '    </td>';
+
         tr += '    <td class="" title="' + MTRLJOBCD + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="' + MTRLJOBCD + '">';
         tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
@@ -1483,6 +1511,8 @@
                 $("#B_CUTLENGTH_" + j).val($("#CUTLENGTH").val());
                 $("#B_BOMQNTY_" + j).val($("#BOMQNTY").val());
                 $("#B_RECPROGSLNO_" + j).val($("#RECPROGSLNO").val());
+                $("#B_RECPROGITCD_" + j).val($("#RECPROGITCD").val());
+                $("#B_RECPROGITSTYLE_" + j).val($("#RECPROGITSTYLE").val());
                 $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
                 $("#B_NEGSTOCK_" + j).val($("#NEGSTOCK").val());
                 $("#B_UOM_" + j).val($("#UOM").val());
@@ -1575,7 +1605,7 @@
         $("#TDDISCTYPE").val("P");
         $("#SCMDISCTYPE").val("P");
         if (TAG != "B") {
-            ClearAllTextBoxes("BOMITCD,BOMITNM,BOMQNTY,RECPROGSLNO");
+            ClearAllTextBoxes("BOMITCD,BOMITNM,BOMQNTY,RECPROGSLNO,RECPROGITCD,RECPROGITSTYLE");
         }
         if (TAG == "Y") {
             $("#AddRow_Barcode").show();
@@ -2296,7 +2326,7 @@
                             @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    @if (Model.DefaultAction != "V")
+                    @if (Model.DefaultAction != "V" && Model.MENU_PARA == "JW")
                     { <div class="col-md-1" style="width:auto;">
                         <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Get Data From Cash Memo" title="Click to Get Data From Cash Memo" onclick="GetCashMemoDetails()" />
                     </div>
@@ -2404,8 +2434,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.BOMITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BOMITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4','RECPROGSLNO','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4','RECPROGSLNO','Y');", @placeholder = "Code", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBomItemDetails", PageControllerName)','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4','RECPROGSLNO','Y')" />
+                                        @Html.EditorFor(model => model.BOMITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BOMITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4/RECPROGITCD=PROGITCD/RECPROGITSTYLE=PROGITSTYLE','RECPROGSLNO','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4/RECPROGITCD=PROGITCD/RECPROGITSTYLE=PROGITSTYLE','RECPROGSLNO','Y');", @placeholder = "Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBomItemDetails", PageControllerName)','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4/RECPROGITCD=PROGITCD/RECPROGITSTYLE=PROGITSTYLE','RECPROGSLNO','Y')" />
                                     </div>
                                 </div>
                                 <div class="col-md-8">
@@ -2413,6 +2443,8 @@
                                         @Html.EditorFor(model => model.BOMITNM, new { htmlAttributes = new { @class = "form-control", id = "BOMITNM", @title = "Bom Item Name", @placeholder = "Bom Item Name", @readonly = "readonly", @TabIndex = -1 } })
                                         @Html.HiddenFor(model => model.BOMQNTY, new { id = "BOMQNTY" })
                                         @Html.HiddenFor(model => model.RECPROGSLNO, new { id = "RECPROGSLNO" })
+                                        @Html.HiddenFor(model => model.RECPROGITCD, new { id = "RECPROGITCD" })
+                                        @Html.HiddenFor(model => model.RECPROGITSTYLE, new { id = "RECPROGITSTYLE" })
                                     </div>
                                 </div>
                                 <div class="col-md-1">

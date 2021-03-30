@@ -354,7 +354,7 @@ namespace Improvar.Controllers
 
                 string str = "";
                 str += "select a.PROGAUTONO,a.PROGSLNO,a.PROGAUTONO||a.PROGSLNO PROGAUTOSLNO,b.PROGUNIQNO,b.BARNO,a.SLNO,d.ITGRPCD,c.ITGRPNM,d.ITNM, ";
-                str += "b.ITCD,d.FABITCD,d.STYLENO,d.UOMcd,e.COLRNM,b.COLRCD,b.SIZECD,b.SHADE,a.NOS,a.QNTY,b.ITREMARK,f.ITNM FABITNM,b.sample,g.COMMONUNIQBAR ";
+                str += "b.ITCD,d.FABITCD,d.STYLENO,d.UOMcd,e.COLRNM,b.COLRCD,b.SIZECD,b.SHADE,a.NOS,a.QNTY,b.ITREMARK,f.ITNM FABITNM,b.sample,g.COMMONUNIQBAR,a.SHORTQNTY ";
                 str += "from " + Scm + ".T_PROGDTL a , " + Scm + ".T_PROGMAST b," + Scm + ".M_GROUP c, ";
                 str += Scm + ".M_SITEM d, " + Scm + ".M_COLOR e, " + Scm + ".M_SITEM f, " + Scm + ".T_BATCHMST g ";
                 str += "where d.ITGRPCD=c.ITGRPCD(+) and b.ITCD = d.ITCD(+) and b.COLRCD = e.COLRCD(+) and d.FABITCD = f.ITCD(+) and b.BARNO=g.BARNO(+) ";
@@ -393,40 +393,44 @@ namespace Improvar.Controllers
                 //                   SAMPLE = dr["sample"].retStr(),
                 //                   CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
                 //               }).OrderBy(s => s.SLNO).ToList();
+               
                 VE.TPROGDTL = (from dr in Progdtltbl.AsEnumerable()
                                join dr1 in pendprogramme.AsEnumerable() on dr.Field<string>("PROGAUTOSLNO") equals dr1.Field<string>("PROGAUTOSLNO") into Z
                                from dr1 in Z.DefaultIfEmpty()
                                select new TPROGDTL()
                                {
-                                   SLNO = dr.Field<short>("SLNO").retShort(),
-                                   PROGAUTONO = dr.Field<string>("PROGAUTONO").retStr(),
-                                   PROGSLNO = dr.Field<short>("PROGSLNO").retShort(),
-                                   PROGAUTOSLNO = dr.Field<string>("PROGAUTOSLNO").retStr(),
-                                   PROGUNIQNO = dr.Field<string>("PROGUNIQNO").retStr(),
-                                   BARNO = dr.Field<string>("BARNO").retStr(),
-                                   ITGRPNM = dr.Field<string>("ITGRPNM").retStr(),
-                                   ITGRPCD = dr.Field<string>("ITGRPCD").retStr(),
-                                   ITNM = dr.Field<string>("FABITNM").retStr() + " " + dr.Field<string>("ITNM").retStr(),
-                                   ITCD = dr.Field<string>("ITCD").retStr(),
+                                   SLNO = dr["SLNO"].retShort(),
+                                   PROGAUTONO = dr["PROGAUTONO"].retStr(),
+                                   PROGSLNO = dr["PROGSLNO"].retShort(),
+                                   PROGAUTOSLNO = dr["PROGAUTOSLNO"].retStr(),
+                                   PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
+                                   BARNO = dr["BARNO"].retStr(),
+                                   ITGRPNM = dr["ITGRPNM"].retStr(),
+                                   ITGRPCD = dr["ITGRPCD"].retStr(),
+                                   ITNM = dr["FABITNM"].retStr() + " " + dr["ITNM"].retStr(),
+                                   ITCD = dr["ITCD"].retStr(),
                                    //FABITCD = dr["FABITCD"].retStr(),
-                                   STYLENO = dr.Field<string>("STYLENO").retStr(),
-                                   UOM = dr.Field<string>("UOMCD").retStr(),
-                                   COLRNM = dr.Field<string>("COLRNM").retStr(),
-                                   COLRCD = dr.Field<string>("COLRCD").retStr(),
-                                   SIZECD = dr.Field<string>("SIZECD").retStr(),
-                                   SHADE = dr.Field<string>("SHADE").retStr(),
-                                   NOS = dr.Field<double>("NOS").retDbl(),
-                                   QNTY = dr.Field<double>("QNTY").retDbl(),
-                                   ITREMARK = dr.Field<string>("ITREMARK").retStr(),
-                                   SAMPLE = dr.Field<string>("sample").retStr(),
-                                   CheckedSample = dr.Field<string>("sample").retStr() == "Y" ? true : false,
-                                   BALNOS = dr1.Field<decimal>("BALNOS").retDbl(),
-                                   BALQNTY = dr1.Field<decimal>("BALQNTY").retDbl(),
-                                   COMMONUNIQBAR = dr1.Field<string>("COMMONUNIQBAR").retStr(),
+                                   STYLENO = dr["STYLENO"].retStr(),
+                                   UOM = dr["UOMCD"].retStr(),
+                                   COLRNM = dr["COLRNM"].retStr(),
+                                   COLRCD = dr["COLRCD"].retStr(),
+                                   SIZECD = dr["SIZECD"].retStr(),
+                                   SHADE = dr["SHADE"].retStr(),
+                                   NOS = dr["NOS"].retDbl(),
+                                   QNTY = dr["QNTY"].retDbl(),
+                                   ITREMARK = dr["ITREMARK"].retStr(),
+                                   SAMPLE = dr["sample"].retStr(),
+                                   CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
+                                   BALNOS = dr1["BALNOS"].retDbl(),
+                                   BALQNTY = dr1["BALQNTY"].retDbl(),
+                                   COMMONUNIQBAR = dr1["COMMONUNIQBAR"].retStr(),
+                                   CUTLENGTH = dr1["CUTLENGTH"].retDbl(),
+                                   SHORTQNTY = dr["SHORTQNTY"].retDbl(),
                                }).OrderBy(s => s.SLNO).ToList();
 
                 VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
                 VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();
+                VE.P_T_SHORTQNTY = VE.TPROGDTL.Sum(a => a.SHORTQNTY).retDbl();
 
                 string str1 = "";
                 str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
@@ -1507,6 +1511,7 @@ namespace Improvar.Controllers
                                         ITREMARK = dr["ITREMARK"].retStr(),
                                         SAMPLE = dr["sample"].retStr(),
                                         COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                        CUTLENGTH = dr["CUTLENGTH"].retDbl(),
                                     }).ToList();
                         if (VE.TPROGDTL != null)
                         {
@@ -1592,6 +1597,7 @@ namespace Improvar.Controllers
                                     //BarImages = dr["BarImages"].retStr()
                                     SAMPLE = a.SAMPLE.retStr(),
                                     COMMONUNIQBAR = a.COMMONUNIQBAR.retStr(),
+                                    SHORTQNTY = a.SHORTQNTY.retDbl(),
                                 }).ToList();
 
                 //string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
@@ -2468,6 +2474,7 @@ namespace Improvar.Controllers
                             TPROGDTL.STKDRCR = stkdrcr;
                             TPROGDTL.NOS = VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.retDbl();
                             TPROGDTL.QNTY = VE.TPROGDTL[i].QNTY.retDbl();
+                            TPROGDTL.SHORTQNTY = VE.TPROGDTL[i].SHORTQNTY.retDbl();
 
                             dbsql = masterHelp.RetModeltoSql(TPROGDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();

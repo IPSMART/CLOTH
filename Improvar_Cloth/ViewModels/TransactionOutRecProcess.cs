@@ -194,5 +194,7 @@ namespace Improvar.ViewModels
         public string PROGUNIQNO { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double B_T_SHORTQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? P_T_SHORTQNTY { get; set; }
     }
 }
