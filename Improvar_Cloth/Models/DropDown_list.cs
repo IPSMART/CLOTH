@@ -330,4 +330,11 @@ namespace Improvar.Models
     {
         public string FIELD_VALUE { get; set; }
     }
+    public class DropDown_list_RTCD
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+        public string add { get; set; }
+        public string mobile { get; set; }
+    }
 }

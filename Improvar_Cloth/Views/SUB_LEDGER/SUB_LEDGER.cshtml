@@ -57,33 +57,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-        //if (str.trim()!= str)
-        //{
-        //    msgInfo("Subledger could not contain space at starting of name !");
-        //    message_value = "SLNM";
-        //    $("li").removeClass("active").addClass("");
-        //    $(".nav-tabs li:first-child").addClass('active');
-        //    //below set the  child sequence
-        //    $(".tab-content div").removeClass("active");
-        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-        //    return false;
-        //}
-
-        //var format = /^[ !#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/;
-
-        //if (!format.test(str)) {
-        //    debugger
-        //    if (str.include("$", 0)) {
-        //        msgInfo("Subledger could not contain any special cherecter at starting of name !");
-        //        message_value = "SLNM";
-        //        $("li").removeClass("active").addClass("");
-        //        $(".nav-tabs li:first-child").addClass('active');
-        //        //below set the  child sequence
-        //        $(".tab-content div").removeClass("active");
-        //        $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-        //        return false;
-        //    }
-        //}
+     
         if (!emptyFieldCheck("Select District", "DISTRICT")) {
             message_value = "DISTRICT";
             $("li").removeClass("active").addClass("");
@@ -1029,13 +1003,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "District")
+                                @Html.Label("", "City")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "DISTRICT", maxlength = 40, @list = "DISTRICTlist" } })
+                                @Html.EditorFor(model => model.M_SUBLEG.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "City", maxlength = 40, @list = "DISTRICTlist" } })
                                 <datalist id="DISTRICTlist">
                                     @foreach (var jg in Model.Database_Combo1)
                                     {
@@ -1044,15 +1018,26 @@
                                 </datalist>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2"style="width:auto">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Pin Code")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SUBLEG.PIN, new { htmlAttributes = new { @class = "form-control", id = "PIN", @placeholder = "Pin Code", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 10 } })
+                            </div>
+                        </div>
+
+                        <div class="col-md-2" style="width:auto">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "District")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBLEG.SUBDISTRICT, new { htmlAttributes = new { @class = "form-control", id = "SUBDISTRICT", @placeholder = "District", maxlength = 40, @list = "DISTRICTlist" } })
                             </div>
                         </div>
 
