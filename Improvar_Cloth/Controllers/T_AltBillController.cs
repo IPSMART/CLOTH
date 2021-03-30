@@ -895,7 +895,7 @@ namespace Improvar.Controllers
                     TTXNDTL.MTRLJOBCD = "FS";
                     TTXNDTL.STKDRCR = cr;
                     TTXNDTL.STKTYPE = "F";
-                    TTXNDTL.HSNCODE = VE.HSNCODE;
+                    TTXNDTL.HSNCODE = VE.JOBHSNCODE;
                     TTXNDTL.GOCD = TTXN.GOCD;
                     TTXNDTL.TXBLVAL = VE.TAXABVAL; // IGSTPER
                     double GSTPER = 0, GSTAMT = 0; ;
