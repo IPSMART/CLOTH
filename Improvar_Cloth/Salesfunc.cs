@@ -2141,7 +2141,7 @@ namespace Improvar
                 var STYLEdt = (from g in DB.M_SITEM
                                join h in DB.M_GROUP on g.ITGRPCD equals h.ITGRPCD
                                join i in DB.T_BATCHMST on g.ITCD equals i.ITCD
-                               where g.ITNM == ITNM || g.STYLENO == style || i.BARNO == BARNO
+                               where (g.ITNM == ITNM && g.STYLENO == style) || i.BARNO == BARNO
                                select new
                                {
                                    ITCD = g.ITCD,
@@ -2177,8 +2177,8 @@ namespace Improvar
                     MSITEM.ITCD = letters + (++number).ToString("D7");
                 }
                 MSITEM.ITGRPCD = MGROUP.ITGRPCD;
-                MSITEM.ITNM = "";
-                MSITEM.STYLENO = style.Trim();
+                MSITEM.ITNM =ITNM;
+                MSITEM.STYLENO = style.retStr().Trim();
                 MSITEM.UOMCD = UOM;
                 MSITEM.HSNCODE = HSNCODE;
                 MSITEM.FABITCD = FABITCD;
