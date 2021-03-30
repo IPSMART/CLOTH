@@ -1559,13 +1559,13 @@ namespace Improvar.Controllers
                 if (tbl.Rows.Count == 0) return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
 
                 DataTable rsStkPrcDesc;
-                sql = "";
-                sql += "select distinct a.autono, a.autono||a.itcd autoitcd, e.prcdesc stkprcdesc ";
-                sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_batchmst d, " + Scm1 + ".t_txn b, " + Scm1 + ".m_itemplist e, " + Scm1 + ".t_cntrl_hdr c ";
-                sql += "where a.batchautono=d.batchautono(+) and d.itmprccd=e.itmprccd(+) and a.autono=b.autono(+) and ";
-                sql += sqlc;
-                sql += "a.autono=c.autono ";
-                rsStkPrcDesc = masterHelp.SQLquery(sql);
+                //sql = "";
+                //sql += "select distinct a.autono, a.autono||a.itcd autoitcd, e.prcdesc stkprcdesc ";
+                //sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_batchmst d, " + Scm1 + ".t_txn b, " + Scm1 + ".m_itemplist e, " + Scm1 + ".t_cntrl_hdr c ";
+                //sql += "where a.batchautono=d.batchautono(+) and d.itmprccd=e.itmprccd(+) and a.autono=b.autono(+) and ";
+                //sql += sqlc;
+                //sql += "a.autono=c.autono ";
+                //rsStkPrcDesc = masterHelp.SQLquery(sql);
 
                 //string blterms = "", inspoldesc = "", dealsin = "";
                 //Int16 bankslno = 0;
@@ -3890,11 +3890,11 @@ namespace Improvar.Controllers
 
                                     if (batch_data[a]["nos"].retDbl() == 1)
                                     {
-                                        pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr();
+                                        pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retDbl().ToString("0.00");
                                     }
                                     else if (batch_data[a]["nos"].retDbl() == 0 || batch_data[a]["cutlength"].retDbl() == 0)
                                     {
-                                        pcsdesc += (batch_data[a]["nos"].retDbl() == 0 ? "" : batch_data[a]["nos"].retStr()) + (batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr());
+                                        pcsdesc += (batch_data[a]["nos"].retDbl() == 0 ? "" : batch_data[a]["nos"].retStr()) + (batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retDbl().ToString("0.00"));
                                     }
                                     else {
                                         if (VE.Checkbox9 == true)
@@ -3902,12 +3902,12 @@ namespace Improvar.Controllers
                                             for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
                                             {
                                                 pcsdesc += v == 0 ? "" : "+";
-                                                pcsdesc += batch_data[a]["cutlength"].retStr();
+                                                pcsdesc += batch_data[a]["cutlength"].retDbl().ToString("0.00");
                                             }
                                         }
                                         else
                                         {
-                                            pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                            pcsdesc += batch_data[a]["cutlength"].retDbl().ToString("0.00") + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
                                         }
                                     }
                                     if (batch_data[a]["flagmtr"].retStr() != "")
@@ -3935,11 +3935,11 @@ namespace Improvar.Controllers
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
                                     }
-                                    if (batch_data[a]["itrem"].retStr() != "")
-                                    {
-                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
-                                    }
+                                    //if (batch_data[a]["itrem"].retStr() != "")
+                                    //{
+                                    //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
+                                    //    pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
+                                    //}
                                     if (batch_data[a]["baleno"].retStr() != "")
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
