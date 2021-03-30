@@ -109,23 +109,32 @@
 </script>
 <script>
     function CalculateBlamt() {
+        var TOTTAX = 0;
         var TAXABVAL = retFloat($("#TAXABVAL").val());
         var GSTPER = retFloat($("#GSTPER").val());
-        var TOTTAX = (TAXABVAL * GSTPER / 100);
-        TOTTAX = RoundOff(TOTTAX, 2);
+        var IGSTPER = retFloat($("#IGSTPER").val());
+        if (IGSTPER == 0) {
+            GSTPER = GSTPER / 2;
+            TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
+            TOTTAX = TOTTAX * 2;
+        }
+        else {
+            TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
+        }
+        
         $("#TOTTAX").val(TOTTAX);
         var blamt = 0;
-        var RoundOff = document.getElementById("RoundOff").checked;
-        if (RoundOff) {
+        var RoundOfchk = document.getElementById("RoundOff").checked;
+        if (RoundOfchk) {
             blamt = TAXABVAL + TOTTAX;
-            var blafterround = RoundOff(TAXABVAL, 0);
+            var blafterround = retFloat(RoundOff(blamt, 0));
             var roundamt = blafterround - blamt;
             $("#ROAMT").val(roundamt.toFixed(2));
             $("#BLAMT").val(blafterround);
         }
         else {
             blamt = TAXABVAL + TOTTAX;
-            var blafterround = RoundOff(TAXABVAL, 2);
+            var blafterround = blamt;
             var roundamt = 0;
             $("#ROAMT").val(roundamt.toFixed(2));
             $("#BLAMT").val(blafterround);
@@ -140,7 +149,7 @@
         $.ajax({
             type: 'get',
             url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val() + "&MENUPARA=" + MENUPARA,
+            data: "DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val() + "&MENUPARA=" + MENUPARA,
             success: function (result) {
                 window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
@@ -167,6 +176,7 @@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -350,7 +360,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Taxable Value")
                     </div>
@@ -410,7 +420,7 @@
 
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
+                    <li id="Amounts_LI" class="active"><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
                     <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
@@ -418,7 +428,7 @@
                 <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:750px;">
                 </div>
                 <div class="tab-content">
-                    <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="Amount" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div id="partialdivAmounts" style="margin-top:0px;">
                                 @Html.Partial("_T_AltBill_AMOUNT")

@@ -222,7 +222,7 @@ namespace Improvar.Controllers
 
                 IR.Columns.Add("prefdt", typeof(string));
 
-                IR.Columns.Add("docdtcode", typeof(string));
+                IR.Columns.Add("docdt_code", typeof(string));
                 IR.Columns.Add("grpnm", typeof(string));
                 IR.Columns.Add("itrem", typeof(string));
                 IR.Columns.Add("partnm", typeof(string));
@@ -239,7 +239,7 @@ namespace Improvar.Controllers
                         {
                             DataRow dr = IR.NewRow();
                             string barno = VE.BarcodePrint[i].BARNO.retStr();
-                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte");
+                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte",false);
                             dr["brcodeImage"] = brcodeImage;
                             dr["barno"] = barno;
                             dr["compinit"] = "";
@@ -285,7 +285,7 @@ namespace Improvar.Controllers
                             dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                             dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                             dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                            dr["docdtcode"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
+                            dr["docdt_code"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                             dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                             dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
                             dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
@@ -294,7 +294,7 @@ namespace Improvar.Controllers
                         }
                     }
                 }
-                string rptfile = "";
+                string rptfile = "PrintBarcode";
                 if (VE.Reptype != null) rptfile = VE.Reptype;
                 string rptname = "~/Report/" + rptfile;
 

@@ -233,21 +233,30 @@ namespace Improvar.Controllers
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
                         string style = inrdr["STYLENO"].ToString();
+                        string itnm = inrdr["ITNM"].ToString();
                         string grpnm = inrdr["ITGRPNM"].ToString();
                         string HSNCODE = inrdr["HSNCODE"].ToString();
                         string BARGENTYPE = inrdr["COMMONUNIQBAR"].ToString();
                         TTXNDTL.UOM = inrdr["UOMCD"].ToString();
                         TTXNDTL.BARNO = inrdr["BARNO"].ToString();
+
                         string FABITNM = inrdr["FABITNM"].ToString(); string fabitcd = "";
                         if (FABITNM != "")
                         {
-                            ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "C", BARGENTYPE);
+                            ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "C", BARGENTYPE, "");
                             fabitcd = FABITDet.ITCD;
                         }
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE);
+                        ItemDet ItemDet = new ItemDet();
+                        if (BARGENTYPE == "E")
+                        {
+                            ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
+                        }
+                        else
+                        {
+                            ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
+                        }
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-
-                        TTXNDTL.ITNM = style;
+                        TTXNDTL.ITSTYLE = style + " " + itnm;
                         TTXNDTL.MTRLJOBCD = "FS";
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
@@ -277,7 +286,8 @@ namespace Improvar.Controllers
                         TTXNDTL.TXBLVAL = TTXNDTL.AMT.retDbl(); txable += TTXNDTL.TXBLVAL.retDbl();
                         if (TTXNDTL.TXBLVAL == 0)
                         {
-                            return "TXBLVAL/RATE/QNTY should not Zeor(0) at " + msg;
+                            continue;
+                            //return "TXBLVAL/RATE/QNTY should not Zeor(0) at " + msg;
                         }
                         TTXNDTL.IGSTPER = igstper;
                         TTXNDTL.CGSTPER = cgstper;
@@ -322,6 +332,10 @@ namespace Improvar.Controllers
                         TBATCHDTL.SLNO = ++batchslno;
                         TBATCHDTL.BARNO = TTXNDTL.BARNO;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
+                        if (BARGENTYPE == "E")
+                        {
+                            TBATCHDTL.PDESIGN = style;
+                        }
                         TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
                         TBATCHDTL.BARGENTYPE = BARGENTYPE;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
@@ -349,6 +363,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.LISTDISCPER = TTXNDTL.LISTDISCPER;
                         TBATCHDTL.STKTYPE = TTXNDTL.STKTYPE;
                         TBATCHDTL.PCSTYPE = inrdr["PCSCTG"].retStr();
+
                         TBATCHDTLlist.Add(TBATCHDTL);
                     }// inner loop of TTXNDTL
 

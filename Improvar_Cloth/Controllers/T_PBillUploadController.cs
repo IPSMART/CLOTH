@@ -334,9 +334,9 @@ namespace Improvar.Controllers
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C","");
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-                        TTXNDTL.ITNM = style;
+                        TTXNDTL.ITSTYLE = style;
                         TTXNDTL.MTRLJOBCD = "FS";
 
                         TTXNDTL.STKDRCR = "D";

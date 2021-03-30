@@ -150,7 +150,7 @@
                     <div class="col-lg-3">
                         <table style="border:1px solid">
                             <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox7)</td><td style="border:1px groove;">Print Current O/S in Bill</td></tr>
-                            @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR" && CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") == -1)
+                            @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR" && Model.MENU_PARA != "ST" && Model.MENU_PARA != "AT" && CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") == -1)
                             {
                                 <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox8) @Html.HiddenFor(model => model.BARNO) </td><td style="border:1px groove;">Print Image</td></tr>
                             }
@@ -163,7 +163,7 @@
                         </table>
                     </div>
                 </div>
-                @if (Model.MENU_PARA == "SBCM" || Model.MENU_PARA == "SBCMR")
+                @if (Model.MENU_PARA == "SBCM" || Model.MENU_PARA == "SBCMR" || Model.MENU_PARA == "ST" || Model.MENU_PARA == "AT")
                 {   <div class="row" style="margin-top:10PX">
                     <div class="col-md-8">
                         <div class="editor-label" style="margin-top: 6px;">
