@@ -4389,7 +4389,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -4483,7 +4483,7 @@ namespace Improvar.Controllers
                                 OraCmd.CommandText = sql;
                                 using (var OraReco = OraCmd.ExecuteReader())
                                 {
-                                    if (OraReco.HasRows == false) isNewBatch = true;
+                                    if (OraReco.HasRows == false) { isNewBatch = true; Action = "A"; }
                                 }
 
                                 //checking barno exist or not
@@ -4588,7 +4588,7 @@ namespace Improvar.Controllers
                                 }
 
                                 //add price
-                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
+                                if (VE.DefaultAction == "A" && (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
                                     TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
@@ -5394,7 +5394,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5402,7 +5402,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
