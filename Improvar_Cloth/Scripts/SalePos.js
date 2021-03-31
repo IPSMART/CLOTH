@@ -321,10 +321,10 @@ function AddMainRow(hlpstr) {
     tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onblur = "CalculateGridQnty(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onblur = "CalculateGridQnty(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ',this.value);", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateGridQnty(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateGridQnty(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ',this.value);" value="' + QNTY + '" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -559,10 +559,10 @@ function AddReturnRow(hlpstr) {
     //tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     //tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onblur = "CalculateGridQnty(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onblur = "CalculateGridQnty(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ',this.value);", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '" onblur="CalculateGridQnty(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '" onblur="CalculateGridQnty(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ',this.value);" >';
     tr += '     <input id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" type="hidden" value="' + BALSTOCK + '">';
     tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
@@ -1644,7 +1644,7 @@ function GetData() {
         }
     });
 }
-function CalculateGridQnty(tableid, index) {
+function CalculateGridQnty(tableid, index,value) {
     debugger;
     var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
     if (tableid == "_T_SALE_POS_PRODUCT_GRID") {
@@ -1657,8 +1657,9 @@ function CalculateGridQnty(tableid, index) {
         QNTYID = "R_QNTY_" + index;
         UOMID = "R_UOM_" + index;
     }
-    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
-        $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
+    if ($("#" + UOMID).val() == "PCS") {
+        $("#" + QNTYID).val(retFloat(value));
+        $("#" + NOSID).val(retFloat(value));
     }
     CalculateRowAmt(tableid, index);
 }

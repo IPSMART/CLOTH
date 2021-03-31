@@ -264,5 +264,8 @@ namespace Improvar.ViewModels
         public string JOBHSNCODE { get; set; }
         public string SHOWSTKTYPE { get; set; }
         public string SLDISCDESC { get; set; }
+        public double? DISCRTINRATE { get; set; }
+        public string DISCTYPEINRATE { get; set; }
+        public List<DropDown_list1> DropDown_list1 { get; set; }
     }
 }
