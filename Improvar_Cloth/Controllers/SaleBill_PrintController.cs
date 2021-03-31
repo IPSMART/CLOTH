@@ -69,6 +69,10 @@ namespace Improvar.Controllers
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = masterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
 
+                    if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR")
+                    {
+                        VE.TEXTBOX10 = "2";
+                    }
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
@@ -1392,6 +1396,13 @@ namespace Improvar.Controllers
         {
             try
             {
+                if (VE.TEXTBOX10.retInt() == 0) VE.TEXTBOX10 = "1";
+                copyno = new string[VE.TEXTBOX10.retInt()];
+                for (int a = 0; a <= copyno.Length - 1; a++)
+                {
+                    copyno[a] = "Y";
+                }
+
                 string menupara = VE.MENU_PARA;
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -1861,7 +1872,7 @@ namespace Improvar.Controllers
                     default: blhead = ""; break;
                 }
 
-                Int16 maxCopy = 5;
+                int maxCopy = VE.TEXTBOX10.retInt()-1;
 
                 while (i <= maxR)
                 {
@@ -4971,7 +4982,7 @@ namespace Improvar.Controllers
                                 default: copymode = ""; break;
                             }
 
-                            string negamt = (menupara == "ST"|| menupara == "AT" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            string negamt = (menupara == "ST" || menupara == "AT" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
 
                             DataRow dr1 = IR.NewRow();
                         docstart:
@@ -4983,7 +4994,7 @@ namespace Improvar.Controllers
                             {
                                 if (duedays == 0) payterms = ""; else payterms = duedays.ToString() + " days.";
                             }
-                            
+
                             dr1["menu_para"] = VE.MENU_PARA;
                             //dr1["pvtag"] = tbl.Rows[i]["pv_tag"].ToString();
                             dr1["autono"] = auto1 + ic.ToString();
@@ -4995,7 +5006,7 @@ namespace Improvar.Controllers
                             dr1["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
                             dr1["upiimg"] = "";
                             dr1["upidesc"] = "";
-                           
+
                             dr1["invisstime"] = tbl.Rows[i]["invisstime"].retDbl();
                             dr1["duedays"] = duedays;
                             //dr1["itmprccd"] = tbl.Rows[i]["itmprccd"].ToString();
@@ -5027,7 +5038,7 @@ namespace Improvar.Controllers
                                 dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
                             }
 
-                           
+
 
 
 
@@ -5532,7 +5543,7 @@ namespace Improvar.Controllers
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                                                  /* if (VE.maxdate == "CHALLAN")*/
                 blhead = "Stiching";
-                if(VE.MENU_PARA== "AT")
+                if (VE.MENU_PARA == "AT")
                 { blhead = "Alteration"; }
                 ReportDocument reportdocument = new ReportDocument();
                 if (printemail == "Email")

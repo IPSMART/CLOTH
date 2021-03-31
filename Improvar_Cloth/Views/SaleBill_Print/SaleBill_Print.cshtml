@@ -136,7 +136,9 @@
                     </div>
                 </div>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col-lg-2"></div>
+
+                    @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR")
+                    { <div class="col-lg-2"></div>
                     <div class="col-lg-3">
                         <table style="border:1px solid">
                             <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox1, true)</td><td style="border:1px groove;">Original For Receipent</td></tr>
@@ -147,6 +149,20 @@
                             <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6)</td><td style="border:1px groove;">Extra Copy</td></tr>
                         </table>
                     </div>
+                    }
+                    else
+                    {
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "No Of Copy")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.TEXTBOX10, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX10", @type = "text", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 3 } })
+                            </div>
+                        </div>
+                    }
                     <div class="col-lg-3">
                         <table style="border:1px solid">
                             <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox7)</td><td style="border:1px groove;">Print Current O/S in Bill</td></tr>
