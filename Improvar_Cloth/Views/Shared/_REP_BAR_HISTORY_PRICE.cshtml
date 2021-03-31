@@ -20,9 +20,14 @@
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_REP_BAR_HISTORY_PRICE_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
+                <div class="col-md-1" style="width:auto;float: right;">
+                    <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" id="Update_Price" value="Update Price" title="Click to Update Price" onclick="Update_PriceData()" />
+                </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
                     <b> BarCode Price Details</b>
-                </center>
+                 </center>
+               
+               
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;max-height:100px;width:309px">
@@ -58,7 +63,7 @@
 
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly",maxlength = 14 } })
+                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14 } })
                                         </td>
 
                                     </tr>

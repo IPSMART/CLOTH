@@ -186,12 +186,40 @@
 
     }
 </script>
-<script>  function Barcodeprinting() {
-      debugger;
-      var AUTONO = $("#AUTONO").val();
-      var DOCDT = $("#DOCDT").val();
-      window.open("@Url.Action("T_SALE", "T_SALE")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
-  }</script>
+<script>
+    function Update_PriceData() {
+        debugger;
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("Update_Price", "Rep_Bar_History")",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Update Successfully !");
+                }
+                else {
+                    msgInfo(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function Barcodeprinting() {
+        debugger;
+        var AUTONO = "";
+        var DOCDT = $("#DOCDT").val();
+        var BARNO = $("#BARCODE").val();
+        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO, "_blank")
+    }
+</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -213,10 +241,9 @@
                 @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
             </div>
         </div>
-        @*<div class="col-lg-7"></div>
         <div class="col-md-1">
             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
-        </div>*@
+        </div>
     </div>
     <div class="row">
         <div class="col-md-1">

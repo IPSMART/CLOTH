@@ -9,6 +9,7 @@ using System.IO;
 using System.Collections.Generic;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Improvar.Controllers
 {
@@ -115,8 +116,8 @@ namespace Improvar.Controllers
                         sql2 += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
                         sql2 += "from(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
                         sql2 += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                        sql2 += "from " + scm + ".m_itemplistdtl a where nvl(a.rate, 0) <> 0 ) a, ";
-                        sql2 += "" + scm + ".m_itemplistdtl b, " + scm + ".T_BATCHmst c where a.barno = b.barno(+) and a.prccd = b.prccd(+) and ";
+                        sql2 += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate, 0) <> 0 ) a, ";
+                        sql2 += "" + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c where a.barno = b.barno(+) and a.prccd = b.prccd(+) and ";
                         sql2 += "a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.rn = 1 ";
                         sql2 += "union all ";
                         sql2 += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
@@ -302,6 +303,46 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException + "  ");
             }
             return null;
+        }
+        public ActionResult Update_Price(RepBarHistory VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    for (int i = 0; i <= VE.BARCODEPRICE.Count - 1; i++)
+                    {
+                        sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.BARCODEPRICE[i].RATE + " "
+                                 + " where BARNO='" + VE.BARCODE + "' and PRCCD='" + VE.BARCODEPRICE[i].PRCCD.retStr() + "' and EFFDT=to_date('" + VE.BARCODEPRICE[i].EFFDT.retStr() + "','dd/mm/yyyy')  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
         }
     }
 }
