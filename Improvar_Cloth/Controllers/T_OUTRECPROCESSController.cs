@@ -354,7 +354,7 @@ namespace Improvar.Controllers
 
                 string str = "";
                 str += "select a.PROGAUTONO,a.PROGSLNO,a.PROGAUTONO||a.PROGSLNO PROGAUTOSLNO,b.PROGUNIQNO,b.BARNO,a.SLNO,d.ITGRPCD,c.ITGRPNM,d.ITNM, ";
-                str += "b.ITCD,d.FABITCD,d.STYLENO,d.UOMcd,e.COLRNM,b.COLRCD,b.SIZECD,b.SHADE,a.NOS,a.QNTY,b.ITREMARK,f.ITNM FABITNM,b.sample,g.COMMONUNIQBAR,a.SHORTQNTY ";
+                str += "b.ITCD,d.FABITCD,d.STYLENO,d.UOMcd,e.COLRNM,b.COLRCD,b.SIZECD,b.SHADE,a.NOS,a.QNTY,b.ITREMARK,f.ITNM FABITNM,b.sample,g.COMMONUNIQBAR,a.SHORTQNTY,d.styleno||' '||d.itnm itstyle ";
                 str += "from " + Scm + ".T_PROGDTL a , " + Scm + ".T_PROGMAST b," + Scm + ".M_GROUP c, ";
                 str += Scm + ".M_SITEM d, " + Scm + ".M_COLOR e, " + Scm + ".M_SITEM f, " + Scm + ".T_BATCHMST g ";
                 str += "where d.ITGRPCD=c.ITGRPCD(+) and b.ITCD = d.ITCD(+) and b.COLRCD = e.COLRCD(+) and d.FABITCD = f.ITCD(+) and b.BARNO=g.BARNO(+) ";
@@ -426,6 +426,7 @@ namespace Improvar.Controllers
                                    //COMMONUNIQBAR = dr1["COMMONUNIQBAR"].retStr(),
                                    //CUTLENGTH = dr1["CUTLENGTH"].retDbl(),
                                    SHORTQNTY = dr["SHORTQNTY"].retDbl(),
+                                   ITSTYLE = dr["ITSTYLE"].retStr(),
                                }).OrderBy(s => s.SLNO).ToList();
                 if (pendprogramme != null && pendprogramme.Rows.Count > 0)
                 {
@@ -1399,6 +1400,27 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetGridItemDetails(string val, string Code)
+        {
+            try
+            {
+                var str = masterHelp.ITCD_help(val, "", Code);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+
+                    return Content(str);//
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public dynamic GetPendingProgramme(string docdt, string jobcd, string slcd, string autono, string flag = "")
         {
             try
@@ -1535,6 +1557,7 @@ namespace Improvar.Controllers
                                         SAMPLE = dr["sample"].retStr(),
                                         COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
                                         CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                        ITSTYLE = dr["STYLENO"].retStr()+" "+ dr["ITNM"].retStr(),
                                     }).ToList();
                         if (VE.TPROGDTL != null)
                         {

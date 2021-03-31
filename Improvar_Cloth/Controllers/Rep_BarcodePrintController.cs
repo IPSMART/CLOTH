@@ -79,7 +79,8 @@ namespace Improvar.Controllers
                                            DOCNO = dr["docno"].retStr(),
                                            DOCDT = dr["docdt"].retStr(),
                                            PREFNO = dr["blno"].retStr(),
-                                           PREFDT = dr["docdt"].retStr()
+                                           PREFDT = dr["docdt"].retStr(),
+                                           Checked = dr["barnos"].retDbl() == 0 ? false : true,
                                        }).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
@@ -134,8 +135,8 @@ namespace Improvar.Controllers
                 sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
                 sql += "(select a.barno, a.prccd, a.effdt, ";
                 sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
-                sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".T_BATCHmst c ";
+                sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
+                sql += ") a, " + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c ";
                 sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' ";
                 sql += "union ";
                 sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
@@ -231,6 +232,7 @@ namespace Improvar.Controllers
 
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
+                VE.BarcodePrint = VE.BarcodePrint.Where(a => a.Checked == true).ToList();
                 for (int i = 0; i < VE.BarcodePrint.Count; i++)
                 {
                     if (VE.BarcodePrint[i].Checked == true)
@@ -239,7 +241,7 @@ namespace Improvar.Controllers
                         {
                             DataRow dr = IR.NewRow();
                             string barno = VE.BarcodePrint[i].BARNO.retStr();
-                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte",false);
+                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte", false);
                             dr["brcodeImage"] = brcodeImage;
                             dr["barno"] = barno;
                             dr["compinit"] = "";
@@ -252,7 +254,7 @@ namespace Improvar.Controllers
                             dr["mtr"] = VE.BarcodePrint[i].MTR.retStr();
                             dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
                             dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
-                            dr["txnslno"] = "("+VE.BarcodePrint[i].TAXSLNO.retStr()+")";
+                            dr["txnslno"] = "(" + VE.BarcodePrint[i].TAXSLNO.retStr() + ")";
 
                             var wpp = VE.BarcodePrint[i].WPRATE.retDbl().retStr();
                             dr["wprate"] = (wpp.PadRight(2) == "00" ? wpp.Substring(0, wpp.Length - 2) : wpp);
@@ -264,7 +266,7 @@ namespace Improvar.Controllers
                             var rpp = VE.BarcodePrint[i].RPRATE.retDbl().retStr();
                             dr["rprate"] = (rpp.PadRight(2) == "00" ? rpp.Substring(0, rpp.Length - 2) : rpp);
                             dr["rprate_paisa"] = rpp;
-                            
+
                             //dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
                             //var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
                             //dr["wprate_paisa"] = wpp;

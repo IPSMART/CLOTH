@@ -225,11 +225,13 @@ function AddMainRow(hlpstr) {
     var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
     var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
     var UOM = returncolvalue(hlpstr, "UOMCD");
+    var NOS = returncolvalue(hlpstr, "NOS");
     var QNTY = returncolvalue(hlpstr, "QNTY");
     if (UOM == "PCS") {
-        QNTY = "1";
+        NOS = 1;
+        QNTY = NOS;
     }
-    var NOS = returncolvalue(hlpstr, "NOS");
+
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
@@ -319,10 +321,10 @@ function AddMainRow(hlpstr) {
     tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onblur = "CalculateGridQnty(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateGridQnty(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -418,7 +420,9 @@ function AddMainRow(hlpstr) {
     tr += '    </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
-    CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
+    if (INCLRATEASK == "Y") {
+        CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
+    }
     // CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
     if (INCLRATEASK != "Y") {
         $("#M_STYLENO").val('');
@@ -450,10 +454,12 @@ function AddReturnRow(hlpstr) {
     var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
-    if (UOM == "PCS") {
-        QNTY = 1;
-    }
     var NOS = returncolvalue(hlpstr, "NOS");
+    if (UOM == "PCS") {
+        NOS = 1;
+        QNTY = NOS;
+    }
+
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
@@ -548,10 +554,10 @@ function AddReturnRow(hlpstr) {
     //tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     //tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onblur = "CalculateGridQnty(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '" onblur="CalculateGridQnty(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
     tr += '     <input id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" type="hidden" value="' + BALSTOCK + '">';
     tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
@@ -1505,11 +1511,15 @@ function UpdateBarCodeRow(hlpstr, slno) {
     for (j = 0; j <= GridRowMain - 1; j++) {
         if ($("#B_SLNO_" + j).val() == slno) {
             var qnty = $("#B_QNTY_" + j).val();
+            var nos = $("#B_NOS_" + j).val();
             var newqnty = (returncolvalue(hlpstr, "QNTY"));
+            var newnos = (returncolvalue(hlpstr, "NOS"));
             if (returncolvalue(hlpstr, "UOMCD") == "PCS") {
-                newqnty = "1";
+                newnos = 1;
+                newqnty = newnos;
             }
             var sumqnty = retFloat(qnty) + retFloat(newqnty);
+            var sumnos = retFloat(nos) + retFloat(newnos);
             $("#B_BARNO_" + j).val($("#B_BARNO_" + j).val());
             //$("#B_TXNSLNO_" + j).val(TXNSLNO);
             $("#B_ITGRPCD_" + j).val($("#B_ITGRPCD_" + j).val());
@@ -1530,7 +1540,7 @@ function UpdateBarCodeRow(hlpstr, slno) {
             $("#B_QNTY_" + j).val(sumqnty);
             $("#B_NEGSTOCK_" + j).val($("#B_NEGSTOCK_" + j).val());
             $("#B_UOM_" + j).val($("#B_UOM_" + j).val());
-            $("#B_NOS_" + j).val($("#B_NOS_" + j).val());
+            $("#B_NOS_" + j).val(sumnos);
             $("#B_FLAGMTR_" + j).val($("#B_FLAGMTR_" + j).val());
             $("#INCLRATE_" + j).val($("#INCLRATE_" + j).val());
             $("#B_RATE_" + j).val($("#B_RATE_" + j).val());
@@ -1615,6 +1625,24 @@ function GetData() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+}
+function CalculateGridQnty(tableid, index) {
+    debugger;
+    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
+    if (tableid == "_T_SALE_POS_PRODUCT_GRID") {
+        NOSID = "B_NOS_" + index;
+        QNTYID = "B_QNTY_" + index;
+        UOMID = "B_UOM_" + index;
+    }
+    else {
+        NOSID = "R_NOS_" + index;
+        QNTYID = "R_QNTY_" + index;
+        UOMID = "R_UOM_" + index;
+    }
+    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
+        $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
+    }
+    CalculateRowAmt(tableid, index);
 }
 //function CheckInclusivRateNetAmt(GridId, i) {
 //    debugger;

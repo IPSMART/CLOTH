@@ -105,5 +105,6 @@ namespace Improvar.Models
         public string RECPROGITSTYLE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
+        public string ITSTYLE { get; set; }
     }
 }
