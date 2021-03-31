@@ -266,6 +266,8 @@ namespace Improvar.ViewModels
         public List<PCSection> PCSActionList { get; set; }
         public List<DropDown_list2> TDDISC_TYPE { get; set; }
         public List<DropDown_list3> SCMDISC_TYPE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_DISCAMT { get; set; }
 
     }
 }

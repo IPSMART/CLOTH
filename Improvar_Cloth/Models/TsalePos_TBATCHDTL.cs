@@ -214,7 +214,9 @@ namespace Improvar.Models
         public string PRCCD { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTAMT { get; set; }
-        
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? NETDISCAMT { get; set; }
+
 
     }
 }

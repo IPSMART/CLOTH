@@ -558,6 +558,7 @@ namespace Improvar.Controllers
                 VE.T_NOS = VE.TsalePos_TBATCHDTL.Sum(a => a.NOS).retDbl();
                 VE.T_QNTY = VE.TsalePos_TBATCHDTL.Sum(a => a.QNTY).retDbl();
                 VE.T_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.TXBLVAL).retDbl();
+                VE.T_DISCAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.DISCAMT).retDbl();
                 VE.T_B_GROSSAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GROSSAMT).retDbl();
                 VE.T_IGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.IGSTAMT).retDbl();
                 VE.T_CGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.CGSTAMT).retDbl();
@@ -1463,6 +1464,7 @@ namespace Improvar.Controllers
                 VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
                 VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
                 VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();
+                VE.T_DISCAMT = VE.TTXNDTL.Select(a => a.DISCAMT).Sum().retDbl();
                 VE.T_B_GROSSAMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
                 VE.T_IGST_AMT = VE.TTXNDTL.Select(a => a.IGSTAMT).Sum().retDbl();
                 VE.T_CGST_AMT = VE.TTXNDTL.Select(a => a.CGSTAMT).Sum().retDbl();

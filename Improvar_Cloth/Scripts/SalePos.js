@@ -268,7 +268,7 @@ function AddMainRow(hlpstr) {
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="B_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CLASS1CD" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GROSSAMT" type="hidden" value="' + GROSSAMT + '">';
-    tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
+    //tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="B_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field IGSTPER must be a number." id="B_IGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].IGSTPER" type="hidden" value="' + IGSTPER + '">';
@@ -356,7 +356,12 @@ function AddMainRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
-    tr += ' ';
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" >';
+    tr += ' </td>';
+    tr += ' <td class="" title="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETDISCAMT must be a number." id="B_NETDISCAMT_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].NETDISCAMT" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" style="text-align: right;" readonly="readonly" type="text" >';
     tr += ' </td>';
@@ -715,6 +720,17 @@ function CalculateRowAmt(GridId, i) {
         var B_RATE_ = retFloat($("#B_RATE_" + i).val());
         var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
         $("#B_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
+
+        var NETDISCAMT = retFloat($("#B_NETDISCAMT_" + i).val());
+        if (NETDISCAMT != 0) {
+            var GSTPER = retFloat($("#B_GSTPER_" + i).val());
+            var QNTY = retFloat($("#B_QNTY_" + i).val());
+            var DISCAMT = retFloat(((NETDISCAMT * 100) / (GSTPER + 100)) * QNTY).toFixed(2);
+            $("#B_DISCAMT_" + i).val(DISCAMT);
+            $("#B_DISCRATE_" + i).val(DISCAMT);
+            $("#B_DISCTYPE_" + i).val("F");
+        }
+
         var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
         var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
         var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
@@ -983,7 +999,7 @@ function CalculateTotal() {
     var MENU_PARA = $("#MENU_PARA").val();
 
     //POS MAIN GRID TOTAL
-    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0, T_GSTAMT = 0;
+    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0, T_GSTAMT = 0,T_DISCAMT=0;
     var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#B_QNTY_" + i).val());
@@ -993,10 +1009,12 @@ function CalculateTotal() {
         var NETAMT = retFloat($("#B_NETAMT_" + i).val());
         var TXBLVAL = retFloat($("#B_TXBLVAL_" + i).val());
         var GSTAMT = retFloat($("#B_GSTAMT_" + i).val());
+        T_DISCAMT += retFloat($("#B_DISCAMT_" + i).val());
         T_QNTY += QNTY; T_NOS += NOS; T_NET += NETAMT; T_TXBLVAL += TXBLVAL, T_GSTAMT += GSTAMT;
     }
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
+    $("#B_T_DISCAMT").val(parseFloat(T_DISCAMT).toFixed(2));
     $("#B_T_AMT").val(parseFloat(T_TXBLVAL).toFixed(2));
     $("#B_T_GSTAMT").val(parseFloat(T_GSTAMT).toFixed(2));
     $("#B_T_NET_AMT").val(parseFloat(T_NET).toFixed(2));
@@ -1087,11 +1105,11 @@ function CalculateTotal() {
 
     }
     if (ROUND_TAG == true) {
+        debugger;
         var CMROFFTYPE = $("#CMROFFTYPE").val();
         if (CMROFFTYPE != "") {
             var billamt = CharmPrice(retStr(CMROFFTYPE).substring(0, 2), retInt(blamt), retStr(CMROFFTYPE).substring(2, retStr(CMROFFTYPE).length));
-            rbillamt = Math.round(blamt);
-            tbillamt = retFloat(billamt) - retFloat(rbillamt);
+            tbillamt = retFloat(billamt) - retFloat(blamt);
 
             document.getElementById("BLAMT").value = parseFloat(billamt).toFixed(2);
             document.getElementById("ROAMT").value = parseFloat(tbillamt).toFixed(2);
@@ -1644,6 +1662,7 @@ function CalculateGridQnty(tableid, index) {
     }
     CalculateRowAmt(tableid, index);
 }
+
 //function CheckInclusivRateNetAmt(GridId, i) {
 //    debugger;
 //    var DefaultAction = $("#DefaultAction").val();
