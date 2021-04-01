@@ -121,8 +121,11 @@ function RemoveLastDiscData(RATEID, ITCD_ID, TABLENM) {
     }
 }
 function CharmPrice(ChrmType, Rate, RoundVal) {
-    debugger;
-    RoundVal = RoundVal.padStart(2, '0');
+    debugger;    
+    var RoundValLen = retStr(RoundVal).length;
+    var RateLen = retStr(Rate).length;
+    var RateDivisor = retInt("1" + "".padStart(RoundValLen, '0'));
+    //RoundVal = RoundVal.padStart(2, '0');
     if (Rate < 10) Rate = 10 + Rate;
     var RoundAmt = retInt(RoundVal);
     if (RoundAmt == 0) RoundAmt = 100;
@@ -140,25 +143,25 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
     else if (ChrmType == "NT")//NEXT
     {
-        var last2rate = retInt(Rate % 100);
+        var last2rate = retInt(Rate % RateDivisor);
         if (last2rate <= retInt(RoundVal)) {
-            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
+            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - RoundValLen) + RoundVal);
         }
         else {
-            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
+            big = retInt(retStr(Rate + RateDivisor).substring(0, retStr(Rate + RateDivisor).length - RoundValLen) + RoundVal);
         }
         return retInt(big);
     }
     else if (ChrmType == "NR")//NEAR
     {
-        var last2rate = retInt(Rate % 100);
+        var last2rate = retInt(Rate % RateDivisor);
         if (last2rate <= retInt(RoundVal)) {
-            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
-            small = retInt(retStr(Rate - 100).substring(0, retStr(Rate - 100).length - 2) + RoundVal);
+            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - RoundValLen) + RoundVal);
+            small = retInt(retStr(Rate - RateDivisor).substring(0, retStr(Rate - RateDivisor).length - RoundValLen) + RoundVal);
         }
         else {
-            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
-            small = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
+            big = retInt(retStr(Rate + RateDivisor).substring(0, retStr(Rate + RateDivisor).length - RoundValLen) + RoundVal);
+            small = retInt(retStr(Rate).substring(0, retStr(Rate).length - RoundValLen) + RoundVal);
         }
         var NEAR = retInt((Rate - small >= big - Rate) ? big : small);
         return retInt(NEAR);
