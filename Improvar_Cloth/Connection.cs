@@ -3560,8 +3560,8 @@ namespace Improvar
         {// Rettype=string/image
             try
             {//
-                int width = 600;               
-                int Height = 200; int FontSize = 30;
+                int width = 450;               
+                int Height = 150; int FontSize = 30;
                 using (Barcode barcode = new Barcode())
                 {
                     barcode.IncludeLabel = IncludeLabel;
