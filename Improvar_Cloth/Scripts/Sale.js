@@ -76,6 +76,11 @@ function GetBarnoDetails(id, HelpFrom) {
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
+                            if (!$('#PRCCD').is('[readonly]'))
+                            {
+                                $("#PRCCD").attr("readonly", "readonly");
+                                $('#PRCCD_HELP').hide();
+                            }
                             var value1 = modify_check_stylebarno();
                             if (value1 == "true") {
                                 FillBarcodeArea(result);

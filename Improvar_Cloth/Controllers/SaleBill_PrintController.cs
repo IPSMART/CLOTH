@@ -1601,6 +1601,15 @@ namespace Improvar.Controllers
                     dealsin = rsMgroupSpl.Rows[0]["dealsin"].ToString();
                     bankslno = Convert.ToInt16(rsMgroupSpl.Rows[0]["bankslno"]);
                 }
+                sql = "";
+                sql += "select a.autono,a.SLMSLCD,nvl(b.SHORTNM,b.SLNM)SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm1 + ".t_txnslsmn a," + Scmf + ".m_subleg b," + Scm1 + ".t_cntrl_hdr c ";
+                sql += "where a.SLMSLCD=b.slcd and a.autono=c.autono(+) ";
+                sql += "and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
+                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
+                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
+                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
+                sql += "c.doccd = '" + doccd + "'  ";
+                DataTable dtslm = masterHelp.SQLquery(sql);
 
                 #region  Datatabe IR generate
                 DataTable IR = new DataTable();
@@ -1814,6 +1823,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("portdesc", typeof(string), "");
                 IR.Columns.Add("finaldest", typeof(string), "");
                 IR.Columns.Add("bankinter", typeof(string), "");
+                IR.Columns.Add("SLMSLNM", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -1872,7 +1882,7 @@ namespace Improvar.Controllers
                     default: blhead = ""; break;
                 }
 
-                int maxCopy = VE.TEXTBOX10.retInt()-1;
+                int maxCopy = VE.TEXTBOX10.retInt() - 1;
 
                 while (i <= maxR)
                 {
@@ -2092,6 +2102,11 @@ namespace Improvar.Controllers
 
                             string negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
 
+                            string SLMSLNM = "";
+                            if (dtslm != null && dtslm.Rows.Count > 0)
+                            {
+                                SLMSLNM = string.Join(",", (from DataRow dr in dtslm.Rows where dr["autono"].retStr() == auto1 select dr["slnm"].retStr()).Distinct());
+                            }
                             DataRow dr1 = IR.NewRow();
                         docstart:
                             double duedays = 0;
@@ -2356,7 +2371,7 @@ namespace Improvar.Controllers
                                     dr1[rfld] = "PAN # " + tbl.Rows[i]["cpanno"].ToString();
                                 }
                             }
-
+                            dr1["SLMSLNM"] = SLMSLNM;
                             dr1["porefno"] = tbl.Rows[i]["porefno"].ToString();
                             dr1["porefdt"] = tbl.Rows[i]["porefdt"] == DBNull.Value ? "" : tbl.Rows[i]["porefdt"].retDateStr();
                             dr1["trslcd"] = tbl.Rows[i]["trslcd"].ToString();
@@ -2640,6 +2655,7 @@ namespace Improvar.Controllers
                                             dr1["netamt"] = dnetamt;
                                             dr1["titdiscamt"] = ddisc1 + ddisc2;
                                             dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
+                                            dr1["SLMSLNM"] = SLMSLNM;
                                             totalreadyprint = true;
                                             goto docstart;
                                         }
@@ -2676,6 +2692,7 @@ namespace Improvar.Controllers
                                         dr1["netamt"] = dnetamt;
                                         dr1["titdiscamt"] = ddisc1 + ddisc2;
                                         dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
+                                        dr1["SLMSLNM"] = SLMSLNM;
                                         totalreadyprint = true;
                                         goto docstart;
                                     }
@@ -2705,6 +2722,7 @@ namespace Improvar.Controllers
                                     dr1["netamt"] = dnetamt;
                                     dr1["titdiscamt"] = ddisc1 + ddisc2;
                                     dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
+                                    dr1["SLMSLNM"] = SLMSLNM;
                                     totalreadyprint = true;
                                     goto docstart;
                                 }
