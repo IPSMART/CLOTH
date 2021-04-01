@@ -135,6 +135,7 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
     else if (ChrmType == "RN")//ROUNDNEXT
     {
+        if (small == Rate) big = small;
         return big;
     }
     else if (ChrmType == "NT")//NEXT
