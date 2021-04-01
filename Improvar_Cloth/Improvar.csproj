@@ -1385,6 +1385,7 @@
     <Content Include="Views\Shared\_T_AltBill_AMOUNT.cshtml" />
     <Content Include="Views\Shared\_T_AltBill_PAYMENT.cshtml" />
     <Content Include="Views\Rep_BlWise\Rep_BlWise.cshtml" />
+    <Content Include="Views\Shared\_Rep_Bar_History_AddNewBarno.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

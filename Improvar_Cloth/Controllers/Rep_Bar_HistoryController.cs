@@ -60,6 +60,7 @@ namespace Improvar.Controllers
                                 v.Checked = true;
                             }
                         }
+                        VE.SHOWMTRLJOBCD = VE.DropDown_list_MTRLJOBCD.Count() > 1 ? "Y" : "N";
                         VE.DefaultView = true;
                         VE.ExitMode = 1;
                         VE.DefaultDay = 0;
@@ -267,7 +268,7 @@ namespace Improvar.Controllers
                         OutQty = outqty.QNTY.retDbl();
                     }
                     else { OutQty = 0; }
-                     wsSheet1.Cells[i + 2, 9].Value = OutQty; 
+                    wsSheet1.Cells[i + 2, 9].Value = OutQty;
                     wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["NOS"].retDbl();
                     wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["RATE"].retDbl();
                     wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr();
@@ -327,6 +328,92 @@ namespace Improvar.Controllers
                         sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.BARCODEPRICE[i].RATE + " "
                                  + " where BARNO='" + VE.BARCODE + "' and PRCCD='" + VE.BARCODEPRICE[i].PRCCD.retStr() + "' and EFFDT=to_date('" + VE.BARCODEPRICE[i].EFFDT.retStr() + "','dd/mm/yyyy')  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
+        }
+        public ActionResult GetItemDetails(string val, string Code)
+        {
+            try
+            {
+                var str = masterHelp.ITCD_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult SaveNewBarno(RepBarHistory VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            string dbsql = "";
+            string[] dbsql1;
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    var chk = DB.T_BATCHMST.Where(a => a.BARNO == VE.NEWBARDATA.BARNO).Select(a => a.BARNO).Distinct().ToList();
+                    if (chk.Count > 0)
+                    {
+                        OraTrans.Rollback();
+                        return Content("Barno already exist");
+                    }
+                    string ContentFlg = "";
+
+                    T_BATCHMST TBATCHMST = new T_BATCHMST();
+                    TBATCHMST.EMD_NO = 0;
+                    TBATCHMST.CLCD = CommVar.ClientCode(UNQSNO);
+                    TBATCHMST.BARNO = VE.NEWBARDATA.BARNO.retStr();
+                    TBATCHMST.ITCD = VE.NEWBARDATA.ITCD.retStr();
+                    TBATCHMST.RATE = VE.NEWBARDATA.CPRATE.retDbl();
+                    TBATCHMST.WPRATE = VE.NEWBARDATA.WPRATE.retDbl();
+                    TBATCHMST.RPRATE = VE.NEWBARDATA.RPRATE.retDbl();
+                    TBATCHMST.COMMONUNIQBAR = "E";
+
+                    dbsql = masterHelp.RetModeltoSql(TBATCHMST, "A");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    for (int i = 0; i <= 2; i++)
+                    {
+                        string PRCCD = i == 0 ? "CP" : i == 1 ? "WP" : "RP";
+                        double RATE = i == 0 ? VE.NEWBARDATA.CPRATE.retDbl() : i == 1 ? VE.NEWBARDATA.WPRATE.retDbl() : VE.NEWBARDATA.RPRATE.retDbl();
+
+                        T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                        TBATCHMSTPRICE.EMD_NO = TBATCHMST.EMD_NO;
+                        TBATCHMSTPRICE.CLCD = TBATCHMST.CLCD;
+                        TBATCHMSTPRICE.EFFDT = VE.NEWBARDATA.EFFDT != null ? Convert.ToDateTime(VE.NEWBARDATA.EFFDT) : System.DateTime.Now.Date;
+                        TBATCHMSTPRICE.BARNO = TBATCHMST.BARNO.retStr();
+                        TBATCHMSTPRICE.PRCCD = PRCCD;
+                        TBATCHMSTPRICE.RATE = RATE;
+                        dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE, "A");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
 
                     ModelState.Clear();

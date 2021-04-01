@@ -4,19 +4,23 @@
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
 @*<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
-@Scripts.Render("~/Scripts/Multiple-Select-min.js")
-@Scripts.Render("~/Scripts/bootstrap-select.js")*@
+    <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+    @Scripts.Render("~/Scripts/Multiple-Select-min.js")
+    @Scripts.Render("~/Scripts/bootstrap-select.js")*@
 <script src="~/Scripts/jquery.min.js"></script>
 
 <script>
     $(function () {
         $("#DATEFROM").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         $("#DATETO").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#EFFDT_NEW").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     });
 </script>
 <script>
     $(document).ready(function () {
+        if ("@Model.SHOWMTRLJOBCD" != "Y") {
+            $("#divmtrljobcd").hide();
+        }
         $("#partialdivPRICE").hide();
         $("#partialdivHISTORY").hide();
         GetAllMtrljobcode();
@@ -44,7 +48,7 @@
     }
 </script>
 <script>
-    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD,DOCDT,TAXGRPCD,GOCD,PRCCD,ALLMTRLJOBCD) {
+    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD, DOCDT, TAXGRPCD, GOCD, PRCCD, ALLMTRLJOBCD) {
         debugger;
         var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
         var PARTCD = document.getElementById(PARTCD.id).value;
@@ -52,7 +56,7 @@
         var TAXGRPCD = document.getElementById(TAXGRPCD.id).value;
         var GOCD = document.getElementById(GOCD.id).value;
         var PRCCD = document.getElementById(PRCCD.id).value;
-        var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value; 
+        var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value;
         //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
         var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD
         if (id == "") {
@@ -105,7 +109,7 @@
                         hlpblurval = id;
                         document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
                         FillImageModal();
-                      
+
                     }
                     else {
 
@@ -152,7 +156,7 @@
             var id = (imgname).split('.')[0];
             var ImageDesc = (value.split('~')[1]);
             var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-            htm += '<div id="' + id + '" class="item ' + actt + '">'; 
+            htm += '<div id="' + id + '" class="item ' + actt + '">';
             htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
             htm += '    <span class="carousel-caption">';
             htm += '    <p> ' + ImageDesc + ' </p>';
@@ -220,6 +224,46 @@
         window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO, "_blank")
     }
 </script>
+<script>
+    function BarcodeOpen() {
+        $('.PopUp_Backround').show();
+        $("#popupAddNewBarno").show();
+    }
+    function BarcodeClose() {
+        ClearAllTextBoxes("BARNO_NEW,EFFDT_NEW,CPRATE_NEW,WPRATE_NEW,RPRATE_NEW,ITCD_NEW,ITSTYLE_NEW");
+        $("#popupAddNewBarno").hide();
+        $('.PopUp_Backround').fadeOut();
+    }
+    function SaveBarno() {
+        debugger;
+        if (!emptyFieldCheck("Enter Bar No", "BARNO_NEW")) { return false; }
+        if (!emptyFieldCheck("Select Item", "ITCD_NEW")) { return false; }
+        if (!emptyFieldCheck("Select Effective Date", "EFFDT_NEW")) { return false; }
+        if (!emptyFieldCheck("Enter CP", "CPRATE_NEW")) { return false; }
+        if (!emptyFieldCheck("Enter WP", "WPRATE_NEW")) { return false; }
+        if (!emptyFieldCheck("Enter RP", "RPRATE_NEW")) { return false; }
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("SaveNewBarno", "Rep_Bar_History")",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Save Successfully !");
+                }
+                else {
+                    msgInfo(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -241,8 +285,11 @@
                 @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
             </div>
         </div>
-        <div class="col-md-1">
+        <div class="col-md-3">
             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+        </div>
+        <div class="col-md-1">
+            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Add_Barcode" value="Add Barcode" title="Click to Add Barcode" onclick="BarcodeOpen()" />
         </div>
     </div>
     <div class="row">
@@ -254,7 +301,7 @@
         <div class="col-md-5">
             <div class="editor-field">
                 @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
-             
+
             </div>
         </div>
         <div class="col-md-7">
@@ -278,7 +325,7 @@
             </div>
         </div>
         <div class="col-md-4"></div>
-        <div class="col-lg-1">
+        <div class="col-lg-1" id="divmtrljobcd">
             <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
                 <table id="exampleMTRL" border="1" style="width: auto;">
                     @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
@@ -347,7 +394,7 @@
                 @Html.Label("", "Party")
             </div>
         </div>
-        <div class="col-md-5" >
+        <div class="col-md-5">
             <div class="editor-field">
                 @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", @placeholder = "SLCD", @readonly = "readonly", @TabIndex = -1 } })
             </div>
@@ -435,74 +482,76 @@
         </div>
 
     </div>
-    <div class="row" style="margin-top:20PX">
-        <div class="col-lg-3">
+        <div class="row" style="margin-top:20PX">
+            <div class="col-lg-3">
                 <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove">
                     @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
                 </div>
-        </div>
-        <div class="col-lg-9">
-            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                @*@Html.Partial("_REP_BAR_HISTORY")*@
             </div>
-        </div>
-    </div>
-    @*<div class="row">
-
-                @Html.HiddenFor(model => model.BarImages)
-                <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
-                            <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
-                            <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
-                            <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
-
-        </div>*@
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="row">
-                <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;">
-                    @Html.Label("", "BarCode Image")
+            <div class="col-lg-9">
+                <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                    @*@Html.Partial("_REP_BAR_HISTORY")*@
                 </div>
             </div>
-            @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-            <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
-                <div id="myCarousel" class="carousel" data-ride="carousel">
-                    <div class="carousel-inner" id="div_carousel_inner">
-                        <div class="item active">
-                            <img src="" alt="Los Angeles" style="width:100%;">
-                        </div>
-                        <div class="item">
-                            <img src="" alt="Chicago" style="width:100%;">
-                        </div>
-                    </div>
-                    <!-- Left and right controls -->
-                    <a class="left  carousel-control arrow-left" id="prev">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </a>
-                    <a class="right  carousel-control arrow-right" id="next">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </a>
-                </div>
-            </div>
-
         </div>
-    </div>
-        @*<div class="row" style="margin-top:20PX">
-            <div class="col-lg-6">
-                <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
+        @*<div class="row">
 
-            </div>
-        </div>*@
-            @*<div class="row" style="background-color:#c4b9b9;width:100%">
-                <div id="PartialdivEWBILL">*@
-            @*@Html.Partial("_Rep_Bar_History")*@
-            @*</div>
-                </div>*@
-            <div class="container">
-                <div id="helpDIV">
+                    @Html.HiddenFor(model => model.BarImages)
+                    <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
+                                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                                <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
 
-                </div>
-            </div>
-}
+            </div>*@
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
+                                                    @Html.Label("", "BarCode Image")
+                                                </div>
+                                            </div>
+                                            @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+                                            <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                                                <div id="myCarousel" class="carousel" data-ride="carousel">
+                                                    <div class="carousel-inner" id="div_carousel_inner">
+                                                        <div class="item active">
+                                                            <img src="" alt="Los Angeles" style="width:100%;">
+                                                        </div>
+                                                        <div class="item">
+                                                            <img src="" alt="Chicago" style="width:100%;">
+                                                        </div>
+                                                    </div>
+                                                    <!-- Left and right controls -->
+                                                    <a class="left  carousel-control arrow-left" id="prev">
+                                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                                    </a>
+                                                    <a class="right  carousel-control arrow-right" id="next">
+                                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                                    </a>
+                                                </div>
+                                            </div>
 
+                                        </div>
+                                        <div class="PopUp_Backround">
+                                            <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                                                @Html.Partial("_Rep_Bar_History_AddNewBarno")
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="row" style="margin-top:20PX">
+                                            <div class="col-lg-6">
+                                                <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
 
+                                            </div>
+                                        </div>*@
+                                    @*<div class="row" style="background-color:#c4b9b9;width:100%">
+                                        <div id="PartialdivEWBILL">*@
+                                    @*@Html.Partial("_Rep_Bar_History")*@
+                                    @*</div>
+                                        </div>*@
+                                    <div class="container">
+                                        <div id="helpDIV">
 
+                                        </div>
+                                    </div>
+                                    }

@@ -255,7 +255,13 @@ function FillBarcodeArea(str, Table, i) {
             {
                 discrtinrate = retFloat((retFloat(RATE) * discrtinrate) / 100).toFixed(2);
             }
-            var newrt = retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+            var newrt = 0;
+            if ($("#PRCCD").val() == "CP") {
+                newrt = retFloat(((retFloat(RATE) + retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+            }
+            else {
+                newrt=  retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+            }
             RATE = newrt;
         }
         //

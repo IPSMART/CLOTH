@@ -83,6 +83,7 @@ namespace Improvar.Controllers
                             if (v.MTRLJOBCD == "FS") { v.Checked = true; }
                         }
                     }
+                    VE.SHOWMTRLJOBCD = VE.DropDown_list_MTRLJOBCD.Count() > 1 ? "Y" : "N";
                     //VE.PRCNM
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
