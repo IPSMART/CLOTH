@@ -5587,7 +5587,7 @@ namespace Improvar.Controllers
             DTYP3.value = "P";
             DTYP.Add(DTYP3);
             DropDown_list1 DTYP2 = new DropDown_list1();
-            DTYP2.text = "U";
+            DTYP2.text = "Per Unit";
             DTYP2.value = "U";
             DTYP.Add(DTYP2);
             return DTYP;
