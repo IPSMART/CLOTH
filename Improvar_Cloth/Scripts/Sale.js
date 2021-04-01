@@ -257,7 +257,7 @@ function FillBarcodeArea(str, Table, i) {
             }
             var newrt = 0;
             if ($("#PRCCD").val() == "CP") {
-                newrt = retFloat(((retFloat(RATE) + retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+                newrt = retFloat(retFloat(RATE) + retFloat(discrtinrate)).toFixed(0);
             }
             else {
                 newrt=  retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
