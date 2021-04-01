@@ -65,7 +65,7 @@ namespace Improvar
         }
         public static string retSqlformat(this object codestr)
         {
-            codestr = codestr.retStr().Replace("'","");
+            codestr = codestr.retStr().Replace("'", "");
             string rtval = "";
             string[] cdval = codestr.ToString().Split(',');
             if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString().Trim() != "")
@@ -207,7 +207,9 @@ namespace Improvar
         }
         public static int CharmPrice(string ChrmType, int Rate, string RoundVal)
         {
-            RoundVal = RoundVal.PadLeft(2, '0');
+            int RoundValLen = RoundVal.Length;
+            int RateLen = Rate.ToString().Length;
+            int RateDivisor = Convert.ToInt32("1" + "".PadLeft(RoundValLen, '0'));
             if (Rate < 10) Rate = 10 + Rate;
             int RoundAmt = RoundVal.retInt();
             if (RoundAmt == 0) RoundAmt = 100;
@@ -225,29 +227,29 @@ namespace Improvar
             }
             else if (ChrmType == "NT")//NEXT
             {
-                int last2rate = (Rate % 100);
+                int last2rate = (Rate % RateDivisor);
                 if (last2rate <= RoundVal.retInt())
                 {
-                    big = (Rate.ToString().Substring(0, Rate.ToString().Length - 2) + RoundVal).retInt();
+                    big = (Rate.ToString().Substring(0, RateLen - RoundValLen) + RoundVal).retInt();
                 }
                 else
                 {
-                    big = ((Rate + 100).ToString().Substring(0, (Rate + 100).ToString().Length - 2) + RoundVal).retInt();
+                    big = ((Rate + RateDivisor).ToString().Substring(0, (Rate + RateDivisor).ToString().Length - RoundValLen) + RoundVal).retInt();
                 }
                 return big.retInt();
             }
             else if (ChrmType == "NR")//NEAR
             {
-                int last2rate = (Rate % 100);
+                int last2rate = (Rate % RateDivisor);
                 if (last2rate <= RoundVal.retInt())
                 {
-                    big = (Rate.ToString().Substring(0, Rate.ToString().Length - 2) + RoundVal).retInt();
-                    small = ((Rate - 100).ToString().Substring(0, (Rate - 100).ToString().Length - 2) + RoundVal).retInt();
+                    big = (Rate.ToString().Substring(0, RateLen - RoundValLen) + RoundVal).retInt();
+                    small = ((Rate - RateDivisor).ToString().Substring(0, (Rate - RateDivisor).ToString().Length - RoundValLen) + RoundVal).retInt();
                 }
                 else
                 {
-                    big = ((Rate + 100).ToString().Substring(0, (Rate + 100).ToString().Length - 2) + RoundVal).retInt();
-                    small = ((Rate).ToString().Substring(0, Rate.ToString().Length - 2) + RoundVal).retInt();
+                    big = ((Rate + RateDivisor).ToString().Substring(0, (Rate + RateDivisor).ToString().Length - RoundValLen) + RoundVal).retInt();
+                    small = ((Rate).ToString().Substring(0, RateLen - RoundValLen) + RoundVal).retInt();
                 }
                 int NEAR = (Rate - small >= big - Rate) ? big : small;
                 return NEAR.retInt();
