@@ -1294,7 +1294,7 @@
                                 {
                                     if (Model.M_SYSCNFG.MNTNBARNO == "Y")
                                     {
-                                        <div class="col-md-1">
+                                        <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
                                                 @Html.Label("", "Bar Code")
                                                 <b style="color:Red;">*</b>
@@ -1310,7 +1310,7 @@
                                             </div>
                                         </div>
                                     }
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" style="width:auto;">
                                         <div class="editor-label" style="margin-top: 6px;">
                                             @Html.Label("", "Design No./Item")
                                             <b style="color:Red;">*</b>
@@ -1361,10 +1361,9 @@
                                     </div>
                                     if ((Model.MENU_PARA == "SBPCK") && Model.DefaultAction != "V")
                                     {
-                                        <div class="col-md-3">
+                                        <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
                                                 @Html.Label("", "Disc Rate")
-                                                <b style="color:Red;">*</b>
                                             </div>
                                         </div>
                                         <div class="col-md-1">
@@ -1372,15 +1371,14 @@
                                                     @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate" } })
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
                                                 @Html.Label("", "Disc Type")
-                                                <b style="color:Red;">*</b>
                                             </div>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div class="col-md-1" style="width:auto;">
                                             <div class="editor-field">
-                                                @Html.DropDownListFor(model => model.DISCTYPEINRATE, new SelectList(Model.DropDown_list_StkType, "Value", "Text", Model.STKTYPE), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
+                                                @Html.DropDownListFor(model => model.DISCTYPEINRATE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DISCTYPEINRATE), new { @class = "form-control", id = "DISCTYPEINRATE", @title = "Disc Type" })
                                             </div>
                                         </div>
 
@@ -1392,7 +1390,7 @@
                                                 @Html.Label("", "Bale No.")
                                             </div>
                                         </div>
-                                        <div class="col-md-7">
+                                        <div class="col-md-6">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.BALENO_HELP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO_HELP", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO');", @placeholder = "Bale No.", maxlength = 30 } })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')" />

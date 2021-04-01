@@ -240,7 +240,20 @@ function FillBarcodeArea(str, Table, i) {
         $.each(GSTPERarr, function () {
             GSTPER += parseFloat(this) || 0;
         });
-
+        //calculate rate with disctyperateinrate
+        debugger;
+        var disctypeinrate = $("#DISCTYPEINRATE").val();
+        var discrtinrate = retFloat($("#DISCRTINRATE").val());
+        if (MENU_PARA == "SBPCK" && discrtinrate != 0)
+        {
+            if(disctypeinrate == "P")
+            {
+                discrtinrate = retFloat((retFloat(RATE) * discrtinrate) / 100).toFixed(2);
+            }
+            var newrt = retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+            RATE = newrt;
+        }
+        //
         $("#RATE").val(RATE);
         $("#GSTPER").val(GSTPER);
         $("#PRODGRPGSTPER").val(PRODGRPGSTPER);
