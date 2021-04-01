@@ -396,6 +396,7 @@ namespace Improvar.Controllers
                     TBATCHMST.WPRATE = VE.NEWBARDATA.WPRATE.retDbl();
                     TBATCHMST.RPRATE = VE.NEWBARDATA.RPRATE.retDbl();
                     TBATCHMST.COMMONUNIQBAR = "E";
+                    TBATCHMST.PDESIGN = VE.NEWBARDATA.PDESIGN.retStr();
 
                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, "A");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();

@@ -1505,11 +1505,14 @@ namespace Improvar.Controllers
                 string TAXGRPCD = data[3].retStr();
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
-                string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
+                string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().ToUpper().retSqlformat();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string AUTONO = data[9].retStr() == "" ? "" : data[9].retStr().retSqlformat();
-
+                if(data[7].retStr() == "Bar")
+                {
+                    barnoOrStyle = barnoOrStyle.ToUpper();
+                }
                 string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
