@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace Improvar.ViewModels
 {
@@ -67,8 +68,19 @@ namespace Improvar.ViewModels
         public string GOCD { get; set; }
         public string PRCCD { get; set; }
         public string TAXGRPCD { get; set; }
-        
-
+        public string SHOWMTRLJOBCD { get; set; }
+        public NEWBARDATA NEWBARDATA { get; set; }
+    }
+    public class NEWBARDATA
+    {
+        public string BARNO { get; set; }
+        public DateTime? EFFDT { get; set; }
+        public double? CPRATE { get; set; }
+        public double? WPRATE { get; set; }
+        public double? RPRATE { get; set; }
+        [StringLength(10)]
+        public string ITCD { get; set; }
+        public string ITSTYLE { get; set; }
 
     }
 }

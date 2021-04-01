@@ -76,6 +76,11 @@ function GetBarnoDetails(id, HelpFrom) {
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
+                            if (!$('#PRCCD').is('[readonly]'))
+                            {
+                                $("#PRCCD").attr("readonly", "readonly");
+                                $('#PRCCD_HELP').hide();
+                            }
                             var value1 = modify_check_stylebarno();
                             if (value1 == "true") {
                                 FillBarcodeArea(result);
@@ -240,7 +245,26 @@ function FillBarcodeArea(str, Table, i) {
         $.each(GSTPERarr, function () {
             GSTPER += parseFloat(this) || 0;
         });
-
+        //calculate rate with disctyperateinrate
+        debugger;
+        var disctypeinrate = $("#DISCTYPEINRATE").val();
+        var discrtinrate = retFloat($("#DISCRTINRATE").val());
+        if (MENU_PARA == "SBPCK" && discrtinrate != 0)
+        {
+            if(disctypeinrate == "P")
+            {
+                discrtinrate = retFloat((retFloat(RATE) * discrtinrate) / 100).toFixed(2);
+            }
+            var newrt = 0;
+            if ($("#PRCCD").val() == "CP") {
+                newrt = retFloat(((retFloat(RATE) + retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+            }
+            else {
+                newrt=  retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+            }
+            RATE = newrt;
+        }
+        //
         $("#RATE").val(RATE);
         $("#GSTPER").val(GSTPER);
         $("#PRODGRPGSTPER").val(PRODGRPGSTPER);

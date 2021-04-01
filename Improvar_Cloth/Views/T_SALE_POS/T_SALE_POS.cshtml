@@ -26,6 +26,9 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
+        if ("@Model.SHOWMTRLJOBCD" != "Y") {
+            $("#divmtrljobcd").hide();
+        }
         $("#check_nav").hide();
         if ("@Model.MENU_PARA" == "SBCMR") {
             $("#Return_LI4").addClass("active");
@@ -236,7 +239,7 @@
         <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="urlGetData" value="@Url.Action("GetData", PageControllerName)" />
-        <input type="hidden" id="salesmanlinkcd" value="E" />
+        <input type="hidden" id="salesmanlinkcd" value="E,M" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
@@ -581,7 +584,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-1">
+                <div class="col-lg-1" id="divmtrljobcd">
                     <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
                         <table id="exampleLT" border="1" style="width: auto;">
                             @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)

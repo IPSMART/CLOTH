@@ -268,6 +268,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list3> SCMDISC_TYPE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_DISCAMT { get; set; }
+        public string SHOWMTRLJOBCD { get; set; }
 
     }
 }
