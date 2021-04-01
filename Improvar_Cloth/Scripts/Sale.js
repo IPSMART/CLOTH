@@ -174,6 +174,7 @@ function FillBarcodeArea(str, Table, i) {
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
+    var SYSCNFGCOMMONUNIQBAR = $("#SYSCNFGCOMMONUNIQBAR").val();
     if (DefaultAction == "V") return true;
     if (Table == "COPYLROW") {
         if (event.key != "F8") {
@@ -415,8 +416,13 @@ function FillBarcodeArea(str, Table, i) {
         }
         else {
             if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+                if ($("#SYSCNFGCOMMONUNIQBAR").val() == "E" && $("#MNTNOURDESIGN").val() =="Y") {
+                    $("#PDESIGN").focus();
+                }
+                else {
+                    $("#QNTY").focus();
+                }
                 //$("#ITCD").focus();
-                $("#QNTY").focus();
             } else {
                 if ($("#MNTNBARNO").val() == "Y") {
                     $("#BARCODE").focus();

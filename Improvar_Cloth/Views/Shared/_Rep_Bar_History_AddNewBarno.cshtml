@@ -11,6 +11,7 @@
                 <div class="col-lg-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Bar No.")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-lg-7">
@@ -23,6 +24,7 @@
                 <div class="col-lg-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Item")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -40,7 +42,21 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Party Design")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.NEWBARDATA.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN_NEW", @placeholder = "Party Design", maxlength = 30 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Effective Date")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -53,6 +69,7 @@
                 <div class="col-lg-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "CP")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -65,6 +82,7 @@
                 <div class="col-lg-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "WP")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -77,6 +95,7 @@
                 <div class="col-lg-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "RP")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-9">

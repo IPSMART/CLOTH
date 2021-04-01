@@ -230,7 +230,7 @@
         $("#popupAddNewBarno").show();
     }
     function BarcodeClose() {
-        ClearAllTextBoxes("BARNO_NEW,EFFDT_NEW,CPRATE_NEW,WPRATE_NEW,RPRATE_NEW,ITCD_NEW,ITSTYLE_NEW");
+        ClearAllTextBoxes("BARNO_NEW,EFFDT_NEW,CPRATE_NEW,WPRATE_NEW,RPRATE_NEW,ITCD_NEW,ITSTYLE_NEW,PDESIGN_NEW");
         $("#popupAddNewBarno").hide();
         $('.PopUp_Backround').fadeOut();
     }
@@ -238,6 +238,7 @@
         debugger;
         if (!emptyFieldCheck("Enter Bar No", "BARNO_NEW")) { return false; }
         if (!emptyFieldCheck("Select Item", "ITCD_NEW")) { return false; }
+        if (!emptyFieldCheck("Enter Party Design", "PDESIGN_NEW")) { return false; }
         if (!emptyFieldCheck("Select Effective Date", "EFFDT_NEW")) { return false; }
         if (!emptyFieldCheck("Enter CP", "CPRATE_NEW")) { return false; }
         if (!emptyFieldCheck("Enter WP", "WPRATE_NEW")) { return false; }

@@ -1272,9 +1272,12 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
+                string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().ToUpper().retSqlformat();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
-
+                if(data[7].retStr() == "Bar")
+                {
+                    barnoOrStyle = barnoOrStyle.ToUpper();
+                }
                 if (GOCD == "")
                 {
                     return Content("Please fill Godown");
