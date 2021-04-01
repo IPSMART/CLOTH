@@ -1359,6 +1359,32 @@
                                             }
                                         </div>
                                     </div>
+                                    if ((Model.MENU_PARA == "SBPCK") && Model.DefaultAction != "V")
+                                    {
+                                        <div class="col-md-3">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Disc Rate")
+                                                <b style="color:Red;">*</b>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                    @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Disc Type")
+                                                <b style="color:Red;">*</b>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.DropDownListFor(model => model.DISCTYPEINRATE, new SelectList(Model.DropDown_list_StkType, "Value", "Text", Model.STKTYPE), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
+                                            </div>
+                                        </div>
+
+                                    }
                                     if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR") && Model.DefaultAction == "A")
                                     {
                                         <div class="col-md-1" style="width:auto;">

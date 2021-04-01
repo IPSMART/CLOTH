@@ -89,7 +89,7 @@ namespace Improvar.Controllers
                     }
                     VE.VECHLTYPE = masterHelp.VECHLTYPE();
                     VE.TRANSMODE = masterHelp.TRANSMODE();
-
+                    VE.DropDown_list1 = DISCTYPEINRATE();
                     //string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     //if (autoEntryWork[0] == "yes")
                     //{
@@ -5564,6 +5564,19 @@ namespace Improvar.Controllers
             }
 
             return str;
+        }
+        public List<DropDown_list1> DISCTYPEINRATE()
+        {
+            List<DropDown_list1> DTYP = new List<DropDown_list1>();
+            DropDown_list1 DTYP3 = new DropDown_list1();
+            DTYP3.text = "%";
+            DTYP3.value = "P";
+            DTYP.Add(DTYP3);
+            DropDown_list1 DTYP2 = new DropDown_list1();
+            DTYP2.text = "U";
+            DTYP2.value = "U";
+            DTYP.Add(DTYP2);
+            return DTYP;
         }
     }
 }
