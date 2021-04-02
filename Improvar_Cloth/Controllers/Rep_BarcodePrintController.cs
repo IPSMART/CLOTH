@@ -131,8 +131,8 @@ namespace Improvar.Controllers
                     case 2:
                         prccd = rppricecd; sqlals = "o"; break;
                 }
-                sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
-            //    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+                //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
+               sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
                 sql += "(select a.barno, a.prccd, a.effdt, ";
                 sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
                 sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";

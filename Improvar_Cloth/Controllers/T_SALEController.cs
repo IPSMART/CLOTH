@@ -4604,7 +4604,7 @@ namespace Improvar.Controllers
                                 }
 
                                 //add price
-                                if (VE.DefaultAction == "A" && (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
+                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
                                     TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
