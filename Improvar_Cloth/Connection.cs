@@ -19,7 +19,7 @@ using System.Net.Sockets;
 using Microsoft.VisualBasic;
 using System.Drawing.Imaging;
 using QRCoder;
-using BarcodeLib.Barcode.CrystalReports;
+//using ;
 
 namespace Improvar
 {
@@ -3557,8 +3557,8 @@ namespace Improvar
         //public dynamic GenerateBarcode(string Barcodestr, string Rettype, bool IncludeLabel, string Savepath = "")
         //{// Rettype=string/image
         //    try
-        //    {//
-        //        int width = 600;               
+        //    {//Install-Package BarcodeLib -Version 1.3.0
+        //        int width = 600;
         //        int Height = 200; int FontSize = 30;
         //        using (Barcode barcode = new Barcode())
         //        {
@@ -3600,10 +3600,8 @@ namespace Improvar
         public dynamic GenerateBarcode(string Barcodestr, string Rettype, bool IncludeLabel, string Savepath = "")
         {// Rettype=string/image
             try
-            {
-
-                // Create an instance of Linear Barcode
-                LinearCrystal barcode = new LinearCrystal();
+            {//Install-Package BarcodeLib -Version 1.3.0
+                BarcodeLib.Barcode.CrystalReports.LinearCrystal barcode = new BarcodeLib.Barcode.CrystalReports.LinearCrystal();
                 // Barcode settings
                 barcode.Type = BarcodeLib.Barcode.BarcodeType.CODE128;
                 barcode.BarHeight = 50; //50 pixel
