@@ -131,22 +131,23 @@ namespace Improvar.Controllers
                     case 2:
                         prccd = rppricecd; sqlals = "o"; break;
                 }
-                sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
-                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+                //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
+               sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
                 sql += "(select a.barno, a.prccd, a.effdt, ";
                 sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
                 sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
                 sql += ") a, " + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c ";
                 sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' ";
-                sql += "union ";
-                sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
-                sql += "(select a.barno, a.prccd, a.effdt, ";
-                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ) ";
-                sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".T_BATCHmst d ";
-                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.prccd='" + prccd + "' and ";
-                sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
-                sql += ") a where prccd='" + prccd + "') " + sqlals + ", ";
+                //sql += "union ";
+                //sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+                //sql += "(select a.barno, a.prccd, a.effdt, ";
+                //sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                //sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ) ";
+                //sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".T_BATCHmst d ";
+                //sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.prccd='" + prccd + "' and ";
+                //sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
+                //sql += ") a where prccd='" + prccd + "' ";
+                sql += ") " + sqlals + ", ";
             }
 
             sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, ";
