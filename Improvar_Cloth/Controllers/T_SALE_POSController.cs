@@ -2040,6 +2040,28 @@ namespace Improvar.Controllers
                 string ContentFlg = "";
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
+                    DataTable syscnfgdt = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
+                    if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                    {
+                        if(VE.T_TXNMEMO.NM.retStr() == "")
+                        {
+                            VE.T_TXNMEMO.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                        }
+                        if (VE.T_TXNMEMO.MOBILE.retStr() == "")
+                        {
+                            VE.T_TXNMEMO.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                        }
+                        if (VE.T_TXNMEMO.ADDR.retStr() == "")
+                        {
+                            var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                            VE.T_TXNMEMO.ADDR = addrs;
+                        }
+                        if (VE.T_TXNMEMO.CITY.retStr() == "")
+                        {
+                            VE.T_TXNMEMO.CITY = syscnfgdt.Rows[0]["city"].retStr();
+                        }
+                    }
+
                     T_TXN TTXN = new T_TXN();
                     T_TXNMEMO TTXNMEMO = new T_TXNMEMO();
                     T_TXNPYMT_HDR TTXNPYMTHDR = new T_TXNPYMT_HDR();

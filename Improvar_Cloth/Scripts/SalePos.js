@@ -279,6 +279,9 @@ function AddMainRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field SGSTAMT must be a number." id="B_SGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SGSTAMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSPER must be a number." id="B_CESSPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CESSPER" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSAMT must be a number." id="B_CESSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CESSAMT" type="hidden" value="">';
+    if (MNTNSHADE != "Y") {
+        tr += '   <input id="B_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SHADE" type="hidden" value="">';
+    }
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
@@ -313,9 +316,7 @@ function AddMainRow(hlpstr) {
         tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SHADE" type="text" value="">';
         tr += ' </td>';
     }
-    else {
-        tr += '   <input id="B_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SHADE" type="hidden" value="">';
-    }
+
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="B_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
     tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
@@ -332,8 +333,8 @@ function AddMainRow(hlpstr) {
     if (INCLRATEASK == "Y") {
         tr += '     <td class="" title="">';
         tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onchange = "CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,2);" style="font-weight:bold;background-color: bisque;" type="text" value="' + INCLRATE + '">';
-        tr += '     </td>';
         tr += '     <input id="B_RATE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" type="hidden" value="' + RATE + '">';
+        tr += '     </td>';
         //tr += ' <td class="" title="">';
         //tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
         //tr += ' </td>';
@@ -417,12 +418,13 @@ function AddMainRow(hlpstr) {
     tr += '     <button type="button" onclick="FillImageModal(\'B_BarImages_' + rowindex + '\')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button>';
     tr += '     <input id="B_BarImages_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BarImages" type="hidden" value="' + BarImages + '">';
     tr += ' </td>';
-    tr += ' <td class="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETAMT must be a number." id="B_NETAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NETAMT" readonly="readonly" style="text-align: right;" type="text" value="">';
-    tr += ' </td>';
+
     tr += '    <td class="">';
     tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TsalePos_TBATCHDTL[' + rowindex + '].ITREM" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="">';
     tr += '    </td>';
+    tr += ' <td class="sticky-cell-opposite">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETAMT must be a number." id="B_NETAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NETAMT" readonly="readonly" style="text-align: right;" type="text" value="">';
+    tr += ' </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
     if (INCLRATEASK == "Y") {
@@ -999,7 +1001,7 @@ function CalculateTotal() {
     var MENU_PARA = $("#MENU_PARA").val();
 
     //POS MAIN GRID TOTAL
-    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0, T_GSTAMT = 0,T_DISCAMT=0;
+    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0, T_GSTAMT = 0, T_DISCAMT = 0;
     var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#B_QNTY_" + i).val());
@@ -1644,7 +1646,7 @@ function GetData() {
         }
     });
 }
-function CalculateGridQnty(tableid, index,value) {
+function CalculateGridQnty(tableid, index, value) {
     debugger;
     var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
     if (tableid == "_T_SALE_POS_PRODUCT_GRID") {
