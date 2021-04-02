@@ -26,7 +26,7 @@ function GetBarnoDetails(id, HelpFrom) {
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
-        ClearBarcodeArea();
+        ClearBarcodeArea('Y');
     }
     else {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -76,8 +76,7 @@ function GetBarnoDetails(id, HelpFrom) {
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
-                            if (!$('#PRCCD').is('[readonly]'))
-                            {
+                            if (!$('#PRCCD').is('[readonly]')) {
                                 $("#PRCCD").attr("readonly", "readonly");
                                 $('#PRCCD_HELP').hide();
                             }
@@ -250,10 +249,8 @@ function FillBarcodeArea(str, Table, i) {
         debugger;
         var disctypeinrate = $("#DISCTYPEINRATE").val();
         var discrtinrate = retFloat($("#DISCRTINRATE").val());
-        if (MENU_PARA == "SBPCK" && discrtinrate != 0)
-        {
-            if(disctypeinrate == "P")
-            {
+        if (MENU_PARA == "SBPCK" && discrtinrate != 0) {
+            if (disctypeinrate == "P") {
                 discrtinrate = retFloat((retFloat(RATE) * discrtinrate) / 100).toFixed(2);
             }
             var newrt = 0;
@@ -261,7 +258,7 @@ function FillBarcodeArea(str, Table, i) {
                 newrt = retFloat(retFloat(RATE) + retFloat(discrtinrate)).toFixed(0);
             }
             else {
-                newrt=  retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
+                newrt = retFloat(((retFloat(RATE) - retFloat(discrtinrate)) * 100) / (100 + retFloat(GSTPER))).toFixed(0);
             }
             RATE = newrt;
         }
@@ -416,7 +413,7 @@ function FillBarcodeArea(str, Table, i) {
         }
         else {
             if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-                if ($("#SYSCNFGCOMMONUNIQBAR").val() == "E" && $("#MNTNOURDESIGN").val() =="Y") {
+                if ($("#SYSCNFGCOMMONUNIQBAR").val() == "E" && $("#MNTNOURDESIGN").val() == "Y") {
                     $("#PDESIGN").focus();
                 }
                 else {
@@ -2131,7 +2128,7 @@ function AddBarCodeGrid() {
     tr += ' <tr style="font-size:12px; font-weight:bold;">';
     tr += '    <td class="sticky-cell">';
     tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
-    tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
+    //tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
     tr += '        <input data-val="true" data-val-length="The field COMMONUNIQBAR must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The COMMONUNIQBAR field is required." id="B_COMMONUNIQBAR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COMMONUNIQBAR" type="hidden" value="' + COMMONUNIQBAR + '">';
     tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
     tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
@@ -2386,6 +2383,9 @@ function AddBarCodeGrid() {
     tr += '    <td class="">';
     tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale();" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="">';
     //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
+    tr += '    </td>';
+    tr += '    <td class="" title="' + BARCODE + '">';
+    tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARCODE + '">';
     tr += '    </td>';
     tr += '   <td class=""> ';
     tr += ' <input type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="' + NoOfBarImages + '" readonly="readonly" placeholder="">';
