@@ -1824,6 +1824,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("finaldest", typeof(string), "");
                 IR.Columns.Add("bankinter", typeof(string), "");
                 IR.Columns.Add("SLMSLNM", typeof(string), "");
+                IR.Columns.Add("incl_disc", typeof(double), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -1898,7 +1899,7 @@ namespace Improvar.Controllers
                         i = istore;
                         lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
-                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0;
+                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0;double tincldisc = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0;
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
@@ -2593,6 +2594,7 @@ namespace Improvar.Controllers
                                 dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
                                 var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
+                                dr1["incl_disc"] = (tbl.Rows[i]["inclrate"].retDbl() * dr1["qnty"].retDbl())- dr1["netamt"].retDbl() ;
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
                                 dqnty = dqnty + (dr1["qnty"].ToString()).retDbl();
@@ -2600,6 +2602,7 @@ namespace Improvar.Controllers
                                 ddisc1 = ddisc1 + (dr1["tddiscamt"].ToString()).retDbl();
                                 ddisc2 = ddisc2 + (dr1["discamt"].ToString()).retDbl();
                                 dtxblval = dtxblval + (dr1["txblval"].ToString()).retDbl();
+                                tincldisc +=(dr1["incl_disc"].ToString()).retDbl();
                                 //if (VE.TEXTBOX6 == "SaleBill_rec.rpt")
                                 //{
                                 //    if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
@@ -2656,6 +2659,7 @@ namespace Improvar.Controllers
                                             dr1["titdiscamt"] = ddisc1 + ddisc2;
                                             dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                             dr1["SLMSLNM"] = SLMSLNM;
+                                            dr1["incl_disc"] = tincldisc;
                                             totalreadyprint = true;
                                             goto docstart;
                                         }
@@ -2693,6 +2697,7 @@ namespace Improvar.Controllers
                                         dr1["titdiscamt"] = ddisc1 + ddisc2;
                                         dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                         dr1["SLMSLNM"] = SLMSLNM;
+                                        dr1["incl_disc"] = tincldisc;
                                         totalreadyprint = true;
                                         goto docstart;
                                     }
@@ -2723,6 +2728,7 @@ namespace Improvar.Controllers
                                     dr1["titdiscamt"] = ddisc1 + ddisc2;
                                     dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                     dr1["SLMSLNM"] = SLMSLNM;
+                                    dr1["incl_disc"] = tincldisc;
                                     totalreadyprint = true;
                                     goto docstart;
                                 }

@@ -129,6 +129,7 @@
                                     <th class="" style="width:135px;">Pcs.Type</th>
                                 }
                                 <th class="" style="width:160px;">Item Remarks</th>
+                                <th class="" style="width:160px;">Barno</th>
                                 <th class="" style="width:30px; text-align:center">Img</th>
                                 <th class="">Image Upload</th>
 
@@ -155,7 +156,7 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell">
                                             @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
+                                            @*@Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })*@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].COMMONUNIQBAR, new { id = "B_COMMONUNIQBAR_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
@@ -441,6 +442,9 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
                                         </td>
                                         <td class="">
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
                                             <input type="button" onclick="T_Sale_FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="TBATCHDTL[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.TBATCHDTL[i].BarImagesCount" />
                                         </td>
                                         <td class="">
@@ -591,6 +595,7 @@
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
