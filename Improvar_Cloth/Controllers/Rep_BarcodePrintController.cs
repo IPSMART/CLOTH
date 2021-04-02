@@ -166,15 +166,11 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_BarcodePrint(RepBarcodePrint VE, string btnSubmit)
         {
-            if (btnSubmit == "Print from text")
-            {
-                return RedirectToAction("PreviewBarcodeTxtFmt");
-            }
-            else
+            try
             {
                 string sql = "select * from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
                 var dtsyscnfg = masterHelp.SQLquery(sql); string PRICEINCODE = "";
-                if (dtsyscnfg.Rows.Count > 0)
+                if (dtsyscnfg !=null &&dtsyscnfg.Rows.Count > 0)
                 {
                     PRICEINCODE = dtsyscnfg.Rows[0]["PRICEINCODE"].retStr();
                 }
@@ -229,7 +225,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("partnm", typeof(string));
                 IR.Columns.Add("sizecd", typeof(string));
                 IR.Columns.Add("recdt_code", typeof(string));
-
+                string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
                 VE.BarcodePrint = VE.BarcodePrint.Where(a => a.Checked == true).ToList();
@@ -237,11 +233,12 @@ namespace Improvar.Controllers
                 {
                     if (VE.BarcodePrint[i].Checked == true)
                     {
+                        string barno = VE.BarcodePrint[i].BARNO.retStr();
+                        byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte", false);
+                        FileName = VE.BarcodePrint[i].DOCNO.retStr();
                         for (int j = 0; j < VE.BarcodePrint[i].NOS.retDbl(); j++)
                         {
                             DataRow dr = IR.NewRow();
-                            string barno = VE.BarcodePrint[i].BARNO.retStr();
-                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte", false);
                             dr["brcodeImage"] = brcodeImage;
                             dr["barno"] = barno;
                             dr["compinit"] = "";
@@ -306,13 +303,37 @@ namespace Improvar.Controllers
                 DSP.Merge(IR);
                 reportdocument.SetDataSource(DSP);
                 Response.Buffer = false;
+                Response.Clear();
                 Response.ClearContent();
                 Response.ClearHeaders();
                 Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
                 stream.Seek(0, SeekOrigin.Begin);
                 reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
-                return new FileStreamResult(stream, "application/pdf");
+                if (btnSubmit == "Download Barcode")
+                {
+                    Response.ContentType = "application/pdf";
+                    Response.Charset = string.Empty;
+                    Response.Cache.SetCacheability(System.Web.HttpCacheability.Public);
+                    Response.AddHeader("Content-Disposition", string.Format("attachment;filename=" + FileName + ".pdf", "Collection"));
+                    byte[] bytes;
+                    using (var ms = new MemoryStream()) { stream.CopyTo(ms); bytes = ms.ToArray(); }
+                    Response.OutputStream.Write(bytes, 0, bytes.Length);
+                    Response.OutputStream.Flush();
+                    Response.OutputStream.Close();
+                    Response.End();
+                    return Content("Done");
+                }
+                else
+                {
+                    return new FileStreamResult(stream, "application/pdf");
+                }
             }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.StackTrace);
+            }
+            return Content("Done");
         }
         public string RateEncode(int rate, string PRICEINCODE)
         {

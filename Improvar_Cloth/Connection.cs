@@ -17,11 +17,9 @@ using System.Drawing;
 using Improvar.Models;
 using System.Net.Sockets;
 using Microsoft.VisualBasic;
-using BarcodeLib;
 using System.Drawing.Imaging;
 using QRCoder;
-//using iTextSharp.text;
-//using iTextSharp.text.pdf;
+using BarcodeLib.Barcode.CrystalReports;
 
 namespace Improvar
 {
@@ -1913,7 +1911,7 @@ namespace Improvar
                             //}
                             //else
                             //{
-                                endDT = maxDT.AddDays(-1);
+                            endDT = maxDT.AddDays(-1);
                             //}
                             var days = Enumerable.Range(0, Int32.MaxValue)
                                          .Select(a => startDT.AddDays(a))
@@ -3556,41 +3554,95 @@ namespace Improvar
                 return "";
             }
         }
+        //public dynamic GenerateBarcode(string Barcodestr, string Rettype, bool IncludeLabel, string Savepath = "")
+        //{// Rettype=string/image
+        //    try
+        //    {//
+        //        int width = 600;               
+        //        int Height = 200; int FontSize = 30;
+        //        using (Barcode barcode = new Barcode())
+        //        {
+        //            barcode.IncludeLabel = IncludeLabel;
+        //            barcode.Alignment = AlignmentPositions.LEFT;
+        //            barcode.LabelFont = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Regular);
+        //            var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White);
+        //            if (Rettype == "byte")
+        //            {
+        //                using (MemoryStream ms = new MemoryStream())
+        //                {
+        //                    barcodeImage.Save(ms, ImageFormat.Jpeg);
+        //                    byte[] imageBytes = ms.ToArray();
+        //                    return imageBytes;
+        //                }
+        //            }
+        //            //return barcodeImage;
+        //            if (Savepath == "")
+        //                Savepath = "c:/IPSMART/Barcode/" + Barcodestr + ".jpeg";
+        //            if (!Directory.Exists(Path.GetDirectoryName(Savepath)))
+        //            {
+        //                Directory.CreateDirectory(Path.GetDirectoryName(Savepath));
+        //            }
+        //            if (System.IO.File.Exists(Barcodestr))
+        //            {
+        //                System.IO.File.Delete(Barcodestr);
+        //                GC.Collect();
+        //            }
+        //            barcodeImage.Save(Savepath, ImageFormat.Jpeg);
+        //        }
+        //        return Barcodestr;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        SaveException(ex, "");
+        //        return ex.Message;
+        //    }
+        //}
         public dynamic GenerateBarcode(string Barcodestr, string Rettype, bool IncludeLabel, string Savepath = "")
         {// Rettype=string/image
             try
-            {//
-                int width = 600;               
-                int Height = 200; int FontSize = 30;
-                using (Barcode barcode = new Barcode())
-                {
-                    barcode.IncludeLabel = IncludeLabel;
-                    barcode.Alignment = AlignmentPositions.LEFT;
-                    barcode.LabelFont = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Regular);
-                    var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White, width, Height);
-                    if (Rettype == "byte")
-                    {
-                        using (MemoryStream ms = new MemoryStream())
-                        {
-                            barcodeImage.Save(ms, ImageFormat.Jpeg);
-                            byte[] imageBytes = ms.ToArray();
-                            return imageBytes;
-                        }
-                    }
-                    //return barcodeImage;
-                    if (Savepath == "")
-                        Savepath = "c:/IPSMART/Barcode/" + Barcodestr + ".jpeg";
-                    if (!Directory.Exists(Path.GetDirectoryName(Savepath)))
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(Savepath));
-                    }
-                    if (System.IO.File.Exists(Barcodestr))
-                    {
-                        System.IO.File.Delete(Barcodestr);
-                        GC.Collect();
-                    }
-                    barcodeImage.Save(Savepath, ImageFormat.Jpeg);
-                }
+            {
+
+                // Create an instance of Linear Barcode
+                LinearCrystal barcode = new LinearCrystal();
+                // Barcode settings
+                barcode.Type = BarcodeLib.Barcode.BarcodeType.CODE128;
+                barcode.BarHeight = 50; //50 pixel
+                barcode.ShowText = false;
+                barcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
+                barcode.Data = Barcodestr;
+                byte[] imageData = barcode.drawBarcodeAsBytes();
+                return imageData;
+                //int width = 600;
+                //int Height = 200; int FontSize = 30;
+                //using (Barcode barcode = new Barcode())
+                //{
+                //    barcode.IncludeLabel = IncludeLabel;
+                //    barcode.Alignment = AlignmentPositions.LEFT;
+                //    barcode.LabelFont = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Regular);
+                //    var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White);
+                //    if (Rettype == "byte")
+                //    {
+                //        using (MemoryStream ms = new MemoryStream())
+                //        {
+                //            barcodeImage.Save(ms, ImageFormat.Jpeg);
+                //            byte[] imageBytes = ms.ToArray();
+                //            return imageBytes;
+                //        }
+                //    }
+                //    //return barcodeImage;
+                //    if (Savepath == "")
+                //        Savepath = "c:/IPSMART/Barcode/" + Barcodestr + ".jpeg";
+                //    if (!Directory.Exists(Path.GetDirectoryName(Savepath)))
+                //    {
+                //        Directory.CreateDirectory(Path.GetDirectoryName(Savepath));
+                //    }
+                //    if (System.IO.File.Exists(Barcodestr))
+                //    {
+                //        System.IO.File.Delete(Barcodestr);
+                //        GC.Collect();
+                //    }
+                //    barcodeImage.Save(Savepath, ImageFormat.Jpeg);
+                //}
                 return Barcodestr;
             }
             catch (Exception ex)
@@ -3603,10 +3655,10 @@ namespace Improvar
         public string CopyImage(string copyFromPath, string copyToPath)
         {
             try
-            {               
+            {
                 if (System.IO.File.Exists(copyToPath))
                 {
-                        System.IO.File.Delete(copyToPath);
+                    System.IO.File.Delete(copyToPath);
                 }
                 File.Copy(copyFromPath, copyToPath);
                 return copyToPath;
