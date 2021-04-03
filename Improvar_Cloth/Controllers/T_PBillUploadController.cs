@@ -158,6 +158,7 @@ namespace Improvar.Controllers
             List<DUpGrid> DUGridlist = new List<DUpGrid>();
             try
             {
+                //Enable 32 bit application from IIS. to run dbf and ins  32 bit cryastal report 32 bit.
                 string Path = "C:\\IPSMART\\Temp";
                 if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
                 Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
