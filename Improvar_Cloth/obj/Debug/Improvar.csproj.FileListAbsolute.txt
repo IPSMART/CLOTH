@@ -219,3 +219,4 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.xml
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.pdb
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.xml
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\itextsharp.xml
+D:\current project\CLOTH\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
