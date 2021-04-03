@@ -724,11 +724,19 @@ namespace Improvar.Controllers
                     }
 
                     //checking childdata exist against barno
-                    var chk_child = (from a in DB.T_BATCHDTL where a.BARNO == v.BARNO && a.AUTONO != TXN.AUTONO select a).ToList();
-                    if (chk_child.Count() > 0)
+                    //var chk_child = (from a in DB.T_BATCHDTL where a.BARNO == v.BARNO && a.AUTONO != TXN.AUTONO select a).ToList();
+                    //if (chk_child.Count() > 0)
+                    //{
+                    //    v.ChildData = "Y";
+                    //}
+
+                    var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
+                    if (chk_child != "")
                     {
                         v.ChildData = "Y";
                     }
+
+
                     //if ((VE.MENU_PARA == "PB") && ((TXN.BARGENTYPE == "E") || (TXN.BARGENTYPE == "C" && v.BARGENTYPE == "E")))
                     //{
                     //    v.WPRATE = v.RATE * VE.WPPER;
