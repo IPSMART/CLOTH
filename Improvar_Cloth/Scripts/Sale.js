@@ -26,7 +26,10 @@ function GetBarnoDetails(id, HelpFrom) {
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
-        ClearBarcodeArea('Y');
+        ClearBarcodeArea();
+        $("#AddRow_Barcode").show();
+        $("#UpdateRow_Barcode").hide();
+
     }
     else {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
