@@ -332,7 +332,7 @@
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].LISTPRICE, new { htmlAttributes = new { id = "B_LISTPRICE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#B_');" } })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "B_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, @onchange = "RateUpdate(" + i + ",'#B_');" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "B_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, onblur = "RateUpdate(" + i + ",'#B_');", onkeydown = "CopyLastDiscData(this.value,'NO','B_LISTDISCPER_','NO','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_LISTDISCPER_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })

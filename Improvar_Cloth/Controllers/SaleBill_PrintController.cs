@@ -3307,6 +3307,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("mutslnm", typeof(string), "");
                 IR.Columns.Add("flagmtr", typeof(double), "");
                 IR.Columns.Add("bltype", typeof(string), "");
+                IR.Columns.Add("netqnty", typeof(double), "");
+                IR.Columns.Add("nqdecimal", typeof(double), "");
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
 
@@ -3338,7 +3340,7 @@ namespace Improvar.Controllers
                 string fssailicno = ""; /*string grpemailid = "";*/ string goadd = ""/*, gocd = ""*/;
                 string rupinwords = "";
                 int uomdecimal = 3; int uommaxdecimal = 0;
-
+                int nuomdecimal = 3; int nuommaxdecimal = 0;
                 switch (tbl.Rows[0]["doctag"].ToString())
                 {
                     case "SB":
@@ -3385,7 +3387,7 @@ namespace Improvar.Controllers
                         lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
                         double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double ddisc3 = 0; double dtxblval = 0;
-                        double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0;
+                        double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0; double dnqnty = 0;
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
                         string dtldsc = "", dtlamt = "";
@@ -3900,6 +3902,7 @@ namespace Improvar.Controllers
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : (tbl.Rows[i]["qnty"]).retDbl();
+                                dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl()- tbl.Rows[i]["flagmtr"].retDbl();
                                 dr1["flagmtr"] = tbl.Rows[i]["flagmtr"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
                                 string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());
@@ -3911,6 +3914,18 @@ namespace Improvar.Controllers
                                 if (VE.DOCCD == "SOOS" && uomdecimal == 6) uomdecimal = 4;
 
                                 dr1["qdecimal"] = uomdecimal;
+
+                                nuomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
+                                string dbnqtyu = string.Format("{0:N6}", (dr1["netqnty"]).retDbl());
+                                if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
+                                {
+                                    if (nuomdecimal > 4) nuomdecimal = 4;
+                                }
+                                if (nuomdecimal > nuommaxdecimal) nuommaxdecimal = nuomdecimal;
+                                if (VE.DOCCD == "SOOS" && nuomdecimal == 6) nuomdecimal = 4;
+
+                                dr1["nqdecimal"] = nuomdecimal;
+
                                 dr1["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
                                 dr1["rate"] = tbl.Rows[i]["rate"].retDbl().ToString("0.00");
                                 dr1["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : (tbl.Rows[i]["amt"]).retDbl();
@@ -3959,17 +3974,17 @@ namespace Improvar.Controllers
                                     if (batch_data[a]["scmdiscrate"].retDbl() > 0)
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
+                                        pcsdesc += "-SL "+batch_data[a]["scmdiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["tddiscrate"].retDbl() > 0)
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += batch_data[a]["tddiscrate"].retStr() + "% ";
+                                        pcsdesc += "-SL " + batch_data[a]["tddiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["discrate"].retDbl() > 0)
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
+                                        pcsdesc += "-SL " + batch_data[a]["discrate"].retStr() + "% ";
                                     }
                                     //if (batch_data[a]["itrem"].retStr() != "")
                                     //{
@@ -4044,6 +4059,7 @@ namespace Improvar.Controllers
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
                                 dqnty = dqnty + (dr1["qnty"].ToString()).retDbl();
+                                dnqnty = dnqnty + (dr1["netqnty"].ToString()).retDbl();
                                 dbasamt = dbasamt + (dr1["amt"].ToString()).retDbl();
                                 ddisc1 = ddisc1 + (tbl.Rows[i]["scmdiscamt"]).retDbl();
                                 ddisc2 = ddisc2 + (tbl.Rows[i]["tddiscamt"]).retDbl();
@@ -4093,6 +4109,7 @@ namespace Improvar.Controllers
                                             }
                                             dr1["nos"] = dnos;
                                             dr1["qnty"] = dqnty;
+                                            dr1["netqnty"] = dnqnty;
                                             if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                             dr1["qdecimal"] = uommaxdecimal;
                                             dr1["amt"] = dbasamt;
@@ -4130,6 +4147,7 @@ namespace Improvar.Controllers
                                         }
                                         dr1["nos"] = dnos;
                                         dr1["qnty"] = dqnty;
+                                        dr1["netqnty"] = dnqnty;
                                         if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                         dr1["qdecimal"] = uommaxdecimal;
                                         dr1["amt"] = dbasamt;
@@ -4160,6 +4178,7 @@ namespace Improvar.Controllers
                                     if (CommVar.ClientCode(UNQSNO) == "RATN") dr1["itdesc"] = "Total";
                                     dr1["nos"] = dnos;
                                     dr1["qnty"] = dqnty;
+                                    dr1["netqnty"] = dnqnty;
                                     if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                     dr1["qdecimal"] = uommaxdecimal;
                                     dr1["amt"] = dbasamt;

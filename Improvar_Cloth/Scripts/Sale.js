@@ -176,6 +176,7 @@ function FillBarcodeArea(str, Table, i) {
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
+    var MNTNSHADE = $("#MNTNSHADE").val();
     var SYSCNFGCOMMONUNIQBAR = $("#SYSCNFGCOMMONUNIQBAR").val();
     if (DefaultAction == "V") return true;
     if (Table == "COPYLROW") {
@@ -436,11 +437,16 @@ function FillBarcodeArea(str, Table, i) {
     }
     else if (str != "") {
         if (ModuleCode.indexOf("SALESCLOTH") != -1) {
-            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-                $("#NOS").focus();
+            if (MNTNSHADE == "Y") {
+                $("#SHADE").focus();
             }
             else {
-                $("#CUTLENGTH").focus();
+                if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+                    $("#NOS").focus();
+                }
+                else {
+                    $("#CUTLENGTH").focus();
+                }
             }
         }
     }
@@ -2293,7 +2299,7 @@ function AddBarCodeGrid() {
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field LISTPRICE must be a number." id="B_LISTPRICE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].LISTPRICE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="RateUpdate(' + rowindex + ',\'#B_\');" value="' + LISTPRICE + '" >';
         tr += '    </td>';
         tr += '    <td class="" title="' + LISTDISCPER + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field LISTDISCPER must be a number." id="B_LISTDISCPER_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].LISTDISCPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="RateUpdate(' + rowindex + ',\'#B_\');" value="' + LISTDISCPER + '" >';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field LISTDISCPER must be a number." id="B_LISTDISCPER_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].LISTDISCPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="RateUpdate(' + rowindex + ',\'#B_\');" onkeydown="CopyLastDiscData(this.value,\'NO\',\'B_LISTDISCPER_\',\'NO\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_LISTDISCPER_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + LISTDISCPER + '" >';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" readonly="readonly" value="' + RATE + '" >';

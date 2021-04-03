@@ -1409,7 +1409,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="editor-field">
-                                                @Html.EditorFor(model => model.BALENO_HELP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO_HELP", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO');", @placeholder = "Bale No.", maxlength = 30 } })
+                                                @Html.EditorFor(model => model.BALENO_HELP, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO_HELP", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO');", @placeholder = "Bale No.", maxlength = 30, @TabIndex = -1 } })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO_HELP','BALENO_HELP=baleno=0/LINKAUTONO=blautono=5/LINKDOCNO=bldocno','DOCDT/GOCD/LINKAUTONO')" />
                                                 @Html.HiddenFor(model => model.T_TXN_LINKNO.LINKAUTONO, new { id = "LINKAUTONO" })
                                                 @Html.HiddenFor(model => model.LINKDOCNO, new { id = "LINKDOCNO" })
@@ -1418,7 +1418,7 @@
                                         if (Model.DefaultAction == "A")
                                         {
                                             <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn-sm" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBale" value="Get Bale Data" title="Click to Get Bale Data" onclick="GetBaleData('LINKAUTONO', 'LINKDOCNO', 'BALENO_HELP')" />
+                                                <input tabindex="-1" type="button" class="btn-sm" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBale" value="Get Bale Data" title="Click to Get Bale Data" onclick="GetBaleData('LINKAUTONO', 'LINKDOCNO', 'BALENO_HELP') " />
                                             </div>
                                         }
                                     }
