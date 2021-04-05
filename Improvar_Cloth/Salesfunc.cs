@@ -49,7 +49,7 @@ namespace Improvar
             sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, listdiscper, ";
             sql += "row_number() over(partition by b.slcd order by c.docdt desc) as rn ";
             sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d ";
-            sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and ";
+            sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and listdiscper<>0 and ";
             if (docdt != "") sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') and ";
             //sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
             sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
