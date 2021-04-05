@@ -587,6 +587,7 @@
         <input type="hidden" id="urlnameGENLEG" value="@Url.Action("GetGeneralLedgerDetails", PageControllerName)" />
         <input type="hidden" id="UrlGetBaleData" value="@Url.Action("GetBaleData", PageControllerName)" />
         <input type="hidden" id="UrlCopyRow" value="@Url.Action("CopyBarGridRow", PageControllerName)" />
+        <input type="hidden" id="UrlLastAgentTransport" value="@Url.Action("LastAgentTransport", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -737,8 +738,8 @@
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT');", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')" />*@
-                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','" + @ViewBag.Partycaption + " Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD/SLDISCDESC=SLDISCDESC','slcd_tag/DOCDT')", onblur = "GetPartyDetails(this.value);", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)',' @ViewBag.Partycaption Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD/SLDISCDESC=SLDISCDESC','slcd_tag/DOCDT')" />
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','" + @ViewBag.Partycaption + " Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD/SLDISCDESC=SLDISCDESC/TRANSLCD=TRSLCD/TRANSLNM=TRSLNM','slcd_tag/DOCDT')", onblur = "GetPartyDetails(this.value);", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)',' @ViewBag.Partycaption Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD/SLDISCDESC=SLDISCDESC/TRANSLCD=TRSLCD/TRANSLNM=TRSLNM','slcd_tag/DOCDT')" />
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -963,7 +964,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    @Html.EditorFor(model => model.T_TXNOTH.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeydown = "LastAgentTransport('A','AGSLCD','AGSLNM');", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd');", @placeholder = "Code", maxlength = 8 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd')" />
                                     @*@Html.HiddenFor(model => model.AGSLNM, new { id = "AGSLNM" })*@
                                 </div>
@@ -1292,7 +1293,15 @@
                                 </div>
                             </div>
                         }
-                    </div>
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <p class="text-info">
+                                    * Press <b>F4</b> on <b>Agent</b> to get last Agent respect of @ViewBag.Partycaption<br />
+                                </p>
+                            </div>
+                        }
+                            </div>
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
                             <div class="row">
@@ -2188,7 +2197,7 @@
                             </div>
                             <div class="Transportdiv col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "LastAgentTransport('T','TRANSLCD','TRANSLNM');", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" id="help_translcd" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
                                 </div>
                             </div>
@@ -2335,6 +2344,14 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <p class="text-info">
+                                    * Press <b>F4</b> on <b>Transporter</b> to get last Transporter respect of @ViewBag.Partycaption<br />
+                                </p>
+                            </div>
+                        }
                     </div>
                     <div id="OtherAddress" class="tab-pane fade" style="margin-top: 10px;">
                         <div class="row">

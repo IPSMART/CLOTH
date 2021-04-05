@@ -430,7 +430,7 @@ namespace Improvar.Controllers
                     if (party_data != null && party_data.Rows.Count > 0)
                     {
                         string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
-                        VE.SLDISCDESC = (party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
+                        VE.SLDISCDESC = (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
                     }
                 }
 
@@ -1133,7 +1133,7 @@ namespace Improvar.Controllers
                                 str += "^" + "TCSNM" + "=^" + TCSNM + Cn.GCS();
 
                                 string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
-                                str += "^" + "SLDISCDESC" + "=^" + (party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10))) + Cn.GCS();
+                                str += "^" + "SLDISCDESC" + "=^" + (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10))) + Cn.GCS();
                                 return Content(str);
                             }
                             else
@@ -3742,6 +3742,44 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        public ActionResult LastAgentTransport(string Party, string Doccd, string Comesfrom)
+        {
+            try
+            {
+                string str = "", caption = "";
+                string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO);
+                string sql = "";
+                if (Comesfrom == "A")
+                {
+                    sql += "select * from ( select b.agslcd slcd,c.slnm from " + scm + ".t_txn a," + scm + ".t_txnoth b," + scmf + ".m_subleg c ";
+                    sql += "where a.autono=b.autono(+) and b.agslcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.agslcd is not null order by a.autono desc ) where rownum=1 ";
+                    caption = "Agent";
+                }
+                else if (Comesfrom == "T")
+                {
+                    sql += "select * from ( select b.translcd slcd,c.slnm from " + scm + ".t_txn a," + scm + " .t_txntrans b," + scmf + ".m_subleg c ";
+                    sql += "where a.autono=b.autono(+) and b.translcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.translcd is not null order by a.autono desc) where rownum=1 ";
+                    caption = "Transporter";
+                }
+                var data = masterHelp.SQLquery(sql);
+                if (data != null && data.Rows.Count > 0)
+                {
+                    str = masterHelp.ToReturnFieldValues("", data);
+                }
+                else
+                {
+                    str = caption + " not found respect of this party !!";
+                }
+                return Content(str);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+
         }
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {

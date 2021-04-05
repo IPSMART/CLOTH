@@ -2621,7 +2621,7 @@ function GetPartyDetails(id) {
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -2645,7 +2645,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -2668,6 +2668,8 @@ function GetPartyDetails(id) {
                         $("#DUEDAYS").val(returncolvalue(result, "crdays"));
                         $("#PSLCD").val(returncolvalue(result, "PSLCD"));
                         $("#PARTYCD").val(returncolvalue(result, "PARTYCD"));
+                        $("#TRANSLCD").val(returncolvalue(result, "TRSLCD"));
+                        $("#TRANSLNM").val(returncolvalue(result, "TRSLNM"));
                         //tcs
                         $("#TDSCODE").val(returncolvalue(result, "TCSCODE"));
                         $("#TDSNM").val(returncolvalue(result, "TCSNM"));
@@ -2712,7 +2714,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
                         message_value = "SLCD";
                     }
                 }
@@ -3930,6 +3932,57 @@ function CopyRow(index) {
             msgError("Error: " + textStatus + "," + errorThrown);
         }
     });
+}
+function LastAgentTransport(Comesfrom, ID, NAME) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    var MENU_PARA = $("#MENU_PARA").val();
+    if (DefaultAction == "V") return true;
+    if (event.key != "F4" && event.key != "F2") return true;
+    if (event.key == "F4") {
+        var Party = $("#SLCD").val();
+        if (Party == "") {
+            msgInfo("Please Enter Party !!");
+            message_value = "SLCD";
+            return false;
+        }
+        var Doccd = $("#DOCCD").val();
+        $.ajax({
+            type: 'post',
+            url: $("#UrlLastAgentTransport").val(), //"@Url.Action("LastAgentTransport", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: "&Party=" + Party + "&Doccd=" + Doccd + "&Comesfrom=" + Comesfrom,
+            success: function (result) {
+                debugger;
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#" + ID).val(returncolvalue(result, "SLCD"));
+                    $("#" + NAME).val(returncolvalue(result, "SLNM"));
+                }
+                else {
+                    $('#helpDIV').html("");
+                    msgInfo("" + result + " !");
+                    ClearAllTextBoxes(ID + "," + NAME);
+                    message_value = ID;
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    else {
+        if (Comesfrom == "A") {
+            GetHelpBlur($("#UrlSubLedgerDetails").val(), 'Agent Details', 'AGSLCD', 'AGSLCD=slcd=1/AGSLNM=slnm=0', 'agentlinkcd');
+        }
+        else {
+            GetHelpBlur($("#UrlSubLedgerDetails").val(), 'Transporter Details', 'TRANSLCD', 'TRANSLCD=slcd=1/TRANSLNM=slnm=0', 'trnsportlinkcd');
+        }
+    }
+
+
 }
 
 

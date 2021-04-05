@@ -2988,7 +2988,7 @@ namespace Improvar.Controllers
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,z.totdiscamt,  ";
                 sql += "(case when nvl(h.cancel,'N')='Y' then 'C' when r.autono is not null then 'A' ";
                 sql += "when nvl(s.einvappl,'N')='Y' and p.irnno is null and e.gstno is not null and s.expcd is null and s.salpur='S' then 'I' end) cancel,p.irnno, ";
-                sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype from  ";
+                sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign from  ";
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, o.pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
@@ -3309,6 +3309,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("bltype", typeof(string), "");
                 IR.Columns.Add("netqnty", typeof(double), "");
                 IR.Columns.Add("nqdecimal", typeof(double), "");
+                IR.Columns.Add("PDESIGN", typeof(string), "");
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
 
@@ -3887,6 +3888,7 @@ namespace Improvar.Controllers
                                 //dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
                                 dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
                                 dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
+                                dr1["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
                                 dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{

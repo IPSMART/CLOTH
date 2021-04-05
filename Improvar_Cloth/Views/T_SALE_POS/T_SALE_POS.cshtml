@@ -309,6 +309,19 @@
                                 @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                             </div>
                         </div>
+@if (Model.DefaultAction == "A")
+{
+    <div class="col-md-3">
+        <div class="editor-label" style="margin-top: 6px;">
+            @Html.Label("", "Manual Bill #")
+        </div>
+    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.M_SLIP_NO, new { htmlAttributes = new { @class = "form-control", id = "M_SLIP_NO", maxlength = 6, @onkeypress = "return numericOnly(this);", @placeholder = "Slip No." } })
+                        </div>
+                    </div>
+}
                         @*<div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Bill Type")

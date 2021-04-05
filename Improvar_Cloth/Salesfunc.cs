@@ -27,7 +27,7 @@ namespace Improvar
             sql += "select z.slcd, b.taxgrpcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.gstno, a.docth, b.trslcd, b.courcd, nvl(c.agslcd,a.agslcd) agslcd, ";
             sql += "g.slnm,nvl(g.slarea,g.district) slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
-            sql += "y.docdt lastbldt, y.scmdiscrate, y.scmdisctype, ";
+            sql += "y.docdt lastbldt, y.scmdiscrate, y.scmdisctype,y.listdiscper, ";
             sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
             sql += "from ";
 
@@ -45,8 +45,8 @@ namespace Improvar
             sql += "from " + scm + ".m_subleg_brand b ";
             sql += "where b.slcd='" + slcd + "' and b.compcd='" + COM + "' ) c, ";
 
-            sql += "( select slcd,docdt, scmdiscrate, scmdisctype from ( ";
-            sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, ";
+            sql += "( select slcd,docdt, scmdiscrate, scmdisctype, listdiscper from ( ";
+            sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, listdiscper, ";
             sql += "row_number() over(partition by b.slcd order by c.docdt desc) as rn ";
             sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d ";
             sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and ";
@@ -55,7 +55,7 @@ namespace Improvar
             sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
             if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
 
-            sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype) where rn = 1 ) y, ";
+            sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper) where rn = 1 ) y, ";
 
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc from ";
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc, ";

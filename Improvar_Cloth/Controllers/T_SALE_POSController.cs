@@ -2190,8 +2190,15 @@ namespace Improvar.Controllers
                     {
                         TTXN.EMD_NO = 0;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
-                        TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
-                        TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        if (VE.M_SLIP_NO != null)
+                        {
+                            TTXN.DOCNO = Convert.ToString(VE.M_SLIP_NO).PadLeft(6, '0');
+                        }
+                        else
+                        {
+                            TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        }
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
