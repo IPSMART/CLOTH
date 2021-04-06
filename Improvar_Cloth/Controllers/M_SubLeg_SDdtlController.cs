@@ -32,7 +32,7 @@ namespace Improvar.Controllers
                     ViewBag.formname = "Tax & Credit Limit Party & Company  Wise";
                     DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema); string comp = CommVar.Compcd(UNQSNO);
+                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema); 
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
                     SubLedgerSDdtlMasterEntry VE = new SubLedgerSDdtlMasterEntry();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
@@ -41,8 +41,9 @@ namespace Improvar.Controllers
 
                     if (op.Length != 0)
                     {
+                        string compcd = CommVar.Compcd(UNQSNO);
                         string gcs = Cn.GCS();
-                        VE.IndexKey = (from p in DB.M_SUBLEG_COM orderby p.SLCD select new IndexKey() { Navikey = p.SLCD + gcs + p.COMPCD }).Distinct().ToList();
+                        VE.IndexKey = (from p in DB.M_SUBLEG_COM where p.COMPCD==compcd orderby p.SLCD select new IndexKey() { Navikey = p.SLCD + gcs + p.COMPCD }).Distinct().ToList();
                         if (op == "E" || op == "D" || op == "V")
                         {
                             if (searchValue.Length != 0)
@@ -115,7 +116,7 @@ namespace Improvar.Controllers
 
                             List<MSUBLEGSDDTL> MSUBLEGSDDTL = new List<MSUBLEGSDDTL>();
                             VE.MSUBLEGSDDTL = (from i in DBF.M_LOCA
-                                               where i.COMPCD == comp
+                                               where i.COMPCD == compcd
                                                select new MSUBLEGSDDTL()
                                                {
                                                    LOCCD = i.LOCCD,
@@ -306,11 +307,12 @@ namespace Improvar.Controllers
         }
         public ActionResult SearchPannelData()
         {
+            string compcd = CommVar.Compcd(UNQSNO);
             DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             var query = (from j in DB.M_SUBLEG_COM
                          join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
-                         where (p.M_AUTONO == j.M_AUTONO)
+                         where (p.M_AUTONO == j.M_AUTONO) && j.COMPCD == compcd
                          select new
                          {
                              SLCD = j.SLCD,
