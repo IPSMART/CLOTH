@@ -240,7 +240,9 @@ function AddMainRow(hlpstr) {
     var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
-    var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
+    var DISCTYPE=returncolvalue(hlpstr, "DISCTYPE");
+    var DISCRATE=returncolvalue(hlpstr, "DISCRATE");
+    var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE, DISCTYPE, DISCRATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
 
@@ -473,7 +475,9 @@ function AddReturnRow(hlpstr) {
     var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
-    var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
+    var DISCTYPE=returncolvalue(hlpstr, "DISCTYPE");
+    var DISCRATE=returncolvalue(hlpstr, "DISCRATE");
+    var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE,DISCTYPE,DISCRATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0; var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
@@ -736,7 +740,9 @@ function CalculateRowAmt(GridId, i) {
         var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
         var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
         var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
-        var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
+        var B_DISCTYPE_ = $("#B_DISCTYPE_" + i).val();
+        var B_DISCRATE_ = $("#B_DISCRATE_" + i).val();
+        var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
         $("#B_DISCAMT_" + i).val(discamt);
         $("#B_TXBLVAL_" + i).val(TXBLVAL_);
         $("#B_GSTPER_" + i).val(GSTPER);
@@ -930,7 +936,9 @@ function CalculateRowAmt(GridId, i) {
         var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
         var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
-        var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
+        var B_DISCTYPE_ = $("#R_DISCTYPE_" + i).val();
+        var B_DISCRATE_ = $("#R_DISCRATE_" + i).val();
+        var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
         $("#R_DISCAMT_" + i).val(discamt);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
         var gstper = $("#R_GSTPER_" + i).val();
@@ -1477,7 +1485,9 @@ function UpdateTaxPer() {
     for (i = 0; i <= GridRowMain - 1; i++) {
         var rate = retFloat($("#B_RATE_" + i).val());
         var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
-        var allgst = retGstPerstr(prodgrpgstper, rate);
+        var disctype = retFloat($("#B_DISCTYPE_" + i).val());
+        var discrate = $("#B_DISCRATE_" + i).val();
+        var allgst = retGstPerstr(prodgrpgstper, rate, disctype, discrate);
         var tax = null;
         if (allgst != "") {
             tax = allgst.split(',');

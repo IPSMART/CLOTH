@@ -32,7 +32,7 @@ namespace Improvar.Controllers
                     ViewBag.formname = "Tax & Credit Limit Party & Location Wise";
                     DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema); string comp = CommVar.Compcd(UNQSNO);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
                     SubLedgerSDdtlMasterEntry VE = new SubLedgerSDdtlMasterEntry();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
@@ -113,15 +113,15 @@ namespace Improvar.Controllers
                             MSUBLEGSDDTL_OBJ.Add(MSUBLEGSDDTL_OBJ1);
                             VE.MSUBLEGSDDTL = MSUBLEGSDDTL_OBJ;
 
-
                             List<MSUBLEGSDDTL> MSUBLEGSDDTL = new List<MSUBLEGSDDTL>();
                             VE.MSUBLEGSDDTL = (from i in DBF.M_LOCA
+                                               where i.COMPCD == comp
                                                select new MSUBLEGSDDTL()
                                                {
                                                    LOCCD = i.LOCCD,
                                                    LOCNM = i.LOCNM
                                                })
-                            .OrderBy(s => s.LOCCD).ToList();
+                            .OrderBy(s => s.LOCCD).Distinct().ToList();
                             int k = 0;
                             foreach (var v in VE.MSUBLEGSDDTL)
                             {
@@ -398,8 +398,8 @@ namespace Improvar.Controllers
             {
                 var query = (
                     from c in DBF.M_SUBLEG
-                    //join d in DBF.M_SUBLEG_LINK on c.SLCD equals (d.SLCD)
-                    //where (c.SLCD == val && d.LINKCD == Code)
+                        //join d in DBF.M_SUBLEG_LINK on c.SLCD equals (d.SLCD)
+                        //where (c.SLCD == val && d.LINKCD == Code)
                     where (c.SLCD == val)
                     select c);
                 if (query.Any())
@@ -519,7 +519,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-      
+
         public ActionResult Addrow(SubLedgerSDdtlMasterEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

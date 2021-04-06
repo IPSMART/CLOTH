@@ -2835,20 +2835,18 @@ namespace Improvar.Controllers
 
             if (dt != null && dt.Rows.Count > 0)
             {
-                var aa = dt.Rows[0]["rate"].GetType();
-                var aa1 = dt.Rows[0]["scmdiscrate"].GetType();
                 VE.TTXNDTLPOPUP = (from r1 in dt.AsEnumerable()
                                    group r1 by new
                                    {
-                                       AUTONO = r1.Field<string>("autono").retStr(),
-                                       AGDOCNO = VE.MENU_PARA.retStr() == "SR" ? r1.Field<string>("docno").retStr() : r1.Field<string>("PREFNO").retStr(),
-                                       AGDOCDT = VE.MENU_PARA.retStr() == "SR" ? r1.Field<string>("docdt").retDateStr() : r1.Field<DateTime>("PREFDT").retDateStr(),
-                                       BARNO = r1.Field<string>("barno").retStr(),
-                                       ITCD = r1.Field<string>("itcd").retStr(),
-                                       ITSTYLE = r1.Field<string>("styleno").retStr() + " " + r1.Field<string>("itnm").retStr(),
-                                       RATE = r1.Field<double>("rate").retDbl(),
-                                       SCMDISCTYPE_DESC = r1.Field<string>("scmdisctype").retStr(),
-                                       SCMDISCRATE = r1.Field<decimal>("scmdiscrate").retDbl(),
+                                       AUTONO = r1["autono"].retStr(),
+                                       AGDOCNO = VE.MENU_PARA.retStr() == "SR" ? r1["docno"].retStr() : r1["PREFNO"].retStr(),
+                                       AGDOCDT = VE.MENU_PARA.retStr() == "SR" ? r1["docdt"].retStr() : r1["PREFDT"].retStr(),
+                                       BARNO = r1["barno"].retStr(),
+                                       ITCD = r1["itcd"].retStr(),
+                                       ITSTYLE = r1["styleno"].retStr() + " " + r1["itnm"].retStr(),
+                                       RATE = r1["rate"].retDbl(),
+                                       SCMDISCTYPE_DESC = r1["scmdisctype"].retStr(),
+                                       SCMDISCRATE = r1["scmdiscrate"].retDbl(),
                                    } into g
                                    select new TTXNDTLPOPUP
                                    {
@@ -2858,7 +2856,7 @@ namespace Improvar.Controllers
                                        BARNO = g.Key.BARNO,
                                        ITCD = g.Key.ITCD,
                                        ITSTYLE = g.Key.ITSTYLE,
-                                       QNTY = g.Sum(x => x.Field<double>("QNTY")),
+                                       QNTY = g.Sum(x => x["QNTY"].retDbl()),
                                        RATE = g.Key.RATE,
                                        SCMDISCTYPE_DESC = g.Key.SCMDISCTYPE_DESC.retStr() == "P" ? "%" : g.Key.SCMDISCTYPE_DESC.retStr() == "N" ? "Nos" : g.Key.SCMDISCTYPE_DESC.retStr() == "Q" ? "Qnty" : "Fixed",
                                        SCMDISCRATE = g.Key.SCMDISCRATE,
@@ -2869,6 +2867,7 @@ namespace Improvar.Controllers
                 {
                     slno++;
                     VE.TTXNDTLPOPUP[p].SLNO = slno.retShort();
+                    VE.TTXNDTLPOPUP[p].AGDOCDT = VE.TTXNDTLPOPUP[p].AGDOCDT.retStr() == "" ? "" : VE.TTXNDTLPOPUP[p].AGDOCDT.retStr().Remove(10);
                 }
 
             }
