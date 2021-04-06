@@ -4046,6 +4046,7 @@ namespace Improvar.Controllers
                                 dr1["disc"] = strdsc;
                                 dr1["titdiscamt"] = (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
                                 dr1["discamt"] = (tbl.Rows[i]["discamt"]).retDbl().ToINRFormat();
+                                dr1["scmdiscrate"] = (tbl.Rows[i]["scmdiscrate"]).retDbl().ToINRFormat();
                                 dr1["scmdiscamt"] = (tbl.Rows[i]["scmdiscamt"]).retDbl().ToINRFormat();
                                 dr1["txblval"] = ((tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl() - (tbl.Rows[i]["scmdiscamt"]).retDbl()).ToINRFormat();
 
