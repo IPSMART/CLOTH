@@ -1899,7 +1899,7 @@ namespace Improvar.Controllers
                         i = istore;
                         lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
-                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0;double tincldisc = 0;
+                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0; double tincldisc = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0;
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
@@ -2509,7 +2509,8 @@ namespace Improvar.Controllers
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
+                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
+                                dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
                                 //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
@@ -2594,7 +2595,7 @@ namespace Improvar.Controllers
                                 dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
                                 var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
-                                dr1["incl_disc"] = (tbl.Rows[i]["inclrate"].retDbl() * dr1["qnty"].retDbl())- dr1["netamt"].retDbl() ;
+                                dr1["incl_disc"] = (tbl.Rows[i]["inclrate"].retDbl() * dr1["qnty"].retDbl()) - dr1["netamt"].retDbl();
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
                                 dqnty = dqnty + (dr1["qnty"].ToString()).retDbl();
@@ -2602,7 +2603,7 @@ namespace Improvar.Controllers
                                 ddisc1 = ddisc1 + (dr1["tddiscamt"].ToString()).retDbl();
                                 ddisc2 = ddisc2 + (dr1["discamt"].ToString()).retDbl();
                                 dtxblval = dtxblval + (dr1["txblval"].ToString()).retDbl();
-                                tincldisc +=(dr1["incl_disc"].ToString()).retDbl();
+                                tincldisc += (dr1["incl_disc"].ToString()).retDbl();
                                 //if (VE.TEXTBOX6 == "SaleBill_rec.rpt")
                                 //{
                                 //    if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
@@ -3904,7 +3905,7 @@ namespace Improvar.Controllers
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : (tbl.Rows[i]["qnty"]).retDbl();
-                                dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl()- tbl.Rows[i]["flagmtr"].retDbl();
+                                dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl() - tbl.Rows[i]["flagmtr"].retDbl();
                                 dr1["flagmtr"] = tbl.Rows[i]["flagmtr"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
                                 string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());
@@ -3976,7 +3977,7 @@ namespace Improvar.Controllers
                                     if (batch_data[a]["scmdiscrate"].retDbl() > 0)
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += "-SL "+batch_data[a]["scmdiscrate"].retStr() + "% ";
+                                        pcsdesc += "-SL " + batch_data[a]["scmdiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["tddiscrate"].retDbl() > 0)
                                     {

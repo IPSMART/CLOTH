@@ -654,6 +654,12 @@
     <Compile Include="Models\USER_APPL.cs" />
     <Compile Include="Models\USER_GUIDE.cs" />
     <Compile Include="Models\V_SJOBMST_STDRT.cs" />
+    <Compile Include="Report\CashMemo_Sachi.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CashMemo_Sachi.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\CashMemo_Tres.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1484,6 +1490,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Report\CashMemo_Sachi.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CashMemo_Sachi.cs</LastGenOutput>
+    </Content>
     <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode_Tres_3X2.cs</LastGenOutput>
