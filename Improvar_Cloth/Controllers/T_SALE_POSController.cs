@@ -605,7 +605,7 @@ namespace Improvar.Controllers
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(),v.DISCTYPE.retStr(),v.DISCRATE.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -674,7 +674,7 @@ namespace Improvar.Controllers
                                 R_PRODGRPGSTPER = R_tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (R_PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(R_PRODGRPGSTPER, v.RATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(R_PRODGRPGSTPER, v.RATE.retDbl(),v.DISCTYPE.retStr(),v.DISCRATE.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -1106,6 +1106,8 @@ namespace Improvar.Controllers
                 string MTRLJOBCD = data[5].retStr() == "" ? "" : data[5].retStr().retSqlformat();
                 string BARNO = data[6].retStr() == "" ? "" : data[6].retStr().retSqlformat();
                 double RATE = data[7].retDbl();
+                string DISCTYPE = data[8].retStr();
+                double DISCRATE = data[9].retDbl();
                 var str = masterHelp.ITCD_help(val, "", data[0].retStr());
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -1131,7 +1133,7 @@ namespace Improvar.Controllers
                         BARIMAGE = tax_data.Rows[0]["BARIMAGE"].retStr();
                         if (PRODGRPGSTPER != "")
                         {
-                            ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
+                            ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE,DISCTYPE,DISCRATE);
                             if (ALL_GSTPER.retStr() != "")
                             {
                                 var gst = ALL_GSTPER.Split(',').ToList();
@@ -2969,7 +2971,7 @@ namespace Improvar.Controllers
                     {
                         for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
                         {
-                            if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null && VE.TTXNSLSMN[i].BLAMT != 0)
+                            if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null)
                             {
                                 T_TXNSLSMN TTXNSLSMN = new T_TXNSLSMN();
                                 TTXNSLSMN.AUTONO = TTXN.AUTONO;

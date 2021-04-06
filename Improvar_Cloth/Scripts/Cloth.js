@@ -1,9 +1,17 @@
 ﻿var DefaultAction = $("#DefaultAction").val();
-function retGstPerstr(prodgrpgstper, rate) {
+function retGstPerstr(prodgrpgstper, rate, disctype, discrate) {
     debugger;
     if (DefaultAction == "V") return true;
     //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
-
+    if (retFloat(discrate) != 0 && retStr(disctype) != "") {//less discount from rate
+        if (disctype == "P") {
+            rate = retFloat(retFloat(rate) - retFloat((retFloat(rate) * retFloat(discrate)) / 100)).toFixed(3);
+        }
+        else {
+            rate = retFloat(retFloat(rate) - retFloat(discrate)).toFixed(3);
+        }
+        rate =retFloat( rate);
+    }
     var fromrt = 0, tort = 0, selrow = -1;
     var mgstrate = [5];
     var rtval = "0,0,0"; //igstper,cgst,sgst
@@ -21,8 +29,8 @@ function retGstPerstr(prodgrpgstper, rate) {
     if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
     return rtval;
 }
-function retGstPer(prodgrpgstper, rate) {
-    var gstRate = retGstPerstr(prodgrpgstper, rate);
+function retGstPer(prodgrpgstper, rate, disctype, discrate) {
+    var gstRate = retGstPerstr(prodgrpgstper, rate, disctype, discrate);
     var gstarr = gstRate.split(',');
     gstRate = retFloat(gstarr[0]) + retFloat(gstarr[1]) + retFloat(gstarr[2]);
     return gstRate;

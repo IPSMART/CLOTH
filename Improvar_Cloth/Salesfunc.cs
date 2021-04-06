@@ -1087,11 +1087,20 @@ namespace Improvar
             tbl = SQLquery(sql);
             return tbl;
         }
-        public string retGstPer(string prodgrpgstper, double rate = 0)
+        public string retGstPer(string prodgrpgstper, double rate = 0, string disctype = "", double discrate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
             //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
-
+            if (discrate.retDbl() != 0 && disctype.retStr() != "")
+            {//less discount from rate
+                if (disctype == "P")
+                {
+                    rate = (rate.retDbl() - ((rate.retDbl() * discrate.retDbl()) / 100).retDbl()).retDbl().toRound(3);
+                }
+                else {
+                    rate = (rate.retDbl() - discrate.retDbl()).retDbl().toRound(3);
+                }
+            }
             double fromrt = 0, tort = 0; int selrow = -1;
             string[] mgstrate = new string[5];
             string rtval = "0,0,0"; //igstper,cgst,sgst
@@ -2177,7 +2186,7 @@ namespace Improvar
                     MSITEM.ITCD = letters + (++number).ToString("D7");
                 }
                 MSITEM.ITGRPCD = MGROUP.ITGRPCD;
-                MSITEM.ITNM =ITNM;
+                MSITEM.ITNM = ITNM;
                 MSITEM.STYLENO = style.retStr().Trim();
                 MSITEM.UOMCD = UOM;
                 MSITEM.HSNCODE = HSNCODE;
