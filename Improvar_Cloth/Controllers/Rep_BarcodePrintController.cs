@@ -294,7 +294,7 @@ namespace Improvar.Controllers
                         }
                     }
                 }
-                string rptfile = "PrintBarcode";
+                string rptfile = "PrintBarcode.rpt";
                 if (VE.Reptype != null) rptfile = VE.Reptype;
                 string rptname = "~/Report/" + rptfile;
 
