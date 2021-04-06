@@ -744,6 +744,12 @@
       <DependentUpon>SaleBill_Cloth.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\SaleBill_DIWH.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SaleBill_DIWH.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\SaleBill_Job.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1501,6 +1507,10 @@
     <Content Include="Report\SaleBill_Tres.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Tres.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\SaleBill_DIWH.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SaleBill_DIWH.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <PropertyGroup>
