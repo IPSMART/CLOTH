@@ -29,7 +29,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Tax & Credit Limit Party & Location Wise";
+                    ViewBag.formname = "Tax & Credit Limit Party & Company  Wise";
                     DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema); string comp = CommVar.Compcd(UNQSNO);
@@ -682,10 +682,10 @@ namespace Improvar.Controllers
                         if (VE.DefaultAction == "E")
                         {
                             MSUBLEGCOM.DTAG = "E";
-                            DB.M_SUBLEG_BRAND.Where(x => x.SLCD == MSUBLEGCOM.SLCD).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_SUBLEG_BRAND.Where(x => x.SLCD == MSUBLEGCOM.SLCD && x.COMPCD == MSUBLEGCOM.COMPCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SUBLEG_BRAND.RemoveRange(DB.M_SUBLEG_BRAND.Where(x => x.SLCD == MSUBLEGCOM.SLCD));
 
-                            DB.M_SUBLEG_SDDTL.Where(x => x.SLCD == MSUBLEGCOM.SLCD).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_SUBLEG_SDDTL.Where(x => x.SLCD == MSUBLEGCOM.SLCD && x.COMPCD == MSUBLEGCOM.COMPCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SUBLEG_SDDTL.RemoveRange(DB.M_SUBLEG_SDDTL.Where(x => x.SLCD == MSUBLEGCOM.SLCD));
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
@@ -783,6 +783,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
+                        var COMPCD = CommVar.Compcd(UNQSNO);
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_SUBLEG_COM", VE.M_SUBLEG_COM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
@@ -802,9 +803,9 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
 
 
-                        DB.M_SUBLEG_BRAND.RemoveRange(DB.M_SUBLEG_BRAND.Where(x => x.SLCD == VE.M_SUBLEG_COM.SLCD));
+                        DB.M_SUBLEG_BRAND.RemoveRange(DB.M_SUBLEG_BRAND.Where(x => x.SLCD == VE.M_SUBLEG_COM.SLCD && x.COMPCD == COMPCD));
                         DB.SaveChanges();
-                        DB.M_SUBLEG_SDDTL.RemoveRange(DB.M_SUBLEG_SDDTL.Where(x => x.SLCD == VE.M_SUBLEG_COM.SLCD));
+                        DB.M_SUBLEG_SDDTL.RemoveRange(DB.M_SUBLEG_SDDTL.Where(x => x.SLCD == VE.M_SUBLEG_COM.SLCD && x.COMPCD == COMPCD));
                         DB.SaveChanges();
                         DB.M_SUBLEG_COM.RemoveRange(DB.M_SUBLEG_COM.Where(x => x.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO));
                         DB.SaveChanges();
@@ -849,7 +850,7 @@ namespace Improvar.Controllers
                 SQLQuery = SQLQuery + "select a.slcd, b.slnm, b.add1||' '||b.add2||' '||b.add3||' '||b.add4||' '||b.add5||' '||b.add6 add1, ";
                 SQLQuery = SQLQuery + "b.partygrp, b.statecd, b.gstno, e.taxgrpcd, a.crdays, a.crlimit, c.taxgrpnm, e.trslcd, d.slnm trslnm, a.m_autono ";
                 SQLQuery = SQLQuery + "from " + DB + ".m_subleg_com a, " + DBF + ".m_subleg b, " + DBF + ".m_taxgrp c, " + DBF + ".m_subleg d, " + DB + ".m_subleg_sddtl e ";
-                SQLQuery = SQLQuery + "where a.compcd='" + COMPCD + "' and a.compcd=e.compcd(+) and e.loccd='" + LOCCD + "' and a.slcd=b.slcd(+) and ";
+                SQLQuery = SQLQuery + "where a.compcd='" + COMPCD + "' and a.compcd=e.compcd(+) and a.slcd=b.slcd(+) and ";
                 SQLQuery = SQLQuery + "e.taxgrpcd=c.taxgrpcd(+) and e.trslcd=d.slcd(+) ";
 
                 tbl = masterHelp.SQLquery(SQLQuery);
