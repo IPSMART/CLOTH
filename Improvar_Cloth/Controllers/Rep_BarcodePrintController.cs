@@ -254,26 +254,16 @@ namespace Improvar.Controllers
                             dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
                             dr["txnslno"] = "(" + VE.BarcodePrint[i].TAXSLNO.retStr() + ")";
 
-                            var wpp = VE.BarcodePrint[i].WPRATE.retDbl().retStr();
-                            dr["wprate"] = (wpp.PadRight(2) == "00" ? wpp.Substring(0, wpp.Length - 2) : wpp);
-                            dr["wprate_paisa"] = wpp;
-                            var cpp = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
-                            dr["cprate"] = (cpp.PadRight(2) == "00" ? cpp.Substring(0, cpp.Length - 2) : cpp);
-                            dr["cprate_paisa"] = cpp;
-
-                            var rpp = VE.BarcodePrint[i].RPRATE.retDbl().retStr();
-                            dr["rprate"] = (rpp.PadRight(2) == "00" ? rpp.Substring(0, rpp.Length - 2) : rpp);
-                            dr["rprate_paisa"] = rpp;
-
-                            //dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
-                            //var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
-                            //dr["wprate_paisa"] = wpp;
-                            //dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
-                            //var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
-                            //dr["cprate_paisa"] = cpp;
-                            //dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
-                            //var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
-                            //dr["rprate_paisa"] = rpp;
+                            var wpp = VE.BarcodePrint[i].WPRATE.retDbl();
+                            dr["wprate"] = wpp.retInt().retStr();
+                            dr["wprate_paisa"] = wpp.ToString("0.00");
+                            var cpp = VE.BarcodePrint[i].CPRATE.retDbl();
+                            dr["cprate"] = cpp.retInt().retStr();
+                            dr["cprate_paisa"] = cpp.ToString("0.00");
+                            var rpp = VE.BarcodePrint[i].RPRATE.retDbl();
+                            dr["rprate"] = rpp.retInt().retStr();
+                            dr["rprate_paisa"] = rpp.ToString("0.00");
+                            
                             dr["cprate_code"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["wprate_code"] = RateEncode(VE.BarcodePrint[i].WPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["rprate_code"] = RateEncode(VE.BarcodePrint[i].RPRATE.retDbl().retInt(), PRICEINCODE);
