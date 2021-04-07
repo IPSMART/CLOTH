@@ -1292,15 +1292,16 @@ namespace Improvar
 
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
-            sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM from ";
-            sql += "  (select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM from ";
 
-            sql += "  from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
-            sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
-            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "(select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
-            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
-            sql += " and a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ) a, ";
+            sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
+            sql += "a.autono not in (select blautono from sd_snc2021.t_bale) and ";
+            sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ) a, ";
 
             sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
             sql += "sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos ";
@@ -1353,11 +1354,25 @@ namespace Improvar
             sql += " '' shade, g.pageno, g.pageslno, ";
             sql += " f.prefno, f.prefdt, nvl(b.bnos, 0)-nvl(c.bnos,0) bnos, h.styleno||' '||h.itnm  itstyle from ";
 
-            sql += " (select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
-            sql += "  from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
-            sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
-            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
-            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) a, ";
+            sql += "( ";
+            sql += "select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
+            sql += "from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
+            sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ";
+
+            sql += "union all ";
+
+            sql += "select distinct a.autono blautono, '' mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";
+            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+            if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+            sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
+            sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ";
+
+            sql += ") a, ";
 
             sql += " (select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,	";
             sql += " sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos  ";
@@ -1384,7 +1399,7 @@ namespace Improvar
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
             if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
-            sql += " and nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 ";
+            sql += " and ( nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 or b.bnos is null) ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
