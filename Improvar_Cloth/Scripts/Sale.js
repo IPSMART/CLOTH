@@ -538,53 +538,58 @@ function UpdateBarCodeRow() {
             TXNSLNO = 1;
         }
         else {
-            var allslno = [];
-            var matchslno = [];
-            countmatchslno = 0;
-            for (j = 0; j <= GridRowMain - 1; j++) {
-                var flag = true;
-                if (MENU_PARA == "SR" || MENU_PARA == "PR") {
-                    if (retStr($("#AGDOCNO").val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#AGDOCDT").val()) != retStr($("#B_AGDOCDT_" + j).val())) {
+            if (document.getElementById("MergeBarItem").checked == true) {
+                var allslno = [];
+                var matchslno = [];
+                countmatchslno = 0;
+                for (j = 0; j <= GridRowMain - 1; j++) {
+                    var flag = true;
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                        if (retStr($("#AGDOCNO").val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#AGDOCDT").val()) != retStr($("#B_AGDOCDT_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
+                        if (retFloat($("#LISTPRICE").val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#LISTDISCPER").val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                    if (retStr($("#BALENO").val()) != retStr($("#B_BALENO_" + j).val())) {
                         flag = false;
                     }
+                    //}
+                    if (flag == true) {
+
+                        if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                                        retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
+                                        retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                                         retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
+                                        retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
+                                        retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) && retStr($("#PDESIGN").val()) == retStr($("#B_PDESIGN_" + j).val())) {
+
+                            matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                            countmatchslno++;
+                        }
+                    }
+                    allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
                 }
-                if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
-                    if (retFloat($("#LISTPRICE").val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#LISTDISCPER").val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
-                        flag = false;
+
+                if (matchslno.length > 0) {
+                    TXNSLNO = Math.max.apply(Math, matchslno);
+                    if (TXNSLNO == 0) {
+                        TXNSLNO = Math.max.apply(Math, allslno);
+                        TXNSLNO++;
                     }
                 }
-                //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-                if (retStr($("#BALENO").val()) != retStr($("#B_BALENO_" + j).val())) {
-                    flag = false;
-                }
-                //}
-                if (flag == true) {
-
-                    if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
-                                    retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
-                                    retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
-                                     retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
-                                    retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
-                                    retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                                    retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) && retStr($("#PDESIGN").val()) == retStr($("#B_PDESIGN_" + j).val())) {
-
-                        matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
-                        countmatchslno++;
-                    }
-                }
-                allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
-            }
-
-            if (matchslno.length > 0) {
-                TXNSLNO = Math.max.apply(Math, matchslno);
-                if (TXNSLNO == 0) {
+                else {
                     TXNSLNO = Math.max.apply(Math, allslno);
                     TXNSLNO++;
                 }
             }
             else {
-                TXNSLNO = Math.max.apply(Math, allslno);
-                TXNSLNO++;
+                TXNSLNO = retInt($("#SLNO").val());
             }
         }
     }
@@ -2058,74 +2063,79 @@ function AddBarCodeGrid() {
             TXNSLNO = 1;
         }
         else {
-            var allslno = [];
-            var matchslno = [];
-            var pageno = [];
-            var bluom = [];
-            countmatchslno = 0;
-            for (j = 0; j <= GridRowMain - 1; j++) {
-                var flag = true;
-                if (MENU_PARA == "SR" || MENU_PARA == "PR") {
-                    if (retStr(AGDOCNO) != retStr($("#B_AGDOCNO_" + j).val()) || retStr(AGDOCDT) != retStr($("#B_AGDOCDT_" + j).val())) {
-                        flag = false;
-                    }
-                }
-                if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
-                    if (retFloat(LISTPRICE) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat(LISTDISCPER) != retFloat($("#B_LISTDISCPER_" + j).val())) {
-                        flag = false;
-                    }
-                }
-                //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-                if (retStr(BALENO) != retStr($("#B_BALENO_" + j).val())) {
-                    flag = false;
-                }
-                //}
-                if (flag == true) {
-                    if (retStr(ITGRPCD) == retStr($("#B_ITGRPCD_" + j).val()) && retStr(MTRLJOBCD) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
-                 retStr(MTBARCODE) == retStr($("#B_MTBARCODE_" + j).val()) && retStr(ITCD) == retStr($("#B_ITCD_" + j).val()) &&
-                 retStr(DISCTYPE) == retStr($("#B_DISCTYPE_" + j).val()) && retStr(TDDISCTYPE) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
-                  retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
-                 retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
-                 retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                 retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) && retStr(PDESIGN) == retStr($("#B_PDESIGN_" + j).val())) {
-
-                        matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
-                        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
-                            var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
-                            str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
-                            str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
-                            pageno[countmatchslno] = str1;
+            if (document.getElementById("MergeBarItem").checked == true) {
+                var allslno = [];
+                var matchslno = [];
+                var pageno = [];
+                var bluom = [];
+                countmatchslno = 0;
+                for (j = 0; j <= GridRowMain - 1; j++) {
+                    var flag = true;
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                        if (retStr(AGDOCNO) != retStr($("#B_AGDOCNO_" + j).val()) || retStr(AGDOCDT) != retStr($("#B_AGDOCDT_" + j).val())) {
+                            flag = false;
                         }
-                        var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
-                        str1 += "^BLUOMCD=^" + retStr($("#B_BLUOMCD_" + j).val()) + String.fromCharCode(181);
-                        bluom[countmatchslno] = str1;
+                    }
+                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
+                        if (retFloat(LISTPRICE) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat(LISTDISCPER) != retFloat($("#B_LISTDISCPER_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                    if (retStr(BALENO) != retStr($("#B_BALENO_" + j).val())) {
+                        flag = false;
+                    }
+                    //}
+                    if (flag == true) {
+                        if (retStr(ITGRPCD) == retStr($("#B_ITGRPCD_" + j).val()) && retStr(MTRLJOBCD) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                     retStr(MTBARCODE) == retStr($("#B_MTBARCODE_" + j).val()) && retStr(ITCD) == retStr($("#B_ITCD_" + j).val()) &&
+                     retStr(DISCTYPE) == retStr($("#B_DISCTYPE_" + j).val()) && retStr(TDDISCTYPE) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                      retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
+                     retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
+                     retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) && retStr(PDESIGN) == retStr($("#B_PDESIGN_" + j).val())) {
 
-                        countmatchslno++;
+                            matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                                var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                                str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
+                                str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
+                                pageno[countmatchslno] = str1;
+                            }
+                            var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                            str1 += "^BLUOMCD=^" + retStr($("#B_BLUOMCD_" + j).val()) + String.fromCharCode(181);
+                            bluom[countmatchslno] = str1;
+
+                            countmatchslno++;
+                        }
+                    }
+                    allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
+                }
+
+                if (matchslno.length > 0) {
+                    TXNSLNO = Math.max.apply(Math, matchslno);
+                    if (TXNSLNO == 0) {
+                        TXNSLNO = Math.max.apply(Math, allslno);
+                        TXNSLNO++;
+                    }
+                    else {
+                        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                            var strpageno = pageno.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
+                            PAGENO = returncolvalue(strpageno, "PAGENO");
+                            PAGESLNO = returncolvalue(strpageno, "PAGESLNO");
+                        }
+
+                        var strbluom = bluom.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
+                        BLUOMCD = returncolvalue(strbluom, "BLUOMCD");
                     }
                 }
-                allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
-            }
-
-            if (matchslno.length > 0) {
-                TXNSLNO = Math.max.apply(Math, matchslno);
-                if (TXNSLNO == 0) {
+                else {
                     TXNSLNO = Math.max.apply(Math, allslno);
                     TXNSLNO++;
                 }
-                else {
-                    if (ModuleCode.indexOf("SALESCLOTH") != -1) {
-                        var strpageno = pageno.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
-                        PAGENO = returncolvalue(strpageno, "PAGENO");
-                        PAGESLNO = returncolvalue(strpageno, "PAGESLNO");
-                    }
-
-                    var strbluom = bluom.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
-                    BLUOMCD = returncolvalue(strbluom, "BLUOMCD");
-                }
             }
             else {
-                TXNSLNO = Math.max.apply(Math, allslno);
-                TXNSLNO++;
+                TXNSLNO = retInt(SLNO);
             }
         }
     }

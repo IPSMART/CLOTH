@@ -3763,8 +3763,9 @@ namespace Improvar.Controllers
                             dr1["lrdt"] = tbl.Rows[i]["lrdt"] == DBNull.Value ? "" : tbl.Rows[i]["lrdt"].retDateStr(); /*tbl.Rows[i]["lrdt"].ToString().Substring(0, 10).ToString();*/
                             dr1["lorryno"] = tbl.Rows[i]["lorryno"].ToString();
                             dr1["ewaybillno"] = tbl.Rows[i]["ewaybillno"].ToString();
-                            dr1["grwt"] = tbl.Rows[i]["grwt"] == DBNull.Value ? 0 : tbl.Rows[i]["grwt"].retDbl();
-                            dr1["ntwt"] = tbl.Rows[i]["ntwt"] == DBNull.Value ? 0 : tbl.Rows[i]["ntwt"].retDbl();
+                            dr1["grwt"] = tbl.Rows[i]["grwt"].retDbl();
+                            dr1["ntwt"] = tbl.Rows[i]["ntwt"].retDbl();
+                            dr1["noofcases"] = tbl.Rows[i]["noofcases"].retDbl();
                             dr1["agentnm"] = tbl.Rows[i]["agslnm"].ToString();
                             dr1["mutslnm"] = tbl.Rows[i]["mutslnm"].ToString();
                             dr1["bltype"] = tbl.Rows[i]["bltype"].ToString();
