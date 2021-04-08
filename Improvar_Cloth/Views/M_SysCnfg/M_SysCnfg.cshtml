@@ -393,303 +393,325 @@
                                     </div>
                                 </div>
                             </div>
-                            @*<div class="row">
-                                    <div class="col-md-5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", " CashMemo RoundOff Type")
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.CMROFFTYPE, new SelectList(Model.DropDown_list1, "Value", "Text"), "", new { @class = "form-control", id = "CMROFFTYPE" })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Amount")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.CMROFFAMT, new { htmlAttributes = new { @class = "form-control", id = "CMROFFAMT", maxlength = 2, @onkeypress = "return event.charCode > 47 && event.charCode < 58;" } })
+                                    </div>
+                                </div>
+                                </div>
+                                @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Deals in")
+
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SYSCNFG.DEALSIN, new { htmlAttributes = new { @class = "form-control", id = "DEALSIN", @placeholder = "Deals in", maxlength = 100 } })
+                    </div>
+                </div>
+            </div>*@
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="editor-field" style="margin-top: 4px;">
-                                            @Html.Label("", "Deals in")
+                                            @Html.Label("", "Insurance Policy")
 
                                         </div>
                                     </div>
                                     <div class="col-md-10">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.M_SYSCNFG.DEALSIN, new { htmlAttributes = new { @class = "form-control", id = "DEALSIN", @placeholder = "Deals in", maxlength = 100 } })
+                                            @Html.EditorFor(model => model.M_SYSCNFG.INSPOLDESC, new { htmlAttributes = new { @class = "form-control", id = "INSPOLDESC", @placeholder = "Insurance Policy", maxlength = 100 } })
                                         </div>
                                     </div>
-                                </div>*@
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-field" style="margin-top: 4px;">
-                                        @Html.Label("", "Insurance Policy")
+                                </div>
+                                @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Bill Terms")
 
-                                    </div>
-                                </div>
-                                <div class="col-md-10">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.M_SYSCNFG.INSPOLDESC, new { htmlAttributes = new { @class = "form-control", id = "INSPOLDESC", @placeholder = "Insurance Policy", maxlength = 100 } })
-                                    </div>
-                                </div>
-                            </div>
-                            @*<div class="row">
-                                    <div class="col-md-5">
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="editor-field">
+                        @Html.TextAreaFor(model => model.M_SYSCNFG.BLTERMS, new { @class = "form-control", id = "BLTERMS", @placeholder = "Bill Terms", maxlength = 1000 })
+                    </div>
+                </div>
+            </div>*@
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="editor-field" style="margin-top: 4px;">
-                                            @Html.Label("", "Bill Terms")
+                                            @Html.Label("", "Due Date Calc on")
 
                                         </div>
                                     </div>
-                                    <div class="col-md-10">
+                                    <div class="col-md-6">
                                         <div class="editor-field">
-                                            @Html.TextAreaFor(model => model.M_SYSCNFG.BLTERMS, new { @class = "form-control", id = "BLTERMS", @placeholder = "Bill Terms", maxlength = 1000 })
+                                            @Html.DropDownListFor(model => Model.M_SYSCNFG.DUEDATECALCON, new SelectList(Model.DropDown_list3, "Value", "Text"), new { @class = "form-control", id = "DUEDATECALCON" })
                                         </div>
                                     </div>
-                                </div>*@
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-field" style="margin-top: 4px;">
-                                        @Html.Label("", "Due Date Calc on")
+                                </div>
+                                @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Bank Serial No")
 
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.DropDownListFor(model => Model.M_SYSCNFG.DUEDATECALCON, new SelectList(Model.DropDown_list3, "Value", "Text"), new { @class = "form-control", id = "DUEDATECALCON" })
-                                    </div>
-                                </div>
-                            </div>
-                            @*<div class="row">
-                                    <div class="col-md-5">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SYSCNFG.BANKSLNO, new { htmlAttributes = new { @class = "form-control", id = "BANKSLNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Bank Serial No", maxlength = 2 } })
+                    </div>
+                </div>
+            </div>*@
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="editor-field" style="margin-top: 4px;">
-                                            @Html.Label("", "Bank Serial No")
+                                            @Html.Label("", "WP %")
 
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.M_SYSCNFG.BANKSLNO, new { htmlAttributes = new { @class = "form-control", id = "BANKSLNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Bank Serial No", maxlength = 2 } })
-                                        </div>
-                                    </div>
-                                </div>*@
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-field" style="margin-top: 4px;">
-                                        @Html.Label("", "WP %")
-
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => Model.M_SYSCNFG.WPPER, new { htmlAttributes = new { id = "WPPER", @class = "form-control", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 6 } })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-field" style="margin-top: 4px;">
-                                        @Html.Label("", "RP %")
-
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => Model.M_SYSCNFG.RPPER, new { htmlAttributes = new { id = "RPPER", @class = "form-control", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 6 } })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-field" style="margin-top: 4px;">
-                                        @Html.Label("", "Price Code[e.g (0 to 9R)]")
-
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODE, new { htmlAttributes = new { id = "PRICEINCODE", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode('');", maxlength = 11, title = "Upper Case only" } })
-                                    </div>
-                                </div>
-                                <div class="col-md-7">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.PRICEINCODERATE, new { htmlAttributes = new { id = "PRICEINCODERATE", @class = "form-control", @placeholder = "Price in code rate", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", onblur = "RateEncode('');", @type = "text", maxlength = 10 } })
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.PRICEINCODERATENCOD, new { htmlAttributes = new { id = "PRICEINCODERATENCOD", @class = "form-control", @placeholder = "Encoded Code", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @type = "text", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-field" style="margin-top: 4px;">
-                                        @Html.Label("", "Price In Code Cost[e.g (0 to 9R)]")
-
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODECOST, new { htmlAttributes = new { id = "PRICEINCODECOST", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode('y');", maxlength = 11, title = "Upper Case only" } })
-                                    </div>
-                                </div>
-                                <div class="col-md-7">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.PRICEINCODECOSTRATE, new { htmlAttributes = new { id = "PRICEINCODECOSTRATE", @class = "form-control", @placeholder = "Price In Code Cost rate", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", onblur = "RateEncode('y');", @type = "text", maxlength = 10 } })
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.PRICEINCODECOSTRATENCOD, new { htmlAttributes = new { id = "PRICEINCODECOSTRATENCOD", @class = "form-control", @placeholder = "Encoded Code", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @type = "text", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Retail")
-                                        @*<b style="color:Red;">*</b>*@
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @*@Html.EditorFor(model => model.M_SYSCNFG.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD');", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" id="help_RTDEBCD" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD =1/RTDBNM =RTDEBNM =0')" />*@
-                                        @Html.EditorFor(model => model.M_SYSCNFG.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Debtor Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Debtor Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD');", @placeholder = "RTDEBCD", maxlength = 8 } })
-                                        <img src="~/Image/search.png" id="help_RTDEBCD" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Debtor Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD')" />
-
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.RTDBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDBNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Design Path")
-                                        @*<b style="color:Red;">*</b>*@
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.M_SYSCNFG.DESIGNPATH, new { htmlAttributes = new { @class = "form-control", id = "DESIGNPATH", maxlength = 100, @title = "Only for View", @placeholder = "Design Path" } })
-                                    </div>
-                                </div>
-                            </div>
-                            @*<div class="row">
-                                    <div class="col-md-5">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "INC Rate")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" style="width: auto;">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.INC_RATE)
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5" style="width: auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Size")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" style="width: auto;">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNSIZE)
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5" style="width: auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Color")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" style="width: auto;">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNCOLOR)
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5" style="width: auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Part")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" style="width: auto;">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNPART)
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5" style="width: auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain FLAGMTR")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" style="width: auto;">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5" style="width: auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Price List")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" style="width: auto;">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNLISTPRCE)
-                                        </div>
-                                    </div>
-                                </div>*@
-
-
-                            @*<div class="row">
-                                    <div class="col-md-5">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Size")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNSIZE)
+                                            @Html.EditorFor(model => Model.M_SYSCNFG.WPPER, new { htmlAttributes = new { id = "WPPER", @class = "form-control", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 6 } })
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-5">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Color")
+                                    <div class="col-md-6">
+                                        <div class="editor-field" style="margin-top: 4px;">
+                                            @Html.Label("", "RP %")
+
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNCOLOR)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-5">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain Part")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNPART)
+                                    <div class="col-md-2">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => Model.M_SYSCNFG.RPPER, new { htmlAttributes = new { id = "RPPER", @class = "form-control", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 6 } })
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-5">
+                                    <div class="col-md-6">
+                                        <div class="editor-field" style="margin-top: 4px;">
+                                            @Html.Label("", "Price Code[e.g (0 to 9R)]")
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODE, new { htmlAttributes = new { id = "PRICEINCODE", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode('');", maxlength = 11, title = "Upper Case only" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.PRICEINCODERATE, new { htmlAttributes = new { id = "PRICEINCODERATE", @class = "form-control", @placeholder = "Price in code rate", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", onblur = "RateEncode('');", @type = "text", maxlength = 10 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.PRICEINCODERATENCOD, new { htmlAttributes = new { id = "PRICEINCODERATENCOD", @class = "form-control", @placeholder = "Encoded Code", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @type = "text", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="editor-field" style="margin-top: 4px;">
+                                            @Html.Label("", "Price In Code Cost[e.g (0 to 9R)]")
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODECOST, new { htmlAttributes = new { id = "PRICEINCODECOST", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode('y');", maxlength = 11, title = "Upper Case only" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.PRICEINCODECOSTRATE, new { htmlAttributes = new { id = "PRICEINCODECOSTRATE", @class = "form-control", @placeholder = "Price In Code Cost rate", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", onblur = "RateEncode('y');", @type = "text", maxlength = 10 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.PRICEINCODECOSTRATENCOD, new { htmlAttributes = new { id = "PRICEINCODECOSTRATENCOD", @class = "form-control", @placeholder = "Encoded Code", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @type = "text", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Maintain FLAGMTR")
+                                            @Html.Label("", "Retail")
+                                            @*<b style="color:Red;">*</b>*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @*@Html.EditorFor(model => model.M_SYSCNFG.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD');", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" id="help_RTDEBCD" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD =1/RTDBNM =RTDEBNM =0')" />*@
+                                            @Html.EditorFor(model => model.M_SYSCNFG.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Debtor Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Debtor Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD');", @placeholder = "RTDEBCD", maxlength = 8 } })
+                                            <img src="~/Image/search.png" id="help_RTDEBCD" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Debtor Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDBNM=RTDEBNM=0','RETDEBSLCD')" />
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.RTDBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDBNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Design Path")
+                                            @*<b style="color:Red;">*</b>*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.M_SYSCNFG.DESIGNPATH, new { htmlAttributes = new { @class = "form-control", id = "DESIGNPATH", maxlength = 100, @title = "Only for View", @placeholder = "Design Path" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "INC Rate")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.INC_RATE)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Size")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNSIZE)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Color")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNCOLOR)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Part")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNPART)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain FLAGMTR")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Price List")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNLISTPRCE)
+                    </div>
+                </div>
+            </div>*@
+
+
+                                @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Size")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNSIZE)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Color")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNCOLOR)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Part")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNPART)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain FLAGMTR")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
+                    </div>
+                </div>
+            </div>*@
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "De - Activate")
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="editor-field" style="margin-top:6px;">
-                                            @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
+                                            @Html.CheckBoxFor(model => model.Checked)
                                         </div>
-                                    </div>
-                                </div>*@
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "De - Activate")
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field" style="margin-top:6px;">
-                                        @Html.CheckBoxFor(model => model.Checked)
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <div class="col-lg-3">
                             <table style="border:1px solid;margin-top: 8px;">
                                 <tr>
