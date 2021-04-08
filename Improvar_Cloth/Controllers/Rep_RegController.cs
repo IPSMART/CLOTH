@@ -35,6 +35,8 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Sales Registers"; break;
                         case "PB":
                             ViewBag.formname = "Purchase Registers"; break;
+                        case "CM":
+                            ViewBag.formname = "Cash Memo Registers"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -56,12 +58,14 @@ namespace Improvar.Controllers
                         RT2.value = "Sales Return";
                         RT2.text = "Sales Return";
                         RT.Add(RT2);
-                        DropDown_list1 RT3 = new DropDown_list1();
-                        RT3.value = "Sales Cash Memo";
-                        RT3.text = "Sales Cash Memo";
-                        RT.Add(RT3);
                         RT.Add(new DropDown_list1 { value = "SDWOQ", text = "Sales Debit Note (W/O Qnty)" });
                         RT.Add(new DropDown_list1 { value = "SCWOQ", text = "Sales Credit Note (W/O Qnty)" });
+                        VE.DropDown_list1 = RT;
+                    }
+                    else if (VE.MENU_PARA == "CM")
+                    {
+                        RT.Add(new DropDown_list1 { value = "Sales Cash Memo", text = "Sales Cash Memo" });
+                        RT.Add(new DropDown_list1 { value = "Cash Memo Credit Note", text = "Cash Memo Credit Note" });
                         VE.DropDown_list1 = RT;
                     }
                     else
@@ -199,6 +203,9 @@ namespace Improvar.Controllers
                     case "Sales Cash Memo":
                         txntag = "'SB'";
                         doctype = "'SBCM'"; break;
+                    case "Cash Memo Credit Note":
+                        txntag = "'SB'";
+                        doctype = "'SBCMR'"; break;
                     case "Purchase Return":
                         txntag = "'PR'";
                         doctype = "'SPRM'"; break;

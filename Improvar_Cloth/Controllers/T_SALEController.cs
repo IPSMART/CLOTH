@@ -316,6 +316,14 @@ namespace Improvar.Controllers
                         VE.SHOWMTRLJOBCD = mtrljobcd.Count() > 1 ? "Y" : "N";
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
                         VE.SHOWSTKTYPE = VE.DropDown_list_StkType.Count > 1 ? "Y" : "N";
+                        if (CommVar.ClientCode(UNQSNO) == "SACH")
+                        {
+                            VE.MergeBarItem = false;
+                        }
+                        else
+                        {
+                            VE.MergeBarItem = true;
+                        }
                     }
                     else
                     {

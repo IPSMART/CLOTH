@@ -73,7 +73,12 @@
         if ("@Model.SHOWSTKTYPE" != "Y") {
             $(".divstktype").hide();
         }
-
+        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@Model.M_SYSCNFG.COMMONUNIQBAR" == "E") {
+                $(".DivMergeBarItem").show();
+        }
+        else {
+            $(".DivMergeBarItem").hide();
+        }
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#update_page_slno").hide();
@@ -1431,6 +1436,7 @@
                                             </div>
                                         }
                                     }
+                                  
                                     if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                     {
                                         <div class="col-lg-9" style="border:groove 1px;">
@@ -1520,6 +1526,14 @@
                                 </div>
                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                 }
+                                <div class="DivMergeBarItem col-md-1" style="width:auto;">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Merge Item")
+                                    </div>
+                                </div>
+                                <div class="DivMergeBarItem col-md-1" style="width:auto;margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.MergeBarItem, new { id = "MergeBarItem", @TabIndex = -1 })
+                                </div>
                             </div>
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
                     {

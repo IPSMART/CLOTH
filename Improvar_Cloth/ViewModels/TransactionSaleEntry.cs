@@ -267,5 +267,6 @@ namespace Improvar.ViewModels
         public double? DISCRTINRATE { get; set; }
         public string DISCTYPEINRATE { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        public bool MergeBarItem { get; set; }
     }
 }
