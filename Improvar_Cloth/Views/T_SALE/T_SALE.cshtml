@@ -73,7 +73,7 @@
         if ("@Model.SHOWSTKTYPE" != "Y") {
             $(".divstktype").hide();
         }
-        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@Model.M_SYSCNFG.COMMONUNIQBAR" == "E") {
+        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@Model.M_SYSCNFG?.COMMONUNIQBAR" == "E") {
                 $(".DivMergeBarItem").show();
         }
         else {
