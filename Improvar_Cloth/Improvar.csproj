@@ -1500,10 +1500,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CashMemo_Sachi.cs</LastGenOutput>
     </Content>
-    <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2.rpt">
+    <Content Include="Report\PrintBarcode_Tres_3X2.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode_Tres_3X2.cs</LastGenOutput>
-    </EmbeddedResource>
+    </Content>
     <Content Include="Report\SaleBill_Tres.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Tres.cs</LastGenOutput>
