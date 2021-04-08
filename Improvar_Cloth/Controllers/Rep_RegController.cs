@@ -60,6 +60,7 @@ namespace Improvar.Controllers
                         RT.Add(RT2);
                         RT.Add(new DropDown_list1 { value = "SDWOQ", text = "Sales Debit Note (W/O Qnty)" });
                         RT.Add(new DropDown_list1 { value = "SCWOQ", text = "Sales Credit Note (W/O Qnty)" });
+                        RT.Add(new DropDown_list1 { value = "Proforma", text = "Proforma Invoice" });
                         VE.DropDown_list1 = RT;
                     }
                     else if (VE.MENU_PARA == "CM")
