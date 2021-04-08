@@ -45,7 +45,7 @@ namespace Improvar.Models
 
         public DateTime? LRDT { get; set; }
 
-        [StringLength(15)]
+        [StringLength(20)]
         public string LRNO { get; set; }
 
         [Required]

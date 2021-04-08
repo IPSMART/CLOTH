@@ -43,7 +43,7 @@
                                             @Html.TextBoxFor(model => Model.TBILTY[i].SLNO, new { id = "SLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
-                                            @Html.TextBoxFor(model => Model.TBILTY[i].LRNO, new { id = "LRNO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTY[i].LRNO, new { id = "LRNO_" + i, maxlength = 20, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBILTY[i].BLAUTONO, new { id = "BLAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TBILTY[i].BALEYR, new { id = "BALEYR_" + i })
                                         </td>
