@@ -240,8 +240,8 @@ function AddMainRow(hlpstr) {
     var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
-    var DISCTYPE=returncolvalue(hlpstr, "DISCTYPE");
-    var DISCRATE=returncolvalue(hlpstr, "DISCRATE");
+    var DISCTYPE = returncolvalue(hlpstr, "DISCTYPE");
+    var DISCRATE = returncolvalue(hlpstr, "DISCRATE");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE, DISCTYPE, DISCRATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
@@ -350,14 +350,14 @@ function AddMainRow(hlpstr) {
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
     tr += ' </td>';
     tr += ' <td class="">';
-    tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCTYPE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" ><option value="P">%</option>';
+    tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCTYPE" onchange="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');" ><option value="P">%</option>';
     tr += '         <option value="N">Nos</option>';
     tr += '         <option value="Q">Qnty</option>';
     tr += '         <option value="F">Fixed</option>';
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" >';
@@ -475,9 +475,9 @@ function AddReturnRow(hlpstr) {
     var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
-    var DISCTYPE=returncolvalue(hlpstr, "DISCTYPE");
-    var DISCRATE=returncolvalue(hlpstr, "DISCRATE");
-    var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE,DISCTYPE,DISCRATE);
+    var DISCTYPE = returncolvalue(hlpstr, "DISCTYPE");
+    var DISCRATE = returncolvalue(hlpstr, "DISCRATE");
+    var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE, DISCTYPE, DISCRATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0; var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
@@ -594,14 +594,14 @@ function AddReturnRow(hlpstr) {
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
     tr += ' </td>';
     tr += ' <td class="">';
-    tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="R_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCTYPE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" ><option value="P">%</option>';
+    tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="R_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCTYPE" onchange="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');" ><option value="P">%</option>';
     tr += '         <option value="N">Nos</option>';
     tr += '         <option value="Q">Qnty</option>';
     tr += '         <option value="F">Fixed</option>';
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" onkeydown="CopyLastDiscData(this.value,R_DISCTYPE_' + rowindex + '.value,\'R_DISCRATE_\',\'R_DISCTYPE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');RemoveLastDiscData(\'R_DISCRATE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');" onkeydown="CopyLastDiscData(this.value,R_DISCTYPE_' + rowindex + '.value,\'R_DISCRATE_\',\'R_DISCTYPE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');RemoveLastDiscData(\'R_DISCRATE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' ';
     tr += ' <td class="" title="">';
@@ -1181,72 +1181,187 @@ function CalculateInclusiveRate(i, GridId) {
         var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
         var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
         var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
+
+        var qntyamt = 0, rate = 0;
+        if (INCLRATE_ == 0) {
+            rate = retFloat($("#B_RATE_" + i).val());
+        }
+        else {
+            rate = retFloat(INCLRATE_);
+        }
+        qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
+        var discamt1 = CalculateDiscountWithvalue("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, retFloat(qntyamt), "B_DISCRATE_" + i);
+        qntyamt = retFloat(qntyamt) - retFloat(discamt1);
+        if (B_QNTY_ != 0) {
+            qntyamt = retFloat(retFloat(qntyamt) / B_QNTY_);
+        }
         //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
         var fromrt = 0, tort = 0, selrow = -1;
         var mgstrate = [5];
         var rtval = "0,0,0"; //igstper,cgst,sgst
         var SP = String.fromCharCode(179);
         var mrates = B_PRODGRPGSTPER_.split(SP);
+        var taxpercent = 0,igstper=0,cgstper=0,sgstper=0;
         for (var x = 0; x <= mrates.length - 1; x++) {
-            //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+            taxpercent = 0;
+            igstper = 0;
+            cgstper = 0;
+            sgstper = 0;
             mgstrate = mrates[x].split('~');
             if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
             if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
-            var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
-            if (B_DISCRATE_ != 0) {
-                $("#B_GROSSAMT_" + i).val(tort);
-                var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
-                tmprt = tort - discamt;
-            }
-            tmprt = tmprt * (taxpercent + 100) / 100;
-            if (INCLRATE_ <= tmprt) {
-                var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
-                var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
-                $("#B_RATE_" + i).val(itemrate);
-                $("#B_GSTPER_" + i).val(taxpercent);
+            taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]);
+            igstper = parseFloat(mgstrate[2]);
+            cgstper = parseFloat(mgstrate[3]);
+            sgstper = parseFloat(mgstrate[4]);
+            var tmprt = tort;
+            if (qntyamt <= tmprt) {
                 break;
             }
         }
+
+        $("#B_GSTPER_" + i).val(taxpercent);
+        $("#B_IGSTPER_" + i).val(igstper);
+        $("#B_CGSTPER_" + i).val(cgstper);
+        $("#B_SGSTPER_" + i).val(sgstper);
+        var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
+        $("#B_RATE_" + i).val(itemrate);
+
+        $("#B_GROSSAMT_" + i).val(retFloat(itemrate * B_QNTY_).toFixed(2));
         CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', i);
         return itemrate;
-    } else if (GridId == "_T_SALE_POS_RETURN_GRID") {
+    }
+    else if (GridId == "_T_SALE_POS_RETURN_GRID") {
         var itemrate = 0;
         var INCLRATE_ = retFloat($("#R_INCLRATE_" + i).val());
         var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
         var B_DISCRATE_ = retFloat($("#R_DISCRATE_" + i).val());
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
+
+        var qntyamt = 0, rate = 0;
+        if (INCLRATE_ == 0) {
+            rate = retFloat($("#R_RATE_" + i).val());
+        }
+        else {
+            rate = retFloat(INCLRATE_);
+        }
+        qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
+        var discamt1 = CalculateDiscountWithvalue("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, retFloat(qntyamt), "B_DISCRATE_" + i);
+        qntyamt = retFloat(qntyamt) - retFloat(discamt1);
+        if (B_QNTY_ != 0) {
+            qntyamt = retFloat(retFloat(qntyamt) / B_QNTY_);
+        }
         //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
         var fromrt = 0, tort = 0, selrow = -1;
         var mgstrate = [5];
         var rtval = "0,0,0"; //igstper,cgst,sgst
         var SP = String.fromCharCode(179);
         var mrates = B_PRODGRPGSTPER_.split(SP);
+        var taxpercent = 0, igstper = 0, cgstper = 0, sgstper = 0;
         for (var x = 0; x <= mrates.length - 1; x++) {
-            //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+            taxpercent = 0;
+            igstper = 0;
+            cgstper = 0;
+            sgstper = 0;
             mgstrate = mrates[x].split('~');
             if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
             if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
-            var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
-            if (B_DISCRATE_ != 0) {
-                $("#R_GROSSAMT_" + i).val(tort);
-                var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
-                tmprt = tort - discamt;
-            }
-            tmprt = tmprt * (taxpercent + 100) / 100;
-            if (INCLRATE_ <= tmprt) {
-                var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
-                var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
-                $("#R_RATE_" + i).val(itemrate);
-                $("#R_GSTPER_" + i).val(taxpercent);
+            taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]);
+            igstper = parseFloat(mgstrate[2]);
+            cgstper = parseFloat(mgstrate[3]);
+            sgstper = parseFloat(mgstrate[4]);
+            var tmprt = tort;
+            if (qntyamt <= tmprt) {
                 break;
             }
         }
+
+        $("#R_GSTPER_" + i).val(taxpercent);
+        $("#R_IGSTPER_" + i).val(igstper);
+        $("#R_CGSTPER_" + i).val(cgstper);
+        $("#R_SGSTPER_" + i).val(sgstper);
+        var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
+        $("#R_RATE_" + i).val(itemrate);
+
+        $("#R_GROSSAMT_" + i).val(retFloat(itemrate * B_QNTY_).toFixed(2));
         CalculateRowAmt('_T_SALE_POS_RETURN_GRID', i);
         return itemrate;
     }
-
 }
+//function CalculateInclusiveRate(i, GridId) {
+//    debugger; var DefaultAction = $("#DefaultAction").val();
+//    if (DefaultAction == "V") return true;
+//    if (GridId == "_T_SALE_POS_PRODUCT_GRID") {
+//        var itemrate = 0;
+//        var INCLRATE_ = retFloat($("#INCLRATE_" + i).val());
+//        var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
+//        var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
+//        var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
+//        //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+//        var fromrt = 0, tort = 0, selrow = -1;
+//        var mgstrate = [5];
+//        var rtval = "0,0,0"; //igstper,cgst,sgst
+//        var SP = String.fromCharCode(179);
+//        var mrates = B_PRODGRPGSTPER_.split(SP);
+//        for (var x = 0; x <= mrates.length - 1; x++) {
+//            //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+//            mgstrate = mrates[x].split('~');
+//            if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
+//            if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
+//            var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
+//            if (B_DISCRATE_ != 0) {
+//                $("#B_GROSSAMT_" + i).val(tort);
+//                var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
+//                tmprt = tort - discamt;
+//            }
+//            tmprt = tmprt * (taxpercent + 100) / 100;
+//            if (INCLRATE_ <= tmprt) {
+//                var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
+//                var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
+//                $("#B_RATE_" + i).val(itemrate);
+//                $("#B_GSTPER_" + i).val(taxpercent);
+//                break;
+//            }
+//        }
+//        CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', i);
+//        return itemrate;
+//    } else if (GridId == "_T_SALE_POS_RETURN_GRID") {
+//        var itemrate = 0;
+//        var INCLRATE_ = retFloat($("#R_INCLRATE_" + i).val());
+//        var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
+//        var B_DISCRATE_ = retFloat($("#R_DISCRATE_" + i).val());
+//        var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
+//        //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+//        var fromrt = 0, tort = 0, selrow = -1;
+//        var mgstrate = [5];
+//        var rtval = "0,0,0"; //igstper,cgst,sgst
+//        var SP = String.fromCharCode(179);
+//        var mrates = B_PRODGRPGSTPER_.split(SP);
+//        for (var x = 0; x <= mrates.length - 1; x++) {
+//            //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+//            mgstrate = mrates[x].split('~');
+//            if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
+//            if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
+//            var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
+//            if (B_DISCRATE_ != 0) {
+//                $("#R_GROSSAMT_" + i).val(tort);
+//                var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
+//                tmprt = tort - discamt;
+//            }
+//            tmprt = tmprt * (taxpercent + 100) / 100;
+//            if (INCLRATE_ <= tmprt) {
+//                var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
+//                var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
+//                $("#R_RATE_" + i).val(itemrate);
+//                $("#R_GSTPER_" + i).val(taxpercent);
+//                break;
+//            }
+//        }
+//        CalculateRowAmt('_T_SALE_POS_RETURN_GRID', i);
+//        return itemrate;
+//    }
 
+//}
 function SalesmanPerChk() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();

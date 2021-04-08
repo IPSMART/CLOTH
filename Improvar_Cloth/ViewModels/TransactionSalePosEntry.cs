@@ -270,6 +270,8 @@ namespace Improvar.ViewModels
         public double? T_DISCAMT { get; set; }
         public string SHOWMTRLJOBCD { get; set; }
         public int? M_SLIP_NO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_INCL_DISC { get; set; }
 
     }
 }

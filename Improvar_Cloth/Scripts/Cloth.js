@@ -178,3 +178,29 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
         return 0;
     }
 }
+function CalculateDiscountWithvalue(DiscTypeId, DiscRateId, QntyId, NosId, GrossAmtVal, DiscountedAmt) {
+    var DISCAMT = 0;
+    var DiscType = $("#" + DiscTypeId).val();
+    var DiscRate = retFloat($("#" + DiscRateId).val());
+    if (DiscType == "Q") {
+        var Qnty = retFloat($("#" + QntyId).val());
+        DISCAMT = DiscRate * Qnty;
+    }
+    else if (DiscType == "N") {
+        var Nos = retFloat($("#" + NosId).val());
+        DISCAMT = DiscRate * Nos;
+    }
+    else if (DiscType == "P") {
+        var Amt = retFloat(GrossAmtVal);
+        DISCAMT = (DiscRate * Amt) / 100;
+    }
+    else if (DiscType == "F") { DISCAMT = DiscRate; }
+        //else if (DiscType == "A") { DISCAMT = DiscRate; }
+    else if (DiscType == "A") {
+        DiscountedAmt = retFloat(DiscountedAmt);
+        DISCAMT = (DiscRate * DiscountedAmt) / 100;
+    }
+    else { DISCAMT = 0; }
+    DISCAMT = parseFloat(DISCAMT).toFixed(2);
+    return parseFloat(DISCAMT);
+}

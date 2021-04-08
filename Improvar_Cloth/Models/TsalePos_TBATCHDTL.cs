@@ -216,7 +216,8 @@ namespace Improvar.Models
         public double? GSTAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? NETDISCAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? INCL_DISC { get; set; }
 
     }
 }

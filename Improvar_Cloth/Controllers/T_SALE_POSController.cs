@@ -580,6 +580,7 @@ namespace Improvar.Controllers
 
                 foreach (var v in VE.TsalePos_TBATCHDTL)
                 {
+                   v.INCL_DISC = (v.INCLRATE.retDbl() * v.QNTY.retDbl()) - v.NETAMT.retDbl();
                     //v.DISC_TYPE = masterHelp.DISC_TYPE();
                     //v.PCSActionList = masterHelp.PCSAction();
                     v.GSTAMT = (v.IGSTAMT + v.CGSTAMT + v.SGSTAMT).retDbl().toRound(2);
@@ -605,7 +606,7 @@ namespace Improvar.Controllers
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(),v.DISCTYPE.retStr(),v.DISCRATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.DISCTYPE.retStr(), v.DISCRATE.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -636,7 +637,7 @@ namespace Improvar.Controllers
                     }
                 }
                 VE.T_GSTAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GSTAMT).retDbl();
-
+                VE.T_INCL_DISC = VE.TsalePos_TBATCHDTL.Sum(a => a.INCL_DISC).retDbl();
                 #region Return tab
                 // fill prodgrpgstper in t_batchdtl
                 DataTable R_allprodgrpgstper_data = new DataTable();
@@ -674,7 +675,7 @@ namespace Improvar.Controllers
                                 R_PRODGRPGSTPER = R_tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (R_PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(R_PRODGRPGSTPER, v.RATE.retDbl(),v.DISCTYPE.retStr(),v.DISCRATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(R_PRODGRPGSTPER, v.RATE.retDbl(), v.DISCTYPE.retStr(), v.DISCRATE.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -1133,7 +1134,7 @@ namespace Improvar.Controllers
                         BARIMAGE = tax_data.Rows[0]["BARIMAGE"].retStr();
                         if (PRODGRPGSTPER != "")
                         {
-                            ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE,DISCTYPE,DISCRATE);
+                            ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE, DISCTYPE, DISCRATE);
                             if (ALL_GSTPER.retStr() != "")
                             {
                                 var gst = ALL_GSTPER.Split(',').ToList();
@@ -1276,7 +1277,7 @@ namespace Improvar.Controllers
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().ToUpper().retSqlformat();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
-                if(data[7].retStr() == "Bar")
+                if (data[7].retStr() == "Bar")
                 {
                     barnoOrStyle = barnoOrStyle.ToUpper();
                 }
@@ -2045,7 +2046,7 @@ namespace Improvar.Controllers
                     DataTable syscnfgdt = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
                     if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                     {
-                        if(VE.T_TXNMEMO.NM.retStr() == "")
+                        if (VE.T_TXNMEMO.NM.retStr() == "")
                         {
                             VE.T_TXNMEMO.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
                         }
@@ -3247,8 +3248,9 @@ namespace Improvar.Controllers
                         string blconslcd = TTXN.CONSLCD;
                         if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
                         if (blconslcd == sslcd) blconslcd = "";
+                        string agslcd = VE.TTXNSLSMN == null ? "" : VE.TTXNSLSMN[0].SLMSLCD;
                         dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, proddrcr,
-                               parglcd, sslcd, blconslcd, TTXNOTH.AGSLCD, parclass1cd, Convert.ToSByte(isl),
+                               parglcd, sslcd, blconslcd, agslcd, parclass1cd, Convert.ToSByte(isl),
                                 dbamt, strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                                 TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), dbamt.retDbl(),
                                 "", "", "", "", VE.T_TXNMEMO.RTDEBCD == null ? "" : VE.T_TXNMEMO.RTDEBCD);
@@ -3569,9 +3571,9 @@ namespace Improvar.Controllers
                                             parclass1cd, class2cd, VE.TTXNPYMT[i].AMT.retDbl());
                                     OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                 }
-
+                                string agslcd = VE.TTXNSLSMN == null ? "" : VE.TTXNSLSMN[0].SLMSLCD;
                                 dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, cr,
-                                   parglcd, sslcd, null, TTXNOTH.AGSLCD, parclass1cd, Convert.ToSByte(pslno + 100),
+                                   parglcd, sslcd, null, agslcd, parclass1cd, Convert.ToSByte(pslno + 100),
                                     VE.TTXNPYMT[i].AMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), 0, TTXNOTH.POREFNO,
                                     TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.TTXNPYMT[i].AMT.retDbl(),
                                     "", "", "", "", VE.T_TXNMEMO.RTDEBCD == null ? "" : VE.T_TXNMEMO.RTDEBCD);
@@ -3723,11 +3725,11 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
-                dbok:;
+            dbok:;
             }
             catch (Exception ex)
             {

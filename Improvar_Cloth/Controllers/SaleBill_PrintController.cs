@@ -1825,6 +1825,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("bankinter", typeof(string), "");
                 IR.Columns.Add("SLMSLNM", typeof(string), "");
                 IR.Columns.Add("incl_disc", typeof(double), "");
+                IR.Columns.Add("barno", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -2509,7 +2510,9 @@ namespace Improvar.Controllers
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr1["itnm"] = (ic == 1 && CommVar.ClientCode(UNQSNO) == "SACH") ? (tbl.Rows[i]["itnm"].ToString() + " (" + tbl.Rows[i]["barno"].ToString() + ")") : tbl.Rows[i]["itnm"].ToString();
+                                //dr1["itnm"] = (ic == 1 && CommVar.ClientCode(UNQSNO) == "SACH") ? (tbl.Rows[i]["itnm"].ToString() + " (" + tbl.Rows[i]["barno"].ToString() + ")") : tbl.Rows[i]["itnm"].ToString();
+                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
+                                dr1["barno"] = tbl.Rows[i]["barno"].ToString();
                                 dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
