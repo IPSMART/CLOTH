@@ -395,18 +395,15 @@ namespace Improvar.Controllers
                     {
                         sl.EFFDT = System.DateTime.Now.Date;
                     }
-                    //string sql = "";
-                    //sql += " select j.COMPCD,k.COMPNM,j.DEALSIN,j.INSPOLDESC,j.BLTERMS,j.DUEDATECALCON,j.BANKSLNO ";
-                    //sql += " from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL j, " + CommVar.FinSchema(UNQSNO) + ".M_COMP k where j.COMPCD = k.COMPCD and j.COMPCD = '" + sl.COMPCD + "' union all ";
+                    string sql = "";
+                    //sql += " select k.COMPCD,j.COMPNM,k.DEALSIN,k.INSPOLDESC,k.BLTERMS,k.DUEDATECALCON,k.BANKSLNO ";
+                    //sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP j, " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL k where j.COMPCD = k.COMPCD(+) and k.COMPCD = '" + sl.COMPCD + "' union all ";
                     //sql += " select k.COMPCD,k.COMPNM,''DEALSIN,''INSPOLDESC,''BLTERMS,''DUEDATECALCON,0BANKSLNO ";
                     //sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP k ";
                     //sql += " where k.COMPCD not in (select compcd from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL where COMPCD = '" + sl.COMPCD + "'  ) ";
-                    string sql = "";
+
                     sql += " select k.COMPCD,j.COMPNM,k.DEALSIN,k.INSPOLDESC,k.BLTERMS,k.DUEDATECALCON,k.BANKSLNO ";
-                    sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP j, " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL k where j.COMPCD = k.COMPCD(+) and k.COMPCD = '" + sl.COMPCD + "' union all ";
-                    sql += " select k.COMPCD,k.COMPNM,''DEALSIN,''INSPOLDESC,''BLTERMS,''DUEDATECALCON,0BANKSLNO ";
-                    sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP k ";
-                    sql += " where k.COMPCD not in (select compcd from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL where COMPCD = '" + sl.COMPCD + "'  ) ";
+                    sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP j, " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL k where j.COMPCD = k.COMPCD(+)";
 
                     var mmgrpspl = Master_Help.SQLquery(sql);
                     if (mmgrpspl != null && mmgrpspl.Rows.Count > 0)
@@ -584,8 +581,20 @@ namespace Improvar.Controllers
                             }
 
                         }
-                        var Chk_MGRP_SPL_data = (from i in DB.M_MGROUP_SPL where i.COMPCD == MSYSCNFG.COMPCD select i).ToList();
-                        if (Chk_MGRP_SPL_data.Count > 0) DB.M_MGROUP_SPL.RemoveRange(DB.M_MGROUP_SPL.Where(x => x.COMPCD == MSYSCNFG.COMPCD));
+                        //var Chk_MGRP_SPL_data = (from i in DB.M_MGROUP_SPL where i.COMPCD == MSYSCNFG.COMPCD select i).ToList();
+                        //if (Chk_MGRP_SPL_data.Count > 0) DB.M_MGROUP_SPL.RemoveRange(DB.M_MGROUP_SPL.Where(x => x.COMPCD == MSYSCNFG.COMPCD));
+                        if (VE.MMGROUPSPL != null)
+                        {
+                            for (int i = 0; i <= VE.MMGROUPSPL.Count - 1; i++)
+                            {
+                                if (VE.MMGROUPSPL[i].SLNO != 0)
+                                {
+                                    var compcdd = VE.MMGROUPSPL[i].COMPCD;
+                                    var Chk_MGRP_SPL_data = (from j in DB.M_MGROUP_SPL where j.COMPCD == compcdd select j).ToList();
+                                    if (Chk_MGRP_SPL_data.Count > 0) DB.M_MGROUP_SPL.RemoveRange(DB.M_MGROUP_SPL.Where(x => x.COMPCD == compcdd));
+                                }
+                            }
+                        }
                         MSYSCNFG.SALDEBGLCD = VE.M_SYSCNFG.SALDEBGLCD;
                         MSYSCNFG.PURDEBGLCD = VE.M_SYSCNFG.PURDEBGLCD;
                         MSYSCNFG.CLASS1CD = VE.M_SYSCNFG.CLASS1CD;
