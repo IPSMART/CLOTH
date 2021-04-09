@@ -58,7 +58,7 @@
             return false;
         }
      
-        if (!emptyFieldCheck("Select District", "DISTRICT")) {
+        if (!emptyFieldCheck("Select Location/City", "DISTRICT")) {
             message_value = "DISTRICT";
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -1003,13 +1003,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "City")
+                                @Html.Label("", "Location/City")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "City", maxlength = 40, @list = "DISTRICTlist" } })
+                                @Html.EditorFor(model => model.M_SUBLEG.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "Location/City", maxlength = 40, @list = "DISTRICTlist" } })
                                 <datalist id="DISTRICTlist">
                                     @foreach (var jg in Model.Database_Combo1)
                                     {

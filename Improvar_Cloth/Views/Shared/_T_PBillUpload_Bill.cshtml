@@ -11,7 +11,7 @@
         {
             <div class="grid_title">
                 <div class="col-md-8">
-                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'tblPbill_Bill');" />
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'tblPbill_Bill');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;"><b>Purchase Bill Selection</b></center>
@@ -21,7 +21,9 @@
                     <table id="tblPbill_Bill" class="resizable table-striped" cellpadding="0px" cellspacing="0px" >
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="text-align:center;width: 27px;">
+                                    <input type="checkbox" name="Test" checked="checked" onclick="SetAllCheckBoxesFilter(this, 'tblPbill_Bill', 'Checked_', 'search')" />
+                                </th>
                                 <th class="" style="width: 30px;text-align:center;">SL No.</th>
                                 <th class="" style="width: 59px;">Bill No</th>
                                 <th class="" style="width: 100px;">Bill Date</th>
@@ -33,8 +35,8 @@
                                 for (int i = 0; i <= Model.DUpGrid.Count - 1; i++)
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
-                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.DUpGrid[i].Checked, new { id = "Checked_" + i, @TabIndex = -1 })
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;width: 27px;">
+                                            @Html.CheckBoxFor(model => model.DUpGrid[i].Checked, new { id = "Checked_" + i, @checked = "checked" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.DUpGrid[i].Slno, new { id = "Slno_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

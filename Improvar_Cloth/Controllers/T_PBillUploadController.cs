@@ -116,6 +116,7 @@ namespace Improvar.Controllers
                         dupgrid.Slno = ++slno;
                         dupgrid.BLNO = oudr["INV_NO"].retStr();
                         dupgrid.BLDT = oudr["INVDATE"].retDateStr();
+                        dupgrid.Checked = true;
                         DUGridlist.Add(dupgrid);
                     }
                     VE.DUpGrid = DUGridlist;
