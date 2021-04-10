@@ -1390,7 +1390,7 @@ namespace Improvar.Controllers
                                 dr1["disc"] = strdsc;
                                 dr1["titdiscamt"] = (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["tddiscamt"]).retDbl();
                                 dr1["discamt"] = negamt == "Y" ? tbl.Rows[i]["discamt"].retDbl() * -1 : tbl.Rows[i]["discamt"].retDbl();
-                                double txblval = (tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl();
+                                double txblval = (tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl()- (tbl.Rows[i]["scmdiscamt"]).retDbl();
                                 dr1["txblval"] = (negamt == "Y" ? txblval.retDbl() * -1 : txblval.retDbl()).ToINRFormat();
 
                                 dr1["cgstdsp"] = flagi == true ? "IGST" : "CGST";
