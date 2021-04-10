@@ -432,6 +432,7 @@ namespace Improvar.Controllers
                                              SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                              SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
                                              SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
+                                             SCMDISCAMT = dr["SCMDISCAMT"].retDbl(),
                                              STKTYPE = dr["STKTYPE"].retStr(),
                                              STKNAME = dr["STKNAME"].retStr(),
                                              BARNO = dr["BARNO"].retStr(),
@@ -560,6 +561,7 @@ namespace Improvar.Controllers
                 VE.T_QNTY = VE.TsalePos_TBATCHDTL.Sum(a => a.QNTY).retDbl();
                 VE.T_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.TXBLVAL).retDbl();
                 VE.T_DISCAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.DISCAMT).retDbl();
+                VE.T_SCMDISCAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.SCMDISCAMT).retDbl();
                 VE.T_B_GROSSAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GROSSAMT).retDbl();
                 VE.T_IGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.IGSTAMT).retDbl();
                 VE.T_CGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.CGSTAMT).retDbl();
@@ -567,7 +569,7 @@ namespace Improvar.Controllers
                 VE.T_CESS_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.CESSAMT).retDbl();
                 VE.B_T_NET = VE.TsalePos_TBATCHDTL.Sum(a => a.NETAMT).retDbl();
                 VE.T_NET_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.NETAMT).retDbl();
-
+                VE.T_GROSSAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GROSSAMT).retDbl();
 
                 // fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
@@ -580,7 +582,7 @@ namespace Improvar.Controllers
 
                 foreach (var v in VE.TsalePos_TBATCHDTL)
                 {
-                   v.INCL_DISC = (v.INCLRATE.retDbl() * v.QNTY.retDbl()) - v.NETAMT.retDbl();
+                    //v.INCL_DISC = (v.INCLRATE.retDbl() * v.QNTY.retDbl()) - v.NETAMT.retDbl();
                     //v.DISC_TYPE = masterHelp.DISC_TYPE();
                     //v.PCSActionList = masterHelp.PCSAction();
                     v.GSTAMT = (v.IGSTAMT + v.CGSTAMT + v.SGSTAMT).retDbl().toRound(2);
@@ -635,6 +637,8 @@ namespace Improvar.Controllers
                             }
                         }
                     }
+                    v.INCL_DISC = ((v.DISCAMT.retDbl() * (v.GSTPER + 100)) / 100).retDbl().toRound(2);
+                    v.DISCONBILLPERROW = ((v.SCMDISCAMT.retDbl() * (v.GSTPER + 100)) / 100).retDbl().toRound(2);
                 }
                 VE.T_GSTAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GSTAMT).retDbl();
                 VE.T_INCL_DISC = VE.TsalePos_TBATCHDTL.Sum(a => a.INCL_DISC).retDbl();
@@ -747,7 +751,7 @@ namespace Improvar.Controllers
                 VE.TOTTAXVAL = VE.T_B_GROSSAMT.retDbl() + VE.A_T_AMOUNT.retDbl();
                 VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
-                string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
+                string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT,a.SLNO from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
                 str += "where a.SLMSLCD=b.slcd and a.autono='" + VE.T_TXN.AUTONO + "'";
                 var SALSMN_DATA = masterHelp.SQLquery(str);
                 VE.TTXNSLSMN = (from DataRow dr in SALSMN_DATA.Rows
@@ -758,12 +762,13 @@ namespace Improvar.Controllers
                                     PER = dr["PER"].retDbl(),
                                     ITAMT = dr["ITAMT"].retDbl(),
                                     BLAMT = dr["BLAMT"].retDbl(),
+                                    SLNO =Convert.ToByte( dr["SLNO"]),
                                 }).ToList();
                 double S_T_GROSS_AMT = 0; double T_BILL_AMT = 0;
                 //c
                 for (int p = 0; p <= VE.TTXNSLSMN.Count - 1; p++)
                 {
-                    VE.TTXNSLSMN[p].SLNO = (p + 1).retShort();
+                    //VE.TTXNSLSMN[p].SLNO = (p + 1).retShort();
 
                     S_T_GROSS_AMT = S_T_GROSS_AMT + VE.TTXNSLSMN[p].ITAMT.Value;
                     T_BILL_AMT = T_BILL_AMT + VE.TTXNSLSMN[p].BLAMT.Value;
@@ -2017,9 +2022,10 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
-        public ActionResult SAVE(FormCollection FC, TransactionSalePosEntry VE)
+        public dynamic SAVE(FormCollection FC, TransactionSalePosEntry VE, string othr_para = "")
         {
             Cn.getQueryString(VE);
+            string ContentFlg = "";
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             //  Oracle Queries
@@ -2029,18 +2035,17 @@ namespace Improvar.Controllers
             OracleTransaction OraTrans;
             string dbsql = "";
             string[] dbsql1;
-            string dberrmsg = "";
-
             OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
             OraCmd.Transaction = OraTrans;
             DB.Configuration.ValidateOnSaveEnabled = false;
+            T_CNTRL_HDR TCH = new T_CNTRL_HDR();
             try
             {
                 DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
                 OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
 
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string ContentFlg = "";
+
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
                     DataTable syscnfgdt = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
@@ -2070,7 +2075,6 @@ namespace Improvar.Controllers
                     T_TXNPYMT_HDR TTXNPYMTHDR = new T_TXNPYMT_HDR();
                     T_TXNOTH TTXNOTH = new T_TXNOTH();
                     T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
-                    T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                     T_CNTRL_DOC_PASS TCDP = new T_CNTRL_DOC_PASS();
 
                     string DOCPATTERN = "";
@@ -2098,7 +2102,7 @@ namespace Improvar.Controllers
                     TTXN.SLCD = VE.RETDEBSLCD;
                     if (TTXN.SLCD.retStr() == "")
                     {
-                        dberrmsg = "Debtor/Creditor code not setup"; goto dbnotsave;
+                        ContentFlg = "Debtor/Creditor code not setup"; goto dbnotsave;
                     }
                     string sslcd = TTXN.SLCD;
                     if (VE.PSLCD.retStr() != "") sslcd = VE.PSLCD.ToString();
@@ -2456,6 +2460,9 @@ namespace Improvar.Controllers
                                 TTXNDTL.DISCTYPE = VE.TsalePos_TBATCHDTL[i].DISCTYPE;
                                 TTXNDTL.DISCRATE = VE.TsalePos_TBATCHDTL[i].DISCRATE;
                                 TTXNDTL.DISCAMT = VE.TsalePos_TBATCHDTL[i].DISCAMT;
+                                TTXNDTL.SCMDISCTYPE = VE.TsalePos_TBATCHDTL[i].SCMDISCTYPE;
+                                TTXNDTL.SCMDISCRATE = VE.TsalePos_TBATCHDTL[i].SCMDISCRATE;
+                                TTXNDTL.SCMDISCAMT = VE.TsalePos_TBATCHDTL[i].SCMDISCAMT;
                                 TTXNDTL.PRCCD = VE.T_TXNOTH.PRCCD;
                                 TTXNDTL.GLCD = VE.TsalePos_TBATCHDTL[i].GLCD;
                                 dbsql = masterHelp.RetModeltoSql(TTXNDTL);
@@ -2473,7 +2480,7 @@ namespace Improvar.Controllers
                                 DataTable dt = masterHelp.SQLquery(sql);
                                 if (dt.Rows.Count == 0)
                                 {
-                                    dberrmsg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL[i].ITCD; goto dbnotsave;
+                                    ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL[i].ITCD; goto dbnotsave;
                                 }
                                 sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                 OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
@@ -2717,7 +2724,7 @@ namespace Improvar.Controllers
                                 DataTable dt = masterHelp.SQLquery(sql);
                                 if (dt.Rows.Count == 0)
                                 {
-                                    dberrmsg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL_RETURN[i].ITCD; goto dbnotsave;
+                                    ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL_RETURN[i].ITCD; goto dbnotsave;
                                 }
                                 sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                 OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
@@ -2872,7 +2879,7 @@ namespace Improvar.Controllers
 
                     if (dbqty == 0)
                     {
-                        dberrmsg = "Quantity not entered"; goto dbnotsave;
+                        ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
                     isl = 1;
 
@@ -2976,6 +2983,7 @@ namespace Improvar.Controllers
                             {
                                 T_TXNSLSMN TTXNSLSMN = new T_TXNSLSMN();
                                 TTXNSLSMN.AUTONO = TTXN.AUTONO;
+                                TTXNSLSMN.SLNO = Convert.ToByte(VE.TTXNSLSMN[i].SLNO);
                                 TTXNSLSMN.EMD_NO = TTXN.EMD_NO;
                                 TTXNSLSMN.CLCD = TTXN.CLCD;
                                 TTXNSLSMN.DTAG = TTXN.DTAG;
@@ -3600,7 +3608,7 @@ namespace Improvar.Controllers
                     #endregion
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
                     {
-                        dberrmsg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
+                        ContentFlg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
                         goto dbnotsave;
                     }
 
@@ -3613,9 +3621,8 @@ namespace Improvar.Controllers
                     {
                         ContentFlg = "2";
                     }
-                    OraTrans.Commit();
-                    OraCon.Dispose();
-                    return Content(ContentFlg);
+                    goto dbsave;
+
                 }
                 else if (VE.DefaultAction == "V")
                 {
@@ -3716,27 +3723,45 @@ namespace Improvar.Controllers
                     dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
-                    OraTrans.Commit();
-                    OraCon.Dispose();
-                    return Content("3");
+                    ContentFlg = "3";
+                    goto dbsave;
                 }
                 else
                 {
                     return Content("");
                 }
-                goto dbok;
-            dbnotsave:;
-                OraTrans.Rollback();
-                OraCon.Dispose();
-                return Content(dberrmsg);
-            dbok:;
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
+                ContentFlg = ex.Message + ex.StackTrace;
+                goto dbnotsave;
+            }
+        dbsave:
+            {
+                OraTrans.Commit();
+                OraCon.Dispose();
+                if (othr_para == "")
+                    return Content(ContentFlg);
+                else if (othr_para == "SAVEANDPRINT")
+                {
+                    // string sequence doccd~docdt~docno
+                    ContentFlg = TCH.DOCCD + "~" + TCH.DOCDT.retDateStr() + "~" + TCH.DOCONLYNO;
+                    return (ContentFlg);
+                }
+                else
+                    return ContentFlg;
+            }
+        dbnotsave:
+            {
                 OraTrans.Rollback();
                 OraCon.Dispose();
-                return Content(ex.Message + ex.InnerException);
+                if (othr_para == "")
+                    return Content(ContentFlg);
+                else if (othr_para == "SAVEANDPRINT")
+                    return (ContentFlg);
+                else
+                    return ContentFlg;
             }
         }
         public ActionResult Print(TransactionSalePosEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT, string MENUPARA)
@@ -3903,6 +3928,28 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             ModelState.Clear();
             return PartialView("_T_SALE_POS_RETURN", VE);
+
+        }
+        [HttpPost]
+        public ActionResult T_SALE_POS(FormCollection FC, TransactionSalePosEntry VE)
+        {
+            string retmag = SAVE(FC, VE, "SAVEANDPRINT");
+            var retarr = retmag.Split('~');
+            if (retarr.Length == 1)
+            {
+                return Content(retmag);
+            }
+            else
+            {
+                SaleBill_PrintController RepPos = new SaleBill_PrintController();
+                ReportViewinHtml RVH = new ReportViewinHtml();
+                RVH.DOCCD = retarr[0];
+                RVH.TDT = retarr[1];
+                RVH.FDT = retarr[1];
+                RVH.DOCNO = retarr[2];
+                RVH.MENU_PARA = VE.MENU_PARA;
+                return RepPos.SaleBill_Print(RVH, FC, "");
+            }
 
         }
     }

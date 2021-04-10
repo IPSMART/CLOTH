@@ -238,11 +238,13 @@
         debugger;
         if (!emptyFieldCheck("Enter Bar No", "BARNO_NEW")) { return false; }
         if (!emptyFieldCheck("Select Item", "ITCD_NEW")) { return false; }
-        if (!emptyFieldCheck("Enter Party Design", "PDESIGN_NEW")) { return false; }
-        if (!emptyFieldCheck("Select Effective Date", "EFFDT_NEW")) { return false; }
-        if (!emptyFieldCheck("Enter CP", "CPRATE_NEW")) { return false; }
-        if (!emptyFieldCheck("Enter WP", "WPRATE_NEW")) { return false; }
-        if (!emptyFieldCheck("Enter RP", "RPRATE_NEW")) { return false; }
+        //if (!emptyFieldCheck("Enter Party Design", "PDESIGN_NEW")) { return false; }
+        if (retFloat($("#CPRATE_NEW").val()) != 0 || retFloat($("#WPRATE_NEW").val()) != 0 || retFloat($("#RPRATE_NEW").val()) != 0) {
+            if (!emptyFieldCheck("Select Effective Date", "EFFDT_NEW")) { return false; }
+        }
+        //if (!emptyFieldCheck("Enter CP", "CPRATE_NEW")) { return false; }
+        //if (!emptyFieldCheck("Enter WP", "WPRATE_NEW")) { return false; }
+        //if (!emptyFieldCheck("Enter RP", "RPRATE_NEW")) { return false; }
         $.ajax({
             type: 'post',
             beforesend: $("#WaitingMode").show(),
@@ -483,18 +485,18 @@
         </div>
 
     </div>
-        <div class="row" style="margin-top:20PX">
-            <div class="col-lg-3">
-                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove">
-                    @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                    @*@Html.Partial("_REP_BAR_HISTORY")*@
-                </div>
+    <div class="row" style="margin-top:20PX">
+        <div class="col-lg-3">
+            <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove">
+                @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
             </div>
         </div>
+        <div class="col-lg-9">
+            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                @*@Html.Partial("_REP_BAR_HISTORY")*@
+            </div>
+        </div>
+    </div>
         @*<div class="row">
 
                     @Html.HiddenFor(model => model.BarImages)
