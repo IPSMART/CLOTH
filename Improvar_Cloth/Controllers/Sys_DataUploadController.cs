@@ -132,6 +132,17 @@ namespace Improvar.Controllers
                         }
                     }
                 }
+
+                var sizeDT = dbfdt.AsEnumerable().GroupBy(g => new { SIZECD = g["SIZECD"] })
+                    .Select(g =>
+                    {
+                        var row = dbfdt.NewRow(); row["SIZECD"] = g.Key.SIZECD; return row;
+                    }).CopyToDataTable();
+                foreach (DataRow oudr in sizeDT.Rows)
+                {
+                    string SIZENM = oudr["SIZECD"].retStr();
+                    Salesfunc.CreateSizeMaster(SIZENM);
+                }
                 TransactionSaleEntry TMPVE = new TransactionSaleEntry();
                 T_SALEController TSCntlr = new T_SALEController();
                 T_TXN TTXN = new T_TXN();
@@ -237,6 +248,7 @@ namespace Improvar.Controllers
                         string grpnm = inrdr["ITGRPNM"].ToString();
                         string HSNCODE = inrdr["HSNCODE"].ToString();
                         string BARGENTYPE = inrdr["COMMONUNIQBAR"].ToString();
+                        string SIZECD = inrdr["SIZECD"].ToString().ToUpper().Trim(' '); if (SIZECD.Length > 4) SIZECD = SIZECD.Substring(0, 4);
                         TTXNDTL.UOM = inrdr["UOMCD"].ToString();
                         TTXNDTL.BARNO = inrdr["BARNO"].ToString();
 
@@ -261,6 +273,7 @@ namespace Improvar.Controllers
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
+                        TTXNDTL.SIZECD = SIZECD;
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.PAGENO = inrdr["PAGENO"].retInt();
                         TTXNDTL.PAGESLNO = inrdr["PAGESLNO"].retInt();
@@ -341,6 +354,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.BARGENTYPE = BARGENTYPE;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
                         TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
+                        TBATCHDTL.SIZECD = SIZECD;
                         TBATCHDTL.STKDRCR = TTXNDTL.STKDRCR;
                         TBATCHDTL.NOS = TTXNDTL.NOS;
                         TBATCHDTL.QNTY = TTXNDTL.QNTY;
