@@ -2611,5 +2611,50 @@ namespace Improvar
             return syscnfgdt;
 
         }
+        public void CreateSizeMaster(string SIZENM)
+        {
+            try
+            {
+                string sizecd = "";
+                SIZENM = SIZENM.retStr().ToUpper().Trim();
+                sizecd = SIZENM.Trim(' ');
+                if (sizecd.Length > 4) sizecd = sizecd.Substring(0, 4);
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                var tMGROU = DB.M_SIZE.Where(m => m.SIZECD == sizecd).FirstOrDefault();
+                if (tMGROU == null)
+                {
+
+                    OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+                    OraCon.Open();
+                    OracleCommand OraCmd = OraCon.CreateCommand();
+                    using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+                    {
+                        M_SIZE MSIZE = new M_SIZE();
+                        MSIZE.CLCD = CommVar.ClientCode(UNQSNO);
+                        MSIZE.EMD_NO = 0;
+                        MSIZE.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
+                        MSIZE.SZBARCODE = Cn.GenMasterCode("M_SIZE", "SZBARCODE", "", 2);
+                        MSIZE.SIZECD = sizecd;
+                        MSIZE.SIZENM = SIZENM;
+                        MSIZE.ALTSIZENM = "";
+                        MSIZE.PRINT_SEQ = "0";
+
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
+                        string dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
+                        var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                        dbsql = masterHelpFa.RetModeltoSql(MSIZE, "A", CommVar.CurSchema(UNQSNO));
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        OraTrans.Commit();
+                    }
+                    OraCon.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                //return ex.Message;
+            }
+        }
     }
 }
