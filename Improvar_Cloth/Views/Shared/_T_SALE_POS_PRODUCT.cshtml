@@ -35,6 +35,7 @@
                                 <th class="" style="width: 70px;">ItmGrp</th>
                                 <th class="" style="width:71px;text-align:right;">Item Code</th>
                                 <th class="" style="width: 160px;">Item Design</th>
+                                <th class="" style="width:60px;">Hsn Code</th>
                                 @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                 {
                                     <th class="" style="width: 50px;">Color Name</th>
@@ -57,8 +58,8 @@
                                 else {
                                     <th class="" style="width:80px;text-align:right;">Rate</th>
                                 }
-                                <th class="" style="width:60px;">Hsn Code</th>
-                                <th class="" style="width:50px;">Disc Type</th>
+                                <th class="" style="width:76px;text-align:right;">Basic Amt</th>
+                                <th class="" style="width:67px;">Disc Type</th>
                                 <th class="" style="width:42px;text-align:right;">Disc Rate</th>
                                 <th class="" style="width:75px;text-align:right;">Disc Amt</th>
                                 @if (Model.DefaultAction == "V")
@@ -66,6 +67,9 @@
                                     <th class="" style="width:75px;text-align:right;">Incl. Disc Amt</th>
                                 }
                                 <th class="" style="width:75px;text-align:right;">Fixed Disc Amt</th>
+                                <th class="" style="width:67px;">Disc-1</th>
+                                <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
+                                <th class="" style="width:75px;text-align:right;">Disc1 Amt</th>
                                 <th class="" style="width:86px;text-align:right;">Taxable Value</th>
                                 @*@if (Model.MENU_PARA == "PB")
                                     {
@@ -110,7 +114,7 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].CLASS1CD, new { id = "B_CLASS1CD_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].GROSSAMT, new { id = "B_GROSSAMT_" + i })@*GROSSAMT*@@*B_AMT_*@
+
                                             @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].DISCAMT, new { id = "B_DISCAMT_" + i })*@
                                             @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].TXBLVAL, new { id = "R_TXBLVAL_" + i })*@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].TOTDISCAMT, new { id = "B_TOTDISCAMT_" + i })
@@ -126,6 +130,7 @@
                                             {
                                                 @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i })
                                             }
+                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].DISCONBILLPERROW, new { id = "B_DISCONBILLPERROW_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -149,6 +154,9 @@
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].ITSTYLE, new { id = "B_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i })*@
                                             @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })*@
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].HSNCODE, new { htmlattributes = new { id = "B_HSNCODE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                         {
@@ -202,7 +210,7 @@
                                             </td>
                                         }
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].HSNCODE, new { htmlattributes = new { id = "B_HSNCODE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].GROSSAMT, new { htmlAttributes = new { id = "B_GROSSAMT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -217,6 +225,7 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCAMT, new { htmlAttributes = new { id = "B_DISCAMT_" + i, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @class = " atextBoxFor" } })
                                         </td>
+                                      
                                         @if (Model.DefaultAction == "V")
                                         {
                                             <td class="">
@@ -225,6 +234,15 @@
                                         }
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NETDISCAMT, new { htmlAttributes = new { id = "B_NETDISCAMT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @class = " atextBoxFor", onblur = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text", Model.TsalePos_TBATCHDTL[i].SCMDISCTYPE), new { @class = "atextBoxFor select_3d ", id = "B_SCMDISCTYPE_" + i, @onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_PRODUCT_GRID');" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, onblur = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_PRODUCT_GRID');", onkeydown = "CopyLastDiscData(this.value,B_SCMDISCTYPE_" + i + ".value,'B_SCMDISCRATE_','B_SCMDISCTYPE_','B_ITCD_','_T_SALE_POS_PRODUCT_GRID');RemoveLastDiscData('B_SCMDISCRATE_','B_ITCD_','_T_SALE_POS_PRODUCT_GRID');" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].SCMDISCAMT, new { htmlAttributes = new { id = "B_SCMDISCAMT_" + i, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @class = " atextBoxFor" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TXBLVAL, new { htmlAttributes = new { id = "B_TXBLVAL_" + i, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @class = " atextBoxFor" } })
@@ -285,7 +303,7 @@
                                         </td>
 
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
+                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
                                         </td>
                                         <td class="sticky-cell-opposite">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NETAMT, new { htmlAttributes = new { id = "B_NETAMT_" + i, @style = "text-align: right;", @class = " atextBoxFor", @readonly = "readonly", @TabIndex = -1 } })
@@ -301,6 +319,7 @@
                                 <td class="sticky-cell" style="left:50px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>design*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
@@ -330,12 +349,15 @@
                                 }
                                 else {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> }
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td>
+                                    @Html.EditorFor(model => Model.T_GROSSAMT, new { htmlAttributes = new { id = "B_T_GROSSAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @TabIndex = -1, @readonly = "readonly" } })
+                                </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td>
                                     @Html.EditorFor(model => Model.T_DISCAMT, new { htmlAttributes = new { id = "B_T_DISCAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @TabIndex = -1, @readonly = "readonly" } })
                                 </td>
+                               
                                 @if (Model.DefaultAction == "V")
                                 {
                                     <td>
@@ -343,6 +365,11 @@
                                     </td>
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td>
+                                    @Html.EditorFor(model => Model.T_SCMDISCAMT, new { htmlAttributes = new { id = "B_T_SCMDISCAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @TabIndex = -1, @readonly = "readonly" } })
+                                </td>
                                 <td>
                                     @Html.EditorFor(model => Model.T_AMT, new { htmlAttributes = new { id = "B_T_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @TabIndex = -1, @readonly = "readonly" } })
                                 </td>
