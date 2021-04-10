@@ -1922,7 +1922,8 @@ function CalculateDiscOnBill() {
     var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
 
     for (var i = 0; i <= GridRowMain - 1; i++) {
-        CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', i);
+        CalculateInclusiveRate(i, '_T_SALE_POS_PRODUCT_GRID')
+        //CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', i);
     }
 }
 //function CheckInclusivRateNetAmt(GridId, i) {
