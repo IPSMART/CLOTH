@@ -36,5 +36,6 @@ namespace Improvar.Models
         public double? ITAMT { get; set; }
 
         public double? BLAMT { get; set; }
+        public byte? SLNO { get; set; }
     }
 }

@@ -751,7 +751,7 @@ namespace Improvar.Controllers
                 VE.TOTTAXVAL = VE.T_B_GROSSAMT.retDbl() + VE.A_T_AMOUNT.retDbl();
                 VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
-                string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
+                string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT,a.SLNO from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
                 str += "where a.SLMSLCD=b.slcd and a.autono='" + VE.T_TXN.AUTONO + "'";
                 var SALSMN_DATA = masterHelp.SQLquery(str);
                 VE.TTXNSLSMN = (from DataRow dr in SALSMN_DATA.Rows
@@ -762,12 +762,13 @@ namespace Improvar.Controllers
                                     PER = dr["PER"].retDbl(),
                                     ITAMT = dr["ITAMT"].retDbl(),
                                     BLAMT = dr["BLAMT"].retDbl(),
+                                    SLNO =Convert.ToByte( dr["SLNO"]),
                                 }).ToList();
                 double S_T_GROSS_AMT = 0; double T_BILL_AMT = 0;
                 //c
                 for (int p = 0; p <= VE.TTXNSLSMN.Count - 1; p++)
                 {
-                    VE.TTXNSLSMN[p].SLNO = (p + 1).retShort();
+                    //VE.TTXNSLSMN[p].SLNO = (p + 1).retShort();
 
                     S_T_GROSS_AMT = S_T_GROSS_AMT + VE.TTXNSLSMN[p].ITAMT.Value;
                     T_BILL_AMT = T_BILL_AMT + VE.TTXNSLSMN[p].BLAMT.Value;
@@ -2982,6 +2983,7 @@ namespace Improvar.Controllers
                             {
                                 T_TXNSLSMN TTXNSLSMN = new T_TXNSLSMN();
                                 TTXNSLSMN.AUTONO = TTXN.AUTONO;
+                                TTXNSLSMN.SLNO = Convert.ToByte(VE.TTXNSLSMN[i].SLNO);
                                 TTXNSLSMN.EMD_NO = TTXN.EMD_NO;
                                 TTXNSLSMN.CLCD = TTXN.CLCD;
                                 TTXNSLSMN.DTAG = TTXN.DTAG;
