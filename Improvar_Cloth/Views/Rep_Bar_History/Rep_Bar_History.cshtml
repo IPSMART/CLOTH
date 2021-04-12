@@ -74,6 +74,7 @@
                     if (result != "") {
                         $("#WaitingMode").hide();
                         var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                        document.getElementById("BARCODE").value = returncolvalue(res[0], "BARNO");
                         document.getElementById("ITGRPCD").value = returncolvalue(res[0], "ITGRPCD");
                         document.getElementById("ITGRPNM").value = returncolvalue(res[0], "ITGRPNM");
                         document.getElementById("FABITCD").value = returncolvalue(res[0], "FABITCD");

@@ -1145,11 +1145,14 @@ function CalculateTotal() {
     $("#A_T_NET").val(parseFloat(T_NET_AMT).toFixed(2));
 
     //PAYMENT GRID TOTAL
-    var T_AMT = 0;
+    var T_AMT = 0, CARDAMT = 0;
     var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var AMT = retFloat($("#P_AMT_" + i).val());
         T_AMT += parseFloat(AMT);
+        if ($("#P_PYMTTYPE_" + i).val() == "R") {
+            CARDAMT += retFloat($("#P_AMT_" + i).val());
+        }
     }
     $("#T_PYMT_AMT").val(T_AMT.toFixed(2));
 
@@ -1210,14 +1213,25 @@ function CalculateTotal() {
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
         //document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
     }
-    var aa = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
+    debugger;
+    if (DefaultAction == "A") {
+        var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
+        var CASHAMT=0;
+        for (var a = 0; a <= GridRow - 1; a++) {
+            if ($("#P_PYMTTYPE_" + a).val() == "C") {
+                CASHAMT =retFloat($("#BLAMT").val()) - retFloat(CARDAMT);
+                $("#P_AMT_" + a).val(retFloat(CASHAMT).toFixed(2));
+                //$("#NETDUE").val(0.00);
+            }
+        }
+        $("#T_PYMT_AMT").val(retFloat(retFloat(CARDAMT)+retFloat(CASHAMT)).toFixed(2));
+        $("#PAYAMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
+        T_PYMT_AMT = retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2);
+    }
+   
+    //var aa = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
     document.getElementById("NETDUE").value = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
-    //var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
-    //for (var i = 0; i <= GridRow - 1; i++) {
-    //    if ($("#P_PYMTTYPE_" + i).val() == "C") {
-    //        $("#P_AMT_" + i).val(retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2));
-    //    }
-    //}
+
     //SALESMAN GRID TOTAL
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
 

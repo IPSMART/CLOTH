@@ -3948,6 +3948,13 @@ namespace Improvar.Controllers
                 RVH.FDT = retarr[1];
                 RVH.DOCNO = retarr[2];
                 RVH.MENU_PARA = VE.MENU_PARA;
+                DataTable repformat = salesfunc.getRepFormat("CASHMEMO");
+                if(repformat != null && repformat.Rows.Count > 0)
+                {
+                    RVH.TEXTBOX6 = repformat.Rows[0]["value"].retStr();
+                }
+                RVH.TEXTBOX7 = "Half";
+                RVH.TEXTBOX10 = "2";
                 return RepPos.SaleBill_Print(RVH, FC, "");
             }
 
