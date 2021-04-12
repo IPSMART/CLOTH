@@ -889,6 +889,10 @@ namespace Improvar
                 itcdqry = "nvl(e.linkitcd,a.itcd) ";
                 itcdpipe = "nvl(e.linkitcd,a.itcd)";
             }
+            if (barno.retStr() != "")
+            {
+                barno = barno.ToUpper();
+            }
             #region Generate Stock Table
             DataTable rsstk = new DataTable();
             rsstk.Columns.Add("key", typeof(string), "");
@@ -1050,7 +1054,7 @@ namespace Improvar
             {
                 if (exactbarno == true)
                 {
-                    sql += " (a.barno=" + stylelike + ") and ";
+                    sql += " (upper(a.barno)=" + stylelike.ToUpper() + ") and ";
                 }
                 else
                 {
@@ -1177,7 +1181,11 @@ namespace Improvar
                 itcdqry = "nvl(e.linkitcd,a.itcd) ";
                 itcdpipe = "nvl(e.linkitcd,a.itcd)";
             }
-
+            if(barno.retStr() != "")
+            {
+                barno = barno.ToUpper();
+            }
+            
             sql = "";
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
@@ -1262,7 +1270,7 @@ namespace Improvar
             {
                 if (exactbarno == true)
                 {
-                    sql += " (a.barno=" + stylelike + ") and ";
+                    sql += " (upper(a.barno) =" + stylelike.ToUpper() + ") and ";
                 }
                 else
                 {

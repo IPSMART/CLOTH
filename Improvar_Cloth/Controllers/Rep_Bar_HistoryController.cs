@@ -111,7 +111,7 @@ namespace Improvar.Controllers
                         sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + barnoOrStyle + "' ";
+                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barnoOrStyle.ToUpper() + "' ";
                         sql1 += "order by b.DOCDT,b.DOCNO ";
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
                         sql2 += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
@@ -128,7 +128,7 @@ namespace Improvar.Controllers
                         sql2 += "a.prccd = b.prccd(+) and a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.barno = d.barno(+) and d.barno is null) a ";
                         sql2 += ") a, ";
                         sql2 += "" + scmf + ".m_prclst b ";
-                        sql2 += "where a.prccd = b.prccd(+) and a.barno = '" + barnoOrStyle + "' ";
+                        sql2 += "where a.prccd = b.prccd(+) and upper(a.barno) = '" + barnoOrStyle.ToUpper() + "' ";
                         DataTable tbatchdtl = masterHelp.SQLquery(sql1);
                         DataTable itempricedtl = masterHelp.SQLquery(sql2);
                         VE.BARCODEHISTORY = (from DataRow dr in tbatchdtl.Rows
@@ -379,7 +379,7 @@ namespace Improvar.Controllers
                 OraCmd.Transaction = OraTrans;
                 try
                 {
-                    var chk = DB.T_BATCHMST.Where(a => a.BARNO == VE.NEWBARDATA.BARNO).Select(a => a.BARNO).Distinct().ToList();
+                    var chk = DB.T_BATCHMST.Where(a => a.BARNO.ToUpper() == VE.NEWBARDATA.BARNO.ToUpper()).Select(a => a.BARNO).Distinct().ToList();
                     if (chk.Count > 0)
                     {
                         OraTrans.Rollback();
@@ -390,7 +390,7 @@ namespace Improvar.Controllers
                     T_BATCHMST TBATCHMST = new T_BATCHMST();
                     TBATCHMST.EMD_NO = 0;
                     TBATCHMST.CLCD = CommVar.ClientCode(UNQSNO);
-                    TBATCHMST.BARNO = VE.NEWBARDATA.BARNO.retStr();
+                    TBATCHMST.BARNO = VE.NEWBARDATA.BARNO.retStr().ToUpper();
                     TBATCHMST.ITCD = VE.NEWBARDATA.ITCD.retStr();
                     TBATCHMST.RATE = VE.NEWBARDATA.CPRATE.retDbl();
                     TBATCHMST.WPRATE = VE.NEWBARDATA.WPRATE.retDbl();
