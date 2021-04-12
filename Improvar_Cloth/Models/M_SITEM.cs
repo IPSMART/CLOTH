@@ -91,5 +91,7 @@ namespace Improvar.Models
         public string PRODGRPCD { get; set; }
         [StringLength(20)]
         public string SAPCODE { get; set; }
+       
+        public double? CONVQTYPUNIT { get; set; }
     }
 }

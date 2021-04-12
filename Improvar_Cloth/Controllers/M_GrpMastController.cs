@@ -104,6 +104,26 @@ namespace Improvar.Controllers
                     list1.Add(obj3);
                     VE.DropDown_list1 = list1;
                     //=================End Bar Code Generation Type================//
+                    //=================For WP/rp Price Gen================//
+                    List<DropDown_list2> PG = new List<DropDown_list2>();
+                    DropDown_list2 PG1 = new DropDown_list2();
+                    PG1.text = "ROUND";
+                    PG1.value = "RD";
+                    PG.Add(PG1);
+                    DropDown_list2 PG2 = new DropDown_list2();
+                    PG2.text = "ROUNDNEXT";
+                    PG2.value = "RN";
+                    PG.Add(PG2);
+                    DropDown_list2 PG3 = new DropDown_list2();
+                    PG3.text = "NEAR";
+                    PG3.value = "NR";
+                    PG.Add(PG3);
+                    DropDown_list2 PG4 = new DropDown_list2();
+                    PG4.text = "NEXT";
+                    PG4.value = "NT";
+                    PG.Add(PG4);
+                    VE.DropDown_list2 = PG;
+                    //=================End WP/rp Price Gen ================//
                     VE.DefaultAction = op;
 
                     if (op.Length != 0)
@@ -239,6 +259,16 @@ namespace Improvar.Controllers
                     {
                         var purretglnm = (from a in DBF.M_GENLEG where a.GLCD == purretglcd select new { a.GLNM }).FirstOrDefault();
                         VE.PURRETGLNM = purretglnm.GLNM;
+                    }
+                    if (sl.WPPRICEGEN.retStr() != "")
+                    {
+                        VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
+                        VE.WPPRICEGENAMT = sl.WPPRICEGEN.Substring(2, 2);
+                    }
+                    if (sl.RPPRICEGEN.retStr() != "")
+                    {
+                        VE.RPPRICEGENCD = sl.RPPRICEGEN.Substring(0, 2);
+                        VE.RPPRICEGENAMT = sl.RPPRICEGEN.Substring(2, 2);
                     }
                     if (sll.INACTIVE_TAG == "Y")
                     {
@@ -536,6 +566,14 @@ namespace Improvar.Controllers
                         MGROUP.SAPCODE = VE.M_GROUP.SAPCODE;
                         MGROUP.WPPER = VE.M_GROUP.WPPER;
                         MGROUP.RPPER = VE.M_GROUP.RPPER;
+                        if (VE.WPPRICEGENCD.retStr() != "")
+                        {
+                            MGROUP.WPPRICEGEN = VE.WPPRICEGENCD.retStr() + VE.WPPRICEGENAMT.retStr().PadLeft(2, '0');//NR99
+                        }
+                        if (VE.RPPRICEGENCD.retStr() != "")
+                        {
+                            MGROUP.RPPRICEGEN = VE.RPPRICEGENCD.retStr() + VE.RPPRICEGENAMT.retStr().PadLeft(2, '0');//NT99
+                        }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

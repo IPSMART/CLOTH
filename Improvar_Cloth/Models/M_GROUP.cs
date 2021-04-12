@@ -78,5 +78,7 @@ namespace Improvar.Models
         public string SAPCODE { get; set; }
         public decimal? WPPER { get; set; }
         public decimal? RPPER { get; set; }
+
+     
     }
 }
