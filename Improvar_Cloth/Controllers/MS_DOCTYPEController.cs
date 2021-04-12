@@ -273,7 +273,7 @@ namespace Improvar.Controllers
             string finyrf = dfinyr[0].ToString().Trim().Substring(6) + "-" + yy;
             Improvar.Models.ImprovarDB DB1 = new Models.ImprovarDB(Cn.GetConnectionString(), FIN_SCHEMA);
             M_LOCA MLOCA = DB1.M_LOCA.Find(LOCCD, COMPCD);
-            string sql = "select BLINIT from " + CommVar.CurSchema(UNQSNO) + ".M_GODOWN  WHERE GOCD='" + GOCD + "'";
+            string sql = "select BLINIT from " + CommVar.FinSchema(UNQSNO) + ".M_GODOWN  WHERE GOCD='" + GOCD + "'";
             DataTable dt = masterHelp.SQLquery(sql); string docpara = "";
             if (dt != null && dt.Rows.Count > 0)
             {
