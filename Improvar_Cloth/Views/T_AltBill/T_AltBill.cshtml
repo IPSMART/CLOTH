@@ -108,6 +108,159 @@
     }
 </script>
 <script>
+    function CalculateRowAmt(GridId, i) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+      
+        if (GridId == "_T_SALE_POS_AMOUNT_GRID") {
+            var A_NOS = retFloat($("#B_T_NOS").val());
+            var B_QNTY = retFloat($("#B_T_QNTY").val());
+            var D_GROSS_AMT = retFloat($("#T_B_GROSSAMT").val());
+            var E_NET_AMT = retFloat($("#B_T_NET_AMT").val());
+            var RT = retFloat($("#AMTRATE_" + i).val());
+            var IGST_PER = retFloat($("#AIGSTPER_" + i).val());
+            var CGST_PER = retFloat($("#ACGSTPER_" + i).val());
+            var SGST_PER = retFloat($("#ASGSTPER_" + i).val());
+            var CESS_PER = retFloat($("#ACESSPER_" + i).val());
+            var DUTY_PER = retFloat($("#ADUTYPER_" + i).val());
+            var CALC_TYPE = $("#CALCTYPE_" + i).val();
+            var CALC_FORMULA = retFloat($("#CALCFORMULA_" + i).val());
+
+            var AMOUNT = 0;
+            if (CALC_TYPE == "F") { AMOUNT = parseFloat(RT); }
+            else if (CALC_TYPE == "P") {
+                if (CALC_FORMULA == "A") { AMOUNT = parseFloat(A_NOS) * parseFloat(RT); }
+                else if (CALC_FORMULA == "B") { AMOUNT = parseFloat(B_QNTY) * parseFloat(RT); }
+                else if (CALC_FORMULA == "D") { AMOUNT = parseFloat(D_GROSS_AMT) * parseFloat(RT); }
+                else if (CALC_FORMULA == "E") { AMOUNT = parseFloat(E_NET_AMT) * parseFloat(RT); }
+            }
+            $("#A_AMT_" + i).val(AMOUNT);
+            var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var DUTY_AMT = 0;
+
+            // IGST CALCULATION
+            $("#AIGSTPER_" + i).val(IGST_PER);
+            IGST_AMT = (AMOUNT * IGST_PER) / 100;
+            var NEWIGST_AMT = $("#AIGSTAMT_" + i).val();
+            var BAL_AMT = Math.abs(parseFloat(NEWIGST_AMT) - parseFloat(IGST_AMT));
+            if (BAL_AMT <= 1) {
+                $("#AIGSTAMT_" + i).val(parseFloat(NEWIGST_AMT).toFixed(2));
+            }
+            else {
+                $("#AIGSTAMT_" + i).val(parseFloat(IGST_AMT).toFixed(2));
+            }
+            //END
+
+            // CGST CALCULATION
+            $("#ACGSTPER_" + i).val(CGST_PER);
+            CGST_AMT = (AMOUNT * CGST_PER) / 100;
+
+            var NEWCGST_AMT = $("#ACGSTAMT_" + i).val();
+            var BAL_AMT = Math.abs(parseFloat(NEWCGST_AMT) - parseFloat(CGST_AMT));
+            if (BAL_AMT <= 1) {
+                $("#ACGSTAMT_" + i).val(parseFloat(NEWCGST_AMT).toFixed(2));
+            }
+            else {
+                $("#ACGSTAMT_" + i).val(parseFloat(CGST_AMT).toFixed(2));
+            }
+
+            //END
+            // SGST CALCULATION
+            $("#ASGSTPER_" + i).val(SGST_PER);
+            SGST_AMT = (AMOUNT * SGST_PER) / 100;
+
+            var NEWSGST_AMT = $("#ASGSTAMT_" + i).val();
+            var BAL_AMT = Math.abs(parseFloat(NEWSGST_AMT) - parseFloat(SGST_AMT));
+            if (BAL_AMT <= 1) {
+                $("#ASGSTAMT_" + i).val(parseFloat(NEWSGST_AMT).toFixed(2));
+            }
+            else {
+                $("#ASGSTAMT_" + i).val(parseFloat(SGST_AMT).toFixed(2));
+            }
+            //END
+            // CESS CALCULATION
+            $("#ACESSPER_" + i).val(CESS_PER);
+            CESS_AMT = (AMOUNT * CESS_PER) / 100;
+
+            var NEWCESS_AMT = $("#ACESSAMT_" + i).val();
+            var BAL_AMT = Math.abs(parseFloat(NEWCESS_AMT) - parseFloat(CESS_AMT));
+            if (BAL_AMT <= 1) {
+                $("#ACESSAMT_" + i).val(parseFloat(NEWCESS_AMT).toFixed(2));
+            }
+            else {
+                $("#ACESSAMT_" + i).val(parseFloat(CESS_AMT).toFixed(2));
+            }
+            //END
+            // DUTY CALCULATION
+
+            $("#ADUTYPER_" + i).val(DUTY_PER);
+            DUTY_AMT = (AMOUNT * DUTY_PER) / 100;
+
+            var NEWDUTY_AMT = $("#ADUTYAMT_" + i).val();
+            var BAL_AMT = Math.abs(parseFloat(NEWDUTY_AMT) - parseFloat(DUTY_AMT));
+            if (BAL_AMT <= 1) {
+                $("#ADUTYAMT_" + i).val(parseFloat(NEWDUTY_AMT).toFixed(2));
+            }
+            else {
+                $("#ADUTYAMT_" + i).val(parseFloat(DUTY_AMT).toFixed(2));
+            }
+            //END
+
+            var NET_AMT = AMOUNT + parseFloat($("#AIGSTAMT_" + i).val()) + parseFloat($("#ACGSTAMT_" + i).val()) +
+                         parseFloat($("#ASGSTAMT_" + i).val()) + parseFloat($("#ACESSAMT_" + i).val()) + parseFloat($("#ADUTYAMT_" + i).val());
+            $("#ANETAMT_" + i).val(parseFloat(NET_AMT).toFixed(2));
+
+        }
+       
+        CalculateTotal();
+    }
+    function CalculateTotal() {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+
+        //AMT GRID TOTAL
+        var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
+        var GridRow = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var CURR_AMT = retFloat($("#ACURR_AMT_" + i).val());
+            var AMT = retFloat($("#A_AMT_" + i).val());
+            var IGST_AMT = retFloat($("#AIGSTAMT_" + i).val());
+            var CGST_AMT = retFloat($("#ACGSTAMT_" + i).val());
+            var SGST_AMT = retFloat($("#ASGSTAMT_" + i).val());
+            var CESS_AMT = retFloat($("#ACESSAMT_" + i).val());
+            var DUTY_AMT = retFloat($("#ADUTYAMT_" + i).val());
+            var NET_AMT = retFloat($("#ANETAMT_" + i).val());
+
+            T_CURR_AMT += CURR_AMT; T_AMT += parseFloat(AMT); T_IGST_AMT += parseFloat(IGST_AMT); T_CGST_AMT += parseFloat(CGST_AMT); T_SGST_AMT += parseFloat(SGST_AMT);
+            T_CESS_AMT += parseFloat(CESS_AMT); T_DUTY_AMT += parseFloat(DUTY_AMT); T_NET_AMT += parseFloat(NET_AMT);
+
+        }
+        $("#A_T_CURR").val(parseFloat(T_CURR_AMT).toFixed(2));
+        $("#A_T_AMOUNT").val(parseFloat(T_AMT).toFixed(2));
+        $("#A_T_IGST").val(parseFloat(T_IGST_AMT).toFixed(2));
+        $("#A_T_CGST").val(parseFloat(T_CGST_AMT).toFixed(2));
+        $("#A_T_SGST").val(parseFloat(T_SGST_AMT).toFixed(2));
+        $("#A_T_CESS").val(parseFloat(T_CESS_AMT).toFixed(2));
+        $("#A_T_DUTY").val(parseFloat(T_DUTY_AMT).toFixed(2));
+        $("#A_T_NET").val(parseFloat(T_NET_AMT).toFixed(2));
+
+        //PAYMENT GRID TOTAL
+        var T_AMT = 0;
+        var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var AMT = retFloat($("#P_AMT_" + i).val());
+            T_AMT += parseFloat(AMT);
+        }
+        $("#T_PYMT_AMT").val(T_AMT.toFixed(2));
+
+        CalculateBlamt();
+
+
+    }
+</script>
+<script>
     function CalculateBlamt() {
         var TOTTAX = 0;
         var TAXABVAL = retFloat($("#TAXABVAL").val());
@@ -141,6 +294,47 @@
         }
     }
 </script>
+@*<script>
+    function CalculateInclusiveRate() {
+        debugger; var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+       
+            var itemrate = 0;
+            var INCLRATE_ = retFloat($("#BLAMT").val());
+            //var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
+            //var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
+            var B_PRODGRPGSTPER_ = $("#GSTPER").val();
+            //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+            var fromrt = 0, tort = 0, selrow = -1;
+            var mgstrate = [5];
+            var rtval = "0,0,0"; //igstper,cgst,sgst
+            var SP = String.fromCharCode(179);
+            var mrates = B_PRODGRPGSTPER_.split(SP);
+            for (var x = 0; x <= mrates.length - 1; x++) {
+                //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+                mgstrate = mrates[x].split('~');
+                if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
+                if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
+                var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
+                //if (B_DISCRATE_ != 0) {
+                //    $("#B_GROSSAMT_" + i).val(tort);
+                //    var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
+                //    tmprt = tort - discamt;
+                //}
+                $("#TAXABVAL").val(tort);
+                tmprt = tmprt * (taxpercent + 100) / 100;
+                if (INCLRATE_ <= tmprt) {
+                    var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
+                    //var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
+                    //$("#TAXABVAL").val(itemrate);
+                    $("#GSTPER").val(taxpercent);
+                    break;
+                }
+            }
+            return itemrate;
+      
+    }
+</script>*@
 <script>
     function pageprinting() {
         debugger;
@@ -413,29 +607,29 @@
                 </div>
                 <div class="col-md-5">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", onclick = "CalculateInclusiveRate();",@style = "font-weight:bold;font-size:15px;text-align:right" } })
                     </div>
                 </div>
             </div>
 
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Amounts_LI" class="active"><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
-                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
+                    @*<li id="Amounts_LI" class="active"><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>*@
+                    <li id="Payment_LI" class="active"><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:750px;">
                 </div>
                 <div class="tab-content">
-                    <div id="Amount" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                    @*<div id="Amount" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div id="partialdivAmounts" style="margin-top:0px;">
                                 @Html.Partial("_T_AltBill_AMOUNT")
                             </div>
                         </div>
-                    </div>
-                    <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    </div>*@
+                    <div id="Payment" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div id="partialdivPayment" style="margin-top:0px;">
                                 @Html.Partial("_T_AltBill_PAYMENT")

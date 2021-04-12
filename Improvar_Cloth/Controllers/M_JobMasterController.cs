@@ -341,6 +341,7 @@ namespace Improvar.Controllers
                         MJBMST.IMTRLJOBCD = VE.M_JOBMST.IMTRLJOBCD;
                         MJBMST.ISSMTRLDESC = VE.M_JOBMST.ISSMTRLDESC;
                         MJBMST.JOBSEQ = VE.M_JOBMST.JOBSEQ;
+                        MJBMST.FLAG1 = VE.M_JOBMST.FLAG1;
                         //Control header 
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_JOBMST", MJBMST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
                         if (VE.DefaultAction == "A")
