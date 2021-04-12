@@ -764,29 +764,33 @@ function CalculateRowAmt(GridId, i) {
         var discamt = 0, baldiscamt = 0, lastslno = 0;;
         baldiscamt = DISCONBILL;
         var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
-
+        var totalpropotionamt = 0;
         for (var j = 0; j <= GridRowMain - 1; j++) {
             if (retFloat($("#B_SLNO_" + j).val()) != 0 && retStr($("#B_ITCD_" + j).val()) != "" && retFloat($("#B_QNTY_" + j).val()) != 0 && retStr($("#B_MTRLJOBCD_" + j).val()) != "" && retStr($("#B_STKTYPE_" + j).val()) != "") {
                 lastslno = j;
+                totalpropotionamt += retFloat($("#B_DISCONBILLPERROW_" + j).val());
             }
         }
-        for (var j = 0; j <= GridRowMain - 1; j++) {
-            if (retFloat($("#B_SLNO_" + j).val()) != 0 && retStr($("#B_ITCD_" + j).val()) != "" && retFloat($("#B_QNTY_" + j).val()) != 0 && retStr($("#B_MTRLJOBCD_" + j).val()) != "" && retStr($("#B_STKTYPE_" + j).val()) != "") {
-                if (j == lastslno) { discamt = retFloat(baldiscamt).toFixed(2); }
-                else
-                {
-                    if (DISCONBILL == 0) { discamt = 0; }
+        if (totalpropotionamt != DISCONBILL) {
+            for (var j = 0; j <= GridRowMain - 1; j++) {
+                if (retFloat($("#B_SLNO_" + j).val()) != 0 && retStr($("#B_ITCD_" + j).val()) != "" && retFloat($("#B_QNTY_" + j).val()) != 0 && retStr($("#B_MTRLJOBCD_" + j).val()) != "" && retStr($("#B_STKTYPE_" + j).val()) != "") {
+                    if (j == lastslno) { discamt = retFloat(baldiscamt).toFixed(2); }
                     else
                     {
-                        if (TOTALGROSSAMT != 0) {
-                            discamt = retFloat((DISCONBILL / TOTALGROSSAMT) * retFloat($("#B_GROSSAMT_" + j).val())).toFixed(2);
+                        if (DISCONBILL == 0) { discamt = 0; }
+                        else
+                        {
+                            if (TOTALGROSSAMT != 0) {
+                                discamt = retFloat((DISCONBILL / TOTALGROSSAMT) * retFloat($("#B_GROSSAMT_" + j).val())).toFixed(2);
+                            }
                         }
                     }
+                    baldiscamt = retFloat(baldiscamt) - retFloat(discamt);
+                    $("#B_DISCONBILLPERROW_" + j).val(discamt);
                 }
-                baldiscamt = retFloat(baldiscamt) - retFloat(discamt);
-                $("#B_DISCONBILLPERROW_" + j).val(discamt);
             }
         }
+
         //END OVERALL DISCOUNT PROPOTION TO ROW WISE
 
         //CALCULATE DISCAMT1 WITH ROW WISE PROPOTIONATE AMT
@@ -807,11 +811,17 @@ function CalculateRowAmt(GridId, i) {
         var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
         var B_DISCTYPE_ = $("#B_DISCTYPE_" + i).val();
         var B_DISCRATE_ = $("#B_DISCRATE_" + i).val();
-        var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
         $("#B_DISCAMT_" + i).val(discamt);
         $("#B_SCMDISCAMT_" + i).val(scmdiscamt);
         $("#B_TXBLVAL_" + i).val(TXBLVAL_);
-        $("#B_GSTPER_" + i).val(GSTPER);
+        var GSTPER = 0;
+        if ($("#INCLRATEASK").val() == "Y") {
+            GSTPER =  $("#B_GSTPER_" + i).val();
+        }
+        else {
+            GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
+            $("#B_GSTPER_" + i).val(GSTPER);
+        }
         //IGST,CGST,SGST,CESS AMOUNT CALCULATION
 
         var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
@@ -1216,19 +1226,19 @@ function CalculateTotal() {
     debugger;
     if (DefaultAction == "A") {
         var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
-        var CASHAMT=0;
+        var CASHAMT = 0;
         for (var a = 0; a <= GridRow - 1; a++) {
             if ($("#P_PYMTTYPE_" + a).val() == "C") {
-                CASHAMT =retFloat($("#BLAMT").val()) - retFloat(CARDAMT);
+                CASHAMT = retFloat($("#BLAMT").val()) - retFloat(CARDAMT);
                 $("#P_AMT_" + a).val(retFloat(CASHAMT).toFixed(2));
                 //$("#NETDUE").val(0.00);
             }
         }
-        $("#T_PYMT_AMT").val(retFloat(retFloat(CARDAMT)+retFloat(CASHAMT)).toFixed(2));
+        $("#T_PYMT_AMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
         $("#PAYAMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
         T_PYMT_AMT = retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2);
     }
-   
+
     //var aa = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
     document.getElementById("NETDUE").value = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
 
@@ -1299,10 +1309,11 @@ function CalculateInclusiveRate(i, GridId) {
                 var discamt = 0, baldiscamt = 0, lastslno = 0;;
                 baldiscamt = DISCONBILL;
                 var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
-
+                var totalpropotionamt = 0;
                 for (var j = 0; j <= GridRowMain - 1; j++) {
                     if (retFloat($("#B_SLNO_" + j).val()) != 0 && retStr($("#B_ITCD_" + j).val()) != "" && retFloat($("#B_QNTY_" + j).val()) != 0 && retStr($("#B_MTRLJOBCD_" + j).val()) != "" && retStr($("#B_STKTYPE_" + j).val()) != "") {
                         lastslno = j;
+                        totalpropotionamt += retFloat($("#B_DISCONBILLPERROW_" + j).val());
                     }
                 }
                 for (var j = 0; j <= GridRowMain - 1; j++) {
@@ -1320,7 +1331,12 @@ function CalculateInclusiveRate(i, GridId) {
                         }
                         baldiscamt = retFloat(baldiscamt) - retFloat(discamt);
                         if (j == i) {
-                            discamt2 = discamt;
+                            if (totalpropotionamt != DISCONBILL) {
+                                discamt2 = discamt;
+                            }
+                            else {
+                                discamt2 = retFloat($("#B_DISCONBILLPERROW_" + j).val());
+                            }
                         }
                     }
                 }
