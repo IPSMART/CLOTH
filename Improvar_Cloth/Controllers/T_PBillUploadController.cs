@@ -351,7 +351,7 @@ namespace Improvar.Controllers
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "TR";
                         TTXNDTL.UOM = "MTR";
-                        TTXNDTL.QNTY = inrdr["NET_QTY"].retDbl();
+                        TTXNDTL.QNTY = inrdr["GROSS_QTY"].retDbl(); // NET_QTY
                         TTXNDTL.NOS = 1;
                         TTXNDTL.RATE = inrdr["RATE"].retDbl();
                         TTXNDTL.AMT = inrdr["GROSS_AMT"].retDbl();
