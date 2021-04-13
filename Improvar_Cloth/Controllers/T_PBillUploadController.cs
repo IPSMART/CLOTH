@@ -234,7 +234,7 @@ namespace Improvar.Controllers
                     {//Selected row will upload only
                         continue;
                     }
-                    TTXN.TCSPER = 0.075;
+                    TTXN.TCSPER = 0;// 0.075;
                     dupgrid.BLNO = TTXN.PREFNO;
                     string Ddate = DateTime.ParseExact(oudr["INVDATE"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
                     TTXN.DOCDT = Convert.ToDateTime(Ddate);
@@ -261,10 +261,11 @@ namespace Improvar.Controllers
                     double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
                     var roffamt = (blINV_VALUE - calcultednet).toRound(2);
                     double blTAX_AMT = oudr["TAX_AMT"].retDbl();
-                    double tcsamt = (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
+                    double tcsamt = 0;// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
                     TTXN.BLAMT = blINV_VALUE + tcsamt;
-                    TTXN.TDSCODE = "X";
-                    TTXN.ROYN = "Y";
+                    //TTXN.TDSCODE = "X";
+                    //TTXN.ROYN = "Y";
+                    TMPVE.RoundOff = true;
                     TTXN.TCSON = calcultednet;
                     TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
