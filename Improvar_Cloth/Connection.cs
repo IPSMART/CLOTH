@@ -2873,12 +2873,13 @@ namespace Improvar
         //    return newPattern;
         //}
 
-        public string DocPattern(long docno, string doc_type_code, string schema, string FIN_SCHEMAS, string docdt = "")
+        public string DocPattern(long docno, string doc_type_code, string schema, string FIN_SCHEMAS, string docdt = "", string docpara = "")
         {
+            MasterHelp masterHelp = new MasterHelp();
             var UNQSNO = getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), schema);
             M_DOCTYPE MD = DB.M_DOCTYPE.Find(doc_type_code);
-            string[] pattern = new[] { "&comprefix&", "&locprefix&", "&docprefix&", "&mm&-&docno&", "&mmm&", "&docno&", "&finyr&", "&finyrs&", "&finyrf&" };
+            string[] pattern = new[] { "&comprefix&", "&locprefix&", "&docprefix&", "&mm&-&docno&", "&mmm&", "&docno&", "&yy&", "&finyr&", "&finyrs&", "&finyrf&", "&docpara&" };
             string newPattern = MD.DOCNOPATTERN;
             string docno1 = "";
             DateTime ddate;
@@ -2892,15 +2893,16 @@ namespace Improvar
             {
                 docno1 = docno.ToString();
             }
-            string[] finyr = CommVar.FinPeriod(UNQSNO).Split('-');
-            string asstyr = "", asstyrs = "";
-            if (finyr[0].ToString().Trim().Substring(8) == finyr[1].ToString().Trim().Substring(8)) asstyr = finyr[0].ToString().Trim().Substring(8);
-            else asstyr = finyr[0].ToString().Trim().Substring(8) + "-" + finyr[1].ToString().Trim().Substring(8);
-            asstyrs = asstyr.Replace("-", "");
-            string finyrf = finyr[0].ToString().Trim().Substring(6) + "-" + finyr[0].ToString().Trim().Substring(8);
+            string[] dfinyr = CommVar.FinPeriod(UNQSNO).Split('-');
+            string finyr = "", finyrs = "", yy = "";
+            yy = dfinyr[0].ToString().Trim().Substring(8);
+            if (yy == dfinyr[1].ToString().Trim().Substring(8)) finyr = yy;
+            else finyr = yy + "-" + dfinyr[1].ToString().Trim().Substring(8);
+            finyrs = finyr.Replace("-", "");
+            string finyrf = dfinyr[0].ToString().Trim().Substring(6) + "-" + yy;
             Improvar.Models.ImprovarDB DB1 = new Models.ImprovarDB(GetConnectionString(), FIN_SCHEMAS);
             M_LOCA MLOCA = DB1.M_LOCA.Find(CommVar.Loccd(UNQSNO), CommVar.Compcd(UNQSNO));
-            string[] pattern1 = new[] { CommVar.Compcd(UNQSNO), MLOCA.LOCA_CODE, MD.DOCPRFX, ddate.Month.ToString().PadLeft(2, '0') + "-" + docno1.ToString(), CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(ddate.Month), docno1.ToString(), asstyr, asstyrs, finyrf };
+            string[] pattern1 = new[] { CommVar.Compcd(UNQSNO), MLOCA.LOCA_CODE, MD.DOCPRFX, ddate.Month.ToString().PadLeft(2, '0') + "-" + docno1.ToString(), CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(ddate.Month), docno1.ToString(), yy, finyr, finyrs, finyrf, docpara };
             for (int i = 0; i <= pattern.Length - 1; i++)
             {
                 int index = newPattern.IndexOf(pattern[i]);

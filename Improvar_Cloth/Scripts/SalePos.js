@@ -1078,7 +1078,7 @@ function CalculateRowAmt(GridId, i) {
     }
     CalculateTotal();
 }
-function CalculateTotal() {
+function CalculateTotal(CallFrm) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
@@ -1224,7 +1224,7 @@ function CalculateTotal() {
         //document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
     }
     debugger;
-    if (DefaultAction == "A") {
+    if (CallFrm != "PYMTGRID") {
         var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
         var CASHAMT = 0;
         for (var a = 0; a <= GridRow - 1; a++) {

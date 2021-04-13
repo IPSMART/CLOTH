@@ -3724,6 +3724,7 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 int MAXSLNO = VE.TBATCHDTL.Select(a => a.SLNO).Max();
+                int MAXBLSLNO = VE.TBATCHDTL.Select(a => a.TXNSLNO).Max();
                 TBATCHDTL TBATCHDTLobjtemp = VE.TBATCHDTL.Where(m => m.SLNO == BarSlno).First();
                 TBATCHDTL TBATCHDTLobj = new TBATCHDTL();
                 for (int i = 0; i <= NOOFROWCOPY - 1; i++)
@@ -3735,6 +3736,10 @@ namespace Improvar.Controllers
                         propB.SetValue(TBATCHDTLobj, propA.GetValue(TBATCHDTLobjtemp, null), null);
                     }
                     TBATCHDTLobj.SLNO = (++MAXSLNO).retShort();
+                    if(VE.MergeBarItem == false)
+                    {
+                        TBATCHDTLobj.TXNSLNO = (++MAXBLSLNO).retShort();
+                    }
                     TBATCHDTLobj.NOOFROWCOPY = "";
                     VE.TBATCHDTL.Add(TBATCHDTLobj);
                 }

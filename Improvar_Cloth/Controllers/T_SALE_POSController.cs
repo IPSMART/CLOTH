@@ -2353,6 +2353,7 @@ namespace Improvar.Controllers
                     //  create header record in finschema
                     if (blactpost == true || blgstpost == true)
                     {
+                        Cn.Create_DOCCD(UNQSNO, "F", TTXN.DOCCD);
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 111;
