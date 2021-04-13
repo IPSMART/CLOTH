@@ -576,8 +576,8 @@ namespace Improvar.Controllers
         }
         private string getSLCD(string sapcode, string gstno)
         {
-            sql = "select slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com a," + CommVar.FinSchema(UNQSNO) + ".m_subleg b  where a.slcd=b.slcd sapcode='" + sapcode + "'";
-            if (gstno != "") sql += " and gstno='" + gstno + "'";
+            sql = "select a.slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com a," + CommVar.FinSchema(UNQSNO) + ".m_subleg b  where a.slcd=b.slcd and a.sapcode='" + sapcode + "'";
+            if (gstno != "") sql += " and b.gstno='" + gstno + "'";
             var dt = masterHelp.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
