@@ -654,6 +654,7 @@ namespace Improvar.Controllers
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
                 VE.T_NOS = VE.TTXNDTL.Sum(a => a.NOS).retDbl();
                 VE.T_QNTY = VE.TTXNDTL.Sum(a => a.QNTY).retDbl();
+                VE.T_FLAGMTR = VE.TTXNDTL.Sum(a => a.FLAGMTR).retDbl();
                 VE.T_AMT = VE.TTXNDTL.Sum(a => a.AMT).retDbl();
                 VE.T_DISCAMT = VE.TTXNDTL.Sum(a => a.DISCAMT).retDbl();
                 VE.T_TDDISCAMT = VE.TTXNDTL.Sum(a => a.TDDISCAMT).retDbl();

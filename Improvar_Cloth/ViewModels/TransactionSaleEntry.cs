@@ -268,5 +268,8 @@ namespace Improvar.ViewModels
         public string DISCTYPEINRATE { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public bool MergeBarItem { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_FLAGMTR { get; set; }
+        
     }
 }
