@@ -185,11 +185,12 @@ namespace Improvar.Controllers
                 TMPVE.DefaultAction = "A";
                 TMPVE.MENU_PARA = "PB";
                 var outerDT = dbfdt.AsEnumerable()
-               .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
+               .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], GSTINPLANT = g["GSTINPLANT"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
                .Select(g =>
                {
                    var row = dbfdt.NewRow();
                    row["CUSTOMERNO"] = g.Key.CUSTOMERNO;
+                   row["GSTINPLANT"] = g.Key.GSTINPLANT;
                    row["INV_NO"] = g.Key.INV_NO;
                    row["INVDATE"] = g.Key.INVDATE;
                    row["LR_NO"] = g.Key.LR_NO;
@@ -241,10 +242,11 @@ namespace Improvar.Controllers
                     TTXN.PREFDT = TTXN.DOCDT;
                     dupgrid.BLNO = TTXN.PREFNO;
                     string CUSTOMERNO = oudr["CUSTOMERNO"].ToString();
-                    TTXN.SLCD = getSLCD(CUSTOMERNO); dupgrid.CUSTOMERNO = CUSTOMERNO;
+                    string GSTINPLANT = oudr["GSTINPLANT"].ToString();
+                    TTXN.SLCD = getSLCD(CUSTOMERNO, GSTINPLANT); dupgrid.CUSTOMERNO = CUSTOMERNO;
                     if (TTXN.SLCD == "")
                     {
-                        dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") in the SAPCODE from [Tax code link up With Party].";
+                        dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") and GSTNO="+ GSTINPLANT + " in the SAPCODE from [Tax code link up With Party].";
                         DUGridlist.Add(dupgrid);
                         break;
                     }
@@ -289,7 +291,7 @@ namespace Improvar.Controllers
 
                     if (oudr["CARR_NO"].ToString() != "")
                     {
-                        TXNTRANS.TRANSLCD = getSLCD(oudr["CARR_NO"].ToString());
+                        TXNTRANS.TRANSLCD = getSLCD(oudr["CARR_NO"].ToString(),"");
                         if (TXNTRANS.TRANSLCD == "")
                         {
                             dupgrid.MESSAGE = "Please add  CARR_NO:(" + oudr["CARR_NO"].ToString() + ")/ Transporter,CARR_NAME:(" + oudr["CARR_NAME"].ToString() + ") in the SAPCODE from [Tax code link up With Party].";
@@ -336,7 +338,7 @@ namespace Improvar.Controllers
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C","");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = style;
                         TTXNDTL.MTRLJOBCD = "FS";
@@ -572,9 +574,10 @@ namespace Improvar.Controllers
             }
             return pcstype;
         }
-        private string getSLCD(string sapcode)
+        private string getSLCD(string sapcode, string gstno)
         {
-            sql = "select slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com where sapcode='" + sapcode + "'";
+            sql = "select a.slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com a," + CommVar.FinSchema(UNQSNO) + ".m_subleg b  where a.slcd=b.slcd and a.sapcode='" + sapcode + "'";
+            if (gstno != "") sql += " and b.gstno='" + gstno + "'";
             var dt = masterHelp.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
