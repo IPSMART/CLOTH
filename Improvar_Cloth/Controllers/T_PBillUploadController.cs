@@ -374,7 +374,6 @@ namespace Improvar.Controllers
                         TTXNDTL.GLCD = PURGLCD;
                         TTXNDTL.TXBLVAL = inrdr["NET_AMT"].retDbl(); txable += TTXNDTL.TXBLVAL.retDbl();
 
-                        double NET_AMT = ((TTXNDTL.TXBLVAL * (100 + gstper)) / 100).retDbl();
                         TTXNDTL.IGSTPER = inrdr["INTEGR_TAX"].retDbl();
                         TTXNDTL.CGSTPER = inrdr["CENT_TAX"].retDbl();
                         TTXNDTL.SGSTPER = inrdr["STATE_TAX"].retDbl();
@@ -382,9 +381,10 @@ namespace Improvar.Controllers
 
                         TTXNDTL.IGSTAMT = inrdr["INTEGR_AMT"].retDbl() - amttabigstamt; gstamt += TTXNDTL.IGSTAMT.retDbl();
                         TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.CGSTAMT.retDbl();
-                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();
+                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();                        
+                        //double NET_AMT = ((TTXNDTL.TXBLVAL * (100 + gstper)) / 100).retDbl();
+                        double NET_AMT = TTXNDTL.TXBLVAL.retDbl() + TTXNDTL.CGSTAMT.retDbl() + TTXNDTL.SGSTAMT.retDbl() + TTXNDTL.IGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
-
                         TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE).FirstOrDefault();
                         if (tmpTTXNDTL != null)
                         {
