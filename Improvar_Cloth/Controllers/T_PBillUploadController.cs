@@ -246,7 +246,7 @@ namespace Improvar.Controllers
                     TTXN.SLCD = getSLCD(CUSTOMERNO, GSTINPLANT); dupgrid.CUSTOMERNO = CUSTOMERNO;
                     if (TTXN.SLCD == "")
                     {
-                        dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") in the SAPCODE from [Tax code link up With Party].";
+                        dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") and GSTNO="+ GSTINPLANT + " in the SAPCODE from [Tax code link up With Party].";
                         DUGridlist.Add(dupgrid);
                         break;
                     }
