@@ -565,7 +565,7 @@ function UpdateBarCodeRow() {
                                         retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
                                         retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
                                          retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
-                                        retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
+                                        retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#GSTPER").val()) == retFloat($("#B_GSTPER_"+j).val()) &&
                                         retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
                                         retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) && retStr($("#PDESIGN").val()) == retStr($("#B_PDESIGN_" + j).val())) {
 
@@ -2091,7 +2091,7 @@ function AddBarCodeGrid() {
                      retStr(MTBARCODE) == retStr($("#B_MTBARCODE_" + j).val()) && retStr(ITCD) == retStr($("#B_ITCD_" + j).val()) &&
                      retStr(DISCTYPE) == retStr($("#B_DISCTYPE_" + j).val()) && retStr(TDDISCTYPE) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
                       retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
-                     retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
+                     retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat(TDDISCRATE) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat(GSTPER) == retFloat($("#B_GSTPER_"+j).val()) &&
                      retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
                      retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) && retStr(PDESIGN) == retStr($("#B_PDESIGN_" + j).val())) {
 
