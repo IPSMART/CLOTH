@@ -304,7 +304,7 @@ namespace Improvar.Controllers
                 VE.T_CNTRL_HDR = TCH;
                 VE = GetOutstInvoice(VE, VE.RETDEBSLCD, sl.AUTONO);
                 var TVCHBLADJ = DBF.T_VCH_BL_ADJ.Where(m => m.AUTONO == sl.AUTONO).ToList();
-                double TOT_bill_AMT =0, TOT_PRE_ADJ=0, TOT_ADJ = 0, TOT_BAL=0;
+                double TOT_bill_AMT = 0, TOT_PRE_ADJ = 0, TOT_ADJ = 0, TOT_BAL = 0;
                 foreach (var outs in VE.SLPYMTADJ)
                 {
                     var adjdet = TVCHBLADJ.Where(t => t.I_AUTONO == outs.I_AUTONO && t.I_SLNO == outs.I_SLNO).FirstOrDefault();
@@ -316,7 +316,7 @@ namespace Improvar.Controllers
                     }
                     TOT_bill_AMT += outs.AMT.retDbl(); TOT_PRE_ADJ += outs.PRE_ADJ_AMT.retDbl(); TOT_BAL += outs.BAL_AMT.retDbl();
                 }
-                VE.TOT_AMT = TOT_bill_AMT;VE.TOT_PRE_ADJ = TOT_PRE_ADJ;VE.TOT_ADJ = TOT_ADJ;VE.TOT_BAL = TOT_BAL;          
+                VE.TOT_AMT = TOT_bill_AMT; VE.TOT_PRE_ADJ = TOT_PRE_ADJ; VE.TOT_ADJ = TOT_ADJ; VE.TOT_BAL = TOT_BAL;
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
             return VE;
@@ -962,13 +962,14 @@ namespace Improvar.Controllers
                         {
                             for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
                             {
-                                if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null && VE.TTXNSLSMN[i].BLAMT != 0)
+                                if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null)
                                 {
                                     T_TXNSLSMN TTXNSLSMN = new T_TXNSLSMN();
                                     TTXNSLSMN.AUTONO = TBHDR.AUTONO;
                                     TTXNSLSMN.EMD_NO = TBHDR.EMD_NO;
                                     TTXNSLSMN.CLCD = TBHDR.CLCD;
                                     TTXNSLSMN.DTAG = TBHDR.DTAG;
+                                    TTXNSLSMN.SLNO = Convert.ToByte(VE.TTXNSLSMN[i].SLNO);
                                     TTXNSLSMN.SLMSLCD = VE.TTXNSLSMN[i].SLMSLCD;
                                     TTXNSLSMN.PER = VE.TTXNSLSMN[i].PER.retDbl();
                                     TTXNSLSMN.ITAMT = VE.TTXNSLSMN[i].ITAMT.retDbl();
@@ -987,10 +988,18 @@ namespace Improvar.Controllers
                         //if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
                         dbsql = masterHelp.InsVch_Hdr(TBHDR.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, null, null, "Y", null, trcd, "", "", "", currrt, "", "");
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
-                        dbsql = masterHelp.InsVch_Det(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, Convert.ToSByte(1), "D", "", TCH.SLCD,
+                        if (VE.TTXNPYMT != null)
+                        {
+                            for (int i = 0; i <= VE.TTXNPYMT.Count - 1; i++)
+                            {
+                                if (VE.TTXNPYMT[i].SLNO != 0 && VE.TTXNPYMT[i].AMT.retDbl() != 0)
+                                {
+                                    dbsql = masterHelp.InsVch_Det(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, Convert.ToSByte(1), "D", VE.TTXNPYMT[i].GLCD, TCH.SLCD,
                               VE.TOT_ADJ, "Rem", "", TCH.SLCD, 0, 0, 0);
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
 
                         dbsql = masterHelp.InsVch_Bl(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, "D",
                                 "", TCH.SLCD, "", "", "", Convert.ToSByte(1), VE.T_PYMT_AMT, "", "", "", "", "", 0, 0, "", "", VE.T_PYMT_AMT, "", "", "");
@@ -1116,11 +1125,11 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                    dbnotsave:;
+                dbnotsave:;
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                    dbok:;
+                dbok:;
                 }
                 catch (Exception ex)
                 {
