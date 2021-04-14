@@ -3737,7 +3737,7 @@ namespace Improvar.Controllers
                         propB.SetValue(TBATCHDTLobj, propA.GetValue(TBATCHDTLobjtemp, null), null);
                     }
                     TBATCHDTLobj.SLNO = (++MAXSLNO).retShort();
-                    if(VE.MergeBarItem == false)
+                    if (VE.MergeBarItem == false)
                     {
                         TBATCHDTLobj.TXNSLNO = (++MAXBLSLNO).retShort();
                     }
@@ -4483,7 +4483,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5084,11 +5084,11 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                         strblno = ""; strbldt = ""; strduedt = ""; strvtype = ""; strrefno = "";
-                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "PCN")
+                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "SR")
                         {
                             strvtype = "CN";
                         }
-                        else if (VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PDN")
+                        else if (VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "PR")
                         {
                             strvtype = "DN";
                         }
@@ -5489,7 +5489,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5497,7 +5497,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
