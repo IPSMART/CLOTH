@@ -197,7 +197,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-                
+
         public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
         {
             try
@@ -1390,7 +1390,7 @@ namespace Improvar.Controllers
                                 dr1["disc"] = strdsc;
                                 dr1["titdiscamt"] = (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["tddiscamt"]).retDbl();
                                 dr1["discamt"] = negamt == "Y" ? tbl.Rows[i]["discamt"].retDbl() * -1 : tbl.Rows[i]["discamt"].retDbl();
-                                double txblval = (tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl()- (tbl.Rows[i]["scmdiscamt"]).retDbl();
+                                double txblval = (tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl() - (tbl.Rows[i]["scmdiscamt"]).retDbl();
                                 dr1["txblval"] = (negamt == "Y" ? txblval.retDbl() * -1 : txblval.retDbl()).ToINRFormat();
 
                                 dr1["cgstdsp"] = flagi == true ? "IGST" : "CGST";
@@ -2715,7 +2715,14 @@ namespace Improvar.Controllers
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : (tbl.Rows[i]["qnty"]).retDbl();
-                                dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl() - tbl.Rows[i]["flagmtr"].retDbl();
+                                //dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl() - tbl.Rows[i]["flagmtr"].retDbl();
+                                if (VE.MENU_PARA == "PB")
+                                {
+                                    dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl();
+                                }
+                                else { //for bhura time of sales qnty=qnty-flagmtr
+                                    dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl() - tbl.Rows[i]["flagmtr"].retDbl();
+                                }
                                 dr1["flagmtr"] = tbl.Rows[i]["flagmtr"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
                                 string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());

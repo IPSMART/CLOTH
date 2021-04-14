@@ -2091,7 +2091,7 @@ namespace Improvar.Controllers
                     string trcd = "TR";
                     string revcharge = "";
                     string dr = ""; string cr = ""; int isl = 0; string strrem = "";
-                    double igst = 0; double cgst = 0; double sgst = 0; double cess = 0; double duty = 0; double dbqty = 0; double dbamt = 0; double dbcurramt = 0;
+                    double igst = 0; double cgst = 0; double sgst = 0; double cess = 0; double duty = 0; double dbqty = 0;double rdbqty=0; double dbamt = 0; double dbcurramt = 0;
                     double dbDrAmt = 0, dbCrAmt = 0;
                     blactpost = true; blgstpost = true;
                     /* string parglcd = "saldebglcd"*/
@@ -2867,7 +2867,8 @@ namespace Improvar.Controllers
 
                                 #endregion
 
-                                dbqty = dbqty - VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
+                                //dbqty = dbqty - VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
+                                rdbqty = rdbqty + VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
                                 igst = igst - VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl();
                                 cgst = cgst - VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl();
                                 sgst = sgst - VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl();
@@ -2882,6 +2883,7 @@ namespace Improvar.Controllers
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
+                    dbqty = dbqty - rdbqty;
                     isl = 1;
 
                     if (VE.TTXNAMT != null)

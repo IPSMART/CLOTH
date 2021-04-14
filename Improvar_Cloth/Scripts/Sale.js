@@ -1083,7 +1083,12 @@ function CalculateAmt_Details(i) {
     }
     else if (BLQNTY == 0) {
         //amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
-        amount = parseFloat(QNTY) * parseFloat(RATE);
+        if (MENU_PARA == "PB") {
+            amount = parseFloat(QNTY) * parseFloat(RATE);
+        }
+        else { //for bhura time of sales qnty=qnty-flagmtr
+            amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
+        }
     }
     else {
         amount = parseFloat(BLQNTY) * parseFloat(RATE);
