@@ -226,7 +226,7 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="sticky-cell" style="left:60px">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();HasChangeBarSale();" })
                                         </td>
                                         @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                         {
@@ -313,13 +313,13 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="PJBLDiv">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 6 } })
                                         </td>
                                         <td class="PJBLDiv">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="PJBLDiv">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12, autocomplete = "off" } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12, autocomplete = "off" } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -329,10 +329,10 @@
                                         @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                         {
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTPRICE, new { htmlAttributes = new { id = "B_LISTPRICE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#B_');" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTPRICE, new { htmlAttributes = new { id = "B_LISTPRICE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#B_');HasChangeBarSale();" } })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "B_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, onblur = "RateUpdate(" + i + ",'#B_');", onkeydown = "CopyLastDiscData(this.value,'NO','B_LISTDISCPER_','NO','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_LISTDISCPER_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "B_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, onblur = "RateUpdate(" + i + ",'#B_');HasChangeBarSale();", onkeydown = "CopyLastDiscData(this.value,'NO','B_LISTDISCPER_','NO','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_LISTDISCPER_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
@@ -342,7 +342,7 @@
                                         {
                                             <td class="">
                                                 @*@Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })*@
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, onblur = "RateUpdate(" + i + ",'#B_');" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, onblur = "RateUpdate(" + i + ",'#B_');HasChangeBarSale();" } })
                                             </td>
                                         }
 
