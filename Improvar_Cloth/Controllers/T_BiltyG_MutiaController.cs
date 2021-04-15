@@ -43,7 +43,7 @@ namespace Improvar.Controllers
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     //================= For Issue ================//
-                     List <DropDown_list1> ISSUE = new List<DropDown_list1>();
+                    List<DropDown_list1> ISSUE = new List<DropDown_list1>();
                     DropDown_list1 ISSUE1 = new DropDown_list1();
                     ISSUE1.text = "Issue";
                     ISSUE1.value = "D";
@@ -53,8 +53,8 @@ namespace Improvar.Controllers
                     ISSUE2.value = "C";
                     ISSUE.Add(ISSUE2);
                     VE.DropDown_list1 = ISSUE;
-                   // ================= For Issue ================//
-                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
+                    // ================= For Issue ================//
+                    string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
                         autoEntryWork[2] = autoEntryWork[2].Replace("$$$$$$$$", "&");
@@ -204,10 +204,10 @@ namespace Improvar.Controllers
                     VE.SLNM = subleg.SLNM;
                     VE.REGMOBILE = subleg.REGMOBILE.ToString();
                 }
-              
+
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
-                string Scm = CommVar.CurSchema(UNQSNO); 
+                string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,b.prefno,b.prefdt ";
                 str += " from " + Scm + ".T_BILTY a," + Scm + ".T_TXN b ";
@@ -216,24 +216,24 @@ namespace Improvar.Controllers
 
                 DataTable tbiltytbl = Master_Help.SQLquery(str);
                 VE.TBILTY = (from DataRow dr in tbiltytbl.Rows
-                               select new TBILTY()
-                               {
-                                   SLNO = Convert.ToInt16(dr["slno"]),
-                                   BLAUTONO = dr["blautono"].retStr(),
-                                   DRCR = dr["drcr"].retStr()==""?"": dr["drcr"].retStr(),
-                                   LRDT = dr["lrdt"].retDateStr(),
-                                   LRNO = dr["lrno"].retStr(),
-                                   BALENO = dr["baleno"].retStr(),
-                                   PREFNO= dr["prefno"].retStr(),
-                                   PREFDT = dr["prefdt"].retDateStr(),
-                                   BALEYR = dr["baleyr"].retStr()
-                               }).OrderBy(s => s.SLNO).ToList();
+                             select new TBILTY()
+                             {
+                                 SLNO = Convert.ToInt16(dr["slno"]),
+                                 BLAUTONO = dr["blautono"].retStr(),
+                                 DRCR = dr["drcr"].retStr() == "" ? "" : dr["drcr"].retStr(),
+                                 LRDT = dr["lrdt"].retDateStr(),
+                                 LRNO = dr["lrno"].retStr(),
+                                 BALENO = dr["baleno"].retStr(),
+                                 PREFNO = dr["prefno"].retStr(),
+                                 PREFDT = dr["prefdt"].retDateStr(),
+                                 BALEYR = dr["baleyr"].retStr()
+                             }).OrderBy(s => s.SLNO).ToList();
                 foreach (var q in VE.TBILTY)
                 {
                     VE.DRCR = q.DRCR;
-                   
+
                 }
-              
+
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
@@ -268,7 +268,7 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
         }
-        public ActionResult GetSubLedgerDetails(string val,string code)
+        public ActionResult GetSubLedgerDetails(string val, string code)
         {
             try
             {
@@ -297,19 +297,19 @@ namespace Improvar.Controllers
                 string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM", "BALEYR" };
                 GetPendig_Data = dv.ToTable(true, COL);
                 List<string> blautonos = new List<string>();
-                  
+
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
                                    select new TBILTY_POPUP
-                                        {
-                                            BLAUTONO = dr["autono"].retStr(),
-                                            LRNO = dr["lrno"].retStr(),
-                                            LRDT = dr["lrdt"].retDateStr(),
-                                            BALENO = dr["baleno"].retStr(),
-                                            PREFNO = dr["prefno"].retStr(),
-                                            PREFDT = dr["prefdt"].retDateStr(),
-                                            TRANSLNM = dr["TRANSLNM"].retStr(),
-                                            BALEYR = dr["BALEYR"].retStr(),
+                                   {
+                                       BLAUTONO = dr["autono"].retStr(),
+                                       LRNO = dr["lrno"].retStr(),
+                                       LRDT = dr["lrdt"].retDateStr(),
+                                       BALENO = dr["baleno"].retStr(),
+                                       PREFNO = dr["prefno"].retStr(),
+                                       PREFDT = dr["prefdt"].retDateStr(),
+                                       TRANSLNM = dr["TRANSLNM"].retStr(),
+                                       BALEYR = dr["BALEYR"].retStr(),
                                    }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                 if (VE.TBILTY != null)
                 {//checked when opend secone times.
@@ -318,20 +318,20 @@ namespace Improvar.Controllers
                     VE.TBILTY_POPUP.Where(x => selectedbill.Contains(x.BLAUTONO) && selectedbillbaleno.Contains(x.BALENO)).ForEach(e => e.Checked = true);
                 }
                 for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
-                    {
-                        VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
+                {
+                    VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
 
                 }
 
                 if (VE.TBILTY_POPUP.Count != 0)
-                    {
-                        VE.DefaultView = true;
-                        return PartialView("_T_BiltyG_Mutia_PopUp", VE);
-                    }
-                    else {
-                        VE.DefaultView = true;
-                        return Content("0");
-                    }
+                {
+                    VE.DefaultView = true;
+                    return PartialView("_T_BiltyG_Mutia_PopUp", VE);
+                }
+                else {
+                    VE.DefaultView = true;
+                    return Content("0");
+                }
             }
             catch (Exception ex)
             {
@@ -342,7 +342,8 @@ namespace Improvar.Controllers
         public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             try
-            { var gcs = Cn.GCS();var flag = false;
+            {
+                var gcs = Cn.GCS(); var flag = false;
                 List<string> baleno = new List<string>();
                 List<string> blautonos = new List<string>();
                 List<string> existingbale = new List<string>();
@@ -390,7 +391,7 @@ namespace Improvar.Controllers
                 {
                     VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
                 }
-            
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_BiltyG_Mutia_Main", VE);
@@ -401,7 +402,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-   public ActionResult DeleteRow(TransactionBiltyGMutiaEntry VE)
+        public ActionResult DeleteRow(TransactionBiltyGMutiaEntry VE)
         {
             try
             {
@@ -638,7 +639,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(),DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -741,12 +742,12 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                    dbnotsave:;
+                dbnotsave:;
                     transaction.Rollback();
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                    dbok:;
+                dbok:;
                 }
                 catch (Exception ex)
                 {

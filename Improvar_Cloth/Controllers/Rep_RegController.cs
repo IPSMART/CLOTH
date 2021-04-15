@@ -239,7 +239,7 @@ namespace Improvar.Controllers
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt,b.pageno,b.PAGESLNO,b.baleno  ";
+                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem  ";
 
                 query1 += " from ( ";
                 query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
@@ -397,7 +397,7 @@ namespace Improvar.Controllers
                     {
                         if (dtlsumm == "C") HC.GetPrintHeader(IR, "localcentral", "string", "c,5", "Local/;Central");
                         HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
-
+                        if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
 
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
@@ -516,6 +516,7 @@ namespace Improvar.Controllers
                                     dr["slnm"] = tbl.Rows[i]["nm"].ToString();
                                     dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 }
+                                if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") dr["docremoth"] = tbl.Rows[i]["docrem"].ToString();
                                 if (dtlsumm != "C") dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
                                 if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                 if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
