@@ -276,7 +276,7 @@ function FillBarcodeArea(str, Table, i) {
 
         $("#SHADE").val(returncolvalue(str, "SHADE"));
         $("#BALENO").val(returncolvalue(str, "BALENO"));
-        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
             $("#OURDESIGN").val(returncolvalue(str, "OURDESIGN"));
             $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
             $("#WPPRICEGEN").val(returncolvalue(str, "WPPRICEGEN"));
@@ -379,7 +379,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#SHADE").val($(FieldidStarting + "SHADE_" + i).val());
         $("#BARGENTYPETEMP").val($(FieldidStarting + "BARGENTYPE_" + i).val());
         $("#BALENO").val($(FieldidStarting + "BALENO_" + i).val());
-        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
             $("#OURDESIGN").val($(FieldidStarting + "OURDESIGN_" + i).val());
             $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
             $("#WPPRICEGEN").val($(FieldidStarting + "WPPRICEGEN_" + i).val());
@@ -416,7 +416,7 @@ function FillBarcodeArea(str, Table, i) {
             $("#CUTLENGTH").focus();
         }
         else {
-            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
                 if ($("#SYSCNFGCOMMONUNIQBAR").val() == "E" && $("#MNTNOURDESIGN").val() == "Y") {
                     $("#PDESIGN").focus();
                 }
@@ -660,7 +660,7 @@ function UpdateBarCodeRow() {
             $("#B_PRODGRPGSTPER_" + j).val($("#PRODGRPGSTPER").val());
             $("#B_SHADE_" + j).val($("#SHADE").val());
             $("#B_BALENO_" + j).val($("#BALENO").val());
-            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
                 $("#B_OURDESIGN_" + j).val($("#OURDESIGN").val());
                 $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
                 $("#B_WPPRICEGEN_" + j).val($("#WPPRICEGEN").val());
@@ -762,7 +762,7 @@ function ClearBarcodeArea(TAG) {
     var MNTNDISC1 = $("#MNTNDISC1").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
     ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP");
-    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN,WPPER,RPPER");
     }
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
@@ -2011,7 +2011,7 @@ function AddBarCodeGrid() {
     var RPPRICEGEN = "";
     var WPPER = "";
     var RPPER = "";
-    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         OURDESIGN = $("#OURDESIGN").val();
         PDESIGN = $("#PDESIGN").val();
         WPPRICEGEN = $("#WPPRICEGEN").val();
@@ -2164,7 +2164,7 @@ function AddBarCodeGrid() {
     if (MNTNBALE != "Y") {
         tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
     }
-    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+    if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
         tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
     }

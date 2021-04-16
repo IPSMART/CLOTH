@@ -1224,20 +1224,21 @@ function CalculateTotal(CallFrm) {
         //document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
     }
     debugger;
-    if (CallFrm != "PYMTGRID") {
-        var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
-        var CASHAMT = 0;
-        for (var a = 0; a <= GridRow - 1; a++) {
-            if ($("#P_PYMTTYPE_" + a).val() == "C") {
-                CASHAMT = retFloat($("#BLAMT").val()) - retFloat(CARDAMT);
-                $("#P_AMT_" + a).val(retFloat(CASHAMT).toFixed(2));
-                //$("#NETDUE").val(0.00);
-            }
-        }
-        $("#T_PYMT_AMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
-        $("#PAYAMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
-        T_PYMT_AMT = retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2);
-    }
+    //due amt auto update in payement cash
+    //if (CallFrm != "PYMTGRID") {
+    //    var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
+    //    var CASHAMT = 0;
+    //    for (var a = 0; a <= GridRow - 1; a++) {
+    //        if ($("#P_PYMTTYPE_" + a).val() == "C") {
+    //            CASHAMT = retFloat($("#BLAMT").val()) - retFloat(CARDAMT);
+    //            $("#P_AMT_" + a).val(retFloat(CASHAMT).toFixed(2));
+    //            //$("#NETDUE").val(0.00);
+    //        }
+    //    }
+    //    $("#T_PYMT_AMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
+    //    $("#PAYAMT").val(retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2));
+    //    T_PYMT_AMT = retFloat(retFloat(CARDAMT) + retFloat(CASHAMT)).toFixed(2);
+    //}
 
     //var aa = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
     document.getElementById("NETDUE").value = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);

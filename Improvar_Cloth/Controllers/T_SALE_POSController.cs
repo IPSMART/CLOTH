@@ -3950,6 +3950,8 @@ namespace Improvar.Controllers
                 RVH.TDT = retarr[1];
                 RVH.FDT = retarr[1];
                 RVH.DOCNO = retarr[2];
+                RVH.FDOCNO = retarr[2];
+                RVH.TDOCNO = retarr[2];
                 RVH.MENU_PARA = VE.MENU_PARA;
                 DataTable repformat = salesfunc.getRepFormat("CASHMEMO");
                 if(repformat != null && repformat.Rows.Count > 0)

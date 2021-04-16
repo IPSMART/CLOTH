@@ -164,7 +164,7 @@
                                             {
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
                                             }
-                                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
+                                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
                                             {
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].OURDESIGN, new { id = "B_OURDESIGN_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
