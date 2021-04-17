@@ -351,6 +351,8 @@ namespace Improvar.DataSets {
             
             private global::System.Data.DataColumn columnrecdt_code;
             
+            private global::System.Data.DataColumn columncompnm;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public DataTable1DataTable() {
@@ -674,6 +676,14 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn compnmColumn {
+                get {
+                    return this.columncompnm;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -745,7 +755,8 @@ namespace Improvar.DataSets {
                         string itgrpshortnm, 
                         string docno, 
                         string doconlyno, 
-                        string recdt_code) {
+                        string recdt_code, 
+                        string compnm) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         brcodeImage,
@@ -783,7 +794,8 @@ namespace Improvar.DataSets {
                         itgrpshortnm,
                         docno,
                         doconlyno,
-                        recdt_code};
+                        recdt_code,
+                        compnm};
                 rowDataTable1Row.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDataTable1Row);
                 return rowDataTable1Row;
@@ -842,6 +854,7 @@ namespace Improvar.DataSets {
                 this.columndocno = base.Columns["docno"];
                 this.columndoconlyno = base.Columns["doconlyno"];
                 this.columnrecdt_code = base.Columns["recdt_code"];
+                this.columncompnm = base.Columns["compnm"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -919,6 +932,8 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columndoconlyno);
                 this.columnrecdt_code = new global::System.Data.DataColumn("recdt_code", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnrecdt_code);
+                this.columncompnm = new global::System.Data.DataColumn("compnm", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncompnm);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1637,6 +1652,22 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string compnm {
+                get {
+                    try {
+                        return ((string)(this[this.tableDataTable1.compnmColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'compnm\' in table \'DataTable1\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDataTable1.compnmColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IsbrcodeImageNull() {
                 return this.IsNull(this.tableDataTable1.brcodeImageColumn);
             }
@@ -2065,6 +2096,18 @@ namespace Improvar.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void Setrecdt_codeNull() {
                 this[this.tableDataTable1.recdt_codeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IscompnmNull() {
+                return this.IsNull(this.tableDataTable1.compnmColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetcompnmNull() {
+                this[this.tableDataTable1.compnmColumn] = global::System.Convert.DBNull;
             }
         }
         

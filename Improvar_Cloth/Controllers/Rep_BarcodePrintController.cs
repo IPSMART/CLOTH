@@ -226,6 +226,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("partnm", typeof(string));
                 IR.Columns.Add("sizecd", typeof(string));
                 IR.Columns.Add("recdt_code", typeof(string));
+                IR.Columns.Add("compnm", typeof(string));
                 string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -280,6 +281,7 @@ namespace Improvar.Controllers
                             dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
                             dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
                             dr["sizecd"] = VE.BarcodePrint[i].SIZECD.retStr();
+                            dr["compnm"] = CommVar.CompName(UNQSNO);
                             IR.Rows.Add(dr);
                         }
                     }

@@ -57,7 +57,7 @@ namespace Improvar.Controllers
                     RT.Add(RT3);
                     VE.DropDown_list1 = RT;
                     VE.TEXTBOX1 = MasterHelp.ComboFill("TEXTBOX1", VE.DropDown_list1, 0, 1);
-
+                    VE.Checkbox1 = true;VE.Checkbox2 = true;
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -76,13 +76,13 @@ namespace Improvar.Controllers
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
                 bool showitems = false;
-                bool exldump = false, showdocno = false;
+                bool exldump = false, showdocno = false;bool viewItem = VE.Checkbox1; bool viewUom = VE.Checkbox2;
                 string selagslcd = "";
                 if (FC.AllKeys.Contains("slmslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["slmslcdvalue"].ToString());
 
                 string reptype = FC["Reptype"].retStr();
                 if (reptype == "D") { showitems = true; } else { exldump = true; showdocno = true; }
-
+              
 
                 //if (showdocno == false) sorton = "P";
 
@@ -121,8 +121,8 @@ namespace Improvar.Controllers
                 sql += "order by slnm,autono											";
                 if (reptype == "S")
                 {
-                    sql = "select a.slnm,sum(a.txblval) txblval,sum(a.blamt) blamt  from (" + sql + ") a ";
-                    sql += " group by a.slnm";
+                    sql = "select a.slno, a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd,sum(a.mult) mult,sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
+                    sql += " group by a.slnm,a.slno, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd ";
                     sql += " order by slnm";
                 }
 
@@ -150,9 +150,9 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "docno", "string", "c,20", "Doc No.");
 
                 }
-                HC.GetPrintHeader(IR, "itgrpcd", "string", "c,8", "Item cd");
-                HC.GetPrintHeader(IR, "itgrpnm", "string", "c,15", "Item Name");
-                HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
+               if(viewItem==true) HC.GetPrintHeader(IR, "itgrpcd", "string", "c,8", "Item cd");
+               if (viewItem == true) HC.GetPrintHeader(IR, "itgrpnm", "string", "c,15", "Item Name");
+               if (viewUom == true) HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
                 HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Qnty");
                 HC.GetPrintHeader(IR, "txblval", "double", "n,15,2", "Item Value");
                 HC.GetPrintHeader(IR, "blamt", "double", "n,15,2", "Bill Value");
@@ -181,23 +181,23 @@ namespace Improvar.Controllers
                     {
                         string chkval2fld = "autono";
                         //if (showdocno == false) chkval2fld = "slcd";
-                        chkval2 = tbl.Rows[i][chkval2fld].ToString();
+                        //chkval2 = tbl.Rows[i][chkval2fld].ToString();
 
-                        chkval = tbl.Rows[i][chkval2fld].ToString();
+                       // chkval = tbl.Rows[i][chkval2fld].ToString();
                         double pamt1 = 0, pamt2 = 0, pqnty = 0, pshrqnty = 0, pshblamt = 0, pshtxblval = 0;
                         scount++;
-                        while (tbl.Rows[i]["slmslcd"].ToString() == chkval1 && tbl.Rows[i]["autono"].ToString() == chkval2)
+                        while (tbl.Rows[i]["slmslcd"].ToString() == chkval1)//&& tbl.Rows[i]["autono"].ToString() == chkval2
                         {
                             string itcd = "";
                             // if (showitems == true && reptype == "D")
                             itcd = tbl.Rows[i]["itgrpcd"].ToString();
                             double iamt1 = 0, iamt2 = 0, iqnty = 0;
-                            while (tbl.Rows[i]["slmslcd"].ToString() == chkval1 && tbl.Rows[i]["autono"].ToString() == chkval2 && tbl.Rows[i]["itgrpcd"].ToString() == itcd)
+                            while (tbl.Rows[i]["slmslcd"].ToString() == chkval1 && tbl.Rows[i]["itgrpcd"].ToString() == itcd)//&& tbl.Rows[i]["autono"].ToString() == chkval2
                             {
                                 double txblval = tbl.Rows[i]["txblval"].retDbl() * tbl.Rows[i]["mult"].retDbl();
                                 double blamt = tbl.Rows[i]["blamt"].retDbl() * tbl.Rows[i]["mult"].retDbl();
                                 double qnty = 0;
-                                if (showitems == true) qnty = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["mult"].retDbl();
+                                qnty = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["mult"].retDbl();
                                 if (showdocno == true)
                                 {
                                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -208,9 +208,9 @@ namespace Improvar.Controllers
                                     }
                                     if (showitems == true) IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
                                     if (showitems == true) IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
-                                    IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i]["itgrpcd"].retStr();
-                                    IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i]["itgrpnm"].retStr();
-                                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i]["itgrpcd"].retStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i]["itgrpnm"].retStr();
+                                    if (viewUom == true) IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
                                     IR.Rows[rNo]["qnty"] = qnty;
 
                                 }
@@ -245,9 +245,9 @@ namespace Improvar.Controllers
                                     }
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
                                     IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
-                                    IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
-                                    IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
-                                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i - 1]["uomcd"].retStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
+                                    if (viewUom == true) IR.Rows[rNo]["uomcd"] = tbl.Rows[i - 1]["uomcd"].retStr();
                                     IR.Rows[rNo]["qnty"] = iqnty;
                                     IR.Rows[rNo]["txblval"] = iamt1;
                                     IR.Rows[rNo]["per"] = tbl.Rows[i - 1]["per"].retDbl();
