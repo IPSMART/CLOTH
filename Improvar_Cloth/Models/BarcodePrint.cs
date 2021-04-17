@@ -43,6 +43,8 @@ namespace Improvar.Models
         public string ITREM { get; set; }
         public string PARTNM { get; set; }
         public string SIZECD { get; set; }
+        public string UOMCD { get; set; }
+        public string QNTY { get; set; }
         
         public bool Checked { get; set; }
     }

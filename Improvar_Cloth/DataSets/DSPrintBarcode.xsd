@@ -52,6 +52,8 @@
               <xs:element name="doconlyno" msprop:Generator_ColumnVarNameInTable="columndoconlyno" msprop:Generator_ColumnPropNameInRow="doconlyno" msprop:Generator_ColumnPropNameInTable="doconlynoColumn" msprop:Generator_UserColumnName="doconlyno" type="xs:string" minOccurs="0" />
               <xs:element name="recdt_code" msprop:Generator_ColumnVarNameInTable="columnrecdt_code" msprop:Generator_ColumnPropNameInRow="recdt_code" msprop:Generator_ColumnPropNameInTable="recdt_codeColumn" msprop:Generator_UserColumnName="recdt_code" type="xs:string" minOccurs="0" />
               <xs:element name="compnm" msprop:Generator_ColumnVarNameInTable="columncompnm" msprop:Generator_ColumnPropNameInRow="compnm" msprop:Generator_ColumnPropNameInTable="compnmColumn" msprop:Generator_UserColumnName="compnm" type="xs:string" minOccurs="0" />
+              <xs:element name="uom" msprop:Generator_ColumnVarNameInTable="columnuom" msprop:Generator_ColumnPropNameInRow="uom" msprop:Generator_ColumnPropNameInTable="uomColumn" msprop:Generator_UserColumnName="uom" type="xs:string" minOccurs="0" />
+              <xs:element name="compcd" msprop:Generator_ColumnVarNameInTable="columncompcd" msprop:Generator_ColumnPropNameInRow="compcd" msprop:Generator_ColumnPropNameInTable="compcdColumn" msprop:Generator_UserColumnName="compcd" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
