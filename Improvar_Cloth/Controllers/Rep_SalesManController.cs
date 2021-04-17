@@ -323,8 +323,8 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["shtxblval"] = gshtxblval;
                 IR.Rows[rNo]["shblamt"] = gshblamt;
 
-                string pghdr1 = "Salesman wise " + " Report " + (reptype == "D" ? "[Detail]" : "[Register]") + "from " + fdt + " to " + tdt;
-                string repname = "Salesman wise " + (reptype == "D" ? "Detail" : "Register");
+                string pghdr1 = "Salesman wise " + " Report " + (reptype == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
+                string repname = "Salesman wise " + (reptype == "D" ? "Detail" : "Summary");
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;
