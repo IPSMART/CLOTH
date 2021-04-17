@@ -121,8 +121,8 @@ namespace Improvar.Controllers
                 sql += "order by slnm,autono											";
                 if (reptype == "S")
                 {
-                    sql = "select a.slno, a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd,sum(a.mult) mult,sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
-                    sql += " group by a.slnm,a.slno, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd ";
+                    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd,sum(a.mult) mult,sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
+                    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd ";
                     sql += " order by slnm";
                 }
 
