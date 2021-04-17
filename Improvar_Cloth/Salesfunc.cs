@@ -1308,7 +1308,7 @@ namespace Improvar
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
             sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
-            sql += "a.autono not in (select blautono from sd_snc2021.t_bale) and ";
+           // sql += "a.autono not in (select blautono from " + schema + ".t_bale) and ";
             sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ) a, ";
 
             sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";

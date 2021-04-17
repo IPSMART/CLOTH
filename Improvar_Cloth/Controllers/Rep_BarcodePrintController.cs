@@ -63,7 +63,7 @@ namespace Improvar.Controllers
                                            ITGRPNM = dr["ITGRPNM"].retStr(),
                                            FABITNM = dr["FABITNM"].retStr(),
                                            STYLENO = dr["itnm"].retStr(),
-                                           NOS = dr["barnos"].retStr(),
+                                           NOS = ((dr["uomcd"].retStr() == "MTR") && (dr["barnos"].retInt() == 1 || dr["barnos"].retInt() == 0) ? 1 : (dr["uomcd"].retStr() == "MTR") &&( dr["barnos"].retInt() != 1 || dr["barnos"].retInt() != 0) ? dr["barnos"].retInt(): dr["qnty"].retInt()).retStr(),
                                            WPRATE = dr["wprate"].retDbl(),
                                            CPRATE = dr["cprate"].retDbl(),
                                            RPRATE = dr["rprate"].retDbl(),
@@ -80,6 +80,8 @@ namespace Improvar.Controllers
                                            DOCDT = dr["docdt"].retStr(),
                                            PREFNO = dr["blno"].retStr(),
                                            PREFDT = dr["docdt"].retStr(),
+                                           UOMCD = dr["uomcd"].retStr(),
+                                           QNTY = dr["qnty"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
                                        }).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                     VE.DefaultView = true;
@@ -226,6 +228,10 @@ namespace Improvar.Controllers
                 IR.Columns.Add("partnm", typeof(string));
                 IR.Columns.Add("sizecd", typeof(string));
                 IR.Columns.Add("recdt_code", typeof(string));
+                IR.Columns.Add("compnm", typeof(string));
+                IR.Columns.Add("compcd", typeof(string));
+                IR.Columns.Add("uom", typeof(string));
+                IR.Columns.Add("qnty", typeof(string));
                 string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -280,6 +286,10 @@ namespace Improvar.Controllers
                             dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
                             dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
                             dr["sizecd"] = VE.BarcodePrint[i].SIZECD.retStr();
+                            dr["compnm"] = CommVar.CompName(UNQSNO);
+                            dr["compcd"] = CommVar.Compcd(UNQSNO);
+                            dr["qnty"] = VE.BarcodePrint[i].QNTY.retStr();
+                            dr["uom"] = VE.BarcodePrint[i].UOMCD.retStr();
                             IR.Rows.Add(dr);
                         }
                     }

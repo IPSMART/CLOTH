@@ -3909,7 +3909,7 @@ namespace Improvar.Controllers
                     switch (VE.MENU_PARA)
                     {
                         case "SBPCK":
-                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
+                            stkdrcr = "N"; blactpost = false; blgstpost = false; break;
                         case "SB":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SBDIR":
