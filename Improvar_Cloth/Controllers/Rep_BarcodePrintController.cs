@@ -63,7 +63,7 @@ namespace Improvar.Controllers
                                            ITGRPNM = dr["ITGRPNM"].retStr(),
                                            FABITNM = dr["FABITNM"].retStr(),
                                            STYLENO = dr["itnm"].retStr(),
-                                           NOS = ((dr["uomcd"].retStr() == "MTR") && (dr["barnos"].retInt() == 1 || dr["barnos"].retInt() == 0) ? 1 : (dr["uomcd"].retStr() == "MTR") &&( dr["barnos"].retInt() != 1 || dr["barnos"].retInt() != 0) ? dr["barnos"].retInt(): dr["qnty"].retInt()).retStr(),
+                                           NOS = (dr["barnos"].retInt() == 1 || dr["barnos"].retInt() == 0) ? (dr["uomcd"].retStr() == "MTR" ? "1" : dr["qnty"].retStr()) : dr["barnos"].retStr(),//if barno==0==1 then( uom==mtr then nos=1 otherwise nos=qnty)
                                            WPRATE = dr["wprate"].retDbl(),
                                            CPRATE = dr["cprate"].retDbl(),
                                            RPRATE = dr["rprate"].retDbl(),
@@ -114,7 +114,8 @@ namespace Improvar.Controllers
             sql += "a.fabitcd, e.itnm fabitnm from ";
 
             sql += "( select a.autono, to_number(" + (tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, ";
-            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
+            //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
+            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos ";
             sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : ".t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
             sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and ";
             if (autono.retStr() != "") sql += "a.autono in ('" + autono + "') and ";
@@ -134,7 +135,7 @@ namespace Improvar.Controllers
                         prccd = rppricecd; sqlals = "o"; break;
                 }
                 //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
-               sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
                 sql += "(select a.barno, a.prccd, a.effdt, ";
                 sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
                 sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
@@ -173,7 +174,7 @@ namespace Improvar.Controllers
             {
                 string sql = "select * from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
                 var dtsyscnfg = masterHelp.SQLquery(sql); string PRICEINCODE = "";
-                if (dtsyscnfg !=null &&dtsyscnfg.Rows.Count > 0)
+                if (dtsyscnfg != null && dtsyscnfg.Rows.Count > 0)
                 {
                     PRICEINCODE = dtsyscnfg.Rows[0]["PRICEINCODE"].retStr();
                 }
@@ -269,7 +270,7 @@ namespace Improvar.Controllers
                             var rpp = VE.BarcodePrint[i].RPRATE.retDbl();
                             dr["rprate"] = rpp.retInt().retStr();
                             dr["rprate_paisa"] = rpp.ToString("0.00");
-                            
+
                             dr["cprate_code"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["wprate_code"] = RateEncode(VE.BarcodePrint[i].WPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["rprate_code"] = RateEncode(VE.BarcodePrint[i].RPRATE.retDbl().retInt(), PRICEINCODE);
