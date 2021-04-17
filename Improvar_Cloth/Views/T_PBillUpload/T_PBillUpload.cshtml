@@ -7,9 +7,10 @@
 <script src="~/Scripts/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#btnExtractDBF').click(function () {
+        document.getElementById("filePurchase").accept = ".dbf";
+        $('#btnExtractFile').click(function () {
             if (window.FormData !== undefined) {
-                var fileUpload = $("#fileRaymondPurchaseDBF").get(0);
+                var fileUpload = $("#filePurchase").get(0);
                 var files = fileUpload.files;
                 var fileData = new FormData();
                 for (var i = 0; i < files.length; i++) {
@@ -46,6 +47,28 @@
     <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
         @if (Model != null && Model.STATUS == null)
         {
+            if (CommVar.ClientCode(Model.UNQSNO) == "LALF")
+            {
+                <div class="row">
+                    <div class="col-md-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_PYTHDR.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Ledger Details','SLCD','SLCD=slcd=1/SLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Ledger Details','SLCD','SLCD=slcd=1/SLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="SLCD_HELP" width="19px" height="16px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Sub Ledger Details','SLCD','SLCD=slcd=1/SLNM=slnm=0')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PartyName, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+            }
             <div class="row">
                 <div class="col-md-7">
                     <div class="editor-field" style="margin-top: 4px;">
@@ -55,12 +78,12 @@
                 </div>
                 <div class="col-md-8">
                     <div class="editor-field" style="margin-top: 4px;">
-                        <input type="file" id="fileRaymondPurchaseDBF" name="RaymondPurchaseDBF" required accept=".dbf" />
+                        <input type="file" id="filePurchase" name="filePurchase" required accept=".dbf" />
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="editor-field">
-                        <input id="btnExtractDBF" type="button" value="View Data" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                        <input id="btnExtractFile" type="button" value="View Data" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
                     </div>
                 </div>
             </div>
@@ -70,37 +93,36 @@
                 @*@Html.Partial("_T_PBillUpload_Bill")*@
             </div>
         </div>
-
-            <div class="row">
-                @if (Model != null && Model.DUpGrid != null)
-                {
-                    <table class="table table-bordered table-condensed">
-                        <caption><h2>Upload Status</h2></caption>
-                        <thead>
-                            <tr><th>CUSTOMERNO</th><th>BLNO</th><th>BLDT</th><th>TCSAMT</th><th>ROAMT</th><th>BLAMT</th><th>MESSAGE</th></tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.DUpGrid.Count; i++)
-                            {
-                                <tr>
-                                    <td>@Model.DUpGrid[i].CUSTOMERNO </td>
-                                    <td> @Model.DUpGrid[i].BLNO</td>
-                                    <td> @Model.DUpGrid[i].BLDT</td>
-                                    <td> @Model.DUpGrid[i].TCSAMT</td>
-                                    <td> @Model.DUpGrid[i].ROAMT</td>
-                                    <td> @Model.DUpGrid[i].BLAMT</td>
-                                    <td>@Model.DUpGrid[i].MESSAGE</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-                <h2>@Model.STATUS</h2>
-            </div>
-        </div>
-    <div class="container">
-        <div id="helpDIV">
-
+        <div class="row">
+            @if (Model != null && Model.DUpGrid != null)
+            {
+                <table class="table table-bordered table-condensed">
+                    <caption><h2>Upload Status</h2></caption>
+                    <thead>
+                        <tr><th>CUSTOMERNO</th><th>BLNO</th><th>BLDT</th><th>TCSAMT</th><th>ROAMT</th><th>BLAMT</th><th>MESSAGE</th></tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.DUpGrid.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.DUpGrid[i].CUSTOMERNO </td>
+                                <td> @Model.DUpGrid[i].BLNO</td>
+                                <td> @Model.DUpGrid[i].BLDT</td>
+                                <td> @Model.DUpGrid[i].TCSAMT</td>
+                                <td> @Model.DUpGrid[i].ROAMT</td>
+                                <td> @Model.DUpGrid[i].BLAMT</td>
+                                <td>@Model.DUpGrid[i].MESSAGE</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            <h2>@Model.STATUS</h2>
         </div>
     </div>
+                <div class="container">
+                    <div id="helpDIV">
+
+                    </div>
+                </div>
 }
