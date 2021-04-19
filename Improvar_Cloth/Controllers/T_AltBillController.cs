@@ -284,7 +284,7 @@ namespace Improvar.Controllers
 
                 VE.TAXABVAL = tDtl.TXBLVAL.retDbl();
                 VE.GSTPER = tDtl.IGSTPER.retDbl() + tDtl.CGSTPER.retDbl() + tDtl.SGSTPER.retDbl();
-                VE.IGSTPER = tDtl.IGSTPER.retDbl() + tDtl.CGSTAMT.retDbl() + tDtl.SGSTAMT.retDbl();
+                VE.IGSTPER = tDtl.IGSTPER.retDbl();
                 VE.TOTTAX = tDtl.IGSTAMT.retDbl() + tDtl.CGSTAMT.retDbl() + tDtl.SGSTAMT.retDbl();
                 VE.RoundOff = sl.ROYN == "Y" ? true : false;
                 VE.INC_RATE = sl.INCL_RATE == "Y".retStr() ? true : false;
