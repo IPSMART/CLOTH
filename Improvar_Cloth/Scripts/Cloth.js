@@ -136,7 +136,7 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     //RoundVal = RoundVal.padStart(2, '0');
     if (Rate < 10) Rate = 10 + Rate;
     var RoundAmt = retInt(RoundVal);
-    if (RoundAmt == 0) RoundAmt = 100;
+    if (RoundAmt == 0) return Rate; //RoundAmt = 100;
     var small = retInt(retInt(Rate / RoundAmt) * RoundAmt);
     var big = retInt(small + RoundAmt);
     if (ChrmType == "RD")//ROUND

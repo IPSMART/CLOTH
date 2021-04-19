@@ -762,7 +762,7 @@ namespace Improvar.Controllers
                                     PER = dr["PER"].retDbl(),
                                     ITAMT = dr["ITAMT"].retDbl(),
                                     BLAMT = dr["BLAMT"].retDbl(),
-                                    SLNO =Convert.ToByte( dr["SLNO"]),
+                                    SLNO = Convert.ToByte(dr["SLNO"]),
                                 }).ToList();
                 double S_T_GROSS_AMT = 0; double T_BILL_AMT = 0;
                 //c
@@ -2091,7 +2091,7 @@ namespace Improvar.Controllers
                     string trcd = "TR";
                     string revcharge = "";
                     string dr = ""; string cr = ""; int isl = 0; string strrem = "";
-                    double igst = 0; double cgst = 0; double sgst = 0; double cess = 0; double duty = 0; double dbqty = 0;double rdbqty=0; double dbamt = 0; double dbcurramt = 0;
+                    double igst = 0; double cgst = 0; double sgst = 0; double cess = 0; double duty = 0; double dbqty = 0; double rdbqty = 0; double dbamt = 0; double dbcurramt = 0;
                     double dbDrAmt = 0, dbCrAmt = 0;
                     blactpost = true; blgstpost = true;
                     /* string parglcd = "saldebglcd"*/
@@ -2398,6 +2398,9 @@ namespace Improvar.Controllers
                     }
 
                     bool recoexist = false;
+                    bool isNewBatch = false;
+                    string barno = "";
+                    string Action = "A", SqlCondition = "";
                     VE.BALEYR = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).Year.retStr();
                     if (VE.TsalePos_TBATCHDTL != null)
                     {
@@ -2475,45 +2478,72 @@ namespace Improvar.Controllers
                                 double mtrlcost = (((VE.TsalePos_TBATCHDTL[i].TXBLVAL + _amtdist) / VE.TsalePos_TBATCHDTL[i].QNTY) * VE.TsalePos_TBATCHDTL[i].QNTY).retDbl().toRound(2);
                                 double batchamt = (((VE.TsalePos_TBATCHDTL[i].TXBLVAL) / VE.TsalePos_TBATCHDTL[i].QNTY) * VE.TsalePos_TBATCHDTL[i].QNTY).retDbl().toRound();
 
-                                bool flagbatch = false;
-                                string barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL[i].ITCD, VE.TsalePos_TBATCHDTL[i].CLRBARCODE, VE.TsalePos_TBATCHDTL[i].SZBARCODE);
+                                //bool flagbatch = false;
+                                //string barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL[i].ITCD, VE.TsalePos_TBATCHDTL[i].CLRBARCODE, VE.TsalePos_TBATCHDTL[i].SZBARCODE);
+                                //sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where barno='" + barno + "'";
+                                //DataTable dt = masterHelp.SQLquery(sql);
+                                //if (dt.Rows.Count == 0)
+                                //{
+                                //    ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL[i].ITCD; goto dbnotsave;
+                                //}
+                                //sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
+                                //OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                                //if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                //if (recoexist == false) flagbatch = true;
+
+                                ////checking barno exist or not
+                                //string Action = "", SqlCondition = "";
+                                //if (VE.DefaultAction == "A")
+                                //{
+                                //    Action = VE.DefaultAction;
+                                //}
+                                //else
+                                //{
+                                //    sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL[i].SLNO + " and barno='" + barno + "' ";
+                                //    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                //    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                //    if (recoexist == true)
+                                //    {
+                                //        Action = "E";
+                                //        SqlCondition = "autono = '" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL[i].SLNO + " and barno='" + barno + "' ";
+                                //        flagbatch = true;
+                                //        barno = VE.TsalePos_TBATCHDTL[i].BARNO;
+                                //    }
+                                //    else
+                                //    {
+                                //        Action = "A";
+                                //    }
+                                //}
+                                isNewBatch = false;
+                                barno = "";
+                                Action = "A";
+                                SqlCondition = "";
+                                if (string.IsNullOrEmpty(VE.TsalePos_TBATCHDTL[i].BARNO))
+                                {
+                                    barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL[i].ITCD, VE.TsalePos_TBATCHDTL[i].CLRBARCODE, VE.TsalePos_TBATCHDTL[i].SZBARCODE);
+                                }
+                                else
+                                {
+                                    barno = VE.TsalePos_TBATCHDTL[i].BARNO;
+                                }
                                 sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where barno='" + barno + "'";
-                                DataTable dt = masterHelp.SQLquery(sql);
+                                var dt = masterHelp.SQLquery(sql);
                                 if (dt.Rows.Count == 0)
                                 {
                                     ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL[i].ITCD; goto dbnotsave;
                                 }
-                                sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
-                                OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
-                                if (recoexist == false) flagbatch = true;
-
-                                //checking barno exist or not
-                                string Action = "", SqlCondition = "";
-                                if (VE.DefaultAction == "A")
+                                sql = "Select BARNO from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
+                                OraCmd.CommandText = sql;
+                                using (var OraReco = OraCmd.ExecuteReader())
                                 {
-                                    Action = VE.DefaultAction;
+                                    if (OraReco.HasRows == false) { isNewBatch = true; Action = "A"; }
                                 }
-                                else
-                                {
-                                    sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL[i].SLNO + " and barno='" + barno + "' ";
-                                    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
-                                    if (recoexist == true)
-                                    {
-                                        Action = "E";
-                                        SqlCondition = "autono = '" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL[i].SLNO + " and barno='" + barno + "' ";
-                                        flagbatch = true;
-                                        barno = VE.TsalePos_TBATCHDTL[i].BARNO;
-                                    }
-                                    else
-                                    {
-                                        Action = "A";
-                                    }
-                                }
-                                if (flagbatch == true)
+
+                                if (isNewBatch == true)
                                 {
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
                                     T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
@@ -2719,45 +2749,70 @@ namespace Improvar.Controllers
                                 double batchamt = (((VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL) / VE.TsalePos_TBATCHDTL_RETURN[i].QNTY) * VE.TsalePos_TBATCHDTL_RETURN[i].QNTY).retDbl().toRound();
 
 
-                                bool flagbatch = false;
-                                string barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL_RETURN[i].ITCD, VE.TsalePos_TBATCHDTL_RETURN[i].CLRBARCODE, VE.TsalePos_TBATCHDTL_RETURN[i].SZBARCODE);
+                                //bool flagbatch = false;
+                                //string barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL_RETURN[i].ITCD, VE.TsalePos_TBATCHDTL_RETURN[i].CLRBARCODE, VE.TsalePos_TBATCHDTL_RETURN[i].SZBARCODE);
+                                //sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where barno='" + barno + "'";
+                                //DataTable dt = masterHelp.SQLquery(sql);
+                                //if (dt.Rows.Count == 0)
+                                //{
+                                //    ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL_RETURN[i].ITCD; goto dbnotsave;
+                                //}
+                                //sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
+                                //OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                                //if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                //if (recoexist == false) flagbatch = true;
+
+                                ////checking barno exist or not
+                                //string Action = "", SqlCondition = "";
+                                //if (VE.DefaultAction == "A")
+                                //{
+                                //    Action = VE.DefaultAction;
+                                //}
+                                //else
+                                //{
+                                //    sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and barno='" + barno + "' ";
+                                //    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                //    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                //    if (recoexist == true)
+                                //    {
+                                //        Action = "E";
+                                //        SqlCondition = "autono = '" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and barno='" + barno + "' ";
+                                //        flagbatch = true;
+                                //        barno = VE.TsalePos_TBATCHDTL_RETURN[i].BARNO;
+                                //    }
+                                //    else
+                                //    {
+                                //        Action = "A";
+                                //    }
+                                //}
+                                isNewBatch = false;
+                                barno = "";
+                                Action = "A";
+                                SqlCondition = "";
+                                if (string.IsNullOrEmpty(VE.TsalePos_TBATCHDTL_RETURN[i].BARNO))
+                                {
+                                    barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL_RETURN[i].ITCD, VE.TsalePos_TBATCHDTL_RETURN[i].CLRBARCODE, VE.TsalePos_TBATCHDTL_RETURN[i].SZBARCODE);
+                                }
+                                else
+                                {
+                                    barno = VE.TsalePos_TBATCHDTL_RETURN[i].BARNO;
+                                }
                                 sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where barno='" + barno + "'";
-                                DataTable dt = masterHelp.SQLquery(sql);
+                                var dt = masterHelp.SQLquery(sql);
                                 if (dt.Rows.Count == 0)
                                 {
                                     ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and itcd=" + VE.TsalePos_TBATCHDTL_RETURN[i].ITCD; goto dbnotsave;
                                 }
-                                sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
-                                OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
-                                if (recoexist == false) flagbatch = true;
-
-                                //checking barno exist or not
-                                string Action = "", SqlCondition = "";
-                                if (VE.DefaultAction == "A")
+                                sql = "Select BARNO from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
+                                OraCmd.CommandText = sql;
+                                using (var OraReco = OraCmd.ExecuteReader())
                                 {
-                                    Action = VE.DefaultAction;
+                                    if (OraReco.HasRows == false) { isNewBatch = true; Action = "A"; }
                                 }
-                                else
-                                {
-                                    sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and barno='" + barno + "' ";
-                                    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-
-                                    if (recoexist == true)
-                                    {
-                                        Action = "E";
-                                        SqlCondition = "autono = '" + TTXN.AUTONO + "' and slno = " + VE.TsalePos_TBATCHDTL_RETURN[i].SLNO + " and barno='" + barno + "' ";
-                                        flagbatch = true;
-                                        barno = VE.TsalePos_TBATCHDTL_RETURN[i].BARNO;
-                                    }
-                                    else
-                                    {
-                                        Action = "A";
-                                    }
-                                }
-                                if (flagbatch == true)
+                                if (isNewBatch == true)
                                 {
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
                                     T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
@@ -3954,7 +4009,7 @@ namespace Improvar.Controllers
                 RVH.TDOCNO = retarr[2];
                 RVH.MENU_PARA = VE.MENU_PARA;
                 DataTable repformat = salesfunc.getRepFormat("CASHMEMO");
-                if(repformat != null && repformat.Rows.Count > 0)
+                if (repformat != null && repformat.Rows.Count > 0)
                 {
                     RVH.TEXTBOX6 = repformat.Rows[0]["value"].retStr();
                 }
