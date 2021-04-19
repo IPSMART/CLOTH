@@ -112,7 +112,7 @@
         debugger;
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
-      
+
         if (GridId == "_T_SALE_POS_AMOUNT_GRID") {
             var A_NOS = retFloat($("#B_T_NOS").val());
             var B_QNTY = retFloat($("#B_T_QNTY").val());
@@ -211,7 +211,7 @@
             $("#ANETAMT_" + i).val(parseFloat(NET_AMT).toFixed(2));
 
         }
-       
+
         CalculateTotal();
     }
     function CalculateTotal() {
@@ -262,6 +262,7 @@
 </script>
 <script>
     function CalculateBlamt() {
+        debugger;
         var TOTTAX = 0;
         var TAXABVAL = retFloat($("#TAXABVAL").val());
         var GSTPER = retFloat($("#GSTPER").val());
@@ -274,7 +275,7 @@
         else {
             TOTTAX = retFloat((TAXABVAL * GSTPER / 100).toFixed(2));
         }
-        
+
         $("#TOTTAX").val(TOTTAX);
         var blamt = 0;
         var RoundOfchk = document.getElementById("RoundOff").checked;
@@ -296,43 +297,16 @@
 </script>
 <script>
     function CalculateInclusiveRate() {
-        debugger;
+        debugger;// 50,000*18/118= Rs. 7627
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
-            var itemrate = 0;
-            var INCLRATE_ = retFloat($("#BLAMT").val());
-            //var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
-            //var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
-            var B_PRODGRPGSTPER_ = $("#GSTPER").val();
-            //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
-            var fromrt = 0, tort = 0, selrow = -1;
-            var mgstrate = [5];
-            var rtval = "0,0,0"; //igstper,cgst,sgst
-            var SP = String.fromCharCode(179);
-            var mrates = B_PRODGRPGSTPER_.split(SP);
-            for (var x = 0; x <= mrates.length - 1; x++) {
-                //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
-                mgstrate = mrates[x].split('~');
-                if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
-                if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
-                var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
-                //if (B_DISCRATE_ != 0) {
-                //    $("#B_GROSSAMT_" + i).val(tort);
-                //    var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
-                //    tmprt = tort - discamt;
-                //}
-                $("#TAXABVAL").val(tort);
-                tmprt = tmprt * (taxpercent + 100) / 100;
-                if (INCLRATE_ <= tmprt) {
-                    var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
-                    //var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
-                    //$("#TAXABVAL").val(itemrate);
-                    $("#GSTPER").val(taxpercent);
-                    break;
-                }
-            }
-            return itemrate;
-      
+        var itemrate = 0;
+        var INCLRATE = retFloat($("#BLAMT").val());
+        var GSTPER = retFloat($("#GSTPER").val());
+        var GSTamount = (INCLRATE * GSTPER / (100 + GSTPER));
+        var TAXABVAL = RoundOff((INCLRATE - GSTamount), 2);
+        $("#TAXABVAL").val(TAXABVAL);
+        CalculateBlamt();
     }
 </script>
 <script>
@@ -607,7 +581,7 @@
                 </div>
                 <div class="col-md-5">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", onclick = "CalculateInclusiveRate();",@style = "font-weight:bold;font-size:15px;text-align:right" } })
+                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", onblur = "CalculateInclusiveRate();", @style = "font-weight:bold;font-size:15px;text-align:right" } })
                     </div>
                 </div>
             </div>
@@ -623,12 +597,12 @@
                 </div>
                 <div class="tab-content">
                     @*<div id="Amount" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div id="partialdivAmounts" style="margin-top:0px;">
-                                @Html.Partial("_T_AltBill_AMOUNT")
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div id="partialdivAmounts" style="margin-top:0px;">
+                                    @Html.Partial("_T_AltBill_AMOUNT")
+                                </div>
                             </div>
-                        </div>
-                    </div>*@
+                        </div>*@
                     <div id="Payment" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div id="partialdivPayment" style="margin-top:0px;">
