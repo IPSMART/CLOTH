@@ -294,11 +294,11 @@
         }
     }
 </script>
-@*<script>
+<script>
     function CalculateInclusiveRate() {
-        debugger; var DefaultAction = $("#DefaultAction").val();
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
-       
             var itemrate = 0;
             var INCLRATE_ = retFloat($("#BLAMT").val());
             //var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
@@ -334,7 +334,7 @@
             return itemrate;
       
     }
-</script>*@
+</script>
 <script>
     function pageprinting() {
         debugger;
@@ -607,7 +607,7 @@
                 </div>
                 <div class="col-md-5">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", onclick = "CalculateInclusiveRate();",@style = "font-weight:bold;font-size:15px;text-align:right" } })
+                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", onclick = "CalculateInclusiveRate();",@style = "font-weight:bold;font-size:15px;text-align:right" } })
                     </div>
                 </div>
             </div>
