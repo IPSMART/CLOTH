@@ -49,7 +49,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
                     if (VE.MENU_PARA == "PJBL") reptype = "PJBILL";
-                    if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT") reptype = "";
+                    if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT") reptype = "CASHMEMO";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
                     if (repformat != null)
@@ -3583,6 +3583,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("portdesc", typeof(string), "");
                 IR.Columns.Add("finaldest", typeof(string), "");
                 IR.Columns.Add("bankinter", typeof(string), "");
+                IR.Columns.Add("barno", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -4150,33 +4151,20 @@ namespace Improvar.Controllers
                                     delvchrg = true;
                                 }
                                 if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
-                                //if (Convert.ToDouble(tbl.Rows[i]["nosinbag"]) != 0)
-                                //{
-                                //    double dbnopcks = Convert.ToDouble(tbl.Rows[i]["nosinbag"]) * Convert.ToDouble(tbl.Rows[i]["nos"]);
-                                //    itdsc = itdsc + "CLD: " + Convert.ToDouble(tbl.Rows[i]["nosinbag"]).ToString("0") + " NOPCKS: " + dbnopcks.ToString();
-                                //}
                                 if (itdsc == "" && CommVar.ClientCode(UNQSNO) == "RATN") itdsc = tbl.Rows[i]["itnm"].ToString();
-                                //if (tbl.Rows[i]["prodcd"].ToString() != "") itdsc = itdsc + "PCD: " + tbl.Rows[i]["prodcd"].ToString() + " ";
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
                                 if (tbl.Rows[i]["itcd"].ToString() != "") dr1["caltype"] = 1; else dr1["caltype"] = 0;
                                 dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
                                 dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
-                                //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
-                                //if (tbl.Rows[i]["damstock"].ToString() == "D")
-                                //{
-                                //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
-                                //}
-                                dr1["itdesc"] = itdsc;
-                                //dr1["bltophead"] = tbl.Rows[i]["bltophead"].ToString();
-                                //dr1["makenm"] = tbl.Rows[i]["makenm"].ToString();
-                                //dr1["mrp"] = tbl.Rows[i]["mrp"];
+                                //dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
+                                dr1["itnm"] = itdsc;
+                                //dr1["itdesc"] = itdsc;
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") dr1["batchdtl"] = "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
-                                //dr1["nos"] = tbl.Rows[i]["nos"].retDbl();
+                            
                                 dr1["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
-                                //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
+                           
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = negamt == "Y" ? tbl.Rows[i]["qnty"].retDbl() * -1 : tbl.Rows[i]["qnty"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
@@ -4357,6 +4345,7 @@ namespace Improvar.Controllers
                                 if (doctotprint == true && totalreadyprint == false)
                                 {
                                     dr1 = IR.NewRow();
+                                    dr1["menu_para"] = VE.MENU_PARA;
                                     dr1["autono"] = auto1 + copymode;
                                     dr1["copymode"] = copymode;
                                     dr1["docno"] = tbl.Rows[i]["docno"].ToString();
@@ -4403,7 +4392,7 @@ namespace Improvar.Controllers
                 string compfixlogosrc = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "fix.jpg";
                 string sendemailids = "";
                 string rptfile = "SaleBillHalf.rpt";
-                //if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
+                if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                                                  /* if (VE.maxdate == "CHALLAN")*/
                 blhead = "Stiching";

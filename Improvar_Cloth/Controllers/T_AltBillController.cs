@@ -899,6 +899,7 @@ namespace Improvar.Controllers
                     TTXNDTL.HSNCODE = VE.JOBHSNCODE;
                     TTXNDTL.GOCD = TTXN.GOCD;
                     TTXNDTL.TXBLVAL = VE.TAXABVAL; // IGSTPER
+                    TTXNDTL.ITREM = VE.JOBNM;
                     double GSTPER = 0, GSTAMT = 0; ;
                     if (VE.IGSTPER == 0)
                     {
