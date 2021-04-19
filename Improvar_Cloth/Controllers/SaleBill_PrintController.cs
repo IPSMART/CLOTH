@@ -4236,7 +4236,7 @@ namespace Improvar.Controllers
                                 dr1["sgstamt"] = negamt == "Y" ? (tbl.Rows[i]["sgstamt"]).retDbl() * -1 : (tbl.Rows[i]["sgstamt"]).retDbl();
                                 dr1["cessper"] = (tbl.Rows[i]["cessper"]).retDbl();
                                 dr1["cessamt"] = (tbl.Rows[i]["cessamt"]).retDbl();
-                                dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
+                                dr1["gstper"] =  (tbl.Rows[i]["gstper"]).retDbl();
                                 var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
                                 //totals

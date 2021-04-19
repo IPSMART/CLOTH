@@ -909,6 +909,7 @@ namespace Improvar.Controllers
                         TTXNDTL.SGSTAMT = GSTAMT;
                         TTXNDTL.CGSTPER = GSTPER;
                         TTXNDTL.SGSTPER = GSTPER;
+                        TTXNDTL.IGSTPER = 0;
                     }
                     else
                     {
@@ -916,6 +917,8 @@ namespace Improvar.Controllers
                         GSTAMT = (VE.TAXABVAL * GSTPER / 100).toRound(2);
                         TTXNDTL.IGSTAMT = GSTAMT;
                         TTXNDTL.IGSTPER = GSTPER;
+                        TTXNDTL.CGSTPER = 0;
+                        TTXNDTL.SGSTPER = 0;
                     }
                     igst = igst + Convert.ToDouble(TTXNDTL.IGSTAMT);
                     cgst = cgst + Convert.ToDouble(TTXNDTL.CGSTAMT);
@@ -1318,6 +1321,13 @@ namespace Improvar.Controllers
                         {
                             TVCHGST.BLDT = Convert.ToDateTime(strbldt);
                         }
+                        TVCHGST.HSNCODE = TTXNDTL.HSNCODE;
+                        TVCHGST.IGSTPER = TTXNDTL.IGSTPER.retDbl();
+                        TVCHGST.IGSTAMT = TTXNDTL.IGSTAMT.retDbl();
+                        TVCHGST.CGSTPER = TTXNDTL.CGSTPER.retDbl();
+                        TVCHGST.CGSTAMT = TTXNDTL.CGSTAMT.retDbl();
+                        TVCHGST.SGSTPER = TTXNDTL.SGSTPER.retDbl();
+                        TVCHGST.SGSTAMT = TTXNDTL.SGSTAMT.retDbl();
                         //TVCHGST.HSNCODE = VE.TsalePos_TBATCHDTL[i].HSNCODE;
                         //TVCHGST.ITNM = (VE.TsalePos_TBATCHDTL[i].ITNM.retStr() + " ").TrimStart(' ') + VE.TsalePos_TBATCHDTL[i].ITSTYLE;
                         //TVCHGST.AMT = VE.TsalePos_TBATCHDTL[i].TXBLVAL.retDbl();
