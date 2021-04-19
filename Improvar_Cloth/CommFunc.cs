@@ -212,7 +212,7 @@ namespace Improvar
             int RateDivisor = Convert.ToInt32("1" + "".PadLeft(RoundValLen, '0'));
             if (Rate < 10) Rate = 10 + Rate;
             int RoundAmt = RoundVal.retInt();
-            if (RoundAmt == 0) RoundAmt = 100;
+            if (RoundAmt == 0) return Rate;    //RoundAmt = 100;
             int small = ((Rate / RoundAmt) * RoundAmt);
             int big = small + RoundAmt;
             if (ChrmType == "RD")//ROUND
