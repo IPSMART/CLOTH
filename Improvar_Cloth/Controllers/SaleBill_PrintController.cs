@@ -3904,52 +3904,7 @@ namespace Improvar.Controllers
                             {
                                 dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
                             }
-
-
-
-
-
-                            //dr1["slcd"] = tbl.Rows[i]["slcd"].ToString();
-                            //dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                            //dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
-                            ////  string cfld = "", rfld = ""; int rf = 0;
-                            //for (int f = 1; f <= 6; f++)
-                            //{
-                            //    cfld = "sladd" + Convert.ToString(f).ToString();
-                            //    if (tbl.Rows[i][cfld].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                            //    }
-                            //}
-                            //rf = rf + 1;
-                            //rfld = "sladd" + Convert.ToString(rf);
-                            //dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
-                            //if (tbl.Rows[i]["gstno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "GST # " + tbl.Rows[i]["gstno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["panno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["phno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "Ph. # " + tbl.Rows[i]["phno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                            //}
+                            
 
                             // Consignee
                             cfld = ""; rfld = ""; rf = 0;
