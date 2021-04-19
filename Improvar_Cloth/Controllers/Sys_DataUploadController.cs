@@ -259,14 +259,35 @@ namespace Improvar.Controllers
                             fabitcd = FABITDet.ITCD;
                         }
                         ItemDet ItemDet = new ItemDet();
-                        if (BARGENTYPE == "E")
+                        var STYLEdt = (from g in DB.M_SITEM
+                                       join h in DB.M_GROUP on g.ITGRPCD equals h.ITGRPCD
+                                       join i in DB.T_BATCHMST on g.ITCD equals i.ITCD
+                                       where (g.STYLENO == style)
+                                       select new
+                                       {
+                                           ITCD = g.ITCD,
+                                           PURGLCD = h.PURGLCD,
+                                           BARNO = i.BARNO,
+                                       }).FirstOrDefault();
+                        if (STYLEdt != null)
                         {
-                            ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "", "F", BARGENTYPE, itnm);
+                            ItemDet.ITCD = STYLEdt.ITCD;
+                            ItemDet.PURGLCD = STYLEdt.PURGLCD;
+                            ItemDet.BARNO = STYLEdt.BARNO;
                         }
                         else
                         {
-                            ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
+                            return "Please add style:(" + style + ") at m_sitem. " + msg;
                         }
+
+                        //if (BARGENTYPE == "E")
+                        //{
+                        //    ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "", "F", BARGENTYPE, itnm);
+                        //}
+                        //else
+                        //{
+                        //    ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
+                        //}
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = style + " " + itnm;
                         TTXNDTL.MTRLJOBCD = "FS";

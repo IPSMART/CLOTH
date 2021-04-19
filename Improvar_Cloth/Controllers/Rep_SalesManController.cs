@@ -57,7 +57,7 @@ namespace Improvar.Controllers
                     RT.Add(RT3);
                     VE.DropDown_list1 = RT;
                     VE.TEXTBOX1 = MasterHelp.ComboFill("TEXTBOX1", VE.DropDown_list1, 0, 1);
-
+                    VE.Checkbox1 = true;VE.Checkbox2 = true;
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -68,237 +68,274 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        //[HttpPost]
-        //public ActionResult Rep_SalesMan(FormCollection FC, ReportViewinHtml VE)
-        //{
-        //    try
-        //    {
-        //        string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-        //        fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
-        //        bool showitems = VE.Checkbox1;
+        [HttpPost]
+        public ActionResult Rep_SalesMan(FormCollection FC, ReportViewinHtml VE)
+        {
+            try
+            {
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
+                bool showitems = false;
+                bool exldump = false, showdocno = false;bool viewItem = VE.Checkbox1; bool viewUom = VE.Checkbox2;
+                string selagslcd = "";
+                if (FC.AllKeys.Contains("slmslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["slmslcdvalue"].ToString());
 
-        //        string selagslcd = "";
-        //        if (FC.AllKeys.Contains("slmslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["slmslcdvalue"].ToString());
+                string reptype = FC["Reptype"].retStr();
+                if (reptype == "D") { showitems = true; } else { exldump = true; showdocno = true; }
+              
 
-        //        string repon = FC["Reptype"].retStr();
-        //        bool exldump = VE.Checkbox2, showdocno = VE.Checkbox1; string agdsp = "Agent";
-        //        if (repon == "S") agdsp = "Sub Agent";
-        //        //if (showdocno == false) sorton = "P";
+                //if (showdocno == false) sorton = "P";
 
-        //        string sql = "";
-        //        sql = "";
-        //        sql += "select a.autono, a.slcd, d.docno, d.docdt, b.slnm, nvl(b.slarea,b.district) slarea, ";
-        //        if (showitems == true) sql += "a.itcd, f.itnm, f.styleno, f.uomcd, a.qnty, "; else sql += "'' itcd, '' itnm, '' styleno, '' uomcd, 0 qnty, ";
-        //        sql += "a.agslcd, c.slnm agslnm, nvl(c.slarea,c.district) agslarea, ";
-        //        sql += "(case when a.doctag in ('SB','SD') then 1 else -1 end) mult, ";
-        //        sql += "a.blamt, a.txblval from ";
+                string sql = "";
+                sql = "";
+                sql += "select a.autono, d.docno, d.docdt, a.slno, a.slmslcd, e.slnm, a.per, b.txblval, b.blamt, a.mult, ";
+                sql += "c.uomcd, c.itgrpnm,c.itgrpcd, c.qnty,	";
+                sql += "round((c.qnty*a.per)/100,3) shqnty, ";
+                sql += "round((b.txblval*a.per)/100,2)*a.mult shtxblval, round((b.blamt*a.per)/100,2)*a.mult shblamt from ";
+                sql += "											";
+                sql += "( select a.autono, a.slno, a.slmslcd, a.per, (case b.doctag when 'SB' then 1 else -1 end) mult, a.blamt ";
+                sql += "from " + scm + ".t_txnslsmn a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c ";
+                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and ";
+                sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
+                sql += "c.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ) a, ";
 
-        //        sql += "( select a.autono, b.slcd, " + (repon == "A" ? "c.agslcd" : "c.sagslcd") + " agslcd, b.doctag, b.blamt, sum(a.txblval) txblval ";
-        //        if (showitems == true) sql += ", a.itcd, sum(a.qnty) qnty ";
-        //        sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txnoth c, " + scm + ".t_cntrl_hdr d	";
-        //        sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and ";
-        //        sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
-        //        sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ";
-        //        sql += "group by a.autono, b.slcd, " + (repon == "A" ? "c.agslcd" : "c.sagslcd") + ", b.doctag, b.blamt ";
-        //        if (showitems == true) sql += ", a.itcd ";
-        //        sql += ") a, ";
-        //        sql += scmf + ".m_subleg b, " + scmf + ".m_subleg c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-        //        if (showitems == true) sql += ", " + scm + ".m_sitem f ";
-        //        sql += "where a.slcd=b.slcd(+) and a.agslcd=c.slcd(+) and a.autono=d.autono(+) and ";
-        //        if (selagslcd != "") sql += "a.agslcd in (" + selagslcd + ") and ";
-        //        if (showitems == true) sql += "a.itcd=f.itcd(+) and ";
-        //        sql += "d.doccd=e.doccd(+) and e.doctype in ('SBILD','SBILL','SRET','SMSCN','SMSDN','SBEXP','SBCMR','SBCM') ";
-        //        sql += "order by agslnm, agslcd, ";
-        //        if (sorton == "P") sql += "slnm, slcd, ";
-        //        if (showitems == true) sql += "styleno, itnm, itcd, ";
-        //        sql += "docdt, docno ";
+                sql += "( select a.autono, sum(case a.stkdrcr when 'C' then a.txblval else a.txblval*-1 end) txblval, b.blamt ";
+                sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c ";
+                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and ";
+                sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
+                sql += "c.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+                sql += "group by a.autono, b.blamt ) b, ";
 
-        //        DataTable tbl = MasterHelp.SQLquery(sql);
+                sql += "( select a.autono, b.uomcd, d.itgrpnm,d.itgrpcd, ";
+                sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 else 0 end) qnty, ";
+                sql += "sum(case a.stkdrcr when 'C' then a.txblval when 'D' then a.txblval*-1 else 0 end) txblval ";
+                sql += "from " + scm + ".t_txndtl a, " + scm + ".m_sitem b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_group d ";
+                sql += "where a.itcd=b.itcd(+) and b.itgrpcd=d.itgrpcd(+) and a.autono=c.autono(+) and ";
+                sql += "a.autono in (select autono from " + scm + ".t_txnslsmn) and ";
+                sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and ";
+                sql += "c.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+                sql += "group by a.autono, b.uomcd, d.itgrpnm,d.itgrpcd) c, ";
+                sql += "" + scm + ".t_cntrl_hdr d, " + scmf + ".m_subleg e ";
+                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and a.slmslcd=e.slcd(+) ";
+                if (selagslcd != "") sql += "a.slmslcd in (" + selagslcd + ") ";
+                sql += "order by slnm,autono											";
+                if (reptype == "S")
+                {
+                    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd,sum(a.mult) mult,sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
+                    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd ";
+                    sql += " order by slnm";
+                }
 
-        //        Int32 i = 0;
-        //        Int32 maxR = 0;
-        //        string chkval, chkval1 = "", chkval2 = "", gonm = "";
-        //        if (tbl.Rows.Count == 0)
-        //        {
-        //            return RedirectToAction("NoRecords", "RPTViewer");
-        //        }
+                DataTable tbl = MasterHelp.SQLquery(sql);
 
-        //        DataTable IR = new DataTable("mstrep");
+                Int32 i = 0;
+                Int32 maxR = 0;
+                string chkval, chkval1 = "", chkval2 = "", gonm = "";
+                if (tbl.Rows.Count == 0)
+                {
+                    return RedirectToAction("NoRecords", "RPTViewer");
+                }
 
-        //        Models.PrintViewer PV = new Models.PrintViewer();
-        //        HtmlConverter HC = new HtmlConverter();
+                DataTable IR = new DataTable("mstrep");
 
-        //        HC.RepStart(IR, 3);
-        //        if (exldump == true) HC.GetPrintHeader(IR, "agslcd", "string", "c,8", agdsp + " Code");
-        //        if (exldump == true) HC.GetPrintHeader(IR, "agslnm", "string", "c,40", agdsp + " Name");
-        //        if (exldump == true) HC.GetPrintHeader(IR, "agslarea", "string", "c,15", agdsp + " Area");
-        //        if (showdocno == true) HC.GetPrintHeader(IR, "docno", "string", "c,20", "Bill No");
-        //        if (showdocno == true) HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Date");
-        //        HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party cd");
-        //        HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party Name");
-        //        HC.GetPrintHeader(IR, "slarea", "string", "c,15", "Area");
-        //        if (showitems == true)
-        //        {
-        //            HC.GetPrintHeader(IR, "itcd", "string", "c,8", "Item cd");
-        //            HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
-        //            HC.GetPrintHeader(IR, "styleno", "string", "c,15", "Style no");
-        //            HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Qnty");
-        //        }
-        //        HC.GetPrintHeader(IR, "txblval", "double", "n,15,2", "Item Value");
-        //        if (showitems == false) HC.GetPrintHeader(IR, "blamt", "double", "n,15,2", "Bill Amt");
+                Models.PrintViewer PV = new Models.PrintViewer();
+                HtmlConverter HC = new HtmlConverter();
 
-        //        Int32 rNo = 0;
-        //        double gamt1 = 0, gamt2 = 0, gqnty = 0;
-        //        // Report begins
-        //        i = 0; maxR = tbl.Rows.Count - 1;
-        //        int gcount = 0;
-        //        while (i <= maxR)
-        //        {
-        //            chkval1 = tbl.Rows[i]["agslcd"].ToString();
-        //            if (exldump == false)
-        //            {
-        //                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["agslcd"].retStr() + "  " + " </span>" + tbl.Rows[i]["agslnm"].retStr();
-        //                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
-        //            }
-        //            double agamt1 = 0, agamt2 = 0, aqnty = 0;
-        //            int scount = 0;
-        //            gcount++;
-        //            while (tbl.Rows[i]["agslcd"].ToString() == chkval1)
-        //            {
-        //                string chkval2fld = "autono";
-        //                if (sorton == "P" || showdocno == false) chkval2fld = "slcd";
-        //                chkval2 = tbl.Rows[i][chkval2fld].ToString();
+                HC.RepStart(IR, 3);
+                if (exldump == true || showitems == true) HC.GetPrintHeader(IR, "slmslcd", "string", "c,8", "Salesman Code");
+                if (exldump == true || showitems == true) HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Salesman Name");
+                if (showitems == true && reptype == "D")
+                {
+                    HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Date");
+                    HC.GetPrintHeader(IR, "docno", "string", "c,20", "Doc No.");
 
-        //                chkval = tbl.Rows[i][chkval2fld].ToString();
-        //                double pamt1 = 0, pamt2 = 0, pqnty = 0;
-        //                scount++;
-        //                while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i][chkval2fld].ToString() == chkval2)
-        //                {
-        //                    string itcd = "";
-        //                    if (showitems == true) itcd = tbl.Rows[i]["itcd"].ToString();
-        //                    double iamt1 = 0, iamt2 = 0, iqnty = 0;
-        //                    while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i][chkval2fld].ToString() == chkval2 && tbl.Rows[i]["itcd"].ToString() == itcd)
-        //                    {
-        //                        double txblval = tbl.Rows[i]["txblval"].retDbl() * tbl.Rows[i]["mult"].retDbl();
-        //                        double blamt = tbl.Rows[i]["blamt"].retDbl() * tbl.Rows[i]["mult"].retDbl();
-        //                        double qnty = 0;
-        //                        if (showitems == true) qnty = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["mult"].retDbl();
-        //                        if (showdocno == true)
-        //                        {
-        //                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //                            if (exldump == true)
-        //                            {
-        //                                IR.Rows[rNo]["agslcd"] = tbl.Rows[i]["agslcd"].retStr();
-        //                                IR.Rows[rNo]["agslnm"] = tbl.Rows[i]["agslnm"].retStr();
-        //                                IR.Rows[rNo]["agslarea"] = tbl.Rows[i]["agslarea"].retStr();
-        //                            }
-        //                            IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
-        //                            IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
-        //                            IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
-        //                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
-        //                            IR.Rows[rNo]["slarea"] = tbl.Rows[i]["slarea"].retStr();
-        //                            if (showitems == true)
-        //                            {
-        //                                IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].retStr();
-        //                                IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].retStr();
-        //                                IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].retStr();
-        //                                IR.Rows[rNo]["qnty"] = qnty;
-        //                            }
-        //                            IR.Rows[rNo]["txblval"] = txblval;
-        //                            if (showitems == false) IR.Rows[rNo]["blamt"] = blamt;
-        //                        }
-        //                        pamt1 = pamt1 + txblval; pamt2 = pamt2 + blamt; pqnty = pqnty + qnty;
-        //                        iamt1 = iamt1 + txblval; iamt2 = iamt2 + blamt; iqnty = iqnty + qnty;
-        //                        i++;
-        //                        if (i > maxR) break;
-        //                    }
-        //                    if (showitems == true)
-        //                    {
-        //                        if (showdocno == false && exldump == false)
-        //                        {
-        //                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //                            if (exldump == true)
-        //                            {
-        //                                IR.Rows[rNo]["agslcd"] = tbl.Rows[i - 1]["agslcd"].retStr();
-        //                                IR.Rows[rNo]["agslnm"] = tbl.Rows[i - 1]["agslnm"].retStr();
-        //                                IR.Rows[rNo]["agslarea"] = tbl.Rows[i - 1]["agslarea"].retStr();
-        //                            }
-        //                            IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
-        //                            IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
-        //                            IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
-        //                            IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].retStr();
-        //                            IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itnm"].retStr();
-        //                            IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].retStr();
-        //                            IR.Rows[rNo]["qnty"] = iqnty;
-        //                            IR.Rows[rNo]["txblval"] = iamt1;
-        //                        }
-        //                    }
-        //                    if (i > maxR) break;
-        //                }
-        //                if ((showdocno == true && sorton == "P" && exldump == false) || showitems == true)
-        //                {
-        //                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //                    IR.Rows[rNo]["dammy"] = "";
-        //                    IR.Rows[rNo]["slnm"] = "Total of [" + tbl.Rows[i - 1]["slnm"] + "] ";
-        //                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-        //                    if (showitems == true) IR.Rows[rNo]["qnty"] = pqnty;
-        //                    IR.Rows[rNo]["txblval"] = pamt1;
-        //                    if (showitems == false) IR.Rows[rNo]["blamt"] = pamt2;
-        //                }
-        //                else if (showdocno == false && exldump == false)
-        //                {
-        //                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //                    if (exldump == true)
-        //                    {
-        //                        IR.Rows[rNo]["agslcd"] = tbl.Rows[i - 1]["agslcd"].retStr();
-        //                        IR.Rows[rNo]["agslnm"] = tbl.Rows[i - 1]["agslnm"].retStr();
-        //                        IR.Rows[rNo]["agslarea"] = tbl.Rows[i - 1]["agslarea"].retStr();
-        //                    }
-        //                    IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
-        //                    IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
-        //                    IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
-        //                    if (showitems == true) IR.Rows[rNo]["qnty"] = pqnty;
-        //                    IR.Rows[rNo]["txblval"] = pamt1;
-        //                    if (showitems == false) IR.Rows[rNo]["blamt"] = pamt2;
-        //                }
-        //                agamt1 = agamt1 + pamt1; agamt2 = agamt2 + pamt2; aqnty = aqnty + pqnty;
-        //                if (i > maxR) break;
-        //            }
-        //            if (exldump == false)
-        //            {
-        //                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //                if (showdocno == false) IR.Rows[rNo]["slcd"] = scount.retStr();
-        //                IR.Rows[rNo]["slnm"] = "Total of [" + tbl.Rows[i - 1]["agslnm"] + "] ";
-        //                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-        //                if (showitems == true) IR.Rows[rNo]["qnty"] = aqnty;
-        //                IR.Rows[rNo]["txblval"] = agamt1;
-        //                if (showitems == false) IR.Rows[rNo]["blamt"] = agamt2;
-        //            }
-        //            gamt1 = gamt1 + agamt1; gamt2 = gamt2 + agamt2; gqnty = gqnty + aqnty;
-        //            if (i > maxR) break;
-        //        }
-        //        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-        //        IR.Rows[rNo]["slcd"] = gcount.retStr();
-        //        IR.Rows[rNo]["slnm"] = "Grand Total";
-        //        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-        //        if (showitems == true) IR.Rows[rNo]["qnty"] = gqnty;
-        //        IR.Rows[rNo]["txblval"] = gamt1;
-        //        if (showitems == false) IR.Rows[rNo]["blamt"] = gamt2;
+                }
+               if(viewItem==true) HC.GetPrintHeader(IR, "itgrpcd", "string", "c,8", "Item cd");
+               if (viewItem == true) HC.GetPrintHeader(IR, "itgrpnm", "string", "c,15", "Item Name");
+               if (viewUom == true) HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
+                HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Qnty");
+                HC.GetPrintHeader(IR, "txblval", "double", "n,15,2", "Item Value");
+                HC.GetPrintHeader(IR, "blamt", "double", "n,15,2", "Bill Value");
+                if (showitems == true && reptype == "D") HC.GetPrintHeader(IR, "per", "double", "n,15,2", "Per");
+                HC.GetPrintHeader(IR, "shqnty", "double", "n,15,2", "Shared;Qnty");
+                HC.GetPrintHeader(IR, "shtxblval", "double", "n,15,2", "Shared;Item Value");
+                HC.GetPrintHeader(IR, "shblamt", "double", "n,15,2", "Shared;Bill Value");
+                Int32 rNo = 0;
+                double gamt1 = 0, gamt2 = 0, gqnty = 0, gshrqnty = 0, gshtxblval = 0, gshblamt = 0;
+                // Report begins
+                i = 0; maxR = tbl.Rows.Count - 1;
+                int gcount = 0;
+                while (i <= maxR)
+                {
+                    chkval1 = tbl.Rows[i]["slmslcd"].ToString();
+                    if (exldump == false)
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["slmslcd"].retStr() + "  " + " </span>" + tbl.Rows[i]["slnm"].retStr();
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    }
+                    double agamt1 = 0, agamt2 = 0, aqnty = 0, ashrqnty = 0, ashtxblval = 0, ashblamt = 0;
+                    int scount = 0;
+                    gcount++;
+                    while (tbl.Rows[i]["slmslcd"].ToString() == chkval1)
+                    {
+                        string chkval2fld = "autono";
+                        //if (showdocno == false) chkval2fld = "slcd";
+                        //chkval2 = tbl.Rows[i][chkval2fld].ToString();
 
-        //        string pghdr1 = agdsp + " Report " + (showdocno == true ? "[Detail]" : "") + "from " + fdt + " to " + tdt;
-        //        string repname = agdsp + (showdocno == true ? "Detail" : "");
-        //        PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
+                       // chkval = tbl.Rows[i][chkval2fld].ToString();
+                        double pamt1 = 0, pamt2 = 0, pqnty = 0, pshrqnty = 0, pshblamt = 0, pshtxblval = 0;
+                        scount++;
+                        while (tbl.Rows[i]["slmslcd"].ToString() == chkval1)//&& tbl.Rows[i]["autono"].ToString() == chkval2
+                        {
+                            string itcd = "";
+                            // if (showitems == true && reptype == "D")
+                            itcd = tbl.Rows[i]["itgrpcd"].ToString();
+                            double iamt1 = 0, iamt2 = 0, iqnty = 0;
+                            while (tbl.Rows[i]["slmslcd"].ToString() == chkval1 && tbl.Rows[i]["itgrpcd"].ToString() == itcd)//&& tbl.Rows[i]["autono"].ToString() == chkval2
+                            {
+                                double txblval = tbl.Rows[i]["txblval"].retDbl() * tbl.Rows[i]["mult"].retDbl();
+                                double blamt = tbl.Rows[i]["blamt"].retDbl() * tbl.Rows[i]["mult"].retDbl();
+                                double qnty = 0;
+                                qnty = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["mult"].retDbl();
+                                if (showdocno == true)
+                                {
+                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    if (exldump == true)
+                                    {
+                                        IR.Rows[rNo]["slmslcd"] = tbl.Rows[i]["slmslcd"].retStr();
+                                        IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
+                                    }
+                                    if (showitems == true) IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
+                                    if (showitems == true) IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i]["itgrpcd"].retStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i]["itgrpnm"].retStr();
+                                    if (viewUom == true) IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                                    IR.Rows[rNo]["qnty"] = qnty;
 
-        //        TempData[repname] = PV;
-        //        TempData[repname + "xxx"] = IR;
-        //        return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message);
-        //    }
-        //}
+                                }
+                                IR.Rows[rNo]["txblval"] = txblval;
+                                IR.Rows[rNo]["blamt"] = blamt;
+                                if (showitems == true)
+                                {
+
+                                    IR.Rows[rNo]["per"] = tbl.Rows[i]["per"].retDbl();
+                                }
+                                IR.Rows[rNo]["shqnty"] = tbl.Rows[i]["shqnty"].retDbl();
+                                IR.Rows[rNo]["shtxblval"] = tbl.Rows[i]["shtxblval"].retDbl();
+                                IR.Rows[rNo]["shblamt"] = tbl.Rows[i]["shblamt"].retDbl();
+                                pamt1 = pamt1 + txblval; pamt2 = pamt2 + blamt; pqnty = pqnty + qnty;
+                                pshrqnty = pshrqnty + tbl.Rows[i]["shqnty"].retDbl();
+                                pshblamt = pshblamt + tbl.Rows[i]["shblamt"].retDbl();
+                                pshtxblval = pshtxblval + tbl.Rows[i]["shtxblval"].retDbl();
+                                iamt1 = iamt1 + txblval; iamt2 = iamt2 + blamt; iqnty = iqnty + qnty;
+                                i++;
+                                if (i > maxR) break;
+                            }
+
+                            if (showitems == true)
+                            {
+                                if (showdocno == false && exldump == false)
+                                {
+                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    if (exldump == true)
+                                    {
+                                        IR.Rows[rNo]["slmslcd"] = tbl.Rows[i - 1]["slmslcd"].retStr();
+                                        IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+                                    }
+                                    IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
+                                    IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
+                                    if (viewItem == true) IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
+                                    if (viewUom == true) IR.Rows[rNo]["uomcd"] = tbl.Rows[i - 1]["uomcd"].retStr();
+                                    IR.Rows[rNo]["qnty"] = iqnty;
+                                    IR.Rows[rNo]["txblval"] = iamt1;
+                                    IR.Rows[rNo]["per"] = tbl.Rows[i - 1]["per"].retDbl();
+                                    IR.Rows[rNo]["shqnty"] = tbl.Rows[i - 1]["shqnty"].retDbl();
+                                    IR.Rows[rNo]["shtxblval"] = tbl.Rows[i - 1]["shtxblval"].retDbl();
+                                    IR.Rows[rNo]["shblamt"] = tbl.Rows[i - 1]["shblamt"].retDbl();
+                                }
+                            }
+                            if (i > maxR) break;
+                        }
+                        if (showitems == true && reptype == "D")
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["dammy"] = "";
+                            IR.Rows[rNo]["slnm"] = "Total of [" + tbl.Rows[i - 1]["slnm"] + "] ";
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                            //if (showitems == true && reptype == "D")
+                            IR.Rows[rNo]["qnty"] = pqnty;
+                            IR.Rows[rNo]["txblval"] = pamt1;
+                            IR.Rows[rNo]["blamt"] = pamt2;
+                            IR.Rows[rNo]["shqnty"] = pshrqnty;
+                            IR.Rows[rNo]["shtxblval"] = pshblamt;
+                            IR.Rows[rNo]["shblamt"] = pshtxblval;
+
+
+                        }
+                        else if (showdocno == false && exldump == false)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            if (exldump == true)
+                            {
+                                IR.Rows[rNo]["slmslcd"] = tbl.Rows[i - 1]["slmslcd"].retStr();
+                                IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+                            }
+                            // if (showitems == true && reptype == "D")
+                            IR.Rows[rNo]["qnty"] = pqnty;
+                            IR.Rows[rNo]["txblval"] = pamt1;
+                            IR.Rows[rNo]["blamt"] = pamt2;
+                            IR.Rows[rNo]["shqnty"] = pshrqnty;
+                            IR.Rows[rNo]["shtxblval"] = pshtxblval;
+                            IR.Rows[rNo]["shblamt"] = pshblamt;
+
+                        }
+                        agamt1 = agamt1 + pamt1; agamt2 = agamt2 + pamt2; aqnty = aqnty + pqnty; ashrqnty = ashrqnty + pshrqnty; ashtxblval = ashtxblval + pshtxblval; ashblamt = ashblamt + pshblamt;
+                        if (i > maxR) break;
+                    }
+                    //if (showitems == false)
+                    //{
+                    //    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    //    if (showitems == false) IR.Rows[rNo]["slmslcd"] = scount.retStr();
+                    //    IR.Rows[rNo]["slnm"] = "Total of [" + tbl.Rows[i - 1]["slnm"] + "] ";
+                    //    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                    //    if (showitems == true && reptype == "D") IR.Rows[rNo]["qnty"] = aqnty;
+                    //    IR.Rows[rNo]["txblval"] = agamt1;
+                    //    IR.Rows[rNo]["blamt"] = agamt2;
+                    //}
+                    gamt1 = gamt1 + agamt1; gamt2 = gamt2 + agamt2; gqnty = gqnty + aqnty;
+                    gshrqnty = gshrqnty + ashrqnty;
+                    gshtxblval = gshtxblval + ashtxblval;
+                    gshblamt = gshblamt + ashblamt;
+                    if (i > maxR) break;
+                }
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["slmslcd"] = gcount.retStr();
+                IR.Rows[rNo]["slnm"] = "Grand Total";
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                // if (showitems == true && reptype == "D")
+                IR.Rows[rNo]["qnty"] = gqnty;
+                IR.Rows[rNo]["txblval"] = gamt1;
+                //if (showitems == false)
+                IR.Rows[rNo]["blamt"] = gamt2;
+                IR.Rows[rNo]["shqnty"] = gshrqnty;
+                IR.Rows[rNo]["shtxblval"] = gshtxblval;
+                IR.Rows[rNo]["shblamt"] = gshblamt;
+
+                string pghdr1 = "Salesman wise " + " Report " + (reptype == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
+                string repname = "Salesman wise " + (reptype == "D" ? "Detail" : "Summary");
+                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
+
+                TempData[repname] = PV;
+                TempData[repname + "xxx"] = IR;
+                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+        }
     }
 }
