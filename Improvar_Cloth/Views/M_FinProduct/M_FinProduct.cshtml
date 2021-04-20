@@ -21,6 +21,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $("#SRC_FLAG").attr("readonly", false);
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#ITCD").attr("readonly", "readonly");
@@ -915,12 +916,25 @@
             else { <input type="hidden" id="fabitcdlinkcd" value="'A','S','P','Y','L','W','T'" /> }
             @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
             {<input type="hidden" id="fabitGrpcd" value="C" /> }
-
-
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
             @Html.HiddenFor(a => a.MENU_PARA)
             @Html.HiddenFor(a => a.STRPRICES)
+            @if (Model.DefaultAction == "V")
+            {
+                <div class="row" style="border: 2px groove;background-color:#bddbf5;margin-top: 5px;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                <label for="SrcFlagCaption">@Html.DisplayFor(model => model.SrcFlagCaption) </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="SRC_FLAG" class="form-control" placeholder="Flag" maxlength=20 />
+                        </div>
+                    </div>
+                </div>
+            }
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
                 <li><a data-toggle="tab" href="#Parts">Parts</a></li>
@@ -965,19 +979,19 @@
                                         @Html.Label("", "Copy from another")
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @*@Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
-                                        @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd');", @placeholder = "Code", maxlength = 10 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="editor-field">
-                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
-                                    </div>
-                                </div>
+                                            <div class="col-md-6">
+                                                <div class="editor-field">
+                                                    @*@Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
+                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
+                                                    @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd');", @placeholder = "Code", maxlength = 10 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="editor-field">
+                                                    <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
+                                                </div>
+                                            </div>
                             }
                             @*</div>*@
 
@@ -1237,11 +1251,11 @@
                                         @Html.Label("", "Pcs. Per Set")
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
-                                    </div>
-                                </div>
+                                            <div class="col-md-6">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                                </div>
+                                            </div>
                             }
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1328,9 +1342,9 @@
                             {
                                 @Html.HiddenFor(model => model.BarImages)
                                 <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
-                                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
-                                <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
-                                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+                                            <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                                            <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                                            <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
                             }
                         </div>
                     </div>
@@ -1343,78 +1357,78 @@
                                     @Html.Label("", "Product Image")
                                 </div>
                             </div>
-                            <div class="row" style="text-align:-webkit-center">
-                                @if (Model.UploadDOC != null)
-                                {
-                                    if (Model.UploadDOC.Count != 0)
-                                    {
-                                        if (Model.UploadDOC[0].DOC_FILE != null)
-                                        {
-                                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                                                <!-- Indicators -->
-                                                <ol class="carousel-indicators" style="bottom:0px;">
-                                                    @if (Model.UploadDOC.Count != 0)
+                                        <div class="row" style="text-align:-webkit-center">
+                                            @if (Model.UploadDOC != null)
+                                            {
+                                                if (Model.UploadDOC.Count != 0)
+                                                {
+                                                    if (Model.UploadDOC[0].DOC_FILE != null)
                                                     {
-                                                        for (int k = 0; k < Model.UploadDOC.Count; k++)
-                                                        {
-                                                            if (k == 0)
-                                                            {
-                                                                <li data-target="#myCarousel" data-slide-to="@k" class="active"></li>
-                                                            }
-                                                            else
-                                                            {
-                                                                <li data-target="#myCarousel" data-slide-to="@k"></li>
-                                                            }
-                                                        }
-                                                    }
-                                                </ol>
+                                                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                                            <!-- Indicators -->
+                                                            <ol class="carousel-indicators" style="bottom:0px;">
+                                                                @if (Model.UploadDOC.Count != 0)
+                                                                {
+                                                                    for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                                    {
+                                                                        if (k == 0)
+                                                                        {
+                                                                            <li data-target="#myCarousel" data-slide-to="@k" class="active"></li>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <li data-target="#myCarousel" data-slide-to="@k"></li>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </ol>
 
-                                                <!-- Wrapper for slides -->
-                                                <div class="carousel-inner">
-                                                    @if (Model.UploadDOC.Count != 0)
+                                                            <!-- Wrapper for slides -->
+                                                            <div class="carousel-inner">
+                                                                @if (Model.UploadDOC.Count != 0)
+                                                                {
+                                                                    for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                                    {
+                                                                        if (k == 0)
+                                                                        {
+                                                                            <div class="item active " style="height:225px">
+                                                                                <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                                                <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                                    <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <div class="item" style="height:225px">
+                                                                                <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                                                <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                                    <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+
+                                                                    }
+                                                                }
+                                                            </div>
+                                                            <!-- Left and right controls -->
+                                                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                                                <span class="glyphicon glyphicon-chevron-left"></span>
+                                                                <span class="sr-only">Previous</span>
+                                                            </a>
+                                                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                                                <span class="sr-only">Next</span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    else
                                                     {
-                                                        for (int k = 0; k < Model.UploadDOC.Count; k++)
-                                                        {
-                                                            if (k == 0)
-                                                            {
-                                                                <div class="item active " style="height:225px">
-                                                                    <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
-                                                                    <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
-                                                                        <p>@Model.UploadDOC[k].DOC_DESC</p>
-                                                                    </div>
-                                                                </div>
-                                                            }
-                                                            else
-                                                            {
-                                                                <div class="item" style="height:225px">
-                                                                    <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
-                                                                    <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
-                                                                        <p>@Model.UploadDOC[k].DOC_DESC</p>
-                                                                    </div>
-                                                                </div>
-                                                            }
-
-                                                        }
+                                                        <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
                                                     }
-                                                </div>
-                                                <!-- Left and right controls -->
-                                                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                                                    <span class="glyphicon glyphicon-chevron-left"></span>
-                                                    <span class="sr-only">Previous</span>
-                                                </a>
-                                                <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                                                    <span class="glyphicon glyphicon-chevron-right"></span>
-                                                    <span class="sr-only">Next</span>
-                                                </a>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
-                                        }
-                                    }
-                                }
-                            </div>
+                                                }
+                                            }
+                                        </div>
                         }
                     </div>
 
@@ -1512,16 +1526,15 @@
 
 
         </div>
-
     }
     else
     {
-        @ViewBag.ErrorMessage
-    }
+                    @ViewBag.ErrorMessage
+                    }
 
-    <div class="container">
-        <div id="helpDIV">
+                    <div class="container">
+                        <div id="helpDIV">
 
-        </div>
-    </div>
-}
+                        </div>
+                    </div>
+                    }
