@@ -3294,7 +3294,7 @@ namespace Improvar.Controllers
                             null, dbqty, 0, dbcurramt);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-                        if (dr == "D") dbDrAmt = dbDrAmt + dbamt.retDbl();
+                        if (proddrcr == "D") dbDrAmt = dbDrAmt + dbamt.retDbl();
                         else dbCrAmt = dbCrAmt + dbamt.retDbl();
 
                         if (parclass1cd.retStr() != "" || class2cd.retStr() != "")
