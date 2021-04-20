@@ -7,7 +7,12 @@
 <script src="~/Scripts/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        document.getElementById("filePurchase").accept = ".dbf";
+        if ("@CommVar.Compcd(Model.UNQSNO)" == "LALF") {
+            document.getElementById("filePurchase").accept = ".xlsx";
+        }
+        else if ("@CommVar.Compcd(Model.UNQSNO)" == "BNBH") {
+            document.getElementById("filePurchase").accept = ".dbf";
+        }
         $('#btnExtractFile').click(function () {
             if (window.FormData !== undefined) {
                 var fileUpload = $("#filePurchase").get(0);
@@ -18,7 +23,7 @@
                 }
                 //fileData.append('username', ‘Manas’);
                 $.ajax({
-                    url: "@Url.Action("ExtractRaymondPurchaseDBF", PageControllerName)",
+                    url: "@Url.Action("ExtractPurchase", PageControllerName)",
                     type: "POST",
                     beforesend: $("#WaitingMode").show(),
                     contentType: false, // Not to set any content header
@@ -120,9 +125,9 @@
             <h2>@Model.STATUS</h2>
         </div>
     </div>
-                <div class="container">
-                    <div id="helpDIV">
+    <div class="container">
+        <div id="helpDIV">
 
-                    </div>
-                </div>
+        </div>
+    </div>
 }
