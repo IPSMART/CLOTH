@@ -44,7 +44,10 @@ namespace Improvar.Controllers
                     string com = CommVar.Compcd(UNQSNO);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-                    VE.FDT = CommVar.FinStartDate(UNQSNO); VE.TDT = CommVar.CurrDate(UNQSNO);
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
+                    VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
+                    VE.FDT = CommVar.CurrDate(UNQSNO);     //CommVar.FinStartDate(UNQSNO);
+                    VE.TDT = CommVar.CurrDate(UNQSNO);
                     //=========For Report Type===========//
                     List<DropDown_list1> RT = new List<DropDown_list1>();
                     if (VE.MENU_PARA == "SB")
@@ -165,12 +168,12 @@ namespace Improvar.Controllers
                 string itgrpcd = "";
 
                 //string reptype = FC["reptype"].ToString();
-                string selslcd = "", unselslcd = "", selloccd = "";
+                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "";
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
                 if (FC.AllKeys.Contains("ITGRPCDvalue")) itgrpcd = CommFunc.retSqlformat(FC["ITGRPCDvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) selloccd = FC["loccdvalue"].retSqlformat();
-
+                if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
                 string txntag = "", doctype = ""; string regdsp = "";
                 txntag = "SALES";
                 if (VE.TEXTBOX7.retStr() != "")
@@ -232,8 +235,8 @@ namespace Improvar.Controllers
                 query = "";
 
                 string query1 = "";
-                query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt, ";
-                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
+                query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt,h.agslcd, ";
+                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
                 query1 += " nvl(a.tcsamt, 0) tcsamt, a.blamt, ";
                 query1 += "   b.slno, b.itcd, ";
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
@@ -281,11 +284,12 @@ namespace Improvar.Controllers
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
                 query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, ";
-                query1 += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k  ";
-                query1 += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) ";
+                query1 += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l ";
+                query1 += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd ";
                 query1 += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+)  ";
                 if (selslcd != "") query1 += " and a.slcd in (" + selslcd + ") ";
                 if (unselslcd != "") query1 += " and a.slcd not in (" + unselslcd + ") ";
+                if (selagslcd != "") query1 += " and h.agslcd in (" + selagslcd + ") ";
                 if (doctype != "") query1 += " and j.doctype in(" + doctype + ") ";
                 query1 += "order by ";
                 if (repsorton == "partywise") query1 += "slcd,prefdt,prefno,docdt,docno";
@@ -375,7 +379,9 @@ namespace Improvar.Controllers
                     if (itmdtl == true)
                     {
                         //HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name;Item Name");
-                        HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party;Name");
+                        HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party;Name");
+                        HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
+                        HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent;Name");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
 
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
@@ -396,7 +402,9 @@ namespace Improvar.Controllers
                     else
                     {
                         if (dtlsumm == "C") HC.GetPrintHeader(IR, "localcentral", "string", "c,5", "Local/;Central");
-                        HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
+                        HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party; Name");
+                        if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
+                        if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
 
@@ -511,8 +519,14 @@ namespace Improvar.Controllers
                                 string locacent = "Local";
                                 if (bigstamt != 0) locacent = "Central";
                                 if (dtlsumm == "C") dr["localcentral"] = locacent;
-                                if (VE.TEXTBOX1 != "Sales Cash Memo") dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                                else {
+                                if (VE.TEXTBOX1 != "Sales Cash Memo")
+                                {
+                                    dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                                    if (dtlsumm != "C") dr["slarea"] = tbl.Rows[i]["slarea"].ToString();
+                                    if (dtlsumm != "C") dr["agslnm"] = tbl.Rows[i]["agslnm"].ToString();
+                                }
+                                else
+                                {
                                     dr["slnm"] = tbl.Rows[i]["nm"].ToString();
                                     dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 }

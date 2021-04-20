@@ -69,7 +69,7 @@ namespace Improvar.Controllers
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = masterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
 
-                    if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR")
+                    if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR"|| VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT")
                     {
                         VE.TEXTBOX10 = "2";
                     }
@@ -3256,6 +3256,12 @@ namespace Improvar.Controllers
         {
             try
             {
+                if (VE.TEXTBOX10.retInt() == 0) VE.TEXTBOX10 = "1";
+                copyno = new string[VE.TEXTBOX10.retInt()];
+                for (int a = 0; a <= copyno.Length - 1; a++)
+                {
+                    copyno[a] = "Y";
+                }
                 string menupara = VE.MENU_PARA;
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -3642,7 +3648,7 @@ namespace Improvar.Controllers
                     default: blhead = ""; break;
                 }
 
-                Int16 maxCopy = 5;
+                int maxCopy = VE.TEXTBOX10.retInt() - 1;
 
                 while (i <= maxR)
                 {
