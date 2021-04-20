@@ -3941,13 +3941,13 @@ namespace Improvar.Controllers
                         case "PJBL":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SCN":
-                            stkdrcr = "N"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "SDN":
-                            stkdrcr = "N"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "PCN":
-                            stkdrcr = "N"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "PDN":
-                            stkdrcr = "N"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                     }
 
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
