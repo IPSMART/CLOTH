@@ -71,8 +71,8 @@ namespace Improvar.Controllers
                 sql += " from " + scm + ".t_txn a ," + scm + ".t_txndtl b, " + scm + ".t_txnoth c, " + scm + ".M_SITEM d, " + scmf + ".M_SUBLEG e, " + scmf + ".M_SUBLEG f," + scm + ".t_cntrl_hdr g  ";
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and b.itcd = d.itcd and a.slcd = e.slcd(+) and c.mutslcd=f.slcd(+)and  a.autono=g.autono and a.doccd in('SSPSL','SSBIL') ";
                 if (doccd.retStr() != "") sql += "and a.doccd in("+doccd+") ";
-                if (fdt != "") sql += "and a.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
-                if (tdt != "") sql += "and a.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                if (fdt.retStr() != "") sql += "and a.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
+                if (tdt.retStr() != "") sql += "and a.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
                 if (selslcd.retStr() != "") sql += "and a.slcd in(" + selslcd + ") ";
                 if (porter.retStr() != "") sql += "and c.mutslcd in(" + porter + ") ";
                 sql += "order by portercd,a.docdt,a.docno,partycd ";
@@ -91,8 +91,9 @@ namespace Improvar.Controllers
                 HC.RepStart(IR, 2);
                 HC.GetPrintHeader(IR, "docno", "string", "c,12", "Bill No.");
                 HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Bill Date");
-                HC.GetPrintHeader(IR, "partynm", "string", "c,25", "Part Name");
+                HC.GetPrintHeader(IR, "partynm", "string", "c,25", "Party Name");
                 HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
+                HC.GetPrintHeader(IR, "porternm", "string", "c,25", "Porter Name");
                 HC.GetPrintHeader(IR, "noofcases", "double", "c,15", "NO OF PACKAGE");
                 HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
                 HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "QUANTITY");
@@ -109,6 +110,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
                     IR.Rows[rNo]["partynm"] = tbl.Rows[i]["partynm"].retStr();
                     IR.Rows[rNo]["slarea"] = tbl.Rows[i]["slarea"].retStr();
+                    IR.Rows[rNo]["porternm"] = tbl.Rows[i]["porternm"].retStr();
                     IR.Rows[rNo]["noofcases"] = tbl.Rows[i]["noofcases"].retDbl();
                     IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
                     IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
