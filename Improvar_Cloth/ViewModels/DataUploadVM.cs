@@ -9,6 +9,9 @@ namespace Improvar.ViewModels
 {
     public class DataUploadVM : Permission
     {
+        
+        public string SLCD { get; set; }
+        public string SLNM { get; set; }
         public string BLNO { get; set; }
         public string BLDT { get; set; }
         public List<DUpGrid> DUpGrid { get; set; }
