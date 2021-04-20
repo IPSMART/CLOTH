@@ -140,6 +140,7 @@ namespace Improvar.Controllers
                         }
 
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
+                        VE.SrcFlagCaption = "Design/Style";
                         if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
                         {
 
@@ -525,7 +526,7 @@ namespace Improvar.Controllers
             return VE;
         }
 
-        public ActionResult SearchPannelData()
+        public ActionResult SearchPannelData(string SRC_FLAG)
         {
             try
             {
@@ -545,8 +546,9 @@ namespace Improvar.Controllers
                 str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
                 str += "where a.barno = b.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
-                if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "'";
-                else str += " and e.itgrptype NOT IN ('F','C')";
+                if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "' ";
+                else str += " and e.itgrptype NOT IN ('F','C') ";
+                if (SRC_FLAG.retStr() != "") str += "and(upper(d.styleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
                 DataTable MDT = masterHelp.SQLquery(str);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
