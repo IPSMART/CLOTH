@@ -3943,11 +3943,11 @@ namespace Improvar.Controllers
                         case "PJBL":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SCN":
-                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
+                            stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "SDN":
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "PCN":
-                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
+                            stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "PDN":
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                     }
@@ -4944,6 +4944,16 @@ namespace Improvar.Controllers
                         string prodrem = strrem; expglcd = "";
                         if (VE.TTXNDTL != null)
                         {
+                            //var AMTGLCD = (from x in VE.TTXNDTL
+                            //               group x by new { x.GLCD, x.CLASS1CD } into P
+                            //               select new
+                            //               {
+                            //                   GLCD = P.Key.GLCD,
+                            //                   CLASS1CD = P.Key.CLASS1CD,
+                            //                   QTY = P.Sum(A => A.QNTY),
+                            //                   TXBLVAL = P.Sum(A => A.TXBLVAL)
+                            //               }).Where(a => a.QTY != 0).ToList();
+
                             var AMTGLCD = (from x in VE.TTXNDTL
                                            group x by new { x.GLCD, x.CLASS1CD } into P
                                            select new
@@ -4952,8 +4962,16 @@ namespace Improvar.Controllers
                                                CLASS1CD = P.Key.CLASS1CD,
                                                QTY = P.Sum(A => A.QNTY),
                                                TXBLVAL = P.Sum(A => A.TXBLVAL)
-                                           }).Where(a => a.QTY != 0).ToList();
+                                           }).ToList();
 
+                            if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                            {
+                                AMTGLCD = AMTGLCD.Where(a => a.TXBLVAL != 0).ToList();
+                            }
+                            else
+                            {
+                                AMTGLCD = AMTGLCD.Where(a => a.QTY != 0).ToList();
+                            }
                             if (AMTGLCD != null && AMTGLCD.Count > 0)
                             {
                                 for (int i = 0; i <= AMTGLCD.Count - 1; i++)
@@ -5345,14 +5363,14 @@ namespace Improvar.Controllers
                         }
                         else if (igst + cgst + sgst == 0)
                         {
-                            if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
-                            {
-                                ContentFlg = "Please enter tax % in Amount tab";
-                            }
-                            else
-                            {
-                                ContentFlg = "TAX amount not found. Please add tax with item.";
-                            }
+                            //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                            //{
+                            //    ContentFlg = "Please enter tax % in Amount tab";
+                            //}
+                            //else
+                            //{
+                            ContentFlg = "TAX amount not found. Please add tax with item.";
+                            //}
                             goto dbnotsave;
                         }
                     }

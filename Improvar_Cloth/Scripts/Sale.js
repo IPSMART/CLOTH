@@ -1077,6 +1077,7 @@ function CalculateAmt_Details(i) {
 
 
     //AMOUNT CALCULATION
+    debugger;
     var amount = 0;
     if (MENU_PARA == "SCN" || MENU_PARA == "SDN" || MENU_PARA == "PCN" || MENU_PARA == "PDN") {
         amount = parseFloat(RATE);
