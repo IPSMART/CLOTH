@@ -182,7 +182,11 @@ namespace Improvar.Controllers
                 mprc = DBF.M_PRCLST.Find(sl.PRCCD);
                 marea = DBF.M_AREACD.Find(sl.AREACD);
                 mDiscrt = DBF.M_DISCRT.Find(sl.DISCRTCD);
-
+                var subleg= DBF.M_SUBLEG.Find(sl.SLCD);
+                if (subleg != null)
+                {
+                    VE.GSTNO = subleg.GSTNO;
+                }
                 var Agent = DBF.M_SUBLEG.Find(sl.AGSLCD);
                 if (Agent != null)
                 {
@@ -418,7 +422,7 @@ namespace Improvar.Controllers
                                 return Content("1");
                             }
                         }
-                        str = i.SLCD + Cn.GCS() + i.SLNM;
+                        str = i.SLCD + Cn.GCS() + i.SLNM + Cn.GCS() + i.GSTNO;
                     }
                     return Content(str);
                 }
