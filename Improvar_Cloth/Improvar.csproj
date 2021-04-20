@@ -655,6 +655,12 @@
     <Compile Include="Models\USER_APPL.cs" />
     <Compile Include="Models\USER_GUIDE.cs" />
     <Compile Include="Models\V_SJOBMST_STDRT.cs" />
+    <Compile Include="Report\AltBill_Sachi.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AltBill_Sachi.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\CashMemo_Sachi.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1514,6 +1520,12 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_DIWH.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Report\AltBill_Sachi.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>AltBill_Sachi.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

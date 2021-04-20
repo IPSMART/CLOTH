@@ -49,7 +49,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
                     if (VE.MENU_PARA == "PJBL") reptype = "PJBILL";
-                    if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT") reptype = "CASHMEMO";
+                    if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT") reptype = "ALTBILL";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
                     if (repformat != null)
@@ -3725,7 +3725,9 @@ namespace Improvar.Controllers
                             if (GST_DATA != null && GST_DATA.Count > 0)
                             {
                                 foreach (var k in GST_DATA)
-                                {
+                                {if (k.IGSTAMT != 0) { dtldsc += "(+) IGST @ " + Cn.Indian_Number_format(k.IGSTPER.retStr(), "0.00") + " %~"; dtlamt += Convert.ToDouble(k.IGSTAMT).ToINRFormat() + "~"; }
+                                    if (k.CGSTAMT != 0) { dtldsc += "(+) CGST @ " + Cn.Indian_Number_format(k.CGSTPER.retStr(), "0.00") + " %~"; dtlamt += Convert.ToDouble(k.CGSTAMT).ToINRFormat() + "~"; }
+                                    if (k.SGSTAMT != 0) { dtldsc += "(+) SGST @ " + Cn.Indian_Number_format(k.SGSTPER.retStr(), "0.00") + " %~"; dtlamt += Convert.ToDouble(k.SGSTAMT).ToINRFormat() + "~"; }
                                     tpaymt = k.TPAMT.retDbl();
                                     tqnty = tqnty + Convert.ToDouble(k.TQNTY);
                                     tamt = tamt + Convert.ToDouble(k.TAMT);
@@ -3902,52 +3904,7 @@ namespace Improvar.Controllers
                             {
                                 dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
                             }
-
-
-
-
-
-                            //dr1["slcd"] = tbl.Rows[i]["slcd"].ToString();
-                            //dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                            //dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
-                            ////  string cfld = "", rfld = ""; int rf = 0;
-                            //for (int f = 1; f <= 6; f++)
-                            //{
-                            //    cfld = "sladd" + Convert.ToString(f).ToString();
-                            //    if (tbl.Rows[i][cfld].ToString() != "")
-                            //    {
-                            //        rf = rf + 1;
-                            //        rfld = "sladd" + Convert.ToString(rf);
-                            //        dr1[rfld] = tbl.Rows[i][cfld].ToString();
-                            //    }
-                            //}
-                            //rf = rf + 1;
-                            //rfld = "sladd" + Convert.ToString(rf);
-                            //dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
-                            //if (tbl.Rows[i]["gstno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "GST # " + tbl.Rows[i]["gstno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["panno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["phno"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = "Ph. # " + tbl.Rows[i]["phno"].ToString();
-                            //}
-                            //if (tbl.Rows[i]["slactnameof"].ToString() != "")
-                            //{
-                            //    rf = rf + 1;
-                            //    rfld = "sladd" + Convert.ToString(rf);
-                            //    dr1[rfld] = tbl.Rows[i]["slactnameof"].ToString();
-                            //}
+                            
 
                             // Consignee
                             cfld = ""; rfld = ""; rf = 0;
@@ -4234,7 +4191,7 @@ namespace Improvar.Controllers
                                 dr1["sgstamt"] = negamt == "Y" ? (tbl.Rows[i]["sgstamt"]).retDbl() * -1 : (tbl.Rows[i]["sgstamt"]).retDbl();
                                 dr1["cessper"] = (tbl.Rows[i]["cessper"]).retDbl();
                                 dr1["cessamt"] = (tbl.Rows[i]["cessamt"]).retDbl();
-                                dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
+                                dr1["gstper"] =  (tbl.Rows[i]["gstper"]).retDbl();
                                 var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
                                 //totals

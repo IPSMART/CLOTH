@@ -44,15 +44,17 @@
     }
 </script>
 <script>
-    function inputhelp(id, id1) {
+    function inputhelp(id, id1, id2) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
+        $("#" + id2.id).val(str[2].toString());
     }
-    function SelectSLCDCode(valu, fld1, fld2, code) {
+    function SelectSLCDCode(valu, fld1, fld2,fld3, code) {
         if (valu == "") {
             $("#" + fld1.id).val("");
             $("#" + fld2.id).val("");
+            $("#" + fld3.id).val("");
         }
         else {
             $.ajax({
@@ -69,6 +71,7 @@
                         $("#msgbody_info").html("Sub Ledger Code already exist !! ");
                         $("#" + fld1.id).val("");
                         $("#" + fld2.id).val("");
+                        $("#" + fld3.id).val("");
                         $("#btnok").focus();
                         message_value = fld1.id;
                     }
@@ -78,12 +81,13 @@
                         $("#msgbody_info").html(" Invalid SUB LEDGER Code !! ");
                         $("#" + fld1.id).val("");
                         $("#" + fld2.id).val("");
+                        $("#" + fld3.id).val("");
                         $("#btnok").focus();
                         message_value = fld1.id;
                     }
                     else {
                         $("#tempHDD").val(result);
-                        inputhelp(fld1, fld2);
+                        inputhelp(fld1, fld2, fld3);
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -385,8 +389,8 @@
                     <div class="editor-field">
                         @if (Model.DefaultAction == "A")
                         {
-                            @Html.EditorFor(model => model.M_SUBLEG_COM.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", maxlength = 10, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSLCDhelp", PageControllerName) + "','SLCD/SLNM','1/0','Sub Ledger details','SLCD','hslcd');", onblur = "SelectSLCDCode(this.value,SLCD,SLNM,'');", @placeholder = "Code" } })
-                            <img src="~/Image/search.png" width="20px" id="shlp" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSLCDhelp", PageControllerName)','SLCD/SLNM','1/0','Sub Ledger Details','SLCD','hslcd')" />
+                            @Html.EditorFor(model => model.M_SUBLEG_COM.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", maxlength = 10, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSLCDhelp", PageControllerName) + "','SLCD/SLNM/GSTNO','1/0/2','Sub Ledger details','SLCD','hslcd');", onblur = "SelectSLCDCode(this.value,SLCD,SLNM,GSTNO,'');", @placeholder = "Code" } })
+                            <img src="~/Image/search.png" width="20px" id="shlp" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSLCDhelp", PageControllerName)','SLCD/SLNM/GSTNO','1/0/2','Sub Ledger Details','SLCD','hslcd')" />
                         }
                         else
                         {
@@ -400,6 +404,11 @@
                         @Html.EditorFor(model => model.M_SUBLEG.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @placeholder = "Sub Ledger Name", @readonly = "readonly" } })
                     </div>
                 </div>
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", maxlength = 45, @placeholder = "GST NO", @readonly = "readonly" } })
+                    </div>
+                </div>
             </div>
 
             <div class="row">
@@ -410,7 +419,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.M_SUBLEG_COM.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", maxlength = 8, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSLCDhelp", PageControllerName) + "','AGSLCD/AGSLNM','1/0','Sub Ledger details','AGSLCD','agent');", onblur = "SelectSLCDCode(this.value,AGSLCD,AGSLNM,'A');", @placeholder = "Code" } })
+                        @Html.EditorFor(model => model.M_SUBLEG_COM.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", maxlength = 8, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSLCDhelp", PageControllerName) + "','AGSLCD/AGSLNM','1/0','Sub Ledger details','AGSLCD','agent');", onblur = "SelectSLCDCode(this.value,AGSLCD,AGSLNM,'','A');", @placeholder = "Code" } })
                         <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSLCDhelp", PageControllerName)','AGSLCD/AGSLNM','1/0','Sub Ledger Details','AGSLCD','agent')" />
                     </div>
                 </div>
