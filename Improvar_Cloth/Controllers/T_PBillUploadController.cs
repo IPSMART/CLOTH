@@ -808,7 +808,7 @@ namespace Improvar.Controllers
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
                 TTXN.SLCD = VE.SLCD;
                 var stcode = VE.GSTNO.retStr().Substring(2); bool igstappl = false;
-                if (stcode == "19") igstappl = true;
+                if (stcode != "19") igstappl = true;
                 // freai j, pf=i,ins k
                 //string AMTCD_FREIGHT = DB.M_AMTTYPE.Where(m => m.CALCCODE == "J").FirstOrDefault()?.AMTCD;
                 //string AMTCD_INSURANCE = DB.M_AMTTYPE.Where(m => m.CALCCODE == "K").FirstOrDefault()?.AMTCD;
@@ -902,7 +902,7 @@ namespace Improvar.Controllers
                         TTXNDTL.UOM = "MTR";
                         TTXNDTL.QNTY = inrdr["QNTY"].retDbl(); // NET_QTY
                         TTXNDTL.NOS = 1;
-                        TTXNDTL.RATE = inrdr["TXBL"].retDbl();
+                        TTXNDTL.RATE = inrdr["TXBL"].retDbl().toRound(2);
                         TTXNDTL.AMT = inrdr["NETVALUE"].retDbl();
                         //TTXNDTL.FLAGMTR = null;
                         //string grade = inrdr["GRADATION"].ToString();
@@ -921,13 +921,13 @@ namespace Improvar.Controllers
                         //TTXNDTL.SCMDISCRATE = discamt1;
                         //TTXNDTL.SCMDISCAMT = discamt1;
                         TTXNDTL.GLCD = PURGLCD;
-                        TTXNDTL.TXBLVAL = inrdr["TXBL"].retDbl();
+                        TTXNDTL.TXBLVAL = TTXNDTL.RATE;
                         txable += TTXNDTL.TXBLVAL.retDbl();
                         double gstper = inrdr["TAXPER"].retDbl();
                         double igstper = 0;
                         double cgstper = 0;
                         double sgstper = 0;
-                        double itmgstamt = inrdr["TAXAMT"].retDbl();// 0; 
+                        double itmgstamt = inrdr["TAXAMT"].retDbl().toRound(2);
                         if (igstappl)
                         {
                             TTXNOTH.TAXGRPCD = "C001";
