@@ -8,25 +8,20 @@
 }
 <script src="~/Scripts/jquery.min.js"></script>
 <script type="text/javascript">
-    $(document).ready(function ()
-    {
-        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
-        {
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
         }
-        else if ("@Model.DefaultAction" == "E")
-        {
+        else if ("@Model.DefaultAction" == "E") {
         }
-        else if ("@Model.DefaultAction" == "A")
-        {
+        else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
     });
 </script>
 <script>
-    function requiredFieldValidator()
-    {
+    function requiredFieldValidator() {
         if (!emptyFieldCheck("Enter Amount Type Name ", "AMTNM")) { return false; }
         if (!emptyFieldCheck("Enter Gen.Ledger Name ", "GLCD")) { return false; }
         if (!emptyFieldCheck("Enter Cal Code ", "CALCCODE")) { return false; }
@@ -52,31 +47,25 @@
     }
 </script>
 <script>
-    function SelectGeneralLedgerCode(id, GLCD, GLNM)
-    {
-        if (id == "")
-        {
+    function SelectGeneralLedgerCode(id, GLCD, GLNM) {
+        if (id == "") {
             $("#" + GLCD.id).val("");
             $("#" + GLNM.id).val("");
         }
-        else
-        {
+        else {
             $.ajax({
                 type: 'GET',
                 url: $("#urlnameGENLEG").val(),
                 data: { val: id },
-                success: function (result)
-                {
+                success: function (result) {
                     var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0)
-                    {
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         var str = $("#tempHDD").val().split(String.fromCharCode(181));
                         $("#" + GLCD.id).val(str[0].toString());
                         $("#" + GLNM.id).val(str[1].toString());
                     }
-                    else
-                    {
+                    else {
                         $("#" + GLCD.id).val("");
                         $("#" + GLNM.id).val("");
                         msgInfo(result);
@@ -143,7 +132,7 @@
                     <div class="editor-field">
                         @Html.EditorFor(model => model.M_AMTTYPE.GLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GLCD", onkeyup = "GetHelp('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','GLCD/GLNM','1/0','General Ledger Details','GLCD');toUpper(this);", onblur = "SelectGeneralLedgerCode(this.value,GLCD,GLNM);", @placeholder = "Code", maxlength = 8 } })
                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','GLCD/GLNM','1/0','General Ledger Details','GLCD')" />
-                        
+
                     </div>
                 </div>
                 <div class="col-md-10">
@@ -155,10 +144,10 @@
             <div class="row">
                 <div class="col-md-5">
                     <div class="editor-field" style="margin-top: 4px;">
-                        @Html.Label("", "Hsn Code")                        
+                        @Html.Label("", "Hsn Code")
                     </div>
                 </div>
-           
+
                 <div class="col-md-6">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.M_AMTTYPE.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @placeholder = "HSNCODE", maxlength = 8, @list = "hsncode1" } })
@@ -189,7 +178,7 @@
                 <div class="col-md-5">
                     <div class="editor-field" style="margin-top: 4px;">
                         @Html.Label("", "Cal Type")
-                        
+
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -202,7 +191,7 @@
                 <div class="col-md-5">
                     <div class="editor-field" style="margin-top: 4px;">
                         @Html.Label("", "Add/Less")
-                        
+
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -215,19 +204,19 @@
                 <div class="col-md-5">
                     <div class="editor-field" style="margin-top: 4px;">
                         @Html.Label("", "Tax Code")
-                        
+
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="editor-field">
-                        @Html.DropDownListFor(model => Model.TAXCODE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TAXCODE),"Select", new { @class = "form-control" })
+                        @Html.DropDownListFor(model => Model.TAXCODE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TAXCODE), "Select", new { @class = "form-control" })
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-5">
                     <div class="editor-field" style="margin-top: 4px;">
-                        @Html.Label("", "CalFormula")                        
+                        @Html.Label("", "CalFormula")
                     </div>
                 </div>
                 <div class="col-lg-8">
@@ -260,6 +249,17 @@
                     </div>
                 </div>
 
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        <b>NOTE:</b> If Gen.Ledger <b>:</b><ol>
+                            <li>INSURANCE then put Cal Code= <b>'K'</b></li>
+                            <li>FREIGHT then put Cal Code= <b>'J'</b> </li>
+                            <li>FORWARDING then put Cal Code= <b>'I'</b></li>
+                        </ol>
+                    </div>
+                </div>
             </div>
 
         </div>
