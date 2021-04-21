@@ -271,6 +271,7 @@ namespace Improvar.ViewModels
         public bool MergeBarItem { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_FLAGMTR { get; set; }
-        
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? DISCONBILL { get; set; }
     }
 }
