@@ -4469,6 +4469,15 @@ namespace Improvar.Controllers
                                             TBALE.BALEYR = data[0]["BALEYR"].retStr();
                                             TBALE.BALEOPEN = data[0]["BALEOPEN"].retStr();
                                         }
+                                        else
+                                        {
+                                            TBALE.RSLNO = TTXNDTL.SLNO;
+                                            TBALE.BLAUTONO = TTXN.AUTONO;
+                                            TBALE.BLSLNO = TTXNDTL.SLNO;
+                                            TBALE.LRDT = TXNTRANS.LRDT;
+                                            TBALE.LRNO = TXNTRANS.LRNO;
+                                            TBALE.BALEYR = TTXNDTL.BALEYR;
+                                        }
                                     }
                                     else
                                     {

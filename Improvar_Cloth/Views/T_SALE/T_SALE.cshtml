@@ -225,7 +225,7 @@
                 }
             }
         }
-        if (balenoexist == true && $("#LRNO").val() == "") {
+        if (balenoexist == true && $("#LRNO").val() == "" && "@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SR" && "@Model.MENU_PARA" != "SBEXP") {
             msgInfo("if Bale No. exist then you have to fill LR Number in Transport Tab !!");
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:nth-child(5)").addClass('active');

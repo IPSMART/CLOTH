@@ -278,5 +278,9 @@ namespace Improvar.ViewModels
         public double? T_SCMDISCAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_GROSSAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_DISCAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_INCL_DISC { get; set; }
     }
 }

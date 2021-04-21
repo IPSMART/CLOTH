@@ -2201,6 +2201,7 @@ namespace Improvar
             compadd += " " + comptbl.Rows[0]["lstate"].ToString() + " [" + comptbl.Rows[0]["lstatecd"].ToString() + "]";
 
             if (comptbl.Rows[0]["phno1"].ToString() != "") locacommu += "Phone : " + (comptbl.Rows[0]["phno1std"].ToString() == "" ? "" : comptbl.Rows[0]["phno1std"].ToString() + "-") + comptbl.Rows[0]["phno1"].ToString();
+            if (comptbl.Rows[0]["phno2"].ToString() != "") locacommu += " " + (comptbl.Rows[0]["phno2std"].ToString() == "" ? "" : comptbl.Rows[0]["phno2std"].ToString() + "-") + comptbl.Rows[0]["phno2"].ToString();
             if (comptbl.Rows[0]["phno3"].ToString() != "") locacommu += ", Fax : " + comptbl.Rows[0]["phno3"].ToString();
             if (stremail != "") locacommu += ", email : " + stremail;
 
@@ -2239,7 +2240,7 @@ namespace Improvar
             sql += "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
             sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
             sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
-            sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std, ";
+            sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std,a.phno2std, ";
             sql += "a.gstno, a.phno1, a.phno2, a.regemailid ";
             sql += "from " + scmf + ".m_loca a, " + scmf + ".m_comp b ";
             sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
