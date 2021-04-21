@@ -4060,7 +4060,24 @@ function CalculateDiscOnBill() {
                     else
                     {
                         if (TOTALGROSSAMT != 0) {
-                            discamt = retFloat((DISCONBILL / TOTALGROSSAMT) * retFloat($("#B_GROSSAMT_" + j).val())).toFixed(2);
+                            var amount = 0;
+                            if (MENU_PARA == "SCN" || MENU_PARA == "SDN" || MENU_PARA == "PCN" || MENU_PARA == "PDN") {
+                                amount = parseFloat($("#B_RATE_" + j).val());
+                            }
+                            else if (retFloat($("#B_BLQNTY_" + j).val()) == 0) {
+                                //amount = (parseFloat($("#B_QNTY_" + j).val()) - parseFloat($("#B_FLAGMTR_" + j).val())) * parseFloat($("#B_RATE_" + j).val());
+                                if (MENU_PARA == "PB") {
+                                    amount = parseFloat($("#B_QNTY_" + j).val()) * parseFloat($("#B_RATE_" + j).val());
+                                }
+                                else { //for bhura time of sales qnty=qnty-flagmtr
+                                    amount = (parseFloat($("#B_QNTY_" + j).val()) - parseFloat($("#B_FLAGMTR_" + j).val())) * parseFloat($("#B_RATE_" + j).val());
+                                }
+                            }
+                            else {
+                                amount = parseFloat($("#B_BLQNTY_" + j).val()) * parseFloat($("#B_RATE_" + j).val());
+                            }
+                            amount = parseFloat(parseFloat(amount).toFixed(2));
+                            discamt = retFloat((DISCONBILL / TOTALGROSSAMT) * retFloat(amount)).toFixed(2);
                         }
                     }
                 }
@@ -4073,7 +4090,7 @@ function CalculateDiscOnBill() {
     }
 
     //END OVERALL DISCOUNT PROPOTION TO ROW WISE
-
+    $("#bardatachng").val("Y");
 }
 
 
