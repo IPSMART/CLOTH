@@ -801,6 +801,19 @@
                                 @Html.Label("", "Bill Amount")
                             </div>
                         </div>*@
+                    @if (Model.DefaultAction != "V")
+                    {
+                        <div class="col-md-5" style="width: auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Discount On Bill")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.DISCONBILL, new { htmlAttributes = new { @class = "form-control", id = "DISCONBILL", maxlength = 15, @placeholder = "Discount On Bill", @onkeypress = "return numericOnly(this,2);", @style = "text-align:right", onblur = "CalculateDiscOnBill();" } })
+                            </div>
+                        </div>
+                    }
                     <div class="col-md-4">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.DISPBLAMT, new { htmlAttributes = new { @class = "form-control", id = "DISPBLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right;color:red;", @title = "Bill Amount" } })
