@@ -927,13 +927,13 @@ namespace Improvar.Controllers
                         double igstper = 0;
                         double cgstper = 0;
                         double sgstper = 0;
-                        gstamt = inrdr["TAXAMT"].retDbl();// 0; 
+                        double itmgstamt = inrdr["TAXAMT"].retDbl();// 0; 
                         if (igstappl)
                         {
                             TTXNOTH.TAXGRPCD = "C001";
                             igstper = gstper;
                             TTXNDTL.IGSTPER = igstper;
-                            TTXNDTL.IGSTAMT = gstamt.retDbl();
+                            TTXNDTL.IGSTAMT = itmgstamt.retDbl();
                         }
                         else {
                             TTXNOTH.TAXGRPCD = "I001";
@@ -941,13 +941,13 @@ namespace Improvar.Controllers
                             sgstper = gstper / 2;
                             TTXNDTL.CGSTPER = cgstper;
                             TTXNDTL.SGSTPER = sgstper;
-                            TTXNDTL.CGSTAMT = (gstamt / 2).toRound(2);// inrdr["CENT_AMT"].retDbl();   // gstamt += TTXNDTL.CGSTAMT.retDbl();
+                            TTXNDTL.CGSTAMT = (itmgstamt / 2).toRound(2);// inrdr["CENT_AMT"].retDbl();   // gstamt += TTXNDTL.CGSTAMT.retDbl();
                             TTXNDTL.SGSTAMT = TTXNDTL.CGSTAMT.retDbl(); // gstamt += TTXNDTL.SGSTAMT.retDbl();
                         }
 
                         TTXNDTL.GSTPER = TTXNDTL.IGSTPER.retDbl() + TTXNDTL.CGSTPER.retDbl() + TTXNDTL.SGSTPER.retDbl();
 
-                        //  gstamt += TTXNDTL.IGSTAMT.retDbl();
+                        gstamt += itmgstamt.retDbl();
                         //double NET_AMT = ((TTXNDTL.TXBLVAL * (100 + gstper)) / 100).retDbl();
                         double NET_AMT = TTXNDTL.TXBLVAL.retDbl() + TTXNDTL.CGSTAMT.retDbl() + TTXNDTL.SGSTAMT.retDbl() + TTXNDTL.IGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
