@@ -236,7 +236,7 @@ namespace Improvar.Controllers
 
                 string query1 = "";
                 query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt,h.agslcd, ";
-                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
+                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
                 query1 += " nvl(a.tcsamt, 0) tcsamt, a.blamt, ";
                 query1 += "   b.slno, b.itcd, ";
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
@@ -380,6 +380,7 @@ namespace Improvar.Controllers
                     {
                         //HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name;Item Name");
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party;Name");
+                        HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent;Name");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
 
@@ -402,6 +403,7 @@ namespace Improvar.Controllers
                     {
                         if (dtlsumm == "C") HC.GetPrintHeader(IR, "localcentral", "string", "c,5", "Local/;Central");
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party; Name");
+                        if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
@@ -518,9 +520,13 @@ namespace Improvar.Controllers
                                 if (bigstamt != 0) locacent = "Central";
                                 if (dtlsumm == "C") dr["localcentral"] = locacent;
                                 if (VE.TEXTBOX1 != "Sales Cash Memo")
-                                { dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                                    if (dtlsumm != "C") dr["agslnm"] = tbl.Rows[i]["agslnm"].ToString(); }
-                                else {
+                                {
+                                    dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                                    if (dtlsumm != "C") dr["slarea"] = tbl.Rows[i]["slarea"].ToString();
+                                    if (dtlsumm != "C") dr["agslnm"] = tbl.Rows[i]["agslnm"].ToString();
+                                }
+                                else
+                                {
                                     dr["slnm"] = tbl.Rows[i]["nm"].ToString();
                                     dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 }

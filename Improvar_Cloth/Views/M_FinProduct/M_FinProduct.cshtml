@@ -22,6 +22,7 @@
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#SRC_FLAG").attr("readonly", false);
+            $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#ITCD").attr("readonly", "readonly");

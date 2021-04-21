@@ -139,6 +139,7 @@ namespace Improvar.Controllers
                         VE.M_SYSCNFG = MSYSCNFG;
 
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
+                        VE.SrcFlagCaption = "Bale No.";
                         if (op == "E" || op == "D" || op == "V" || loadOrder.retStr().Length > 1)
                         {
                             if (searchValue.Length != 0)
@@ -957,7 +958,7 @@ namespace Improvar.Controllers
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             return VE;
         }
-        public ActionResult SearchPannelData(TransactionSaleEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
+        public ActionResult SearchPannelData(TransactionSaleEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT, string SRC_FLAG)
         {
             try
             {
@@ -968,13 +969,14 @@ namespace Improvar.Controllers
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
                 string sql = "";
 
-                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno ";
-                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
-                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
+                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno ";
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d ";
+                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
                 if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
+                if (SRC_FLAG.retStr() != "") sql += "(upper(d.baleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%') and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
                 sql += "order by docdt, docno ";
                 DataTable tbl = masterHelp.SQLquery(sql);
@@ -3941,11 +3943,11 @@ namespace Improvar.Controllers
                         case "PJBL":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SCN":
-                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
+                            stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "SDN":
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "PCN":
-                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
+                            stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "PDN":
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                     }
@@ -4016,7 +4018,15 @@ namespace Improvar.Controllers
                     {
                         TTXN.EMD_NO = 0;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
-                        TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        if (VE.M_SLIP_NO.retStr().Trim(' ') != "")
+                        {
+                            TTXN.DOCNO = Convert.ToString(VE.M_SLIP_NO).PadLeft(6, '0');
+                        }
+                        else
+                        {
+                            TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        }
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                         if (DOCPATTERN.retStr().Length > 16 && (VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR"))
                         {
@@ -4942,6 +4952,16 @@ namespace Improvar.Controllers
                         string prodrem = strrem; expglcd = "";
                         if (VE.TTXNDTL != null)
                         {
+                            //var AMTGLCD = (from x in VE.TTXNDTL
+                            //               group x by new { x.GLCD, x.CLASS1CD } into P
+                            //               select new
+                            //               {
+                            //                   GLCD = P.Key.GLCD,
+                            //                   CLASS1CD = P.Key.CLASS1CD,
+                            //                   QTY = P.Sum(A => A.QNTY),
+                            //                   TXBLVAL = P.Sum(A => A.TXBLVAL)
+                            //               }).Where(a => a.QTY != 0).ToList();
+
                             var AMTGLCD = (from x in VE.TTXNDTL
                                            group x by new { x.GLCD, x.CLASS1CD } into P
                                            select new
@@ -4950,8 +4970,16 @@ namespace Improvar.Controllers
                                                CLASS1CD = P.Key.CLASS1CD,
                                                QTY = P.Sum(A => A.QNTY),
                                                TXBLVAL = P.Sum(A => A.TXBLVAL)
-                                           }).Where(a => a.QTY != 0).ToList();
+                                           }).ToList();
 
+                            if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                            {
+                                AMTGLCD = AMTGLCD.Where(a => a.TXBLVAL != 0).ToList();
+                            }
+                            else
+                            {
+                                AMTGLCD = AMTGLCD.Where(a => a.QTY != 0).ToList();
+                            }
                             if (AMTGLCD != null && AMTGLCD.Count > 0)
                             {
                                 for (int i = 0; i <= AMTGLCD.Count - 1; i++)
@@ -5343,14 +5371,14 @@ namespace Improvar.Controllers
                         }
                         else if (igst + cgst + sgst == 0)
                         {
-                            if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
-                            {
-                                ContentFlg = "Please enter tax % in Amount tab";
-                            }
-                            else
-                            {
-                                ContentFlg = "TAX amount not found. Please add tax with item.";
-                            }
+                            //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                            //{
+                            //    ContentFlg = "Please enter tax % in Amount tab";
+                            //}
+                            //else
+                            //{
+                            ContentFlg = "TAX amount not found. Please add tax with item.";
+                            //}
                             goto dbnotsave;
                         }
                     }

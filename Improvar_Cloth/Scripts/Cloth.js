@@ -10,7 +10,7 @@ function retGstPerstr(prodgrpgstper, rate, disctype, discrate) {
         else {
             rate = retFloat(retFloat(rate) - retFloat(discrate)).toFixed(3);
         }
-        rate =retFloat( rate);
+        rate = retFloat(rate);
     }
     var fromrt = 0, tort = 0, selrow = -1;
     var mgstrate = [5];
@@ -129,14 +129,14 @@ function RemoveLastDiscData(RATEID, ITCD_ID, TABLENM) {
     }
 }
 function CharmPrice(ChrmType, Rate, RoundVal) {
-    debugger;    
+    debugger;
+    var RoundAmt = retInt(RoundVal);
+    if (RoundAmt == 0 || Rate <= 0) return Rate; //RoundAmt = 100;
     var RoundValLen = retStr(RoundVal).length;
     var RateLen = retStr(Rate).length;
     var RateDivisor = retInt("1" + "".padStart(RoundValLen, '0'));
     //RoundVal = RoundVal.padStart(2, '0');
     if (Rate < 10) Rate = 10 + Rate;
-    var RoundAmt = retInt(RoundVal);
-    if (RoundAmt == 0) return Rate; //RoundAmt = 100;
     var small = retInt(retInt(Rate / RoundAmt) * RoundAmt);
     var big = retInt(small + RoundAmt);
     if (ChrmType == "RD")//ROUND
