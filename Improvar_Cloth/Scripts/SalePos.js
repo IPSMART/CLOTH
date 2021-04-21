@@ -366,10 +366,11 @@ function AddMainRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" >';
     tr += ' </td>';
-
-    tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETDISCAMT must be a number." id="B_NETDISCAMT_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].NETDISCAMT" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-    tr += ' </td>';
+    if (DefaultAction != "V") {
+        tr += ' <td class="" title="">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETDISCAMT must be a number." id="B_NETDISCAMT_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].NETDISCAMT" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += ' </td>';
+    }
     //
     tr += ' <td class="">';
     tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SCMDISCTYPE" onchange="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');" ><option value="P">%</option>';
@@ -525,8 +526,8 @@ function AddReturnRow(hlpstr) {
     tr += '   <input id="R_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="R_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="R_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CLASS1CD" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GROSSAMT" type="hidden" value="' + GROSSAMT + '">';
-    tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" type="hidden" value="">';
+    //tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GROSSAMT" type="hidden" value="' + GROSSAMT + '">';
+    //tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="R_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field IGSTPER must be a number." id="R_IGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].IGSTPER" type="hidden" value="' + IGSTPER + '">';
@@ -559,6 +560,9 @@ function AddReturnRow(hlpstr) {
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_ITSTYLE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
+    tr += ' </td>';
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
     tr += ' </td>';
     if (MNTNCOLOR == "Y") {
         tr += ' <td class="" title="">';
@@ -611,8 +615,9 @@ function AddReturnRow(hlpstr) {
         tr += ' </td>';
     }
     tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GROSSAMT" style="text-align: right;" readonly="readonly" type="text" >';
     tr += ' </td>';
+
     tr += ' <td class="">';
     tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="R_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCTYPE" onchange="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');" ><option value="P">%</option>';
     tr += '         <option value="N">Nos</option>';
@@ -623,7 +628,14 @@ function AddReturnRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');" onkeydown="CopyLastDiscData(this.value,R_DISCTYPE_' + rowindex + '.value,\'R_DISCRATE_\',\'R_DISCTYPE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');RemoveLastDiscData(\'R_DISCRATE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
-    tr += ' ';
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" >';
+    tr += ' </td>';
+    if (DefaultAction != "V") {
+        tr += ' <td class="" title="">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETDISCAMT must be a number." id="R_NETDISCAMT_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NETDISCAMT" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += ' </td>';
+    }
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TXBLVAL" style="text-align: right;" readonly="readonly" type="text" >';
     tr += ' </td>';
@@ -679,15 +691,17 @@ function AddReturnRow(hlpstr) {
     //tr += '     <button type="button" onclick="FillImageModal(\'R_BarImages_' + rowindex + '\')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button>';
     //tr += '     <input id="R_BarImages_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BarImages" type="hidden" value="' + BarImages + '">';
     //tr += ' </td>';
-    tr += ' <td class="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETAMT must be a number." id="R_NETAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NETAMT" readonly="readonly" style="text-align: right;" type="text" value="">';
-    tr += ' </td>';
     tr += '    <td class="">';
     tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="R_ITREM_' + rowindex + '" maxlength="100" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].ITREM" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="">';
     tr += '    </td>';
+    tr += ' <td class="sticky-cell-opposite">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETAMT must be a number." id="R_NETAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NETAMT" readonly="readonly" style="text-align: right;" type="text" value="">';
+    tr += ' </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_RETURN_GRID tbody").append(tr);
-    CalculateInclusiveRate(rowindex, '_T_SALE_POS_RETURN_GRID')
+    if (INCLRATEASK == "Y") {
+        CalculateInclusiveRate(rowindex, '_T_SALE_POS_RETURN_GRID')
+    }
     // CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
 
     if (INCLRATEASK != "Y") {
@@ -816,7 +830,7 @@ function CalculateRowAmt(GridId, i) {
         $("#B_TXBLVAL_" + i).val(TXBLVAL_);
         var GSTPER = 0;
         if ($("#INCLRATEASK").val() == "Y") {
-            GSTPER =  $("#B_GSTPER_" + i).val();
+            GSTPER = $("#B_GSTPER_" + i).val();
         }
         else {
             GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
@@ -1009,16 +1023,36 @@ function CalculateRowAmt(GridId, i) {
         var B_RATE_ = retFloat($("#R_RATE_" + i).val());
         var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
         $("#R_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
+
+        var NETDISCAMT = retFloat($("#R_NETDISCAMT_" + i).val());
+        if (NETDISCAMT != 0) {
+            var GSTPER = retFloat($("#R_GSTPER_" + i).val());
+            var QNTY = retFloat($("#R_QNTY_" + i).val());
+            var DISCAMT = retFloat(((NETDISCAMT * 100) / (GSTPER + 100)) * QNTY).toFixed(2);
+            $("#R_DISCAMT_" + i).val(DISCAMT);
+            $("#R_DISCRATE_" + i).val(DISCAMT);
+            $("#R_DISCTYPE_" + i).val("F");
+        }
+
         var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
         var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
         var B_DISCTYPE_ = $("#R_DISCTYPE_" + i).val();
         var B_DISCRATE_ = $("#R_DISCRATE_" + i).val();
-        var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
         $("#R_DISCAMT_" + i).val(discamt);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
-        var gstper = $("#R_GSTPER_" + i).val();
-        if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }
+
+        var GSTPER = 0;
+        if ($("#INCLRATEASK").val() == "Y") {
+            GSTPER = $("#R_GSTPER_" + i).val();
+        }
+        else {
+            GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
+            $("#R_GSTPER_" + i).val(GSTPER);
+        }
+        //var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_, B_DISCTYPE_, B_DISCRATE_);
+        //var gstper = $("#R_GSTPER_" + i).val();
+        //if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }
         //  $("#R_GSTPER_" + i).val(GSTPER);
         //IGST,CGST,SGST,CESS AMOUNT CALCULATION
 
@@ -1110,7 +1144,7 @@ function CalculateTotal(CallFrm) {
     $("#B_T_GROSSAMT").val(parseFloat(T_GROSSAMT).toFixed(2));
 
     //POS RETURN GRID TOTAL
-    var R_T_QNTY = 0, R_T_NOS = 0, R_T_NET = 0, R_T_TXBLVAL = 0, R_T_GSTAMT = 0;
+    var R_T_QNTY = 0, R_T_NOS = 0, R_T_NET = 0, R_T_TXBLVAL = 0, R_T_GSTAMT = 0, R_T_DISCAMT = 0, R_T_GROSSAMT = 0;
     var GridRow = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#R_QNTY_" + i).val());
@@ -1120,6 +1154,8 @@ function CalculateTotal(CallFrm) {
         var NETAMT = retFloat($("#R_NETAMT_" + i).val());
         var TXBLVAL = retFloat($("#R_TXBLVAL_" + i).val());
         var GSTAMT = retFloat($("#R_GSTAMT_" + i).val());
+        R_T_DISCAMT += retFloat($("#R_DISCAMT_" + i).val());
+        R_T_GROSSAMT += retFloat($("#R_GROSSAMT_" + i).val());
         R_T_QNTY += QNTY; R_T_NOS += NOS; R_T_NET += NETAMT; R_T_TXBLVAL += TXBLVAL; R_T_GSTAMT += GSTAMT;
     }
     $("#R_T_QNTY").val(parseFloat(R_T_QNTY).toFixed(2));
@@ -1127,7 +1163,8 @@ function CalculateTotal(CallFrm) {
     $("#R_T_AMT").val(parseFloat(R_T_TXBLVAL).toFixed(2));
     $("#R_T_GSTAMT").val(parseFloat(R_T_GSTAMT).toFixed(2));
     $("#R_T_NET_AMT").val(parseFloat(R_T_NET).toFixed(2));
-
+    $("#R_T_DISCAMT").val(parseFloat(R_T_DISCAMT).toFixed(2));
+    $("#R_T_GROSS_AMT").val(parseFloat(R_T_GROSSAMT).toFixed(2));
     //AMT GRID TOTAL
     var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
     var GridRow = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
@@ -1401,7 +1438,6 @@ function CalculateInclusiveRate(i, GridId) {
             }
             qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
             var discamt1 = CalculateDiscountWithvalue("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, retFloat(qntyamt), "R_DISCRATE_" + i);
-            var discamt2 = CalculateDiscountWithvalue("R_SCMDISCTYPE_" + i, "R_SCMDISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, retFloat(qntyamt), "R_SCMDISCRATE_" + i);
             qntyamt = retFloat(qntyamt) - retFloat(discamt1);
             if (B_QNTY_ != 0) {
                 qntyamt = retFloat(retFloat(qntyamt) / B_QNTY_);

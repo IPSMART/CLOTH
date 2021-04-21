@@ -543,8 +543,6 @@ namespace Improvar.Controllers
 
                 VE.R_T_QNTY = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.QNTY).retDbl();
                 VE.R_T_NOS = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.NOS).retDbl();
-                VE.R_T_NOS = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.NOS).retDbl();
-                VE.R_T_QNTY = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.QNTY).retDbl();
                 VE.R_T_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.TXBLVAL).retDbl();
                 VE.T_R_GROSSAMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.GROSSAMT).retDbl();
                 VE.R_T_IGST_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.IGSTAMT).retDbl();
@@ -553,6 +551,9 @@ namespace Improvar.Controllers
                 VE.R_T_CESS_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.CESSAMT).retDbl();
                 VE.R_T_NET = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.NETAMT).retDbl();
                 VE.R_T_NET_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.NETAMT).retDbl();
+                VE.R_T_GROSS_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.GROSSAMT).retDbl();
+                VE.R_T_DISCAMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.DISCAMT).retDbl();
+               
                 #endregion
 
                 VE.B_T_QNTY = VE.TsalePos_TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -708,8 +709,10 @@ namespace Improvar.Controllers
                             }
                         }
                     }
+                    v.INCL_DISC = ((v.DISCAMT.retDbl() * (v.GSTPER + 100)) / 100).retDbl().toRound(2);
                 }
                 VE.R_T_GSTAMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.GSTAMT).retDbl();
+                VE.R_T_INCL_DISC = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.INCL_DISC).retDbl();
                 #endregion
 
                 // fill prodgrpgstper in t_txndtl
