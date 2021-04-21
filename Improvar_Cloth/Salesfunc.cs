@@ -2223,6 +2223,7 @@ namespace Improvar
                 TBATCHMST.CLCD = MSITEM.CLCD;
                 TBATCHMST.DTAG = MSITEM.DTAG;
                 TBATCHMST.TTAG = MSITEM.TTAG;
+                TBATCHMST.COMMONUNIQBAR = BARGENTYPE == "" ? "C" : BARGENTYPE;  //C=COMMON  E=ENTRY/UNIQUE
                 if (string.IsNullOrEmpty(BARNO))
                 {
                     TBATCHMST.BARNO = GenerateBARNO(MSITEM.ITCD, "", "");
