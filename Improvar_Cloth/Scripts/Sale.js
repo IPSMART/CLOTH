@@ -4005,6 +4005,76 @@ function LastAgentTransport(Comesfrom, ID, NAME) {
 
 
 }
+function CalculateDiscOnBill() {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+    var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+
+    //TOTAL AMT BARTAB 
+    var TOTALGROSSAMT = 0;
+    for (var i = 0; i <= GridRowMain - 1; i++) {
+        var amount = 0;
+        if (MENU_PARA == "SCN" || MENU_PARA == "SDN" || MENU_PARA == "PCN" || MENU_PARA == "PDN") {
+            amount = parseFloat($("#B_RATE_" + i).val());
+        }
+        else if (retFloat($("#B_BLQNTY_" + i).val()) == 0) {
+            //amount = (parseFloat($("#B_QNTY_" + i).val()) - parseFloat($("#B_FLAGMTR_" + i).val())) * parseFloat($("#B_RATE_" + i).val());
+            if (MENU_PARA == "PB") {
+                amount = parseFloat($("#B_QNTY_" + i).val()) * parseFloat($("#B_RATE_" + i).val());
+            }
+            else { //for bhura time of sales qnty=qnty-flagmtr
+                amount = (parseFloat($("#B_QNTY_" + i).val()) - parseFloat($("#B_FLAGMTR_" + i).val())) * parseFloat($("#B_RATE_" + i).val());
+            }
+        }
+        else {
+            amount = parseFloat($("#B_BLQNTY_" + i).val()) * parseFloat($("#B_RATE_" + i).val());
+        }
+        TOTALGROSSAMT += parseFloat(parseFloat(amount).toFixed(2));
+    }
+    //END
+
+    //OVERALL DISCOUNT PROPOTION TO ROW WISE
+    var DISCONBILL = retFloat($("#DISCONBILL").val());
+
+    var discamt = 0, baldiscamt = 0, lastslno = 0;;
+    baldiscamt = DISCONBILL;
+    var totalpropotionamt = 0;
+    for (var j = 0; j <= GridRowMain - 1; j++) {
+        if (retFloat($("#B_SLNO_" + j).val()) != 0 && retStr($("#B_ITCD_" + j).val()) != "" && retFloat($("#B_QNTY_" + j).val()) != 0 && retStr($("#B_MTRLJOBCD_" + j).val()) != "" && retStr($("#B_STKTYPE_" + j).val()) != "") {
+            lastslno = j;
+            if ($("#B_DISCTYPE_" + j).val() == "F") {
+                totalpropotionamt += retFloat($("#B_DISCRATE_" + j).val());
+            }
+
+        }
+    }
+    if (totalpropotionamt != DISCONBILL) {
+        for (var j = 0; j <= GridRowMain - 1; j++) {
+            if (retFloat($("#B_SLNO_" + j).val()) != 0 && retStr($("#B_ITCD_" + j).val()) != "" && retFloat($("#B_QNTY_" + j).val()) != 0 && retStr($("#B_MTRLJOBCD_" + j).val()) != "" && retStr($("#B_STKTYPE_" + j).val()) != "") {
+                if (j == lastslno) { discamt = retFloat(baldiscamt).toFixed(2); }
+                else
+                {
+                    if (DISCONBILL == 0) { discamt = 0; }
+                    else
+                    {
+                        if (TOTALGROSSAMT != 0) {
+                            discamt = retFloat((DISCONBILL / TOTALGROSSAMT) * retFloat($("#B_GROSSAMT_" + j).val())).toFixed(2);
+                        }
+                    }
+                }
+                baldiscamt = retFloat(baldiscamt) - retFloat(discamt);
+                $("#B_DISCRATE_" + j).val(discamt);
+                $("#B_DISCTYPE_" + j).val("F");
+                $("#B_DISCTYPE_DESC_" + j).val("Fixed");
+            }
+        }
+    }
+
+    //END OVERALL DISCOUNT PROPOTION TO ROW WISE
+
+}
 
 
 
