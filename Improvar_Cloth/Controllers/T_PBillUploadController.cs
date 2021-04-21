@@ -726,7 +726,7 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("MRP", typeof(double));
                 dbfdt.Columns.Add("ITEMTXBL", typeof(double));
                 dbfdt.Columns.Add("ITEMTAX", typeof(double));
-                dbfdt.Columns.Add("ITEMNETVALUE", typeof(double));
+                dbfdt.Columns.Add("NETVALUE", typeof(double));
 
                 HttpFileCollectionBase files = Request.Files;
                 HttpPostedFileBase file = files[0];
@@ -752,9 +752,9 @@ namespace Improvar.Controllers
                         double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
                         double TAXPER = workSheet.Cells[rowNum, 121].Value.retDbl();
                         double MRP = workSheet.Cells[rowNum, 13].Value.retDbl();
-                        double ITEMTXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
+                        double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
                         double ITEMTAX = workSheet.Cells[rowNum, 15].Value.retDbl();
-                        double ITEMNETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
+                        double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
                         dr["GRP_SAPCD"] = GRP_SAPCD;
                         dr["ITGRPNM"] = ITGRPNM;
                         dr["STYLE"] = STYLE;
@@ -765,9 +765,9 @@ namespace Improvar.Controllers
                         dr["QNTY"] = QNTY;
                         dr["TAXPER"] = TAXPER;
                         dr["MRP"] = MRP;
-                        dr["ITEMTXBL"] = ITEMTXBL;
+                        dr["TXBL"] = TXBL;
                         dr["ITEMTAX"] = ITEMTAX;
-                        dr["ITEMNETVALUE"] = ITEMNETVALUE;
+                        dr["NETVALUE"] = NETVALUE;
                         dbfdt.Rows.Add(dr);
 
                     }
@@ -796,9 +796,9 @@ namespace Improvar.Controllers
                 row["QNTY"] = g.Sum(r => r.Field<double>("QNTY"));
                 row["TAXPER"] = g.Average(r => r.Field<double>("TAXPER"));
                 row["MRP"] = g.Sum(r => r.Field<double>("MRP"));
-                row["ITEMTXBL"] = g.Sum(r => r.Field<double>("ITEMTXBL"));
+                row["TXBL"] = g.Sum(r => r.Field<double>("TXBL"));
                 row["ITEMTAX"] = g.Sum(r => r.Field<double>("ITEMTAX"));
-                row["ITEMNETVALUE"] = g.Sum(r => r.Field<double>("ITEMNETVALUE"));
+                row["NETVALUE"] = g.Sum(r => r.Field<double>("NETVALUE"));
 
                 return row;
             }).CopyToDataTable();
@@ -854,12 +854,12 @@ namespace Improvar.Controllers
                     }
 
                     TTXNOTH.PRCCD = "CP";
-                    double blINV_VALUE = oudr["INV_VALUE"].retDbl();
-                    double bltaxable = oudr["TAX_AMT"].retDbl();
+                    double blINV_VALUE = oudr["NETVALUE"].retDbl();
+                    double bltaxable = oudr["TXBL"].retDbl();
                     double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
                     double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
                     var roffamt = (blINV_VALUE - calcultednet).toRound(2);
-                    double blTAX_AMT = oudr["TAX_AMT"].retDbl();
+                    //double blTAX_AMT = oudr["TAX_AMT"].retDbl();
                     double tcsamt = 0;// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
                     TTXN.BLAMT = blINV_VALUE + tcsamt;
                     //TTXN.TDSCODE = "X";
@@ -886,38 +886,36 @@ namespace Improvar.Controllers
                         dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
                         dupgrid.BLAMT = TTXN.BLAMT.retStr();
                     }
-
-                    string LR_DATE = DateTime.ParseExact(oudr["LR_DATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
-                    TXNTRANS.LRNO = oudr["LR_NO"].ToString();
-                    TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
+                    
+                    TXNTRANS.LRNO =null;
+                    TXNTRANS.LRDT = null;
                     //----------------------------------------------------------//
-                    string PURGLCD = "";
 
-                    DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
+                    string PURGLCD = "";
+                    DataTable innerDt = dbfdt.Select("BLNO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
-                        string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
-                        string grpnm = inrdr["MAT_DESCRI"].ToString();
-                        string HSNCODE = inrdr["HSN_CODE"].ToString();
+                        string style = inrdr["STYLE"].ToString();
+                        string grpnm = inrdr["ITGRPNM"].ToString();
+                        string HSNCODE = inrdr["HSN"].ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = style;
                         TTXNDTL.MTRLJOBCD = "FS";
-
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
                         //TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
                         //TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
-                        TTXNDTL.BALENO = inrdr["BALENO"].ToString();
+                        //TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "TR";
                         TTXNDTL.UOM = "MTR";
-                        TTXNDTL.QNTY = inrdr["GROSS_QTY"].retDbl(); // NET_QTY
+                        TTXNDTL.QNTY = inrdr["QNTY"].retDbl(); // NET_QTY
                         TTXNDTL.NOS = 1;
-                        TTXNDTL.RATE = inrdr["RATE"].retDbl();
+                        TTXNDTL.RATE = inrdr["TXBL"].retDbl();
                         TTXNDTL.AMT = inrdr["GROSS_AMT"].retDbl();
                         TTXNDTL.FLAGMTR = inrdr["W_FLG_Q"].retDbl();
                         string grade = inrdr["GRADATION"].ToString();
@@ -945,9 +943,9 @@ namespace Improvar.Controllers
                         TTXNDTL.SGSTPER = inrdr["STATE_TAX"].retDbl();
                         TTXNDTL.GSTPER = TTXNDTL.IGSTPER.retDbl() + TTXNDTL.CGSTPER.retDbl() + TTXNDTL.SGSTPER.retDbl();
 
-                        TTXNDTL.IGSTAMT = inrdr["INTEGR_AMT"].retDbl() - amttabigstamt; gstamt += TTXNDTL.IGSTAMT.retDbl();
-                        TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.CGSTAMT.retDbl();
-                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();
+                        TTXNDTL.IGSTAMT = inrdr["INTEGR_AMT"].retDbl() ; gstamt += TTXNDTL.IGSTAMT.retDbl();
+                        TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() ; gstamt += TTXNDTL.CGSTAMT.retDbl();
+                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() ; gstamt += TTXNDTL.SGSTAMT.retDbl();
                         //double NET_AMT = ((TTXNDTL.TXBLVAL * (100 + gstper)) / 100).retDbl();
                         double NET_AMT = TTXNDTL.TXBLVAL.retDbl() + TTXNDTL.CGSTAMT.retDbl() + TTXNDTL.SGSTAMT.retDbl() + TTXNDTL.IGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);

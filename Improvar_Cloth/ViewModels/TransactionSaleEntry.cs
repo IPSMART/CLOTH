@@ -47,6 +47,7 @@ namespace Improvar.ViewModels
         public List<DISC_TYPE> DISC_TYPE1 { get; set; }
         public List<RateHistoryGrid> RateHistoryGrid { get; set; }
         public List<TTXNDTLPOPUP> TTXNDTLPOPUP { get; set; }
+        public string M_SLIP_NO { get; set; }
         public string PSLCD { get; set; }
         public string SLNM { get; set; }
         public string PARTYCD { get; set; }
