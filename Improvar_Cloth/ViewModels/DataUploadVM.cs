@@ -12,6 +12,7 @@ namespace Improvar.ViewModels
         
         public string SLCD { get; set; }
         public string SLNM { get; set; }
+        public string GSTNO { get; set; }
         public string BLNO { get; set; }
         public string BLDT { get; set; }
         public List<DUpGrid> DUpGrid { get; set; }
