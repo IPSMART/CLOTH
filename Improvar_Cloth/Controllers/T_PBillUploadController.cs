@@ -241,7 +241,57 @@ namespace Improvar.Controllers
             }
         }
 
-
+        public string PCSTYPE(string grade, string foc)
+        {
+            string pcstype = "";
+            switch (grade)
+            {
+                case "G":
+                    grade = "GOOD"; break;
+                case "B":
+                    grade = "BCD"; break;
+                case "C":
+                    grade = "CCD"; break;
+                case "A":
+                    grade = "ACD"; break;
+                default:
+                    grade = ""; break;
+            }
+            switch (foc)
+            {
+                case "1":
+                    foc = "NORMAL"; break;
+                case "2":
+                    foc = "ODD"; break;
+                case "3":
+                    foc = "SHORT"; break;
+                case "5":
+                case "6":
+                    foc = "CUTS"; break;
+                default:
+                    foc = ""; break;
+            }
+            if (grade == "G" && foc == "1")
+            {
+                pcstype = "FRESH";
+            }
+            else
+            {
+                pcstype = grade + " " + foc;
+            }
+            return pcstype;
+        }
+        private string getSLCD(string sapcode, string gstno)
+        {
+            sql = "select a.slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com a," + CommVar.FinSchema(UNQSNO) + ".m_subleg b  where a.slcd=b.slcd and a.sapcode='" + sapcode + "'";
+            if (gstno != "") sql += " and b.gstno='" + gstno + "'";
+            var dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["slcd"].ToString();
+            }
+            return "";
+        }
 
 
         [HttpPost]
@@ -268,6 +318,10 @@ namespace Improvar.Controllers
             }
             else if (CommVar.Compcd(UNQSNO) == "LALF")
             {
+                if (VE.SLCD == null)
+                {
+                    return Content("Please select Sub ledger.");
+                }
                 VE = ReadAdityaBirlaPTfile(VE);
             }
             return View(VE);
@@ -654,57 +708,6 @@ namespace Improvar.Controllers
             VE.DUpGrid = DUGridlist;
             return VE;
         }
-        public string PCSTYPE(string grade, string foc)
-        {
-            string pcstype = "";
-            switch (grade)
-            {
-                case "G":
-                    grade = "GOOD"; break;
-                case "B":
-                    grade = "BCD"; break;
-                case "C":
-                    grade = "CCD"; break;
-                case "A":
-                    grade = "ACD"; break;
-                default:
-                    grade = ""; break;
-            }
-            switch (foc)
-            {
-                case "1":
-                    foc = "NORMAL"; break;
-                case "2":
-                    foc = "ODD"; break;
-                case "3":
-                    foc = "SHORT"; break;
-                case "5":
-                case "6":
-                    foc = "CUTS"; break;
-                default:
-                    foc = ""; break;
-            }
-            if (grade == "G" && foc == "1")
-            {
-                pcstype = "FRESH";
-            }
-            else
-            {
-                pcstype = grade + " " + foc;
-            }
-            return pcstype;
-        }
-        private string getSLCD(string sapcode, string gstno)
-        {
-            sql = "select a.slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com a," + CommVar.FinSchema(UNQSNO) + ".m_subleg b  where a.slcd=b.slcd and a.sapcode='" + sapcode + "'";
-            if (gstno != "") sql += " and b.gstno='" + gstno + "'";
-            var dt = masterHelp.SQLquery(sql);
-            if (dt.Rows.Count > 0)
-            {
-                return dt.Rows[0]["slcd"].ToString();
-            }
-            return "";
-        }
 
         public DataUploadVM ReadAdityaBirlaPTfile(DataUploadVM VE)
         {
@@ -783,24 +786,24 @@ namespace Improvar.Controllers
                 var outerDT = dbfdt.AsEnumerable()
                   .GroupBy(g => new { BLNO = g["BLNO"], BLDT = g["BLDT"] })
                   .Select(g =>
-                    {
-                        var row = dbfdt.NewRow();
-                        row["BLNO"] = g.Key.BLNO;
-                        row["BLDT"] = g.Key.BLDT;
-                        //row["GRP_SAPCD"] = g.OrderBy(r => r["GRP_SAPCD"].ToString()).First();
-                        //row["ITGRPNM"] = g.OrderBy(r => r["ITGRPNM"].ToString()).First();
-                        //row["STYLE"] = g.OrderBy(r => r["STYLE"]).First();
-                        //row["SIZENM"] = g.OrderBy(r => r["SIZENM"]).First();
-                        //row["BARNO"] = g.OrderBy(r => r["BARNO"]).First();
-                        //row["HSN"] = g.OrderBy(r => r["HSN"]).First();
-                        row["QNTY"] = g.Sum(r => r.Field<double>("QNTY"));
-                        //row["TAXPER"] = g.Average(r => r.Field<double>("TAXPER"));
-                        //row["MRP"] = g.Sum(r => r.Field<double>("MRP"));
-                        row["TXBL"] = g.Sum(r => r.Field<double>("TXBL"));
-                        row["TAXAMT"] = g.Sum(r => r.Field<double>("TAXAMT"));
-                        row["NETVALUE"] = g.Sum(r => r.Field<double>("NETVALUE"));
-                        return row;
-                    }).CopyToDataTable();
+                  {
+                      var row = dbfdt.NewRow();
+                      row["BLNO"] = g.Key.BLNO;
+                      row["BLDT"] = g.Key.BLDT;
+                      //row["GRP_SAPCD"] = g.OrderBy(r => r["GRP_SAPCD"].ToString()).First();
+                      //row["ITGRPNM"] = g.OrderBy(r => r["ITGRPNM"].ToString()).First();
+                      //row["STYLE"] = g.OrderBy(r => r["STYLE"]).First();
+                      //row["SIZENM"] = g.OrderBy(r => r["SIZENM"]).First();
+                      //row["BARNO"] = g.OrderBy(r => r["BARNO"]).First();
+                      //row["HSN"] = g.OrderBy(r => r["HSN"]).First();
+                      row["QNTY"] = g.Sum(r => r.Field<double>("QNTY"));
+                      //row["TAXPER"] = g.Average(r => r.Field<double>("TAXPER"));
+                      //row["MRP"] = g.Sum(r => r.Field<double>("MRP"));
+                      row["TXBL"] = g.Sum(r => r.Field<double>("TXBL"));
+                      row["TAXAMT"] = g.Sum(r => r.Field<double>("TAXAMT"));
+                      row["NETVALUE"] = g.Sum(r => r.Field<double>("NETVALUE"));
+                      return row;
+                  }).CopyToDataTable();
 
 
                 TTXN.EMD_NO = 0;
@@ -1100,8 +1103,6 @@ namespace Improvar.Controllers
             VE.DUpGrid = DUGridlist;
             return VE;
         }
-
-
 
 
 
