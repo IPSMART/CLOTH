@@ -801,19 +801,7 @@
                                 @Html.Label("", "Bill Amount")
                             </div>
                         </div>*@
-                    @if (Model.DefaultAction != "V")
-                    {
-                        <div class="col-md-5" style="width: auto;">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Discount On Bill")
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.DISCONBILL, new { htmlAttributes = new { @class = "form-control", id = "DISCONBILL", maxlength = 15, @placeholder = "Discount On Bill", @onkeypress = "return numericOnly(this,2);", @style = "text-align:right", onblur = "CalculateDiscOnBill();" } })
-                            </div>
-                        </div>
-                    }
+                   
                     <div class="col-md-4">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.DISPBLAMT, new { htmlAttributes = new { @class = "form-control", id = "DISPBLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right;color:red;", @title = "Bill Amount" } })
@@ -1141,6 +1129,7 @@
                                     </datalist>
                                 </div>
                             </div>
+                    
                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                             {
                                 <div class="col-md-1">
@@ -1206,7 +1195,7 @@
                                     @Html.EditorFor(model => model.TOTNOS, new { htmlAttributes = new { @class = "form-control", id = "TOTNOS", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Qnty Nos", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Total Qnty")
                                 </div>
@@ -1216,7 +1205,7 @@
                                     @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-2" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Taxable Value")
                                 </div>
@@ -1226,7 +1215,7 @@
                                     @Html.EditorFor(model => model.TOTTAXVAL, new { htmlAttributes = new { @class = "form-control", id = "TOTTAXVAL", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Taxable Value", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Total Tax")
                                 </div>
@@ -1236,7 +1225,20 @@
                                     @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            @if (Model.DefaultAction != "V")
+                    {
+                                <div class="col-md-5" style="width: auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Discount On Bill")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.DISCONBILL, new { htmlAttributes = new { @class = "form-control", id = "DISCONBILL", maxlength = 15, @placeholder = "Discount On Bill", @onkeypress = "return numericOnly(this,2);", @style = "text-align:right", onblur = "CalculateDiscOnBill();" } })
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Rounded off")
                                 </div>
@@ -1251,7 +1253,7 @@
                                     @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Bill Amount")
                                 </div>
