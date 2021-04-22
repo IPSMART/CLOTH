@@ -510,8 +510,10 @@ namespace Improvar.Controllers
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
+                        string shade= inrdr["MATERIAL"].ToString().Split('-')[1];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
+                        TTXNDTL.UOM = "MTR";
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = style;
@@ -524,7 +526,6 @@ namespace Improvar.Controllers
                         //TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "TR";
-                        TTXNDTL.UOM = "MTR";
                         TTXNDTL.QNTY = inrdr["GROSS_QTY"].retDbl(); // NET_QTY
                         TTXNDTL.NOS = 1;
                         TTXNDTL.RATE = inrdr["RATE"].retDbl();
@@ -568,7 +569,9 @@ namespace Improvar.Controllers
                                 tmpdtl.QNTY += TTXNDTL.QNTY;
                                 tmpdtl.AMT += TTXNDTL.AMT;
                                 tmpdtl.TOTDISCAMT += TTXNDTL.TOTDISCAMT;
+                                tmpdtl.DISCRATE += TTXNDTL.DISCRATE;
                                 tmpdtl.DISCAMT += TTXNDTL.DISCAMT;
+                                tmpdtl.SCMDISCRATE += TTXNDTL.SCMDISCRATE;
                                 tmpdtl.SCMDISCAMT += TTXNDTL.SCMDISCAMT;
                                 tmpdtl.TXBLVAL += TTXNDTL.TXBLVAL;
                                 tmpdtl.IGSTAMT += TTXNDTL.IGSTAMT;
@@ -611,7 +614,7 @@ namespace Improvar.Controllers
                         //TBATCHDTL.DIA = TTXNDTL.DIA;
                         //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
                         //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
-                        //TBATCHDTL.SHADE = TTXNDTL.SHADE;
+                        TBATCHDTL.SHADE = shade;
                         //TBATCHDTL.MILLNM = TTXNDTL.MILLNM;
                         TBATCHDTL.BATCHNO = inrdr["BATCH"].ToString();
                         TBATCHDTL.BALEYR = TTXNDTL.BALENO.retStr() == "" ? "" : TTXNDTL.BALEYR;
@@ -890,6 +893,7 @@ namespace Improvar.Controllers
                         string style = inrdr["STYLE"].ToString();
                         string grpnm = inrdr["ITGRPNM"].ToString();
                         string HSNCODE = inrdr["HSN"].ToString();
+                        TTXNDTL.UOM = "MTR";
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
                         TTXNDTL.ITCD = ItemDet.ITCD;
                         PURGLCD = ItemDet.PURGLCD;
@@ -902,7 +906,6 @@ namespace Improvar.Controllers
                         //TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
                         //TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "SHOP";
-                        TTXNDTL.UOM = "MTR";
                         TTXNDTL.QNTY = inrdr["QNTY"].retDbl(); // NET_QTY
                         TTXNDTL.NOS = 1;
                         TTXNDTL.RATE = inrdr["TXBL"].retDbl().toRound(2);
