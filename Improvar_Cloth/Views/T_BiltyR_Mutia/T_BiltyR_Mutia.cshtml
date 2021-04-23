@@ -271,11 +271,30 @@
         $('.PopUp_Backround').fadeOut();
     }
 </script>
-<script>
+@*<script>
     function pageprinting()
     {
         debugger;
         $("#btnprint").click();
+    }
+</script>*@
+<script>
+    function pageprinting() {
+        debugger;
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: $('form').serialize() + "&DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Khasra_BaleTrnf_Print", "Khasra_BaleTrnf_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
     }
 </script>
 

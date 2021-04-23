@@ -920,97 +920,122 @@ namespace Improvar.Controllers
                 }
             }
         }
-        [HttpPost]
-        public ActionResult T_BiltyR_Mutia(FormCollection FC, TransactionBiltyRMutiaEntry VE)
+        //[HttpPost]
+        //public ActionResult T_BiltyR_Mutia(FormCollection FC, TransactionBiltyRMutiaEntry VE)
+        //{
+        //    try
+        //    {
+
+        //        DataTable tbl;
+        //        string Scm = CommVar.CurSchema(UNQSNO);
+        //        string str = "";
+        //        str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, z.pcstype, ";
+        //        str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.styleno||' '||c.itnm itstyle,d.prefno,d.prefdt from ";
+
+        //        str += "( select distinct a.autono, a.blautono, a.slno, a.baleno, a.blslno ";
+        //        str += "from " + Scm + ".T_BALE a ";
+        //        str += "where a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ) y, ";
+
+        //        str += "( select a.autono, a.txnslno, max(a.pcstype) pcstype ";
+        //        str += "from " + Scm + ".t_batchdtl a group by a.autono, a.txnslno) z, ";
+
+        //        str += Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d ";
+
+        //        str += "where y.autono=a.autono(+) and y.slno=a.slno(+) and y.autono=z.autono(+) and y.slno=z.txnslno(+) and ";
+        //        str += "y.blautono=b.autono(+) and b.itcd=c.itcd(+) and y.blautono=d.autono(+) and y.baleno=b.baleno(+) and y.blslno=b.slno(+) and ";
+        //        str += "a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ";
+        //        str += "order by prefno, prefdt, slno ";
+        //        tbl = Master_Help.SQLquery(str);
+
+        //        if (tbl.Rows.Count != 0)
+        //        {
+        //            DataTable IR = new DataTable("mstrep");
+
+        //            Models.PrintViewer PV = new Models.PrintViewer();
+        //            HtmlConverter HC = new HtmlConverter();
+
+        //            HC.RepStart(IR, 2);
+        //            HC.GetPrintHeader(IR, "prefno", "string", "c,12", "Bill No.");
+        //            HC.GetPrintHeader(IR, "prefdt", "string", "c,12", "Date");
+        //            HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Short No.");
+        //            HC.GetPrintHeader(IR, "pcstype", "string", "c,10", "Ctg");
+        //            HC.GetPrintHeader(IR, "slno", "string", "c,7", "Slno");
+        //            HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale");
+        //            HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
+        //            HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
+        //            HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
+        //            HC.GetPrintHeader(IR, "lrno", "string", "c,12", "Lrno");
+        //            HC.GetPrintHeader(IR, "pageno", "string", "c,12", "PageNo/PageSlNo.");
+
+        //            Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+        //            i = 0; maxR = tbl.Rows.Count - 1;
+
+        //            while (i <= maxR)
+        //            {
+        //                string blautono = tbl.Rows[i]["blautono"].retStr();
+        //                while (tbl.Rows[i]["blautono"].retStr() == blautono)
+        //                {
+        //                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+        //                    IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].retStr();
+        //                    IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
+        //                    IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
+        //                    IR.Rows[rNo]["pcstype"] = tbl.Rows[i]["pcstype"].retStr();
+        //                    IR.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].retStr();
+        //                    IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
+        //                    IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+        //                    IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+        //                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+        //                    IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
+        //                    IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
+        //                    //snfb requirement new line add after every row
+        //                    IR.Rows.Add("");
+        //                    //end snfb
+        //                    i = i + 1;
+        //                    if (i > maxR) break;
+        //                }
+        //            }
+
+        //            string pghdr1 = "";
+
+        //            pghdr1 = "Receive from Mutia Details as on " + VE.T_CNTRL_HDR.DOCDT.retDateStr() + " ";
+
+        //            PV = HC.ShowReport(IR, "T_BiltyR_Mutia", pghdr1, "", true, true, "P", false);
+
+        //            TempData["T_BiltyR_Mutia"] = PV;
+        //            return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "T_BiltyR_Mutia" });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message);
+        //    }
+        //    return View();
+        //}
+        public ActionResult Print(TransactionKhasraEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
         {
             try
             {
-
-                DataTable tbl;
-                string Scm = CommVar.CurSchema(UNQSNO);
-                string str = "";
-                str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, z.pcstype, ";
-                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.styleno||' '||c.itnm itstyle,d.prefno,d.prefdt from ";
-
-                str += "( select distinct a.autono, a.blautono, a.slno, a.baleno, a.blslno ";
-                str += "from " + Scm + ".T_BALE a ";
-                str += "where a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ) y, ";
-
-                str += "( select a.autono, a.txnslno, max(a.pcstype) pcstype ";
-                str += "from " + Scm + ".t_batchdtl a group by a.autono, a.txnslno) z, ";
-
-                str += Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d ";
-
-                str += "where y.autono=a.autono(+) and y.slno=a.slno(+) and y.autono=z.autono(+) and y.slno=z.txnslno(+) and ";
-                str += "y.blautono=b.autono(+) and b.itcd=c.itcd(+) and y.blautono=d.autono(+) and y.baleno=b.baleno(+) and y.blslno=b.slno(+) and ";
-                str += "a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ";
-                str += "order by prefno, prefdt, slno ";
-                tbl = Master_Help.SQLquery(str);
-
-                if (tbl.Rows.Count != 0)
+                Cn.getQueryString(VE);
+                ReportViewinHtml ind = new ReportViewinHtml();
+                ind.DOCCD = DOC_CD;
+                ind.FDOCNO = DOCNO;
+                ind.TDOCNO = DOCNO;
+                ind.FDT = DOCDT;
+                ind.TDT = DOCDT;
+                ind.MENU_PARA = VE.MENU_PARA;
+                if (TempData["printparameter"] != null)
                 {
-                    DataTable IR = new DataTable("mstrep");
-
-                    Models.PrintViewer PV = new Models.PrintViewer();
-                    HtmlConverter HC = new HtmlConverter();
-
-                    HC.RepStart(IR, 2);
-                    HC.GetPrintHeader(IR, "prefno", "string", "c,12", "Bill No.");
-                    HC.GetPrintHeader(IR, "prefdt", "string", "c,12", "Date");
-                    HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Short No.");
-                    HC.GetPrintHeader(IR, "pcstype", "string", "c,10", "Ctg");
-                    HC.GetPrintHeader(IR, "slno", "string", "c,7", "Slno");
-                    HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale");
-                    HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
-                    HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
-                    HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
-                    HC.GetPrintHeader(IR, "lrno", "string", "c,12", "Lrno");
-                    HC.GetPrintHeader(IR, "pageno", "string", "c,12", "PageNo/PageSlNo.");
-
-                    Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
-                    i = 0; maxR = tbl.Rows.Count - 1;
-
-                    while (i <= maxR)
-                    {
-                        string blautono = tbl.Rows[i]["blautono"].retStr();
-                        while (tbl.Rows[i]["blautono"].retStr() == blautono)
-                        {
-                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].retStr();
-                            IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
-                            IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
-                            IR.Rows[rNo]["pcstype"] = tbl.Rows[i]["pcstype"].retStr();
-                            IR.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].retStr();
-                            IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
-                            IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
-                            IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                            IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
-                            IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
-                            IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
-                            //snfb requirement new line add after every row
-                            IR.Rows.Add("");
-                            //end snfb
-                            i = i + 1;
-                            if (i > maxR) break;
-                        }
-                    }
-
-                    string pghdr1 = "";
-
-                    pghdr1 = "Receive from Mutia Details as on " + VE.T_CNTRL_HDR.DOCDT.retDateStr() + " ";
-
-                    PV = HC.ShowReport(IR, "T_BiltyR_Mutia", pghdr1, "", true, true, "P", false);
-
-                    TempData["T_BiltyR_Mutia"] = PV;
-                    return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "T_BiltyR_Mutia" });
+                    TempData.Remove("printparameter");
                 }
+                TempData["printparameter"] = ind;
+                return Content("");
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return Content(ex.Message);
+                return Content(ex.Message + ex.InnerException);
             }
-            return View();
         }
     }
 }
