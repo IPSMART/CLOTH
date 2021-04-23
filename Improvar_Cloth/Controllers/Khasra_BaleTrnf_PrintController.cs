@@ -497,7 +497,20 @@ namespace Improvar.Controllers
 
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("T_BiltyR_Mutia");
-                 
+
+
+                    wsSheet1.Column(1).Width = 11.33;
+                    wsSheet1.Column(2).Width = 7.56;
+                    wsSheet1.Column(3).Width = 18.11;
+                    wsSheet1.Column(4).Width = 4.33;
+                    wsSheet1.Column(5).Width = 2.89;
+                    wsSheet1.Column(6).Width = 8.11;
+                    wsSheet1.Column(7).Width = 3.11;
+                    wsSheet1.Column(8).Width = 6.33;
+                    wsSheet1.Column(9).Width = 4.56;
+                    wsSheet1.Column(10).Width = 11.22;
+                    wsSheet1.Column(11).Width = 6.89;
+
                     using (ExcelRange Rng = wsSheet1.Cells["A1:K1"])
                     {
                         Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -567,7 +580,7 @@ namespace Improvar.Controllers
                         }
                        
                         wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
-                        wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("dd/MM/yyyy");
+                        wsSheet1.Cells[exlrowno, 2].Value ="'"+ tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
                         wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
                         wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["pcstype"].retStr();
                         wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["rslno"].retShort();
