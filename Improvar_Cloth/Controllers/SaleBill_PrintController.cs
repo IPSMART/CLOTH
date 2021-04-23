@@ -3855,7 +3855,11 @@ namespace Improvar.Controllers
                                 default: copymode = ""; break;
                             }
 
-                            string negamt = (menupara == "ST" || menupara == "AT" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            //string negamt = (menupara == "ST" || menupara == "AT") && (tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            string negamt = "";
+                            if ((menupara == "ST" || menupara == "AT") && (tbl.Rows[i]["slno"].retDbl() > 1000))
+                            {  negamt = "Y"; }
+                            else { negamt = "N"; }
 
                             DataRow dr1 = IR.NewRow();
                         docstart:
