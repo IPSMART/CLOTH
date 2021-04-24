@@ -13,7 +13,7 @@ namespace Improvar
         Connection Cn = new Connection();
         M_SUBLEG MSUBLEG;
         MasterHelp masterHelp = new MasterHelp();
-        public string SMSsend(string mobno, string msg, string TemplateID)
+        public string SMSsend(string mobno, string msg, string TemplateID, string anothermobno = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "", scmf = CommVar.FinSchema(UNQSNO);
@@ -24,6 +24,8 @@ namespace Improvar
                 DataTable tbl = masterHelp.SQLquery(sql);
                 if (tbl.Rows.Count > 0) smsurl = tbl.Rows[0]["smsurl"].ToString();
                 string datastring = "";
+                if (anothermobno.retStr() != "") mobno += "," + anothermobno;
+
                 smsurlsend = smsurl;
                 smsurlsend = smsurlsend.Replace("#MOBILENO#", mobno);
                 smsurlsend = smsurlsend.Replace("#MESSAGE#", msg);
@@ -86,13 +88,15 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             string sql = "", scmf = CommVar.FinSchema(UNQSNO); string tempid = "";
-            string smsmsg = "", smsmsgsend = "";
-            sql = "select a.smsmsg,tempid from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
+            string smsmsg = "", smsmsgsend = "", altmobno = "", autosend = "";
+            sql = "select a.smsmsg,tempid,ALTMOBNO, AUTOSEND from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
             DataTable tbl = masterHelp.SQLquery(sql);
             if (tbl.Rows.Count > 0)
             {
                 smsmsg = tbl.Rows[0]["smsmsg"].ToString();
                 tempid = tbl.Rows[0]["tempid"].ToString();
+                altmobno = tbl.Rows[0]["altmobno"].ToString();
+                autosend = tbl.Rows[0]["autosend"].ToString();
             }
             smsmsgsend = smsmsg;
             for (int i = 0; i <= (smsvar.Length / 2) - 1; i++)
@@ -104,12 +108,16 @@ namespace Improvar
             {
                 MSUBLEG = DBF.M_SUBLEG.Find(slcd);
                 if (MSUBLEG != null) slnm = MSUBLEG.FULLNAME == null ? MSUBLEG.SLNM : MSUBLEG.FULLNAME;
-                slnm = CommFunc.TruncateWord(slnm, 25);
+                System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex("[^a-zA-Z0-9 -]");
+                slnm = rgx.Replace(slnm, "");
+                slnm = CommFunc.TruncateWord(slnm, 28);
             }
             smsmsgsend = smsmsgsend.Replace("&slnm&", slnm);
             List<string> smslist = new List<string>();
             smslist.Add(smsmsgsend);
             smslist.Add(tempid);
+            smslist.Add(altmobno);
+            smslist.Add(autosend);
             return smslist;
         }
         public void insT_TXNSTATUS(string Auto_Number, string ststype, string flag1, string stsrem)

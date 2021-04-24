@@ -489,50 +489,41 @@ namespace Improvar.Controllers
                 #endregion
                 #region EXCEL
                 else {
-                   	          
-
                     string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
                     Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo/ PageSlNo.";
-
-
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("T_BiltyR_Mutia");
-
-
                     wsSheet1.Column(1).Width = 11.33;
                     wsSheet1.Column(2).Width = 7.56;
                     wsSheet1.Column(3).Width = 18.11;
                     wsSheet1.Column(4).Width = 4.33;
-                    wsSheet1.Column(5).Width = 2.89;
+                    wsSheet1.Column(5).Width = 3.22;
                     wsSheet1.Column(6).Width = 8.11;
                     wsSheet1.Column(7).Width = 3.11;
                     wsSheet1.Column(8).Width = 6.33;
                     wsSheet1.Column(9).Width = 4.56;
                     wsSheet1.Column(10).Width = 11.22;
                     wsSheet1.Column(11).Width = 6.89;
-
-                    using (ExcelRange Rng = wsSheet1.Cells["A1:K1"])
+                    var modelTable = wsSheet1.Cells[1, 1];
+                    using (ExcelRange Rng = wsSheet1.Cells["A1:K3"])
                     {
                         Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                         Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
-                        Rng.Style.Font.Size = 14; Rng.Style.Font.Bold = true;
+                        Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
                         wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
-                        
-
-
-                    }
-                    using (ExcelRange Rng = wsSheet1.Cells["A2:K2"])
-                    {
-                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
-                        Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;                     
+                        //}
+                        //using (ExcelRange Rng = wsSheet1.Cells["A2:K2"])
+                        //{
+                        //    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        //    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                        //    Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
                         wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
-                    }
-                    using (ExcelRange Rng = wsSheet1.Cells["A3:K3"])
-                    {
-                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
-                        Rng.Style.Font.Size = 11; Rng.Style.Font.Bold = true;
+                        //}
+                        //using (ExcelRange Rng = wsSheet1.Cells["A3:K3"])
+                        //{
+                        //    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        //    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                        //    Rng.Style.Font.Size = 11; Rng.Style.Font.Bold = true;
                         wsSheet1.Cells["A3:A3"].Value = "Receive from Mutia Details as on " + fdate + " to " + tdate;
                     }
                     using (ExcelRange Rng = wsSheet1.Cells["A4:K4"])
@@ -548,39 +539,76 @@ namespace Improvar.Controllers
                         for (int j = 0; j < Header.Length; j++)
                         {
                             wsSheet1.Cells[4, j + 1].Value = Header[j];
-
                         }
                     }
-
-                    string E_DATE = System.DateTime.Now.ToString().Substring(0, 10);
-                    string seletype = "", Etyp1 = "";
-
-
-
-                    int exlrowno = 5; int exlrowrslno = 5; var rslno = 0;
-                  
-                        for (int i = 0; i < tbl.Rows.Count; i++)
+                    int exlrowno = 5; var rslno = 0;
+                    for (int i = 0; i < tbl.Rows.Count; i++)
                     {
-                        
-                        if (tbl.Rows[i]["rslno"].retShort()!= rslno && i!=0)
+                        if (tbl.Rows[i]["rslno"].retShort() != rslno && i != 0)
                         {
-                           
-                            wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height= 20;
+                            modelTable = wsSheet1.Cells[exlrowno, 1];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 2];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 3];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 4];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 5];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 6];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 7];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 8];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 9];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-                            wsSheet1.Cells[exlrowno, 10].Value =""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 10];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 11];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
                             exlrowno++;
                         }
-                       
+
                         wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
-                        wsSheet1.Cells[exlrowno, 2].Value ="'"+ tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
+                        wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
                         wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
                         wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["pcstype"].retStr();
                         wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["rslno"].retShort();
@@ -592,24 +620,12 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
                         rslno = tbl.Rows[i]["rslno"].retShort();
                         exlrowno++;
-
                     }
-                    //wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    //wsSheet1.Row(exlrowno).Style.Font.Bold = true;
-                    //wsSheet1.Cells[exlrowno, 7].Value = "TOTAL";
-                    //wsSheet1.Cells[exlrowno, 8].Value = TINQTY;
-                    //wsSheet1.Cells[exlrowno, 9].Value = TOUTQTY;
-
-                    //wsSheet1.Row(++exlrowno).Style.Font.Bold = true;
-                    //wsSheet1.Cells[exlrowno, 7].Value = "Balance Qnty";
-                    //wsSheet1.Cells[exlrowno, 9].Value = (TINQTY - TOUTQTY);
-                    //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
-                    //for download//
                     Response.Clear();
                     Response.ClearContent();
                     Response.Buffer = true;
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("Content-Disposition", "attachment; filename=Receive from Mutia"+tdocno+".xlsx");
+                    Response.AddHeader("Content-Disposition", "attachment; filename=Receive from Mutia_" + tdocno + ".xlsx");
                     Response.BinaryWrite(ExcelPkg.GetAsByteArray());
                     Response.Flush();
                     Response.Close();
@@ -626,6 +642,8 @@ namespace Improvar.Controllers
             }
             return null;
         }
+
+
     }
 }
 
