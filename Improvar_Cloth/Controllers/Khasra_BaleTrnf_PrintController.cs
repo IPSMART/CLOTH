@@ -50,7 +50,6 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Sotck Transfer Bale Printing"; break;
                         case "BLTR":
                             ViewBag.formname = "Receive from Mutia Report"; break;
-
                         default: ViewBag.formname = ""; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -106,7 +105,7 @@ namespace Improvar.Controllers
 
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 string yr_cd = CommVar.YearCode(UNQSNO);
-                string section = "";
+                string section = "", filename = "" ;
                 switch (Command)
                 {
                     case "Print": section = "Print"; break;
@@ -136,99 +135,100 @@ namespace Improvar.Controllers
                 if (tdate.retStr() != "") str += "and e.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
                 if (fdocno != "") str += "and e.doconlyno >= '" + fdocno + "' ";
                 if (tdocno != "") str += "and e.doconlyno <= '" + tdocno + "'   ";
-                str += "order by prefno, prefdt, slno ";
+                str += "order by d.prefno, d.prefdt, a.baleno,a.rslno ";
                 tbl = masterHelp.SQLquery(str);
+
+
+                string sql = "select a.gocd, k.gonm, a.blautono,a.slno, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
+                sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+                sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
+                sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.gonm hdrgonm,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail,a.slno,a.docno,a.docdt,a.baleopen, nvl(m.decimals, 0) qdecimal, ";
+                sql += " a.slcd,nvl(a.fullname, a.slnm) slnm,a.regemailid, a.add1 sladd1, a.add2 sladd2, a.add3 sladd3, a.add4 sladd4, a.add5 sladd5, a.add6 sladd6, a.add7 sladd7,  ";
+                sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)) phno, a.state, a.country, a.statecd, a.actnameof slactnameof  ";
+
+                sql += "from  ( ";
+                sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+                sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-1000,a.slno)slno,d.docno,d.docdt,a.baleopen,e.slcd,f.slnm,f.fullname,f.regemailid,f.add1,f.add2, f.add3,f.add4,f.add5,f.add6,f.add7,f.gstno, f.panno,f.regmobile, ";
+                sql += "f.slphno,f.phno1,f.state,f.country, f.statecd, f.actnameof ";
+                sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ," + scm + ".t_txn e," + scmf + ".m_subleg f ";
+                sql += "where a.autono = b.autono(+) and a.autono = d.autono(+)and c.autono = e.autono(+) and e.slcd=f.slcd(+) and ";
+                sql += "a.autono=c.autono(+) and decode(a.baleopen,'Y',a.slno-1000,a.slno)=c.slno(+) and c.stkdrcr in ('D','C') and ";
+                sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
+                sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
+                if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
+                if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
+                if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
+                if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";
+                if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   ";
+                sql += ") a, ";
+
+                sql += "" + scm + ".t_txntrans e, " + scm + ".t_txn f, " + scm + ".t_txndtl g, " + scm + ".m_sitem h, " + scm + ".m_group i, " + scm + ".t_batchdtl j, " + scmf + ".m_godown k, " + scmf + ".m_godown l, " + scmf + ".m_uom m, " + scmf + ".m_subleg n ";
+                sql += "where a.blautono = e.autono(+) and a.blautono = f.autono(+) and f.slcd=n.slcd(+) and  ";
+                sql += "g.autono=j.autono(+) and g.slno=j.txnslno(+) and a.blautono = g.autono(+) and a.blslno = g.slno(+) and g.itcd = h.itcd(+) and f.gocd = l.gocd(+)  ";
+                //if (itgrpcd != "") sql += "and f.itgrpcd in (" + itgrpcd + ")  ";
+                //if (itcd != "") sql += "and a.itcd in (" + itcd + ")  ";
+                //if (baleno != "") sql += "and a.baleno||baleyr in (" + baleno + ")  ";
+                sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+)  and a.slno <1000 ";
+                sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+                sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
+                sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
+                sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
+
+                sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
+
+                #region old query
+                //string sql = "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
+                //sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+                //sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
+                //sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.gonm hdrgonm,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail,a.slno,a.docno,a.docdt,a.baleopen, nvl(m.decimals, 0) qdecimal, ";
+                //sql += " f.slcd,nvl(n.fullname, n.slnm) slnm,n.regemailid, n.add1 sladd1, n.add2 sladd2, n.add3 sladd3, n.add4 sladd4, n.add5 sladd5, n.add6 sladd6, n.add7 sladd7,  ";
+                //sql += " n.gstno, n.panno, trim(n.regmobile || decode(n.regmobile, null, '', ',') || n.slphno || decode(n.phno1, null, '', ',' || n.phno1)) phno, n.state, n.country, n.statecd, n.actnameof slactnameof  ";
+                //sql += "from  ( ";
+                //sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+                //sql += "sum(case c.stkdrcr when 'D' then c.qnty when 'C' then c.qnty*-1 end) qnty,a.autono,a.slno,d.docno,d.docdt,a.baleopen ";
+                //sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ";
+                //sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+                //sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and ";
+                //sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
+                //sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
+                //if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
+                //if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
+                //if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
+                //if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";
+                //if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   ";
+                //sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno,a.autono,a.slno,d.docno,d.docdt,a.baleopen ";
+                //sql += ") a, ";
+                //sql += "" + scm + ".t_txntrans e, " + scm + ".t_txn f, " + scm + ".t_txndtl g, " + scm + ".m_sitem h, " + scm + ".m_group i, " + scm + ".t_batchdtl j, " + scmf + ".m_godown k, " + scmf + ".m_godown l, " + scmf + ".m_uom m, " + scmf + ".m_subleg n ";
+                //sql += "where a.blautono = e.autono(+) and a.blautono = f.autono(+) and f.slcd=n.slcd(+) and  ";
+                //sql += "g.autono=j.autono(+) and g.slno=j.txnslno(+) and a.blautono = g.autono(+) and a.blslno = g.slno(+) and g.itcd = h.itcd(+) and f.gocd = l.gocd(+)  ";
+                ////if (itgrpcd != "") sql += "and f.itgrpcd in (" + itgrpcd + ")  ";
+                ////if (itcd != "") sql += "and a.itcd in (" + itcd + ")  ";
+                ////if (baleno != "") sql += "and a.baleno||baleyr in (" + baleno + ")  ";
+                //sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 and a.slno <1000 ";
+                //sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+                //sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
+                //sql += ",f.slcd,nvl(n.fullname, n.slnm),n.regemailid, n.add1, n.add2, n.add3, n.add4, n.add5, n.add6, n.add7,  ";
+                //sql += " n.gstno, n.panno, trim(n.regmobile || decode(n.regmobile, null, '', ',') || n.slphno || decode(n.phno1, null, '', ',' || n.phno1)), n.state, n.country, n.statecd, n.actnameof  ";
+                //sql += "order by a.autono, f.prefno, a.baleno ";
+                #endregion
+
+                DataTable restbl = new DataTable("restbl");
+                restbl = masterHelp.SQLquery(sql);
+
+
+                sql = "select a.autono,a.gocd hdrgocd,b.gonm hdrgonm,b.goadd1 hdrgoadd1,b.goadd2 hdrgoadd2,b.goadd3 hdrgoadd3,b.gophno hdrgophno,b.goemail hdrgoemail ";
+                sql += "from " + scm + ".t_txn a, " + scmf + ".m_godown b, " + scm + ".t_cntrl_hdr c ";
+                sql += "where a.gocd=b.gocd(+) and a.autono=c.autono ";
+                sql += "and c.compcd = '" + COM + "' and nvl(c.cancel, 'N') = 'N' and ";
+                sql += "c.loccd='" + LOC + "' and c.yr_cd = '" + yr_cd + "'  ";
+                if (doccd.retStr() != "") sql += "and c.doccd ='" + doccd + "' ";
+                if (fdate.retStr() != "") sql += "and c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
+                if (tdate.retStr() != "") sql += "and c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
+                DataTable restblgodown = new DataTable("restblgodown");
+                restblgodown = masterHelp.SQLquery(sql);
                 #region Print
                 if (section == "Print")
                 {
-                    string sql = "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
-                    sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
-                    sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
-                    sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.gonm hdrgonm,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail,a.slno,a.docno,a.docdt,a.baleopen, nvl(m.decimals, 0) qdecimal, ";
-                    sql += " a.slcd,nvl(a.fullname, a.slnm) slnm,a.regemailid, a.add1 sladd1, a.add2 sladd2, a.add3 sladd3, a.add4 sladd4, a.add5 sladd5, a.add6 sladd6, a.add7 sladd7,  ";
-                    sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)) phno, a.state, a.country, a.statecd, a.actnameof slactnameof  ";
-
-                    sql += "from  ( ";
-                    sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
-                    sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-1000,a.slno)slno,d.docno,d.docdt,a.baleopen,e.slcd,f.slnm,f.fullname,f.regemailid,f.add1,f.add2, f.add3,f.add4,f.add5,f.add6,f.add7,f.gstno, f.panno,f.regmobile, ";
-                    sql += "f.slphno,f.phno1,f.state,f.country, f.statecd, f.actnameof ";
-                    sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ," + scm + ".t_txn e," + scmf + ".m_subleg f ";
-                    sql += "where a.autono = b.autono(+) and a.autono = d.autono(+)and c.autono = e.autono(+) and e.slcd=f.slcd(+) and ";
-                    sql += "a.autono=c.autono(+) and decode(a.baleopen,'Y',a.slno-1000,a.slno)=c.slno(+) and c.stkdrcr in ('D','C') and ";
-                    sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
-                    sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
-                    if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
-                    if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
-                    if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
-                    if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";
-                    if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   ";
-                    sql += ") a, ";
-
-                    sql += "" + scm + ".t_txntrans e, " + scm + ".t_txn f, " + scm + ".t_txndtl g, " + scm + ".m_sitem h, " + scm + ".m_group i, " + scm + ".t_batchdtl j, " + scmf + ".m_godown k, " + scmf + ".m_godown l, " + scmf + ".m_uom m, " + scmf + ".m_subleg n ";
-                    sql += "where a.blautono = e.autono(+) and a.blautono = f.autono(+) and f.slcd=n.slcd(+) and  ";
-                    sql += "g.autono=j.autono(+) and g.slno=j.txnslno(+) and a.blautono = g.autono(+) and a.blslno = g.slno(+) and g.itcd = h.itcd(+) and f.gocd = l.gocd(+)  ";
-                    //if (itgrpcd != "") sql += "and f.itgrpcd in (" + itgrpcd + ")  ";
-                    //if (itcd != "") sql += "and a.itcd in (" + itcd + ")  ";
-                    //if (baleno != "") sql += "and a.baleno||baleyr in (" + baleno + ")  ";
-                    sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+)  and a.slno <1000 ";
-                    sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
-                    sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
-                    sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
-                    sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
-
-                    sql += "order by a.autono, f.prefno, a.baleno ";
-
-                    #region old query
-                    //string sql = "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
-                    //sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
-                    //sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
-                    //sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.gonm hdrgonm,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail,a.slno,a.docno,a.docdt,a.baleopen, nvl(m.decimals, 0) qdecimal, ";
-                    //sql += " f.slcd,nvl(n.fullname, n.slnm) slnm,n.regemailid, n.add1 sladd1, n.add2 sladd2, n.add3 sladd3, n.add4 sladd4, n.add5 sladd5, n.add6 sladd6, n.add7 sladd7,  ";
-                    //sql += " n.gstno, n.panno, trim(n.regmobile || decode(n.regmobile, null, '', ',') || n.slphno || decode(n.phno1, null, '', ',' || n.phno1)) phno, n.state, n.country, n.statecd, n.actnameof slactnameof  ";
-                    //sql += "from  ( ";
-                    //sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
-                    //sql += "sum(case c.stkdrcr when 'D' then c.qnty when 'C' then c.qnty*-1 end) qnty,a.autono,a.slno,d.docno,d.docdt,a.baleopen ";
-                    //sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ";
-                    //sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
-                    //sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and ";
-                    //sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
-                    //sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
-                    //if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
-                    //if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
-                    //if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
-                    //if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";
-                    //if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   ";
-                    //sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno,a.autono,a.slno,d.docno,d.docdt,a.baleopen ";
-                    //sql += ") a, ";
-                    //sql += "" + scm + ".t_txntrans e, " + scm + ".t_txn f, " + scm + ".t_txndtl g, " + scm + ".m_sitem h, " + scm + ".m_group i, " + scm + ".t_batchdtl j, " + scmf + ".m_godown k, " + scmf + ".m_godown l, " + scmf + ".m_uom m, " + scmf + ".m_subleg n ";
-                    //sql += "where a.blautono = e.autono(+) and a.blautono = f.autono(+) and f.slcd=n.slcd(+) and  ";
-                    //sql += "g.autono=j.autono(+) and g.slno=j.txnslno(+) and a.blautono = g.autono(+) and a.blslno = g.slno(+) and g.itcd = h.itcd(+) and f.gocd = l.gocd(+)  ";
-                    ////if (itgrpcd != "") sql += "and f.itgrpcd in (" + itgrpcd + ")  ";
-                    ////if (itcd != "") sql += "and a.itcd in (" + itcd + ")  ";
-                    ////if (baleno != "") sql += "and a.baleno||baleyr in (" + baleno + ")  ";
-                    //sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 and a.slno <1000 ";
-                    //sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
-                    //sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
-                    //sql += ",f.slcd,nvl(n.fullname, n.slnm),n.regemailid, n.add1, n.add2, n.add3, n.add4, n.add5, n.add6, n.add7,  ";
-                    //sql += " n.gstno, n.panno, trim(n.regmobile || decode(n.regmobile, null, '', ',') || n.slphno || decode(n.phno1, null, '', ',' || n.phno1)), n.state, n.country, n.statecd, n.actnameof  ";
-                    //sql += "order by a.autono, f.prefno, a.baleno ";
-                    #endregion
-
-                    DataTable restbl = new DataTable("restbl");
-                    restbl = masterHelp.SQLquery(sql);
-
-
-                    sql = "select a.autono,a.gocd hdrgocd,b.gonm hdrgonm,b.goadd1 hdrgoadd1,b.goadd2 hdrgoadd2,b.goadd3 hdrgoadd3,b.gophno hdrgophno,b.goemail hdrgoemail ";
-                    sql += "from " + scm + ".t_txn a, " + scmf + ".m_godown b, " + scm + ".t_cntrl_hdr c ";
-                    sql += "where a.gocd=b.gocd(+) and a.autono=c.autono ";
-                    sql += "and c.compcd = '" + COM + "' and nvl(c.cancel, 'N') = 'N' and ";
-                    sql += "c.loccd='" + LOC + "' and c.yr_cd = '" + yr_cd + "'  ";
-                    if (doccd.retStr() != "") sql += "and c.doccd ='" + doccd + "' ";
-                    if (fdate.retStr() != "") sql += "and c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
-                    if (tdate.retStr() != "") sql += "and c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
-                    DataTable restblgodown = new DataTable("restblgodown");
-                    restblgodown = masterHelp.SQLquery(sql);
-
                     if (restbl.Rows.Count == 0)
                     {
                         return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
@@ -428,6 +428,10 @@ namespace Improvar.Controllers
                 #region Show Report
                 else if (section == "Show Report")
                 {
+                    if (tbl.Rows.Count == 0)
+                    {
+                        return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                    }
                     if (tbl.Rows.Count != 0)
                     {
                         DataTable IR = new DataTable("mstrep");
@@ -489,6 +493,15 @@ namespace Improvar.Controllers
                 #endregion
                 #region EXCEL
                 else {
+                    if (VE.MENU_PARA == "KHSR")
+                    { tbl = restbl;
+                        filename = "Khasra_";
+                    }
+                    else { filename = "Receive from Mutia_"; }
+                       if (tbl.Rows.Count == 0)
+                    {
+                        return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                    }
                     string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
                     Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo/ PageSlNo.";
                     ExcelPackage ExcelPkg = new ExcelPackage();
@@ -544,7 +557,8 @@ namespace Improvar.Controllers
                     int exlrowno = 5; var rslno = 0;
                     for (int i = 0; i < tbl.Rows.Count; i++)
                     {
-                        if (tbl.Rows[i]["rslno"].retShort() != rslno && i != 0)
+                        var curslno = VE.MENU_PARA == "KHSR" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                        if (curslno != rslno && i != 0)
                         {
                             modelTable = wsSheet1.Cells[exlrowno, 1];
                             modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -610,22 +624,22 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
                         wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
                         wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
-                        wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["pcstype"].retStr();
-                        wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["rslno"].retShort();
+                        wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" ? "":tbl.Rows[i]["pcstype"].retStr();
+                        wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA== "KHSR"? tbl.Rows[i]["slno"].retShort():tbl.Rows[i]["rslno"].retShort();
                         wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
                         wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
                         wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl();
                         wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["uomcd"].retStr();
                         wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["lrno"].retStr();
                         wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
-                        rslno = tbl.Rows[i]["rslno"].retShort();
+                        rslno = VE.MENU_PARA == "KHSR" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
                         exlrowno++;
                     }
                     Response.Clear();
                     Response.ClearContent();
                     Response.Buffer = true;
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("Content-Disposition", "attachment; filename=Receive from Mutia_" + tdocno + ".xlsx");
+                    Response.AddHeader("Content-Disposition", "attachment; filename="+filename + tdocno + ".xlsx");
                     Response.BinaryWrite(ExcelPkg.GetAsByteArray());
                     Response.Flush();
                     Response.Close();

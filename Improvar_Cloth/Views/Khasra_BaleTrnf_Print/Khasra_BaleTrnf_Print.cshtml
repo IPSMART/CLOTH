@@ -136,7 +136,8 @@
                         <div class="editor-field" style="margin-top:8px;">
                             <input type="submit" value="Show Report" name="Command" class="btn btn-default" sstyle="width:66px;" formtarget="_blank" />
                         </div>
-                    </div><div class="col-md-4"></div>
+                    </div>
+                    <div class="col-md-4"></div>
                     <div class="col-md-9">
                         <div class="editor-field" style="margin-top:8px;">
                             <input type="submit" value="Excel" name="Command" class="btn btn-info" style="width:66px;" formtarget="_blank" />
@@ -147,9 +148,17 @@
                 else {   <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
-                    <div class="col-LG-10">
+                    <div class="col-md-5">
                         <input type="submit" value="Print" name="Command" class="btn btn-default" style="width:66px;" formtarget="_blank" />
                     </div>
+                    @if (Model.MENU_PARA != "PYMT")
+                    { <div class="col-md-4"></div>
+                    <div class="col-md-5">
+                        <div class="editor-field">
+                            <input type="submit" value="Excel" name="Command" class="btn btn-info" style="width:66px;" formtarget="_blank" />
+                        </div>
+                    </div> }
+
                 </div>
                 }
 
