@@ -105,7 +105,7 @@ namespace Improvar.Controllers
 
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 string yr_cd = CommVar.YearCode(UNQSNO);
-                string section = "", filename = "" ;
+                string section = "", filename = "";
                 switch (Command)
                 {
                     case "Print": section = "Print"; break;
@@ -494,18 +494,21 @@ namespace Improvar.Controllers
                 #region EXCEL
                 else {
                     if (VE.MENU_PARA == "KHSR")
-                    { tbl = restbl;
+                    {
+                        tbl = restbl;
                         filename = "Khasra_";
                     }
                     else { filename = "Receive from Mutia_"; }
-                       if (tbl.Rows.Count == 0)
+                    if (tbl.Rows.Count == 0)
                     {
                         return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
                     }
                     string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
                     Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo/ PageSlNo.";
+                    var sheetName = "";
+                    sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : "T_BiltyR_Mutia";
                     ExcelPackage ExcelPkg = new ExcelPackage();
-                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("T_BiltyR_Mutia");
+                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add(sheetName);
                     wsSheet1.Column(1).Width = 11.33;
                     wsSheet1.Column(2).Width = 7.56;
                     wsSheet1.Column(3).Width = 18.11;
@@ -537,7 +540,7 @@ namespace Improvar.Controllers
                         //    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                         //    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                         //    Rng.Style.Font.Size = 11; Rng.Style.Font.Bold = true;
-                        wsSheet1.Cells["A3:A3"].Value = "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                        wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
                     }
                     using (ExcelRange Rng = wsSheet1.Cells["A4:K4"])
                     {
@@ -624,8 +627,8 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
                         wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
                         wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
-                        wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" ? "":tbl.Rows[i]["pcstype"].retStr();
-                        wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA== "KHSR"? tbl.Rows[i]["slno"].retShort():tbl.Rows[i]["rslno"].retShort();
+                        wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                        wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
                         wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
                         wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
                         wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl();
@@ -639,7 +642,7 @@ namespace Improvar.Controllers
                     Response.ClearContent();
                     Response.Buffer = true;
                     Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("Content-Disposition", "attachment; filename="+filename + tdocno + ".xlsx");
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + tdocno + ".xlsx");
                     Response.BinaryWrite(ExcelPkg.GetAsByteArray());
                     Response.Flush();
                     Response.Close();
