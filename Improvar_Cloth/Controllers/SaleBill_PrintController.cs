@@ -2791,16 +2791,16 @@ namespace Improvar.Controllers
                                         }
                                     }
 
-                                    if (batch_data[a]["scmdiscrate"].retDbl() > 0)
-                                    {
-                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                        pcsdesc += "-SL " + batch_data[a]["scmdiscrate"].retStr() + "% ";
-                                    }
-                                    //if (batch_data[a]["tddiscrate"].retDbl() > 0)
+                                    //if (batch_data[a]["scmdiscrate"].retDbl() > 0)
                                     //{
                                     //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                    //    pcsdesc += "-SL " + batch_data[a]["tddiscrate"].retStr() + "% ";
+                                    //    pcsdesc += "-SL " + batch_data[a]["scmdiscrate"].retStr() + "% ";
                                     //}
+                                    if (batch_data[a]["tddiscrate"].retDbl() > 0)
+                                    {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
+                                        pcsdesc += "-SL " + batch_data[a]["tddiscrate"].retStr() + "% ";
+                                    }
                                     //if (batch_data[a]["discrate"].retDbl() > 0)
                                     //{
                                     //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
