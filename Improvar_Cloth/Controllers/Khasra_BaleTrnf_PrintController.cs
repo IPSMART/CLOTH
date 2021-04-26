@@ -515,8 +515,10 @@ namespace Improvar.Controllers
                     wsSheet1.Column(4).Width = 4.33;
                     wsSheet1.Column(5).Width = 3.22;
                     wsSheet1.Column(6).Width = 8.11;
+                    wsSheet1.Column(6).Style.Font.Bold = true;
                     wsSheet1.Column(7).Width = 3.11;
                     wsSheet1.Column(8).Width = 6.33;
+                    wsSheet1.Column(8).Style.Font.Bold = true;
                     wsSheet1.Column(9).Width = 4.56;
                     wsSheet1.Column(10).Width = 11.22;
                     wsSheet1.Column(11).Width = 6.89;
@@ -623,7 +625,7 @@ namespace Improvar.Controllers
                             wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
                             exlrowno++;
                         }
-
+                        wsSheet1.Row(exlrowno).Style.Font.Size = 9;
                         wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
                         wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
                         wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
