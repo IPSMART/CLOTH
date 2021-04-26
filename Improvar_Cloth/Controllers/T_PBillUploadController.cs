@@ -921,7 +921,8 @@ namespace Improvar.Controllers
                         //TTXNDTL.DISCAMT = discamt;
                         //TTXNDTL.SCMDISCTYPE = "F";
                         //TTXNDTL.SCMDISCRATE = discamt1;
-                        //TTXNDTL.SCMDISCAMT = discamt1;
+                        string SIZENM = inrdr["SIZENM"].retStr(); ;
+                        TTXNDTL.SIZECD = Salesfunc.CreateSizeMaster(SIZENM);
                         TTXNDTL.GLCD = PURGLCD;
                         TTXNDTL.TXBLVAL = TTXNDTL.RATE;
                         txable += TTXNDTL.TXBLVAL.retDbl();
@@ -1003,7 +1004,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.SCMDISCTYPE = TTXNDTL.SCMDISCTYPE;
                         TBATCHDTL.TDDISCRATE = TTXNDTL.TDDISCRATE;
                         TBATCHDTL.TDDISCTYPE = TTXNDTL.TDDISCTYPE;
-                        //TBATCHDTL.DIA = TTXNDTL.DIA;
+                        TBATCHDTL.SIZECD = TTXNDTL.SIZECD;
                         //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
                         //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
                         //TBATCHDTL.SHADE = TTXNDTL.SHADE;

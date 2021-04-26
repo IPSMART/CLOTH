@@ -519,6 +519,7 @@ namespace Improvar.Controllers
                     wsSheet1.Column(7).Width = 3.11;
                     wsSheet1.Column(8).Width = 6.33;
                     wsSheet1.Column(8).Style.Font.Bold = true;
+                    wsSheet1.Column(8).Style.Numberformat.Format = "0.00";
                     wsSheet1.Column(9).Width = 4.56;
                     wsSheet1.Column(10).Width = 11.22;
                     wsSheet1.Column(11).Width = 6.89;
@@ -633,7 +634,7 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
                         wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
                         wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
-                        wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl();
+                        wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl().toRound(2);
                         wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["uomcd"].retStr();
                         wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["lrno"].retStr();
                         wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();

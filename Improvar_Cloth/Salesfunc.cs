@@ -2620,7 +2620,7 @@ namespace Improvar
             return syscnfgdt;
 
         }
-        public void CreateSizeMaster(string SIZENM)
+        public string CreateSizeMaster(string SIZENM)
         {
             try
             {
@@ -2658,11 +2658,12 @@ namespace Improvar
                     }
                     OraCon.Dispose();
                 }
+                return sizecd;
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                //return ex.Message;
+                return "";
             }
         }
     }
