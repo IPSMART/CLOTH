@@ -3963,7 +3963,7 @@ namespace Improvar.Controllers
                     }
                     string prodglcd = (VE.TTXNDTL != null) ? VE.TTXNDTL[0].GLCD.retStr() : "";
 
-                    sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
+                    sql = "select b.rogl, b.tcsgl,b.TCSPURGLCD, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
                     sql += "'" + prodglcd.retStr() + "' prodglcd, ";
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     else sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
@@ -5082,9 +5082,10 @@ namespace Improvar.Controllers
                         if (dbamt != 0)
                         {
                             string adrcr = cr;
-
+                            //TCSPURGLCD
+                            var TCSGLCD = VE.MENU_PARA == "PB" ? tbl.Rows[0]["TCSPURGLCD"].ToString() : tbl.Rows[0]["tcsgl"].ToString();
                             isl = isl + 1;
-                            dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, tbl.Rows[0]["tcsgl"].ToString(), sslcd,
+                            dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, TCSGLCD, sslcd,
                                     dbamt, strrem, tbl.Rows[0]["parglcd"].ToString(), TTXN.SLCD, 0, 0, 0);
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                             if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;

@@ -135,12 +135,61 @@ namespace Improvar.Controllers
                 string filename = "";
                 if (reptype == "AE" || reptype == "PE")
                 {
-                    string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
-
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
-                    if (reptype == "PE")
+                    if(reptype=="AE")
                     {
+                        string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
+                        
+                        using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
+                        {
+                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                            Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            string[] Header = Excel_Header.Split('|');
+                            for (int j = 0; j < Header.Length; j++)
+                            {
+                                wsSheet1.Cells[1, j + 1].Value = Header[j];
+                            }
+                        }
+                        filename = "AdittyaBirlaStock".retRepname();
+                        int exlrowno = 2; var rslno = 0;
+                        for (int i = 0; i < tbl.Rows.Count; i++)
+                        {
+                            double opqnty = 0;
+                            if (tbl.Rows[i]["doctag"].retStr() == "OP" || tbl.Rows[i]["doctag"].retStr() == "PB" || tbl.Rows[i]["doctag"].retStr() == "TI" || tbl.Rows[i]["doctag"].retStr() == "SR")
+                            {
+                                opqnty += tbl.Rows[i]["qnty"].retDbl();
+                            }
+                            else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "PR" || tbl.Rows[i]["doctag"].retStr() == "TO")
+                            {
+                                opqnty -= tbl.Rows[i]["qnty"].retDbl();
+                            }
+                            else
+                            {
+                                opqnty += tbl.Rows[i]["qnty"].retDbl();
+                            }
+                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
+                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
+                            wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
+                            wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retStr();
+                            wsSheet1.Cells[exlrowno, 5].Value = opqnty.retDbl();
+                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["rprate"].retDbl();
+
+                            exlrowno++;
+
+                        }
+                    }
+                    else
+                    {
+                                                     
+
+                        string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
+                      
                         using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
                         {
                             Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -172,73 +221,37 @@ namespace Improvar.Controllers
                             }
                         }
                         filename = "PurchasebillwiseStock Lalf";
-                    }
-                    else
-                    {
-                        using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
-                        {
-                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                            Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
-                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
-                            Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                            string[] Header = Excel_Header.Split('|');
-                            for (int j = 0; j < Header.Length; j++)
-                            {
-                                wsSheet1.Cells[1, j + 1].Value = Header[j];
-                            }
-                        }
-                        filename = "AdittyaBirlaStock".retRepname();
-                    }
-                  
-                    if (reptype == "AE")
-                    {
-                        int exlrowno = 2; var rslno = 0;
-                        for (int i = 0; i < tbl.Rows.Count; i++)
-                        {
-                            double opqnty = 0;
-                            if (tbl.Rows[i]["doctag"].retStr() == "OP" || tbl.Rows[i]["doctag"].retStr() == "PB"|| tbl.Rows[i]["doctag"].retStr() == "TI"|| tbl.Rows[i]["doctag"].retStr() == "SR")
-                            {
-                                opqnty += tbl.Rows[i]["qnty"].retDbl();
-                            }
-                            else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "PR"|| tbl.Rows[i]["doctag"].retStr() == "TO")
-                            {
-                                opqnty -= tbl.Rows[i]["qnty"].retDbl();
-                            }
-                            else
-                            {
-                                opqnty += tbl.Rows[i]["qnty"].retDbl();
-                            }
-                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
-                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
-                            wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 5].Value = opqnty.retDbl();
-                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["rprate"].retDbl();
-
-                            exlrowno++;
-
-                        }
-                    }
-                    else {
                         int exlrowno = 4; var rslno = 0;
                         for (int i = 0; i < tbl.Rows.Count; i++)
                         {
-                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
-                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
-                            wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retShort();
-                            wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["baleno"].retStr();
-                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["qnty"].retDbl();
-                            wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["rprate"].retDbl();
+                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i][""].retStr();
+                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["docdt"].retDateStr();
+                            wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["barno"].retStr();
+                            wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["docno"].retShort();
+                            wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["itgrpnm"].retStr();
+                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["shapcd"].retStr();
+                            wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["prefno"].retStr();
+                            wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["prefdt"].retDateStr("yyyy", "dd/MM/yyyy");
+                            wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["styleno"].retStr();
+                            wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["shade"].retStr();
+                            wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["sizenm"].retStr();
+                            wsSheet1.Cells[exlrowno, 12].Value = tbl.Rows[i][""].retStr();
+                            if (tbl.Rows[i]["doctag"].retStr() == "PB")
+                            {
+                                wsSheet1.Cells[exlrowno, 13].Value = wsSheet1.Cells[exlrowno, 13].Value.retDbl() + tbl.Rows[i]["qnty"].retDbl();
+                                if (MENU_PARA != "Q") wsSheet1.Cells[exlrowno, 15].Value = wsSheet1.Cells[exlrowno, 15].Value.retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                               
+                            }
+                           // wsSheet1.Cells[exlrowno, 13].Value = tbl.Rows[i]["qnty"].retDbl();
+                            wsSheet1.Cells[exlrowno, 14].Value = tbl.Rows[i]["rprate"].retDbl();
+                           // wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["txblval"].retDbl();
+                            wsSheet1.Cells[exlrowno, 16].Value = tbl.Rows[i][""].retStr();
+                            wsSheet1.Cells[exlrowno, 17].Value = tbl.Rows[i][""].retDbl();
 
                             exlrowno++;
 
                         }
-                    }
-                    
+                    }                    
                     //for download//
                     Response.Clear();
                     Response.ClearContent();
