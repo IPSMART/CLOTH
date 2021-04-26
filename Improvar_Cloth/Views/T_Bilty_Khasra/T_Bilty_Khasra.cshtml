@@ -96,7 +96,7 @@
 
         if ("@Model.MENU_PARA" == "TRWB") {
             if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
-            if (!emptyFieldCheck("Please Select / Enter Subledger","SLCD")) { return false; }
+            if (!emptyFieldCheck("Please Select / Enter Subledger", "SLCD")) { return false; }
         }
         return true;
     }
@@ -311,12 +311,20 @@
         $('.PopUp_Backround').fadeOut();
     }
     function GodownBaleopenFill(index) {
-        debugger;
         var GOCD = $("#GOCD_" + index).val();
         var GONM = $("#GONM_" + index).val();
         var FLAG1 = $("#FLAG1_" + index).val();
+        const keyType = event.type;
+        if (keyType == "keydown") {
+            var checkedblopn = document.getElementById("CheckedBALEOPEN_" + index).checked;
+            if (checkedblopn) {
+                document.getElementById("CheckedBALEOPEN_" + index).checked = false;
+            }
+            else {
+                document.getElementById("CheckedBALEOPEN_" + index).checked=true;
+            }
+        }
         var BALEOPEN = document.getElementById("CheckedBALEOPEN_" + index).checked;
-
         var BLAUTONO = $("#BLAUTONO_" + index).val();
         var BALENO = $("#BALENO_" + index).val();
 
@@ -602,27 +610,27 @@
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Mutia Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0','trnsportlinkcd')" />
                         </div>
                     </div>
-                                    <div class="col-md-9">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Mutia Name", @readonly = "readonly", tabindex = "-1" } })
-                                        </div>
-                                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Mutia Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
                 }
                 @if (Model.MENU_PARA != "KHSR")
                 {
                     <div class="col-md-4" style="width:auto">
                         <div class="editor-label" style="margin-top: 6px;">
-                         @Html.Label("", "Subledger")
-                           @if (Model.MENU_PARA == "TRWB")
-                           { <b style="color:Red;">*</b>}
+                            @Html.Label("", "Subledger")
+                            @if (Model.MENU_PARA == "TRWB")
+                            { <b style="color:Red;">*</b>}
                         </div>
                     </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Subledger Details','SLCD','SLCD=SLCD=1/SLNM1=slnm=0','partylinkcd');", @placeholder = "SLCD", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')" />
-                                        </div>
-                                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Subledger Details','SLCD','SLCD=SLCD=1/SLNM1=slnm=0','partylinkcd');", @placeholder = "SLCD", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')" />
+                        </div>
+                    </div>
                                     <div class="col-md-9" style="width:auto">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.SLNM1, new { htmlAttributes = new { @class = "form-control", id = "SLNM1", maxlength = 45, @title = "Only for View", @placeholder = "Subledger Name", @readonly = "readonly", tabindex = "-1" } })
