@@ -185,10 +185,7 @@ namespace Improvar.Controllers
                         }
                     }
                     else
-                    {
-                                                     
-
-                        string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
+                    {string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
                       
                         using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
                         {
@@ -216,38 +213,35 @@ namespace Improvar.Controllers
                             string[] Header = Excel_Header.Split('|');
                             for (int j = 0; j < Header.Length; j++)
                             {
-                                wsSheet1.Cells[4, j + 1].Value = Header[j];
+                                wsSheet1.Cells[3, j + 1].Value = Header[j];
 
                             }
                         }
-                        filename = "PurchasebillwiseStock Lalf";
+                        filename = "PurchasebillwiseStock";
                         int exlrowno = 4; var rslno = 0;
                         for (int i = 0; i < tbl.Rows.Count; i++)
                         {
-                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i][""].retStr();
-                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["docdt"].retDateStr();
+                            wsSheet1.Cells[exlrowno, 1].Value = "";
+                            wsSheet1.Cells[exlrowno, 2].Value = "";// tbl.Rows[i][""].retDateStr("yyyy", "dd/MM/yyyy");//docdt
                             wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["barno"].retStr();
-                            wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["docno"].retShort();
+                            wsSheet1.Cells[exlrowno, 4].Value = "";// tbl.Rows[i][""].retShort();//docno
                             wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["itgrpnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["shapcd"].retStr();
-                            wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["prefno"].retStr();
-                            wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["prefdt"].retDateStr("yyyy", "dd/MM/yyyy");
+                            wsSheet1.Cells[exlrowno, 6].Value = "";// tbl.Rows[i][""].retStr();//shapcode
+                            wsSheet1.Cells[exlrowno, 7].Value = "";//tbl.Rows[i][""].retStr();//prefno
+                            wsSheet1.Cells[exlrowno, 8].Value = "";//tbl.Rows[i][""].retDateStr("yyyy", "dd/MM/yyyy");//prefdt
                             wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["styleno"].retStr();
-                            wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["shade"].retStr();
-                            wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["sizenm"].retStr();
-                            wsSheet1.Cells[exlrowno, 12].Value = tbl.Rows[i][""].retStr();
+                            wsSheet1.Cells[exlrowno, 10].Value = "";// tbl.Rows[i][""].retStr();//shade
+                            wsSheet1.Cells[exlrowno, 11].Value = "";// tbl.Rows[i][""].retStr();//sizenm
+                            wsSheet1.Cells[exlrowno, 12].Value = "";//tbl.Rows[i][""].retStr();
                             if (tbl.Rows[i]["doctag"].retStr() == "PB")
                             {
                                 wsSheet1.Cells[exlrowno, 13].Value = wsSheet1.Cells[exlrowno, 13].Value.retDbl() + tbl.Rows[i]["qnty"].retDbl();
                                 if (MENU_PARA != "Q") wsSheet1.Cells[exlrowno, 15].Value = wsSheet1.Cells[exlrowno, 15].Value.retDbl() + tbl.Rows[i]["txblval"].retDbl();
                                
                             }
-                           // wsSheet1.Cells[exlrowno, 13].Value = tbl.Rows[i]["qnty"].retDbl();
                             wsSheet1.Cells[exlrowno, 14].Value = tbl.Rows[i]["rprate"].retDbl();
-                           // wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["txblval"].retDbl();
-                            wsSheet1.Cells[exlrowno, 16].Value = tbl.Rows[i][""].retStr();
-                            wsSheet1.Cells[exlrowno, 17].Value = tbl.Rows[i][""].retDbl();
-
+                            wsSheet1.Cells[exlrowno, 16].Value = "";// tbl.Rows[i][""].retStr();
+                            wsSheet1.Cells[exlrowno, 17].Value = "";//tbl.Rows[i][""].retDbl();
                             exlrowno++;
 
                         }
