@@ -53,7 +53,7 @@ namespace Improvar.Controllers
                                          where i.COMPCD == com
                                          select new DropDown_list3() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
                     VE.TEXTBOX5 = MasterHelp.ComboFill("loccd", VE.DropDown_list3, 0, 1);
-
+                    VE.Compnm = CommVar.Compcd(UNQSNO);
                     VE.DefaultView = true;
                     return View(VE);
                 }
