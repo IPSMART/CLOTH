@@ -332,7 +332,7 @@ namespace Improvar.Controllers
             try
             {
                 string SkipGocd = "'TR'" + (code.retStr() == "" ? "" : "," + code.retSqlformat());
-                var str = masterHelp.GOCD_help(val, SkipGocd);
+                var str = masterHelp.GOCD_help(val, "");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
