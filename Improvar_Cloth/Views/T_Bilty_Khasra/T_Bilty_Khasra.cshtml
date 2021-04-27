@@ -72,7 +72,7 @@
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         var GridRowMain = $("#T_Bilty_Khasra_Main > tbody > tr").length;
 
-        if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
+        if ("@Model.MENU_PARA" == "TRWB") {
             var gocd = $("#GOCD").val();
             if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             for (var i = 0; i < GridRowMain; i++) {
