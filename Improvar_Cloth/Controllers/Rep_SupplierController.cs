@@ -79,59 +79,60 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) loccd = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 string reptype = VE.TEXTBOX1.retStr();
-
-                string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
-                sql += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
-                sql += "nvl(rp.rate, 0) rprate, ";
-                sql += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
-                sql += " ";
-                sql += "(select d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-                sql += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
-                sql += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
-                sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-                sql += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
-                sql += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
-                sql += "group by d.compcd, d.loccd, a.barno, 'OP' ";
-                sql += "union all ";
-                sql += "select d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-                sql += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
-                sql += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
-                sql += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-                sql += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
-                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
-                sql += "group by d.compcd, d.loccd, a.barno, c.doctag ) a, ";
-                sql += " ";
-                sql += "(select barno, effdt, prccd, rate from ( ";
-                sql += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".t_batchmst_price a ";
-                sql += "where a.effdt <= to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b, ";
-                sql += " ";
-                sql += "(select barno, effdt, prccd, rate from ( ";
-                sql += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".t_batchmst_price a ";
-                sql += "where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, ";
-                sql += " (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += " from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
-                sql += " ";
-                sql += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, ";
-                sql += "" + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
-                sql += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
-                sql += "a.barno = b.barno(+) and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and ";
-                sql += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) ";
-                if (slcd.retStr() != "") sql += "and e.slcd in (" + slcd + ") ";
-                if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
-                if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
-                sql += "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
-                DataTable tbl = MasterHelp.SQLquery(sql);
-                if (reptype != "PE")
+                DataTable tbl = new DataTable(); DataTable LOCDT = new DataTable("loccd");
+                if (reptype!="PE")
                 {
-                    if (tbl.Rows.Count == 0) return Content("no records..");
+                    string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
+                    sql += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
+                    sql += "nvl(rp.rate, 0) rprate, ";
+                    sql += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
+                    sql += " ";
+                    sql += "(select d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
+                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
+                    sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+                    sql += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
+                    sql += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
+                    sql += "group by d.compcd, d.loccd, a.barno, 'OP' ";
+                    sql += "union all ";
+                    sql += "select d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
+                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
+                    sql += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+                    sql += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
+                    sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+                    sql += "group by d.compcd, d.loccd, a.barno, c.doctag ) a, ";
+                    sql += " ";
+                    sql += "(select barno, effdt, prccd, rate from ( ";
+                    sql += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql += "from " + scm + ".t_batchmst_price a ";
+                    sql += "where a.effdt <= to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b, ";
+                    sql += " ";
+                    sql += "(select barno, effdt, prccd, rate from ( ";
+                    sql += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql += "from " + scm + ".t_batchmst_price a ";
+                    sql += "where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, ";
+                    sql += " (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql += " from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
+                    sql += " ";
+                    sql += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, ";
+                    sql += "" + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
+                    sql += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
+                    sql += "a.barno = b.barno(+) and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and ";
+                    sql += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) ";
+                    if (slcd.retStr() != "") sql += "and e.slcd in (" + slcd + ") ";
+                    if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
+                    if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
+                    sql += "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
+                    tbl = MasterHelp.SQLquery(sql);
+                   if (tbl.Rows.Count == 0) return Content("no records..");
+                   
+                    string[] LOCTBLCOLS = new string[] { "loccd", "locnm" };
+                    LOCDT = tbl.DefaultView.ToTable(true, LOCTBLCOLS);
                 }
-                DataTable LOCDT = new DataTable("loccd");
-                string[] LOCTBLCOLS = new string[] { "loccd", "locnm" };
-                LOCDT = tbl.DefaultView.ToTable(true, LOCTBLCOLS);
+              
 
                 string filename = "";
                 if (reptype == "AE" || reptype == "PE")
@@ -219,14 +220,14 @@ namespace Improvar.Controllers
                                 wsSheet1.Cells[3, j + 1].Value = Header[j];
                             }
                         }
-                        filename = "PurchasebillwiseStock";
+                        filename = "PurchasebillwiseStock".retRepname();
                         int exlrowno = 4;
                         for (int i = 0; i < Purtbl.Rows.Count; i++)
                         {
                             wsSheet1.Cells[exlrowno, 1].Value = "";
                             wsSheet1.Cells[exlrowno, 2].Value = Purtbl.Rows[i]["docdt"].retDateStr("yyyy", "dd/MM/yyyy");//docdt
                             wsSheet1.Cells[exlrowno, 3].Value = Purtbl.Rows[i]["barno"].retStr();
-                            wsSheet1.Cells[exlrowno, 4].Value = Purtbl.Rows[i]["docno"].retShort();//docno
+                            wsSheet1.Cells[exlrowno, 4].Value = Purtbl.Rows[i]["docno"].retStr();//docno
                             wsSheet1.Cells[exlrowno, 5].Value = Purtbl.Rows[i]["itgrpnm"].retStr();
                             wsSheet1.Cells[exlrowno, 6].Value = Purtbl.Rows[i]["sapcode"].retStr();//sapcode
                             wsSheet1.Cells[exlrowno, 7].Value = Purtbl.Rows[i]["prefno"].retStr();//prefno
@@ -235,12 +236,9 @@ namespace Improvar.Controllers
                             wsSheet1.Cells[exlrowno, 10].Value = Purtbl.Rows[i]["shade"].retStr();//shade
                             wsSheet1.Cells[exlrowno, 11].Value = Purtbl.Rows[i]["sizecd"].retStr();//sizecd
                             wsSheet1.Cells[exlrowno, 12].Value = "";
-                            if (Purtbl.Rows[i]["doctag"].retStr() == "PB")
-                            {
-                                wsSheet1.Cells[exlrowno, 13].Value = wsSheet1.Cells[exlrowno, 13].Value.retDbl() + Purtbl.Rows[i]["qnty"].retDbl();
-                                if (MENU_PARA != "Q") wsSheet1.Cells[exlrowno, 15].Value = wsSheet1.Cells[exlrowno, 15].Value.retDbl() + Purtbl.Rows[i]["txblval"].retDbl();
-                            }
+                            wsSheet1.Cells[exlrowno, 13].Value =  Purtbl.Rows[i]["qnty"].retDbl();
                             wsSheet1.Cells[exlrowno, 14].Value = Purtbl.Rows[i]["rprate"].retDbl();
+                            wsSheet1.Cells[exlrowno, 15].Value = Purtbl.Rows[i]["txblval"].retDbl();
                             wsSheet1.Cells[exlrowno, 16].Value = Purtbl.Rows[i]["discamt"].retDbl();
                             wsSheet1.Cells[exlrowno, 17].Value = Purtbl.Rows[i]["txblval"].retDbl()- (Purtbl.Rows[i]["discamt"].retDbl()+ Purtbl.Rows[i]["othramt"].retDbl());
                             exlrowno++;
