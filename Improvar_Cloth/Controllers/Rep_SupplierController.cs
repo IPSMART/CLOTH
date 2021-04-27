@@ -80,7 +80,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("loccdvalue")) loccd = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 string reptype = VE.TEXTBOX1.retStr();
                 DataTable tbl = new DataTable(); DataTable LOCDT = new DataTable("loccd");
-                if (reptype!="PE")
+                if (reptype!= "PurchasebillwiseStock")
                 {
                     string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                     sql += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
@@ -135,11 +135,11 @@ namespace Improvar.Controllers
               
 
                 string filename = "";
-                if (reptype == "AE" || reptype == "PE")
+                if (reptype == "AdityaBirlaStock" || reptype == "PurchasebillwiseStock")
                 {
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
-                    if (reptype == "AE")
+                    if (reptype == "AdityaBirlaStock")
                     {
                         string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
 
@@ -650,12 +650,12 @@ namespace Improvar.Controllers
             sql += ") summ ";
             sql += "where summ.qnty > 0 ";
             sql += ")  ";
-            sql += "group by ";
-            sql += " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno), ";
-            sql += " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ";
             if (slcd.retStr() != "") sql += "and e.slcd in (" + slcd + ") ";
             if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
             if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
+            sql += "group by ";
+            sql += " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno), ";
+            sql += " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ";
             sql += "order by barno ";
             DataTable tbl = MasterHelp.SQLquery(sql);
             return tbl;
