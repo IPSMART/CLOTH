@@ -80,7 +80,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("loccdvalue")) loccd = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 string reptype = VE.TEXTBOX1.retStr();
                 DataTable tbl = new DataTable(); DataTable LOCDT = new DataTable("loccd");
-                if (reptype != "PurchasebillwiseStock")
+                if (reptype != "PurchasebillwiseStock"||reptype != "AdityaBirlaSale")
                 {
                     string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                     sql += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
@@ -135,7 +135,7 @@ namespace Improvar.Controllers
 
 
                 string filename = "";
-                if (reptype == "AdityaBirlaStock" || reptype == "PurchasebillwiseStock")
+                if (reptype == "AdityaBirlaStock" || reptype == "PurchasebillwiseStock" || reptype == "AdityaBirlaSale")
                 {
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
@@ -188,7 +188,10 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        DataTable Purtbl = retSalesxxxxxxxxxxxxxxxxxxx(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd);
+                        DataTable Purtbl = new DataTable();
+                        if (reptype == "AdityaBirlaSale") { Purtbl = retSalesWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "AdittyaBirlaSales".retRepname(); }
+                        else { Purtbl = retPurchaseWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "PurchasebillwiseStock".retRepname(); }
+
                         if (Purtbl.Rows.Count == 0) return Content("no records..");
                         string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
                         using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
@@ -220,7 +223,7 @@ namespace Improvar.Controllers
                                 wsSheet1.Cells[3, j + 1].Value = Header[j];
                             }
                         }
-                        filename = "PurchasebillwiseStock".retRepname();
+                       
                         int exlrowno = 4;
                         for (int i = 0; i < Purtbl.Rows.Count; i++)
                         {
@@ -751,7 +754,7 @@ namespace Improvar.Controllers
             //order by barno
         }
 
-        public DataTable retSalesxxxxxxxxxxxxxxxxxxx(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")
+        public DataTable retSalesWiseStock(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "";
@@ -776,7 +779,7 @@ namespace Improvar.Controllers
             sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e, " + scm + ".t_txndtl f ";
             sql += Environment.NewLine + "where a.barno = b.barno(+)  and c.autono = f.autono ";
             sql += Environment.NewLine + "and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = '" + COM + "' ";//ONLY SALES WILL COME
-            sql += Environment.NewLine + "and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR')  and e.doctype not in ('SB','SBDIR','SBCM')  and a.stkdrcr in ('D','C') and d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
+            sql += Environment.NewLine + "and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR')  and e.doctype in ('SB','SBDIR','SBCM')  and a.stkdrcr in ('D','C') and d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
             sql += Environment.NewLine + "and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
             sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd ";
             sql += Environment.NewLine + " ) a, ";
