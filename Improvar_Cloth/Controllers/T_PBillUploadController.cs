@@ -851,8 +851,8 @@ namespace Improvar.Controllers
                     double tcsamt = 0;// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
                     //TTXN.BLAMT = blINV_VALUE + tcsamt;
                     //TMPVE.RoundOff = true;
-                    //TTXN.TDSCODE = "X";
-                    //TTXN.ROYN = "Y";
+                    TTXN.TDSCODE = "X";
+                    TTXN.ROYN = "Y";
                     //TTXN.TCSON = calcultednet;
                     TTXN.TCSAMT = tcsamt;
                     dupgrid.TCSAMT = tcsamt.ToString();
