@@ -4386,7 +4386,7 @@ namespace Improvar.Controllers
                                 TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
                                 TTXNDTL.GOCD = VE.T_TXN.GOCD;
                                 TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
-                                TTXNDTL.NOS = VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;
+                                TTXNDTL.NOS = (VE.TTXNDTL[i].UOM == "MTR"&& VE.TTXNDTL[i].NOS.retDbl()==0)?1:VE.TTXNDTL[i].NOS; /*VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;*/
                                 TTXNDTL.QNTY = VE.TTXNDTL[i].QNTY;
                                 TTXNDTL.BLQNTY = VE.TTXNDTL[i].BLQNTY;
                                 TTXNDTL.RATE = VE.TTXNDTL[i].RATE;
@@ -4769,7 +4769,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.PARTCD = VE.TBATCHDTL[i].PARTCD;
                                 TBATCHDTL.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
                                 TBATCHDTL.STKDRCR = stkdrcr;
-                                TBATCHDTL.NOS = VE.TBATCHDTL[i].NOS;
+                                TBATCHDTL.NOS = (VE.TBATCHDTL[i].UOM == "MTR" && VE.TBATCHDTL[i].NOS.retDbl() == 0) ? 1 : VE.TBATCHDTL[i].NOS; /*VE.TBATCHDTL[i].NOS;*/
                                 TBATCHDTL.QNTY = VE.TBATCHDTL[i].QNTY;
                                 TBATCHDTL.BLQNTY = VE.TBATCHDTL[i].BLQNTY;
                                 TBATCHDTL.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
