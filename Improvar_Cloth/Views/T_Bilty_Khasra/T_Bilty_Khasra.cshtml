@@ -315,7 +315,7 @@
         var GONM = $("#GONM_" + index).val();
         var FLAG1 = $("#FLAG1_" + index).val();
         const keyType = event.type;
-        if (keyType == "keydown") {
+        if (keyType == "keyup") {
             var checkedblopn = document.getElementById("CheckedBALEOPEN_" + index).checked;
             if (checkedblopn) {
                 document.getElementById("CheckedBALEOPEN_" + index).checked = false;
