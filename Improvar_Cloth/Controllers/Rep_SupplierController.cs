@@ -15,6 +15,14 @@ namespace Improvar.Controllers
         MasterHelp MasterHelp = new MasterHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         DropDownHelp DropDownHelp = new DropDownHelp();
+        string scm = "", scmf = "";
+        string fdt = "";
+        string tdt = "";
+        string LOC = "", COM = "";
+        string MENU_PARA = "";
+        string slcd = "", itgrpcd = "", loccd = "";
+        string reptype = "";
+
         // GET: Rep_Supplier
         public ActionResult Rep_Supplier()
         {
@@ -69,18 +77,19 @@ namespace Improvar.Controllers
         {
             try
             {
-                string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string fdt = VE.FDT.retStr();
-                string tdt = VE.TDT.retStr();
-                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
-                string MENU_PARA = VE.MENU_PARA.retStr();
-                string slcd = "", itgrpcd = "", loccd = "";
+                scm = CommVar.CurSchema(UNQSNO); scmf = CommVar.FinSchema(UNQSNO);
+                fdt = VE.FDT.retStr();
+                tdt = VE.TDT.retStr();
+                LOC = CommVar.Loccd(UNQSNO); COM = CommVar.Compcd(UNQSNO);
+                MENU_PARA = VE.MENU_PARA.retStr();
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) loccd = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
-                string reptype = VE.TEXTBOX1.retStr();
-                DataTable tbl = new DataTable(); DataTable LOCDT = new DataTable("loccd");
-                if (reptype != "PurchasebillwiseStock"||reptype != "AdityaBirlaSale")
+                reptype = VE.TEXTBOX1.retStr();
+                DataTable tbl = new DataTable();
+                DataTable LOCDT = new DataTable("loccd");
+
+                if (reptype != "PurchasebillwiseStock" || reptype != "AdityaBirlaSale")
                 {
                     string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                     sql += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
@@ -189,7 +198,7 @@ namespace Improvar.Controllers
                     else
                     {
                         DataTable Purtbl = new DataTable();
-                        if (reptype == "AdityaBirlaSale") { Purtbl = retSalesWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "AdittyaBirlaSales".retRepname(); }
+                        if (reptype == "AdityaBirlaSale") { return  GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
                         else { Purtbl = retPurchaseWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "PurchasebillwiseStock".retRepname(); }
 
                         if (Purtbl.Rows.Count == 0) return Content("no records..");
@@ -223,7 +232,7 @@ namespace Improvar.Controllers
                                 wsSheet1.Cells[3, j + 1].Value = Header[j];
                             }
                         }
-                       
+
                         int exlrowno = 4;
                         for (int i = 0; i < Purtbl.Rows.Count; i++)
                         {
@@ -566,9 +575,10 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
             return null;
-
-
         }
+
+
+
         public DataTable retPurchaseWiseStock(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
@@ -754,11 +764,11 @@ namespace Improvar.Controllers
             //order by barno
         }
 
-        public DataTable retSalesWiseStock(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")
+        public ActionResult GetSalesfromSupplier(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "";
-            sql += " select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno, ";
+            sql += " select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno, f.BRANDCD,";
             sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd, ";
             sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(a.discamt)discamt ";
             sql += Environment.NewLine + " from  ( ";
@@ -841,11 +851,80 @@ namespace Improvar.Controllers
             if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
             if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
             sql += "group by ";
-            sql += " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno), ";
+            sql += " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),f.BRANDCD, ";
             sql += " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ";
-            sql += "order by barno ";
+            sql += "order by docdt,barno ";
             DataTable tbl = MasterHelp.SQLquery(sql);
-            return tbl;
+            if (tbl.Rows.Count == 0) return Content("no records..");
+
+            ExcelPackage ExcelPkg = new ExcelPackage();
+            ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
+            string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
+            using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
+            {
+                Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                Rng.Style.Font.Size = 14; Rng.Style.Font.Bold = true;
+                wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
+            }
+            using (ExcelRange Rng = wsSheet1.Cells["A2:Q2"])
+            {
+                Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
+                wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
+            }
+            using (ExcelRange Rng = wsSheet1.Cells["A3:Q3"])
+            {
+                Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                string[] Header = Excel_Header.Split('|');
+                for (int j = 0; j < Header.Length; j++)
+                {
+                    wsSheet1.Cells[3, j + 1].Value = Header[j];
+                }
+            }
+
+            int exlrowno = 4;
+            for (int i = 0; i < tbl.Rows.Count; i++)
+            {
+                wsSheet1.Cells[exlrowno, 1].Value = "";
+                wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["docdt"].retDateStr("yyyy", "dd/MM/yyyy");//docdt
+                wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["barno"].retStr();
+                wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["docno"].retStr();//docno
+                wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["itgrpnm"].retStr();
+                wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["sapcode"].retStr();//sapcode
+                wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["docno"].retStr();//prefno
+                wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["docdt"].retDateStr("yyyy", "dd/MM/yyyy");//prefdt
+                wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["styleno"].retStr();
+                wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["shade"].retStr();//shade
+                wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["sizecd"].retStr();//sizecd
+                wsSheet1.Cells[exlrowno, 12].Value = "";
+                wsSheet1.Cells[exlrowno, 13].Value = tbl.Rows[i]["qnty"].retDbl();
+                wsSheet1.Cells[exlrowno, 14].Value = tbl.Rows[i]["rprate"].retDbl();
+                wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["txblval"].retDbl();
+                wsSheet1.Cells[exlrowno, 16].Value = tbl.Rows[i]["discamt"].retDbl();
+                wsSheet1.Cells[exlrowno, 17].Value = tbl.Rows[i]["txblval"].retDbl() - (tbl.Rows[i]["discamt"].retDbl() + tbl.Rows[i]["othramt"].retDbl());
+                exlrowno++;
+            }
+            //for download//
+            Response.Clear();
+            Response.ClearContent();
+            Response.Buffer = true;
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            string filename = "AdittyaBirlaSales".retRepname();
+            Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+            Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+            Response.Flush();
+            Response.Close();
+            Response.End();
+            return Content("");
+
             //                        select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno,
             // e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd,
             //  sum(a.nos) nos,sum(a.qnty)qnty, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(a.discamt)discamt

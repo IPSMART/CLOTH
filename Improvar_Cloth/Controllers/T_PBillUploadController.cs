@@ -715,8 +715,8 @@ namespace Improvar.Controllers
             {
                 DataTable dbfdt = new DataTable();
                 dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
-                dbfdt.Columns.Add("GRP_SAPCD", typeof(string));
                 dbfdt.Columns.Add("ITGRPNM", typeof(string));
+                dbfdt.Columns.Add("GRPNM", typeof(string));
                 dbfdt.Columns.Add("STYLE", typeof(string));
                 dbfdt.Columns.Add("SIZENM", typeof(string));
                 dbfdt.Columns.Add("BLNO", typeof(string));
@@ -743,8 +743,8 @@ namespace Improvar.Controllers
                     {
                         DataRow dr = dbfdt.NewRow();
                         dr["EXCELROWNUM"] = rowNum;
-                        string GRP_SAPCD = workSheet.Cells[rowNum, 3].Value.retStr();
-                        string ITGRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
+                        string ITGRPNM = workSheet.Cells[rowNum, 3].Value.retStr();
+                        string GRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
                         string STYLE = workSheet.Cells[rowNum, 5].Value.retStr();
                         string SIZENM = workSheet.Cells[rowNum, 6].Value.retStr();
                         string BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
@@ -757,8 +757,8 @@ namespace Improvar.Controllers
                         double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
                         double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
                         double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
-                        dr["GRP_SAPCD"] = GRP_SAPCD;
                         dr["ITGRPNM"] = ITGRPNM;
+                        dr["GRPNM"] = GRPNM;
                         dr["STYLE"] = STYLE;
                         dr["SIZENM"] = SIZENM;
                         dr["BLNO"] = BLNO;
@@ -887,14 +887,16 @@ namespace Improvar.Controllers
                     {
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
-                        string style = inrdr["STYLE"].ToString();
-                        string grpnm = inrdr["ITGRPNM"].ToString();
+                        string pdesign = inrdr["STYLE"].ToString(); 
+                        string ITGRPNM = inrdr["ITGRPNM"].ToString();
+                        string GRPNM = inrdr["GRPNM"].ToString();
+                        string itnm = ITGRPNM + " " + GRPNM;
                         string HSNCODE = inrdr["HSN"].ToString();
-                        TTXNDTL.UOM = "MTR";
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
+                        TTXNDTL.UOM = "PCS";
+                        ItemDet ItemDet = Salesfunc.CreateItem("",TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
                         TTXNDTL.ITCD = ItemDet.ITCD;
                         PURGLCD = ItemDet.PURGLCD;
-                        TTXNDTL.ITSTYLE = style;
+                        TTXNDTL.ITSTYLE = pdesign;
                         TTXNDTL.MTRLJOBCD = "FS";
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
@@ -906,7 +908,7 @@ namespace Improvar.Controllers
                         TTXNDTL.QNTY = inrdr["QNTY"].retDbl(); // NET_QTY
                         TTXNDTL.NOS = 1;
                         TTXNDTL.RATE = inrdr["TXBL"].retDbl().toRound(2);
-                        //TTXNDTL.FLAGMTR = null;
+                        //TTXNDTL.pd = null;
                         //string grade = inrdr["GRADATION"].ToString();
                         //string foc = inrdr["FOC"].ToString();
                         //string pCSTYPE = PCSTYPE(grade, foc);
@@ -971,7 +973,6 @@ namespace Improvar.Controllers
                                 tmpdtl.CGSTAMT += TTXNDTL.CGSTAMT;
                                 tmpdtl.SGSTAMT += TTXNDTL.SGSTAMT;
                                 tmpdtl.NETAMT += TTXNDTL.NETAMT;
-
                                 TTXNDTL.SLNO = tmpdtl.SLNO;
                             }
                         }
@@ -996,7 +997,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.BLQNTY = TTXNDTL.BLQNTY;
                         TBATCHDTL.FLAGMTR = TTXNDTL.FLAGMTR;
                         TBATCHDTL.ITREM = TTXNDTL.ITREM;
-                        TBATCHDTL.UOM = "MTR";
+                        TBATCHDTL.UOM = TTXNDTL.UOM;
                         TBATCHDTL.RATE = TTXNDTL.RATE;
                         TBATCHDTL.DISCRATE = TTXNDTL.DISCRATE;
                         TBATCHDTL.DISCTYPE = TTXNDTL.DISCTYPE;
@@ -1007,7 +1008,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.SIZECD = TTXNDTL.SIZECD;
                         //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
                         //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
-                        //TBATCHDTL.SHADE = TTXNDTL.SHADE;
+                        TBATCHDTL.PDESIGN = pdesign;
                         //TBATCHDTL.MILLNM = TTXNDTL.MILLNM;
                         //TBATCHDTL.BATCHNO = inrdr["BATCH"].ToString();
                         TBATCHDTL.BALEYR = TTXNDTL.BALENO.retStr() == "" ? "" : TTXNDTL.BALEYR;

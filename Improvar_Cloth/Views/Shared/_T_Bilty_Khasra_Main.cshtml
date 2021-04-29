@@ -94,7 +94,7 @@
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].FLAG1, new { id = "FLAG1_" + i })
                                         </td>
                                         <td class="grid_td" style="padding-left:11px;padding-right:11px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].CheckedBALEOPEN, new { id = "CheckedBALEOPEN_" + i, Onclick = "GodownBaleopenFill(" + i + ");",onkeydup= "GodownBaleopenFill(" + i + ");" })
+                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].CheckedBALEOPEN, new { id = "CheckedBALEOPEN_" + i, Onclick = "GodownBaleopenFill(" + i + ");",onkeyup= "GodownBaleopenFill(" + i + ");" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PBLNO, new { id = "PBLNO_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
