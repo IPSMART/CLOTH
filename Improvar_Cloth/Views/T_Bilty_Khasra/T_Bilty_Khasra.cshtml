@@ -181,6 +181,7 @@
                     { return msgWarning("Record not Found! Please enter valid Document date."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
                     $("#popup").html(result);
+                    $("#search_Popup").focus();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -321,7 +322,7 @@
                 document.getElementById("CheckedBALEOPEN_" + index).checked = false;
             }
             else {
-                document.getElementById("CheckedBALEOPEN_" + index).checked=true;
+                document.getElementById("CheckedBALEOPEN_" + index).checked = true;
             }
         }
         var BALEOPEN = document.getElementById("CheckedBALEOPEN_" + index).checked;
@@ -540,7 +541,7 @@
                     {
                     <div class="col-md-7">
                         <div class="editor-field" style="margin-top: 2px;">
-                            <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Data " onclick="GetData()" />
+                            <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Data (Alt+G)  " accesskey="G" onclick="GetData()" />
                         </div>
                     </div>
                 }
@@ -583,10 +584,8 @@
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.EditorFor(model => model.GONM1, new { htmlAttributes = new { @class = "form-control", id = "GONM1", @placeholder = "Godown Name", @TabIndex = -1, @readonly = "readonly" } })
                     </div>
-                </div>}
-
-
-
+                </div>
+                    }
                 }
                 @*<div class="col-md-3">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -631,12 +630,11 @@
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')" />
                         </div>
                     </div>
-                                    <div class="col-md-9" style="width:auto">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.SLNM1, new { htmlAttributes = new { @class = "form-control", id = "SLNM1", maxlength = 45, @title = "Only for View", @placeholder = "Subledger Name", @readonly = "readonly", tabindex = "-1" } })
-                                        </div>
-                                    </div>
-
+                    <div class="col-md-9" style="width:auto">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM1, new { htmlAttributes = new { @class = "form-control", id = "SLNM1", maxlength = 45, @title = "Only for View", @placeholder = "Subledger Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
                 }
             </div>
             <div class="row" style="margin-top:5px;">
