@@ -153,6 +153,8 @@ namespace Improvar.Controllers
         {
             try
             {
+                //ReportViewinHtml VE = new ReportViewinHtml();
+                Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string dtlsumm = "";
@@ -242,7 +244,7 @@ namespace Improvar.Controllers
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem  ";
+                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype  ";
 
                 query1 += " from ( ";
                 query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
@@ -434,6 +436,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
                     HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
                     if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "payamt", "double", "n,12,2", ";Payment");
+                    if (dtlsumm != "C" && VE.Checkbox1 == true && VE.MENU_PARA == "SB") HC.GetPrintHeader(IR, "bltype", "string", "c,15", ";Bill Type");
                     HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
                     if (itmdtl == true && MSYSCNFG.MNTNBALE == "Y") HC.GetPrintHeader(IR, "baleno", "string", "c,15", "Bale. ;No");
                     if (itmdtl == true) HC.GetPrintHeader(IR, "pagenoslno", "string", "c,15", "Page No. /;Page Slno.");
@@ -564,6 +567,7 @@ namespace Improvar.Controllers
                                     //foreach(var c in a)
                                     // { if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = c.payamt; }  //tbl.Rows[i]["payamt"].retDbl();
                                     if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = a.Sum(b => b.payamt).retDbl();
+                                    if (dtlsumm != "C" && VE.Checkbox1==true && VE.MENU_PARA=="SB") dr["bltype"] = tbl.Rows[i]["bltype"].retStr();
                                     dr["blamt"] = tbl.Rows[i]["blamt"].retDbl();
                                     dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
                                     dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
