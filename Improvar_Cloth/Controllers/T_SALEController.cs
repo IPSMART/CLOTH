@@ -254,7 +254,7 @@ namespace Improvar.Controllers
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH();
-                                if (VE.MENU_PARA == "SBDIR" && CommVar.Compcd(UNQSNO) == "BNBH") TXNOTH.PAYTERMS = "NETT CASH, NO LESS";
+                                if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TXNOTH.PAYTERMS = "NETT CASH, NO LESS";
                                 VE.T_TXNOTH = TXNOTH;
 
                                 //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
