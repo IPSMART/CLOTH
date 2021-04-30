@@ -253,7 +253,9 @@ namespace Improvar.Controllers
                                 }
                                 VE.T_TXN = TTXN;
 
-                                T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
+                                T_TXNOTH TXNOTH = new T_TXNOTH();
+                                if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TXNOTH.PAYTERMS = "NETT CASH, NO LESS";
+                                VE.T_TXNOTH = TXNOTH;
 
                                 //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
                                 //{
@@ -4386,7 +4388,7 @@ namespace Improvar.Controllers
                                 TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
                                 TTXNDTL.GOCD = VE.T_TXN.GOCD;
                                 TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
-                                TTXNDTL.NOS = (VE.TTXNDTL[i].UOM == "MTR"&& VE.TTXNDTL[i].NOS.retDbl()==0)?1:VE.TTXNDTL[i].NOS; /*VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;*/
+                                TTXNDTL.NOS = (VE.TTXNDTL[i].UOM == "MTR" && VE.TTXNDTL[i].NOS.retDbl() == 0) ? 1 : VE.TTXNDTL[i].NOS; /*VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;*/
                                 TTXNDTL.QNTY = VE.TTXNDTL[i].QNTY;
                                 TTXNDTL.BLQNTY = VE.TTXNDTL[i].BLQNTY;
                                 TTXNDTL.RATE = VE.TTXNDTL[i].RATE;

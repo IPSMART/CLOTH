@@ -257,13 +257,15 @@
                 </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col-lg-2"></div>
-                    @*<div class="col-md-7">
+                    @if (Model.MENU_PARA == "SB")
+                    { <div class="col-md-7">
                         <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Item details")
+                            @Html.Label("", "Bill Type")
 
                             @Html.CheckBoxFor(model => model.Checkbox1, true)
                         </div>
-                    </div>*@
+                    </div> }
+                   
                     <div class="col-md-7">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Item Remarks")
