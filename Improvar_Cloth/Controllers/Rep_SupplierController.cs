@@ -198,7 +198,7 @@ namespace Improvar.Controllers
                     else
                     {
                         DataTable Purtbl = new DataTable();
-                        if (reptype == "AdityaBirlaSale") { return  GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
+                        if (reptype == "AdityaBirlaSale") { return GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
                         else { Purtbl = retPurchaseWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "PurchasebillwiseStock".retRepname(); }
 
                         if (Purtbl.Rows.Count == 0) return Content("no records..");
@@ -770,7 +770,7 @@ namespace Improvar.Controllers
             string sql = "";
             sql += " select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno, f.BRANDCD,";
             sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd, ";
-            sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(a.discamt)discamt ";
+            sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty,sum(d.amt) basamt, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0)) discamt ";
             sql += Environment.NewLine + " from  ( ";
             //sql += "select d.compcd, d.loccd, a.barno, 'OP' doctag, d.docdt, d.docno, c.prefno, c.prefdt, a.shade, sum(a.nos)nos, ";
             //sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, sum(a.txblval) txblval, ";
@@ -783,15 +783,15 @@ namespace Improvar.Controllers
             //sql += "group by d.compcd, d.loccd, a.barno, 'OP',d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd ";
 
             //sql += "union all select d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,sum(a.nos)nos, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-            sql += Environment.NewLine + "select d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,sum(a.nos)nos, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+            sql += Environment.NewLine + "select a.autono,a.txnslno,d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,sum(a.nos)nos, sum(a.qnty) qnty, ";
             sql += Environment.NewLine + "sum(a.txblval) txblval, ";
-            sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt ,b.sizecd ";
-            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e, " + scm + ".t_txndtl f ";
-            sql += Environment.NewLine + "where a.barno = b.barno(+)  and c.autono = f.autono ";
+            sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt,b.sizecd ";
+            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+            sql += Environment.NewLine + "where a.barno = b.barno(+)  ";
             sql += Environment.NewLine + "and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = '" + COM + "' ";//ONLY SALES WILL COME
             sql += Environment.NewLine + "and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR')  and e.doctype in ('SB','SBDIR','SBCM')  and a.stkdrcr in ('D','C') and d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
             sql += Environment.NewLine + "and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
-            sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd ";
+            sql += Environment.NewLine + "group by  a.autono,a.txnslno,d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,b.sizecd ";
             sql += Environment.NewLine + " ) a, ";
 
             sql += Environment.NewLine + "(select barno, effdt, prccd, rate ";
@@ -801,9 +801,9 @@ namespace Improvar.Controllers
             sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, ";
             sql += Environment.NewLine + "(select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
             sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
-            sql += Environment.NewLine + "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, " + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
+            sql += Environment.NewLine + " " + scm + ".t_txndtl d," + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, " + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
             sql += Environment.NewLine + ", " + scm + ".m_size l";
-            sql += Environment.NewLine + "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and a.barno = b.barno(+) ";
+            sql += Environment.NewLine + "where  a.autono||a.txnslno = d.autono||d.slno and a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and a.barno = b.barno(+) ";
             sql += Environment.NewLine + "and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and f.itgrpcd = h.itgrpcd(+) ";
             sql += Environment.NewLine + "and f.uomcd = i.uomcd(+) and a.sizecd = l.sizecd(+) ";
             sql += Environment.NewLine + "and a.barno in ( ";
@@ -843,17 +843,17 @@ namespace Improvar.Controllers
             sql += Environment.NewLine + "and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and f.itgrpcd = h.itgrpcd(+) ";
             sql += Environment.NewLine + "and f.uomcd = i.uomcd(+) and a.sizecd = l.sizecd(+) ";
             if (slcd.retStr() != "") sql += " and e.slcd in (" + slcd + ") ";
-            sql += "group by ";
-            sql += "e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno), ";
-            sql += " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ";
-            sql += ") summ ";
-            sql += ")  ";
+            sql += Environment.NewLine + "group by ";
+            sql += Environment.NewLine + "e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno), ";
+            sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ";
+            sql += Environment.NewLine + ") summ ";
+            sql += Environment.NewLine + ")  ";
             if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
             if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
-            sql += "group by ";
-            sql += " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),f.BRANDCD, ";
-            sql += " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ";
-            sql += "order by docdt,barno ";
+            sql += Environment.NewLine + "group by ";
+            sql += Environment.NewLine + " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),f.BRANDCD, ";
+            sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ,(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0))";
+            sql += Environment.NewLine + "order by docdt,barno ";
             DataTable tbl = MasterHelp.SQLquery(sql);
             if (tbl.Rows.Count == 0) return Content("no records..");
 
@@ -907,9 +907,9 @@ namespace Improvar.Controllers
                 wsSheet1.Cells[exlrowno, 12].Value = "";
                 wsSheet1.Cells[exlrowno, 13].Value = tbl.Rows[i]["qnty"].retDbl();
                 wsSheet1.Cells[exlrowno, 14].Value = tbl.Rows[i]["rprate"].retDbl();
-                wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["txblval"].retDbl();
+                wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["basamt"].retDbl();
                 wsSheet1.Cells[exlrowno, 16].Value = tbl.Rows[i]["discamt"].retDbl();
-                wsSheet1.Cells[exlrowno, 17].Value = tbl.Rows[i]["txblval"].retDbl() - (tbl.Rows[i]["discamt"].retDbl() + tbl.Rows[i]["othramt"].retDbl());
+                wsSheet1.Cells[exlrowno, 17].Value = (tbl.Rows[i]["basamt"].retDbl() + tbl.Rows[i]["othramt"].retDbl() - tbl.Rows[i]["discamt"].retDbl()).toRound();
                 exlrowno++;
             }
             //for download//
@@ -925,96 +925,88 @@ namespace Improvar.Controllers
             Response.End();
             return Content("");
 
-            //                        select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno,
-            // e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd,
-            //  sum(a.nos) nos,sum(a.qnty)qnty, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(a.discamt)discamt
-            //  from  (
-            //select d.compcd, d.loccd, a.barno, 'OP' doctag, d.docdt, d.docno, c.prefno, c.prefdt, a.shade, sum(a.nos)nos,
-            // sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, sum(a.txblval) txblval,
-            // sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt, nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt, b.sizecd
+            //            select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno, f.BRANDCD,
+            // e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd, 
+            // sum(a.nos) nos,sum(a.qnty)qnty,sum(d.amt) basamt, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0))discamt
+            // from  (
 
+            //select A.AUTONO, a.txnslno, d.compcd, d.loccd, a.barno, c.doctag, d.docdt, d.docno, c.prefno, c.prefdt, a.shade, sum(a.nos)nos, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty,
+            //sum(a.txblval) txblval,
+            //sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt, b.sizecd
 
-            //from SD_LALF2021.t_batchdtl a, SD_LALF2021.t_batchmst b, SD_LALF2021.t_txn c, SD_LALF2021.t_cntrl_hdr d, SD_LALF2021.m_doctype e, SD_LALF2021.t_txndtl f
-            //where a.barno = b.barno(+) and c.autono = f.autono
-            //and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = 'LALF' and d.loccd = 'KOLK' and nvl(d.cancel, 'N') = 'N'
-            //and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and d.docdt < to_date('01/04/2021', 'dd/mm/yyyy')
-            //group by d.compcd, d.loccd, a.barno, 'OP',d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd
+            //from SD_LALF2021.t_batchdtl a, SD_LALF2021.t_batchmst b, SD_LALF2021.t_txn c, SD_LALF2021.t_cntrl_hdr d, SD_LALF2021.m_doctype e
+            //where a.barno = b.barno
+            //and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = 'LALF'
 
-            //      union all select d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,sum(a.nos)nos, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, 
-            // sum(a.txblval) txblval,
-            // sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt ,b.sizecd
-            //     from SD_LALF2021.t_batchdtl a, SD_LALF2021.t_batchmst b, SD_LALF2021.t_txn c, SD_LALF2021.t_cntrl_hdr d, SD_LALF2021.m_doctype e, SD_LALF2021.t_txndtl f
-            //where a.barno = b.barno(+)  and c.autono = f.autono
-            // and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = 'LALF'
-            //and d.loccd = 'KOLK' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and d.docdt >= to_date('01/04/2021', 'dd/mm/yyyy')
-            // and d.docdt <= to_date('26/04/2021', 'dd/mm/yyyy')
-            // group by d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd
-            // ) a,
-
-            //   (select barno, effdt, prccd, rate
-            //  from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn from SD_LALF2021.t_batchmst_price a
+            //and d.loccd = 'KOLK' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR')  and e.doctype in ('SB', 'SBDIR', 'SBCM')  and a.stkdrcr in ('D','C') and d.docdt >= to_date('01/04/2021', 'dd/mm/yyyy')
+            //and d.docdt <= to_date('07/04/2021', 'dd/mm/yyyy')  AND A.AUTONO = '2021LALFKOLKSSSBCM0000000049'
+            //group by A.AUTONO,a.txnslno,d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,b.sizecd
+            //  ) a, 
+            //(select barno, effdt, prccd, rate
+            //from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn from SD_LALF2021.t_batchmst_price a
             //where a.effdt <= to_date('01/04/2021', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b,  (select barno, effdt, prccd, rate
             //from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn
-            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('26/04/2021', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp,
-            //  (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn
-            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('26/04/2021', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp,
-            //  SD_LALF2021.t_batchmst e, SD_LALF2021.m_sitem f, SD_LALF2021.m_sitem g, SD_LALF2021.m_group h, FIN_LALF2021.m_uom i, FIN_LALF2021.m_subleg j, FIN_LALF2021.m_loca k
-            //  , SD_LALF2021.m_size l
-            //where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and a.barno = b.barno(+)
+            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('07/04/2021', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, 
+            //(select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn
+            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('07/04/2021', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, 
+            //SD_LALF2021.t_txndtl d, SD_LALF2021.t_batchmst e, SD_LALF2021.m_sitem f, SD_LALF2021.m_sitem g, SD_LALF2021.m_group h, FIN_LALF2021.m_uom i, FIN_LALF2021.m_subleg j, FIN_LALF2021.m_loca k
+            //   , SD_LALF2021.m_size l
+            //where a.autono || a.txnslno = d.autono || d.slno and a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and a.barno = b.barno(+)
             //and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and f.itgrpcd = h.itgrpcd(+)
-            // and f.uomcd = i.uomcd(+) and a.sizecd = l.sizecd(+)
+            //and f.uomcd = i.uomcd(+) and a.sizecd = l.sizecd(+)
             //and a.barno in (
             //select barno from  (
             //select  a.barno, sum(a.qnty)qnty
             //from(
-            //select d.compcd, d.loccd, a.barno, d.docdt, d.docno, c.prefno, c.prefdt, a.shade,
+            //select  d.compcd, d.loccd, a.barno, d.docdt, d.docno, c.prefno, c.prefdt, a.shade,
             //sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,
             //sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt, nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt, b.sizecd
-
-
             //from SD_LALF2021.t_batchdtl a, SD_LALF2021.t_batchmst b, SD_LALF2021.t_txn c, SD_LALF2021.t_cntrl_hdr d, SD_LALF2021.m_doctype e, SD_LALF2021.t_txndtl f
             //where a.barno = b.barno(+) and c.autono = f.autono
             //and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = 'LALF' and d.loccd = 'KOLK' and nvl(d.cancel, 'N') = 'N'
             //and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and d.docdt < to_date('01/04/2021', 'dd/mm/yyyy')
             //group by d.compcd, d.loccd, a.barno, 'OP', d.docdt, d.docno, c.prefno, c.prefdt, a.shade, nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0), b.sizecd
 
-
             //union all select d.compcd, d.loccd, a.barno, d.docdt, d.docno, c.prefno, c.prefdt, a.shade, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty,
             //sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,
             //  sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt, nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt, b.sizecd
             //from SD_LALF2021.t_batchdtl a, SD_LALF2021.t_batchmst b, SD_LALF2021.t_txn c, SD_LALF2021.t_cntrl_hdr d, SD_LALF2021.m_doctype e, SD_LALF2021.t_txndtl f
             //where a.barno = b.barno(+)  and c.autono = f.autono
-
             //and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = 'LALF'
             //and d.loccd = 'KOLK' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and d.docdt >= to_date('01/04/2021', 'dd/mm/yyyy')
-            // and d.docdt <= to_date('26/04/2021', 'dd/mm/yyyy') group by d.compcd, d.loccd, a.barno,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd
-            // ) a,
+            // and d.docdt <= to_date('07/04/2021', 'dd/mm/yyyy')
 
-            //   (select barno, effdt, prccd, rate
-            //  from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn from SD_LALF2021.t_batchmst_price a
+
+
+            // group by d.compcd, d.loccd, a.barno,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0),b.sizecd
+
+
+            // ) a, 
+            //(select barno, effdt, prccd, rate
+            //from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn from SD_LALF2021.t_batchmst_price a
             //where a.effdt <= to_date('01/04/2021', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b,  (select barno, effdt, prccd, rate
             //from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn
-            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('26/04/2021', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp,
-            //  (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn
-            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('26/04/2021', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp,
-            //  SD_LALF2021.t_batchmst e, SD_LALF2021.m_sitem f, SD_LALF2021.m_sitem g, SD_LALF2021.m_group h, FIN_LALF2021.m_uom i, FIN_LALF2021.m_subleg j, FIN_LALF2021.m_loca k
-            //  , SD_LALF2021.m_size l
+            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('07/04/2021', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, 
+            //(select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn
+            //from SD_LALF2021.t_batchmst_price a where a.effdt <= to_date('07/04/2021', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, 
+            //SD_LALF2021.t_batchmst e, SD_LALF2021.m_sitem f, SD_LALF2021.m_sitem g, SD_LALF2021.m_group h, FIN_LALF2021.m_uom i, FIN_LALF2021.m_subleg j, FIN_LALF2021.m_loca k
+            //, SD_LALF2021.m_size l
             //where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and a.barno = b.barno(+)
             //and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and f.itgrpcd = h.itgrpcd(+)
-            // and f.uomcd = i.uomcd(+) and a.sizecd = l.sizecd(+)
-
-
-            // group by
-            //   e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),
+            //and f.uomcd = i.uomcd(+) and a.sizecd = l.sizecd(+)  and e.slcd in ('CA00005','CA00004','CA00003','CA00002','OA00006','OA00005') 
+            //group by
+            //e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno), 
             // e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd
             //) summ
-            //where summ.qnty > 0
-            //) 
-
-            //  group by
-            //   e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),
+            //)  
+            //group by
+            // e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),f.BRANDCD, 
             // e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd
-            //order by barno
+            // ,nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0)
+            //order by docdt,barno
+
+
+
         }
 
 
