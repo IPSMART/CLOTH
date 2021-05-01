@@ -405,14 +405,17 @@ namespace Improvar
                 return "";
             }
         }
-        public static string nextSchema(string scm, string unqsno)
+       
+        public static string NextYearSchema(string unqsno)
         {
             try
             {
-                string yrcd = (Convert.ToDecimal(CommVar.YearCode(unqsno)) + 1).ToString();
-                string rval = scm.Substring(0, scm.Length - 4) + yrcd;
-                rval = rval.ToUpper();
-                return rval;
+                return System.Web.HttpContext.Current.Session["NEXTSCHEMA" + unqsno].ToString();
+            }
+            catch { }
+            try
+            {
+                return System.Web.HttpContext.Current.Session["NEXTSCHEMA"].ToString();
             }
             catch
             {
