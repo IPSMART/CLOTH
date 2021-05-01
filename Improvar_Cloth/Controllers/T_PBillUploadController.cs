@@ -989,6 +989,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.BARNO = BARNO;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
                         TBATCHDTL.BARGENTYPE = TTXN.BARGENTYPE;
+                        TBATCHDTL.COMMONUNIQBAR= TTXN.BARGENTYPE;
                         TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
                         TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
