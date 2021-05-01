@@ -825,6 +825,7 @@ namespace Improvar.Controllers
                     DUpGrid dupgrid = new DUpGrid();
                     TTXN.GOCD = "SHOP";
                     TTXN.DOCTAG = "PB";
+                    TTXN.BARGENTYPE = "E";
                     TTXN.PREFNO = oudr["BLNO"].ToString();
 
                     if (VE.DUpGrid.Where(m => m.Checked == true & m.BLNO == TTXN.PREFNO).FirstOrDefault() == null)
@@ -879,7 +880,6 @@ namespace Improvar.Controllers
                     TXNTRANS.LRNO = null;
                     TXNTRANS.LRDT = null;
                     //----------------------------------------------------------//
-
                     string PURGLCD = "";
                     DataTable innerDt = dbfdt.Select("BLNO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     double txable = 0, gstamt = 0; short batchslno = 0;
@@ -890,7 +890,8 @@ namespace Improvar.Controllers
                         string pdesign = inrdr["STYLE"].ToString(); 
                         string ITGRPNM = inrdr["ITGRPNM"].ToString();
                         string GRPNM = inrdr["GRPNM"].ToString();
-                        string itnm = ITGRPNM + " " + GRPNM;
+                        string BARNO = inrdr["BARNO"].ToString();
+                        string itnm = ITGRPNM + " " + GRPNM; 
                         string HSNCODE = inrdr["HSN"].ToString();
                         TTXNDTL.UOM = "PCS";
                         ItemDet ItemDet = Salesfunc.CreateItem("",TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
@@ -984,10 +985,10 @@ namespace Improvar.Controllers
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
                         TBATCHDTL.TXNSLNO = TTXNDTL.SLNO;
-                        TBATCHDTL.SLNO = ++batchslno;  //COUNTER.retShort();
-                        //TBATCHDTL.GOCD = VE.T_TXN.GOCD;
-                        //TBATCHDTL.BARNO = barno;
+                        TBATCHDTL.SLNO = ++batchslno;
+                        TBATCHDTL.BARNO = BARNO;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
+                        TBATCHDTL.BARGENTYPE = TTXN.BARGENTYPE;
                         TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
                         TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
