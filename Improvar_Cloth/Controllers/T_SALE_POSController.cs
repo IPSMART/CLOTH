@@ -553,7 +553,8 @@ namespace Improvar.Controllers
                 VE.R_T_NET_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.NETAMT).retDbl();
                 VE.R_T_GROSS_AMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.GROSSAMT).retDbl();
                 VE.R_T_DISCAMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.DISCAMT).retDbl();
-               
+                VE.R_T_FLAGMTR = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.FLAGMTR).retDbl();
+
                 #endregion
 
                 VE.B_T_QNTY = VE.TsalePos_TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -571,6 +572,7 @@ namespace Improvar.Controllers
                 VE.B_T_NET = VE.TsalePos_TBATCHDTL.Sum(a => a.NETAMT).retDbl();
                 VE.T_NET_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.NETAMT).retDbl();
                 VE.T_GROSSAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GROSSAMT).retDbl();
+                VE.T_FLAGMTR = VE.TsalePos_TBATCHDTL.Sum(a => a.FLAGMTR).retDbl();
 
                 // fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
