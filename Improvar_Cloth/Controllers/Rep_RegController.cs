@@ -384,7 +384,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party;Name");
                         HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent;Name");
-                        if (dtlsumm != "C" && VE.Checkbox1 == true && VE.MENU_PARA == "SB") HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
+                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (itemrem == true) HC.GetPrintHeader(IR, "itrem", "string", "c,20", ";Item Remarks");
@@ -407,7 +407,7 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
-                        if (dtlsumm != "C" && VE.Checkbox1 == true && VE.MENU_PARA == "SB") HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
+                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
@@ -526,7 +526,7 @@ namespace Improvar.Controllers
                                     dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                     if (dtlsumm != "C") dr["slarea"] = tbl.Rows[i]["slarea"].ToString();
                                     if (dtlsumm != "C") dr["agslnm"] = tbl.Rows[i]["agslnm"].ToString();
-                                    if (dtlsumm != "C" && VE.Checkbox1 == true && VE.MENU_PARA == "SB") dr["bltype"] = tbl.Rows[i]["bltype"].retStr();
+                                    if (dtlsumm != "C" && VE.Checkbox1 == true) dr["bltype"] = tbl.Rows[i]["bltype"].retStr();
                                 }
                                 else
                                 {
@@ -630,7 +630,7 @@ namespace Improvar.Controllers
                                 DataRow dr = IR.NewRow();
                                 //dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
                                 dr["itnm"] = tbl.Rows[i]["itstyle"].ToString();
-                                if (dtlsumm != "C" && VE.Checkbox1 == true && VE.MENU_PARA == "SB") dr["bltype"] = tbl.Rows[i]["bltype"].retStr();
+                                if (dtlsumm != "C" && VE.Checkbox1 == true) dr["bltype"] = tbl.Rows[i]["bltype"].retStr();
                                 if (VE.TEXTBOX1 == "Sales Cash Memo") dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 if (itemrem == true && itmdtl == true) dr["itrem"] = tbl.Rows[i]["itrem"].ToString();
                                 dr["hsncode"] = tbl.Rows[i]["hsncode"].ToString();

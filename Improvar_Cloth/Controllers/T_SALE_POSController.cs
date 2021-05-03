@@ -49,6 +49,7 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
+                    VE.BL_TYPE = masterHelp.BL_TYPE();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     //VE.DISC_TYPE = masterHelp.DISC_TYPE();
 
@@ -284,6 +285,7 @@ namespace Improvar.Controllers
                             //if (VE.T_TXN != null) VE.PAYABLE = (VE.T_TXN.BLAMT - VE.RETAMT).retDbl().toRound(2); else VE.PAYABLE = 0.retDbl().toRound(2);
                             //VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
+                        VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
                     }
                     else
                     {
@@ -2316,6 +2318,7 @@ namespace Improvar.Controllers
                     TTXNOTH.DTAG = TTXN.DTAG;
                     TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
                     TTXNOTH.PRCCD = VE.T_TXNOTH.PRCCD;
+                    TTXNOTH.BLTYPE = VE.T_TXNOTH.BLTYPE;
 
                     //----------------------------------------------------------//
 
@@ -3324,7 +3327,7 @@ namespace Improvar.Controllers
                                parglcd, sslcd, blconslcd, agslcd, parclass1cd, Convert.ToSByte(isl),
                                 dbamt, strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                                 TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), dbamt.retDbl(),
-                                "", "", "", "", VE.T_TXNMEMO.RTDEBCD == null ? "" : VE.T_TXNMEMO.RTDEBCD);
+                                "", "", "", "", VE.T_TXNMEMO.RTDEBCD == null ? "" : VE.T_TXNMEMO.RTDEBCD, VE.T_TXNOTH.BLTYPE);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                     }

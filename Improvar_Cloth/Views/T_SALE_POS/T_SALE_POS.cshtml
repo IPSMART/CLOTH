@@ -29,6 +29,9 @@
         if ("@Model.SHOWMTRLJOBCD" != "Y") {
             $("#divmtrljobcd").hide();
         }
+        if ("@Model.SHOWBLTYPE" != "Y") {
+            $(".divbltype").hide();
+        }
         $("#check_nav").hide();
         if ("@Model.MENU_PARA" == "SBCMR") {
             $("#Return_LI4").addClass("active");
@@ -323,7 +326,7 @@
                                 </div>
                             </div>
                         }
-                        @*<div class="col-md-1">
+                        <div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Bill Type")
                                 </div>
@@ -333,7 +336,7 @@
                                     @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
                                 </div>
 
-                            </div>*@
+                            </div>
                     </div>
                     <div class="row">
                         <div class="col-md-5">
