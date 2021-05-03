@@ -7,6 +7,7 @@ using System.Data;
 using CrystalDecisions.CrystalReports.Engine;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Improvar.Controllers
 {
@@ -20,7 +21,7 @@ namespace Improvar.Controllers
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
         DropDownHelp DropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-
+        string path_Save = "C:\\Ipsmart\\Temp";
         public ActionResult SaleBill_Print()
         {
             try
@@ -215,7 +216,7 @@ namespace Improvar.Controllers
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 string str1 = "";
                 DataTable rsTmp;
-                string doctype = "";
+                string doctype = "",billno = "";
                 str1 = "select doctype from " + Scm1 + ".m_doctype where doccd='" + VE.DOCCD + "'";
                 rsTmp = masterHelp.SQLquery(str1);
                 doctype = rsTmp.Rows[0]["doctype"].ToString();
@@ -886,6 +887,7 @@ namespace Improvar.Controllers
                                              itrem = dr["itrem"]
                                          }).ToList();
                             docno = tbl.Rows[i]["docno"].ToString();
+                            billno = docno;
                             if (copyno[ic].ToString() == "N")
                             {
                                 i = i + 1;
@@ -1647,11 +1649,11 @@ namespace Improvar.Controllers
                             System.Web.HttpContext.Current.Response.ClearHeaders();
                             Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
                             stream.Seek(0, SeekOrigin.Begin);
-                            string path_Save = @"C:\improvar\" + doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
-                            if (System.IO.File.Exists(path_Save))
-                            {
-                                System.IO.File.Delete(path_Save);
-                            }
+                            if (!System.IO.Directory.Exists(path_Save)) { System.IO.Directory.CreateDirectory(path_Save); }
+                            //path_Save = path_Save +"\\"+ doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
+                            var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                            path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
+                            if (System.IO.File.Exists(path_Save)) { System.IO.File.Delete(path_Save); }
                             reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, path_Save);
                             reportdocument.Close();
                             // email
@@ -1754,7 +1756,7 @@ namespace Improvar.Controllers
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 string str1 = "";
                 DataTable rsTmp;
-                string doctype = "";
+                string doctype = "",billno="";
                 string docnos = VE.TEXTBOX8.retStr();
 
 
@@ -2364,6 +2366,7 @@ namespace Improvar.Controllers
                                              itrem = dr["itrem"]
                                          }).ToList();
                             docno = tbl.Rows[i]["docno"].ToString();
+                            billno = docno;
                             if (copyno[ic].ToString() == "N")
                             {
                                 i = i + 1;
@@ -3121,11 +3124,12 @@ namespace Improvar.Controllers
                             Response.ClearHeaders();
                             Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
                             stream.Seek(0, SeekOrigin.Begin);
-                            string path_Save = @"C:\improvar\" + doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
-                            if (System.IO.File.Exists(path_Save))
-                            {
-                                System.IO.File.Delete(path_Save);
-                            }
+                            if (!System.IO.Directory.Exists(path_Save)) { System.IO.Directory.CreateDirectory(path_Save); }
+                            //path_Save = path_Save +"\\"+ doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
+                            var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                            path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
+                            if (System.IO.File.Exists(path_Save)) { System.IO.File.Delete(path_Save); }
+
                             reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, path_Save);
                             reportdocument.Close();
                             // email
@@ -3268,7 +3272,7 @@ namespace Improvar.Controllers
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 string str1 = "";
                 DataTable rsTmp;
-                string doctype = "";
+                string doctype = "", billno = "";
                 str1 = "select doctype from " + Scm1 + ".m_doctype where doccd='" + VE.DOCCD + "'";
                 rsTmp = masterHelp.SQLquery(str1);
                 doctype = rsTmp.Rows[0]["doctype"].ToString();
@@ -3833,6 +3837,7 @@ namespace Improvar.Controllers
                                              itrem = dr["itrem"]
                                          }).ToList();
                             docno = tbl.Rows[i]["docno"].ToString();
+                            billno = docno;
                             if (copyno[ic].ToString() == "N")
                             {
                                 i = i + 1;
@@ -4442,11 +4447,11 @@ namespace Improvar.Controllers
                             Response.ClearHeaders();
                             Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
                             stream.Seek(0, SeekOrigin.Begin);
-                            string path_Save = @"C:\improvar\" + doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
-                            if (System.IO.File.Exists(path_Save))
-                            {
-                                System.IO.File.Delete(path_Save);
-                            }
+                            if (!System.IO.Directory.Exists(path_Save)) { System.IO.Directory.CreateDirectory(path_Save); }
+                            //path_Save = path_Save +"\\"+ doccd + "-" + emlslcd + "-" + ldt.Substring(6, 4) + ldt.Substring(3, 2) + ldt.Substring(0, 2) + ".pdf";
+                            var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                            path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
+                            if (System.IO.File.Exists(path_Save)) { System.IO.File.Delete(path_Save); }
                             reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, path_Save);
                             reportdocument.Close();
                             // email
