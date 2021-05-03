@@ -4709,15 +4709,14 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 bool pricedataexist = false;
-                                if (VE.DefaultAction == "A")
+
+                                sql = "Select BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno='" + barno + "' and effdt =to_date('" + TTXN.DOCDT.retDateStr() + "','dd/mm/yyyy') ";
+                                OraCmd.CommandText = sql;
+                                using (var OraReco = OraCmd.ExecuteReader())
                                 {
-                                    sql = "Select BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno='" + barno + "' and effdt =to_date('" + TTXN.DOCDT.retDateStr() + "','dd/mm/yyyy') ";
-                                    OraCmd.CommandText = sql;
-                                    using (var OraReco = OraCmd.ExecuteReader())
-                                    {
-                                        if (OraReco.HasRows == true) { pricedataexist = true; }
-                                    }
+                                    if (OraReco.HasRows == true) { pricedataexist = true; }
                                 }
+
 
                                 //add price
                                 if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") && pricedataexist == false)
