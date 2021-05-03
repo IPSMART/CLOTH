@@ -247,7 +247,8 @@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].CONVQTYPUNIT, new { id = "D_CONVQTYPUNIT_" + i })
+                                         </td>
                                         @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                         {
                                             <td class="">

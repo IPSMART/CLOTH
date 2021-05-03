@@ -41,5 +41,6 @@ namespace Improvar.ViewModels
         public string BarImages { get; set; }
         public bool NEGSTOCK { get; set; }
         public bool HASTRANSACTION { get; set; }
+        public string CONVUOMNM { get; set; }
     }
 }

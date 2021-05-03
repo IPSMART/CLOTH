@@ -195,5 +195,6 @@ namespace Improvar.Models
         public string NOOFROWCOPY { get; set; }
         public string RECPROGITCD { get; set; }
         public string RECPROGITSTYLE { get; set; }
+        public double? CONVQTYPUNIT { get; set; }
     }
 }

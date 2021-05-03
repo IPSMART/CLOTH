@@ -499,7 +499,7 @@ namespace Improvar.Controllers
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
                 str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
-                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO ";
+                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,s.BLQNTY,k.CONVQTYPUNIT ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t ";
@@ -583,13 +583,15 @@ namespace Improvar.Controllers
                                     WPPER = dr["WPPER"].retDbl(),
                                     RPPER = dr["RPPER"].retDbl(),
                                     RECPROGSLNO = dr["RECPROGSLNO"].retShort(),
+                                    BLQNTY = dr["BLQNTY"].retDbl(),
+                                    CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
                 str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT, ";
-                str1 += "i.ITREM,i.AGDOCNO,i.AGDOCDT,i.LISTPRICE,i.LISTDISCPER,i.PAGENO,i.PAGESLNO,i.BLUOMCD ";
+                str1 += "i.ITREM,i.AGDOCNO,i.AGDOCDT,i.LISTPRICE,i.LISTDISCPER,i.PAGENO,i.PAGESLNO,i.BLUOMCD,j.CONVQTYPUNIT ";
                 str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                 str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
@@ -651,6 +653,7 @@ namespace Improvar.Controllers
                                   PAGENO = dr["PAGENO"].retInt(),
                                   PAGESLNO = dr["PAGESLNO"].retInt(),
                                   BLUOMCD = dr["BLUOMCD"].retStr(),
+                                  CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -1753,6 +1756,8 @@ namespace Improvar.Controllers
                     x.FABITNM = x.FABITNM.retStr();
                     x.PDESIGN = x.PDESIGN.retStr();
                     x.RECPROGSLNO = x.RECPROGSLNO.retShort();
+                    x.BLQNTY = x.BLQNTY.retDbl();
+                    x.CONVQTYPUNIT = x.CONVQTYPUNIT.retDbl();
                 });
                 VE.TTXNDTL = (from x in VE.TBATCHDTL
                               group x by new
@@ -1796,6 +1801,7 @@ namespace Improvar.Controllers
                                   x.FABITNM,
                                   x.PDESIGN,
                                   x.RECPROGSLNO,
+                                  x.CONVQTYPUNIT,
                               } into P
                               select new TTXNDTL
                               {
@@ -1842,6 +1848,7 @@ namespace Improvar.Controllers
                                   FABITCD = P.Key.FABITCD,
                                   FABITNM = P.Key.FABITNM,
                                   RECPROGSLNO = P.Key.RECPROGSLNO,
+                                  CONVQTYPUNIT = P.Key.CONVQTYPUNIT,
                               }).OrderBy(a => a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
@@ -3927,7 +3934,7 @@ namespace Improvar.Controllers
                         case "SBEXP":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale Export" + strqty; break;
                         case "PI":
-                            stkdrcr = "0"; blactpost = false; blgstpost = true; break;
+                            stkdrcr = "0"; blactpost = false; blgstpost = false; break;
                         case "PB":
                             stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "PR":

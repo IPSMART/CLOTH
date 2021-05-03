@@ -296,6 +296,11 @@ function FillBarcodeArea(str, Table, i) {
         if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
             $("#LISTPRICE").val(RATE);
         }
+        $("#BLUOMCD").val(returncolvalue(str, "CONVUOMCD"));
+        $("#CONVQTYPUNIT").val(returncolvalue(str, "CONVQTYPUNIT"));
+        var BLQNTY = retFloat(retFloat($("#QNTY").val()) * retFloat($("#CONVQTYPUNIT").val())).toFixed(3);
+        $("#BLQNTY").val(BLQNTY);
+       
     }
     else {
         var FieldidStarting = "";
@@ -403,6 +408,10 @@ function FillBarcodeArea(str, Table, i) {
             $("#LISTDISCPER").val($(FieldidStarting + "LISTDISCPER_" + i).val());
 
         }
+
+        $("#BLUOMCD").val($(FieldidStarting + "BLUOMCD_" + i).val());
+        $("#BLQNTY").val($(FieldidStarting + "BLQNTY_" + i).val());
+        $("#CONVQTYPUNIT").val($(FieldidStarting + "CONVQTYPUNIT_" + i).val());
     }
     if (Table == "_T_SALE_PRODUCT_GRID") {
         $("#AddRow_Barcode").hide();
@@ -716,6 +725,9 @@ function UpdateBarCodeRow() {
                 $("#B_LISTPRICE_" + j).val($("#LISTPRICE").val());
                 $("#B_LISTDISCPER_" + j).val($("#LISTDISCPER").val());
             }
+            $("#B_BLUOMCD_" + j).val($("#BLUOMCD").val());
+            $("#B_BLQNTY_" + j).val($("#BLQNTY").val());
+            $("#B_CONVQTYPUNIT_" + j).val($("#CONVQTYPUNIT").val());
         }
 
     }
@@ -761,7 +773,7 @@ function ClearBarcodeArea(TAG) {
     var MNTNDISC2 = $("#MNTNDISC2").val();
     var MNTNDISC1 = $("#MNTNDISC1").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP,BLUOMCD,BLQNTY,CONVQTYPUNIT");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN,WPPER,RPPER");
     }
@@ -2067,7 +2079,9 @@ function AddBarCodeGrid() {
     var TXNSLNO = "";
     var PAGENO = "";
     var PAGESLNO = "";
-    var BLUOMCD = "";
+    var BLUOMCD = $("#BLUOMCD").val();
+    var BLQNTY = $("#BLQNTY").val();
+    var CONVQTYPUNIT = $("#CONVQTYPUNIT").val();
     if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRowMain == 0) {
@@ -2137,7 +2151,7 @@ function AddBarCodeGrid() {
                         }
 
                         var strbluom = bluom.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
-                        BLUOMCD = returncolvalue(strbluom, "BLUOMCD");
+                        //BLUOMCD = returncolvalue(strbluom, "BLUOMCD");
                     }
                 }
                 else {
@@ -2214,6 +2228,8 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
     }
     tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
+    tr += '        <input id="B_BLQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="' + BLQNTY + '">';
+    tr += '        <input id="B_CONVQTYPUNIT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CONVQTYPUNIT" type="hidden" value="' + CONVQTYPUNIT + '">';
     if (SHOWSTKTYPE != "Y") {
         tr += '        <input id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" type="hidden" value="' + STKTYPE + '">';
     }
@@ -3266,7 +3282,7 @@ function GetItcd(id) {
     var MENU_PARA = $("#MENU_PARA").val();
     var ModuleCode = $("#ModuleCode").val();
     if (id == "") {
-        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD,BLUOMCD,CONVQTYPUNIT");
     }
     else {
         var code = $("#ITGRPCD").val() + String.fromCharCode(181) + $("#DOCDT").val() + String.fromCharCode(181) + $("#TAXGRPCD").val() + String.fromCharCode(181) + $("#GOCD").val() + String.fromCharCode(181) + $("#PRCCD").val() + String.fromCharCode(181) + $("#MTRLJOBCD").val() + String.fromCharCode(181) + $("#BARCODE").val() + String.fromCharCode(181) + $("#RATE").val();
@@ -3278,7 +3294,7 @@ function GetItcd(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+                    ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD,BLUOMCD,CONVQTYPUNIT");
                     $('#SearchFldValue').val("ITCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("ITCD/ITSTYLE/UOM/STYLENO/ITGRPCD/ITGRPNM");
@@ -3300,6 +3316,8 @@ function GetItcd(id) {
                         $("#BarImages").val(returncolvalue(result, "BARIMAGE"));
                         $("#GLCD").val(returncolvalue(result, "GLCD"));
                         $("#BARGENTYPETEMP").val(returncolvalue(result, "bargentype"));
+                        $("#BLUOMCD").val(returncolvalue(result, "CONVUOMCD"));
+                        $("#CONVQTYPUNIT").val(returncolvalue(result, "CONVQTYPUNIT"));
                         hlpblurval = id;
                         if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
                             changeBARGENTYPE();
@@ -3320,7 +3338,7 @@ function GetItcd(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+                        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD,BLUOMCD,CONVQTYPUNIT");
                         message_value = "ITCD";
                     }
                 }
@@ -3337,18 +3355,22 @@ function GetItcd(id) {
 }
 function CalculateBargridQnty(tableid, index) {
     debugger;
-    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "";
+    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "", CONVQTYPUNITID="",BLQNTYID="";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CUTLENGTHID = "B_CUTLENGTH_" + index;
         NOSID = "B_NOS_" + index;
         QNTYID = "B_QNTY_" + index;
         UOMID = "B_UOM_" + index;
+        CONVQTYPUNITID = "B_CONVQTYPUNIT_" + index;
+        BLQNTYID = "B_BLQNTY_" + index;
     }
     else {
         CUTLENGTHID = "CUTLENGTH";
         NOSID = "NOS";
         QNTYID = "QNTY";
         UOMID = "UOM";
+        CONVQTYPUNITID = "CONVQTYPUNIT";
+        BLQNTYID = "BLQNTY";
     }
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
@@ -3357,6 +3379,8 @@ function CalculateBargridQnty(tableid, index) {
     if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
         $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
     }
+    var BLQNTY = retFloat(retFloat($("#" + QNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val())).toFixed(3);
+    $("#" + BLQNTYID).val(BLQNTY);
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CalculateTotal_Barno();
         HasChangeBarSale()

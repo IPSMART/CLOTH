@@ -273,5 +273,8 @@ namespace Improvar.ViewModels
         public double? T_FLAGMTR { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? DISCONBILL { get; set; }
+        public string BLUOMCD { get; set; }
+        public double? CONVQTYPUNIT { get; set; }
+        public double? BLQNTY { get; set; }
     }
 }

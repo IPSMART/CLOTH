@@ -323,6 +323,10 @@ namespace Improvar.Controllers
                         VE.FABSTYLENO = fitem.STYLENO;
                         VE.FABUOMNM = fitem.UOMCD;
                     }
+                    if(sl.CONVUOMCD.retStr() != "")
+                    {
+                        VE.CONVUOMNM = DBF.M_UOM.Where(a=>a.UOMCD == sl.CONVUOMCD).Select(a=>a.UOMNM).FirstOrDefault();
+                    }
                     if (sl.NEGSTOCK == "Y")
                     {
                         VE.NEGSTOCK = true;
@@ -1608,6 +1612,7 @@ namespace Improvar.Controllers
                         MSITEM.PRODGRPCD = VE.M_SITEM.PRODGRPCD;
                         MSITEM.SAPCODE = VE.M_SITEM.SAPCODE;
                         MSITEM.CONVQTYPUNIT = VE.M_SITEM.CONVQTYPUNIT;
+                        MSITEM.CONVUOMCD = VE.M_SITEM.CONVUOMCD;
                         //MSITEM.STD_RATE = VE.M_SITEM.STD_RATE;
                         //MSITEM.SAMPPC = VE.M_SITEM.SAMPPC;
                         //MSITEM.STDLOTQTY = VE.M_SITEM.SAMPPC;

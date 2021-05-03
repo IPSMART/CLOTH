@@ -542,8 +542,8 @@
     }
     function SelectUOMCode(id, UOMCD, UOMNM) {
         if (id == "") {
-            $("#UOMCD").val("");
-            $("#UOMNM").val("");
+            $("#" + UOMCD.id).val("");
+            $("#" + UOMNM.id).val("");
         }
         else {
             $.ajax({
@@ -559,10 +559,10 @@
                         inputUOM(UOMCD, UOMNM);
                     }
                     else {
-                        $("#UOMCD").val("");
-                        $("#UOMNM").val("");
+                        $("#" + UOMCD.id).val("");
+                        $("#" + UOMNM.id).val("");
                         msgInfo("Invalid  UOM Code !!");
-                        message_value = "UOMCD";
+                        message_value = UOMCD.id;
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1313,6 +1313,22 @@
                             <div class="col-md-7">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.SAPCODE, new { htmlAttributes = new { @class = "form-control", id = "SAPCODE", maxlength = 20, @placeholder = "SAP code" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Bill UOM")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.CONVUOMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CONVUOMCD", onkeyup = "GetHelp('" + @Url.Action("GetUOMDetails", PageControllerName) + "','CONVUOMCD/CONVUOMNM','1/0','Select Bill UOM Details','CONVUOMCD');toUpper(this);", onblur = "SelectUOMCode(this.value,CONVUOMCD,CONVUOMNM);", @placeholder = "Code", maxlength = 3, required = "required" } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetUOMDetails", PageControllerName)','CONVUOMCD/CONVUOMNM','1/0','Select Bill UOM Details','CONVUOMCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CONVUOMNM, new { htmlAttributes = new { @class = "form-control", id = "CONVUOMNM", maxlength = 5, @TabIndex = -1, @title = "Only for View", @placeholder = "Bill UOM Description", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-7">

@@ -216,6 +216,8 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
                                             }
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BLUOMCD, new { id = "B_BLUOMCD_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BLQNTY, new { id = "B_BLQNTY_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].CONVQTYPUNIT, new { id = "B_CONVQTYPUNIT_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i })
                                             @if (Model.SHOWSTKTYPE != "Y")
                                             {
