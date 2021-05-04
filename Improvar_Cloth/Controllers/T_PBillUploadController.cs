@@ -887,14 +887,15 @@ namespace Improvar.Controllers
                     {
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
-                        string pdesign = inrdr["STYLE"].ToString(); 
+                        string pdesign = inrdr["STYLE"].ToString();
                         string ITGRPNM = inrdr["ITGRPNM"].ToString();
                         string GRPNM = inrdr["GRPNM"].ToString();
                         string BARNO = inrdr["BARNO"].ToString();
-                        string itnm = ITGRPNM + " " + GRPNM; 
+                        string itnm = ITGRPNM + " " + GRPNM;
                         string HSNCODE = inrdr["HSN"].ToString();
+                        string MRP = inrdr["MRP"].ToString();
                         TTXNDTL.UOM = "PCS";
-                        ItemDet ItemDet = Salesfunc.CreateItem("",TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
+                        ItemDet ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
                         TTXNDTL.ITCD = ItemDet.ITCD;
                         PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = pdesign;
@@ -989,7 +990,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.BARNO = BARNO;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
                         TBATCHDTL.BARGENTYPE = TTXN.BARGENTYPE;
-                        TBATCHDTL.COMMONUNIQBAR= TTXN.BARGENTYPE;
+                        TBATCHDTL.COMMONUNIQBAR = TTXN.BARGENTYPE;
                         TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
                         TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
@@ -1024,7 +1025,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.LISTDISCPER = TTXNDTL.LISTDISCPER;
                         //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
                         TBATCHDTL.STKTYPE = TTXNDTL.STKTYPE;
-
+                        TBATCHDTL.RPRATE = MRP.retDbl();
                         //if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && VE.M_SYSCNFG.MNTNPCSTYPE == "Y")
                         //{
                         //    TBATCHDTL.PCSTYPE = TTXNDTL.PCSTYPE;
@@ -1081,6 +1082,13 @@ namespace Improvar.Controllers
                      //    TTXNAMTlist.Add(TTXNAMT);
                      //}
                      //           //Amount tab end
+                     //same barno should not repeat 
+                    string duplicates = "";
+                    duplicates = string.Join(",", TBATCHDTLlist.GroupBy(s => s.BARNO)
+                           .Where(g => g.Count() > 1)
+                           .Select(g => g.Key).ToList());
+
+                    //
 
                     double billvalbfroff = txable + gstamt;
                     double billvalafroff = (txable + gstamt).toRound(0);
@@ -1095,11 +1103,22 @@ namespace Improvar.Controllers
                     TMPVE.TBATCHDTL = TBATCHDTLlist;
                     TMPVE.TTXNAMT = TTXNAMTlist;
                     TMPVE.T_VCH_GST = new T_VCH_GST();
-                    string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
-                    tslCont = tslCont.retStr().Split('~')[0];
-                    if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
-                    else dupgrid.MESSAGE = tslCont;
+                    string tslCont = "";
+                    if (duplicates.retStr() == "")
+                    {
+                        tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
+
+                        tslCont = tslCont.retStr().Split('~')[0];
+                        if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
+                        else dupgrid.MESSAGE = tslCont;
+                    }
+                    else
+                    {
+                        dupgrid.MESSAGE = "Same barno " + duplicates + "should not repeat !!";
+                    }
                     DUGridlist.Add(dupgrid);
+
+
                 }//outer
                 VE.STATUS = "Data Uploaded Successfully";
 
