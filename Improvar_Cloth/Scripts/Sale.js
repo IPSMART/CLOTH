@@ -296,10 +296,12 @@ function FillBarcodeArea(str, Table, i) {
         if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
             $("#LISTPRICE").val(RATE);
         }
-        $("#BLUOMCD").val(returncolvalue(str, "CONVUOMCD"));
-        $("#CONVQTYPUNIT").val(returncolvalue(str, "CONVQTYPUNIT"));
-        var BLQNTY = retFloat(retFloat($("#QNTY").val()) * retFloat($("#CONVQTYPUNIT").val())).toFixed(3);
-        $("#BLQNTY").val(BLQNTY);
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") {
+            $("#BLUOMCD").val(returncolvalue(str, "CONVQTYPUNIT") + " " + returncolvalue(str, "CONVUOMCD"));
+            $("#CONVQTYPUNIT").val(returncolvalue(str, "CONVQTYPUNIT"));
+        }
+        //var BLQNTY = retFloat(retFloat($("#QNTY").val()) * retFloat($("#CONVQTYPUNIT").val())).toFixed(3);
+        //$("#BLQNTY").val(BLQNTY);
 
     }
     else {
@@ -314,6 +316,7 @@ function FillBarcodeArea(str, Table, i) {
             $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
             $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
             $("#CUTLENGTH").val($(FieldidStarting + "CUTLENGTH_" + i).val());
+            $("#BLQNTY").val($(FieldidStarting + "BLQNTY_" + i).val());
         }
         else {
             if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK") {
@@ -410,7 +413,6 @@ function FillBarcodeArea(str, Table, i) {
         }
 
         $("#BLUOMCD").val($(FieldidStarting + "BLUOMCD_" + i).val());
-        $("#BLQNTY").val($(FieldidStarting + "BLQNTY_" + i).val());
         $("#CONVQTYPUNIT").val($(FieldidStarting + "CONVQTYPUNIT_" + i).val());
     }
     if (Table == "_T_SALE_PRODUCT_GRID") {
@@ -599,7 +601,9 @@ function UpdateBarCodeRow() {
                                          retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
                                         retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#GSTPER").val()) == retFloat($("#B_GSTPER_" + j).val()) &&
                                         retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val())) {
+                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) &&
+                            retStr($("#BLUOMCD").val()) == retStr($("#B_BLUOMCD_" + j).val()) && retFloat($("#BLQNTY").val()) == retFloat($("#B_BLQNTY_" + j).val())
+) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             countmatchslno++;
@@ -2141,7 +2145,8 @@ function AddBarCodeGrid() {
                       retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
                      retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat(TDDISCRATE) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat(GSTPER) == retFloat($("#B_GSTPER_" + j).val()) &&
                      retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val())) {
+                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) &&
+                     retFloat(BLQNTY) == retFloat($("#B_BLQNTY_" + j).val()) && retStr(BLUOMCD) == retStr($("#B_BLUOMCD_" + j).val())) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             if (ModuleCode.indexOf("SALESCLOTH") != -1) {
@@ -2250,8 +2255,10 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
         tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
     }
-    tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
-    tr += '        <input id="B_BLQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="' + BLQNTY + '">';
+    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP") {
+        tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
+        tr += '        <input id="B_BLQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="' + BLQNTY + '">';
+    }
     tr += '        <input id="B_CONVQTYPUNIT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CONVQTYPUNIT" type="hidden" value="' + CONVQTYPUNIT + '">';
     if (SHOWSTKTYPE != "Y") {
         tr += '        <input id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" type="hidden" value="' + STKTYPE + '">';
@@ -2346,13 +2353,27 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + NOS + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + NOS + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + QNTY + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + QNTY + '">';
-    tr += '    </td>';
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") {
+        tr += '    <td class="" title="' + QNTY + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" readonly="readonly" value="' + QNTY + '">';
+        tr += '    </td>';
+    }
+    else {
+        tr += '    <td class="" title="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + QNTY + '">';
+        tr += '    </td>';
+    }
     tr += '    <td class="" title="' + UOM + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
     tr += '    </td>';
-
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") {
+        tr += '    <td class="" title="' + BLQNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + BLQNTY + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + BLUOMCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" readonly="readonly" type="text" value="' + BLUOMCD + '">';
+        tr += '    </td>';
+    }
 
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         tr += '    <td class="" title="' + LISTPRICE + '">';
@@ -3378,6 +3399,9 @@ function GetItcd(id) {
 }
 function CalculateBargridQnty(tableid, index) {
     debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
     var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "", CONVQTYPUNITID = "", BLQNTYID = "";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CUTLENGTHID = "B_CUTLENGTH_" + index;
@@ -3395,6 +3419,8 @@ function CalculateBargridQnty(tableid, index) {
         CONVQTYPUNITID = "CONVQTYPUNIT";
         BLQNTYID = "BLQNTY";
     }
+
+
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
         $("#" + QNTYID).val(retFloat(qnty));
@@ -3402,8 +3428,13 @@ function CalculateBargridQnty(tableid, index) {
     if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
         $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
     }
-    var BLQNTY = retFloat(retFloat($("#" + QNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val())).toFixed(3);
-    $("#" + BLQNTYID).val(BLQNTY);
+
+    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") && (retFloat($("#" + CUTLENGTHID).val()) == 0 || retFloat($("#" + NOSID).val()) == 0)) {
+        var qnty = retFloat($("#" + BLQNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val());
+        $("#" + QNTYID).val(retFloat(qnty));
+    }
+    //var BLQNTY = retFloat(retFloat($("#" + QNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val())).toFixed(3);
+    //$("#" + BLQNTYID).val(BLQNTY);
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CalculateTotal_Barno();
         HasChangeBarSale()

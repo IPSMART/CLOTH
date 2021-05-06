@@ -339,7 +339,7 @@ function AddMainRow(hlpstr) {
     tr += ' </td>';
     if (MNTNFLAGMTR == "Y") {
         tr += ' <td class="" title="">';
-        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + FLAGMTR + '">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');" value="' + FLAGMTR + '">';
         tr += ' </td>';
     }
     tr += ' <td class="" title="">';
@@ -612,7 +612,7 @@ function AddReturnRow(hlpstr) {
     tr += ' </td>';
     if (MNTNFLAGMTR == "Y") {
         tr += ' <td class="" title="">';
-        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + FLAGMTR + '" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + FLAGMTR + '" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');" >';
         tr += ' </td>';
     }
     tr += ' <td class="" title="">';
@@ -776,7 +776,17 @@ function CalculateRowAmt(GridId, i) {
         //        $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
         //    }
         //}
-
+        if (B_FLAGMTR_ != "") {
+            var flgmtr = B_FLAGMTR_;
+            if (flgmtr == "") { flgmtr = parseFloat(0); } else { flgmtr = parseFloat(flgmtr); }
+            var qnty = B_QNTY_;
+            if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
+            if (flgmtr > qnty) {
+                msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
+                message_value = "B_FLAGMTR_" + i;
+                return false;
+            }
+        }
         var B_RATE_ = retFloat($("#B_RATE_" + i).val());
         //var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
         var B_GROSSAMT_ = (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_)) * parseFloat(B_RATE_);
@@ -1043,6 +1053,17 @@ function CalculateRowAmt(GridId, i) {
         var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
         var B_RATE_ = retFloat($("#R_RATE_" + i).val());
         var B_FLAGMTR_ = retFloat($("#R_FLAGMTR_" + i).val());
+        if (B_FLAGMTR_ != "") {
+            var flgmtr = B_FLAGMTR_;
+            if (flgmtr == "") { flgmtr = parseFloat(0); } else { flgmtr = parseFloat(flgmtr); }
+            var qnty = B_QNTY_;
+            if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
+            if (flgmtr > qnty) {
+                msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
+                message_value = "R_FLAGMTR_"+i;
+                return false;
+            }
+        }
         //var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
         var B_GROSSAMT_ = (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_)) * parseFloat(B_RATE_);
         $("#R_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt

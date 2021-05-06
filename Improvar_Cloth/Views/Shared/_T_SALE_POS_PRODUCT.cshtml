@@ -198,7 +198,7 @@
                                         @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
                                         {
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].FLAGMTR, new { htmlAttributes = new { id = "B_FLAGMTR_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, onblur = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
+                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].FLAGMTR, new { htmlAttributes = new { id = "B_FLAGMTR_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, onblur = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_PRODUCT_GRID');" } })
                                             </td>
                                         }
                                         <td class="">

@@ -556,7 +556,6 @@
         }
     </script>
 }
-
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -716,7 +715,6 @@
                             @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
                         </div>
                     </div>
-
                     @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.DefaultAction == "V")
                     {
                         <div class="col-md-3">
@@ -732,7 +730,6 @@
                         </div>
 
                     }
-
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -801,7 +798,7 @@
                                 @Html.Label("", "Bill Amount")
                             </div>
                         </div>*@
-                   
+
                     <div class="col-md-4">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.DISPBLAMT, new { htmlAttributes = new { @class = "form-control", id = "DISPBLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right;color:red;", @title = "Bill Amount" } })
@@ -817,7 +814,6 @@
                             @Html.EditorFor(model => model.DISPTCSAMT, new { htmlAttributes = new { @class = "form-control", id = "DISPTCSAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Tcs Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right;color:red;", @title = "Tcs Amount" } })
                         </div>
                     </div>
-
                     @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
                     {
                         <div class="col-md-1">
@@ -1111,7 +1107,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1129,7 +1124,7 @@
                                     </datalist>
                                 </div>
                             </div>
-                    
+
                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                             {
                                 <div class="col-md-1">
@@ -1181,9 +1176,7 @@
                             {
                                 @Html.HiddenFor(model => Model.T_TXN.REVCHRG, new { id = "REVCHRG" })
                             }
-
                         </div>
-
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1225,19 +1218,7 @@
                                     @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            @if (Model.DefaultAction != "V")
-                    {
-                                <div class="col-md-5" style="width: auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Discount On Bill")
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.DISCONBILL, new { htmlAttributes = new { @class = "form-control", id = "DISCONBILL", maxlength = 15, @placeholder = "Discount On Bill", @onkeypress = "return numericOnly(this,2);", @style = "text-align:right", onblur = "CalculateDiscOnBill();" } })
-                                    </div>
-                                </div>
-                            }
+
                             <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Rounded off")
@@ -1264,7 +1245,21 @@
                                 </div>
                             </div>
                         </div>
-
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Discount On Bill")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.DISCONBILL, new { htmlAttributes = new { @class = "form-control", id = "DISCONBILL", maxlength = 15, @placeholder = "Discount On Bill", @onkeypress = "return numericOnly(this,2);", @style = "text-align:right", onblur = "CalculateDiscOnBill();" } })
+                                    </div>
+                                </div>
+                            </div>
+                        }
                         @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR")
                         {
                             <div class="row">
@@ -1316,7 +1311,6 @@
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.EXPGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "EXPGLCD", onkeyup = "GetHelp('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','EXPGLCD/EXPGLNM','1/0','Exp. General Ledger Details','EXPGLCD');toUpper(this);", onblur = "SelectGeneralLedgerCode(this.value,EXPGLCD,EXPGLNM);", @placeholder = "Code", maxlength = 8 } })
                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','EXPGLCD/EXPGLNM','1/0','Exp. General Ledger Details','EXPGLCD')" />
-
                                     </div>
                                 </div>
                                 <div class="col-md-9">
@@ -1613,7 +1607,6 @@
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER/BarImages=BARIMAGE/BLUOMCD=CONVUOMCD/CONVQTYPUNIT=CONVQTYPUNIT','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetItcd(this.value);", @placeholder = "Item Code", maxlength = 10, @title = "Item Code" } })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER/BarImages=BARIMAGE/BLUOMCD=CONVUOMCD/CONVQTYPUNIT=CONVQTYPUNIT','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE')" />
-
                                                     @*@Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
                                                         <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd =2/ITSTYLE =ITSTYLE =1/UOM =uomcd =3/STYLENO =styleno =0/ITGRPCD =itgrpcd =5/ITGRPNM =itgrpnm =4/HSNCODE =hsncode','ITGRPCD')" />*@
                                                     @*@Html.HiddenFor(model => model.STYLENO, new { id = "STYLENO" })*@
@@ -1632,11 +1625,13 @@
                                                     </span>
                                                 </div>
                                                 @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
-                                                @Html.HiddenFor(model => model.BLUOMCD, new { id = "BLUOMCD" })
-                                                @Html.HiddenFor(model => model.BLQNTY, new { id = "BLQNTY" })
+                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP")
+                                                {
+                                                    @Html.HiddenFor(model => model.BLUOMCD, new { id = "BLUOMCD" })
+                                                    @Html.HiddenFor(model => model.BLQNTY, new { id = "BLQNTY" })
+                                                }
                                                 @Html.HiddenFor(model => model.CONVQTYPUNIT, new { id = "CONVQTYPUNIT" })
                                             </div>
-
 
                                             <div class="fabitcdhlpdiv col-md-3">
                                                 <div class="editor-field">
@@ -1645,7 +1640,6 @@
                                                     @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCDHLP" })
                                                 </div>
                                             </div>
-
                                             <div class="fabitcddiv col-md-3">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
@@ -1655,18 +1649,15 @@
                                                 </div>
                                                 @Html.HiddenFor(model => model.FABITCD, new { id = "FABITCD" })
                                             </div>
-
                                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                             {
                                                 <div class="col-md-4">
-
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
                                                             <label for="PDESIGN" style="font-size: 87%;color: darkgreen;">Pdesign</label>
                                                         </span>
                                                     </div>
-
                                                 </div>
                                             }
                                             else
@@ -1729,7 +1720,6 @@
                                                     </div>
                                                 </div>
                                             }
-
                                         </div>
                                         <div class="row">
                                             <div class="col-md-1">
@@ -1757,7 +1747,18 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
+                                            { <div class="col-md-1">
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @readonly = "readonly", @TabIndex = -1 } })
+                                                        <label for="QNTY" style="font-size: 87%;color: darkgreen;">Quantity</label>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            }
+                                            else
+                                            { <div class="col-md-1">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
                                                         @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
@@ -1765,6 +1766,9 @@
                                                     </span>
                                                 </div>
                                             </div>
+
+                                            }
+
                                             <div class="col-md-1">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
@@ -1773,7 +1777,25 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
+                                            {
+                                                <div class="col-md-1">
+                                                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                        <span class="has-float-label">
+                                                            @Html.EditorFor(model => model.BLQNTY, new { htmlAttributes = new { @class = "form-control", id = "BLQNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Bill Qnty", @title = "Bill Qnty", @onchange = "CalculateBargridQnty();" } })
+                                                            <label for="BLQNTY" style="font-size: 87%;color: darkgreen;">Bill Qnty</label>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                        <span class="has-float-label">
+                                                            @Html.EditorFor(model => model.BLUOMCD, new { htmlAttributes = new { @class = "form-control", id = "BLUOMCD", maxlength = 30, @title = "Bill UOM", @placeholder = "Bill UOM", @readonly = "readonly", @TabIndex = -1 } })
+                                                            <label for="BLUOMCD" style="font-size: 87%;color: darkgreen;">Bill UOM</label>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            }                                        @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
                                             {
                                                 <div class="col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
@@ -1829,7 +1851,7 @@
                                             @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
                                             @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                             {
-                                                <div class="col-md-8">
+                                                <div class="col-md-7">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
@@ -1857,7 +1879,6 @@
                                                     </span>
                                                 </div>
                                             </div>
-
                                             <div class="col-md-1">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
@@ -1876,14 +1897,12 @@
                                                 @Html.HiddenFor(model => model.ALL_GSTPER, new { id = "ALL_GSTPER" })
                                                 @Html.HiddenFor(model => model.PRODGRPGSTPER, new { id = "PRODGRPGSTPER" })
                                             </div>
-
                                             @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                             {
                                                 <div class="col-md-6">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.AGDOCNO, new { htmlAttributes = new { @class = "form-control", id = "AGDOCNO", maxlength = 16, @title = "Against Doc No", @placeholder = "Against Doc No" } })
-
                                                             <label for="AGDOCNO" style="font-size: 87%;color: darkgreen;">Against Doc No</label>
                                                         </span>
                                                     </div>
@@ -1912,7 +1931,6 @@
                                             {
                                                 @Html.HiddenFor(model => model.OURDESIGN, new { id = "OURDESIGN" })
                                             }
-
                                         </div>
                                     </div>
                                     <div class="col-lg-1" id="divmtrljobcd">
@@ -2004,13 +2022,11 @@
                                             @Html.HiddenFor(model => model.GLCD, new { id = "GLCD" })
                                         </div>
                                     </div>
-
                                     <div class="col-md-1" style="width:auto;">
                                         @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />*@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(Alt+A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Alt+Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
-
                                     </div>
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
@@ -2044,7 +2060,6 @@
                             @if (Model.MENU_PARA == "PJBL" && Model.DefaultAction != "V")
                     {
                                 <div class="row">
-
                                     <div class="col-lg-11" style="width:auto;">
                                         <div>
                                             <div id="partialdivJobIssue" style="margin-top:0px;">
@@ -2056,7 +2071,6 @@
                                         <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetIssue" id="Get_Issue" value="Get Issue" title="Click to Get Issue" onclick="GetPendingIssueData()" />
                                         <br />
                                         <button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Select Issue" onclick="SelectIssue();">Select Issue</button>
-
                                     </div>
                                 </div>
                             }
@@ -2065,7 +2079,6 @@
                                     @Html.Partial("_T_SALE_BarTab")
                                 </div>
                             </div>
-
 
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                             {
@@ -2104,7 +2117,6 @@
                                     </div>
                                 </div>
                             }
-
                         </div>
                     </div>
                     <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
@@ -2136,7 +2148,6 @@
                         </div>
                             }
                         }
-
                     </div>
                     <div id="FreightOthers" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
@@ -2224,7 +2235,6 @@
                                     }
                                 </div>
                             </div>
-
                         </div>
                         @*@if (Model.DefaultAction != "V" && (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP"))
                             {
@@ -2565,7 +2575,6 @@
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_STKTRNF.SGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','SGOCD/SGONM','1/0','Godown Details','SGOCD')", @placeholder = "Code" } })
                                     <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','SGOCD/SGONM','1/0','Godown Details','SGOCD')" />
-
                                     @*@Html.EditorFor(model => model.T_STKTRNF.SGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','SGOCD/SGONM','1/0','Godown Details','SGOCD')", onblur = "SelectGodownCode(this.value,SGOCD,SGONM);", @placeholder = "Code" } })
                                         <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','SGOCD/SGONM','1/0','Godown Details','SGOCD')" />*@
                                 </div>
@@ -2587,7 +2596,6 @@
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_STKTRNF.TGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','TGOCD/TGONM','1/0','Godown Details','TGOCD')", @placeholder = "Code" } })
                                     <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','TGOCD/TGONM','1/0','Godown Details','TGOCD')" />
-
                                     @*@Html.EditorFor(model => model.T_STKTRNF.TGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','TGOCD/TGONM','1/0','Godown Details','TGOCD')", onblur = "SelectGodownCode(this.value,TGOCD,TGONM);", @placeholder = "Code" } })
                                         <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','TGOCD/TGONM','1/0','Godown Details','TGOCD')" />*@
                                 </div>
@@ -2598,7 +2606,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -2706,7 +2713,6 @@
                 </div>
             </div>
             <div class="modal fade" id="RateHistoryModal" role="dialog">
-
             </div>
         </div>
 
@@ -2718,7 +2724,6 @@
 
                                                                 <div class="container">
                                                                     <div id="helpDIV">
-
                                                                     </div>
                                                                 </div>
                                                                 }

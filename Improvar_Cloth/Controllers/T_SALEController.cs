@@ -10,6 +10,7 @@ using System.Web.UI.WebControls;
 using Oracle.ManagedDataAccess.Client;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Improvar.Controllers
 {
@@ -576,7 +577,7 @@ namespace Improvar.Controllers
                                     PAGESLNO = dr["PAGESLNO"].retInt(),
                                     PCSTYPE = dr["PCSTYPE"].retStr(),
                                     NEGSTOCK = dr["NEGSTOCK"].retStr(),
-                                    BLUOMCD = dr["BLUOMCD"].retStr(),
+                                    BLUOMCD = dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
                                     COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
                                     FABITCD = dr["FABITCD"].retStr(),
                                     FABITNM = dr["FABITNM"].retStr(),
@@ -652,7 +653,7 @@ namespace Improvar.Controllers
                                   LISTDISCPER = dr["LISTDISCPER"].retDbl(),
                                   PAGENO = dr["PAGENO"].retInt(),
                                   PAGESLNO = dr["PAGESLNO"].retInt(),
-                                  BLUOMCD = dr["BLUOMCD"].retStr(),
+                                  BLUOMCD = dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
                                   CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                               }).OrderBy(s => s.SLNO).ToList();
 
@@ -1802,6 +1803,7 @@ namespace Improvar.Controllers
                                   //x.PDESIGN,
                                   x.RECPROGSLNO,
                                   x.CONVQTYPUNIT,
+                                  x.BLQNTY,
                               } into P
                               select new TTXNDTL
                               {
@@ -1820,7 +1822,8 @@ namespace Improvar.Controllers
                                   NOS = P.Sum(A => A.NOS),
                                   QNTY = P.Sum(A => A.QNTY),
                                   FLAGMTR = P.Sum(A => A.FLAGMTR),
-                                  BLQNTY = P.Sum(A => A.BLQNTY),
+                                  //BLQNTY = P.Sum(A => A.BLQNTY),
+                                  BLQNTY = P.Key.BLQNTY,
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
                                   DISCTYPE_DESC = P.Key.DISCTYPE_DESC,
@@ -2656,6 +2659,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        [ValidateInput(false)]
         public ActionResult ParkRecord(FormCollection FC, TransactionSaleEntry stream)
         {
             try
@@ -3880,7 +3884,7 @@ namespace Improvar.Controllers
                         if (difList != null && difList.Count > 0)
                         {
                             string diffitcd = difList.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
-                            OraTrans.Rollback();
+                            //OraTrans.Rollback();
                             OraCon.Dispose();
                             ContentFlg = "Barcode grid & Detail grid itcd [" + diffitcd + "] wise qnty, nos should match !!";
                             goto dbnotsave;
@@ -4440,7 +4444,14 @@ namespace Improvar.Controllers
                                 TTXNDTL.LISTDISCPER = VE.TTXNDTL[i].LISTDISCPER;
                                 TTXNDTL.PAGENO = VE.TTXNDTL[i].PAGENO;
                                 TTXNDTL.PAGESLNO = VE.TTXNDTL[i].PAGESLNO;
-                                TTXNDTL.BLUOMCD = VE.TTXNDTL[i].BLUOMCD;
+                                string BLUOMCD = "";
+                                if (VE.TTXNDTL[i].BLUOMCD.retStr() != "")
+                                {
+                                    BLUOMCD = Regex.Replace(VE.TTXNDTL[i].BLUOMCD, @"[^A-Z]+", String.Empty);
+                                    BLUOMCD = BLUOMCD.Trim();
+                                }
+                                TTXNDTL.BLUOMCD = BLUOMCD;
+                                //TTXNDTL.BLUOMCD = VE.TTXNDTL[i].BLUOMCD;
                                 dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -5229,7 +5240,14 @@ namespace Improvar.Controllers
                                     TVCHGST.CESSAMT = VE.TTXNDTL[i].CESSAMT.retDbl();
                                     TVCHGST.DRCR = cr;
                                     TVCHGST.QNTY = (VE.TTXNDTL[i].BLQNTY.retDbl() == 0 ? VE.TTXNDTL[i].QNTY.retDbl() : VE.TTXNDTL[i].BLQNTY.retDbl());
-                                    TVCHGST.UOM = VE.TTXNDTL[i].BLUOMCD.retStr() != "" ? VE.TTXNDTL[i].BLUOMCD : VE.TTXNDTL[i].UOM;
+                                    string BLUOMCD = "";
+                                    if (VE.TTXNDTL[i].BLUOMCD.retStr() != "" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP"))
+                                    {
+                                        BLUOMCD = Regex.Replace(VE.TTXNDTL[i].BLUOMCD, @"[^A-Z]+", String.Empty);
+                                        BLUOMCD = BLUOMCD.Trim();
+                                    }
+                                    TVCHGST.UOM = BLUOMCD.retStr() != "" ? BLUOMCD : VE.TTXNDTL[i].UOM;
+                                    //TVCHGST.UOM = VE.TTXNDTL[i].BLUOMCD.retStr() != "" ? VE.TTXNDTL[i].BLUOMCD : VE.TTXNDTL[i].UOM;
                                     TVCHGST.AGSTDOCNO = VE.TTXNDTL[i].AGDOCNO;
                                     TVCHGST.AGSTDOCDT = VE.TTXNDTL[i].AGDOCDT;
                                     TVCHGST.SALPUR = salpur;
