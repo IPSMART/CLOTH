@@ -252,6 +252,25 @@ namespace Improvar.Controllers
                 sl = DB.T_TXNPYMT_HDR.Find(aa[0].Trim());
                 TCH = DB.T_CNTRL_HDR.Find(sl.AUTONO);
 
+                VE.RTDEBNM = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
+                VE.MOBILE = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.MOBILE).FirstOrDefault();
+                var add1 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD1).FirstOrDefault();
+                var add2 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD2).FirstOrDefault();
+                var add3 = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
+                var city = sl.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == sl.RTDEBCD).Select(b => b.CITY).FirstOrDefault();
+                VE.ADDR = add1 + " " + add2 + " " + add3 + "/" + city;
+
+                string sql1 = "";
+                sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
+                sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c";
+                sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
+                DataTable syscnfgdt = masterHelp.SQLquery(sql1);
+                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                {
+                    VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                    //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
+                }
+
                 string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT from " + scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
                 str += "where a.SLMSLCD=b.slcd and a.autono='" + sl.AUTONO + "'";
                 var SALSMN_DATA = masterHelp.SQLquery(str);
@@ -988,22 +1007,80 @@ namespace Improvar.Controllers
                         //if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
                         dbsql = masterHelp.InsVch_Hdr(TBHDR.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, null, null, "Y", null, trcd, "", "", "", currrt, "", "");
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+                        #region Payment tab
+                        short pslno = 0, adjslno = 0;
+                        string dr = "D", cr = "C";
+                        string parglcd = "", parclass1cd = "", class2cd = "", tcsgl = "", prodglcd = "", prodrglcd = "", rogl = "", glcd = "", rglcd = "", slmslcd = "", strrefno = "";
+                        string sslcd = VE.RETDEBSLCD;
+                        string strblno = DOCPATTERN;
+                        string strbldt = TCH.DOCDT.ToString();
+                        string strduedt = Convert.ToDateTime(TCH.DOCDT.Value).AddDays(0).ToString().retDateStr();
+                        string strvtype = "BL";
+
+                        sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, ";
+                        sql += "'" + glcd + "' prodglcd,'" + rglcd + "' prodrglcd, ";
+                        sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
+                        sql += "a.saldebglcd parglcd, ";
+                        sql += "igst_rvi, cgst_rvi, sgst_rvi, cess_rvi, igst_rvo, cgst_rvo, sgst_rvo, cess_rvo ";
+                        sql += "from " + scm1 + ".m_syscnfg a, " + scmf + ".m_post b, " + scm1 + ".m_subleg_com c ";
+                        sql += "where c.slcd in('" + sslcd + "',null) and ";
+                        sql += "c.compcd in ('" + COM + "',null) ";
+                        DataTable tbl = masterHelp.SQLquery(sql);
+                        if (tbl != null && tbl.Rows.Count > 0)
+                        {
+                            parglcd = tbl.Rows[0]["parglcd"].retStr() == "" ? "" : tbl.Rows[0]["parglcd"].retStr(); parclass1cd = tbl.Rows[0]["class1cd"].retStr() == "" ? "" : tbl.Rows[0]["class1cd"].retStr();
+                            class2cd = tbl.Rows[0]["class2cd"].retStr() == "" ? "" : tbl.Rows[0]["class2cd"].retStr();
+                            tcsgl = tbl.Rows[0]["tcsgl"].retStr() == "" ? "" : tbl.Rows[0]["tcsgl"].retStr();
+                            prodglcd = tbl.Rows[0]["prodglcd"].retStr() == "" ? "" : tbl.Rows[0]["prodglcd"].retStr();
+                            prodrglcd = tbl.Rows[0]["prodrglcd"].retStr() == "" ? "" : tbl.Rows[0]["prodrglcd"].retStr();
+                            rogl = tbl.Rows[0]["rogl"].retStr() == "" ? "" : tbl.Rows[0]["rogl"].retStr();
+                        }
+
+                        //List<TTXNPYMT> vchadtTemp = new List<TTXNPYMT>();
+
                         if (VE.TTXNPYMT != null)
                         {
                             for (int i = 0; i <= VE.TTXNPYMT.Count - 1; i++)
                             {
-                                if (VE.TTXNPYMT[i].SLNO != 0 && VE.TTXNPYMT[i].AMT.retDbl() != 0)
+                                if (VE.TTXNPYMT[i].GLCD.retStr() != "" && VE.TTXNPYMT[i].AMT.retDbl() != 0)
                                 {
-                                    dbsql = masterHelp.InsVch_Det(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, Convert.ToSByte(1), "D", VE.TTXNPYMT[i].GLCD, TCH.SLCD,
-                              VE.TOT_ADJ, "Rem", "", TCH.SLCD, 0, 0, 0);
+                                    //string pymtrem = "Cash";
+                                    string pymtrem = VE.TTXNPYMT[i].PYMTNM;
+                                    pslno++; adjslno++;
+                                    dbsql = masterHelp.InsVch_Det(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, Convert.ToSByte(pslno + 100), cr,
+                                        parglcd, sslcd, VE.TTXNPYMT[i].AMT.retDbl(), pymtrem, VE.TTXNPYMT[i].GLCD);
                                     OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    if (parclass1cd.retStr() != "" || class2cd.retStr() != "")
+                                    {
+                                        dbsql = masterHelp.InsVch_Class(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, 1, Convert.ToSByte(pslno + 100), sslcd,
+                                                parclass1cd, class2cd, VE.TTXNPYMT[i].AMT.retDbl());
+                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    }
+                                    string agslcd = VE.TTXNSLSMN == null ? "" : VE.TTXNSLSMN[0].SLMSLCD;
+                                    dbsql = masterHelp.InsVch_Bl(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, cr,
+                                       parglcd, sslcd, null, agslcd, parclass1cd, Convert.ToSByte(pslno + 100),
+                                        VE.TTXNPYMT[i].AMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, 0, 0, "",
+                                         "", VE.TTXNPYMT[i].AMT.retDbl(),
+                                        "", "", "", "", VE.T_TXNPYMT_HDR.RTDEBCD == null ? "" : VE.T_TXNPYMT_HDR.RTDEBCD);
+                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+
+
+                                    T_VCH_DET TVCHDET = new T_VCH_DET();
+                                    TVCHDET.AUTONO = TCH.AUTONO; TVCHDET.CLCD = TBHDR.CLCD; TVCHDET.DTAG = TCH.DTAG; TVCHDET.EMD_NO = TCH.EMD_NO;
+                                    TVCHDET.DOCCD = TCH.DOCCD; TVCHDET.DOCDT = TCH.DOCDT; TVCHDET.DOCNO = TCH.DOCNO;
+                                    TVCHDET.SLNO = pslno + 200; TVCHDET.DRCR = dr; TVCHDET.GLCD = VE.TTXNPYMT[i].GLCD; TVCHDET.AMT = VE.TTXNPYMT[i].AMT; TVCHDET.R_SLCD = sslcd; TVCHDET.R_GLCD = parglcd;
+                                    TVCHDET.T_REM = pymtrem; TVCHDET.CHQNO = VE.TTXNPYMT[i].INSTNO; TVCHDET.OSLNO = pslno + 100;
+                                    if (VE.TTXNPYMT[i].INSTDT.retDateStr() != "") TVCHDET.CHQDT = Convert.ToDateTime(VE.TTXNPYMT[i].INSTDT.retDateStr());
+                                    dbsql = masterHelp.RetModeltoSql(TVCHDET, "A", scmf);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                                    //vchadtTemp.Add(new TTXNPYMT() { SLNO = (pslno + 100).retShort(), AMT = TVCHDET.AMT, ADJAMT = 0 });
                                 }
                             }
                         }
-
-                        dbsql = masterHelp.InsVch_Bl(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, "D",
-                                "", TCH.SLCD, "", "", "", Convert.ToSByte(1), VE.T_PYMT_AMT, "", "", "", "", "", 0, 0, "", "", VE.T_PYMT_AMT, "", "", "");
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                        #endregion
 
                         if (VE.SLPYMTADJ != null && VE.SLPYMTADJ.Count > 0)
                         {
@@ -1012,6 +1089,7 @@ namespace Improvar.Controllers
                             {
                                 if (VE.SLPYMTADJ[i].Checked == true && VE.SLPYMTADJ[i].I_SLNO != 0 && VE.SLPYMTADJ[i].ADJ_AMT != null && VE.SLPYMTADJ[i].ADJ_AMT != 0)
                                 {
+                                    //double willAdjust = 0;
                                     T_VCH_BL_ADJ TVCHBLADJ = new T_VCH_BL_ADJ();
                                     TVCHBLADJ.EMD_NO = TBHDR.EMD_NO;
                                     TVCHBLADJ.CLCD = TBHDR.CLCD;
@@ -1021,14 +1099,60 @@ namespace Improvar.Controllers
                                     TVCHBLADJ.I_SLNO = VE.SLPYMTADJ[i].I_SLNO;
                                     TVCHBLADJ.I_AMT = VE.SLPYMTADJ[i].I_AMT;
                                     TVCHBLADJ.R_AUTONO = TBHDR.AUTONO;
-                                    TVCHBLADJ.R_SLNO = 1;
+                                    //var curadj = vchadtTemp.Where(m => m.ADJAMT != 0).FirstOrDefault();
+                                    //vchadtTemp.Where(m => m.SLNO == curadj.SLNO).ForEach(m => m.ADJAMT = 0);
+                                    TVCHBLADJ.R_SLNO = 101;
                                     TVCHBLADJ.R_AMT = VE.T_PYMT_AMT; // + Convert.ToDouble(VE.TOTAL_DISCAMT_AMT);
+                                    //if(curadj.ADJAMT> VE.SLPYMTADJ[i].ADJ_AMT)
                                     TVCHBLADJ.ADJ_AMT = VE.SLPYMTADJ[i].ADJ_AMT;
                                     dbsql = masterHelp.RetModeltoSql(TVCHBLADJ, "A", fscm);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
                                 }
                             }
                         }
+
+                        //if (VE.TTXNPYMT != null)
+                        //{
+                        //    for (int i = 0; i <= VE.TTXNPYMT.Count - 1; i++)
+                        //    {
+                        //        if (VE.TTXNPYMT[i].SLNO != 0 && VE.TTXNPYMT[i].AMT.retDbl() != 0)
+                        //        {
+                        //            dbsql = masterHelp.InsVch_Det(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, Convert.ToSByte(1), "D", VE.TTXNPYMT[i].GLCD, TCH.SLCD,
+                        //      VE.TOT_ADJ, "Rem", "", TCH.SLCD, 0, 0, 0);
+                        //            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                        //        }
+                        //    }
+                        //}
+
+                        //dbsql = masterHelp.InsVch_Bl(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, "D",
+                        //        "", TCH.SLCD, "", "", "", Convert.ToSByte(1), VE.T_PYMT_AMT, "", "", "", "", "", 0, 0, "", "", VE.T_PYMT_AMT, "", "", "");
+                        //OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+                        //if (VE.SLPYMTADJ != null && VE.SLPYMTADJ.Count > 0)
+                        //{
+                        //    int COUNTERADJ = 0;
+                        //    for (int i = 0; i <= VE.SLPYMTADJ.Count - 1; i++)
+                        //    {
+                        //        if (VE.SLPYMTADJ[i].Checked == true && VE.SLPYMTADJ[i].I_SLNO != 0 && VE.SLPYMTADJ[i].ADJ_AMT != null && VE.SLPYMTADJ[i].ADJ_AMT != 0)
+                        //        {
+                        //            T_VCH_BL_ADJ TVCHBLADJ = new T_VCH_BL_ADJ();
+                        //            TVCHBLADJ.EMD_NO = TBHDR.EMD_NO;
+                        //            TVCHBLADJ.CLCD = TBHDR.CLCD;
+                        //            TVCHBLADJ.AUTONO = TBHDR.AUTONO;
+                        //            TVCHBLADJ.SLNO = ++COUNTERADJ;
+                        //            TVCHBLADJ.I_AUTONO = VE.SLPYMTADJ[i].I_AUTONO;
+                        //            TVCHBLADJ.I_SLNO = VE.SLPYMTADJ[i].I_SLNO;
+                        //            TVCHBLADJ.I_AMT = VE.SLPYMTADJ[i].I_AMT;
+                        //            TVCHBLADJ.R_AUTONO = TBHDR.AUTONO;
+                        //            TVCHBLADJ.R_SLNO = 1;
+                        //            TVCHBLADJ.R_AMT = VE.T_PYMT_AMT; // + Convert.ToDouble(VE.TOTAL_DISCAMT_AMT);
+                        //            TVCHBLADJ.ADJ_AMT = VE.SLPYMTADJ[i].ADJ_AMT;
+                        //            dbsql = masterHelp.RetModeltoSql(TVCHBLADJ, "A", fscm);
+                        //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        //        }
+                        //    }
+                        //}
 
                         #endregion
 
