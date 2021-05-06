@@ -300,7 +300,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#CONVQTYPUNIT").val(returncolvalue(str, "CONVQTYPUNIT"));
         var BLQNTY = retFloat(retFloat($("#QNTY").val()) * retFloat($("#CONVQTYPUNIT").val())).toFixed(3);
         $("#BLQNTY").val(BLQNTY);
-       
+
     }
     else {
         var FieldidStarting = "";
@@ -569,14 +569,37 @@ function UpdateBarCodeRow() {
                     }
                     //}
                     if (flag == true) {
-
+                        //
+                        debugger;
+                        //var a1 = retStr($("#ITGRPCD").val()); var pp1 = retStr($("#B_ITGRPCD_" + j).val());
+                        //var b1 = retStr($("#MTRLJOBCD").val()); var qq1 = retStr($("#B_MTRLJOBCD_" + j).val())
+                        //var c1 = retStr($("#MTBARCODE").val()); var rr1 = retStr($("#B_MTBARCODE_" + j).val())
+                        //var d1 = retStr($("#ITCD").val()); var ss1 = retStr($("#B_ITCD_" + j).val())
+                        //var e1 = retStr($("#DISCTYPE").val()); var tt1 = retStr($("#B_DISCTYPE_" + j).val())
+                        //var f1 = retStr($("#TDDISCTYPE").val()); var u1 = retStr($("#B_TDDISCTYPE_" + j).val())
+                        //var g1 = retStr($("#SCMDISCTYPE").val()); var v1 = retStr($("#B_SCMDISCTYPE_" + j).val())
+                        //var h1 = retStr($("#UOM").val()); var w1 = retStr($("#B_UOM_" + j).val())
+                        //var i1 = retStr($("#STKTYPE").val()); var x1 = retStr($("#B_STKTYPE_" + j).val())
+                        //var j1 = retFloat($("#RATE").val()); var y1 = retFloat($("#B_RATE_" + j).val())
+                        //var k1 = retFloat($("#DISCRATE").val()); var z1 = retFloat($("#B_DISCRATE_" + j).val())
+                        //var l1 = retFloat($("#SCMDISCRATE").val()); var aa1 = retFloat($("#B_SCMDISCRATE_" + j).val())
+                        //var m1 = retFloat($("#TDDISCRATE").val()); var bb1 = retFloat($("#B_TDDISCRATE_" + j).val())
+                        //var n1 = retFloat($("#GSTPER").val()); var cc1 = retFloat($("#B_GSTPER_" + j).val())
+                        //var o1 = retFloat($("#FLAGMTR").val()); var dd1 = retFloat($("#B_FLAGMTR_" + j).val())
+                        //var p1 = retStr($("#HSNCODE").val()); var ee1 = retStr($("#B_HSNCODE_" + j).val())
+                        //var q1 = retStr($("#PRODGRPGSTPER").val()); var ff1 = retStr($("#B_PRODGRPGSTPER_" + j).val())
+                        //var r1 = retStr($("#GLCD").val()); var gg1 = retStr($("#B_GLCD_" + j).val())
+                        //var s1 = retStr($("#SLNO").val()); var hh1 = retStr($("#B_SLNO_" + j).val())
+                        //var t1 = retStr($("#FABITCD").val()); var ii1 = retStr($("#B_FABITCD_" + j).val())
+                        //var oo1 = retStr($("#PDESIGN").val()); var jj1 = retStr($("#B_PDESIGN_" + j).val())
+                        //
                         if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
                                         retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
                                         retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
                                          retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
                                         retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#GSTPER").val()) == retFloat($("#B_GSTPER_" + j).val()) &&
                                         retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) && retStr($("#PDESIGN").val()) == retStr($("#B_PDESIGN_" + j).val())) {
+                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val())) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             countmatchslno++;
@@ -2118,7 +2141,7 @@ function AddBarCodeGrid() {
                       retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
                      retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat(TDDISCRATE) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat(GSTPER) == retFloat($("#B_GSTPER_" + j).val()) &&
                      retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) && retStr(PDESIGN) == retStr($("#B_PDESIGN_" + j).val())) {
+                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val())) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             if (ModuleCode.indexOf("SALESCLOTH") != -1) {
@@ -3355,7 +3378,7 @@ function GetItcd(id) {
 }
 function CalculateBargridQnty(tableid, index) {
     debugger;
-    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "", CONVQTYPUNITID="",BLQNTYID="";
+    var CUTLENGTHID = "", NOSID = "", QNTYID = "", UOMID = "", CONVQTYPUNITID = "", BLQNTYID = "";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CUTLENGTHID = "B_CUTLENGTH_" + index;
         NOSID = "B_NOS_" + index;

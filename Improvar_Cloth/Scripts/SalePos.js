@@ -232,11 +232,12 @@ function AddMainRow(hlpstr) {
         NOS = 1;
         QNTY = NOS;
     }
-
+    var FLAGMTR = returncolvalue(hlpstr, "FLAGMTR");
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
-    var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
+    //var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
+    var GROSSAMT = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
@@ -264,7 +265,7 @@ function AddMainRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     if (MNTNFLAGMTR != "Y") {
-        tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
+        tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
     }
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
@@ -338,7 +339,7 @@ function AddMainRow(hlpstr) {
     tr += ' </td>';
     if (MNTNFLAGMTR == "Y") {
         tr += ' <td class="" title="">';
-        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + FLAGMTR + '">';
         tr += ' </td>';
     }
     tr += ' <td class="" title="">';
@@ -499,11 +500,12 @@ function AddReturnRow(hlpstr) {
         NOS = 1;
         QNTY = NOS;
     }
-
+    var FLAGMTR = returncolvalue(hlpstr, "FLAGMTR");
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
-    var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
+    //var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
+    var GROSSAMT = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var DISCTYPE = returncolvalue(hlpstr, "DISCTYPE");
@@ -530,7 +532,7 @@ function AddReturnRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="R_TXNSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TXNSLNO" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="R_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     if (MNTNFLAGMTR != "Y") {
-        tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" type="hidden" value="">';
+        tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
     }
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="R_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BLQNTY" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
@@ -610,7 +612,7 @@ function AddReturnRow(hlpstr) {
     tr += ' </td>';
     if (MNTNFLAGMTR == "Y") {
         tr += ' <td class="" title="">';
-        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + FLAGMTR + '" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
         tr += ' </td>';
     }
     tr += ' <td class="" title="">';
@@ -766,6 +768,7 @@ function CalculateRowAmt(GridId, i) {
         var INCLRATE_ = $("#INCLRATE_" + i).val();
         var B_RATE_ = $("#B_RATE_" + i).val();
         var B_NETAMT_ = $("#B_NETAMT_" + i).val();
+        var B_FLAGMTR_ = retFloat($("#B_FLAGMTR_" + i).val());
         //if(B_NETAMT_!=0)
         //{
         //    if (B_NETAMT_ != INCLRATE_) {
@@ -775,7 +778,8 @@ function CalculateRowAmt(GridId, i) {
         //}
 
         var B_RATE_ = retFloat($("#B_RATE_" + i).val());
-        var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
+        //var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
+        var B_GROSSAMT_ = (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_)) * parseFloat(B_RATE_);
         $("#B_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
 
         var NETDISCAMT = retFloat($("#B_NETDISCAMT_" + i).val());
@@ -1038,7 +1042,9 @@ function CalculateRowAmt(GridId, i) {
 
         var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
         var B_RATE_ = retFloat($("#R_RATE_" + i).val());
-        var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
+        var B_FLAGMTR_ = retFloat($("#R_FLAGMTR_" + i).val());
+        //var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
+        var B_GROSSAMT_ = (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_)) * parseFloat(B_RATE_);
         $("#R_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
 
         var NETDISCAMT = retFloat($("#R_NETDISCAMT_" + i).val());
@@ -1340,6 +1346,7 @@ function CalculateInclusiveRate(i, GridId) {
         if ($("#INCLRATEASK").val() == "Y") {
             var INCLRATE_ = retFloat($("#INCLRATE_" + i).val());
             var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
+            var B_FLAGMTR_ = retFloat($("#B_FLAGMTR_" + i).val());
             var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
             var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
 
@@ -1350,7 +1357,8 @@ function CalculateInclusiveRate(i, GridId) {
             else {
                 rate = retFloat(INCLRATE_);
             }
-            qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
+            //qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
+            qntyamt = retFloat(retFloat(rate) * (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_))).toFixed(2);
             var discamt1 = 0, discamt2 = 0;
             if (retFloat($("#B_NETDISCAMT_" + i).val()) == 0) {
                 discamt1 = CalculateDiscountWithvalue("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, retFloat(qntyamt), "B_DISCRATE_" + i);
@@ -1390,7 +1398,7 @@ function CalculateInclusiveRate(i, GridId) {
                         }
                         baldiscamt = retFloat(baldiscamt) - retFloat(discamt);
                         if (j == i) {
-                            if (totalpropotionamt != DISCONBILL) {
+                            if (retFloat(totalpropotionamt).toFixed(2) != retFloat(DISCONBILL).toFixed(2)) {
                                 discamt2 = discamt;
                             }
                             else {
@@ -1437,7 +1445,8 @@ function CalculateInclusiveRate(i, GridId) {
             var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
             $("#B_RATE_" + i).val(itemrate);
 
-            $("#B_GROSSAMT_" + i).val(retFloat(itemrate * B_QNTY_).toFixed(2));
+            //$("#B_GROSSAMT_" + i).val(retFloat(itemrate * B_QNTY_).toFixed(2));
+            $("#B_GROSSAMT_" + i).val(retFloat(itemrate * (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_))).toFixed(2));
         }
         CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', i);
         return itemrate;
@@ -1447,6 +1456,7 @@ function CalculateInclusiveRate(i, GridId) {
         if ($("#INCLRATEASK").val() == "Y") {
             var INCLRATE_ = retFloat($("#R_INCLRATE_" + i).val());
             var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
+            var B_FLAGMTR_ = retFloat($("#R_FLAGMTR_" + i).val());
             var B_DISCRATE_ = retFloat($("#R_DISCRATE_" + i).val());
             var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
 
@@ -1457,7 +1467,8 @@ function CalculateInclusiveRate(i, GridId) {
             else {
                 rate = retFloat(INCLRATE_);
             }
-            qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
+            //qntyamt = retFloat(retFloat(rate) * retFloat(B_QNTY_)).toFixed(2);
+            qntyamt = retFloat(retFloat(rate) * (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_))).toFixed(2);
             var discamt1 = CalculateDiscountWithvalue("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, retFloat(qntyamt), "R_DISCRATE_" + i);
             qntyamt = retFloat(qntyamt) - retFloat(discamt1);
             if (B_QNTY_ != 0) {
@@ -1495,7 +1506,8 @@ function CalculateInclusiveRate(i, GridId) {
             var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent))).toFixed(2);
             $("#R_RATE_" + i).val(itemrate);
 
-            $("#R_GROSSAMT_" + i).val(retFloat(itemrate * B_QNTY_).toFixed(2));
+            //$("#R_GROSSAMT_" + i).val(retFloat(itemrate * B_QNTY_).toFixed(2));
+            $("#R_GROSSAMT_" + i).val(retFloat(itemrate * (parseFloat(B_QNTY_) - parseFloat(B_FLAGMTR_))).toFixed(2));
         }
         CalculateRowAmt('_T_SALE_POS_RETURN_GRID', i);
         return itemrate;
@@ -1870,14 +1882,18 @@ function UpdateBarCodeRow(hlpstr, slno) {
         if ($("#B_SLNO_" + j).val() == slno) {
             var qnty = $("#B_QNTY_" + j).val();
             var nos = $("#B_NOS_" + j).val();
+            var flagmtr = $("#B_FLAGMTR_" + j).val();
             var newqnty = (returncolvalue(hlpstr, "QNTY"));
             var newnos = (returncolvalue(hlpstr, "NOS"));
             if (returncolvalue(hlpstr, "UOMCD") == "PCS") {
                 newnos = 1;
                 newqnty = newnos;
             }
+            var newflagmtr = (returncolvalue(hlpstr, "FLAGMTR"));
+
             var sumqnty = retFloat(qnty) + retFloat(newqnty);
             var sumnos = retFloat(nos) + retFloat(newnos);
+            var sumflagmtr = retFloat(flagmtr) + retFloat(newflagmtr);
             $("#B_BARNO_" + j).val($("#B_BARNO_" + j).val());
             //$("#B_TXNSLNO_" + j).val(TXNSLNO);
             $("#B_ITGRPCD_" + j).val($("#B_ITGRPCD_" + j).val());
@@ -1899,12 +1915,13 @@ function UpdateBarCodeRow(hlpstr, slno) {
             $("#B_NEGSTOCK_" + j).val($("#B_NEGSTOCK_" + j).val());
             $("#B_UOM_" + j).val($("#B_UOM_" + j).val());
             $("#B_NOS_" + j).val(sumnos);
-            $("#B_FLAGMTR_" + j).val($("#B_FLAGMTR_" + j).val());
+            $("#B_FLAGMTR_" + j).val(sumflagmtr);
             $("#INCLRATE_" + j).val($("#INCLRATE_" + j).val());
             $("#B_RATE_" + j).val($("#B_RATE_" + j).val());
             $("#B_GLCD_" + j).val($("#B_GLCD_" + j).val());
             var RATE = returncolvalue(hlpstr, "RATE");
-            var GROSSAMT = retFloat(sumqnty) * retFloat(RATE);
+            //var GROSSAMT = retFloat(sumqnty) * retFloat(RATE);
+            var GROSSAMT = (parseFloat(sumqnty) - parseFloat(sumflagmtr)) * retFloat(RATE);
             $("#B_GROSSAMT_" + j).val(GROSSAMT);
             $("#B_PRODGRPGSTPER_" + j).val($("#B_PRODGRPGSTPER_" + j).val());
             //var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);

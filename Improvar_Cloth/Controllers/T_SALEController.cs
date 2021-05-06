@@ -1754,7 +1754,7 @@ namespace Improvar.Controllers
                     x.BLUOMCD = x.BLUOMCD.retStr();
                     x.FABITCD = x.FABITCD.retStr();
                     x.FABITNM = x.FABITNM.retStr();
-                    x.PDESIGN = x.PDESIGN.retStr();
+                    //x.PDESIGN = x.PDESIGN.retStr();
                     x.RECPROGSLNO = x.RECPROGSLNO.retShort();
                     x.BLQNTY = x.BLQNTY.retDbl();
                     x.CONVQTYPUNIT = x.CONVQTYPUNIT.retDbl();
@@ -1799,7 +1799,7 @@ namespace Improvar.Controllers
                                   x.BLUOMCD,
                                   x.FABITCD,
                                   x.FABITNM,
-                                  x.PDESIGN,
+                                  //x.PDESIGN,
                                   x.RECPROGSLNO,
                                   x.CONVQTYPUNIT,
                               } into P
@@ -1856,7 +1856,7 @@ namespace Improvar.Controllers
                 if (allslno != distnctslno)
                 {
                     #region error checking
-                    //DataTable tbl = ListToDatatable.LINQResultToDataTable(VE.TTXNDTL);
+                    DataTable tbl = ListToDatatable.LINQResultToDataTable(VE.TTXNDTL);
                     #endregion
 
                     string slno = string.Join(",", (VE.TTXNDTL.GroupBy(x => x.SLNO)
