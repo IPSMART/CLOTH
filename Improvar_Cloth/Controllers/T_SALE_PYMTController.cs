@@ -158,7 +158,7 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
-                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD, "");
+                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD, VE.T_TXNPYMT_HDR.RTDEBCD, "");
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
 
@@ -321,7 +321,7 @@ namespace Improvar.Controllers
                 }
                 VE.T_PYMT_AMT = T_PYMT_AMT;
                 VE.T_CNTRL_HDR = TCH;
-                VE = GetOutstInvoice(VE, VE.RETDEBSLCD, sl.AUTONO);
+                VE = GetOutstInvoice(VE, VE.RETDEBSLCD, sl.RTDEBCD, sl.AUTONO);
                 var TVCHBLADJ = DBF.T_VCH_BL_ADJ.Where(m => m.AUTONO == sl.AUTONO).ToList();
                 double TOT_bill_AMT = 0, TOT_PRE_ADJ = 0, TOT_ADJ = 0, TOT_BAL = 0;
                 foreach (var outs in VE.SLPYMTADJ)
@@ -335,7 +335,19 @@ namespace Improvar.Controllers
                     }
                     TOT_bill_AMT += outs.AMT.retDbl(); TOT_PRE_ADJ += outs.PRE_ADJ_AMT.retDbl(); TOT_BAL += outs.BAL_AMT.retDbl();
                 }
-                VE.TOT_AMT = TOT_bill_AMT; VE.TOT_PRE_ADJ = TOT_PRE_ADJ; VE.TOT_ADJ = TOT_ADJ; VE.TOT_BAL = TOT_BAL;
+                if (VE.DefaultAction == "V")
+                {
+                    if (VE.SLPYMTADJ != null && VE.SLPYMTADJ.Count > 0)
+                    {
+                        VE.SLPYMTADJ = VE.SLPYMTADJ.Where(a => a.ADJ_AMT.retDbl() != 0).ToList();
+                    }
+                }
+                //VE.TOT_AMT = TOT_bill_AMT; VE.TOT_PRE_ADJ = TOT_PRE_ADJ; VE.TOT_ADJ = TOT_ADJ; VE.TOT_BAL = TOT_BAL;
+                VE.TOT_AMT = VE.SLPYMTADJ.Select(a => a.AMT).Sum().retDbl();
+                VE.TOT_PRE_ADJ = VE.SLPYMTADJ.Select(a => a.PRE_ADJ_AMT).Sum().retDbl();
+                VE.TOT_ADJ = VE.SLPYMTADJ.Select(a => a.ADJ_AMT).Sum().retDbl();
+                VE.TOT_BAL = VE.SLPYMTADJ.Select(a => a.BAL_AMT).Sum().retDbl();
+
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
             return VE;
@@ -468,14 +480,21 @@ namespace Improvar.Controllers
             return PartialView("_T_SALE_PYMT_Adjustment", VE);
 
         }
-        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd, string autono)
+        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd, string rtdebcd, string autono)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             try
             {
                 Cn.getQueryString(VE);
                 string glcd = "";// VE.T_PYTHDR.GLCD;
-                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
+                rtdebcd = rtdebcd.retStr() == "" ? "" : rtdebcd.retStr().retSqlformat();
+                string vhautoslno = "";
+                if (VE.DefaultAction == "V")
+                {
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    vhautoslno = string.Join(",", DBF.T_VCH_DET.Where(a => a.AUTONO == autono).Select(s => s.AUTONO + s.SLNO).ToArray()).retSqlformat();
+                }
+                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", vhautoslno, "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, rtdebcd);
                 var RTR = OSDATA.Rows[0]["slno"].GetType();
                 var OSList = (from customer in OSDATA.AsEnumerable()
                               where (customer.Field<string>("VCHTYPE") == "BL")
