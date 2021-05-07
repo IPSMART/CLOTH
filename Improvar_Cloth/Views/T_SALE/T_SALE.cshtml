@@ -1113,17 +1113,7 @@
                                     @Html.Label("", "Deal By")
                                 </div>
                             </div>
-                            <div class="col-md-10">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.DEALBY, new { htmlAttributes = new { @class = "form-control", id = "DEALBY", @placeholder = "Deal By", maxlength = 50, @list = "DealBy_List" } })
-                                    <datalist id="DealBy_List">
-                                        @foreach (var jg in Model.Database_Combo2)
-                                        {
-                                            <option value="@jg.FIELD_VALUE" />
-                                        }
-                                    </datalist>
-                                </div>
-                            </div>
+                            c
 
                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                             {
@@ -1982,6 +1972,20 @@
                                             @Html.HiddenFor(model => model.ORDSLNO, new { id = "ORDSLNO" })
                                         </div>
 
+                                    }
+                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.PCSTYPE, new { htmlAttributes = new { @class = "form-control", id = "PCSTYPE", @placeholder = "Pcs.Type/CTG", maxlength = 50, @list = "PCSTYPE_List" } })
+                                                <datalist id="PCSTYPE_List">
+                                                    @foreach (var jg in Model.Database_Combo4)
+                                                    {
+                                                        <option value="@jg.FIELD_VALUE" />
+                                                    }
+                                                </datalist>
+                                            </div>
+                                        </div>
                                     }
                                     @if (Model.M_SYSCNFG.MNTNDISC1 == "Y")
                                     {

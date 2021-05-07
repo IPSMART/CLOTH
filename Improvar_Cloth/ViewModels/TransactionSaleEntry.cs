@@ -276,5 +276,7 @@ namespace Improvar.ViewModels
         public string BLUOMCD { get; set; }
         public double? CONVQTYPUNIT { get; set; }
         public double? BLQNTY { get; set; }
+        [StringLength(15)]
+        public string PCSTYPE { get; set; }
     }
 }

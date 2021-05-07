@@ -414,6 +414,7 @@ function FillBarcodeArea(str, Table, i) {
 
         $("#BLUOMCD").val($(FieldidStarting + "BLUOMCD_" + i).val());
         $("#CONVQTYPUNIT").val($(FieldidStarting + "CONVQTYPUNIT_" + i).val());
+        $("#PCSTYPE").val($(FieldidStarting + "PCSTYPE_" + i).val());
     }
     if (Table == "_T_SALE_PRODUCT_GRID") {
         $("#AddRow_Barcode").hide();
@@ -755,6 +756,7 @@ function UpdateBarCodeRow() {
             $("#B_BLUOMCD_" + j).val($("#BLUOMCD").val());
             $("#B_BLQNTY_" + j).val($("#BLQNTY").val());
             $("#B_CONVQTYPUNIT_" + j).val($("#CONVQTYPUNIT").val());
+            $("#B_PCSTYPE_" + j).val($("#PCSTYPE").val());
         }
 
     }
@@ -800,7 +802,7 @@ function ClearBarcodeArea(TAG) {
     var MNTNDISC2 = $("#MNTNDISC2").val();
     var MNTNDISC1 = $("#MNTNDISC1").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP,BLUOMCD,BLQNTY,CONVQTYPUNIT");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP,BLUOMCD,BLQNTY,CONVQTYPUNIT,PCSTYPE");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN,WPPER,RPPER");
     }
@@ -2101,6 +2103,7 @@ function AddBarCodeGrid() {
     var FABITCD = $("#FABITCD").val();
     var FABITNM = $("#FABITNM").val();
     var PCSTYPEVALUE = $("#PCSTYPEVALUE").val();
+    var PCSTYPE = $("#PCSTYPE").val();
     var SYSCNFGCOMMONUNIQBAR = $("#SYSCNFGCOMMONUNIQBAR").val();
     //get bill slno
     var TXNSLNO = "";
@@ -2465,7 +2468,7 @@ function AddBarCodeGrid() {
     }
     if ((MENU_PARA == "PB" || MENU_PARA == "PR" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") && MNTNPCSTYPE == "Y") {
         tr += '    <td class="">';
-        tr += ' <input autocomplete="off" class="atextBoxFor text-box single-line" data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" list="Pcstype_List" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="">';
+        tr += ' <input autocomplete="off" class="atextBoxFor text-box single-line" data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" list="Pcstype_List" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="' + PCSTYPE + '">';
         tr += ' <datalist id="Pcstype_List">' + PCSTYPEVALUE + '</datalist>';
         //tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
         tr += '    </td>';
