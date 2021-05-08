@@ -1113,8 +1113,17 @@
                                     @Html.Label("", "Deal By")
                                 </div>
                             </div>
-                            c
-
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.DEALBY, new { htmlAttributes = new { @class = "form-control", id = "DEALBY", @placeholder = "Deal By", maxlength = 50, @list = "DealBy_List" } })
+                                    <datalist id="DealBy_List">
+                                        @foreach (var jg in Model.Database_Combo2)
+                                        {
+                                            <option value="@jg.FIELD_VALUE" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
                             @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                             {
                                 <div class="col-md-1">

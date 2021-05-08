@@ -131,25 +131,25 @@ namespace Improvar.Controllers
                 bool showbatch = true;
 
                 string sql = "";
-                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt, a.prefno, a.prefdt, a.slnm, a.gstno,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
+                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
                 sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos from ";
-                sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, a.rate, ";
+                sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, a.rate, ";
                 sql += "sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, ";
                 sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c, ";
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c," + scm1 + ".m_doctype d, ";
                 sql += scmf + ".m_subleg i ";
-                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and b.slcd=i.slcd(+) and ";
-                sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "'  and ";
-                if (selitcd.retStr() != "") sql += "a.itcd in (" + selitcd + ") and ";
-                if (LOCCD != "") { sql += " c.loccd in(" + LOCCD + ") and "; } else { sql += " c.loccd='" + LOC + "' "; }
+                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and b.slcd=i.slcd(+) and ";
+                sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "'   ";
+                if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  ";
+                if (LOCCD != "") { sql += "and c.loccd in(" + LOCCD + ")  "; } else { sql += "and c.loccd='" + LOC + "' "; }
                 if (plist.retStr() != "")
                 {
-                    //sql += "k.itmprccd in (" + plist + ") and ";
+                    //sql += "and k.itmprccd in (" + plist + ")  ";
                 }
                 if (selgocd.retStr() != "") sql += "and a.gocd in (" + selgocd + ") ";
-                if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
+                //if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, a.rate, a.txblval ) a, ";
+                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, a.rate, a.txblval ) a, ";
 
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos ";
                 sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, ";
@@ -191,7 +191,7 @@ namespace Improvar.Controllers
                 //if (showbatch == true) HC.GetPrintHeader(IR, "batchno", "string", "c,30", "Batchnos");
 
                 double iop = 0, idr = 0, icr = 0, icls = 0, idramt = 0, icramt = 0;
-                double top = 0, tdr = 0, tcr = 0, tcls = 0, tdramt = 0, tcramt = 0,tblqty=0;
+                double top = 0, tdr = 0, tcr = 0, tcls = 0, tdramt = 0, tcramt = 0, tblqty = 0;
                 double dbqty = 0, dbamt = 0;
 
                 top = 0; tdr = 0; tcr = 0; tcls = 0;
@@ -259,7 +259,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
                             IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                             IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
-                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + "]";
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + "]";
                             //if (showbatch == true) IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchnos"];
                             IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
@@ -278,7 +278,7 @@ namespace Improvar.Controllers
                             i = i + 1;
                             if (i > maxR) break;
                         }
-                       
+
                         if (i > maxR) break;
                     }
 
@@ -304,7 +304,7 @@ namespace Improvar.Controllers
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string jobnm = DB.M_JOBMST.Find(VE.MENU_PARA)?.JOBNM;
                 string pghdr1 = "";
-                string repname = jobnm+"_Stk_Leg";
+                string repname = jobnm + "_Stk_Leg";
                 pghdr1 = jobnm + " Stock Ledger from " + fdt + " to " + tdt;
                 if (selgocd != "")
                 {
