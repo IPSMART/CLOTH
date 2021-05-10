@@ -2006,7 +2006,7 @@ namespace Improvar.Controllers
 
         }
         [HttpPost]
-        public ActionResult M_FINProduct(FormCollection FC)
+        public ActionResult M_FINProduct(FormCollection FC, ItemMasterEntry VE)
         {
             try
             {
@@ -2048,14 +2048,14 @@ namespace Improvar.Controllers
                 //}
                 //Session["DtRepBarcodeImage"] = dt;
                 //return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage");
-
+                Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
-
-                string query = "SELECT A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
-                query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B,  " + dbname + ".M_SIZE D, ";
+                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
+                query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, ";
                 query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F ";
                 query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+)   AND ";
                 query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) ";
+               // query = query + "A.M_AUTONO='" + VE.M_SITEM.M_AUTONO + "' ";
                 query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
                 query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
 
