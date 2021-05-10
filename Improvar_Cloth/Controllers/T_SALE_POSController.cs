@@ -3425,7 +3425,17 @@ namespace Improvar.Controllers
                         #region Return tab
                         if (VE.TsalePos_TBATCHDTL_RETURN != null)
                         {
-                            proddrcr = negamt == "Y" ? cr : dr;
+                            double multamt = 1;
+                            if (VE.MENU_PARA == "SBCM")
+                            {
+                                multamt = -1;
+                                proddrcr = negamt == "Y" ? dr : cr;
+
+                            }
+                            else
+                            {
+                                proddrcr = negamt == "Y" ? cr : dr;
+                            }
                             for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
                             {
                                 if (VE.TsalePos_TBATCHDTL_RETURN[i].SLNO != 0 && VE.TsalePos_TBATCHDTL_RETURN[i].ITCD != null)
@@ -3452,17 +3462,17 @@ namespace Improvar.Controllers
                                     }
                                     TVCHGST.HSNCODE = VE.TsalePos_TBATCHDTL_RETURN[i].HSNCODE;
                                     TVCHGST.ITNM = (VE.TsalePos_TBATCHDTL_RETURN[i].ITNM.retStr() + " ").TrimStart(' ') + VE.TsalePos_TBATCHDTL_RETURN[i].ITSTYLE;
-                                    TVCHGST.AMT = VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL;
+                                    TVCHGST.AMT = VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL * multamt;
                                     TVCHGST.CGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER;
                                     TVCHGST.SGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER;
                                     TVCHGST.IGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER;
-                                    TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT;
-                                    TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT;
-                                    TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT;
+                                    TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT * multamt;
+                                    TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT * multamt;
+                                    TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT * multamt;
                                     TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER;
-                                    TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT;
+                                    TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT * multamt;
                                     TVCHGST.DRCR = proddrcr;// dr;
-                                    TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl());
+                                    TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl()) * multamt;
                                     TVCHGST.UOM = VE.TsalePos_TBATCHDTL_RETURN[i].UOM;
                                     TVCHGST.AGSTDOCNO = VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCNO;
                                     TVCHGST.AGSTDOCDT = VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT.retStr() == "" ? (DateTime?)null : Convert.ToDateTime(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT);
@@ -3488,7 +3498,7 @@ namespace Improvar.Controllers
                                     TVCHGST.LUTNO = VE.T_VCH_GST.LUTNO;
                                     TVCHGST.LUTDT = VE.T_VCH_GST.LUTDT;
                                     TVCHGST.TCSPER = TTXN.TCSPER;
-                                    TVCHGST.BASAMT = VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT;
+                                    TVCHGST.BASAMT = VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT * multamt;
                                     TVCHGST.DISCAMT = VE.TsalePos_TBATCHDTL_RETURN[i].DISCAMT;
                                     TVCHGST.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
                                     TVCHGST.GSTSLADD1 = VE.GSTSLADD1;
@@ -3672,6 +3682,12 @@ namespace Improvar.Controllers
                         }
                     }
                     #endregion
+
+                    if (igst + cgst + sgst == 0)
+                    {
+                        ContentFlg = "TAX amount not found. Please add tax with item.";
+                        goto dbnotsave;
+                    }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
                     {
                         ContentFlg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
