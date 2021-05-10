@@ -959,30 +959,30 @@ namespace Improvar.Controllers
                         double NET_AMT = TTXNDTL.TXBLVAL.retDbl() + TTXNDTL.CGSTAMT.retDbl() + TTXNDTL.SGSTAMT.retDbl() + TTXNDTL.IGSTAMT.retDbl();
                         TTXNDTL.AMT = NET_AMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
-                        TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE).FirstOrDefault();
-                        if (tmpTTXNDTL != null)
-                        {
-                            foreach (var tmpdtl in TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE))
-                            {
-                                tmpdtl.NOS += TTXNDTL.NOS;
-                                tmpdtl.QNTY += TTXNDTL.QNTY;
-                                tmpdtl.AMT += TTXNDTL.AMT;
-                                tmpdtl.TOTDISCAMT += TTXNDTL.TOTDISCAMT;
-                                tmpdtl.DISCAMT += TTXNDTL.DISCAMT;
-                                tmpdtl.SCMDISCAMT += TTXNDTL.SCMDISCAMT;
-                                tmpdtl.TXBLVAL += TTXNDTL.TXBLVAL;
-                                tmpdtl.IGSTAMT += TTXNDTL.IGSTAMT;
-                                tmpdtl.CGSTAMT += TTXNDTL.CGSTAMT;
-                                tmpdtl.SGSTAMT += TTXNDTL.SGSTAMT;
-                                tmpdtl.NETAMT += TTXNDTL.NETAMT;
-                                TTXNDTL.SLNO = tmpdtl.SLNO;
-                            }
-                        }
-                        else
-                        {
+                        //TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE).FirstOrDefault();
+                        //if (tmpTTXNDTL != null)
+                        //{
+                        //    foreach (var tmpdtl in TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE))
+                        //    {
+                        //        tmpdtl.NOS += TTXNDTL.NOS;
+                        //        tmpdtl.QNTY += TTXNDTL.QNTY;
+                        //        tmpdtl.AMT += TTXNDTL.AMT;
+                        //        tmpdtl.TOTDISCAMT += TTXNDTL.TOTDISCAMT;
+                        //        tmpdtl.DISCAMT += TTXNDTL.DISCAMT;
+                        //        tmpdtl.SCMDISCAMT += TTXNDTL.SCMDISCAMT;
+                        //        tmpdtl.TXBLVAL += TTXNDTL.TXBLVAL;
+                        //        tmpdtl.IGSTAMT += TTXNDTL.IGSTAMT;
+                        //        tmpdtl.CGSTAMT += TTXNDTL.CGSTAMT;
+                        //        tmpdtl.SGSTAMT += TTXNDTL.SGSTAMT;
+                        //        tmpdtl.NETAMT += TTXNDTL.NETAMT;
+                        //        TTXNDTL.SLNO = tmpdtl.SLNO;
+                        //    }
+                        //}
+                        //else
+                        //{
                             TTXNDTL.SLNO = ++txnslno;
                             TTXNDTLlist.Add(TTXNDTL);
-                        }
+                        //}
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
                         TBATCHDTL.TXNSLNO = TTXNDTL.SLNO;
