@@ -153,11 +153,13 @@
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetPendingData", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
                 data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date and Mutia Name."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
                     $("#popup").html(result);
+                    $("#WaitingMode").hide();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
