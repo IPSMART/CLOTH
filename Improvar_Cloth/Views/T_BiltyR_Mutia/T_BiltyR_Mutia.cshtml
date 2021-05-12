@@ -149,6 +149,7 @@
             var mutslcd = "";
             var docdt = $("#DOCDT").val();
             if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
+            if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
 
             $.ajax({
                 type: 'POST',

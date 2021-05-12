@@ -59,7 +59,7 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
         return true;
     }
 </script>
@@ -78,7 +78,7 @@
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
             var docdt = $("#DOCDT").val();
             var mutslcd = $("#MUTSLCD").val();
-
+            if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetPendingData", PageControllerName)",
@@ -345,7 +345,7 @@
                     <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Transport")
-                            @*<b style="color:Red;">*</b>*@
+                            <b style="color:Red;">*</b>
                         </div>
                     </div>
                     <div class="col-md-3">

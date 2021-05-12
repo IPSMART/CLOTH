@@ -130,7 +130,8 @@ namespace Improvar.Controllers
 
                     str += Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d," + scm + ".t_cntrl_hdr e ";
 
-                    str += "where y.autono=a.autono(+) and y.slno=a.slno(+) and y.autono=z.autono(+) and y.slno=z.txnslno(+) and ";
+                    //str += "where y.autono=a.autono(+) and y.slno=a.slno(+) and y.autono=z.autono(+) and y.slno=z.txnslno(+) and ";
+                    str += "where y.autono=a.autono(+) and y.slno=a.slno(+) and a.blautono=z.autono(+) and a.blslno=z.txnslno(+) and ";
                     str += "y.blautono=b.autono(+) and b.itcd=c.itcd(+) and y.blautono=d.autono(+) and y.baleno=b.baleno(+) and y.blslno=b.slno(+) and a.autono=e.autono(+)  ";
                     if (doccd.retStr() != "") str += "and e.doccd ='" + doccd + "' ";
                     if (fdate.retStr() != "") str += "and e.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";

@@ -1181,11 +1181,11 @@ namespace Improvar
                 itcdqry = "nvl(e.linkitcd,a.itcd) ";
                 itcdpipe = "nvl(e.linkitcd,a.itcd)";
             }
-            if(barno.retStr() != "")
+            if (barno.retStr() != "")
             {
                 barno = barno.ToUpper();
             }
-            
+
             sql = "";
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
@@ -1308,7 +1308,7 @@ namespace Improvar
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
             sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
-           // sql += "a.autono not in (select blautono from " + schema + ".t_bale) and ";
+            // sql += "a.autono not in (select blautono from " + schema + ".t_bale) and ";
             sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ) a, ";
 
             sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
@@ -1371,9 +1371,10 @@ namespace Improvar
 
             sql += "union all ";
 
-            sql += "select distinct a.autono blautono, '' mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
-            sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
-            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            //sql += "select distinct a.autono blautono, '' mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "select distinct a.autono blautono, e.translcd mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d, " + schema + ".t_txntrans e ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
             sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
@@ -1407,7 +1408,8 @@ namespace Improvar
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
             if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
-            sql += " and ( nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 or b.bnos is null) ";
+            //sql += " and ( nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 or b.bnos is null) ";
+            sql += " and ( (nvl(b.bnos, 0)-nvl(c.bnos,0) > 0) or (b.bnos is null and 1 - nvl(c.bnos, 0) > 0)) ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }

@@ -994,7 +994,7 @@ namespace Improvar.Controllers
                                         TVCHGST.DRCR = "C";
                                         TVCHGST.QNTY = VE.TBILTYKHASRA[i].QNTY.retDbl();
                                         TVCHGST.UOM = VE.TBILTYKHASRA[i].UOMCD;
-                                        TVCHGST.SALPUR = "S";
+                                        //TVCHGST.SALPUR = "S";
                                         TVCHGST.OTHRAMT = 0;
                                         TVCHGST.ROAMT = ROAMT;
                                         TVCHGST.BLAMT = BLAMT;
