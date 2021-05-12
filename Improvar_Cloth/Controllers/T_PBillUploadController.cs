@@ -908,8 +908,11 @@ namespace Improvar.Controllers
                         //TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "SHOP";
                         TTXNDTL.QNTY = inrdr["QNTY"].retDbl(); // NET_QTY
-                        TTXNDTL.NOS = 1;
-                        TTXNDTL.RATE = inrdr["TXBL"].retDbl().toRound(2);
+                        TTXNDTL.NOS = TTXNDTL.QNTY;
+                        if (TTXNDTL.QNTY != 0)
+                        {
+                            TTXNDTL.RATE = (inrdr["TXBL"].retDbl() / TTXNDTL.QNTY).retDbl().toRound(2);
+                        }
                         //TTXNDTL.pd = null;
                         //string grade = inrdr["GRADATION"].ToString();
                         //string foc = inrdr["FOC"].ToString();
@@ -928,7 +931,7 @@ namespace Improvar.Controllers
                         string SIZENM = inrdr["SIZENM"].retStr(); ;
                         TTXNDTL.SIZECD = Salesfunc.CreateSizeMaster(SIZENM);
                         TTXNDTL.GLCD = PURGLCD;
-                        TTXNDTL.TXBLVAL = TTXNDTL.RATE;
+                        TTXNDTL.TXBLVAL = inrdr["TXBL"].retDbl();
                         txable += TTXNDTL.TXBLVAL.retDbl();
                         double gstper = inrdr["TAXPER"].retDbl();
                         double igstper = 0;
@@ -980,8 +983,8 @@ namespace Improvar.Controllers
                         //}
                         //else
                         //{
-                            TTXNDTL.SLNO = ++txnslno;
-                            TTXNDTLlist.Add(TTXNDTL);
+                        TTXNDTL.SLNO = ++txnslno;
+                        TTXNDTLlist.Add(TTXNDTL);
                         //}
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
