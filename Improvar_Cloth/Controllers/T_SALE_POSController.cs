@@ -286,6 +286,7 @@ namespace Improvar.Controllers
                             //VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
+                        VE.MergeItem = (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)? false : true;
                     }
                     else
                     {

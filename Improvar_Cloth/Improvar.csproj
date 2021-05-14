@@ -362,6 +362,7 @@
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\BulkDocumentAttached.cs" />
     <Compile Include="Models\CASHMEMOPOPUP.cs" />
+    <Compile Include="Models\ColumnName.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
     <Compile Include="Models\DateLockRight.cs" />
@@ -1423,6 +1424,7 @@
     <Content Include="Views\Rep_BlWise\Rep_BlWise.cshtml" />
     <Content Include="Views\Shared\_Rep_Bar_History_AddNewBarno.cshtml" />
     <Content Include="Views\Rep_SalesMan\Rep_SalesMan.cshtml" />
+    <Content Include="Views\Shared\_Rep_Reg_Column.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

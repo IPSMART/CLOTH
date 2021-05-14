@@ -171,6 +171,15 @@
             $('#_T_SALE_PRODUCT_GRID input').attr('TabIndex', '-1');
             $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
         }
+        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+            if ("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "SBEXP") {
+                var CONVQTYPUNIT = retFloat($("#CONVQTYPUNIT").val()).toFixed(0);
+                if (CONVQTYPUNIT == "0") {
+                    $(".Billuomdiv").hide();
+                }
+            }
+        }
+
         $("#WaitingMode").hide();
     });
 </script>
@@ -1778,7 +1787,7 @@
                                             </div>
                                             @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
                                             {
-                                                <div class="col-md-1">
+                                                <div class="Billuomdiv col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.BLQNTY, new { htmlAttributes = new { @class = "form-control", id = "BLQNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Bill Qnty", @title = "Bill Qnty", @onchange = "CalculateBargridQnty();" } })
@@ -1786,7 +1795,7 @@
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="Billuomdiv col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.BLUOMCD, new { htmlAttributes = new { @class = "form-control", id = "BLUOMCD", maxlength = 30, @title = "Bill UOM", @placeholder = "Bill UOM", @readonly = "readonly", @TabIndex = -1 } })

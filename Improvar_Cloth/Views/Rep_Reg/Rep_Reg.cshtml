@@ -112,13 +112,31 @@
         }
     }
 </script>
-
+<script>
+    function SaveSetting() {
+        $.ajax({
+            type: 'post',
+            url:"@Url.Action("SaveSetting",PageControllerName)",
+            data: $('form').serialize(),
+            beforesend: $("#WaitingMode").show(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                msgSuccess1(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
     {
         <div class="form-horizontal">
             @Html.HiddenFor(s => s.DefaultAction)
+            <input type="hidden" id="urlFilterColumn" value="@Url.Action("FilterColumn",PageControllerName)" />
             <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 0% 22% 2% 22%;">
                 @*<div class="row">
@@ -389,12 +407,26 @@
                     </div>
                 </div>
 
-                 
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="button" name="Columns" value="Columns" title="Filter Column Display" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myColumnModal" />
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="button" name="SaveSeting" value="Save Setting" title="Save Setting which column do you want to show every time." onclick="SaveSetting()" class="btn btn-info btn-sm" />
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
                     <div class="col-lg-6">
                         <input type="button" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="modal fade" id="myColumnModal" role="dialog">
+                        @Html.Partial("_Rep_Reg_Column")
                     </div>
                 </div>
             </div>

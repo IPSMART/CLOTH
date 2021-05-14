@@ -1,0 +1,241 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+<script>
+    function FilterColumn() {
+        $.ajax({
+            type: 'post',
+            url: $("#urlFilterColumn").val(),
+            data: $('form').serialize(),
+            beforesend: $("#WaitingMode").show(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $('#partialdiv').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+        });
+    }
+</script>
+<div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Select Column</h4>
+        </div>
+        <div class="modal-body">
+            @if (Model.ColumnName != null)
+            {
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].AUTONO)  @Html.Label("AUTONO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;column-width=20px">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DOCCD)  @Html.Label("DOCCD")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DOCNO)  @Html.Label("DOCNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CANCEL)  @Html.Label("CANCEL")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DOCDT)  @Html.Label("DOCDT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].AGSLCD)  @Html.Label("AGSLCD")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].PREFNO)  @Html.Label("PREFNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].PREFDT)  @Html.Label("PREFDT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SLCD)  @Html.Label("SLCD")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SLNM)  @Html.Label("SLNM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SLAREA)  @Html.Label("SLAREA")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].AGSLNM)  @Html.Label("AGSLNM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].NM)  @Html.Label("NM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].MOBILE)  @Html.Label("MOBILE")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].GSTNO)  @Html.Label("GSTNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DISTRICT)  @Html.Label("DISTRICT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ROAMT)  @Html.Label("ROAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].TCSAMT)  @Html.Label("TCSAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].BLAMT)  @Html.Label("BLAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SLNO)  @Html.Label("SLNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ITCD)  @Html.Label("ITCD")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ITNM)  @Html.Label("ITNM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ITSTYLE)  @Html.Label("ITSTYLE")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ITREM)  @Html.Label("ITREM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].HSNCODE)  @Html.Label("HSNCODE")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].UOMCD)  @Html.Label("UOMCD")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].UOMNM)  @Html.Label("UOMNM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DECIMALS)  @Html.Label("DECIMALS")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].NOS)  @Html.Label("NOS")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].QNTY)  @Html.Label("QNTY")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].RATE)  @Html.Label("RATE")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].AMT)  @Html.Label("AMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SCMDISCAMT)  @Html.Label("SCMDISCAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].TDDISCAMT)  @Html.Label("TDDISCAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DISCAMT)  @Html.Label("DISCAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].TXBLVAL)  @Html.Label("TXBLVAL")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CONSLCD)  @Html.Label("CONSLCD")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CSLNM)  @Html.Label("CSLNM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CGSTNO)  @Html.Label("CGSTNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CDISTRICT)  @Html.Label("CDISTRICT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].TRSLNM)  @Html.Label("TRSLNM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].LRNO)  @Html.Label("LRNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].LRDT)  @Html.Label("LRDT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].GRWT)  @Html.Label("GRWT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].TRWT)  @Html.Label("TRWT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].NTWT)  @Html.Label("NTWT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ORDREFNO)  @Html.Label("ORDREFNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ORDREFDT)  @Html.Label("ORDREFDT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].IGSTPER)  @Html.Label("IGSTPER")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].IGSTAMT)  @Html.Label("IGSTAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CGSTPER)  @Html.Label("CGSTPER")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CGSTAMT)  @Html.Label("CGSTAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SGSTAMT)  @Html.Label("SGSTAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CESSPER)  @Html.Label("CESSPER")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].CESSAMT)  @Html.Label("CESSAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].BLQNTY)  @Html.Label("BLQNTY")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].NETAMT)  @Html.Label("NETAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].SGSTPER)  @Html.Label("SGSTPER")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].GSTPER)  @Html.Label("GSTPER")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].GSTAMT)  @Html.Label("GSTAMT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ACKNO)  @Html.Label("ACKNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].ACKDT)  @Html.Label("ACKDT")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].PAGENO)  @Html.Label("PAGENO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].PAGESLNO)  @Html.Label("PAGESLNO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].BALENO)  @Html.Label("BALENO")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].DOCREM)  @Html.Label("DOCREM")
+                </label>
+                <label class="checkbox-inline" style="padding-top: 2px;">
+                    @Html.CheckBoxFor(model => model.ColumnName[0].BLTYPE)  @Html.Label("BLTYPE")
+                </label>
+            }
+            else
+            {
+                <p> Some internal Problem Found  [No column Found]</p>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="FilterColumn()">Close</button>
+        </div>
+    </div>
+</div>
+

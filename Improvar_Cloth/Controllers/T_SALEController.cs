@@ -191,7 +191,10 @@ namespace Improvar.Controllers
                             VE.T_TXNEINV = TTXNEINV;
                             if (loadOrder.retStr().Length > 1)
                             {
-                                VE.T_TXN.AUTONO = "";
+                                if (VE.MENU_PARA != "SBDIR")
+                                {
+                                    VE.T_TXN.AUTONO = "";
+                                }
                                 if (VE.T_TXN_LINKNO == null) VE.T_TXN_LINKNO = new T_TXN_LINKNO();
                                 VE.LINKDOCNO = loadOrder.retStr();
                                 VE.T_TXN_LINKNO.LINKAUTONO = searchValue.retStr();
@@ -1819,7 +1822,8 @@ namespace Improvar.Controllers
                                   STYLENO = P.Key.STYLENO,
                                   STKTYPE = P.Key.STKTYPE,
                                   UOM = P.Key.UOM,
-                                  NOS = P.Sum(A => A.NOS),
+                                  NOS = P.Sum(A => (A.UOM == "MTR" && A.NOS.retDbl() == 0) ? 1 : A.NOS),
+                                  //NOS = P.Sum(A => A.NOS),
                                   QNTY = P.Sum(A => A.QNTY),
                                   FLAGMTR = P.Sum(A => A.FLAGMTR),
                                   //BLQNTY = P.Sum(A => A.BLQNTY),
@@ -2783,7 +2787,8 @@ namespace Improvar.Controllers
                 sql += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 sql += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 sql += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
-                sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
                 sql += "from " + scm + ".T_BATCHDTL i, " + scm + ".T_BATCHMST j, " + scm + ".M_SITEM k, " + scm + ".M_SIZE l, " + scm + ".M_COLOR m, ";
                 sql += scm + ".M_GROUP n," + scm + ".M_MTRLJOBMST o," + scm + ".M_PARTS p," + scm + ".M_STKTYPE q," + scm + ".T_CNTRL_HDR r ";
                 sql += "," + scm + ".T_TXNDTL s," + scm + ".T_TXN t ";
@@ -3858,18 +3863,36 @@ namespace Improvar.Controllers
                 }
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
+                    string PIAUTONO = "";
+                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A")
+                    {
+                        PIAUTONO = VE.T_TXN.AUTONO;
+                    }
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
 
                     if (VE.TBATCHDTL != null && VE.TTXNDTL != null)
                     {
+                        //var barcodedata = (from x in VE.TBATCHDTL
+                        //                   group x by new { x.ITCD } into P
+                        //                   select new
+                        //                   {
+                        //                       ITCD = P.Key.ITCD,
+                        //                       QTY = P.Sum(A => A.QNTY).retDbl().toRound(3),
+                        //                       NOS = P.Sum(A => A.NOS).retDbl()
+                        //                   }).Where(a => a.QTY != 0).ToList();
                         var barcodedata = (from x in VE.TBATCHDTL
-                                           group x by new { x.ITCD } into P
                                            select new
                                            {
-                                               ITCD = P.Key.ITCD,
+                                               ITCD = x.ITCD,
+                                               NOS = (x.UOM == "MTR" && x.NOS.retDbl() == 0) ? 1 : x.NOS,
+                                               QNTY = x.QNTY
+                                           }).ToList().GroupBy(l => l.ITCD).Select(P => new
+                                           {
+                                               ITCD = P.Key,
                                                QTY = P.Sum(A => A.QNTY).retDbl().toRound(3),
                                                NOS = P.Sum(A => A.NOS).retDbl()
                                            }).Where(a => a.QTY != 0).ToList();
+
                         var txndtldata = (from x in VE.TTXNDTL
                                           group x by new { x.ITCD } into P
                                           select new
@@ -5220,7 +5243,8 @@ namespace Improvar.Controllers
                                     TVCHGST.DOCNO = TTXN.DOCNO;
                                     TVCHGST.DOCDT = TTXN.DOCDT;
                                     TVCHGST.DSLNO = isl.retShort();
-                                    TVCHGST.SLNO = gs.retShort();
+                                    //TVCHGST.SLNO = gs.retShort();
+                                    TVCHGST.SLNO = VE.TTXNDTL[i].SLNO.retShort();
                                     TVCHGST.PCODE = TTXN.SLCD;
                                     TVCHGST.BLNO = strblno;
                                     if (strbldt.retStr() != "")
@@ -5444,6 +5468,13 @@ namespace Improvar.Controllers
                         ContentFlg = "2";
                     }
                     OraTrans.Commit();
+                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "")//need to delete profma when salebill done from profma
+                    {
+                        T_SALEController TSCntlr = new T_SALEController();
+                        VE.DefaultAction = "V";
+                        VE.MENU_PARA = "PI";
+                        string deletemsg = (string)TSCntlr.SAVE(VE, "PI");
+                    }
                     goto dbsave;
                 }
                 else if (VE.DefaultAction == "V")
@@ -5537,7 +5568,7 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.finTblUpdt("t_vch_hdr", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-                    if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP")
+                    if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI")
                     {
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();

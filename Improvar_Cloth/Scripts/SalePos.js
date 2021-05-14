@@ -93,6 +93,8 @@
                             ClearAllTextBoxes("M_BARCODE,M_STYLENO,MTRLJOBCD,PARTCD");
                             BARNO = returncolvalue(result, "BARNO");
                             //ITCD = returncolvalue(result, "ITCD");
+                            var MergeItem = document.getElementById("MergeItem").checked;
+
                             var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
                             for (j = 0; j <= GridRowMain - 1; j++) {
                                 if (BARNO == $("#B_BARNO_" + j).val()) {
@@ -101,10 +103,9 @@
                                 }
                                 duplicate = false;
                             }
-                            if (slno > 0) {
+                            if (slno > 0 && MergeItem == true) {
                                 UpdateBarCodeRow(result, slno);
                             }
-
                             else {
                                 AddMainRow(result);
                             }
