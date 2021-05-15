@@ -303,7 +303,7 @@ namespace Improvar.Controllers
             try
             {
                 var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD); DataView dv = new DataView(GetPendig_Data);
-                string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt","status" };
                 GetPendig_Data = dv.ToTable(true, COL);
                 VE.TBILTYR_POPUP = (from DataRow dr in GetPendig_Data.Rows
                                     select new TBILTYR_POPUP
@@ -313,7 +313,8 @@ namespace Improvar.Controllers
                                         LRDT = dr["lrdt"].retDateStr(),
                                         BALENO = dr["baleno"].retStr(),
                                         PREFNO = dr["prefno"].retStr(),
-                                        PREFDT = dr["prefdt"].retDateStr()
+                                        PREFDT = dr["prefdt"].retDateStr(),
+                                        STATUS = dr["STATUS"].retStr()
                                     }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                 for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
                 {

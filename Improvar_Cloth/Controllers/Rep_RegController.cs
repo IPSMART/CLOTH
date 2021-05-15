@@ -100,6 +100,7 @@ namespace Improvar.Controllers
                                          select new DropDown_list3() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
                     VE.TEXTBOX5 = MasterHelp.ComboFill("loccd", VE.DropDown_list3, 0, 1);
                     //VE.DropDown_list2 = MasterHelp.INSURANCE().ConvertAll(x => new DropDown_list2 { text = x.Text, value = x.Value });
+                    ShowAllColumn(VE);
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -239,16 +240,16 @@ namespace Improvar.Controllers
                 query = "";
 
                 string query1 = "";
-                query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt,h.agslcd, ";
-                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
+                query1 += " select a.autono, a.doccd, a.docno, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, ";
+                query1 += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
                 query1 += " nvl(a.tcsamt, 0) tcsamt, a.blamt, ";
                 query1 += "   b.slno, b.itcd, ";
                 //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, ";
                 query1 += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
-                query1 += " e.slnm trslnm, f.lrno,f.lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype  ";
+                query1 += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
+                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype  ";
 
                 query1 += " from ( ";
                 query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
@@ -321,6 +322,15 @@ namespace Improvar.Controllers
                 }
                 if (dtlsumm == "E")
                 {
+                    string colnm = ShowAllColumn(VE, true);
+                    if(colnm.retStr() != "")
+                    {
+                        DataView dv = new DataView(tbl);
+                        string[] COL = colnm.Split(',').ToArray();
+                        tbl = dv.ToTable(true, COL);
+                    }
+                   
+
                     DataTable[] exdt = new DataTable[1];
                     exdt[0] = tbl;
                     string[] sheetname = new string[1];
@@ -762,6 +772,441 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public dynamic ShowAllColumn(ReportViewinHtml VE, bool GetOnlyColumnnm = false)
+        {
+            string columnnm = "";
+            string SectionNm = "REGISTER" + CommVar.Compcd(UNQSNO);
+            List<ColumnName> ColumnNamelist = new List<ColumnName>();
+            ColumnName ColumnNameObj = new ColumnName();
+            INI Handel_Ini = new INI();
+            string BRS = Handel_Ini.IniReadValue(SectionNm, "AUTONO", Server.MapPath("~/Ipsmart.ini"));
+            if (BRS == "" && GetOnlyColumnnm == false)
+            {
+                #region if any column name not saved
+                ColumnNameObj.AUTONO = true;
+                ColumnNameObj.DOCCD = true;
+                ColumnNameObj.DOCNO = true;
+                ColumnNameObj.CANCEL = true;
+                ColumnNameObj.DOCDT = true;
+                ColumnNameObj.AGSLCD = true;
+                ColumnNameObj.PREFNO = true;
+                ColumnNameObj.PREFDT = true;
+                ColumnNameObj.SLCD = true;
+                ColumnNameObj.SLNM = true;
+                ColumnNameObj.SLAREA = true;
+                ColumnNameObj.AGSLNM = true;
+                ColumnNameObj.NM = true;
+                ColumnNameObj.MOBILE = true;
+                ColumnNameObj.GSTNO = true;
+                ColumnNameObj.DISTRICT = true;
+                ColumnNameObj.ROAMT = true;
+                ColumnNameObj.TCSAMT = true;
+                ColumnNameObj.BLAMT = true;
+                ColumnNameObj.SLNO = true;
+                ColumnNameObj.ITCD = true;
+                ColumnNameObj.ITNM = true;
+                ColumnNameObj.ITSTYLE = true;
+                ColumnNameObj.ITREM = true;
+                ColumnNameObj.HSNCODE = true;
+                ColumnNameObj.UOMCD = true;
+                ColumnNameObj.UOMNM = true;
+                ColumnNameObj.DECIMALS = true;
+                ColumnNameObj.NOS = true;
+                ColumnNameObj.QNTY = true;
+                ColumnNameObj.RATE = true;
+                ColumnNameObj.AMT = true;
+                ColumnNameObj.SCMDISCAMT = true;
+                ColumnNameObj.TDDISCAMT = true;
+                ColumnNameObj.DISCAMT = true;
+                ColumnNameObj.TXBLVAL = true;
+                ColumnNameObj.CONSLCD = true;
+                ColumnNameObj.CSLNM = true;
+                ColumnNameObj.CGSTNO = true;
+                ColumnNameObj.CDISTRICT = true;
+                ColumnNameObj.TRSLNM = true;
+                ColumnNameObj.LRNO = true;
+                ColumnNameObj.LRDT = true;
+                ColumnNameObj.GRWT = true;
+                ColumnNameObj.TRWT = true;
+                ColumnNameObj.NTWT = true;
+                ColumnNameObj.ORDREFNO = true;
+                ColumnNameObj.ORDREFDT = true;
+                ColumnNameObj.IGSTPER = true;
+                ColumnNameObj.IGSTAMT = true;
+                ColumnNameObj.CGSTPER = true;
+                ColumnNameObj.CGSTAMT = true;
+                ColumnNameObj.SGSTAMT = true;
+                ColumnNameObj.CESSPER = true;
+                ColumnNameObj.CESSAMT = true;
+                ColumnNameObj.BLQNTY = true;
+                ColumnNameObj.NETAMT = true;
+                ColumnNameObj.SGSTPER = true;
+                ColumnNameObj.GSTPER = true;
+                ColumnNameObj.GSTAMT = true;
+                ColumnNameObj.ACKNO = true;
+                ColumnNameObj.ACKDT = true;
+                ColumnNameObj.PAGENO = true;
+                ColumnNameObj.PAGESLNO = true;
+                ColumnNameObj.BALENO = true;
+                ColumnNameObj.DOCREM = true;
+                ColumnNameObj.BLTYPE = true;
+
+                INI Handel_ini = new INI();
+                Handel_ini.IniWriteValue(SectionNm, "AUTONO", ColumnNameObj.AUTONO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DOCCD", ColumnNameObj.DOCCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DOCNO", ColumnNameObj.DOCNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CANCEL", ColumnNameObj.CANCEL.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DOCDT", ColumnNameObj.DOCDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "AGSLCD", ColumnNameObj.AGSLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "PREFNO", ColumnNameObj.PREFNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "PREFDT", ColumnNameObj.PREFDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SLCD", ColumnNameObj.SLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SLNM", ColumnNameObj.SLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SLAREA", ColumnNameObj.SLAREA.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "AGSLNM", ColumnNameObj.AGSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "NM", ColumnNameObj.NM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "MOBILE", ColumnNameObj.MOBILE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "GSTNO", ColumnNameObj.GSTNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DISTRICT", ColumnNameObj.DISTRICT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ROAMT", ColumnNameObj.ROAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "TCSAMT", ColumnNameObj.TCSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "BLAMT", ColumnNameObj.BLAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SLNO", ColumnNameObj.SLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ITCD", ColumnNameObj.ITCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ITNM", ColumnNameObj.ITNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ITSTYLE", ColumnNameObj.ITSTYLE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ITREM", ColumnNameObj.ITREM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "HSNCODE", ColumnNameObj.HSNCODE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "UOMCD", ColumnNameObj.UOMCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "UOMNM", ColumnNameObj.UOMNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DECIMALS", ColumnNameObj.DECIMALS.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "NOS", ColumnNameObj.NOS.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "QNTY", ColumnNameObj.QNTY.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "RATE", ColumnNameObj.RATE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "AMT", ColumnNameObj.AMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SCMDISCAMT", ColumnNameObj.SCMDISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "TDDISCAMT", ColumnNameObj.TDDISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DISCAMT", ColumnNameObj.DISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "TXBLVAL", ColumnNameObj.TXBLVAL.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CONSLCD", ColumnNameObj.CONSLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CSLNM", ColumnNameObj.CSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CGSTNO", ColumnNameObj.CGSTNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CDISTRICT", ColumnNameObj.CDISTRICT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "TRSLNM", ColumnNameObj.TRSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "LRNO", ColumnNameObj.LRNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "LRDT", ColumnNameObj.LRDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "GRWT", ColumnNameObj.GRWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "TRWT", ColumnNameObj.TRWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "NTWT", ColumnNameObj.NTWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ORDREFNO", ColumnNameObj.ORDREFNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ORDREFDT", ColumnNameObj.ORDREFDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "IGSTPER", ColumnNameObj.IGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "IGSTAMT", ColumnNameObj.IGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CGSTPER", ColumnNameObj.CGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CGSTAMT", ColumnNameObj.CGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SGSTAMT", ColumnNameObj.SGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CESSPER", ColumnNameObj.CESSPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "CESSAMT", ColumnNameObj.CESSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "BLQNTY", ColumnNameObj.BLQNTY.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "NETAMT", ColumnNameObj.NETAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "SGSTPER", ColumnNameObj.SGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "GSTPER", ColumnNameObj.GSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "GSTAMT", ColumnNameObj.GSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ACKNO", ColumnNameObj.ACKNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ACKDT", ColumnNameObj.ACKDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "PAGENO", ColumnNameObj.PAGENO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "PAGESLNO", ColumnNameObj.PAGESLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "BALENO", ColumnNameObj.BALENO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "DOCREM", ColumnNameObj.DOCREM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "BLTYPE", ColumnNameObj.BLTYPE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                ColumnNamelist.Add(ColumnNameObj);
+                VE.ColumnName = ColumnNamelist;
+                #endregion
+            }
+            else
+            {
+                #region 
+                bool AUTONO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "AUTONO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.AUTONO = AUTONO;
+                columnnm += AUTONO == true ? "AUTONO," : "";
+
+                bool DOCCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DOCCD", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DOCCD = DOCCD;
+                columnnm += DOCCD == true ? "DOCCD," : "";
+
+                bool DOCNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DOCNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DOCNO = DOCNO;
+                columnnm += DOCNO == true ? "DOCNO," : "";
+
+                bool CANCEL = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CANCEL", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CANCEL = CANCEL;
+                columnnm += CANCEL == true ? "CANCEL," : "";
+
+                bool DOCDT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DOCDT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DOCDT = DOCDT;
+                columnnm += DOCDT == true ? "DOCDT," : "";
+
+                bool AGSLCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "AGSLCD", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.AGSLCD = AGSLCD;
+                columnnm += AGSLCD == true ? "AGSLCD," : "";
+
+                bool PREFNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "PREFNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.PREFNO = PREFNO;
+                columnnm += PREFNO == true ? "PREFNO," : "";
+
+                bool PREFDT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "PREFDT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.PREFDT = PREFDT;
+                columnnm += PREFDT == true ? "PREFDT," : "";
+
+                bool SLCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SLCD", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SLCD = SLCD;
+                columnnm += SLCD == true ? "SLCD," : "";
+
+                bool SLNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SLNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SLNM = SLNM;
+                columnnm += SLNM == true ? "SLNM," : "";
+
+                bool SLAREA = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SLAREA", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SLAREA = SLAREA;
+                columnnm += SLAREA == true ? "SLAREA," : "";
+
+                bool AGSLNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "AGSLNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.AGSLNM = AGSLNM;
+                columnnm += AGSLNM == true ? "AGSLNM," : "";
+
+                bool NM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "NM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.NM = NM;
+                columnnm += NM == true ? "NM," : "";
+
+                bool MOBILE = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "MOBILE", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.MOBILE = MOBILE;
+                columnnm += MOBILE == true ? "MOBILE," : "";
+
+                bool GSTNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "GSTNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.GSTNO = GSTNO;
+                columnnm += GSTNO == true ? "GSTNO," : "";
+
+                bool DISTRICT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DISTRICT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DISTRICT = DISTRICT;
+                columnnm += DISTRICT == true ? "DISTRICT," : "";
+
+                bool ROAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ROAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ROAMT = ROAMT;
+                columnnm += ROAMT == true ? "ROAMT," : "";
+
+                bool TCSAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "TCSAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.TCSAMT = TCSAMT;
+                columnnm += TCSAMT == true ? "TCSAMT," : "";
+
+                bool BLAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "BLAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.BLAMT = BLAMT;
+                columnnm += BLAMT == true ? "BLAMT," : "";
+
+                bool SLNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SLNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SLNO = SLNO;
+                columnnm += SLNO == true ? "SLNO," : "";
+
+                bool ITCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITCD", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ITCD = ITCD;
+                columnnm += ITCD == true ? "ITCD," : "";
+
+                bool ITNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ITNM = ITNM;
+                columnnm += ITNM == true ? "ITNM," : "";
+
+                bool ITSTYLE = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITSTYLE", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ITSTYLE = ITSTYLE;
+                columnnm += ITSTYLE == true ? "ITSTYLE," : "";
+
+                bool ITREM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITREM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ITREM = ITREM;
+                columnnm += ITREM == true ? "ITREM," : "";
+
+                bool HSNCODE = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "HSNCODE", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.HSNCODE = HSNCODE;
+                columnnm += HSNCODE == true ? "HSNCODE," : "";
+
+                bool UOMCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "UOMCD", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.UOMCD = UOMCD;
+                columnnm += UOMCD == true ? "UOMCD," : "";
+
+                bool UOMNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "UOMNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.UOMNM = UOMNM;
+                columnnm += UOMNM == true ? "UOMNM," : "";
+
+                bool DECIMALS = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DECIMALS", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DECIMALS = DECIMALS;
+                columnnm += DECIMALS == true ? "DECIMALS," : "";
+
+                bool NOS = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "NOS", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.NOS = NOS;
+                columnnm += NOS == true ? "NOS," : "";
+
+                bool QNTY = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "QNTY", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.QNTY = QNTY;
+                columnnm += QNTY == true ? "QNTY," : "";
+
+                bool RATE = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "RATE", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.RATE = RATE;
+                columnnm += RATE == true ? "RATE," : "";
+
+                bool AMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "AMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.AMT = AMT;
+                columnnm += AMT == true ? "AMT," : "";
+
+                bool SCMDISCAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SCMDISCAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SCMDISCAMT = SCMDISCAMT;
+                columnnm += SCMDISCAMT == true ? "SCMDISCAMT," : "";
+
+                bool TDDISCAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "TDDISCAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.TDDISCAMT = TDDISCAMT;
+                columnnm += TDDISCAMT == true ? "TDDISCAMT," : "";
+
+                bool DISCAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DISCAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DISCAMT = DISCAMT;
+                columnnm += DISCAMT == true ? "DISCAMT," : "";
+
+                bool TXBLVAL = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "TXBLVAL", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.TXBLVAL = TXBLVAL;
+                columnnm += TXBLVAL == true ? "TXBLVAL," : "";
+
+                bool CONSLCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CONSLCD", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CONSLCD = CONSLCD;
+                columnnm += CONSLCD == true ? "CONSLCD," : "";
+
+                bool CSLNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CSLNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CSLNM = CSLNM;
+                columnnm += CSLNM == true ? "CSLNM," : "";
+
+                bool CGSTNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CGSTNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CGSTNO = CGSTNO;
+                columnnm += CGSTNO == true ? "CGSTNO," : "";
+
+                bool CDISTRICT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CDISTRICT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CDISTRICT = CDISTRICT;
+                columnnm += CDISTRICT == true ? "CDISTRICT," : "";
+
+                bool TRSLNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "TRSLNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.TRSLNM = TRSLNM;
+                columnnm += TRSLNM == true ? "TRSLNM," : "";
+
+                bool LRNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "LRNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.LRNO = LRNO;
+                columnnm += LRNO == true ? "LRNO," : "";
+
+                bool LRDT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "LRDT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.LRDT = LRDT;
+                columnnm += LRDT == true ? "LRDT," : "";
+
+                bool GRWT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "GRWT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.GRWT = GRWT;
+                columnnm += GRWT == true ? "GRWT," : "";
+
+                bool TRWT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "TRWT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.TRWT = TRWT;
+                columnnm += TRWT == true ? "TRWT," : "";
+
+                bool NTWT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "NTWT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.NTWT = NTWT;
+                columnnm += NTWT == true ? "NTWT," : "";
+
+                bool ORDREFNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ORDREFNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ORDREFNO = ORDREFNO;
+                columnnm += ORDREFNO == true ? "ORDREFNO," : "";
+
+                bool ORDREFDT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ORDREFDT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ORDREFDT = ORDREFDT;
+                columnnm += ORDREFDT == true ? "ORDREFDT," : "";
+
+                bool IGSTPER = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "IGSTPER", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.IGSTPER = IGSTPER;
+                columnnm += IGSTPER == true ? "IGSTPER," : "";
+
+                bool IGSTAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "IGSTAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.IGSTAMT = IGSTAMT;
+                columnnm += IGSTAMT == true ? "IGSTAMT," : "";
+
+                bool CGSTPER = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CGSTPER", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CGSTPER = CGSTPER;
+                columnnm += CGSTPER == true ? "CGSTPER," : "";
+
+                bool CGSTAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CGSTAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CGSTAMT = CGSTAMT;
+                columnnm += CGSTAMT == true ? "CGSTAMT," : "";
+
+                bool SGSTAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SGSTAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SGSTAMT = SGSTAMT;
+                columnnm += SGSTAMT == true ? "SGSTAMT," : "";
+
+                bool CESSPER = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CESSPER", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CESSPER = CESSPER;
+                columnnm += CESSPER == true ? "CESSPER," : "";
+
+                bool CESSAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "CESSAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.CESSAMT = CESSAMT;
+                columnnm += CESSAMT == true ? "CESSAMT," : "";
+
+                bool BLQNTY = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "BLQNTY", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.BLQNTY = BLQNTY;
+                columnnm += BLQNTY == true ? "BLQNTY," : "";
+
+                bool NETAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "NETAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.NETAMT = NETAMT;
+                columnnm += NETAMT == true ? "NETAMT," : "";
+
+                bool SGSTPER = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SGSTPER", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.SGSTPER = SGSTPER;
+                columnnm += SGSTPER == true ? "SGSTPER," : "";
+
+                bool GSTPER = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "GSTPER", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.GSTPER = GSTPER;
+                columnnm += GSTPER == true ? "GSTPER," : "";
+
+                bool GSTAMT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "GSTAMT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.GSTAMT = GSTAMT;
+                columnnm += GSTAMT == true ? "GSTAMT," : "";
+
+                bool ACKNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ACKNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ACKNO = ACKNO;
+                columnnm += ACKNO == true ? "ACKNO," : "";
+
+                bool ACKDT = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ACKDT", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ACKDT = ACKDT;
+                columnnm += ACKDT == true ? "ACKDT," : "";
+
+                bool PAGENO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "PAGENO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.PAGENO = PAGENO;
+                columnnm += PAGENO == true ? "PAGENO," : "";
+
+                bool PAGESLNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "PAGESLNO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.PAGESLNO = PAGESLNO;
+                columnnm += PAGESLNO == true ? "PAGESLNO," : "";
+
+                bool BALENO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "BALENO", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.BALENO = BALENO;
+                columnnm += BALENO == true ? "BALENO," : "";
+
+                bool DOCREM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "DOCREM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.DOCREM = DOCREM;
+                columnnm += DOCREM == true ? "DOCREM," : "";
+
+                bool BLTYPE = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "BLTYPE", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.BLTYPE = BLTYPE;
+                columnnm += BLTYPE == true ? "BLTYPE," : "";
+                #endregion
+                ColumnNamelist.Add(ColumnNameObj);
+                VE.ColumnName = ColumnNamelist;
+            }
+            if (GetOnlyColumnnm == true)
+            {
+                if (columnnm.retStr() != "")
+                {
+                    columnnm = columnnm.TrimEnd(',');
+                }
+                return columnnm;
+            }
+            else return null;
+        }
         public ActionResult FilterColumn(ReportViewinHtml VE, FormCollection FC)
         {//call from View Page
 
@@ -842,148 +1287,149 @@ namespace Improvar.Controllers
         }
         public ActionResult SaveSetting(ReportViewinHtml VE, FormCollection FC)
         {//call from View Page
+            string SectionNm = "REGISTER" + CommVar.Compcd(UNQSNO);
 
-            List<ColumnName> mbclist = new List<ColumnName>();
-            ColumnName mBankObj = new ColumnName();
-            mBankObj.AUTONO = VE.ColumnName[0].AUTONO;
-            mBankObj.DOCCD = VE.ColumnName[0].DOCCD;
-            mBankObj.DOCNO = VE.ColumnName[0].DOCNO;
-            mBankObj.CANCEL = VE.ColumnName[0].CANCEL;
-            mBankObj.DOCDT = VE.ColumnName[0].DOCDT;
-            mBankObj.AGSLCD = VE.ColumnName[0].AGSLCD;
-            mBankObj.PREFNO = VE.ColumnName[0].PREFNO;
-            mBankObj.PREFDT = VE.ColumnName[0].PREFDT;
-            mBankObj.SLCD = VE.ColumnName[0].SLCD;
-            mBankObj.SLNM = VE.ColumnName[0].SLNM;
-            mBankObj.SLAREA = VE.ColumnName[0].SLAREA;
-            mBankObj.AGSLNM = VE.ColumnName[0].AGSLNM;
-            mBankObj.NM = VE.ColumnName[0].NM;
-            mBankObj.MOBILE = VE.ColumnName[0].MOBILE;
-            mBankObj.GSTNO = VE.ColumnName[0].GSTNO;
-            mBankObj.DISTRICT = VE.ColumnName[0].DISTRICT;
-            mBankObj.ROAMT = VE.ColumnName[0].ROAMT;
-            mBankObj.TCSAMT = VE.ColumnName[0].TCSAMT;
-            mBankObj.BLAMT = VE.ColumnName[0].BLAMT;
-            mBankObj.SLNO = VE.ColumnName[0].SLNO;
-            mBankObj.ITCD = VE.ColumnName[0].ITCD;
-            mBankObj.ITNM = VE.ColumnName[0].ITNM;
-            mBankObj.ITSTYLE = VE.ColumnName[0].ITSTYLE;
-            mBankObj.ITREM = VE.ColumnName[0].ITREM;
-            mBankObj.HSNCODE = VE.ColumnName[0].HSNCODE;
-            mBankObj.UOMCD = VE.ColumnName[0].UOMCD;
-            mBankObj.UOMNM = VE.ColumnName[0].UOMNM;
-            mBankObj.DECIMALS = VE.ColumnName[0].DECIMALS;
-            mBankObj.NOS = VE.ColumnName[0].NOS;
-            mBankObj.QNTY = VE.ColumnName[0].QNTY;
-            mBankObj.RATE = VE.ColumnName[0].RATE;
-            mBankObj.AMT = VE.ColumnName[0].AMT;
-            mBankObj.SCMDISCAMT = VE.ColumnName[0].SCMDISCAMT;
-            mBankObj.TDDISCAMT = VE.ColumnName[0].TDDISCAMT;
-            mBankObj.DISCAMT = VE.ColumnName[0].DISCAMT;
-            mBankObj.TXBLVAL = VE.ColumnName[0].TXBLVAL;
-            mBankObj.CONSLCD = VE.ColumnName[0].CONSLCD;
-            mBankObj.CSLNM = VE.ColumnName[0].CSLNM;
-            mBankObj.CGSTNO = VE.ColumnName[0].CGSTNO;
-            mBankObj.CDISTRICT = VE.ColumnName[0].CDISTRICT;
-            mBankObj.TRSLNM = VE.ColumnName[0].TRSLNM;
-            mBankObj.LRNO = VE.ColumnName[0].LRNO;
-            mBankObj.LRDT = VE.ColumnName[0].LRDT;
-            mBankObj.GRWT = VE.ColumnName[0].GRWT;
-            mBankObj.TRWT = VE.ColumnName[0].TRWT;
-            mBankObj.NTWT = VE.ColumnName[0].NTWT;
-            mBankObj.ORDREFNO = VE.ColumnName[0].ORDREFNO;
-            mBankObj.ORDREFDT = VE.ColumnName[0].ORDREFDT;
-            mBankObj.IGSTPER = VE.ColumnName[0].IGSTPER;
-            mBankObj.IGSTAMT = VE.ColumnName[0].IGSTAMT;
-            mBankObj.CGSTPER = VE.ColumnName[0].CGSTPER;
-            mBankObj.CGSTAMT = VE.ColumnName[0].CGSTAMT;
-            mBankObj.SGSTAMT = VE.ColumnName[0].SGSTAMT;
-            mBankObj.CESSPER = VE.ColumnName[0].CESSPER;
-            mBankObj.CESSAMT = VE.ColumnName[0].CESSAMT;
-            mBankObj.BLQNTY = VE.ColumnName[0].BLQNTY;
-            mBankObj.NETAMT = VE.ColumnName[0].NETAMT;
-            mBankObj.SGSTPER = VE.ColumnName[0].SGSTPER;
-            mBankObj.GSTPER = VE.ColumnName[0].GSTPER;
-            mBankObj.GSTAMT = VE.ColumnName[0].GSTAMT;
-            mBankObj.ACKNO = VE.ColumnName[0].ACKNO;
-            mBankObj.ACKDT = VE.ColumnName[0].ACKDT;
-            mBankObj.PAGENO = VE.ColumnName[0].PAGENO;
-            mBankObj.PAGESLNO = VE.ColumnName[0].PAGESLNO;
-            mBankObj.BALENO = VE.ColumnName[0].BALENO;
-            mBankObj.DOCREM = VE.ColumnName[0].DOCREM;
-            mBankObj.BLTYPE = VE.ColumnName[0].BLTYPE;
+            List<ColumnName> ColumnNamelist = new List<ColumnName>();
+            ColumnName ColumnNameObj = new ColumnName();
+            ColumnNameObj.AUTONO = VE.ColumnName[0].AUTONO;
+            ColumnNameObj.DOCCD = VE.ColumnName[0].DOCCD;
+            ColumnNameObj.DOCNO = VE.ColumnName[0].DOCNO;
+            ColumnNameObj.CANCEL = VE.ColumnName[0].CANCEL;
+            ColumnNameObj.DOCDT = VE.ColumnName[0].DOCDT;
+            ColumnNameObj.AGSLCD = VE.ColumnName[0].AGSLCD;
+            ColumnNameObj.PREFNO = VE.ColumnName[0].PREFNO;
+            ColumnNameObj.PREFDT = VE.ColumnName[0].PREFDT;
+            ColumnNameObj.SLCD = VE.ColumnName[0].SLCD;
+            ColumnNameObj.SLNM = VE.ColumnName[0].SLNM;
+            ColumnNameObj.SLAREA = VE.ColumnName[0].SLAREA;
+            ColumnNameObj.AGSLNM = VE.ColumnName[0].AGSLNM;
+            ColumnNameObj.NM = VE.ColumnName[0].NM;
+            ColumnNameObj.MOBILE = VE.ColumnName[0].MOBILE;
+            ColumnNameObj.GSTNO = VE.ColumnName[0].GSTNO;
+            ColumnNameObj.DISTRICT = VE.ColumnName[0].DISTRICT;
+            ColumnNameObj.ROAMT = VE.ColumnName[0].ROAMT;
+            ColumnNameObj.TCSAMT = VE.ColumnName[0].TCSAMT;
+            ColumnNameObj.BLAMT = VE.ColumnName[0].BLAMT;
+            ColumnNameObj.SLNO = VE.ColumnName[0].SLNO;
+            ColumnNameObj.ITCD = VE.ColumnName[0].ITCD;
+            ColumnNameObj.ITNM = VE.ColumnName[0].ITNM;
+            ColumnNameObj.ITSTYLE = VE.ColumnName[0].ITSTYLE;
+            ColumnNameObj.ITREM = VE.ColumnName[0].ITREM;
+            ColumnNameObj.HSNCODE = VE.ColumnName[0].HSNCODE;
+            ColumnNameObj.UOMCD = VE.ColumnName[0].UOMCD;
+            ColumnNameObj.UOMNM = VE.ColumnName[0].UOMNM;
+            ColumnNameObj.DECIMALS = VE.ColumnName[0].DECIMALS;
+            ColumnNameObj.NOS = VE.ColumnName[0].NOS;
+            ColumnNameObj.QNTY = VE.ColumnName[0].QNTY;
+            ColumnNameObj.RATE = VE.ColumnName[0].RATE;
+            ColumnNameObj.AMT = VE.ColumnName[0].AMT;
+            ColumnNameObj.SCMDISCAMT = VE.ColumnName[0].SCMDISCAMT;
+            ColumnNameObj.TDDISCAMT = VE.ColumnName[0].TDDISCAMT;
+            ColumnNameObj.DISCAMT = VE.ColumnName[0].DISCAMT;
+            ColumnNameObj.TXBLVAL = VE.ColumnName[0].TXBLVAL;
+            ColumnNameObj.CONSLCD = VE.ColumnName[0].CONSLCD;
+            ColumnNameObj.CSLNM = VE.ColumnName[0].CSLNM;
+            ColumnNameObj.CGSTNO = VE.ColumnName[0].CGSTNO;
+            ColumnNameObj.CDISTRICT = VE.ColumnName[0].CDISTRICT;
+            ColumnNameObj.TRSLNM = VE.ColumnName[0].TRSLNM;
+            ColumnNameObj.LRNO = VE.ColumnName[0].LRNO;
+            ColumnNameObj.LRDT = VE.ColumnName[0].LRDT;
+            ColumnNameObj.GRWT = VE.ColumnName[0].GRWT;
+            ColumnNameObj.TRWT = VE.ColumnName[0].TRWT;
+            ColumnNameObj.NTWT = VE.ColumnName[0].NTWT;
+            ColumnNameObj.ORDREFNO = VE.ColumnName[0].ORDREFNO;
+            ColumnNameObj.ORDREFDT = VE.ColumnName[0].ORDREFDT;
+            ColumnNameObj.IGSTPER = VE.ColumnName[0].IGSTPER;
+            ColumnNameObj.IGSTAMT = VE.ColumnName[0].IGSTAMT;
+            ColumnNameObj.CGSTPER = VE.ColumnName[0].CGSTPER;
+            ColumnNameObj.CGSTAMT = VE.ColumnName[0].CGSTAMT;
+            ColumnNameObj.SGSTAMT = VE.ColumnName[0].SGSTAMT;
+            ColumnNameObj.CESSPER = VE.ColumnName[0].CESSPER;
+            ColumnNameObj.CESSAMT = VE.ColumnName[0].CESSAMT;
+            ColumnNameObj.BLQNTY = VE.ColumnName[0].BLQNTY;
+            ColumnNameObj.NETAMT = VE.ColumnName[0].NETAMT;
+            ColumnNameObj.SGSTPER = VE.ColumnName[0].SGSTPER;
+            ColumnNameObj.GSTPER = VE.ColumnName[0].GSTPER;
+            ColumnNameObj.GSTAMT = VE.ColumnName[0].GSTAMT;
+            ColumnNameObj.ACKNO = VE.ColumnName[0].ACKNO;
+            ColumnNameObj.ACKDT = VE.ColumnName[0].ACKDT;
+            ColumnNameObj.PAGENO = VE.ColumnName[0].PAGENO;
+            ColumnNameObj.PAGESLNO = VE.ColumnName[0].PAGESLNO;
+            ColumnNameObj.BALENO = VE.ColumnName[0].BALENO;
+            ColumnNameObj.DOCREM = VE.ColumnName[0].DOCREM;
+            ColumnNameObj.BLTYPE = VE.ColumnName[0].BLTYPE;
 
             INI Handel_ini = new INI();
-            Handel_ini.IniWriteValue("REGISTER", "AUTONO", mBankObj.AUTONO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DOCCD", mBankObj.DOCCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DOCNO", mBankObj.DOCNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CANCEL", mBankObj.CANCEL.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DOCDT", mBankObj.DOCDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "AGSLCD", mBankObj.AGSLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "PREFNO", mBankObj.PREFNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "PREFDT", mBankObj.PREFDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SLCD", mBankObj.SLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SLNM", mBankObj.SLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SLAREA", mBankObj.SLAREA.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "AGSLNM", mBankObj.AGSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "NM", mBankObj.NM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "MOBILE", mBankObj.MOBILE.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "GSTNO", mBankObj.GSTNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DISTRICT", mBankObj.DISTRICT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ROAMT", mBankObj.ROAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "TCSAMT", mBankObj.TCSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "BLAMT", mBankObj.BLAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SLNO", mBankObj.SLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ITCD", mBankObj.ITCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ITNM", mBankObj.ITNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ITSTYLE", mBankObj.ITSTYLE.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ITREM", mBankObj.ITREM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "HSNCODE", mBankObj.HSNCODE.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "UOMCD", mBankObj.UOMCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "UOMNM", mBankObj.UOMNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DECIMALS", mBankObj.DECIMALS.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "NOS", mBankObj.NOS.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "QNTY", mBankObj.QNTY.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "RATE", mBankObj.RATE.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "AMT", mBankObj.AMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SCMDISCAMT", mBankObj.SCMDISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "TDDISCAMT", mBankObj.TDDISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DISCAMT", mBankObj.DISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "TXBLVAL", mBankObj.TXBLVAL.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CONSLCD", mBankObj.CONSLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CSLNM", mBankObj.CSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CGSTNO", mBankObj.CGSTNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CDISTRICT", mBankObj.CDISTRICT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "TRSLNM", mBankObj.TRSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "LRNO", mBankObj.LRNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "LRDT", mBankObj.LRDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "GRWT", mBankObj.GRWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "TRWT", mBankObj.TRWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "NTWT", mBankObj.NTWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ORDREFNO", mBankObj.ORDREFNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ORDREFDT", mBankObj.ORDREFDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "IGSTPER", mBankObj.IGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "IGSTAMT", mBankObj.IGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CGSTPER", mBankObj.CGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CGSTAMT", mBankObj.CGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SGSTAMT", mBankObj.SGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CESSPER", mBankObj.CESSPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "CESSAMT", mBankObj.CESSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "BLQNTY", mBankObj.BLQNTY.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "NETAMT", mBankObj.NETAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "SGSTPER", mBankObj.SGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "GSTPER", mBankObj.GSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "GSTAMT", mBankObj.GSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ACKNO", mBankObj.ACKNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "ACKDT", mBankObj.ACKDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "PAGENO", mBankObj.PAGENO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "PAGESLNO", mBankObj.PAGESLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "BALENO", mBankObj.BALENO.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "DOCREM", mBankObj.DOCREM.ToString(), Server.MapPath("~/Ipsmart.ini"));
-            Handel_ini.IniWriteValue("REGISTER", "BLTYPE", mBankObj.BLTYPE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "AUTONO", ColumnNameObj.AUTONO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DOCCD", ColumnNameObj.DOCCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DOCNO", ColumnNameObj.DOCNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CANCEL", ColumnNameObj.CANCEL.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DOCDT", ColumnNameObj.DOCDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "AGSLCD", ColumnNameObj.AGSLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "PREFNO", ColumnNameObj.PREFNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "PREFDT", ColumnNameObj.PREFDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SLCD", ColumnNameObj.SLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SLNM", ColumnNameObj.SLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SLAREA", ColumnNameObj.SLAREA.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "AGSLNM", ColumnNameObj.AGSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "NM", ColumnNameObj.NM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "MOBILE", ColumnNameObj.MOBILE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "GSTNO", ColumnNameObj.GSTNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DISTRICT", ColumnNameObj.DISTRICT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ROAMT", ColumnNameObj.ROAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "TCSAMT", ColumnNameObj.TCSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "BLAMT", ColumnNameObj.BLAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SLNO", ColumnNameObj.SLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ITCD", ColumnNameObj.ITCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ITNM", ColumnNameObj.ITNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ITSTYLE", ColumnNameObj.ITSTYLE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ITREM", ColumnNameObj.ITREM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "HSNCODE", ColumnNameObj.HSNCODE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "UOMCD", ColumnNameObj.UOMCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "UOMNM", ColumnNameObj.UOMNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DECIMALS", ColumnNameObj.DECIMALS.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "NOS", ColumnNameObj.NOS.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "QNTY", ColumnNameObj.QNTY.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "RATE", ColumnNameObj.RATE.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "AMT", ColumnNameObj.AMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SCMDISCAMT", ColumnNameObj.SCMDISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "TDDISCAMT", ColumnNameObj.TDDISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DISCAMT", ColumnNameObj.DISCAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "TXBLVAL", ColumnNameObj.TXBLVAL.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CONSLCD", ColumnNameObj.CONSLCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CSLNM", ColumnNameObj.CSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CGSTNO", ColumnNameObj.CGSTNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CDISTRICT", ColumnNameObj.CDISTRICT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "TRSLNM", ColumnNameObj.TRSLNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "LRNO", ColumnNameObj.LRNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "LRDT", ColumnNameObj.LRDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "GRWT", ColumnNameObj.GRWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "TRWT", ColumnNameObj.TRWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "NTWT", ColumnNameObj.NTWT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ORDREFNO", ColumnNameObj.ORDREFNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ORDREFDT", ColumnNameObj.ORDREFDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "IGSTPER", ColumnNameObj.IGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "IGSTAMT", ColumnNameObj.IGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CGSTPER", ColumnNameObj.CGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CGSTAMT", ColumnNameObj.CGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SGSTAMT", ColumnNameObj.SGSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CESSPER", ColumnNameObj.CESSPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "CESSAMT", ColumnNameObj.CESSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "BLQNTY", ColumnNameObj.BLQNTY.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "NETAMT", ColumnNameObj.NETAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "SGSTPER", ColumnNameObj.SGSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "GSTPER", ColumnNameObj.GSTPER.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "GSTAMT", ColumnNameObj.GSTAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ACKNO", ColumnNameObj.ACKNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "ACKDT", ColumnNameObj.ACKDT.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "PAGENO", ColumnNameObj.PAGENO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "PAGESLNO", ColumnNameObj.PAGESLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "BALENO", ColumnNameObj.BALENO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "DOCREM", ColumnNameObj.DOCREM.ToString(), Server.MapPath("~/Ipsmart.ini"));
+            Handel_ini.IniWriteValue(SectionNm, "BLTYPE", ColumnNameObj.BLTYPE.ToString(), Server.MapPath("~/Ipsmart.ini"));
 
-            mbclist.Add(mBankObj);
-            VE.ColumnName = mbclist;
+            ColumnNamelist.Add(ColumnNameObj);
+            VE.ColumnName = ColumnNamelist;
             VE.DefaultView = true;
             return Content("Setting Saved Sucessfully !!");
         }
