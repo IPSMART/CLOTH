@@ -172,7 +172,7 @@
             $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
         }
         if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
-            if ("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "SBEXP") {
+            if ("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "SBEXP" || "@Model.MENU_PARA" == "PI") {
                 var CONVQTYPUNIT = retFloat($("#CONVQTYPUNIT").val()).toFixed(0);
                 if (CONVQTYPUNIT == "0") {
                     $(".Billuomdiv").hide();
@@ -1633,7 +1633,7 @@
                                                     </span>
                                                 </div>
                                                 @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
-                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP")
+                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP" && Model.MENU_PARA != "PI")
                                                 {
                                                     @Html.HiddenFor(model => model.BLUOMCD, new { id = "BLUOMCD" })
                                                     @Html.HiddenFor(model => model.BLQNTY, new { id = "BLQNTY" })
@@ -1785,7 +1785,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI")
                                             {
                                                 <div class="Billuomdiv col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">

@@ -137,7 +137,7 @@ namespace Improvar
         {
             double rtval = 0;
             if (val == null || val.retStr() == "") rtval = 0;
-            else rtval = Convert.ToDouble(val);
+            else rtval = Convert.ToDouble(val.ToString());
             return rtval;
         }
         public static int retInt(this object val)

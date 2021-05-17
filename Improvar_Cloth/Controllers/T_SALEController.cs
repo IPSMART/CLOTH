@@ -5265,7 +5265,7 @@ namespace Improvar.Controllers
                                     TVCHGST.DRCR = cr;
                                     TVCHGST.QNTY = (VE.TTXNDTL[i].BLQNTY.retDbl() == 0 ? VE.TTXNDTL[i].QNTY.retDbl() : VE.TTXNDTL[i].BLQNTY.retDbl());
                                     string BLUOMCD = "";
-                                    if (VE.TTXNDTL[i].BLUOMCD.retStr() != "" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP"))
+                                    if (VE.TTXNDTL[i].BLUOMCD.retStr() != "" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PI"))
                                     {
                                         BLUOMCD = Regex.Replace(VE.TTXNDTL[i].BLUOMCD, @"[^A-Z]+", String.Empty);
                                         BLUOMCD = BLUOMCD.Trim();
