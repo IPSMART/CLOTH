@@ -27,6 +27,6 @@ namespace Improvar.ViewModels
         public string BALENO { get; set; }
         public string GONM1 { get; set; }
 
-
+        public string BALECOUNT { get; set; }
     }
 }
