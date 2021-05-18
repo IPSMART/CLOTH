@@ -503,7 +503,7 @@ namespace Improvar.Controllers
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
                 str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
-                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,s.BLQNTY,k.CONVQTYPUNIT ";
+                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,i.BLQNTY,k.CONVQTYPUNIT ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t ";
@@ -1806,7 +1806,7 @@ namespace Improvar.Controllers
                                   //x.PDESIGN,
                                   x.RECPROGSLNO,
                                   x.CONVQTYPUNIT,
-                                  x.BLQNTY,
+                                  //x.BLQNTY,
                               } into P
                               select new TTXNDTL
                               {
@@ -1826,8 +1826,8 @@ namespace Improvar.Controllers
                                   //NOS = P.Sum(A => A.NOS),
                                   QNTY = P.Sum(A => A.QNTY),
                                   FLAGMTR = P.Sum(A => A.FLAGMTR),
-                                  //BLQNTY = P.Sum(A => A.BLQNTY),
-                                  BLQNTY = P.Key.BLQNTY,
+                                  BLQNTY = P.Sum(A => A.BLQNTY),
+                                  //BLQNTY = P.Key.BLQNTY,
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
                                   DISCTYPE_DESC = P.Key.DISCTYPE_DESC,
@@ -2781,20 +2781,21 @@ namespace Improvar.Controllers
                 sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
                 sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                 sql += ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount from";
+                sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD from";
 
                 sql += "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                 sql += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 sql += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 sql += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
                 sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                sql += ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD ";
                 //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
                 sql += "from " + scm + ".T_BATCHDTL i, " + scm + ".T_BATCHMST j, " + scm + ".M_SITEM k, " + scm + ".M_SIZE l, " + scm + ".M_COLOR m, ";
                 sql += scm + ".M_GROUP n," + scm + ".M_MTRLJOBMST o," + scm + ".M_PARTS p," + scm + ".M_STKTYPE q," + scm + ".T_CNTRL_HDR r ";
-                sql += "," + scm + ".T_TXNDTL s," + scm + ".T_TXN t ";
+                sql += "," + scm + ".T_TXNDTL s," + scm + ".T_TXN t, " + scm + ".M_SITEM u ";
                 sql += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                 sql += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+) ";
-                sql += "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono ";
+                sql += "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+) ";
                 sql += "and t.doctag in('" + doctag + "')  ";
                 if (R_DOCNO.retStr() != "") sql += " and " + (VE.MENU_PARA.retStr() == "SR" ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                 if (FDT.retDateStr() != "") sql += "and " + (VE.MENU_PARA.retStr() == "SR" ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
@@ -2817,30 +2818,6 @@ namespace Improvar.Controllers
                 sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + TAXGRPCD + "' ";
                 sql += "group by a.prodgrpcd ) y, ";
 
-                //sql += "(select a.barno, count(*) barimagecount, ";
-                //sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
-                //sql += "within group (order by a.barno) as barimage from ";
-                ////sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
-                //sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-                //sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-                //sql += "from " + scm + ".m_batch_img_hdr a ";
-                //sql += "union ";
-                //sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-                //sql += "from " + scm + ".m_batch_img_hdr_link a, " + scm + ".m_batch_img_hdr b ";
-                //sql += "where a.mainbarno=b.barno(+) ) a, ";
-                //sql += "" + scm + ".m_batch_img_hdr b ";
-                //sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
-                //sql += "union ";
-                //sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-                //sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-                //sql += "from " + scm + ".t_batch_img_hdr a ";
-                //sql += "union ";
-                //sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-                //sql += "from " + scm + ".t_batch_img_hdr_link a, " + scm + ".t_batch_img_hdr b ";
-                //sql += "where a.mainbarno=b.barno(+) ) a, ";
-                //sql += "" + scm + ".t_batch_img_hdr b ";
-                //sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
-                //sql += "group by a.barno ) z ";
                 sql += "(select a.barno, count(*) barimagecount,";
                 sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
                 sql += "within group (order by a.barno) as barimage from ";
@@ -2974,6 +2951,11 @@ namespace Improvar.Controllers
                                      BarImagesCount = dr["barimagecount"].retStr(),
                                      PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
                                      GSTPER = dr["GSTPER"].retDbl(),
+                                     BLUOMCD = dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
+                                     //BLQNTY = dr["BLQNTY"].retDbl(),
+                                     CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
+                                     FABITCD = dr["FABITCD"].retStr(),
+                                     FABITNM = dr["FABITNM"].retStr(),
                                  }).ToList();
                 if (VE.TBATCHDTL == null)
                 {
