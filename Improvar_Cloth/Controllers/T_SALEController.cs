@@ -2784,14 +2784,14 @@ namespace Improvar.Controllers
                 sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
                 sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                 sql += ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD from";
+                sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK from";
 
                 sql += "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                 sql += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 sql += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 sql += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
                 sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
-                sql += ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD ";
+                sql += ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
                 //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
                 sql += "from " + scm + ".T_BATCHDTL i, " + scm + ".T_BATCHMST j, " + scm + ".M_SITEM k, " + scm + ".M_SIZE l, " + scm + ".M_COLOR m, ";
                 sql += scm + ".M_GROUP n," + scm + ".M_MTRLJOBMST o," + scm + ".M_PARTS p," + scm + ".M_STKTYPE q," + scm + ".T_CNTRL_HDR r ";
@@ -2959,6 +2959,7 @@ namespace Improvar.Controllers
                                      CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                                      FABITCD = dr["FABITCD"].retStr(),
                                      FABITNM = dr["FABITNM"].retStr(),
+                                     NEGSTOCK = dr["NEGSTOCK"].retStr(),
                                  }).ToList();
                 if (VE.TBATCHDTL == null)
                 {

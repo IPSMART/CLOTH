@@ -358,7 +358,14 @@
                                         @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI")
                                         {
                                             <td class="PJBLDiv">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].BLQNTY, new { htmlAttributes = new { id = "B_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12, autocomplete = "off" } })
+                                                @if (Model.TBATCHDTL[i].CONVQTYPUNIT.retDbl() == 0)
+                                                {
+                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].BLQNTY, new { htmlAttributes = new { id = "B_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12, autocomplete = "off", @TabIndex = -1, @readonly = "readonly" } })
+                                                }
+                                                else
+                                                {
+                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].BLQNTY, new { htmlAttributes = new { id = "B_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12, autocomplete = "off" } })
+                                                }
                                             </td>
                                             @*<td class="">
                                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].BLUOMCD, new { id = "B_BLUOMCD_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -611,29 +618,29 @@
                                 @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 @if (Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PJIS" && Model.MENU_PARA != "PJRT")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     if (Model.M_SYSCNFG.MNTNDISC1 == "Y")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     }
                                     if (Model.M_SYSCNFG.MNTNDISC2 == "Y")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     }
                                 }
 
                                 @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")

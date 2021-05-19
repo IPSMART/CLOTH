@@ -782,6 +782,17 @@ function UpdateBarCodeRow() {
             $("#B_BLQNTY_" + j).val($("#BLQNTY").val());
             $("#B_CONVQTYPUNIT_" + j).val($("#CONVQTYPUNIT").val());
             $("#B_PCSTYPE_" + j).val($("#PCSTYPE").val());
+            if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+                if (retFloat($("#CONVQTYPUNIT").val()) == 0) {
+                    $("#B_BLQNTY_" + j).attr('readonly', 'readonly');
+                    $("#B_BLQNTY_" + j).attr('TabIndex', '-1');
+                    $("#B_BLQNTY_" + j).val("");
+                }
+                else {
+                    $("#B_BLQNTY_" + j).attr("readonly", false);
+                    $("#B_BLQNTY_" + j).removeAttr("TabIndex");
+                }
+            }
         }
 
     }
@@ -2412,7 +2423,12 @@ function AddBarCodeGrid() {
     tr += '    </td>';
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
         tr += '    <td class="" title="' + BLQNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + BLQNTY + '">';
+        if (retFloat(CONVQTYPUNIT) == 0) {
+            tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" readonly="readonly" value="' + BLQNTY + '">';
+        }
+        else {
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + BLQNTY + '">';
+        }
         tr += '    </td>';
         //tr += '    <td class="" title="' + BLUOMCD + '">';
         //tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" readonly="readonly" type="text" value="' + BLUOMCD + '">';
@@ -3472,16 +3488,19 @@ function CalculateBargridQnty(tableid, index) {
 
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
-        $("#" + QNTYID).val(retFloat(qnty));
+        $("#" + QNTYID).val(retFloat(qnty).toFixed(3));
     }
-    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
+    else {
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+            var qnty = retFloat($("#" + BLQNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val());
+            $("#" + QNTYID).val(retFloat(qnty).toFixed(3));
+        }
+    }
+    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0 && retFloat($("#" + BLQNTYID).val()) == 0) {
         $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
     }
 
-    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && (retFloat($("#" + CUTLENGTHID).val()) == 0 || retFloat($("#" + NOSID).val()) == 0)) {
-        var qnty = retFloat($("#" + BLQNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val());
-        $("#" + QNTYID).val(retFloat(qnty));
-    }
+
     //var BLQNTY = retFloat(retFloat($("#" + QNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val())).toFixed(3);
     //$("#" + BLQNTYID).val(BLQNTY);
     if (tableid == "_T_SALE_PRODUCT_GRID") {
