@@ -2282,6 +2282,9 @@ namespace Improvar.Controllers
                     VE.TBATCHDTL[i].MTRLJOBNM = MTRLJOBNM;
                     VE.TBATCHDTL[i].MTBARCODE = MTBARCODE;
                 }
+                VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                      select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_BarTab", VE);
             }
@@ -2991,6 +2994,9 @@ namespace Improvar.Controllers
                         }
                     }
                 }
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                      select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
             }
             catch (Exception ex)
             {
@@ -3431,6 +3437,10 @@ namespace Improvar.Controllers
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
 
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                      select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
                 VE.DefaultView = true;
                 ModelState.Clear();
                 return PartialView("_T_SALE_BarTab", VE);
@@ -3710,6 +3720,9 @@ namespace Improvar.Controllers
                 }
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
+
+                VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                      select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 
                 VE.DefaultView = true;
                 ModelState.Clear();
@@ -4156,6 +4169,11 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         //finance
+                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
+                        {
+                            dbsql = masterHelp.finTblUpdt("t_vch_bl_adj", TTXN.AUTONO, "E");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                        }
                         dbsql = masterHelp.finTblUpdt("t_vch_gst", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                         dbsql = masterHelp.finTblUpdt("t_vch_bl", TTXN.AUTONO, "E");
@@ -5191,6 +5209,11 @@ namespace Improvar.Controllers
                     }
                     if (blgstpost == true)
                     {
+                        DataTable OSDATA = new DataTable();
+                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
+                        {
+                            OSDATA = masterHelp.GenOSTbl(tbl.Rows[0]["parglcd"].ToString(), VE.T_TXN.SLCD, VE.T_TXN.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", VE.T_TXN.AUTONO, "");
+                        }
                         #region TVCHGST Table update    
 
                         int gs = 0;
@@ -5293,6 +5316,45 @@ namespace Improvar.Controllers
                                     //        VE.GSTSLNM, VE.GSTNO, "", "", "", VE.T_VCH_GST.EXPCD, VE.T_VCH_GST.SHIPDOCNO, SHIPDOCDT, VE.T_VCH_GST.PORTCD, dncntag, TTXN.CONSLCD, exemptype, 0, expglcd, "Y");
                                     //OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                     gblamt = 0; groamt = 0; gtcsamt = 0;
+
+                                    if (gs == 1)
+                                    {
+                                        #region if return then auto adjustment
+                                        if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") && OSDATA.Rows.Count > 0)
+                                        {
+                                            string AGAUTONO = "", AGBLAMT = "";
+                                            string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : "PB";
+                                            sql = "select a.autono,a.blamt from " + scm1 + ".t_txn a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono(+) and a.doctag='" + doctag + "' ";
+
+                                            if (VE.MENU_PARA.retStr() == "SR")
+                                            {
+                                                sql += "and (b.docno = '" + VE.TTXNDTL[i].AGDOCNO + "' or b.vchrno like '%" + VE.TTXNDTL[i].AGDOCNO.retStr() + "%' ) ";
+                                                sql += "and a.docdt = to_date('" + VE.TTXNDTL[i].AGDOCDT.retDateStr() + "','dd/mm/yyyy')";
+                                            }
+                                            else
+                                            {
+                                                sql += "and a.prefno = '" + VE.TTXNDTL[i].AGDOCNO + "'  ";
+                                                sql += "and a.prefdt = to_date('" + VE.TTXNDTL[i].AGDOCDT.retDateStr() + "','dd/mm/yyyy')";
+                                            }
+                                            DataTable dt1 = masterHelp.SQLquery(sql);
+                                            if (dt1 != null && dt1.Rows.Count > 0)
+                                            {
+                                                if (dt1.Rows.Count > 1)
+                                                {
+                                                    ContentFlg = "Invoice not fount against this docno : " + VE.TTXNDTL[i].AGDOCNO + " ..Please enter correct docno "; goto dbnotsave;
+                                                }
+                                                else
+                                                {
+                                                    AGAUTONO = dt1.Rows[0]["autono"].retStr();
+                                                    AGBLAMT = dt1.Rows[0]["BLAMT"].retStr();
+                                                }
+                                            }
+
+                                            dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, Convert.ToSByte(isl), VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
+                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        }
+                                        #endregion
+                                    }
                                 }
                             }
                         }
@@ -5538,6 +5600,11 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                     // Delete from financial schema
+                    if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
+                    {
+                        dbsql = masterHelp.finTblUpdt("t_vch_bl_adj", VE.T_TXN.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                    }
                     dbsql = masterHelp.finTblUpdt("T_TXNEWB", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.finTblUpdt("t_vch_gst", VE.T_TXN.AUTONO, "D");
