@@ -280,251 +280,244 @@ namespace Improvar.Controllers
         }
         public ItemMasterEntry Navigation(ItemMasterEntry VE, ImprovarDB DB, int index, string searchValue)
         {
-            try
+            sl = new M_SITEM(); sll = new M_CNTRL_HDR(); slll = new M_GROUP(); slsb = new M_SUBBRAND(); slb = new M_BRAND(); slc = new M_COLLECTION(); sluom = new M_UOM();
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
+            if (VE.IndexKey.Count != 0)
             {
-                sl = new M_SITEM(); sll = new M_CNTRL_HDR(); slll = new M_GROUP(); slsb = new M_SUBBRAND(); slb = new M_BRAND(); slc = new M_COLLECTION(); sluom = new M_UOM();
-                ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
-                if (VE.IndexKey.Count != 0)
+                string[] aa = null;
+                if (searchValue.Length == 0)
                 {
-                    string[] aa = null;
-                    if (searchValue.Length == 0)
-                    {
-                        aa = VE.IndexKey[index].Navikey.Split(Convert.ToChar(Cn.GCS()));
-                    }
-                    else
-                    {
-                        aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
-                    }
-                    var itcd = aa[0];
-                    if (VE.MENU_PARA == "C")
-                    {
-                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "F" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
-                    }
-                    else if (VE.MENU_PARA == "F")
-                    {
-                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
-                    }
-                    else { sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "F" && r.ITCD == itcd).FirstOrDefault(); }
-                    sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
-                    slll = DB.M_GROUP.Find(sl.ITGRPCD);
-                    slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
-                    slb = DB.M_BRAND.Find(sl.BRANDCD);
-                    slc = DB.M_COLLECTION.Find(sl.COLLCD);
-                    sluom = DBF.M_UOM.Find(sl.UOMCD);
-                    sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
-                    VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "", "") != "" ? true : false;
-                    string fitcd = sl.FABITCD.retStr();
-                    if (fitcd != "")
-                    {
-                        var fitem = (from a in DB.M_SITEM where a.ITCD == fitcd select new { a.ITNM, a.STYLENO, a.UOMCD }).FirstOrDefault();
-                        VE.FABITNM = fitem.ITNM;
-                        VE.FABSTYLENO = fitem.STYLENO;
-                        VE.FABUOMNM = fitem.UOMCD;
-                    }
-                    if(sl.CONVUOMCD.retStr() != "")
-                    {
-                        VE.CONVUOMNM = DBF.M_UOM.Where(a=>a.UOMCD == sl.CONVUOMCD).Select(a=>a.UOMNM).FirstOrDefault();
-                    }
-                    if (sl.NEGSTOCK == "Y")
-                    {
-                        VE.NEGSTOCK = true;
-                    }
-                    else
-                    {
-                        VE.NEGSTOCK = false;
-                    }
-                    if (sll.INACTIVE_TAG == "Y")
-                    {
-                        VE.Checked = true;
-                    }
-                    else
-                    {
-                        VE.Checked = false;
-                    }
-
-                    string sql = "";
-                    sql += "select i.SLCD,j.SLNM,i.JOBRT,i.PDESIGN from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_SLCD i,";
-                    sql += CommVar.FinSchema(UNQSNO) + ".M_SUBLEG j where i.SLCD =j.SLCD and i.ITCD='" + sl.ITCD + "'";
-                    DataTable dt = Master_HelpFa.SQLquery(sql);
-                    VE.MSITEMSLCD = (from DataRow dr in dt.Rows
-                                     select new MSITEMSLCD()
-                                     {
-                                         SLCD = dr["SLCD"].retStr(),
-                                         SLNM = dr["SLNM"].retStr(),
-                                         JOBRT = dr["JOBRT"].retDbl(),
-                                         PDESIGN = dr["PDESIGN"].retStr()
-                                     }).ToList();
-                    if (VE.MSITEMSLCD.Count == 0)
-                    {
-                        List<MSITEMSLCD> ITEMSIZE = new List<MSITEMSLCD>();
-                        MSITEMSLCD MIS = new MSITEMSLCD();
-                        MIS.SRLNO = "1";
-                        ITEMSIZE.Add(MIS);
-                        VE.MSITEMSLCD = ITEMSIZE;
-                    }
-                    else
-                    {
-                        for (int i = 0; i <= VE.MSITEMSLCD.Count - 1; i++)
-                        {
-                            VE.MSITEMSLCD[i].SRLNO = (i + 1).ToString();
-                        }
-                    }
-
-                    VE.MSITEMPARTS = (from i in DB.M_SITEM_PARTS
-                                      join j in DB.M_PARTS on i.PARTCD equals (j.PARTCD)
-                                      where (i.ITCD == sl.ITCD)
-                                      select new MSITEMPARTS()
-                                      {
-                                          PARTCD = i.PARTCD,
-                                          PARTNM = j.PARTNM,
-                                      }).ToList();
-
-                    if (VE.MSITEMPARTS.Count == 0)
-                    {
-                        List<MSITEMPARTS> ITEMPARTS = new List<MSITEMPARTS>();
-                        MSITEMPARTS MIP = new MSITEMPARTS();
-                        MIP.SLNO = 1;
-                        ITEMPARTS.Add(MIP);
-                        VE.MSITEMPARTS = ITEMPARTS;
-                    }
-                    else
-                    {
-                        for (int i = 0; i <= VE.MSITEMPARTS.Count - 1; i++)
-                        {
-                            VE.MSITEMPARTS[i].SLNO = Convert.ToByte(i + 1);
-                        }
-                    }
-                    sql = "";
-                    sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE, ";
-                    sql += "case when exists (select autono from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHdtl a where a.BARNO = i.BARNO) then 'Y' else '' end as HASTRANSACTION ";
-                    sql += "FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst i, " + CommVar.CurSchema(UNQSNO) + ".M_COLOR j, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k ";
-                    sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.COMMONUNIQBAR='C' and i.itcd = '" + sl.ITCD + "' ";
-                    sql += " order by COLRCD NULLS first,sizecd NULLS first,K.PRINT_SEQ asc ";
-                    dt = masterHelp.SQLquery(sql);
-                    VE.MSITEMBARCODE = (from DataRow dr in dt.Rows
-                                        select new MSITEMBARCODE()
-                                        {
-                                            SIZECD = dr["SIZECD"].ToString(),
-                                            SIZENM = dr["SIZENM"].ToString(),
-                                            SZBARCODE = dr["SZBARCODE"].ToString(),
-                                            COLRCD = dr["COLRCD"].ToString(),
-                                            COLRNM = dr["COLRNM"].ToString(),
-                                            BARNO = dr["BARNO"].ToString(),
-                                            CLRBARCODE = dr["CLRBARCODE"].ToString(),
-                                            HASTRANSACTION = dr["HASTRANSACTION"].ToString() == "Y" ? true : false
-                                        }).ToList();
-
-                    if (VE.MSITEMBARCODE.Count == 0)
-                    {
-                        List<MSITEMBARCODE> SITEMBARCODE = new List<MSITEMBARCODE>();
-                        MSITEMBARCODE MII = new MSITEMBARCODE();
-                        MII.SRLNO = 1;
-                        SITEMBARCODE.Add(MII);
-                        VE.MSITEMBARCODE = SITEMBARCODE;
-                    }
-                    else
-                    {
-                        for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
-                        {
-                            VE.MSITEMBARCODE[i].SRLNO = Convert.ToByte((i + 1));
-                            if (VE.DefaultAction == "A")
-                            {
-                                VE.MSITEMBARCODE[i].BARNO = null;
-                            }
-                        }
-                    }
-                    VE.MSITEMMEASURE = (from i in DB.M_SITEM_MEASURE
-                                        where (i.ITCD == sl.ITCD)
-                                        select new MSITEMMEASURE()
-                                        {
-                                            MDESC = i.MDESC,
-                                            MVAL = i.MVAL,
-                                            REM = i.REM,
-                                        }).ToList();
-                    if (VE.MSITEMMEASURE.Count == 0)
-                    {
-                        List<MSITEMMEASURE> ITEMMEASURE = new List<MSITEMMEASURE>();
-                        MSITEMMEASURE MIM = new MSITEMMEASURE();
-                        MIM.SLNO = 1;
-                        ITEMMEASURE.Add(MIM);
-                        VE.MSITEMMEASURE = ITEMMEASURE;
-                    }
-                    else
-                    {
-                        for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)
-                        {
-                            VE.MSITEMMEASURE[i].SLNO = Convert.ToByte((i + 1));
-                        }
-                    }
-                    VE.M_SITEM = sl;
-                    string barnosql = getbarno(sl.ITCD).retSqlformat();
-
-                    VE.DropDown_list1 = Price_Effdt(VE, barnosql);
-                    if (VE.DropDown_list1.Count > 0)
-                    {
-                        VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
-                        VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
-                        VE.DTPRICES = GetPrices(VE);
-                    }
-                    VE.UploadDOC = Cn.GetUploadImage(CommVar.CurSchema(UNQSNO).ToString(), Convert.ToInt32(sl.M_AUTONO));
-
-                    if (VE.UploadDOC.Count == 0)
-                    {
-                        List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
-                        UploadDOC UPL = new UploadDOC();
-                        UPL.DocumentType = doctP;
-                        UploadDOC1.Add(UPL);
-                        VE.UploadDOC = UploadDOC1;
-                    }
-                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".T_BATCH_IMG_HDR WHERE barno in(" + barnosql + ")";
-                    dt = masterHelp.SQLquery(sql);
-                    VE.UploadBarImages = (from DataRow dr in dt.Rows
-                                          select new UploadDOC
-                                          {
-                                              docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
-                                              DOC_DESC = dr["DOC_DESC"].retStr(),
-                                              DOC_FILE = CommVar.WebUploadDocURL(dr["DOC_FLNAME"].retStr()),
-                                              DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
-                                          }).ToList();
-                    foreach (var v in VE.UploadBarImages)
-                    {
-                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
-                        FROMpath = Path.Combine(FROMpath, "");
-                        string TOPATH = CommVar.LocalUploadDocPath() + v.DOC_FILE_NAME;
-                        var tyy = Url.Action();
-                        Cn.CopyImage(FROMpath, TOPATH);
-                        VE.BarImages += Cn.GCS() + CommVar.WebUploadDocURL(v.DOC_FILE_NAME) + "~" + v.DOC_DESC;
-                    }
-
-                    if (VE.DefaultAction == "A")
-                    {
-                        VE.SEARCH_ITCD = sl.ITCD;
-                        sl.ITCD = null;
-                        //VE.ITEM_BARCODE = null;
-                        sl.STYLENO = null;
-
-                    }
+                    aa = VE.IndexKey[index].Navikey.Split(Convert.ToChar(Cn.GCS()));
                 }
                 else
                 {
-                    VE.M_SITEM = sl;
-                    List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
-                    UploadDOC UPL = new UploadDOC();
-                    UPL.DocumentType = doctP;
-                    UploadDOC1.Add(UPL);
-                    VE.UploadDOC = UploadDOC1;
+                    aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
+                }
+                var itcd = aa[0];
+                if (VE.MENU_PARA == "C")
+                {
+                    sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "F" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
+                }
+                else if (VE.MENU_PARA == "F")
+                {
+                    sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
+                }
+                else { sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "F" && r.ITCD == itcd).FirstOrDefault(); }
+                sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
+                slll = DB.M_GROUP.Find(sl.ITGRPCD);
+                slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
+                slb = DB.M_BRAND.Find(sl.BRANDCD);
+                slc = DB.M_COLLECTION.Find(sl.COLLCD);
+                sluom = DBF.M_UOM.Find(sl.UOMCD);
+                sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
+                VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "", "") != "" ? true : false;
+                string fitcd = sl.FABITCD.retStr();
+                if (fitcd != "")
+                {
+                    var fitem = (from a in DB.M_SITEM where a.ITCD == fitcd select new { a.ITNM, a.STYLENO, a.UOMCD }).FirstOrDefault();
+                    VE.FABITNM = fitem.ITNM;
+                    VE.FABSTYLENO = fitem.STYLENO;
+                    VE.FABUOMNM = fitem.UOMCD;
+                }
+                if (sl.CONVUOMCD.retStr() != "")
+                {
+                    VE.CONVUOMNM = DBF.M_UOM.Where(a => a.UOMCD == sl.CONVUOMCD).Select(a => a.UOMNM).FirstOrDefault();
+                }
+                if (sl.NEGSTOCK == "Y")
+                {
+                    VE.NEGSTOCK = true;
+                }
+                else
+                {
+                    VE.NEGSTOCK = false;
+                }
+                if (sll.INACTIVE_TAG == "Y")
+                {
+                    VE.Checked = true;
+                }
+                else
+                {
+                    VE.Checked = false;
+                }
+
+                string sql = "";
+                sql += "select i.SLCD,j.SLNM,i.JOBRT,i.PDESIGN from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_SLCD i,";
+                sql += CommVar.FinSchema(UNQSNO) + ".M_SUBLEG j where i.SLCD =j.SLCD and i.ITCD='" + sl.ITCD + "'";
+                DataTable dt = Master_HelpFa.SQLquery(sql);
+                VE.MSITEMSLCD = (from DataRow dr in dt.Rows
+                                 select new MSITEMSLCD()
+                                 {
+                                     SLCD = dr["SLCD"].retStr(),
+                                     SLNM = dr["SLNM"].retStr(),
+                                     JOBRT = dr["JOBRT"].retDbl(),
+                                     PDESIGN = dr["PDESIGN"].retStr()
+                                 }).ToList();
+                if (VE.MSITEMSLCD.Count == 0)
+                {
                     List<MSITEMSLCD> ITEMSIZE = new List<MSITEMSLCD>();
                     MSITEMSLCD MIS = new MSITEMSLCD();
                     MIS.SRLNO = "1";
                     ITEMSIZE.Add(MIS);
                     VE.MSITEMSLCD = ITEMSIZE;
                 }
+                else
+                {
+                    for (int i = 0; i <= VE.MSITEMSLCD.Count - 1; i++)
+                    {
+                        VE.MSITEMSLCD[i].SRLNO = (i + 1).ToString();
+                    }
+                }
+
+                VE.MSITEMPARTS = (from i in DB.M_SITEM_PARTS
+                                  join j in DB.M_PARTS on i.PARTCD equals (j.PARTCD)
+                                  where (i.ITCD == sl.ITCD)
+                                  select new MSITEMPARTS()
+                                  {
+                                      PARTCD = i.PARTCD,
+                                      PARTNM = j.PARTNM,
+                                  }).ToList();
+
+                if (VE.MSITEMPARTS.Count == 0)
+                {
+                    List<MSITEMPARTS> ITEMPARTS = new List<MSITEMPARTS>();
+                    MSITEMPARTS MIP = new MSITEMPARTS();
+                    MIP.SLNO = 1;
+                    ITEMPARTS.Add(MIP);
+                    VE.MSITEMPARTS = ITEMPARTS;
+                }
+                else
+                {
+                    for (int i = 0; i <= VE.MSITEMPARTS.Count - 1; i++)
+                    {
+                        VE.MSITEMPARTS[i].SLNO = Convert.ToByte(i + 1);
+                    }
+                }
+                sql = "";
+                sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE, ";
+                sql += "case when exists (select autono from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHdtl a where a.BARNO = i.BARNO) then 'Y' else '' end as HASTRANSACTION ";
+                sql += "FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst i, " + CommVar.CurSchema(UNQSNO) + ".M_COLOR j, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k ";
+                sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.COMMONUNIQBAR='C' and i.itcd = '" + sl.ITCD + "' ";
+                sql += " order by COLRCD NULLS first,sizecd NULLS first,K.PRINT_SEQ asc ";
+                dt = masterHelp.SQLquery(sql);
+                VE.MSITEMBARCODE = (from DataRow dr in dt.Rows
+                                    select new MSITEMBARCODE()
+                                    {
+                                        SIZECD = dr["SIZECD"].ToString(),
+                                        SIZENM = dr["SIZENM"].ToString(),
+                                        SZBARCODE = dr["SZBARCODE"].ToString(),
+                                        COLRCD = dr["COLRCD"].ToString(),
+                                        COLRNM = dr["COLRNM"].ToString(),
+                                        BARNO = dr["BARNO"].ToString(),
+                                        CLRBARCODE = dr["CLRBARCODE"].ToString(),
+                                        HASTRANSACTION = dr["HASTRANSACTION"].ToString() == "Y" ? true : false
+                                    }).ToList();
+
+                if (VE.MSITEMBARCODE.Count == 0)
+                {
+                    List<MSITEMBARCODE> SITEMBARCODE = new List<MSITEMBARCODE>();
+                    MSITEMBARCODE MII = new MSITEMBARCODE();
+                    MII.SRLNO = 1;
+                    SITEMBARCODE.Add(MII);
+                    VE.MSITEMBARCODE = SITEMBARCODE;
+                }
+                else
+                {
+                    for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
+                    {
+                        VE.MSITEMBARCODE[i].SRLNO = Convert.ToByte((i + 1));
+                        if (VE.DefaultAction == "A")
+                        {
+                            VE.MSITEMBARCODE[i].BARNO = null;
+                        }
+                    }
+                }
+                VE.MSITEMMEASURE = (from i in DB.M_SITEM_MEASURE
+                                    where (i.ITCD == sl.ITCD)
+                                    select new MSITEMMEASURE()
+                                    {
+                                        MDESC = i.MDESC,
+                                        MVAL = i.MVAL,
+                                        REM = i.REM,
+                                    }).ToList();
+                if (VE.MSITEMMEASURE.Count == 0)
+                {
+                    List<MSITEMMEASURE> ITEMMEASURE = new List<MSITEMMEASURE>();
+                    MSITEMMEASURE MIM = new MSITEMMEASURE();
+                    MIM.SLNO = 1;
+                    ITEMMEASURE.Add(MIM);
+                    VE.MSITEMMEASURE = ITEMMEASURE;
+                }
+                else
+                {
+                    for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)
+                    {
+                        VE.MSITEMMEASURE[i].SLNO = Convert.ToByte((i + 1));
+                    }
+                }
+                VE.M_SITEM = sl;
+                string barnosql = getbarno(sl.ITCD).retSqlformat();
+
+                VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                if (VE.DropDown_list1.Count > 0)
+                {
+                    VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
+                    VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                    VE.DTPRICES = GetPrices(VE);
+                }
+                VE.UploadDOC = Cn.GetUploadImage(CommVar.CurSchema(UNQSNO).ToString(), Convert.ToInt32(sl.M_AUTONO));
+
+                if (VE.UploadDOC.Count == 0)
+                {
+                    List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
+                    UploadDOC UPL = new UploadDOC();
+                    UPL.DocumentType = doctP;
+                    UploadDOC1.Add(UPL);
+                    VE.UploadDOC = UploadDOC1;
+                }
+                sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".T_BATCH_IMG_HDR WHERE barno in(" + barnosql + ")";
+                dt = masterHelp.SQLquery(sql);
+                VE.UploadBarImages = (from DataRow dr in dt.Rows
+                                      select new UploadDOC
+                                      {
+                                          docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
+                                          DOC_DESC = dr["DOC_DESC"].retStr(),
+                                          DOC_FILE = CommVar.WebUploadDocURL(dr["DOC_FLNAME"].retStr()),
+                                          DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
+                                      }).ToList();
+                foreach (var v in VE.UploadBarImages)
+                {
+                    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
+                    FROMpath = Path.Combine(FROMpath, "");
+                    string TOPATH = CommVar.LocalUploadDocPath() + v.DOC_FILE_NAME;
+                    var tyy = Url.Action();
+                    Cn.CopyImage(FROMpath, TOPATH);
+                    VE.BarImages += Cn.GCS() + CommVar.WebUploadDocURL(v.DOC_FILE_NAME) + "~" + v.DOC_DESC;
+                }
+
+                if (VE.DefaultAction == "A")
+                {
+                    VE.SEARCH_ITCD = sl.ITCD;
+                    sl.ITCD = null;
+                    //VE.ITEM_BARCODE = null;
+                    sl.STYLENO = null;
+
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Cn.SaveException(ex, "");
+                VE.M_SITEM = sl;
+                List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
+                UploadDOC UPL = new UploadDOC();
+                UPL.DocumentType = doctP;
+                UploadDOC1.Add(UPL);
+                VE.UploadDOC = UploadDOC1;
+                List<MSITEMSLCD> ITEMSIZE = new List<MSITEMSLCD>();
+                MSITEMSLCD MIS = new MSITEMSLCD();
+                MIS.SRLNO = "1";
+                ITEMSIZE.Add(MIS);
+                VE.MSITEMSLCD = ITEMSIZE;
             }
 
             return VE;
@@ -2055,7 +2048,7 @@ namespace Improvar.Controllers
                 query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F ";
                 query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+)   AND ";
                 query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) ";
-               // query = query + "A.M_AUTONO='" + VE.M_SITEM.M_AUTONO + "' ";
+                // query = query + "A.M_AUTONO='" + VE.M_SITEM.M_AUTONO + "' ";
                 query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
                 query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
 
