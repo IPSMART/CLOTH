@@ -5309,6 +5309,11 @@ namespace Improvar.Controllers
                                     TVCHGST.RATE = VE.TTXNDTL[i].RATE.retDbl();
                                     TVCHGST.PINV = pinv;
                                     TVCHGST.GOOD_SERV = (VE.MENU_PARA == "PJBL") ? "S" : "";
+                                    if (VE.MENU_PARA == "PR")
+                                    {
+                                        TVCHGST.PREFDT = VE.T_TXN.PREFDT;
+                                        TVCHGST.PREFNO = VE.T_TXN.PREFNO;
+                                    }
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -5461,6 +5466,11 @@ namespace Improvar.Controllers
                                     TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT.retDbl();
                                     TVCHGST1.RATE = VE.TTXNAMT[i].AMTRATE.retDbl();
                                     TVCHGST1.PINV = pinv;
+                                    if (VE.MENU_PARA == "PR")
+                                    {
+                                        TVCHGST1.PREFDT = VE.T_TXN.PREFDT;
+                                        TVCHGST1.PREFNO = VE.T_TXN.PREFNO;
+                                    }
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST1, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

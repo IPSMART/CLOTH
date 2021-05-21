@@ -199,14 +199,14 @@
             return false;
         }
         if ("@Model.MENU_PARA" == "PB") {
-            if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
+            if (!emptyFieldCheck("Please Enter Party bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
-            if (!emptyFieldCheck("Please Enter Purchase bill date", "PREFDT")) {
+            if (!emptyFieldCheck("Please Enter Party bill date", "PREFDT")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
                 $(".tab-content div").removeClass("active");
@@ -909,11 +909,11 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                         <div class="row">
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
                             {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Purchase bill no")
+                                        @Html.Label("", "Party bill no")
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <b style="color:Red;">*</b>
@@ -927,7 +927,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Purchase bill dt")
+                                        @Html.Label("", "Party bill dt")
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <b style="color:Red;">*</b>
