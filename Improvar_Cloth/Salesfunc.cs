@@ -1505,7 +1505,7 @@ namespace Improvar
             sql += "d.styleno, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt, m.itrem, ";
             sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm,h.bargentype, d.brandcd, i.brandnm, ";
             sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.qnty,0) ordqnty, ";
-            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty,m.pdesign,m.partcd,p.partnm ,p.prtbarcode,f.clrbarcode,e.szbarcode,nvl(d.hsncode,h.hsncode)hsncode from ";
+            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty,m.pdesign,m.partcd,p.partnm ,p.prtbarcode,f.clrbarcode,e.szbarcode,nvl(d.hsncode,h.hsncode)hsncode,nvl(d.negstock,h.negstock)negstock from ";
 
             sql += "( select a.autono, a.slno, a.qnty ";
             sql += "from " + scm + ".t_sorddtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_sord c, " + scm + ".m_doctype d ";

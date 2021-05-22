@@ -2078,6 +2078,7 @@ namespace Improvar.Controllers
                                            SZBARCODE = dr["SZBARCODE"].retStr(),
                                            UOM = dr["UOMCD"].retStr(),
                                            HSNCODE = dr["HSNCODE"].retStr(),
+                                           NEGSTOCK = dr["NEGSTOCK"].retStr(),
                                        }).ToList();
                     string ITCDLIST = VE.PENDINGORDER.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
 
@@ -2218,6 +2219,7 @@ namespace Improvar.Controllers
                               TDDISCTYPE_DESC = "%",
                               SCMDISCTYPE = "P",
                               SCMDISCTYPE_DESC = "%",
+                              NEGSTOCK = a.NEGSTOCK.retStr()
                           }).ToList();
 
                 if (VE.TBATCHDTL != null)
@@ -2328,6 +2330,7 @@ namespace Improvar.Controllers
                               MTRLJOBCD = a.MTRLJOBCD.retStr(),
                               MTRLJOBNM = a.MTRLJOBNM.retStr(),
                               MTBARCODE = a.MTBARCODE.retStr(),
+                              NEGSTOCK = a.NEGSTOCK.retStr()
                           }).ToList();
                 TempData["PENDORDER" + VE.MENU_PARA] = dt;
                 return Content("0");
@@ -3490,238 +3493,240 @@ namespace Improvar.Controllers
                 str1 += "order by k.ITGRPCD ,i.MTRLJOBCD,k.ITCD ,i.DISCTYPE,i.TDDISCTYPE,i.SCMDISCTYPE,k.UOMCD ,i.STKTYPE ,i.RATE,i.DISCRATE,i.SCMDISCRATE,i.TDDISCRATE,i.HSNCODE ,s.GLCD,j.FABITCD ,j.PDESIGN  ";
                 tbl = masterHelp.SQLquery(str1);
 
-                VE.TBATCHDTL = (from DataRow dr in tbl.Rows
-                                select new TBATCHDTL()
-                                {
-                                    SLNO = dr["SLNO"].retShort(),
-                                    TXNSLNO = dr["TXNSLNO"].retShort(),
-                                    ITGRPCD = dr["ITGRPCD"].retStr(),
-                                    ITGRPNM = dr["ITGRPNM"].retStr(),
-                                    MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
-                                    MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
-                                    MTBARCODE = dr["MTBARCODE"].retStr(),
-                                    ITCD = dr["ITCD"].retStr(),
-                                    ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
-                                    UOM = dr["UOMCD"].retStr(),
-                                    STYLENO = dr["STYLENO"].retStr(),
-                                    PARTCD = dr["PARTCD"].retStr(),
-                                    PARTNM = dr["PARTNM"].retStr(),
-                                    PRTBARCODE = dr["PRTBARCODE"].retStr(),
-                                    COLRCD = dr["COLRCD"].retStr(),
-                                    COLRNM = dr["COLRNM"].retStr(),
-                                    CLRBARCODE = dr["CLRBARCODE"].retStr(),
-                                    SIZECD = dr["SIZECD"].retStr(),
-                                    SIZENM = dr["SIZENM"].retStr(),
-                                    SZBARCODE = dr["SZBARCODE"].retStr(),
-                                    SHADE = dr["SHADE"].retStr(),
-                                    QNTY = dr["QNTY"].retDbl(),
-                                    NOS = dr["NOS"].retDbl(),
-                                    RATE = dr["RATE"].retDbl(),
-                                    DISCRATE = dr["DISCRATE"].retDbl(),
-                                    DISCTYPE = dr["DISCTYPE"].retStr(),
-                                    DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["DISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                    TDDISCRATE = dr["TDDISCRATE"].retDbl(),
-                                    TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["TDDISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                    TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
-                                    SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["SCMDISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                    SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
-                                    SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
-                                    STKTYPE = dr["STKTYPE"].retStr(),
-                                    STKNAME = dr["STKNAME"].retStr(),
-                                    BARNO = dr["BARNO"].retStr(),
-                                    HSNCODE = dr["HSNCODE"].retStr(),
-                                    BALENO = dr["BALENO"].retStr(),
-                                    PDESIGN = dr["PDESIGN"].retStr(),
-                                    OURDESIGN = dr["OURDESIGN"].retStr(),
-                                    FLAGMTR = dr["FLAGMTR"].retDbl(),
-                                    LOCABIN = dr["LOCABIN"].retStr(),
-                                    BALEYR = dr["BALEYR"].retStr(),
-                                    BARGENTYPE = dr["BARGENTYPE"].retStr(),
-                                    GLCD = dr["GLCD"].retStr(),
-                                    WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
-                                    RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
-                                    ITREM = dr["ITREM"].retStr(),
-                                    ORDAUTONO = dr["ORDAUTONO"].retStr(),
-                                    ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
-                                    ORDDOCNO = dr["ORDDOCNO"].retStr(),
-                                    ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
-                                    WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
-                                    RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
-                                    AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
-                                    AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
-                                    LISTPRICE = dr["LISTPRICE"].retDbl(),
-                                    LISTDISCPER = dr["LISTDISCPER"].retDbl(),
-                                    CUTLENGTH = dr["CUTLENGTH"].retDbl(),
-                                    PAGENO = dr["PAGENO"].retInt(),
-                                    PAGESLNO = dr["PAGESLNO"].retInt(),
-                                    PCSTYPE = dr["PCSTYPE"].retStr(),
-                                    NEGSTOCK = dr["NEGSTOCK"].retStr(),
-                                    BLUOMCD = dr["BLUOMCD"].retStr(),
-                                    COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
-                                    FABITCD = dr["FABITCD"].retStr(),
-                                    FABITNM = dr["FABITNM"].retStr(),
-                                    WPPER = dr["WPPER"].retDbl(),
-                                    RPPER = dr["RPPER"].retDbl(),
-                                    RECPROGSLNO = dr["BLSLNO"].retShort(),
-                                }).ToList();
-                int j = 0;
-                string ITGRPCD = "", MTRLJOBCD = "", ITCD = "", DISCTYPE = "", TDDISCTYPE = "", SCMDISCTYPE = "", UOM = "",
-                    STKTYPE = "", GLCD = "", FABITCD = "",
-                    PDESIGN = "", HSNCODE = "", PRODGRPGSTPER = "";
-                double RATE = 0, DISCRATE = 0, SCMDISCRATE = 0, TDDISCRATE = 0, GSTPER = 0;
-                int TXNSLNO = 1, SLNO = 1;
-                while (j <= VE.TBATCHDTL.Count - 1)
+                if (tbl != null && tbl.Rows.Count > 0)
                 {
-                    ITGRPCD = VE.TBATCHDTL[j].ITGRPCD.retStr();
-                    MTRLJOBCD = VE.TBATCHDTL[j].MTRLJOBCD.retStr();
-                    ITCD = VE.TBATCHDTL[j].ITCD.retStr();
-                    DISCTYPE = VE.TBATCHDTL[j].DISCTYPE.retStr();
-                    TDDISCTYPE = VE.TBATCHDTL[j].TDDISCTYPE.retStr();
-                    SCMDISCTYPE = VE.TBATCHDTL[j].SCMDISCTYPE.retStr();
-                    UOM = VE.TBATCHDTL[j].UOM.retStr();
-                    STKTYPE = VE.TBATCHDTL[j].STKTYPE.retStr();
-                    RATE = VE.TBATCHDTL[j].RATE.retDbl();
-                    DISCRATE = VE.TBATCHDTL[j].DISCRATE.retDbl();
-                    SCMDISCRATE = VE.TBATCHDTL[j].SCMDISCRATE.retDbl();
-                    TDDISCRATE = VE.TBATCHDTL[j].TDDISCRATE.retDbl();
-                    GSTPER = VE.TBATCHDTL[j].GSTPER.retDbl();
-                    HSNCODE = VE.TBATCHDTL[j].HSNCODE.retStr();
-                    PRODGRPGSTPER = VE.TBATCHDTL[j].PRODGRPGSTPER.retStr();
-                    GLCD = VE.TBATCHDTL[j].GLCD.retStr();
-                    FABITCD = VE.TBATCHDTL[j].FABITCD.retStr();
-                    PDESIGN = VE.TBATCHDTL[j].PDESIGN.retStr();
-
-
-                    while (ITGRPCD == VE.TBATCHDTL[j].ITGRPCD.retStr() && MTRLJOBCD == VE.TBATCHDTL[j].MTRLJOBCD.retStr()
-                        && ITCD == VE.TBATCHDTL[j].ITCD.retStr() &&
-             DISCTYPE == VE.TBATCHDTL[j].DISCTYPE.retStr() && TDDISCTYPE == VE.TBATCHDTL[j].TDDISCTYPE.retStr() &&
-              SCMDISCTYPE == VE.TBATCHDTL[j].SCMDISCTYPE.retStr() && UOM == VE.TBATCHDTL[j].UOM.retStr() && STKTYPE == VE.TBATCHDTL[j].STKTYPE.retStr() && RATE == VE.TBATCHDTL[j].RATE.retDbl() &&
-             DISCRATE == VE.TBATCHDTL[j].DISCRATE.retDbl() && SCMDISCRATE == VE.TBATCHDTL[j].SCMDISCRATE.retDbl() && TDDISCRATE == VE.TBATCHDTL[j].TDDISCRATE.retDbl() && GSTPER == VE.TBATCHDTL[j].GSTPER.retDbl() &&
-             HSNCODE == VE.TBATCHDTL[j].HSNCODE.retStr() && PRODGRPGSTPER == VE.TBATCHDTL[j].PRODGRPGSTPER.retStr() &&
-             GLCD == VE.TBATCHDTL[j].GLCD.retStr() && FABITCD == VE.TBATCHDTL[j].FABITCD.retStr() && PDESIGN == VE.TBATCHDTL[j].PDESIGN.retStr())
+                    VE.TBATCHDTL = (from DataRow dr in tbl.Rows
+                                    select new TBATCHDTL()
+                                    {
+                                        SLNO = dr["SLNO"].retShort(),
+                                        TXNSLNO = dr["TXNSLNO"].retShort(),
+                                        ITGRPCD = dr["ITGRPCD"].retStr(),
+                                        ITGRPNM = dr["ITGRPNM"].retStr(),
+                                        MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
+                                        MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                        MTBARCODE = dr["MTBARCODE"].retStr(),
+                                        ITCD = dr["ITCD"].retStr(),
+                                        ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
+                                        UOM = dr["UOMCD"].retStr(),
+                                        STYLENO = dr["STYLENO"].retStr(),
+                                        PARTCD = dr["PARTCD"].retStr(),
+                                        PARTNM = dr["PARTNM"].retStr(),
+                                        PRTBARCODE = dr["PRTBARCODE"].retStr(),
+                                        COLRCD = dr["COLRCD"].retStr(),
+                                        COLRNM = dr["COLRNM"].retStr(),
+                                        CLRBARCODE = dr["CLRBARCODE"].retStr(),
+                                        SIZECD = dr["SIZECD"].retStr(),
+                                        SIZENM = dr["SIZENM"].retStr(),
+                                        SZBARCODE = dr["SZBARCODE"].retStr(),
+                                        SHADE = dr["SHADE"].retStr(),
+                                        QNTY = dr["QNTY"].retDbl(),
+                                        NOS = dr["NOS"].retDbl(),
+                                        RATE = dr["RATE"].retDbl(),
+                                        DISCRATE = dr["DISCRATE"].retDbl(),
+                                        DISCTYPE = dr["DISCTYPE"].retStr(),
+                                        DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["DISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                        TDDISCRATE = dr["TDDISCRATE"].retDbl(),
+                                        TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["TDDISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                        TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
+                                        SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["SCMDISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                        SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
+                                        SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
+                                        STKTYPE = dr["STKTYPE"].retStr(),
+                                        STKNAME = dr["STKNAME"].retStr(),
+                                        BARNO = dr["BARNO"].retStr(),
+                                        HSNCODE = dr["HSNCODE"].retStr(),
+                                        BALENO = dr["BALENO"].retStr(),
+                                        PDESIGN = dr["PDESIGN"].retStr(),
+                                        OURDESIGN = dr["OURDESIGN"].retStr(),
+                                        FLAGMTR = dr["FLAGMTR"].retDbl(),
+                                        LOCABIN = dr["LOCABIN"].retStr(),
+                                        BALEYR = dr["BALEYR"].retStr(),
+                                        BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                        GLCD = dr["GLCD"].retStr(),
+                                        WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
+                                        RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
+                                        ITREM = dr["ITREM"].retStr(),
+                                        ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                        ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
+                                        ORDDOCNO = dr["ORDDOCNO"].retStr(),
+                                        ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
+                                        WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
+                                        RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
+                                        AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
+                                        AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
+                                        LISTPRICE = dr["LISTPRICE"].retDbl(),
+                                        LISTDISCPER = dr["LISTDISCPER"].retDbl(),
+                                        CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                        PAGENO = dr["PAGENO"].retInt(),
+                                        PAGESLNO = dr["PAGESLNO"].retInt(),
+                                        PCSTYPE = dr["PCSTYPE"].retStr(),
+                                        NEGSTOCK = dr["NEGSTOCK"].retStr(),
+                                        BLUOMCD = dr["BLUOMCD"].retStr(),
+                                        COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                        FABITCD = dr["FABITCD"].retStr(),
+                                        FABITNM = dr["FABITNM"].retStr(),
+                                        WPPER = dr["WPPER"].retDbl(),
+                                        RPPER = dr["RPPER"].retDbl(),
+                                        RECPROGSLNO = dr["BLSLNO"].retShort(),
+                                    }).ToList();
+                    int j = 0;
+                    string ITGRPCD = "", MTRLJOBCD = "", ITCD = "", DISCTYPE = "", TDDISCTYPE = "", SCMDISCTYPE = "", UOM = "",
+                        STKTYPE = "", GLCD = "", FABITCD = "",
+                        PDESIGN = "", HSNCODE = "", PRODGRPGSTPER = "";
+                    double RATE = 0, DISCRATE = 0, SCMDISCRATE = 0, TDDISCRATE = 0, GSTPER = 0;
+                    int TXNSLNO = 1, SLNO = 1;
+                    while (j <= VE.TBATCHDTL.Count - 1)
                     {
-                        VE.TBATCHDTL[j].TXNSLNO = TXNSLNO.retShort();
-                        VE.TBATCHDTL[j].SLNO = SLNO.retShort();
-                        SLNO++;
-                        j++;
-                        if (j >= VE.TBATCHDTL.Count - 1) break;
-                    }
-                    TXNSLNO++;
-                }
-                //fill prodgrpgstper in t_batchdtl
-                DataTable allprodgrpgstper_data = new DataTable();
-                string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
-                ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
-                //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
-                ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
-                string PRCCD = VE.T_TXNOTH.PRCCD.retStr() == "" ? "WP" : VE.T_TXNOTH.PRCCD.retStr();
-                string TAXGRPCD = VE.T_TXNOTH.TAXGRPCD.retStr() == "" ? "C001" : VE.T_TXNOTH.TAXGRPCD.retStr();
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
-                {
-                    allprodgrpgstper_data = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+                        ITGRPCD = VE.TBATCHDTL[j].ITGRPCD.retStr();
+                        MTRLJOBCD = VE.TBATCHDTL[j].MTRLJOBCD.retStr();
+                        ITCD = VE.TBATCHDTL[j].ITCD.retStr();
+                        DISCTYPE = VE.TBATCHDTL[j].DISCTYPE.retStr();
+                        TDDISCTYPE = VE.TBATCHDTL[j].TDDISCTYPE.retStr();
+                        SCMDISCTYPE = VE.TBATCHDTL[j].SCMDISCTYPE.retStr();
+                        UOM = VE.TBATCHDTL[j].UOM.retStr();
+                        STKTYPE = VE.TBATCHDTL[j].STKTYPE.retStr();
+                        RATE = VE.TBATCHDTL[j].RATE.retDbl();
+                        DISCRATE = VE.TBATCHDTL[j].DISCRATE.retDbl();
+                        SCMDISCRATE = VE.TBATCHDTL[j].SCMDISCRATE.retDbl();
+                        TDDISCRATE = VE.TBATCHDTL[j].TDDISCRATE.retDbl();
+                        GSTPER = VE.TBATCHDTL[j].GSTPER.retDbl();
+                        HSNCODE = VE.TBATCHDTL[j].HSNCODE.retStr();
+                        PRODGRPGSTPER = VE.TBATCHDTL[j].PRODGRPGSTPER.retStr();
+                        GLCD = VE.TBATCHDTL[j].GLCD.retStr();
+                        FABITCD = VE.TBATCHDTL[j].FABITCD.retStr();
+                        PDESIGN = VE.TBATCHDTL[j].PDESIGN.retStr();
 
-                }
-                else
-                {
-                    allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
-                }
-                //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                var MSYSCNFG = salesfunc.M_SYSCNFG();
-                foreach (var v in VE.TBATCHDTL)
-                {
-                    PRODGRPGSTPER = "";
-                    string ALL_GSTPER = "";
-                    GSTPER = 0;
-                    if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
-                    {
-                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
-                        if (DATA.Count() > 0)
+
+                        while (ITGRPCD == VE.TBATCHDTL[j].ITGRPCD.retStr() && MTRLJOBCD == VE.TBATCHDTL[j].MTRLJOBCD.retStr()
+                            && ITCD == VE.TBATCHDTL[j].ITCD.retStr() &&
+                 DISCTYPE == VE.TBATCHDTL[j].DISCTYPE.retStr() && TDDISCTYPE == VE.TBATCHDTL[j].TDDISCTYPE.retStr() &&
+                  SCMDISCTYPE == VE.TBATCHDTL[j].SCMDISCTYPE.retStr() && UOM == VE.TBATCHDTL[j].UOM.retStr() && STKTYPE == VE.TBATCHDTL[j].STKTYPE.retStr() && RATE == VE.TBATCHDTL[j].RATE.retDbl() &&
+                 DISCRATE == VE.TBATCHDTL[j].DISCRATE.retDbl() && SCMDISCRATE == VE.TBATCHDTL[j].SCMDISCRATE.retDbl() && TDDISCRATE == VE.TBATCHDTL[j].TDDISCRATE.retDbl() && GSTPER == VE.TBATCHDTL[j].GSTPER.retDbl() &&
+                 HSNCODE == VE.TBATCHDTL[j].HSNCODE.retStr() && PRODGRPGSTPER == VE.TBATCHDTL[j].PRODGRPGSTPER.retStr() &&
+                 GLCD == VE.TBATCHDTL[j].GLCD.retStr() && FABITCD == VE.TBATCHDTL[j].FABITCD.retStr() && PDESIGN == VE.TBATCHDTL[j].PDESIGN.retStr())
                         {
-                            DataTable tax_data = DATA.CopyToDataTable();
-                            if (tax_data != null && tax_data.Rows.Count > 0)
-                            {
-                                v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
-                                PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
-                                if (PRODGRPGSTPER != "")
-                                {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
-                                    if (ALL_GSTPER.retStr() != "")
-                                    {
-                                        var gst = ALL_GSTPER.Split(',').ToList();
-                                        GSTPER = (from a in gst select a.retDbl()).Sum().retDbl();
-                                    }
-                                    v.PRODGRPGSTPER = PRODGRPGSTPER;
-                                    v.ALL_GSTPER = ALL_GSTPER;
-                                    v.GSTPER = GSTPER;
-                                }
-                                if (tax_data.Rows[0]["barimage"].retStr() != "")
-                                {
-                                    v.BarImages = tax_data.Rows[0]["barimage"].retStr();
-                                    var brimgs = v.BarImages.retStr().Split((char)179);
-                                    v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
-                                    foreach (var barimg in brimgs)
-                                    {
-                                        string barfilename = barimg.Split('~')[0];
-                                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
-                                        FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("~/UploadDocuments/" + barfilename);
-                                        Cn.CopyImage(FROMpath, TOPATH);
-                                    }
-                                }
-                                if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP")
-                                {
-                                    v.RATE = tax_data.Rows[0]["RATE"].retDbl();
-                                }
-                                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP") && MSYSCNFG.MNTNLISTPRICE == "Y")
-                                {
-                                    v.LISTPRICE = tax_data.Rows[0]["RATE"].retDbl();
-                                }
-                            }
+                            VE.TBATCHDTL[j].TXNSLNO = TXNSLNO.retShort();
+                            VE.TBATCHDTL[j].SLNO = SLNO.retShort();
+                            SLNO++;
+                            j++;
+                            if (j >= VE.TBATCHDTL.Count - 1) break;
                         }
+                        TXNSLNO++;
                     }
-
+                    //fill prodgrpgstper in t_batchdtl
+                    DataTable allprodgrpgstper_data = new DataTable();
+                    string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
+                    ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
+                    //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
+                    ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
+                    string PRCCD = VE.T_TXNOTH.PRCCD.retStr() == "" ? "WP" : VE.T_TXNOTH.PRCCD.retStr();
+                    string TAXGRPCD = VE.T_TXNOTH.TAXGRPCD.retStr() == "" ? "C001" : VE.T_TXNOTH.TAXGRPCD.retStr();
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
+                        allprodgrpgstper_data = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
-                        if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "" || v.WPPER.retDbl() == 0 || v.RPPER.retDbl() == 0)
+                    }
+                    else
+                    {
+                        allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                    }
+                    //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                    var MSYSCNFG = salesfunc.M_SYSCNFG();
+                    foreach (var v in VE.TBATCHDTL)
+                    {
+                        PRODGRPGSTPER = "";
+                        string ALL_GSTPER = "";
+                        GSTPER = 0;
+                        if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                         {
-                            DataTable syscnfgdata = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
+                            var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                            if (DATA.Count() > 0)
+                            {
+                                DataTable tax_data = DATA.CopyToDataTable();
+                                if (tax_data != null && tax_data.Rows.Count > 0)
+                                {
+                                    v.BALSTOCK = tax_data.Rows[0]["BALQNTY"].retDbl();
+                                    PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                                    if (PRODGRPGSTPER != "")
+                                    {
+                                        ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
+                                        if (ALL_GSTPER.retStr() != "")
+                                        {
+                                            var gst = ALL_GSTPER.Split(',').ToList();
+                                            GSTPER = (from a in gst select a.retDbl()).Sum().retDbl();
+                                        }
+                                        v.PRODGRPGSTPER = PRODGRPGSTPER;
+                                        v.ALL_GSTPER = ALL_GSTPER;
+                                        v.GSTPER = GSTPER;
+                                    }
+                                    if (tax_data.Rows[0]["barimage"].retStr() != "")
+                                    {
+                                        v.BarImages = tax_data.Rows[0]["barimage"].retStr();
+                                        var brimgs = v.BarImages.retStr().Split((char)179);
+                                        v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                                        foreach (var barimg in brimgs)
+                                        {
+                                            string barfilename = barimg.Split('~')[0];
+                                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                            FROMpath = Path.Combine(FROMpath, "");
+                                            string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("~/UploadDocuments/" + barfilename);
+                                            Cn.CopyImage(FROMpath, TOPATH);
+                                        }
+                                    }
+                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP")
+                                    {
+                                        v.RATE = tax_data.Rows[0]["RATE"].retDbl();
+                                    }
+                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP") && MSYSCNFG.MNTNLISTPRICE == "Y")
+                                    {
+                                        v.LISTPRICE = tax_data.Rows[0]["RATE"].retDbl();
+                                    }
+                                }
+                            }
+                        }
 
-                            if (v.WPPRICEGEN.retStr() == "")
-                            {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
-                                {
-                                    v.WPPRICEGEN = syscnfgdata.Rows[0]["wppricegen"].retStr();
-                                }
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                        {
 
-                            }
-                            if (v.RPPRICEGEN.retStr() == "")
+                            if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "" || v.WPPER.retDbl() == 0 || v.RPPER.retDbl() == 0)
                             {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                DataTable syscnfgdata = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
+
+                                if (v.WPPRICEGEN.retStr() == "")
                                 {
-                                    v.RPPRICEGEN = syscnfgdata.Rows[0]["rppricegen"].retStr();
+                                    if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                    {
+                                        v.WPPRICEGEN = syscnfgdata.Rows[0]["wppricegen"].retStr();
+                                    }
+
                                 }
-                            }
-                            if (v.WPPER.retDbl() == 0)
-                            {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                if (v.RPPRICEGEN.retStr() == "")
                                 {
-                                    v.WPPER = syscnfgdata.Rows[0]["WPPER"].retDbl();
+                                    if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                    {
+                                        v.RPPRICEGEN = syscnfgdata.Rows[0]["rppricegen"].retStr();
+                                    }
                                 }
-                            }
-                            if (v.RPPER.retDbl() == 0)
-                            {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                if (v.WPPER.retDbl() == 0)
                                 {
-                                    v.RPPER = syscnfgdata.Rows[0]["RPPER"].retDbl();
+                                    if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                    {
+                                        v.WPPER = syscnfgdata.Rows[0]["WPPER"].retDbl();
+                                    }
+                                }
+                                if (v.RPPER.retDbl() == 0)
+                                {
+                                    if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                    {
+                                        v.RPPER = syscnfgdata.Rows[0]["RPPER"].retDbl();
+                                    }
                                 }
                             }
                         }
                     }
+                    VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
+                    VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
                 }
-                VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
-                VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
-
                 VE.Database_Combo4 = (from n in DB.T_BATCHDTL
                                       select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 

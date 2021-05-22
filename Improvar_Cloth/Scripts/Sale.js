@@ -3351,7 +3351,7 @@ function FillOrderToBarcode() {
             $("#MTRLJOBCD").val($("#Ord_MTRLJOBCD_" + i).val());
             $("#MTRLJOBNM").val($("#Ord_MTRLJOBNM_" + i).val());
             $("#MTBARCODE").val($("#Ord_MTBARCODE_" + i).val());
-
+            $("#NEGSTOCK").val($("#Ord_NEGSTOCK_" + i).val());
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
             var qnty = retFloat(BALQTY - CURRENTADJQTY).toFixed(2);
