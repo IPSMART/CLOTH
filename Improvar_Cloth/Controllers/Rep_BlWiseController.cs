@@ -45,8 +45,8 @@ namespace Improvar.Controllers
                 string FScm1 = CommVar.FinSchema(UNQSNO), SScm1 = CommVar.SaleSchema(UNQSNO), Userid = CommVar.UserID(), com = CommVar.Compcd(UNQSNO), loc = CommVar.Loccd(UNQSNO);
                 string query = "";
                 if (VE.MENU_PARA.Split(',').Count() > 1) Para2 = VE.MENU_PARA.Split(',')[1].retStr();
-                
-                ViewBag.formname = "Bill Wise Outstanding (Bills " + (VE.MENU_PARA.Split(',')[0].retStr() == "DR" ? "Receivable" : "Payable") + ")" + (Para2 != ""?" [Retail Party]":"");
+
+                ViewBag.formname = "Bill Wise Outstanding (Bills " + (VE.MENU_PARA.Split(',')[0].retStr() == "DR" ? "Receivable" : "Payable") + ")" + (Para2 != "" ? " [Retail Party]" : "");
 
                 query += " select distinct c.class1cd,d.class1nm from " + SScm1 + ".m_usr_acs_doccd a, " + SScm1 + ".m_groupdoccd b,";
                 query += " " + SScm1 + ".m_group c, " + FScm1 + ".m_class1 d";
@@ -64,15 +64,15 @@ namespace Improvar.Controllers
 
                 sql += "select distinct a.glcd, a.slcd ";
                 sql += "from " + FScm1 + ".t_vch_bl a, " + FScm1 + ".m_genleg b ";
-                sql += "where a.glcd = b.glcd(+) and b.linkcd = '" +  linkcd + "' and a.rtdebcd is not null ";
+                sql += "where a.glcd = b.glcd(+) and b.linkcd = '" + linkcd + "' and a.rtdebcd is not null ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
-                if (tbl.Rows.Count > 0 ) rtdebslcd = tbl.Rows[0]["slcd"].retStr();
+                if (tbl.Rows.Count > 0) rtdebslcd = tbl.Rows[0]["slcd"].retStr();
                 VE.TEXTBOX8 = rtdebslcd;
 
                 VE.DropDown_list_GLCD = DropDownHelp.DropDown_list_GLCD(linkcd, "Y");
                 VE.Glnm = MasterHelp.ComboFill("glcd", VE.DropDown_list_GLCD, 0, 1);
 
-                if (Para2 == "" )
+                if (Para2 == "")
                 {
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
@@ -82,7 +82,7 @@ namespace Improvar.Controllers
                     VE.DropDown_list_RTCD = DropDownHelp.GetRtDebCdforSelection();
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_RTCD, 0, 1);
                 }
-                
+
                 VE.DropDown_list_AGSLCD = DropDownHelp.GetAgSlcdforSelection();
                 VE.DropDown_list_SLMSLCD = DropDownHelp.GetSlmSlcdforSelection();
 
@@ -115,6 +115,11 @@ namespace Improvar.Controllers
                 VE.DefaultView = true;
                 VE.ExitMode = 1;
                 VE.DefaultDay = 0;
+                if (CommVar.Compcd(UNQSNO) == "SNFP")
+                {
+                    VE.Checkbox14 = true; //Skip clear bills
+                }
+
                 return View(VE);
             }
         }
@@ -201,7 +206,15 @@ namespace Improvar.Controllers
 
                 string OsBill = "Y";
                 if (optRepOpt == "NIL") OsBill = "N"; else if (optRepOpt == "ALL") OsBill = "A";
-                tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, VE.Checkbox4,"","",selrtdebcd);
+                if (VE.Checkbox14 == true) OsBill = "Y";
+                if (VE.Checkbox15 == true)
+                {
+                    tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, VE.Checkbox15, "", "", selrtdebcd);
+                }
+                else
+                {
+                    tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, VE.Checkbox4, "", "", selrtdebcd);
+                }
                 string osmsg = masterhelpfa.CheckOSTbl(tbl);
                 if (osmsg != "OK") return Content(osmsg);
 
@@ -228,7 +241,8 @@ namespace Improvar.Controllers
                     sqlc = ""; sql = "";
                     string curdocautono = "null", txnupto = TD;
                     sqlc = "";
-                    sqlc += "select a.autono||a.r_slno vautoslno, a.i_autono||a.i_slno autoslno, b.docdt, nvl(e.blno,b.doccd||b.doconlyno) doccdno, b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem, ";
+                    //sqlc += "select a.autono||a.r_slno vautoslno, a.i_autono||a.i_slno autoslno, b.docdt, nvl(e.blno,b.doccd||b.doconlyno) doccdno, b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem, ";
+                    sqlc += "select a.autono||a.r_slno vautoslno, a.i_autono||a.i_slno autoslno, b.docdt, nvl(e.blno,b.docno) doccdno, b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem, ";
                     sqlc += "sum(decode(a.r_autono||a.r_slno," + curdocautono + ",nvl(a.adj_amt,0),0) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
                     sqlc += "sum(decode(a.r_autono||a.r_slno," + curdocautono + ",0,nvl(a.adj_amt,0)) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
                     sqlc += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".m_genleg d, " + scmf + ".t_vch_bl e ";
@@ -237,7 +251,7 @@ namespace Improvar.Controllers
                     if (selglcd != "") sqlc += "c.glcd in (" + selglcd + ") and ";
                     if (selslcd != "") sqlc += "c.slcd in (" + selslcd + ") and ";
                     sqlc += "a.autono=b.autono and nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' ";
-                    sqlc += "group by a.autono||a.r_slno, a.i_autono||a.i_slno, b.docdt, nvl(e.blno,b.doccd||b.doconlyno), b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem ";
+                    sqlc += "group by a.autono||a.r_slno, a.i_autono||a.i_slno, b.docdt, nvl(e.blno,b.docno), b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem ";
 
                     sql = "";
 
@@ -386,6 +400,7 @@ namespace Improvar.Controllers
                 HC.RepStart(IR, 3);
                 if (dtlsumm == "D")
                 {
+                    if (VE.Checkbox15 == true) HC.GetPrintHeader(IR, "agshortnm", "string", "c,10", "Agent Name");
                     if (VE.MENU_PARA.Split(',')[0].retStr() == "CR")
                     {
                         HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Doc Date");
@@ -450,7 +465,7 @@ namespace Improvar.Controllers
 
                 string glcd = tbl.Rows[0]["glcd"].ToString(); string glnm = tbl.Rows[0]["glnm"].ToString();
 
-                string glcd1 = "", slcd1 = "", slnm1 = "", slcity1 = "", slphno1="", agslcd1 = "", agslnm1 = "", agslcity1 = "";
+                string glcd1 = "", slcd1 = "", slnm1 = "", slcity1 = "", slphno1 = "", agslcd1 = "", agslnm1 = "", agslcity1 = "";
                 Int32 slno1 = 0, aslno1 = 0;
                 Int32 maxR = 0, i = 0, rNo = 0;
 
@@ -477,15 +492,15 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        agslcd1 = (Para2 ==""?tbl.Rows[i]["slcd"].ToString(): tbl.Rows[i]["rtdebcd"].ToString());
+                        agslcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
                     }
                     while (showAgent == true ? tbl.Rows[i]["agslcd"].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1)
                     {
                         glcd1 = tbl.Rows[i]["glcd"].ToString();
-                        slcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString(): tbl.Rows[i]["rtdebcd"].ToString());
-                        slnm1 = (Para2 == ""?tbl.Rows[i]["slnm"].ToString(): tbl.Rows[i]["rtdebnm"].ToString());
-                        slphno1 = (Para2 == "" ? tbl.Rows[i]["phno"].retStr(): tbl.Rows[i]["rtdebmobile"].retStr());
-                        slcity1 = (Para2 == "" ? tbl.Rows[i]["slcity"].ToString(): tbl.Rows[i]["retdebarea"].ToString());
+                        slcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
+                        slnm1 = (Para2 == "" ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["rtdebnm"].ToString());
+                        slphno1 = (Para2 == "" ? tbl.Rows[i]["phno"].retStr() : tbl.Rows[i]["rtdebmobile"].retStr());
+                        slcity1 = (Para2 == "" ? tbl.Rows[i]["slcity"].ToString() : tbl.Rows[i]["retdebarea"].ToString());
 
                         if (dtlsumm == "D")
                         {
@@ -513,7 +528,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        while ((showAgent == true ? tbl.Rows[i]["agslcd"].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1) && tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == ""?tbl.Rows[i]["slcd"].ToString(): tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                        while ((showAgent == true ? tbl.Rows[i]["agslcd"].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1) && tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
                         {
                             if (dtlsumm == "D") IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
 
@@ -581,6 +596,7 @@ namespace Improvar.Controllers
                                     //IR.Rows[rNo]["docno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i]["tchdocno"].ToString();
                                 }
+                                if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr();
                                 if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
                                 if (tbl.Rows[i]["blno"].ToString() == "") IR.Rows[rNo]["blno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                 else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
@@ -765,11 +781,12 @@ namespace Improvar.Controllers
                 if (due4tDys != 0) IR.Rows[rNo]["due4amt"] = tdue4Amt;
                 if (due5tDys != 0) IR.Rows[rNo]["due5amt"] = tdue5Amt;
                 if (due6tDys != 0) IR.Rows[rNo]["due6amt"] = tdue6Amt;
-                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
 
                 string pghdr1 = "";
                 string repname = "Bill_Outstanding" + System.DateTime.Now;
-                pghdr1 = "Bill Wise Outstanding of " + glnm + " (" + glcd + ") "  + (Para2 == ""?"":"[Retail Party]") +  "as on " + TD;
+                pghdr1 = "Bill Wise Outstanding of " + glnm + " (" + glcd + ") " + (Para2 == "" ? "" : "[Retail Party]") + "as on " + TD;
                 if (submitbutton == "Download Excel")
                 {
                     IR.Columns.Remove("dammy");
@@ -803,6 +820,7 @@ namespace Improvar.Controllers
                 string repname = "Bill_Outstanding" + System.DateTime.Now;
                 string ShowDuedaysfrom = FC["ddshowas"]; // D=due date B=Doc Dt
                 bool itamtprint = VE.Checkbox6;
+                bool PymtDaysprint = VE.Checkbox13; //added from sn fabric not want
                 string due_caldt = FC["ddco"];//Due days calculate on   
 
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -816,6 +834,7 @@ namespace Improvar.Controllers
                 HC.RepStart(IR, 3);
                 if (dtlsumm == "D")
                 {
+                    if (VE.Checkbox15 == true) HC.GetPrintHeader(IR, "agshortnm", "string", "c,10", "Agent Name");
                     if (VE.MENU_PARA.Split(',')[0].retStr() == "CR")
                     {
                         HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Doc;Date");
@@ -826,12 +845,12 @@ namespace Improvar.Controllers
                     if (bltype == true) HC.GetPrintHeader(IR, "bltype", "string", "c,5", "Bill Type");
                     if (itamtprint == true) HC.GetPrintHeader(IR, "itamt", "double", "n,16,2", "Item Value");
                     HC.GetPrintHeader(IR, "blamt", "double", "n,16,2", "Op/Bill Amt");
-                    HC.GetPrintHeader(IR, "cdays", "double", "n,4,0", ";Days");
+                    if (PymtDaysprint == true) HC.GetPrintHeader(IR, "cdays", "double", "n,4,0", ";Days");
                     HC.GetPrintHeader(IR, "adjno", "string", "c,15", "Adj;RefNo.");
                     HC.GetPrintHeader(IR, "adjdt", "string", "c,10", "Adj;Date");
                     HC.GetPrintHeader(IR, "adjamt", "double", "n,16,2", "Adj Amt");
                     HC.GetPrintHeader(IR, "dueamt", "double", "n,16,2", "Due Amt");
-                    HC.GetPrintHeader(IR, "pdays", "double", "n,4,0", "Payment;Days");
+                    if (PymtDaysprint == true) HC.GetPrintHeader(IR, "pdays", "double", "n,4,0", "Payment;Days");
                     HC.GetPrintHeader(IR, "prem", "string", "c,15", "Payment;Remarks");
                     if (dtlsumm == "D" && VE.Checkbox2 == true)
                     {
@@ -873,15 +892,16 @@ namespace Improvar.Controllers
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
 
                         string sldsp = "";
-                        sldsp = "<span style='font-weight:100;font-size:9px;'>" + " " + slcd1 + "  " + " </span>" + slnm1;
+                        sldsp = slnm1;
                         sldsp += "<span style='font-weight:100;font-size:11px;'>" + " [" + slcity1 + "]  " + " </span>";
+                        sldsp += "<span style='font-weight:100;font-size:9px;'>" + " " + slcd1 + "  " + " </span>";
                         if (slphno1 != "") sldsp += IR.Rows[rNo]["Dammy"] + " Ph. " + " </span>" + slphno1;
                         IR.Rows[rNo]["Dammy"] = sldsp;
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
                     double tdays = 0, tdueamt = 0, tbills = 0;
                     slno1++;
-                    while (tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == ""?tbl.Rows[i]["slcd"].ToString(): tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                    while (tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
                     {
                         TimeSpan TSdys, TCdys;
                         //calculate credit days
@@ -921,15 +941,16 @@ namespace Improvar.Controllers
                                          vautoslno = dr["vautoslno"],
                                          autoslno = dr["autoslno"],
                                          adjdt = dr["docdt"],
+                                         adjdocno = dr["docno"],
                                          adjno = dr["doccdno"],
                                          adjamt = dr["adj_amt"],
                                          vchtype = dr["vchtype"],
-                                         pymtrem = dr["pymtrem"]
+                                         pymtrem = dr["pymtrem"],
                                      }).Where(a => a.autoslno.ToString() == iautoslno).ToList();
                         bool recshow = true;
                         if (rsTxn != null)
                         {
-                            if (rsTxn.Count == 1 && rsTxn[0].vautoslno.ToString() == iautoslno && Math.Abs(rsTxn[0].adjamt.ToString().retDbl()) == Math.Abs(tbl.Rows[i]["amt"].ToString().retDbl())) recshow = (VE.Checkbox11 == true? true : false);
+                            if (rsTxn.Count == 1 && rsTxn[0].vautoslno.ToString() == iautoslno && Math.Abs(rsTxn[0].adjamt.ToString().retDbl()) == Math.Abs(tbl.Rows[i]["amt"].ToString().retDbl())) recshow = (VE.Checkbox11 == true ? true : false);
                         }
                         if (recshow == true)
                         {
@@ -943,12 +964,13 @@ namespace Improvar.Controllers
                                     //IR.Rows[rNo]["docno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i]["tchdocno"].ToString();
                                 }
+                                if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr();
                                 if (tbl.Rows[i]["blno"].ToString() == "") IR.Rows[rNo]["blno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                 else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
                                 if (tbl.Rows[i]["bldt"].ToString() == "") IR.Rows[rNo]["bldt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
                                 else IR.Rows[rNo]["bldt"] = tbl.Rows[i]["bldt"].ToString();
                                 if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
-                                IR.Rows[rNo]["cdays"] = days; // cdays;
+                                if (PymtDaysprint == true) IR.Rows[rNo]["cdays"] = days; //cdays
                                 IR.Rows[rNo]["blamt"] = tbl.Rows[i]["amt"].ToString().retDbl();
                                 if (itamtprint == true) IR.Rows[rNo]["itamt"] = tbl.Rows[i]["itamt"].ToString().retDbl();
                                 if (VE.Checkbox2 == true && dtlsumm == "D") IR.Rows[rNo]["ordno"] = tbl.Rows[i]["ordno"];
@@ -983,9 +1005,9 @@ namespace Improvar.Controllers
                                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                         }
                                         IR.Rows[rNo]["adjdt"] = txdr.adjdt.ToString().retDateStr();
-                                        IR.Rows[rNo]["adjno"] = txdr.adjno.ToString();
+                                        IR.Rows[rNo]["adjno"] = (txdr.autoslno == txdr.vautoslno || txdr.adjdocno.retStr() == txdr.adjno.retStr() ? txdr.adjdocno : txdr.adjno.retStr() + "/" + txdr.adjdocno.retStr());
                                         IR.Rows[rNo]["adjamt"] = txdr.adjamt.ToString();
-                                        IR.Rows[rNo]["pdays"] = days;
+                                        if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = days;
                                         string prem = "";
                                         switch (txdr.vchtype.ToString())
                                         {
@@ -1020,7 +1042,8 @@ namespace Improvar.Controllers
                     if (dtlsumm == "D")
                     {
                         IR.Rows[rNo]["blno"] = "Totals";
-                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                        //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
                     }
                     else
                     {
@@ -1029,9 +1052,9 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].ToString();
                     }
                     IR.Rows[rNo]["dueamt"] = tdueamt;
-                    IR.Rows[rNo]["pdays"] = avdays;
+                    if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = avdays;
                 }
-                pghdr1 = "Bill Wise Outstanding (Pay Days) of " + glnm + " (" + glcd + ") " + (Para2 == ""?"":"[Retail Party] ") + "as on " + TD;
+                pghdr1 = "Bill Wise Outstanding (Pay Days) of " + glnm + " (" + glcd + ") " + (Para2 == "" ? "" : "[Retail Party] ") + "as on " + TD;
                 if (submitbutton == "Download Excel")
                 {
                     IR.Columns.Remove("dammy");

@@ -4,6 +4,13 @@
     ViewBag.Title = "Packing Slip Entry";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Partycaption = "Party";
+
+    string COMMONUNIQBAR = "", MNTNCOLOR="";
+    if (Model != null && Model.M_SYSCNFG != null)
+    {
+        COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
+        MNTNCOLOR = Model.M_SYSCNFG.MNTNCOLOR;
+    }
 }
 @{
     switch (Model.MENU_PARA)
@@ -73,7 +80,7 @@
         if ("@Model.SHOWSTKTYPE" != "Y") {
             $(".divstktype").hide();
         }
-        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@Model.M_SYSCNFG.COMMONUNIQBAR" == "E" && "@Model.DefaultAction" != "V") {
+        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@COMMONUNIQBAR" == "E" && "@Model.DefaultAction" != "V") {
             $(".DivMergeBarItem").show();
         }
         else {
@@ -112,7 +119,7 @@
             if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").show();
                     $(".colrcddiv").hide();
                 }
@@ -120,7 +127,7 @@
             else {
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").hide();
                     $(".colrcddiv").show();
                 }
@@ -149,7 +156,7 @@
             if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").show();
                     $(".colrcddiv").hide();
                 }
@@ -157,7 +164,7 @@
             else {
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").hide();
                     $(".colrcddiv").show();
                 }
