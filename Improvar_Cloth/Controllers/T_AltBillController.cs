@@ -1298,7 +1298,8 @@ namespace Improvar.Controllers
                     {
                         #region TVCHGST Table update    
 
-                        int gs = 0;
+                        //int gs = 0;
+                        int gs = 1;
                         string dncntag = ""; string exemptype = "";
                         double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl();
 
@@ -1328,24 +1329,21 @@ namespace Improvar.Controllers
                         TVCHGST.CGSTAMT = TTXNDTL.CGSTAMT.retDbl();
                         TVCHGST.SGSTPER = TTXNDTL.SGSTPER.retDbl();
                         TVCHGST.SGSTAMT = TTXNDTL.SGSTAMT.retDbl();
-                        //TVCHGST.HSNCODE = VE.TsalePos_TBATCHDTL[i].HSNCODE;
-                        //TVCHGST.ITNM = (VE.TsalePos_TBATCHDTL[i].ITNM.retStr() + " ").TrimStart(' ') + VE.TsalePos_TBATCHDTL[i].ITSTYLE;
-                        //TVCHGST.AMT = VE.TsalePos_TBATCHDTL[i].TXBLVAL.retDbl();
-                        //TVCHGST.CGSTPER = VE.TsalePos_TBATCHDTL[i].CGSTPER;
-                        //TVCHGST.SGSTPER = VE.TsalePos_TBATCHDTL[i].SGSTPER;
-                        //TVCHGST.IGSTPER = VE.TsalePos_TBATCHDTL[i].IGSTPER;
-                        //TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL[i].CGSTAMT;
-                        //TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL[i].SGSTAMT;
-                        //TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL[i].IGSTAMT;
-                        //TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL[i].CESSPER;
-                        //TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL[i].CESSAMT;
-                        //TVCHGST.DRCR = proddrcr;//cr;
+                        TVCHGST.ITNM = TTXNDTL.ITREM;
+                        TVCHGST.AMT = TTXNDTL.TXBLVAL.retDbl();
+                        TVCHGST.DRCR = proddrcr;//cr;
+                        TVCHGST.SALPUR = salpur;
+                        TVCHGST.INVTYPECD = "01"; //VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
+                        TVCHGST.ROAMT = groamt;
+                        TVCHGST.BLAMT = gblamt;
+                        TVCHGST.EXPGLCD = VE.JOBEXPGLCD;
+                        TVCHGST.INPTCLAIM = "Y";
+                        TVCHGST.BASAMT = TTXNDTL.TXBLVAL.retDbl();
+
                         //TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl());
                         //TVCHGST.UOM = VE.TsalePos_TBATCHDTL[i].UOM;
                         //TVCHGST.AGSTDOCNO = VE.TsalePos_TBATCHDTL[i].AGDOCNO;
                         //TVCHGST.AGSTDOCDT = VE.TsalePos_TBATCHDTL[i].AGDOCDT.retStr() == "" ? (DateTime?)null : Convert.ToDateTime(VE.TsalePos_TBATCHDTL[i].AGDOCDT);
-                        //TVCHGST.SALPUR = salpur;
-                        //TVCHGST.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
                         //TVCHGST.DNCNCD = TTXNOTH.DNCNCD;
                         //TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
                         //TVCHGST.GSTSLNM = VE.GSTSLNM;
@@ -1355,21 +1353,15 @@ namespace Improvar.Controllers
                         //TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                         //TVCHGST.PORTCD = VE.T_VCH_GST.PORTCD;
                         //TVCHGST.OTHRAMT = 0;
-                        //TVCHGST.ROAMT = groamt;
-                        //TVCHGST.BLAMT = gblamt;
                         //TVCHGST.DNCNSALPUR = dncntag;
                         //TVCHGST.CONSLCD = TTXN.CONSLCD;
                         //TVCHGST.APPLTAXRATE = 0;
                         //TVCHGST.EXEMPTEDTYPE = exemptype;
-                        //TVCHGST.EXPGLCD = VE.TsalePos_TBATCHDTL[i].GLCD;
-                        //TVCHGST.INPTCLAIM = "Y";
                         //TVCHGST.LUTNO = VE.T_VCH_GST.LUTNO;
                         //TVCHGST.LUTDT = VE.T_VCH_GST.LUTDT;
                         //TVCHGST.TCSPER = TTXN.TCSPER;
-                        //TVCHGST.BASAMT = VE.TsalePos_TBATCHDTL[i].GROSSAMT;
                         //TVCHGST.DISCAMT = VE.TsalePos_TBATCHDTL[i].DISCAMT;
                         //TVCHGST.RATE = VE.TsalePos_TBATCHDTL[i].RATE;
-
                         //TVCHGST.GSTSLADD1 = VE.GSTSLADD1;
                         //TVCHGST.GSTSLDIST = VE.GSTSLDIST;
                         //TVCHGST.GSTSLPIN = VE.GSTSLPIN;
@@ -1501,7 +1493,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
