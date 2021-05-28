@@ -113,15 +113,45 @@
     }
 </script>
 <script>
-    function SaveSetting() {
+    function GetColumn() {
         $.ajax({
             type: 'post',
-            url:"@Url.Action("SaveSetting",PageControllerName)",
-            data: $('form').serialize(),
+            url: "@Url.Action("ShowAllColumn", PageControllerName)",
+            data: $('form').serialize() + "&TAG=ColumnName",
             beforesend: $("#WaitingMode").show(),
             success: function (result) {
                 $("#WaitingMode").hide();
-                msgSuccess1(result);
+                $('#partialdiv').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+        });
+    }
+    function SaveSetting(BtnId) {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("SaveSetting",PageControllerName)",
+            data: $('form').serialize() + "&BtnId=" + BtnId,
+            beforesend: $("#WaitingMode").show(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "") {
+                    if (BtnId == "S") {
+                        msgSuccess1("Setting Saved Sucessfully");
+                    }
+                    else if (BtnId == "U") {
+                        msgSuccess1("Setting Edited Sucessfully");
+                    }
+                    else {
+                        msgSuccess3("Setting Deleted Successfully");
+                    }
+                }
+                else {
+                    msgInfo(result);
+                }
+
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -283,7 +313,7 @@
                             @Html.CheckBoxFor(model => model.Checkbox1, true)
                         </div>
                     </div> }
-                   
+
                     <div class="col-md-7">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Item Remarks")
@@ -317,11 +347,11 @@
                                 @Html.CheckBoxFor(model => model.Checkbox7, true)
                             </div>
                         </div>*@
-                  
-                </div>
-              
 
-                    @*<div class="col-md-9">
+                </div>
+
+
+                @*<div class="col-md-9">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Acount head Separation")
 
@@ -330,31 +360,31 @@
                     </div>*@
 
 
-                    @*<table style="border:1px solid">
+                @*<table style="border:1px solid">
+                    <tr>
+                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox1, true)</td>
+                        <td style="border:1px groove;">Item details</td>*@
+                @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, true)</td>
+                    <td style="border:1px groove;">Price List Name Print</td>*@
+                @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox7, true)</td>
+                    <td style="border:1px groove;">Order Details Print</td>*@
+                @*</tr>
+                    <tr>*@
+                @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox2, true)</td>
+                    <td style="border:1px groove;">Batch Details</td>*@
+                @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5, true)</td>
+                    <td style="border:1px groove;">SAP BillNo Print</td>*@
+                @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox8, true)</td>
+                            <td style="border:1px groove;">Acount head Separation </td>
+                        </tr>
                         <tr>
-                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox1, true)</td>
-                            <td style="border:1px groove;">Item details</td>*@
-                    @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, true)</td>
-                        <td style="border:1px groove;">Price List Name Print</td>*@
-                    @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox7, true)</td>
-                        <td style="border:1px groove;">Order Details Print</td>*@
-                    @*</tr>
-                        <tr>*@
-                    @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox2, true)</td>
-                        <td style="border:1px groove;">Batch Details</td>*@
-                    @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5, true)</td>
-                        <td style="border:1px groove;">SAP BillNo Print</td>*@
-                    @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox8, true)</td>
-                                <td style="border:1px groove;">Acount head Separation </td>
-                            </tr>
-                            <tr>
-                                <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3, true)</td>
-                                <td style="border:1px groove;">Transporter/ Consignee Details</td>
-                                <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6, true)</td>
-                                <td style="border:1px groove;">Item Remarks</td>
-                            </tr>
-                        </table>*@
-               
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3, true)</td>
+                            <td style="border:1px groove;">Transporter/ Consignee Details</td>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6, true)</td>
+                            <td style="border:1px groove;">Item Remarks</td>
+                        </tr>
+                    </table>*@
+
 
 
                 @*<div class="row" style="margin-top:10PX">
@@ -390,7 +420,7 @@
                         </div>
                         <div class="col-lg-10">
                             <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
-                           <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date[Mother Invoice]; 
+                            <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date[Mother Invoice];
                             <input type="radio" name="RepSortOn" value="partywise" />Party-wise
                         </div>
                     </div>}
@@ -411,11 +441,11 @@
                     <div class="col-lg-2">
                     </div>
                     <div class="col-lg-2">
-                        <input type="button" name="Columns" value="Columns" title="Filter Column Display" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myColumnModal" />
+                        <input type="button" name="Columns" value="Setup Excel Columns" title="Filter Column Display" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myColumnModal" />
                     </div>
-                    <div class="col-lg-2">
-                        <input type="button" name="SaveSeting" value="Save Setting" title="Save Setting which column do you want to show every time." onclick="SaveSetting()" class="btn btn-info btn-sm" />
-                    </div>
+                    @*<div class="col-lg-2">
+                            <input type="button" name="SaveSeting" value="Save Setting" title="Save Setting which column do you want to show every time." onclick="SaveSetting()" class="btn btn-info btn-sm" />
+                        </div>*@
                 </div>
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
@@ -426,7 +456,41 @@
                 </div>
                 <div class="row">
                     <div class="modal fade" id="myColumnModal" role="dialog">
-                        @Html.Partial("_Rep_Reg_Column")
+
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Select Column</h4>
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <div class="editor-field">
+                                                @Html.DropDownListFor(model => Model.TEXTBOX6, new SelectList(Model.DropDown_list2, "Value", "Text", Model.TEXTBOX6), new { @class = "form-control", id = "TEXTBOX6", @onchange = "GetColumn();" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.TEXTBOX7, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX7", @placeholder = "New Format Name" } })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="partialdiv">
+                                    @Html.Partial("_Rep_Reg_Column")
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('S')">Save New</button>
+                                    @if (Model.DropDown_list2 != null && Model.DropDown_list2.Count() != 0)
+                                    {
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('U')">Update</button>
+                                    }
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('D')">Delete</button>
+
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="FilterColumn()">Close</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
