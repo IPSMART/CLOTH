@@ -286,7 +286,7 @@ namespace Improvar.Controllers
                             //VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
-                        VE.MergeItem = (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)? false : true;
+                        VE.MergeItem = (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1) ? false : true;
                     }
                     else
                     {
@@ -397,8 +397,8 @@ namespace Improvar.Controllers
                 DataTable tbl = masterHelp.SQLquery(str1);
 
                 VE.TsalePos_TBATCHDTL = (from DataRow dr in tbl.Rows
-                                         where dr["SLNO"].retShort() <= 2000
-                                         //where dr["SLNO"].retShort() <= 1000
+                                             //where dr["SLNO"].retShort() <= 2000
+                                         where dr["SLNO"].retShort() <= 1000
                                          select new TsalePos_TBATCHDTL()
                                          {
                                              SLNO = dr["SLNO"].retShort(),
@@ -473,8 +473,8 @@ namespace Improvar.Controllers
                 #region Return tab
 
                 VE.TsalePos_TBATCHDTL_RETURN = (from DataRow dr in tbl.Rows
-                                                where dr["SLNO"].retShort() > 2000
-                                                //where dr["SLNO"].retShort() > 1000
+                                                    //where dr["SLNO"].retShort() > 2000
+                                                where dr["SLNO"].retShort() > 1000
                                                 select new TsalePos_TBATCHDTL_RETURN()
                                                 {
                                                     SLNO = dr["SLNO"].retShort(),
@@ -1661,7 +1661,7 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 List<TsalePos_TBATCHDTL_RETURN> TsalePos_TBATCHDTL = new List<TsalePos_TBATCHDTL_RETURN>();
-                int count = 2000;//1000;
+                int count = 1000;
                 VE.DISC_TYPE = masterHelp.DISC_TYPE();
                 VE.PCSActionList = masterHelp.PCSAction();
                 for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)

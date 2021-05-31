@@ -517,7 +517,7 @@ function AddReturnRow(hlpstr) {
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
-    var SLNO = 2000;//1000;
+    var SLNO = 1000;
     var rowindex = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
     if (rowindex == 0) { SLNO = SLNO + 1; } else { SLNO = SLNO + rowindex + 1; }
 
@@ -1061,7 +1061,7 @@ function CalculateRowAmt(GridId, i) {
             if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
             if (flgmtr > qnty) {
                 msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
-                message_value = "R_FLAGMTR_"+i;
+                message_value = "R_FLAGMTR_" + i;
                 return false;
             }
         }
