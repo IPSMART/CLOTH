@@ -53,5 +53,6 @@ namespace Improvar.Models
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
         public string MTBARCODE { get; set; }
+        public string NEGSTOCK { get; set; }
     }
 }

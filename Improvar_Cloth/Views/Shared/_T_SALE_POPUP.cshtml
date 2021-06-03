@@ -14,17 +14,17 @@
     });
 </script>
 <div id="dragclass" style="overflow-y:auto;max-height:500px;height:auto;overflow-x:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;">
-        <div class="table-responsive">
-            @if (Model.DefaultView == true)
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
             {
-                @Html.ValidationSummary(true)
-                <div class="grid_title">
-                    <div class="col-md-8">
-                        <input type="text" id="PO_P_IN_FS" name="PO_P_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_SALE_POPUP_GRID');" />
-                        <img src="~/Image/search.png" title="Help" />
-                    </div>
-                    <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bar No. Details</b></center>
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="PO_P_IN_FS" name="PO_P_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_SALE_POPUP_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
                 </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bar No. Details</b></center>
+            </div>
                 <div class="sticky-table sticky-ltr-cells">
                     <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:381px;">
                         <table id="T_SALE_POPUP_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 947px;">
@@ -39,7 +39,18 @@
                                     <th class="" style="width:129px;">Bar No.</th>
                                     <th class="" style="width:88px;">Item code</th>
                                     <th class="">Item Name</th>
-                                    <th class="" style="width:50px;text-align:right;">Purchase Qnty</th>
+                                    @if (Model.MENU_PARA == "SR")
+                                    {
+                                        <th class="" style="width:50px;text-align:right;">Sales Qnty</th>
+                                    }
+                                    else if (Model.MENU_PARA == "PR")
+                                    {
+                                        <th class="" style="width:50px;text-align:right;">Purchase Qnty</th>
+                                    }
+                                    else
+                                    {
+                                        <th class="" style="width:50px;text-align:right;">Qnty</th>
+                                    }
                                     <th class="" style="width:80px;text-align:right;">Rate</th>
                                     <th class="" style="width:50px;">Disc Type</th>
                                     <th class="" style="width:50px;text-align:right;">Disc Rate</th>
@@ -60,19 +71,15 @@
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].AGDOCNO, new { id = "P_AGDOCNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].AGDOCDT, new { id = "P_AGDOCDT_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].BARNO, new { id = "P_BARNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].ITCD, new { id = "P_ITCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].ITSTYLE, new { id = "P_ITSTYLE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -112,16 +119,14 @@
                                         <th title="Rate"></th>
                                     </tr>
                                 </tfoot>*@
-
                         </table>
                     </div>
                 </div>
-            }
-
-        </div>
-        <div class="row" style="padding:5px;text-align:center;">
-            <input type="hidden" id="pendorderpopup" />
-            <input type="button" class="btn btn-success" id="btnSelectTTXNDTLDetails" value="Select" style="padding: 2px 5px 2px 5px;" onclick="Sale_SelectTTXNDTLDetails();" />
-            <input type="button" class="btn btn-danger" id="btnCancelTTXNDTLDetails" value="Close" style="padding: 2px 5px 2px 5px;" onclick="Sale_CloseTTXNDTLDetails();" />
-        </div>
+        }
     </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <input type="hidden" id="pendorderpopup" />
+        <input type="button" class="btn btn-success" id="btnSelectTTXNDTLDetails" value="Select" style="padding: 2px 5px 2px 5px;" onclick="Sale_SelectTTXNDTLDetails();" />
+        <input type="button" class="btn btn-danger" id="btnCancelTTXNDTLDetails" value="Close" style="padding: 2px 5px 2px 5px;" onclick="Sale_CloseTTXNDTLDetails();" />
+    </div>
+</div>

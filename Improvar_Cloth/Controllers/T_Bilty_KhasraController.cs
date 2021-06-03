@@ -274,6 +274,7 @@ namespace Improvar.Controllers
                 {
                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
                 }
+                VE.BALECOUNT = VE.TBILTYKHASRA.Select(a => a.BALENO).Distinct().Count().retStr();
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             }
             return VE;
@@ -477,10 +478,13 @@ namespace Improvar.Controllers
                 {
                     VE.TBILTYKHASRA[i].SLNO = Convert.ToInt16(i + 1);
                 }
+                var balecnt = VE.TBILTYKHASRA.Select(a => a.BALENO).Distinct().Count();
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_Bilty_Khasra_Main", VE);
-                return Content(GRN_MAIN);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
+                //return Content(GRN_MAIN);
             }
             catch (Exception ex)
             {

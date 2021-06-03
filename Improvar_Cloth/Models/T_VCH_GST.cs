@@ -194,5 +194,10 @@ namespace Improvar.Models
         public double? RATE { get; set; }
         [StringLength(1)]
         public string PINV { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? PREFDT { get; set; }
+
+        [StringLength(30)]
+        public string PREFNO { get; set; }
     }
 }

@@ -93,6 +93,8 @@
                             ClearAllTextBoxes("M_BARCODE,M_STYLENO,MTRLJOBCD,PARTCD");
                             BARNO = returncolvalue(result, "BARNO");
                             //ITCD = returncolvalue(result, "ITCD");
+                            var MergeItem = document.getElementById("MergeItem").checked;
+
                             var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
                             for (j = 0; j <= GridRowMain - 1; j++) {
                                 if (BARNO == $("#B_BARNO_" + j).val()) {
@@ -101,10 +103,9 @@
                                 }
                                 duplicate = false;
                             }
-                            if (slno > 0) {
+                            if (slno > 0 && MergeItem == true) {
                                 UpdateBarCodeRow(result, slno);
                             }
-
                             else {
                                 AddMainRow(result);
                             }
@@ -553,7 +554,7 @@ function AddReturnRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field CESSPER must be a number." id="R_CESSPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CESSPER" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSAMT must be a number." id="R_CESSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CESSAMT" type="hidden" value="">';
     tr += ' </td>';
-    tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+    tr += ' <td class="sticky-cell" style="left:20px;" title="">';
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="R_SLNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:60px" title="">';
@@ -648,7 +649,7 @@ function AddReturnRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');" onkeydown="CopyLastDiscData(this.value,R_DISCTYPE_' + rowindex + '.value,\'R_DISCRATE_\',\'R_DISCTYPE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');RemoveLastDiscData(\'R_DISCRATE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" >';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" value="">';
     tr += ' </td>';
     if (DefaultAction != "V") {
         tr += ' <td class="" title="">';
@@ -1060,7 +1061,7 @@ function CalculateRowAmt(GridId, i) {
             if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
             if (flgmtr > qnty) {
                 msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
-                message_value = "R_FLAGMTR_"+i;
+                message_value = "R_FLAGMTR_" + i;
                 return false;
             }
         }

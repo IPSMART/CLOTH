@@ -4,6 +4,13 @@
     ViewBag.Title = "Packing Slip Entry";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Partycaption = "Party";
+
+    string COMMONUNIQBAR = "", MNTNCOLOR="";
+    if (Model != null && Model.M_SYSCNFG != null)
+    {
+        COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
+        MNTNCOLOR = Model.M_SYSCNFG.MNTNCOLOR;
+    }
 }
 @{
     switch (Model.MENU_PARA)
@@ -73,7 +80,7 @@
         if ("@Model.SHOWSTKTYPE" != "Y") {
             $(".divstktype").hide();
         }
-        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@Model.M_SYSCNFG.COMMONUNIQBAR" == "E" && "@Model.DefaultAction" != "V") {
+        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@COMMONUNIQBAR" == "E" && "@Model.DefaultAction" != "V") {
             $(".DivMergeBarItem").show();
         }
         else {
@@ -112,7 +119,7 @@
             if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").show();
                     $(".colrcddiv").hide();
                 }
@@ -120,7 +127,7 @@
             else {
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").hide();
                     $(".colrcddiv").show();
                 }
@@ -149,7 +156,7 @@
             if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").show();
                     $(".colrcddiv").hide();
                 }
@@ -157,7 +164,7 @@
             else {
                 $(".fabitcdhlpdiv").hide();
                 $(".fabitcddiv").show();
-                if ('@Model.M_SYSCNFG.MNTNCOLOR' == "Y") {
+                if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").hide();
                     $(".colrcddiv").show();
                 }
@@ -171,6 +178,15 @@
             $('#_T_SALE_PRODUCT_GRID input').attr('TabIndex', '-1');
             $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
         }
+        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+            if ("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "SBEXP" || "@Model.MENU_PARA" == "PI") {
+                var CONVQTYPUNIT = retFloat($("#CONVQTYPUNIT").val()).toFixed(0);
+                if (CONVQTYPUNIT == "0") {
+                    $(".Billuomdiv").hide();
+                }
+            }
+        }
+
         $("#WaitingMode").hide();
     });
 </script>
@@ -190,14 +206,14 @@
             return false;
         }
         if ("@Model.MENU_PARA" == "PB") {
-            if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
+            if (!emptyFieldCheck("Please Enter Party bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
-            if (!emptyFieldCheck("Please Enter Purchase bill date", "PREFDT")) {
+            if (!emptyFieldCheck("Please Enter Party bill date", "PREFDT")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
                 $(".tab-content div").removeClass("active");
@@ -900,11 +916,11 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                         <div class="row">
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
                             {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Purchase bill no")
+                                        @Html.Label("", "Party bill no")
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <b style="color:Red;">*</b>
@@ -918,7 +934,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Purchase bill dt")
+                                        @Html.Label("", "Party bill dt")
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <b style="color:Red;">*</b>
@@ -1624,7 +1640,7 @@
                                                     </span>
                                                 </div>
                                                 @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
-                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP")
+                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP" && Model.MENU_PARA != "PI")
                                                 {
                                                     @Html.HiddenFor(model => model.BLUOMCD, new { id = "BLUOMCD" })
                                                     @Html.HiddenFor(model => model.BLQNTY, new { id = "BLQNTY" })
@@ -1776,9 +1792,9 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI")
                                             {
-                                                <div class="col-md-1">
+                                                <div class="Billuomdiv col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.BLQNTY, new { htmlAttributes = new { @class = "form-control", id = "BLQNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Bill Qnty", @title = "Bill Qnty", @onchange = "CalculateBargridQnty();" } })
@@ -1786,7 +1802,7 @@
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="Billuomdiv col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
                                                             @Html.EditorFor(model => model.BLUOMCD, new { htmlAttributes = new { @class = "form-control", id = "BLUOMCD", maxlength = 30, @title = "Bill UOM", @placeholder = "Bill UOM", @readonly = "readonly", @TabIndex = -1 } })

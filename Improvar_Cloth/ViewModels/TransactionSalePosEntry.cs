@@ -287,5 +287,6 @@ namespace Improvar.ViewModels
         public double? T_FLAGMTR { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? R_T_FLAGMTR { get; set; }
+        public bool MergeItem { get; set; }
     }
 }

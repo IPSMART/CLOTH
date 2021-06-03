@@ -286,6 +286,7 @@ namespace Improvar.Controllers
                             //VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
+                        VE.MergeItem = (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1) ? false : true;
                     }
                     else
                     {
@@ -396,6 +397,7 @@ namespace Improvar.Controllers
                 DataTable tbl = masterHelp.SQLquery(str1);
 
                 VE.TsalePos_TBATCHDTL = (from DataRow dr in tbl.Rows
+                                             //where dr["SLNO"].retShort() <= 2000
                                          where dr["SLNO"].retShort() <= 1000
                                          select new TsalePos_TBATCHDTL()
                                          {
@@ -471,6 +473,7 @@ namespace Improvar.Controllers
                 #region Return tab
 
                 VE.TsalePos_TBATCHDTL_RETURN = (from DataRow dr in tbl.Rows
+                                                    //where dr["SLNO"].retShort() > 2000
                                                 where dr["SLNO"].retShort() > 1000
                                                 select new TsalePos_TBATCHDTL_RETURN()
                                                 {

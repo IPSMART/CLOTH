@@ -39,6 +39,7 @@
                                 <th class="" style="width:100px;">Bale No</th>
                                 <th class="" style="width: 100px;">Bill No</th>
                                 <th class="" style="width:55px;">Bill Date</th>
+                                <th class="" style="width:55px;">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,7 +71,9 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYR_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                       
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYR_POPUP[i].STATUS, new { id = "STATUS_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
                                     </tr>
                                 }
                             }

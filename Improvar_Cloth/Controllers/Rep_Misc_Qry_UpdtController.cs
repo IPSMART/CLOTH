@@ -31,6 +31,7 @@ namespace Improvar.Controllers
                     List<DropDown_list1> CHNGSTYL = new List<DropDown_list1>();
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Style", text = "Change Style No in Bale" });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Pageno", text = "Change Pageno in Bale" });
+                    CHNGSTYL.Add(new DropDown_list1 { value = "Change BaleNo", text = "Change Bale No." });
                     VE.DropDown_list1 = CHNGSTYL;
                     VE.DefaultView = true;
                     return View(VE);
@@ -53,15 +54,26 @@ namespace Improvar.Controllers
                     var data = code.Split(Convert.ToChar(Cn.GCS()));
                     skipstyleno = data[0].retStr() == "Change Pageno" ? true : false;
                     skippageno = data[0].retStr() == "Change Style" ? true : false;
-                    if (data.Length > 1)
+                    if (data[0].retStr() == "Change BaleNo")
                     {
+                        skipstyleno = true;
+                        skippageno = true;
                         gocd = data[1].retStr() == "" ? "" : data[1].retSqlformat();
-                        itcd = data[2].retStr() == "" ? "" : data[2].retSqlformat();
                     }
-                    if (data.Length > 3)
+                    else
                     {
-                        pageno = data[3].retStr() == "" ? "" : data[3].retSqlformat();
+                        if (data.Length > 1)
+                        {
+                            gocd = data[1].retStr() == "" ? "" : data[1].retSqlformat();
+                            itcd = data[2].retStr() == "" ? "" : data[2].retSqlformat();
+                        }
+                        if (data.Length > 3)
+                        {
+                            pageno = data[3].retStr() == "" ? "" : data[3].retSqlformat();
+                        }
                     }
+
+
                 }
                 if (val.retStr() == "") pageno = "";
                 var tdt = CommVar.CurrDate(UNQSNO);
@@ -128,6 +140,24 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult CheckBaleno(string BALENO)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM_CD = CommVar.Compcd(UNQSNO);
+
+            var query = (from c in DB.T_BALE
+                         join d in DB.T_CNTRL_HDR on c.AUTONO equals d.AUTONO
+                         where (c.BALENO == BALENO && d.COMPCD == COM_CD)
+                         select c);
+            if (query.Any())
+            {
+                return Content("1");
+            }
+            else
+            {
+                return Content("0");
+            }
+        }
         public ActionResult Save(RepMiscQryUpdt VE)
         {
             Cn.getQueryString(VE);
@@ -146,19 +176,31 @@ namespace Improvar.Controllers
                 string ContentFlg = "";
                 var schnm = CommVar.CurSchema(UNQSNO);
                 var CLCD = CommVar.ClientCode(UNQSNO);
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                string autono = "";
                 if (VE.TEXTBOX1 == "Change Style")
                 {
-                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                    string autono = VE.BLAUTONO1;
-                    var dt = DB.T_BALE.Where(a => a.BLAUTONO == autono).Select(a => a.AUTONO).Distinct().ToArray();
-                    if (dt.Count() > 0)
-                    {
-                        autono = autono.retSqlformat() +","+ dt.retSqlfromStrarray();
-                    }
-                    else
-                    {
-                        autono = autono.retSqlformat();
-                    }
+                    autono = VE.BLAUTONO1;
+                }
+                else if (VE.TEXTBOX1 == "Change BaleNo")
+                {
+                    autono = VE.BLAUTONO3;
+                }
+                else
+                {
+                    autono = VE.BLAUTONO2;
+                }
+                var dt = DB.T_BALE.Where(a => a.BLAUTONO == autono).Select(a => a.AUTONO).Distinct().ToArray();
+                if (dt.Count() > 0)
+                {
+                    autono = autono.retSqlformat() + "," + dt.retSqlfromStrarray();
+                }
+                else
+                {
+                    autono = autono.retSqlformat();
+                }
+                if (VE.TEXTBOX1 == "Change Style")
+                {
                     sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "' "
                     + " where AUTONO in(" + autono + ") and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
@@ -171,6 +213,28 @@ namespace Improvar.Controllers
                 + " where AUTONO in (" + autono + ")  and BARNO='" + VE.OLDBARNO + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
+                }
+                else if (VE.TEXTBOX1 == "Change BaleNo")
+                {
+                    sql = "update " + schnm + ". T_BALE set BALENO='" + VE.NEWBALENO + "' "
+                   + " where BLAUTONO='" + VE.BLAUTONO3 + "' and BALENO='" + VE.OLDBALENO.retStr() + "' and BALEYR='" + VE.BALEYR3 + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_BATCHDTL set BALENO='" + VE.NEWBALENO + "' "
+                + " where AUTONO in (" + autono + ") and BALENO='" + VE.OLDBALENO.retStr() + "' and BALEYR='" + VE.BALEYR3 + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_BILTY set BALENO='" + VE.NEWBALENO + "' "
+                + " where BLAUTONO='" + VE.BLAUTONO3 + "' and BALENO='" + VE.OLDBALENO.retStr() + "' and BALEYR='" + VE.BALEYR3 + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_PHYSTK set BALENO='" + VE.NEWBALENO + "' "
+                + " where BALENO='" + VE.OLDBALENO.retStr() + "' and BALEYR='" + VE.BALEYR3 + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_TXNDTL set BALENO='" + VE.NEWBALENO + "' "
+                + " where AUTONO in (" + autono + ") and BALENO='" + VE.OLDBALENO.retStr() + "' and BALEYR='" + VE.BALEYR3 + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                 }
                 else
                 {

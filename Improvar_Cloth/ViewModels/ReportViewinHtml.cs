@@ -92,6 +92,6 @@ namespace Improvar.ViewModels
         public string PRCCD { get; set; }
         public string PRCNM { get; set; }
         public string JOBCD { get; set; }
-
+        public List<ColumnName> ColumnName { get; set; }
     }
 }

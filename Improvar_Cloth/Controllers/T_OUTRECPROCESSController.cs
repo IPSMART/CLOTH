@@ -395,8 +395,8 @@ namespace Improvar.Controllers
                 //               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.TPROGDTL = (from dr in Progdtltbl.AsEnumerable()
-                               //join dr1 in pendprogramme.AsEnumerable() on dr["PROGAUTOSLNO"] equals dr1["PROGAUTOSLNO"] into Z
-                               //from dr1 in Z.DefaultIfEmpty()
+                                   //join dr1 in pendprogramme.AsEnumerable() on dr["PROGAUTOSLNO"] equals dr1["PROGAUTOSLNO"] into Z
+                                   //from dr1 in Z.DefaultIfEmpty()
                                select new TPROGDTL()
                                {
                                    SLNO = dr["SLNO"].retShort(),
@@ -1557,7 +1557,7 @@ namespace Improvar.Controllers
                                         SAMPLE = dr["sample"].retStr(),
                                         COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
                                         CUTLENGTH = dr["CUTLENGTH"].retDbl(),
-                                        ITSTYLE = dr["STYLENO"].retStr()+" "+ dr["ITNM"].retStr(),
+                                        ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
                                     }).ToList();
                         if (VE.TPROGDTL != null)
                         {
@@ -2158,6 +2158,36 @@ namespace Improvar.Controllers
                 string ContentFlg = "";
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
+                    if (VE.TBATCHDTL != null && VE.TPROGDTL != null)
+                    {
+                        var prgrmdata = (from x in VE.TPROGDTL
+                                         group x by new { x.ITCD } into P
+                                         select new
+                                         {
+                                             ITCD = P.Key.ITCD,
+                                             QTY = P.Sum(A => A.QNTY + A.SHORTQNTY).retDbl().toRound(3),
+                                         }).Where(a => a.QTY != 0).ToList();
+                        var rcvdata = (from x in VE.TBATCHDTL
+                                       group x by new { x.ITCD } into P
+                                       select new
+                                       {
+                                           ITCD = P.Key.ITCD,
+                                           QTY = P.Sum(A => A.QNTY + A.SHORTQNTY).retDbl().toRound(3),
+                                       }).Where(a => a.QTY != 0).ToList();
+
+
+
+                        var difList1 = rcvdata.Where(a => !prgrmdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY ))
+                         .Union(prgrmdata.Where(a => !rcvdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY ))).ToList();
+                        if (difList1 != null && difList1.Count > 0)
+                        {
+                            string diffitcd = difList1.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
+                            //OraTrans.Rollback();
+                            //OraCon.Dispose();
+                            dberrmsg = "Programme grid & Receive grid itcd [" + diffitcd + "] wise qnty+short qnty should match !!";
+                            goto dbnotsave;
+                        }
+                    }
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
 
                     var barcodedata = (from x in VE.TBATCHDTL

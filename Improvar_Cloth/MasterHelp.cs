@@ -2914,8 +2914,8 @@ namespace Improvar
         {
             DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno);
             DataView dv = new DataView(tbl);
-            string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono";
-            colnm += skipstyleno == true ? "" : ",itcd,styleno,blslno";
+            string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono,blslno";
+            colnm += skipstyleno == true ? "" : ",itcd,styleno";
             colnm += skippageno == true ? "" : ",pageno,pageslno,pagenoslno";
             string[] a = colnm.Split(',');
             tbl = dv.ToTable(true, a);

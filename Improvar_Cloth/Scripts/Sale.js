@@ -94,7 +94,6 @@ function GetBarnoDetails(id, HelpFrom) {
                                 if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR") && ($("#QNTY").val() != "")) {
                                     AddBarCodeGrid();
                                 }
-
                             }
                             else {
                                 if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
@@ -113,6 +112,9 @@ function GetBarnoDetails(id, HelpFrom) {
                                 $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
                                 $("#GLCD").val(returncolvalue(result, "GLCD"));
                                 $("#COMMONUNIQBAR").val(returncolvalue(result, "COMMONUNIQBAR"));
+                                if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && retFloat($("#CONVQTYPUNIT").val()).toFixed(0) != "0") {
+                                    $("#BLQNTY").focus();
+                                }
                             }
 
                         }
@@ -296,7 +298,7 @@ function FillBarcodeArea(str, Table, i) {
         if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
             $("#LISTPRICE").val(RATE);
         }
-        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") {
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
             $("#BLUOMCD").val(returncolvalue(str, "CONVQTYPUNIT") + " " + returncolvalue(str, "CONVUOMCD"));
             $("#CONVQTYPUNIT").val(returncolvalue(str, "CONVQTYPUNIT"));
         }
@@ -423,9 +425,25 @@ function FillBarcodeArea(str, Table, i) {
     }
     changeBARGENTYPE();
     var ModuleCode = $("#ModuleCode").val();
+
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+        var CONVQTYPUNIT = retFloat($("#CONVQTYPUNIT").val()).toFixed(0);
+        if (CONVQTYPUNIT == "0") {
+            $(".Billuomdiv").hide();
+        }
+        else {
+            $(".Billuomdiv").show();
+        }
+    }
     if (event.key == "F8") {
         if (ModuleCode.indexOf("SALESCLOTH") != -1) {
-            $("#CUTLENGTH").focus();
+            if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && retFloat($("#CONVQTYPUNIT").val()).toFixed(0) != "0") {
+                $("#BLQNTY").focus();
+            }
+            else {
+                $("#CUTLENGTH").focus();
+            }
+
         }
         else {
             if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
@@ -457,7 +475,12 @@ function FillBarcodeArea(str, Table, i) {
                     $("#NOS").focus();
                 }
                 else {
-                    $("#CUTLENGTH").focus();
+                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && retFloat($("#CONVQTYPUNIT").val()).toFixed(0) != "0") {
+                        $("#BLQNTY").focus();
+                    }
+                    else {
+                        $("#CUTLENGTH").focus();
+                    }
                 }
             }
         }
@@ -484,6 +507,8 @@ function FillBarcodeArea(str, Table, i) {
             $(".colrcddiv").show();
         }
     }
+
+
 }
 function changeBARGENTYPE() {
     var BARGENTYPE = $("#BARGENTYPE").val();
@@ -597,14 +622,14 @@ function UpdateBarCodeRow() {
                         //var oo1 = retStr($("#PDESIGN").val()); var jj1 = retStr($("#B_PDESIGN_" + j).val())
                         //
                         if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
-                                        retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
-                                        retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
-                                         retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
-                                        retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#GSTPER").val()) == retFloat($("#B_GSTPER_" + j).val()) &&
-                                        retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) &&
-                            retStr($("#BLUOMCD").val()) == retStr($("#B_BLUOMCD_" + j).val()) && retFloat($("#BLQNTY").val()) == retFloat($("#B_BLQNTY_" + j).val())
-) {
+                            retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
+                            retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                            retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
+                            retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#GSTPER").val()) == retFloat($("#B_GSTPER_" + j).val()) &&
+                            retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                            retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val()) && retStr($("#FABITCD").val()) == retStr($("#B_FABITCD_" + j).val()) &&
+                            //retFloat($("#BLQNTY").val()).toFixed(3) == retFloat($("#B_BLQNTY_" + j).val()).toFixed(3) &&
+                            retStr($("#BLUOMCD").val()) == retStr($("#B_BLUOMCD_" + j).val())) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             countmatchslno++;
@@ -757,6 +782,17 @@ function UpdateBarCodeRow() {
             $("#B_BLQNTY_" + j).val($("#BLQNTY").val());
             $("#B_CONVQTYPUNIT_" + j).val($("#CONVQTYPUNIT").val());
             $("#B_PCSTYPE_" + j).val($("#PCSTYPE").val());
+            if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+                if (retFloat($("#CONVQTYPUNIT").val()) == 0) {
+                    $("#B_BLQNTY_" + j).attr('readonly', 'readonly');
+                    $("#B_BLQNTY_" + j).attr('TabIndex', '-1');
+                    $("#B_BLQNTY_" + j).val("");
+                }
+                else {
+                    $("#B_BLQNTY_" + j).attr("readonly", false);
+                    $("#B_BLQNTY_" + j).removeAttr("TabIndex");
+                }
+            }
         }
 
     }
@@ -854,6 +890,15 @@ function ClearBarcodeArea(TAG) {
         if (MNTNCOLOR == "Y") {
             $(".colrcdhlpdiv").hide();
             $(".colrcddiv").show();
+        }
+    }
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+        var CONVQTYPUNIT = retFloat($("#CONVQTYPUNIT").val()).toFixed(0);
+        if (CONVQTYPUNIT == "0") {
+            $(".Billuomdiv").hide();
+        }
+        else {
+            $(".Billuomdiv").show();
         }
     }
 }
@@ -2149,7 +2194,8 @@ function AddBarCodeGrid() {
                      retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat(TDDISCRATE) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat(GSTPER) == retFloat($("#B_GSTPER_" + j).val()) &&
                      retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
                      retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(FABITCD) == retStr($("#B_FABITCD_" + j).val()) &&
-                     retFloat(BLQNTY) == retFloat($("#B_BLQNTY_" + j).val()) && retStr(BLUOMCD) == retStr($("#B_BLUOMCD_" + j).val())) {
+                            //retFloat(BLQNTY).toFixed(3) == retFloat($("#B_BLQNTY_" + j).val()).toFixed(3) &&
+                     retStr(BLUOMCD) == retStr($("#B_BLUOMCD_" + j).val())) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             if (ModuleCode.indexOf("SALESCLOTH") != -1) {
@@ -2258,13 +2304,18 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
         tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
     }
-    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP") {
-        tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
+    tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
+    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && MENU_PARA != "PI") {
+        //tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
         tr += '        <input id="B_BLQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="' + BLQNTY + '">';
     }
     tr += '        <input id="B_CONVQTYPUNIT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CONVQTYPUNIT" type="hidden" value="' + CONVQTYPUNIT + '">';
     if (SHOWSTKTYPE != "Y") {
         tr += '        <input id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" type="hidden" value="' + STKTYPE + '">';
+    }
+    if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+        tr += '        <input id="B_FABITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITNM" type="hidden" value="' + FABITNM + '">';
+        tr += '        <input id="B_FABITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITCD" type="hidden" value="' + FABITCD + '">';
     }
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
@@ -2300,11 +2351,12 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
     tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
     tr += '    </td>         ';
-
-    tr += '    <td class="" title="' + FABITNM + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field FABITNM must be a string with a maximum length of 4." data-val-length-max="4" id="B_FABITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITNM" readonly="readonly" type="text" value="' + FABITNM + '">';
-    tr += '        <input id="B_FABITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITCD" type="hidden" value="' + FABITCD + '">';
-    tr += '    </td>';
+    if (ModuleCode.indexOf("SALESCLOTH") == -1) {
+        tr += '    <td class="" title="' + FABITNM + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field FABITNM must be a string with a maximum length of 4." data-val-length-max="4" id="B_FABITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITNM" readonly="readonly" type="text" value="' + FABITNM + '">';
+        tr += '        <input id="B_FABITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITCD" type="hidden" value="' + FABITCD + '">';
+        tr += '    </td>';
+    }
 
     if (MNTNBALE == "Y") {
         tr += '    <td class="" title="' + BALENO + '">';
@@ -2369,13 +2421,18 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + UOM + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
     tr += '    </td>';
-    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") {
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
         tr += '    <td class="" title="' + BLQNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + BLQNTY + '">';
+        if (retFloat(CONVQTYPUNIT) == 0) {
+            tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" readonly="readonly" value="' + BLQNTY + '">';
+        }
+        else {
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" autocomplete="off" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].BLQNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');HasChangeBarSale();" value="' + BLQNTY + '">';
+        }
         tr += '    </td>';
-        tr += '    <td class="" title="' + BLUOMCD + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" readonly="readonly" type="text" value="' + BLUOMCD + '">';
-        tr += '    </td>';
+        //tr += '    <td class="" title="' + BLUOMCD + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" readonly="readonly" type="text" value="' + BLUOMCD + '">';
+        //tr += '    </td>';
     }
 
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
@@ -3294,7 +3351,7 @@ function FillOrderToBarcode() {
             $("#MTRLJOBCD").val($("#Ord_MTRLJOBCD_" + i).val());
             $("#MTRLJOBNM").val($("#Ord_MTRLJOBNM_" + i).val());
             $("#MTBARCODE").val($("#Ord_MTBARCODE_" + i).val());
-
+            $("#NEGSTOCK").val($("#Ord_NEGSTOCK_" + i).val());
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
             var qnty = retFloat(BALQTY - CURRENTADJQTY).toFixed(2);
@@ -3378,7 +3435,12 @@ function GetItcd(id) {
                                 $("#NOS").focus();
                             }
                             else {
-                                $("#CUTLENGTH").focus();
+                                if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && retFloat($("#CONVQTYPUNIT").val()).toFixed(0) != "0") {
+                                    $("#BLQNTY").focus();
+                                }
+                                else {
+                                    $("#CUTLENGTH").focus();
+                                }
                             }
                         }
                     }
@@ -3426,16 +3488,19 @@ function CalculateBargridQnty(tableid, index) {
 
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
-        $("#" + QNTYID).val(retFloat(qnty));
+        $("#" + QNTYID).val(retFloat(qnty).toFixed(3));
     }
-    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0) {
+    else {
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") {
+            var qnty = retFloat($("#" + BLQNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val());
+            $("#" + QNTYID).val(retFloat(qnty).toFixed(3));
+        }
+    }
+    if ($("#" + UOMID).val() == "PCS" && retFloat($("#" + NOSID).val()) != 0 && retFloat($("#" + BLQNTYID).val()) == 0) {
         $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
     }
 
-    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") && (retFloat($("#" + CUTLENGTHID).val()) == 0 || retFloat($("#" + NOSID).val()) == 0)) {
-        var qnty = retFloat($("#" + BLQNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val());
-        $("#" + QNTYID).val(retFloat(qnty));
-    }
+
     //var BLQNTY = retFloat(retFloat($("#" + QNTYID).val()) * retFloat($("#" + CONVQTYPUNITID).val())).toFixed(3);
     //$("#" + BLQNTYID).val(BLQNTY);
     if (tableid == "_T_SALE_PRODUCT_GRID") {
@@ -3973,6 +4038,7 @@ function SelectGeneralLedgerCode(id, GLCD, GLNM) {
     }
 }
 function GetBaleData() {
+    if (!emptyFieldCheck("Please Select / Enter Bale No.", "BALENO_HELP")) { return false; }
     $.ajax({
         type: 'post',
         url: $("#UrlGetBaleData").val(), //"@Url.Action("GetBaleData", PageControllerName)",
