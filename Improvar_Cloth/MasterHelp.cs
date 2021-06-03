@@ -2691,13 +2691,33 @@ namespace Improvar
                         }
                         else
                         {
-                            using (ExcelRange Rng = ws.Cells[1, 1, 1, dt[i].Columns.Count])
+                            using (ExcelRange Rng = ws.Cells[row + 1, 1, row + 1, dt[i].Columns.Count])
                             {
                                 Rng.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                                 Rng.Style.Font.Bold = true;
                                 Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
                             }
                             ws.Cells[++row, 1].LoadFromDataTable(dt[i], true);
+                        }
+                        int strtRow = row + 1;
+                        row = row + dt[i].Rows.Count;
+                        using (ExcelRange Rng = ws.Cells[++row, 1, row, dt[i].Columns.Count])
+                        {
+                            Rng.Style.Font.Bold = true;
+                        }
+                        ws.Cells[row, 1].Value = "Sub Total";
+                        int column = 0;
+                        foreach (DataColumn dc in dt[i].Columns)
+                        {
+                            ++column;
+                            if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal) || dc.DataType == typeof(int))
+                            {
+                                ws.Cells[row, column, row, column].Formula = "=sum(" + ws.Cells[strtRow, column].Address + ":" + ws.Cells[row - 1, column].Address + ")";
+                            }
+                            if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal))
+                            {
+                                ws.Column(column).Style.Numberformat.Format = "0.00";
+                            }
                         }
                     }
                     //Read the Excel file in a byte array    
