@@ -26,19 +26,20 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SALE_POS_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2004px;">
-                        <thead>
-                            <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 20px;"></th>
-                                <th class="sticky-cell" style="width: 30px;text-align:center;left:20px">SL No</th>
-                                <th class="sticky-cell" style="width: 140px;text-align:center;left:50px">Barno</th>
-                                <th class="" style="width: 70px;">ItmGrp</th>
-                                <th class="" style="width:71px;text-align:right;">Item Code</th>
-                                <th class="" style="width: 160px;">Item Design</th>
-                                <th class="" style="width:60px;">Hsn Code</th>
-                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                    <div style="width: 2014px;">
+                        <table id="_T_SALE_POS_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2004px;">
+                            <thead>
+                                <tr class="sticky-header" style="height:30px;">
+                                    <th class="sticky-cell" style="width: 20px;"></th>
+                                    <th class="sticky-cell" style="width: 30px;text-align:center;left:20px">SL No</th>
+                                    <th class="sticky-cell" style="width: 140px;text-align:center;left:50px">Barno</th>
+                                    <th class="" style="width: 70px;">ItmGrp</th>
+                                    <th class="" style="width:71px;text-align:right;">Item Code</th>
+                                    <th class="" style="width: 160px;">Item Design</th>
+                                    <th class="" style="width:60px;">Hsn Code</th>
+                                    @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                 {
-                                    <th class="" style="width: 50px;">Color Name</th>
+                                        <th class="" style="width: 50px;">Color Name</th>
                                 }   @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                 {
                                     <th class="" style="width: 50px;">Size</th>
@@ -79,16 +80,16 @@
                                 <th class="" style="width:75px;text-align:right;">Disc1 Amt</th>
                                 <th class="" style="width:86px;text-align:right;">Taxable Value</th>
                                 @*@if (Model.MENU_PARA == "PB")
-                                    {
-                                        <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
-                                        <th class="" style="width:80px;text-align:right;">Retail Rate</th>
-                                    }*@
+                    {
+                        <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
+                        <th class="" style="width:80px;text-align:right;">Retail Rate</th>
+                    }*@
                                 <th class="" style="width:50px;text-align:right;">GST Per</th>
                                 <th class="" style="width:63px;text-align:right;">GST Amt</th>
                                 @*@*<th class="" style="width:50px;">Disc-1</th>
-                                    <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
-                                    <th class="" style="width:50px;">Disc-2</th>
-                                    <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>*@
+                    <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
+                    <th class="" style="width:50px;">Disc-2</th>
+                    <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>*@
                                 <th class="" style="width:136px;">Order No.</th>
                                 <th class="" style="width:30px;">Order Slno.</th>
                                 <th class="" style="width:79px;">Order Date</th>
@@ -151,10 +152,10 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ITGRPCD, new { id = "B_ITGRPCD_" + i })
                                         </td>
                                         @*<td class="">
-                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].MTRLJOBNM, new { id = "B_MTRLJOBNM_" + i })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
-                                            </td>*@
+                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].MTRLJOBNM, new { id = "B_MTRLJOBNM_" + i })
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
+                            </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
@@ -211,8 +212,8 @@
                                                 @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].RATE, new { id = "B_RATE_" + i })
                                             </td>
                                             @*<td class="">
-                                                    @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>*@
+                                    @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                </td>*@
 
                                         }
                                         else
@@ -226,7 +227,7 @@
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })*@
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })*@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text", Model.TsalePos_TBATCHDTL[i].DISCTYPE), new { @class = "atextBoxFor select_3d ", id = "B_DISCTYPE_" + i, @onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_PRODUCT_GRID');" })
                                         </td>
                                         <td class="">
@@ -269,14 +270,14 @@
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].GSTAMT, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTAMT_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         @*<td class="">
-                                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_TDDISCTYPE_" + i })
-                                            </td>
-                                            <td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "" } })
-                                            </td>
-                                            <td class="">
-                                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].SCMDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_SCMDISCTYPE_" + i })
-                                            </td>*@
+                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_TDDISCTYPE_" + i })
+                            </td>
+                            <td class="">
+                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "" } })
+                            </td>
+                            <td class="">
+                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].SCMDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_SCMDISCTYPE_" + i })
+                            </td>*@
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })*@
                                             @Html.EditorFor(model => model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "B_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=docno=0/" + "B_ORDDOCDT_" + i + "=docdt=2/" + "B_ORDAUTONO_" + i + "=autono=7/" + "B_ORDSLNO_" + i + "=slno=1','" + "B_ITCD_" + i + "/" + "B_ORDSLNO_" + i + "/" + "B_ORDAUTONO_" + i + "/RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=docno=0/" + "B_ORDDOCDT_" + i + "=docdt=2/" + "B_ORDAUTONO_" + i + "=autono=7/" + "B_ORDSLNO_" + i + "=slno=1','" + "B_ITCD_" + i + "/" + "B_ORDSLNO_" + i + "/" + "B_ORDAUTONO_" + i + "/RETDEBSLCD');", maxlength = 15 } })
@@ -419,6 +420,7 @@
                             </tr>
                         </tfoot>
                     </table>
+                </div>
                 </div>
             </div>
         }

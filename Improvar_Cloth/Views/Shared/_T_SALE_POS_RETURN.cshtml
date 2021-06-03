@@ -33,157 +33,158 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SALE_POS_RETURN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1944px;">
-                        <thead>
-                            <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 20px;"></th>
-                                <th class="sticky-cell" style="width: 40px;text-align:center;left:20px">SL No</th>
-                                <th class="sticky-cell" style="width: 140px;text-align:center;left:60px">Against Doc No.</th>
-                                <th class="sticky-cell" style="width: 140px;text-align:center;left:200px">Against Doc Date</th>
-                                <th class="sticky-cell" style="width: 140px;text-align:center;left:340px">Barno</th>
-                                <th class="" style="width: 70px;">ItmGrp</th>
-                                <th class="" style="width:71px;text-align:right;">Item Code</th>
-                                <th class="" style="width: 160px;">Item Design</th>
-                                <th class="" style="width:60px;">Hsn Code</th>
-                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                    <div style="width: 1954px;">
+                        <table id="_T_SALE_POS_RETURN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1944px;">
+                            <thead>
+                                <tr class="sticky-header" style="height:30px;">
+                                    <th class="sticky-cell" style="width: 20px;"></th>
+                                    <th class="sticky-cell" style="width: 40px;text-align:center;left:20px">SL No</th>
+                                    <th class="sticky-cell" style="width: 140px;text-align:center;left:60px">Against Doc No.</th>
+                                    <th class="sticky-cell" style="width: 140px;text-align:center;left:200px">Against Doc Date</th>
+                                    <th class="sticky-cell" style="width: 140px;text-align:center;left:340px">Barno</th>
+                                    <th class="" style="width: 70px;">ItmGrp</th>
+                                    <th class="" style="width:71px;text-align:right;">Item Code</th>
+                                    <th class="" style="width: 160px;">Item Design</th>
+                                    <th class="" style="width:60px;">Hsn Code</th>
+                                    @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                 {
-                                    <th class="" style="width: 50px;">Color Name</th>
+                                        <th class="" style="width: 50px;">Color Name</th>
                                 }
-                                @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                    @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                 {
-                                    <th class="" style="width: 50px;">Size</th>
+                                        <th class="" style="width: 50px;">Size</th>
                                 }
-                                @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
+                                    @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
                                 {
-                                    <th class="" style="width:232px;">Shade</th>
+                                        <th class="" style="width:232px;">Shade</th>
                                 }
-                                @*<th class="" style="width:50px;text-align:right;">Stock</th>*@
-                                <th class="" style="width:60px;text-align:right;">Nos</th>
-                                <th class="" style="width:50px;text-align:right;">Quantity</th>
-                                @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+                                    @*<th class="" style="width:50px;text-align:right;">Stock</th>*@
+                                    <th class="" style="width:60px;text-align:right;">Nos</th>
+                                    <th class="" style="width:50px;text-align:right;">Quantity</th>
+                                    @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
                                 {
-                                    <th class="" style="width:50px;text-align:right;">Flag</th>
+                                        <th class="" style="width:50px;text-align:right;">Flag</th>
                                 }
-                                <th class="" style="width:50px;">UOM</th>
-                                @if (Model.INCLRATEASK == "Y")
+                                    <th class="" style="width:50px;">UOM</th>
+                                    @if (Model.INCLRATEASK == "Y")
                                 {
-                                    <th class="" style="width:109px;text-align:right;font-weight: 900;">Incl.Rate</th>
+                                        <th class="" style="width:109px;text-align:right;font-weight: 900;">Incl.Rate</th>
                                 }
                                 else {
-                                    <th class="" style="width:80px;text-align:right;">Rate</th>
+                                        <th class="" style="width:80px;text-align:right;">Rate</th>
                                 }
-                                <th class="" style="width:76px;text-align:right;">Basic Amt</th>
-                                <th class="" style="width:50px;">Disc Type</th>
-                                <th class="" style="width:42px;text-align:right;">Disc Rate</th>
-                                <th class="" style="width:75px;text-align:right;">Disc Amt</th>
-                                @if (Model.DefaultAction == "V")
+                                    <th class="" style="width:76px;text-align:right;">Basic Amt</th>
+                                    <th class="" style="width:50px;">Disc Type</th>
+                                    <th class="" style="width:42px;text-align:right;">Disc Rate</th>
+                                    <th class="" style="width:75px;text-align:right;">Disc Amt</th>
+                                    @if (Model.DefaultAction == "V")
                                 {
-                                    <th class="" style="width:75px;text-align:right;">Incl. Disc Amt</th>
+                                        <th class="" style="width:75px;text-align:right;">Incl. Disc Amt</th>
                                 }
                                 else
                                 {
-                                    <th class="" style="width:75px;text-align:right;">Fixed Disc Amt</th>
+                                        <th class="" style="width:75px;text-align:right;">Fixed Disc Amt</th>
                                 }
 
-                                <th class="" style="width:86px;text-align:right;">Taxable Value</th>
-                                @*@if (Model.MENU_PARA == "PB")
-                                    {
-                                        <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
-                                        <th class="" style="width:80px;text-align:right;">Retail Rate</th>
-                                    }*@
-                                <th class="" style="width:50px;text-align:right;">GST Per</th>
-                                <th class="" style="width:63px;text-align:right;">GST Amt</th>
+                                    <th class="" style="width:86px;text-align:right;">Taxable Value</th>
+                                    @*@if (Model.MENU_PARA == "PB")
+                        {
+                            <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
+                            <th class="" style="width:80px;text-align:right;">Retail Rate</th>
+                        }*@
+                                    <th class="" style="width:50px;text-align:right;">GST Per</th>
+                                    <th class="" style="width:63px;text-align:right;">GST Amt</th>
 
-                                @*@*<th class="" style="width:50px;">Disc-1</th>
-                                    <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
-                                    <th class="" style="width:50px;">Disc-2</th>
-                                    <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>*@
+                                    @*@*<th class="" style="width:50px;">Disc-1</th>
+                        <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
+                        <th class="" style="width:50px;">Disc-2</th>
+                        <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>*@
 
-                                @*<th class="" style="width:136px;">Order No.</th>
-                                    <th class="" style="width:30px;">Order Slno.</th>
-                                    <th class="" style="width:79px;">Order Date</th>*@
-                                <th class="" style="width:89px;">PCS Action</th>
-                                <th class="" style="width: 34px;">Stock Type</th>
-                                @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                    @*<th class="" style="width:136px;">Order No.</th>
+                        <th class="" style="width:30px;">Order Slno.</th>
+                        <th class="" style="width:79px;">Order Date</th>*@
+                                    <th class="" style="width:89px;">PCS Action</th>
+                                    <th class="" style="width: 34px;">Stock Type</th>
+                                    @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                 {
-                                    <th class="" style="width: 50px;">Part</th>
+                                        <th class="" style="width: 50px;">Part</th>
                                 }
-                                @*<th class="" style="width:30px; text-align:center">Img</th>*@
-                                <th class="">Item Remarks</th>
-                                <th class="sticky-cell-opposite" style="width:109px;text-align:right;">Net Amt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.TsalePos_TBATCHDTL_RETURN != null)
+                                    @*<th class="" style="width:30px; text-align:center">Img</th>*@
+                                    <th class="">Item Remarks</th>
+                                    <th class="sticky-cell-opposite" style="width:109px;text-align:right;">Net Amt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.TsalePos_TBATCHDTL_RETURN != null)
                             {
                                 for (int i = 0; i <= Model.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
                                 {
-                                    <tr style="font-size:12px; font-weight:bold;">
-                                        <td class="sticky-cell">
-                                            @Html.CheckBoxFor(model => model.TsalePos_TBATCHDTL_RETURN[i].Checked, new { id = "R_Checked_" + i, @TabIndex = -1 })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].AUTONO, new { id = "R_AUTONO_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO, new { id = "R_TXNSLNO_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD, new { id = "R_MTRLJOBCD_" + i })
-                                            @if (Model.M_SYSCNFG.MNTNFLAGMTR != "Y")
+                                        <tr style="font-size:12px; font-weight:bold;">
+                                            <td class="sticky-cell">
+                                                @Html.CheckBoxFor(model => model.TsalePos_TBATCHDTL_RETURN[i].Checked, new { id = "R_Checked_" + i, @TabIndex = -1 })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].AUTONO, new { id = "R_AUTONO_" + i })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO, new { id = "R_TXNSLNO_" + i })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD, new { id = "R_MTRLJOBCD_" + i })
+                                                @if (Model.M_SYSCNFG.MNTNFLAGMTR != "Y")
                                             {
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].FLAGMTR, new { id = "R_FLAGMTR_" + i })
+                                                    @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].FLAGMTR, new { id = "R_FLAGMTR_" + i })
                                             }
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BLQNTY, new { id = "R_BLQNTY_" + i })
-                                            @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].HSNCODE, new { id = "R_HSNCODE_" + i })*@
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].LOCABIN, new { id = "R_LOCABIN_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BARGENTYPE, new { id = "R_BARGENTYPE_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].GLCD, new { id = "R_GLCD_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].CLASS1CD, new { id = "R_CLASS1CD_" + i })
-                                            @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT, new { id = "R_GROSSAMT_" + i })*@
-                                            @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].DISCAMT, new { id = "R_DISCAMT_" + i })*@
-                                            @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL, new { id = "R_TXBLVAL_" + i })*@
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TOTDISCAMT, new { id = "R_TOTDISCAMT_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].IGSTPER, new { id = "R_IGSTPER_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT, new { id = "R_IGSTAMT_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CGSTPER, new { id = "R_CGSTPER_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT, new { id = "R_CGSTAMT_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SGSTPER, new { id = "R_SGSTPER_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT, new { id = "R_SGSTAMT_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CESSPER, new { id = "R_CESSPER_" + i })
-                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CESSAMT, new { id = "R_CESSAMT_" + i })
-                                        </td>
-                                        <td class="sticky-cell" style="left:20px;">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SLNO, new { id = "R_SLNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
-                                        </td>
-                                        <td class="sticky-cell" style="left:60px">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].AGDOCNO, new { id = "R_AGDOCNO_" + i, @class = "atextBoxFor ", maxlength = 16 })
-                                        </td>
-                                        <td class="sticky-cell" style="left:200px">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT, new { htmlAttributes = new { id = "R_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-                                        </td>
-                                        <td class="sticky-cell" style="left:340px">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].BARNO, new { id = "R_BARNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITGRPNM, new { id = "R_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ITGRPCD, new { id = "R_ITGRPCD_" + i })
-                                        </td>
-                                        @*<td class="">
-                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD, new { id = "R_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBNM, new { id = "R_MTRLJOBNM_" + i })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTBARCODE, new { id = "R_MTBARCODE_" + i })
-                                            </td>*@
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITCD, new { id = "R_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITSTYLE, new { id = "R_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ITCD, new { id = "R_ITCD_" + i })*@
-                                            @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].STYLENO, new { id = "R_STYLENO_" + i })*@
-                                        </td>
-                                        <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].HSNCODE, new { htmlattributes = new { id = "R_HSNCODE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
-                                        @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
-                                        {
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].COLRNM, new { id = "R_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BLQNTY, new { id = "R_BLQNTY_" + i })
+                                                @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].HSNCODE, new { id = "R_HSNCODE_" + i })*@
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].LOCABIN, new { id = "R_LOCABIN_" + i })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BARGENTYPE, new { id = "R_BARGENTYPE_" + i })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].GLCD, new { id = "R_GLCD_" + i })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].CLASS1CD, new { id = "R_CLASS1CD_" + i })
+                                                @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT, new { id = "R_GROSSAMT_" + i })*@
+                                                @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].DISCAMT, new { id = "R_DISCAMT_" + i })*@
+                                                @*@Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL, new { id = "R_TXBLVAL_" + i })*@
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TOTDISCAMT, new { id = "R_TOTDISCAMT_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].IGSTPER, new { id = "R_IGSTPER_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT, new { id = "R_IGSTAMT_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CGSTPER, new { id = "R_CGSTPER_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT, new { id = "R_CGSTAMT_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SGSTPER, new { id = "R_SGSTPER_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT, new { id = "R_SGSTAMT_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CESSPER, new { id = "R_CESSPER_" + i })
+                                                @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].CESSAMT, new { id = "R_CESSAMT_" + i })
                                             </td>
+                                            <td class="sticky-cell" style="left:20px;">
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SLNO, new { id = "R_SLNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                            </td>
+                                            <td class="sticky-cell" style="left:60px">
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].AGDOCNO, new { id = "R_AGDOCNO_" + i, @class = "atextBoxFor ", maxlength = 16 })
+                                            </td>
+                                            <td class="sticky-cell" style="left:200px">
+                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT, new { htmlAttributes = new { id = "R_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                                            </td>
+                                            <td class="sticky-cell" style="left:340px">
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].BARNO, new { id = "R_BARNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITGRPNM, new { id = "R_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ITGRPCD, new { id = "R_ITGRPCD_" + i })
+                                            </td>
+                                            @*<td class="">
+                                    @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD, new { id = "R_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBNM, new { id = "R_MTRLJOBNM_" + i })
+                                    @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTBARCODE, new { id = "R_MTBARCODE_" + i })
+                                </td>*@
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITCD, new { id = "R_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITSTYLE, new { id = "R_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ITCD, new { id = "R_ITCD_" + i })*@
+                                                @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].STYLENO, new { id = "R_STYLENO_" + i })*@
+                                            </td>
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].HSNCODE, new { htmlattributes = new { id = "R_HSNCODE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                                            </td>
+                                            @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                        {
+                                                <td class="">
+                                                    @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].COLRNM, new { id = "R_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                </td>
                                         }   @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                         {
                                             <td class="">
@@ -202,9 +203,9 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].SHADE, new { id = "R_SHADE_" + i })
                                         }
                                         @*<td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].BALSTOCK, new { htmlAttributes = new { id = "R_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].NEGSTOCK, new { id = "R_NEGSTOCK_" + i })
-                                            </td>*@
+                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].BALSTOCK, new { htmlAttributes = new { id = "R_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].NEGSTOCK, new { id = "R_NEGSTOCK_" + i })
+                            </td>*@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].NOS, new { htmlAttributes = new { id = "R_NOS_" + i, @style = "text-align: right;", @onblur = "CalculateGridQnty('_T_SALE_POS_RETURN_GRID'," + i + ",this.value);", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
@@ -229,8 +230,8 @@
                                                 @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].INCLRATE, "{0:0.00}", new { id = "R_INCLRATE_" + i, onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_RETURN_GRID');CalculateRowAmt('_T_SALE_POS_RETURN_GRID'," + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
                                             </td>
                                             @*<td class="">
-                                                    @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].RATE, new { htmlAttributes = new { id = "R_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>*@
+                                    @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].RATE, new { htmlAttributes = new { id = "R_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                </td>*@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].RATE, new { id = "R_RATE_" + i })
                                         }
                                         else
@@ -245,7 +246,7 @@
 
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE_DESC, new { id = "R_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE, new { id = "R_DISCTYPE_" + i })*@
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE, new { id = "R_DISCTYPE_" + i })*@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor select_3d ", id = "R_DISCTYPE_" + i, @onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_RETURN_GRID');" })
 
                                         </td>
@@ -283,29 +284,29 @@
                                         </td>
 
                                         @*<td class="">
-                                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL_RETURN[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "R_TDDISCTYPE_" + i })
-                                            </td>
-                                            <td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].TDDISCRATE, new { htmlAttributes = new { id = "R_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "" } })
-                                            </td>
-                                            <td class="">
-                                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].SCMDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL_RETURN[i].SCMDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "R_SCMDISCTYPE_" + i })
-                                            </td>*@
+                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL_RETURN[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "R_TDDISCTYPE_" + i })
+                            </td>
+                            <td class="">
+                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].TDDISCRATE, new { htmlAttributes = new { id = "R_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "" } })
+                            </td>
+                            <td class="">
+                                @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].SCMDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL_RETURN[i].SCMDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "R_SCMDISCTYPE_" + i })
+                            </td>*@
 
                                         @*<td class="">
 
-                                                @Html.EditorFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "R_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "R_ORDDOCNO_" + i + "','" + "R_ORDDOCNO_" + i + "=docno=0/" + "R_ORDDOCDT_" + i + "=docdt=2/" + "R_ORDAUTONO_" + i + "=autono=7/" + "R_ORDSLNO_" + i + "=slno=1','" + "R_ITCD_" + i + "/" + "R_ORDSLNO_" + i + "/" + "R_ORDAUTONO_" + i + "/RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "R_ORDDOCNO_" + i + "','" + "R_ORDDOCNO_" + i + "=docno=0/" + "R_ORDDOCDT_" + i + "=docdt=2/" + "R_ORDAUTONO_" + i + "=autono=7/" + "R_ORDSLNO_" + i + "=slno=1','" + "R_ITCD_" + i + "/" + "R_ORDSLNO_" + i + "/" + "R_ORDAUTONO_" + i + "/RETDEBSLCD');", maxlength = 15 } })
-                                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_SALE_POS")','Order Details','R_ORDDOCNO_@i','R_ORDDOCNO_@i=docno=0/R_ORDDOCDT_@i=docdt=2/R_ORDAUTONO_@i=autono=7/R_ORDSLNO_@i=slno=1','R_ITCD_@i/R_ORDSLNO_@i/R_ORDAUTONO_@i/RETDEBSLCD')" />
+                                @Html.EditorFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "R_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "R_ORDDOCNO_" + i + "','" + "R_ORDDOCNO_" + i + "=docno=0/" + "R_ORDDOCDT_" + i + "=docdt=2/" + "R_ORDAUTONO_" + i + "=autono=7/" + "R_ORDSLNO_" + i + "=slno=1','" + "R_ITCD_" + i + "/" + "R_ORDSLNO_" + i + "/" + "R_ORDAUTONO_" + i + "/RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "R_ORDDOCNO_" + i + "','" + "R_ORDDOCNO_" + i + "=docno=0/" + "R_ORDDOCDT_" + i + "=docdt=2/" + "R_ORDAUTONO_" + i + "=autono=7/" + "R_ORDSLNO_" + i + "=slno=1','" + "R_ITCD_" + i + "/" + "R_ORDSLNO_" + i + "/" + "R_ORDAUTONO_" + i + "/RETDEBSLCD');", maxlength = 15 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_SALE_POS")','Order Details','R_ORDDOCNO_@i','R_ORDDOCNO_@i=docno=0/R_ORDDOCDT_@i=docdt=2/R_ORDAUTONO_@i=autono=7/R_ORDSLNO_@i=slno=1','R_ITCD_@i/R_ORDSLNO_@i/R_ORDAUTONO_@i/RETDEBSLCD')" />
 
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ORDAUTONO, new { id = "R_ORDAUTONO_" + i })
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].ORDAUTONO, new { id = "R_ORDAUTONO_" + i })
 
-                                            </td>*@
+                            </td>*@
                                         @*<td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ORDSLNO, new { htmlAttributes = new { id = "R_ORDSLNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
-                                            </td>*@
+                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ORDSLNO, new { htmlAttributes = new { id = "R_ORDSLNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                            </td>*@
                                         @*<td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ORDDOCDT, new { htmlAttributes = new { id = "R_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
-                                            </td>*@
+                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ORDDOCDT, new { htmlAttributes = new { id = "R_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                            </td>*@
                                         <td class="">
                                             @Html.DropDownListFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].PCSACTION, new SelectList(Model.PCSActionList, "Value", "Text", Model.TsalePos_TBATCHDTL_RETURN[i].PCSACTION), "", new { id = "R_PCSACTION_" + i, @class = " atextBoxFor select_3d " })
                                         </td>
@@ -323,9 +324,9 @@
                                             </td>
                                         }
                                         @*<td class="">
-                                                <button type="button" onclick="FillImageModal('R_BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TsalePos_TBATCHDTL_RETURN[i].BarImagesCount</button>
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BarImages, new { id = "R_BarImages_" + i })
-                                            </td>*@
+                                <button type="button" onclick="FillImageModal('R_BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TsalePos_TBATCHDTL_RETURN[i].BarImagesCount</button>
+                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BarImages, new { id = "R_BarImages_" + i })
+                            </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITREM, new { id = "R_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
                                         </td>
@@ -335,24 +336,24 @@
                                     </tr>
                                 }
                             }
-                        </tbody>
-                        <tfoot>
-                            <tr class="sticky-footer">
-                                <td class="sticky-cell" style="width:20px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
-                                <td class="sticky-cell" style="left:20px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td class="sticky-cell" style="left:60px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td class="sticky-cell" style="left:200px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td class="sticky-cell" style="left:340px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>design*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;">
-                                    <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
-                                </td>
-                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
-                                {
+                            </tbody>
+                            <tfoot>
+                                <tr class="sticky-footer">
+                                    <td class="sticky-cell" style="width:20px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                    <td class="sticky-cell" style="left:20px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td class="sticky-cell" style="left:60px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td class="sticky-cell" style="left:200px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td class="sticky-cell" style="left:340px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>design*@
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td style="text-align:right;">
+                                        <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
+                                    </td>
+                                    @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                {
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }  @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -408,16 +409,16 @@
                                     @Html.EditorFor(model => Model.R_T_AMT, new { htmlAttributes = new { id = "R_T_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td>
                                     @Html.EditorFor(model => Model.R_T_GSTAMT, new { htmlAttributes = new { id = "R_T_GSTAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
 
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
@@ -440,6 +441,7 @@
                             </tr>
                         </tfoot>
                     </table>
+                </div>
                 </div>
             </div>
         }

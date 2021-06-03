@@ -55,6 +55,8 @@
             ViewBag.Title = "Return to Party w/o Job"; ViewBag.Partycaption = "Party"; break;
         case "PJBL":
             ViewBag.Title = "Job Bill raised to Party"; ViewBag.Partycaption = "Party"; break;
+        case "SBPOS":
+            ViewBag.Title = "Cash Sales"; ViewBag.Partycaption = "Buyer"; break;
         default: ViewBag.Title = ""; ViewBag.Partycaption = "Party"; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -116,7 +118,7 @@
                 $('.barfirstrow input').removeAttr("onkeydown");
                 $('.barfirstrow input').attr('TabIndex', '-1');
             }
-            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
+            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP" && '@Model.MENU_PARA' != "SBPOS") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
                 if ('@MNTNCOLOR' == "Y") {
@@ -153,7 +155,7 @@
                 $('.barfirstrow input').removeAttr("onkeydown");
                 $('.barfirstrow input').attr('TabIndex', '-1');
             }
-            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP") {
+            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP" && '@Model.MENU_PARA' != "SBPOS") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
                 if ('@MNTNCOLOR' == "Y") {
@@ -179,7 +181,7 @@
             $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
         }
         if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
-            if ("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "SBEXP" || "@Model.MENU_PARA" == "PI") {
+            if ("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "SBEXP" || "@Model.MENU_PARA" == "PI" || "@Model.MENU_PARA" == "SBPOS") {
                 var CONVQTYPUNIT = retFloat($("#CONVQTYPUNIT").val()).toFixed(0);
                 if (CONVQTYPUNIT == "0") {
                     $(".Billuomdiv").hide();
@@ -241,7 +243,7 @@
                 }
             }
         }
-        if (balenoexist == true && $("#LRNO").val() == "" && "@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SR" && "@Model.MENU_PARA" != "SBEXP") {
+        if (balenoexist == true && $("#LRNO").val() == "" && "@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SR" && "@Model.MENU_PARA" != "SBEXP" && "@Model.MENU_PARA" != "SBPOS") {
             msgInfo("if Bale No. exist then you have to fill LR Number in Transport Tab !!");
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:nth-child(5)").addClass('active');
@@ -754,7 +756,7 @@
                             {
                                 @Html.Label("", "Supplier Code")
                             }
-                            else if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SCN" || Model.MENU_PARA == "SDN")
+                            else if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SCN" || Model.MENU_PARA == "SDN" || Model.MENU_PARA == "SBPOS")
                             {
                                 @Html.Label("", "Buyer Code")
                             }
@@ -791,7 +793,7 @@
                             @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "GST No", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PB")
+                    @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "SBPOS")
                     {
                         <div class="col-md-6">
                             <div class="editor-field">
@@ -1174,7 +1176,7 @@
                                     </div>
                                 </div>
                             }
-                            @if (Model.MENU_PARA != "SBDIR")
+                            @if (Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SBPOS")
                             {
                                 <div class="col-md-4" style="width:auto;">
                                     <div class="editor-label" style="margin-top: 6px;">
@@ -1451,7 +1453,7 @@
 
 
                                     }
-                                    if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR") && Model.DefaultAction == "A")
+                                    if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "SBPOS") && Model.DefaultAction == "A")
                                     {
                                         <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
@@ -1640,7 +1642,7 @@
                                                     </span>
                                                 </div>
                                                 @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
-                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP" && Model.MENU_PARA != "PI")
+                                                @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP" && Model.MENU_PARA != "PI" && Model.MENU_PARA != "SBPOS")
                                                 {
                                                     @Html.HiddenFor(model => model.BLUOMCD, new { id = "BLUOMCD" })
                                                     @Html.HiddenFor(model => model.BLQNTY, new { id = "BLQNTY" })
@@ -1762,7 +1764,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SBPOS")
                                             { <div class="col-md-1">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
@@ -1792,7 +1794,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
                                             {
                                                 <div class="Billuomdiv col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
@@ -1825,7 +1827,7 @@
                                             {
                                                 @Html.HiddenFor(model => model.FLAGMTR, new { id = "FLAGMTR" })
                                             }
-                                            @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                            @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                             {
                                                 <div class="col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
@@ -2290,7 +2292,7 @@
                                     @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PI")
+                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
                             {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
