@@ -274,12 +274,13 @@ namespace Improvar.Controllers
                     VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
                 }
 
-                var jobdata = (from a in DB.M_JOBMST where a.JOBCD == sl.JOBCD select new { a.JOBNM, a.EXPGLCD, a.HSNCODE }).FirstOrDefault();
+                var jobdata = (from a in DB.M_JOBMST where a.JOBCD == sl.JOBCD select new { a.JOBNM, a.EXPGLCD, a.HSNCODE,a.UOMCD }).FirstOrDefault();
                 if (jobdata != null)
                 {
                     VE.JOBNM = jobdata.JOBNM;
                     VE.JOBEXPGLCD = jobdata.EXPGLCD;
                     VE.JOBHSNCODE = jobdata.HSNCODE;
+                    VE.UOM = jobdata.UOMCD;
                 }
 
                 VE.TAXABVAL = tDtl.TXBLVAL.retDbl();
@@ -1339,7 +1340,7 @@ namespace Improvar.Controllers
                         TVCHGST.EXPGLCD = VE.JOBEXPGLCD;
                         TVCHGST.INPTCLAIM = "Y";
                         TVCHGST.BASAMT = TTXNDTL.TXBLVAL.retDbl();
-
+                        TVCHGST.UOM = VE.UOM;
                         //TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl());
                         //TVCHGST.UOM = VE.TsalePos_TBATCHDTL[i].UOM;
                         //TVCHGST.AGSTDOCNO = VE.TsalePos_TBATCHDTL[i].AGDOCNO;

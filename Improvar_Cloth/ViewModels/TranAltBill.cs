@@ -53,6 +53,7 @@ namespace Improvar.ViewModels
         public string PSLCD { get; set; }
         public string EXPGLNM { get; set; }
         public string JOBNM { get; set; }
+        public string UOM { get; set; }
         public string JOBEXPGLCD { get; set; }
         public string JOBHSNCODE { get; set; }
         public string SHOWSTKTYPE { get; set; }
