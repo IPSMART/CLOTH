@@ -106,9 +106,18 @@ namespace Improvar.Controllers
                     VE.DropDown_list2 = (from i in SectionName
                                          where i.Contains("Rep_Reg_")
                                          select new DropDown_list2() { value = i, text = i }).Distinct().OrderBy(s => s.text).ToList();
+                    INI Handel_Ini = new INI();
                     if (VE.DropDown_list2 != null && VE.DropDown_list2.Count() != 0)
                     {
-                        VE.TEXTBOX6 = VE.DropDown_list2[0].value;
+                        foreach (var v in VE.DropDown_list2)
+                        {
+                            string ActiveSection = Handel_Ini.IniReadValue(v.value, "ACTIVE", Server.MapPath("~/Ipsmart.ini"));
+                            if (ActiveSection != "")
+                            {
+                                VE.TEXTBOX6 = v.value;
+                                break;
+                            }
+                        }
                     }
                     ShowAllColumn(VE);
                     VE.DefaultView = true;
@@ -409,7 +418,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party;Name");
                         HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent;Name");
-                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
+                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (itemrem == true) HC.GetPrintHeader(IR, "itrem", "string", "c,20", ";Item Remarks");
@@ -432,7 +441,7 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
-                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
+                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
