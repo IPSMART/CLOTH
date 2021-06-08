@@ -3735,6 +3735,7 @@ function Sale_SelectTTXNDTLDetails() {
         success: function (result) {
             if (result.indexOf("_T_SALE_PRODUCT_GRID") >= 0) {
                 $("#partialdivBarCodeTab").html(result);
+                $("#bardatachng").val("Y");
                 CalculateTotal_Barno();
                 $("#popup_agdocno").html("");
             }
