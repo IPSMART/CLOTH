@@ -149,8 +149,16 @@ namespace Improvar.Controllers
                 if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  ";
                 if (LOCCD != "") { sql += "and c.loccd in(" + LOCCD + ")  "; } else { sql += "and c.loccd='" + LOC + "' "; }
 
-                if (FGOCD != "") sql += "and b.gocd in(" + FGOCD + ")  and a.stkdrcr='C' ";
-                if (TGOCD != "") sql += "and b.gocd in(" + TGOCD + ")  and a.stkdrcr='D' ";
+                if (FGOCD != "" && TGOCD != "")
+                {
+                    sql += "and ((b.gocd in(" + FGOCD + ")  and a.stkdrcr='C') or (b.gocd in(" + TGOCD + ")  and a.stkdrcr='D')) ";
+                }
+                else
+                {
+                    if (FGOCD != "") sql += "and b.gocd in(" + FGOCD + ")  and a.stkdrcr='C' ";
+                    if (TGOCD != "") sql += "and b.gocd in(" + TGOCD + ")  and a.stkdrcr='D' ";
+                }
+
 
 
                 if (plist.retStr() != "")
