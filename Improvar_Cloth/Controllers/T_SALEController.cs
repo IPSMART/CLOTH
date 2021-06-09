@@ -3870,6 +3870,16 @@ namespace Improvar.Controllers
                     {
                         PIAUTONO = VE.T_TXN.AUTONO;
                     }
+                    if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")//allow only one against docno per invoice
+                    {
+                        var cntagdocno = VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct().ToList();
+                        if (cntagdocno.Count > 1)
+                        {
+                            string agdocno =string.Join (",", VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct());
+                            ContentFlg = "Allow only one Invoice ("+ agdocno + ") to adjusting !!";
+                            goto dbnotsave;
+                        }
+                    }
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
 
                     if (VE.TBATCHDTL != null && VE.TTXNDTL != null)

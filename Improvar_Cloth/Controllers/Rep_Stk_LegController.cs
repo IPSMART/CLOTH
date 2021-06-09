@@ -132,7 +132,7 @@ namespace Improvar.Controllers
 
                 string sql = "";
                 sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
-                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos from ";
+                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from ";
                 sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, ";
                 sql += "sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, ";
                 sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
@@ -154,8 +154,27 @@ namespace Improvar.Controllers
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos ";
                 sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, ";
 
+                sql += "(select listagg(gonm, ',') within group (order by gonm) tgonm,autono ";
+                sql += "from (select distinct a.gocd, a.autono, c.gonm ";
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) and a.stkdrcr = 'D' ";
+                sql += "group by a.gocd, a.autono, c.gonm) ";
+                sql += "group by autono)e, ";
+
+                sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono ";
+                sql += "from (select distinct b.gocd, b.autono, c.gonm ";
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and b.gocd = c.gocd(+) and a.stkdrcr = 'C' ";
+                sql += "group by b.gocd, b.autono, c.gonm) ";
+                sql += "group by autono)f, ";
+
+                sql += "(select listagg(baleno, ',') within group (order by baleno) baleno,autono ";
+                sql += "from (select distinct a.baleno, b.autono ";
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b where a.autono = b.autono(+) ";
+                sql += "group by a.baleno, b.autono) ";
+                sql += "group by autono)g, ";
+
+
                 sql += scm1 + ".m_sitem c, " + scmf + ".m_uom d ";
-                sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) ";
+                sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and a.autono=g.autono(+) ";
                 if (itgrpcd.retStr() != "") sql += "and c.itgrpcd in(" + itgrpcd + ") ";
 
                 sql += "order by itnm, itcd, docdt, stkdrcr desc, autono ";
@@ -267,7 +286,8 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
                             IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                             IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
-                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + " " + tbl.Rows[i]["district"] + "]";
+                            string gonm = tbl.Rows[i]["stkdrcr"].ToString() == "D" ? ("To Godown : " + tbl.Rows[i]["tgonm"].ToString()) : ("From Godown : " + tbl.Rows[i]["fgonm"].ToString());
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] + " [" + gonm +", Baleno : "+ tbl.Rows[i]["baleno"].ToString() + "]" : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + " " + tbl.Rows[i]["district"] + "]";
                             //if (showbatch == true) IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchnos"];
                             IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
