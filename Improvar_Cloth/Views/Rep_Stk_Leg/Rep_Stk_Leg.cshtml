@@ -111,7 +111,7 @@
                     </div>
                 </div>*@
 
-                <div class="row">
+                @*<div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:6px">
                             @Html.Label("", "Godown")
@@ -130,8 +130,27 @@
                             </optgroup>
                         </select>
                     </div>
+                </div>*@
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Godown")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.TEXTBOX2))
+                    </div>
                 </div>
-
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Godown")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.TEXTBOX3))
+                    </div>
+                </div>
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
@@ -152,46 +171,55 @@
                         @(new HtmlString(Model.Locnm))
                     </div>
                 </div>
-                @*<div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Item")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <select id="ITEM" name="ITEM" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
-                                <optgroup label="ITEM CODE">
-                                    @foreach (var i in Model.DropDown_list_text)
-                                    {
-                                        <option value="@i.value">
-                                            @i.text1
-                                        </option>
-                                    }
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div>*@
-
-                @*<div class="row" style="margin-top:10PX">
+                <div class="row">
                     <div class="col-lg-2">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Stock Calculate on")
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Amt")
                         </div>
                     </div>
-                    <div class="col-lg-10">
-                        <input type="radio" name="RATEQNTYBAG" value="BAGS" />BAGS
-                        <input type="radio" name="RATEQNTYBAG" value="QNTY" checked />QNTY
-                    </div>
-                </div>*@
-                <div class="row" style="margin-top:10PX">
-                    <div class="col-lg-2">
-                    </div>
-                    <div class="col-lg-6">
-                        <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                    <div class="col-md-6">
+                       @Html.CheckBoxFor(model => model.Checkbox1, true)@*snfb not want amt col*@
                     </div>
                 </div>
-            </div>
+                    @*<div class="row">
+                <div class="col-lg-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Item")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <select id="ITEM" name="ITEM" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                        <optgroup label="ITEM CODE">
+                            @foreach (var i in Model.DropDown_list_text)
+                            {
+                                <option value="@i.value">
+                                    @i.text1
+                                </option>
+                            }
+                        </optgroup>
+                    </select>
+                </div>
+            </div>*@
+                    @*<div class="row" style="margin-top:10PX">
+                <div class="col-lg-2">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Stock Calculate on")
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <input type="radio" name="RATEQNTYBAG" value="BAGS" />BAGS
+                    <input type="radio" name="RATEQNTYBAG" value="QNTY" checked />QNTY
+                </div>
+            </div>*@
+                    <div class="row" style="margin-top:10PX">
+                        <div class="col-lg-2">
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                        </div>
+                    </div>
+                </div>
         </div>
     }
     <div class="container">

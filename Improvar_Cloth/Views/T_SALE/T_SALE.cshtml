@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Partycaption = "Party";
 
-    string COMMONUNIQBAR = "", MNTNCOLOR="";
+    string COMMONUNIQBAR = "", MNTNCOLOR = "";
     if (Model != null && Model.M_SYSCNFG != null)
     {
         COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
@@ -509,7 +509,7 @@
                 $("#STYLENO").focus();
             }
         }
-        if (event.altKey && KeyID == 84) {//for Alt+T (transport tab)
+        if (event.altKey && KeyID == 84 && "@Model.MENU_PARA" != "SR" && "@Model.MENU_PARA" != "PR") {//for Alt+T (transport tab)
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:nth-child(5)").addClass('active');
             //below set the  child sequence
@@ -739,7 +739,7 @@
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                         </div>
                     }
-                    @if (Model.DefaultAction == "V")
+                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "PR")
                     {
                         <div class="col-md-1" style="width:auto;">
                             <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Transport" id="edit_Transport" value="Update Transport" title="Click to Update Transport button for edit Transport Tab" onclick="Edit_Transport()" />
@@ -906,8 +906,11 @@
                     <li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab">Bar Code(B)</a></li>
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="L">Detail(L)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="UpdateTaxPer();">Amount(H)</a></li>
-                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport">Transport(T)</a></li>
-                    <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
+                    @if (Model.MENU_PARA != "SR" && Model.MENU_PARA != "PR")
+                    {
+                        <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport">Transport(T)</a></li>
+                        <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
+                    }
                     @if (Model.MENU_PARA == "SO" || Model.MENU_PARA == "SI")
                     {
                         <li id="StockTransfer_LI" class=""><a data-toggle="tab" href="#StockTransfer">Stock Out/In</a></li>
