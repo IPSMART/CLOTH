@@ -11,6 +11,11 @@
         COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
         MNTNCOLOR = Model.M_SYSCNFG.MNTNCOLOR;
     }
+    int doccdcnt = 0;
+    if (Model != null && Model.DocumentType != null)
+    {
+        doccdcnt = Model.DocumentType.Count;
+    }
 }
 @{
     switch (Model.MENU_PARA)
@@ -195,6 +200,11 @@
 <script>
     function requiredFieldValidator() {
         debugger;
+        if ("@doccdcnt" == 0) {
+            msgInfo("Select Document Code !!");
+            message_value = "DOCCD";
+            return false;
+        }
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter @ViewBag.Partycaption", "SLCD")) { return false; }
         if ("@Model.MENU_PARA" == "PJBL") {
@@ -1484,6 +1494,23 @@
                                         <div class="col-lg-9" style="border:groove 1px;">
                                             <div class="col-md-1" style="width:auto;">
                                                 <div class="editor-label" style="margin-top: 6px;">
+                                                    @if (Model.MENU_PARA == "SR")
+                                                    {
+                                                        @Html.Label("", "Doc No.")
+                                                    }
+                                                    else {
+                                                        @Html.Label("", "P.Bill no.")
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 16 } })
+                                                    @Html.HiddenFor(model => model.Last_R_DOCNO, new { id = "Last_R_DOCNO" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1" style="width:auto;">
+                                                <div class="editor-label" style="margin-top: 6px;">
                                                     @Html.Label("", "Return From Date")
                                                 </div>
                                             </div>
@@ -1503,24 +1530,7 @@
                                                     @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                                     @Html.HiddenFor(model => model.Last_TDT, new { id = "Last_TDT" })
                                                 </div>
-                                            </div>
-                                            <div class="col-md-1" style="width:auto;">
-                                                <div class="editor-label" style="margin-top: 6px;">
-                                                    @if (Model.MENU_PARA == "SR")
-                                                    {
-                                                        @Html.Label("", "Doc No.")
-                                                    }
-                                                    else {
-                                                        @Html.Label("", "P.Bill no.")
-                                                    }
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-2">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 16 } })
-                                                    @Html.HiddenFor(model => model.Last_R_DOCNO, new { id = "Last_R_DOCNO" })
-                                                </div>
-                                            </div>
+                                            </div>                                           
                                             <div class="col-md-1" style="width:auto;">
                                                 <div class="editor-label" style="margin-top: 6px;">
                                                     @Html.Label("", "Bar No.")

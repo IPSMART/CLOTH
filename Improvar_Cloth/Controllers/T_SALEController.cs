@@ -3875,8 +3875,8 @@ namespace Improvar.Controllers
                         var cntagdocno = VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct().ToList();
                         if (cntagdocno.Count > 1)
                         {
-                            string agdocno =string.Join (",", VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct());
-                            ContentFlg = "Allow only one Invoice ("+ agdocno + ") to adjusting !!";
+                            string agdocno = string.Join(",", VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct());
+                            ContentFlg = "Allow only one Invoice (" + agdocno + ") to adjusting !!";
                             goto dbnotsave;
                         }
                     }
@@ -5350,34 +5350,20 @@ namespace Improvar.Controllers
                                         {
                                             string AGAUTONO = "", AGBLAMT = "";
                                             string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : "PB";
-                                            sql = "select a.autono,a.blamt from " + scm1 + ".t_txn a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono(+) and a.doctag='" + doctag + "' ";
+                                            sql = "select a.autono,a.blamt from " + scmf + ".t_vch_bl a ";
+                                            sql += "where a.blno = '" + VE.TTXNDTL[i].AGDOCNO + "'  ";
+                                            sql += "and a.bldt = to_date('" + VE.TTXNDTL[i].AGDOCDT.retDateStr() + "','dd/mm/yyyy')";
 
-                                            if (VE.MENU_PARA.retStr() == "SR")
-                                            {
-                                                sql += "and (b.docno = '" + VE.TTXNDTL[i].AGDOCNO + "' or b.vchrno like '%" + VE.TTXNDTL[i].AGDOCNO.retStr() + "%' ) ";
-                                                sql += "and a.docdt = to_date('" + VE.TTXNDTL[i].AGDOCDT.retDateStr() + "','dd/mm/yyyy')";
-                                            }
-                                            else
-                                            {
-                                                sql += "and a.prefno = '" + VE.TTXNDTL[i].AGDOCNO + "'  ";
-                                                sql += "and a.prefdt = to_date('" + VE.TTXNDTL[i].AGDOCDT.retDateStr() + "','dd/mm/yyyy')";
-                                            }
+
                                             DataTable dt1 = masterHelp.SQLquery(sql);
                                             if (dt1 != null && dt1.Rows.Count > 0)
                                             {
-                                                if (dt1.Rows.Count > 1)
-                                                {
-                                                    ContentFlg = "Invoice not fount against this docno : " + VE.TTXNDTL[i].AGDOCNO + " ..Please enter correct docno "; goto dbnotsave;
-                                                }
-                                                else
-                                                {
-                                                    AGAUTONO = dt1.Rows[0]["autono"].retStr();
-                                                    AGBLAMT = dt1.Rows[0]["BLAMT"].retStr();
-                                                }
-                                            }
+                                                AGAUTONO = dt1.Rows[0]["autono"].retStr();
+                                                AGBLAMT = dt1.Rows[0]["BLAMT"].retStr();
 
-                                            dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, Convert.ToSByte(isl), VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
-                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, Convert.ToSByte(isl), VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
+                                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                            }
                                         }
                                         #endregion
                                     }
