@@ -287,7 +287,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                             IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
                             string gonm = tbl.Rows[i]["stkdrcr"].ToString() == "D" ? ("To Godown : " + tbl.Rows[i]["tgonm"].ToString()) : ("From Godown : " + tbl.Rows[i]["fgonm"].ToString());
-                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] + " [" + gonm +", Baleno : "+ tbl.Rows[i]["baleno"].ToString() + "]" : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + " " + tbl.Rows[i]["district"] + "]";
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] + " [" + gonm + "]" : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + " " + tbl.Rows[i]["district"] + "]";
                             //if (showbatch == true) IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchnos"];
                             IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
