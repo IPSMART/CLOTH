@@ -3993,9 +3993,11 @@ namespace Improvar.Controllers
                         case "SCN":
                             stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "SDN":
-                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
-                        case "PCN":
+                            //stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                             stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
+                        case "PCN":
+                            //stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
+                            stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "PDN":
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "SBPOS":
@@ -5027,7 +5029,7 @@ namespace Improvar.Controllers
                     double itamt = 0;
                     if (blactpost == true)
                     {
-                        if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS") salpur = "S";
+                        if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN") salpur = "S";
                         else salpur = "P";
                         string prodrem = strrem; expglcd = "";
                         if (VE.TTXNDTL != null)
