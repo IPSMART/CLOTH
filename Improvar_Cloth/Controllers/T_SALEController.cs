@@ -5239,8 +5239,11 @@ namespace Improvar.Controllers
 
                         int gs = 0;
                         string dncntag = ""; string exemptype = "";
-                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "SRPOS") dncntag = "SC";
-                        if (VE.MENU_PARA == "PR") dncntag = "PD";
+                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "SRPOS" || VE.MENU_PARA == "SCN") dncntag = "SC";
+                        if (VE.MENU_PARA == "SDN") dncntag = "SD";
+                        if (VE.MENU_PARA == "PCN") dncntag = "PC";
+                        if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "PDN") dncntag = "PD";
+                        
                         double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl(); double gtcsamt = TTXN.TCSAMT.retDbl();
                         string pinv = VE.MENU_PARA == "PI" ? "Y" : "";
                         if (VE.TTXNDTL != null)
