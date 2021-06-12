@@ -5,6 +5,8 @@ using Improvar.Models;
 using Improvar.ViewModels;
 using System.Data;
 using System.Collections.Generic;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
 
 namespace Improvar.Controllers
 {
@@ -106,9 +108,18 @@ namespace Improvar.Controllers
                     VE.DropDown_list2 = (from i in SectionName
                                          where i.Contains("Rep_Reg_")
                                          select new DropDown_list2() { value = i, text = i }).Distinct().OrderBy(s => s.text).ToList();
+                    INI Handel_Ini = new INI();
                     if (VE.DropDown_list2 != null && VE.DropDown_list2.Count() != 0)
                     {
-                        VE.TEXTBOX6 = VE.DropDown_list2[0].value;
+                        foreach (var v in VE.DropDown_list2)
+                        {
+                            string ActiveSection = Handel_Ini.IniReadValue(v.value, "ACTIVE", Server.MapPath("~/Ipsmart.ini"));
+                            if (ActiveSection != "")
+                            {
+                                VE.TEXTBOX6 = v.value;
+                                break;
+                            }
+                        }
                     }
                     ShowAllColumn(VE);
                     VE.DefaultView = true;
@@ -346,7 +357,8 @@ namespace Improvar.Controllers
                     exdt[0] = tbl;
                     string[] sheetname = new string[1];
                     sheetname[0] = "Sheet1";
-                    MasterHelp.ExcelfromDataTables(exdt, sheetname, regdsp + " Register".retRepname(), false, "");
+                    //MasterHelp.ExcelfromDataTables(exdt, sheetname, regdsp + " Register".retRepname(), false, "");
+                    RegExcelfromDataTables(exdt, sheetname, regdsp + " Register".retRepname(), false, regdsp + " Register");
                     return null;
                 }
                 else {
@@ -409,7 +421,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party;Name");
                         HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent;Name");
-                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
+                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (itemrem == true) HC.GetPrintHeader(IR, "itrem", "string", "c,20", ";Item Remarks");
@@ -432,7 +444,7 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
-                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", ";Bill;Type");
+                        if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
@@ -1529,6 +1541,80 @@ namespace Improvar.Controllers
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public void RegExcelfromDataTables(DataTable[] dt, string[] sheetname, string filename, bool isRowHighlight, string Caption)
+        {
+            try
+            {
+                string[] roundoffupto2dec = { "ROAMT", "TCSAMT", "BLAMT", "RATE", "AMT", "SCMDISCAMT", "TDDISCAMT", "DISCAMT", "TXBLVAL", "GRWT", "TRWT", "NTWT", "IGSTPER", "IGSTAMT", "CGSTPER", "CGSTAMT", "SGSTAMT", "CESSPER", "CESSAMT", "NETAMT", "SGSTPER", "GSTPER", "GSTAMT" };
+                string[] roundoffupto3dec = { "QNTY", "BLQNTY" };
+
+                using (ExcelPackage pck = new ExcelPackage())
+                {
+                    for (int i = 0; i < dt.Length; i++)
+                    {
+                        ExcelWorksheet ws = pck.Workbook.Worksheets.Add(sheetname[i]);
+                        int row = 0;
+                        if (Caption != "")
+                        {
+                            ws.Cells[++row, 1].Value = CommVar.CompName(UNQSNO);
+                            ws.Cells[++row, 1].Value = CommVar.LocName(UNQSNO);
+                            ws.Cells[++row, 1].Value = Caption;
+                        }
+                        if (isRowHighlight)
+                        {
+                            ws.Cells[++row, 1].LoadFromDataTable(dt[i], true, TableStyles.Medium15); //You can Use TableStyles property of your desire.    ,
+                        }
+                        else
+                        {
+                            using (ExcelRange Rng = ws.Cells[row + 1, 1, row + 1, dt[i].Columns.Count])
+                            {
+                                Rng.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                Rng.Style.Font.Bold = true;
+                                Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                            }
+                            ws.Cells[++row, 1].LoadFromDataTable(dt[i], true);
+                        }
+                        int strtRow = row + 1;
+                        row = row + dt[i].Rows.Count;
+                        using (ExcelRange Rng = ws.Cells[++row, 1, row, dt[i].Columns.Count])
+                        {
+                            Rng.Style.Font.Bold = true;
+                        }
+                        ws.Cells[row, 1].Value = "Sub Total";
+                        int column = 0;
+                        foreach (DataColumn dc in dt[i].Columns)
+                        {
+                            ++column;
+                            if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal) || dc.DataType == typeof(int))
+                            {
+                                ws.Cells[row, column, row, column].Formula = "=sum(" + ws.Cells[strtRow, column].Address + ":" + ws.Cells[row - 1, column].Address + ")";
+                            }
+                            if ((dc.DataType == typeof(double) || dc.DataType == typeof(decimal)) && roundoffupto2dec.Contains(dc.ColumnName))
+                            {
+                                ws.Column(column).Style.Numberformat.Format = "0.00";
+                            }
+                            else if ((dc.DataType == typeof(double) || dc.DataType == typeof(decimal)) && roundoffupto3dec.Contains(dc.ColumnName))
+                            {
+                                ws.Column(column).Style.Numberformat.Format = "0.000";
+                            }
+                        }
+                        ws.Cells.AutoFitColumns();
+                    }
+                   
+                    //Read the Excel file in a byte array    
+                    Byte[] fileBytes = pck.GetAsByteArray();
+                    Response.ClearContent();
+                    Response.AddHeader("content-disposition", "attachment;filename=" + filename.retRepname() + ".xlsx");
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.BinaryWrite(fileBytes);
+                    Response.End();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
             }
         }
     }

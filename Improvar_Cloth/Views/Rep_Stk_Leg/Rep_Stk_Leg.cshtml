@@ -91,25 +91,25 @@
                 </div>
 
                 @*<div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Price List")
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top:5px">
+                                @Html.Label("", "Price List")
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <select id="plist" name="plist" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
-                            <optgroup label="Employee">
-                                @foreach (var i in Model.DropDown_list1)
-                                {
-                                    <option value="@i.value">
-                                        @i.text
-                                    </option>
-                                }
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>*@
+                        <div class="col-md-6">
+                            <select id="plist" name="plist" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                                <optgroup label="Employee">
+                                    @foreach (var i in Model.DropDown_list1)
+                                    {
+                                        <option value="@i.value">
+                                            @i.text
+                                        </option>
+                                    }
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>*@
 
                 <div class="row">
                     <div class="col-lg-2">
@@ -152,6 +152,16 @@
                         @(new HtmlString(Model.Locnm))
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Amt")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.CheckBoxFor(model => model.Checkbox1, true)@*snfb not want amt col*@
+                    </div>
+                </div>
                 @*<div class="row">
                         <div class="col-lg-2">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -174,16 +184,16 @@
                     </div>*@
 
                 @*<div class="row" style="margin-top:10PX">
-                    <div class="col-lg-2">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Stock Calculate on")
+                        <div class="col-lg-2">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Stock Calculate on")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-10">
-                        <input type="radio" name="RATEQNTYBAG" value="BAGS" />BAGS
-                        <input type="radio" name="RATEQNTYBAG" value="QNTY" checked />QNTY
-                    </div>
-                </div>*@
+                        <div class="col-lg-10">
+                            <input type="radio" name="RATEQNTYBAG" value="BAGS" />BAGS
+                            <input type="radio" name="RATEQNTYBAG" value="QNTY" checked />QNTY
+                        </div>
+                    </div>*@
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>

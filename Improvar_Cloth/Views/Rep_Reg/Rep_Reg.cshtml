@@ -188,6 +188,9 @@
                     <div class="col-md-9">
                         @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1" })
                     </div>
+                    <div class="col-lg-2" style="margin-top: 4px;">
+                        <input type="button" name="Columns" value="Setup Excel Columns" style="padding: 2px;" title="Filter Column Display" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myColumnModal" />
+                    </div>
                 </div>
                 @*<div class="row">
                         <div class="col-lg-2">
@@ -437,16 +440,6 @@
                     </div>
                 </div>
 
-                <div class="row" style="margin-top:10PX">
-                    <div class="col-lg-2">
-                    </div>
-                    <div class="col-lg-2">
-                        <input type="button" name="Columns" value="Setup Excel Columns" title="Filter Column Display" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myColumnModal" />
-                    </div>
-                    @*<div class="col-lg-2">
-                            <input type="button" name="SaveSeting" value="Save Setting" title="Save Setting which column do you want to show every time." onclick="SaveSetting()" class="btn btn-info btn-sm" />
-                        </div>*@
-                </div>
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
