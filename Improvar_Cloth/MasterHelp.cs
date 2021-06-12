@@ -2429,7 +2429,7 @@ namespace Improvar
             }
         }
         public List<REV_CHRG> REV_CHRG()
-        {
+        { 
             List<REV_CHRG> Reverse = new List<REV_CHRG>();//add reverse charge option
             REV_CHRG Reverse0 = new REV_CHRG();
             Reverse0.Text = "No"; Reverse0.Value = "";
