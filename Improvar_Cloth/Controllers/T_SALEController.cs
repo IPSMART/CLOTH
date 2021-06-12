@@ -3993,11 +3993,9 @@ namespace Improvar.Controllers
                         case "SCN":
                             stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "SDN":
-                            //stkdrcr = "N"; blactpost = true; blgstpost = true; break;
-                            stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
-                        case "PCN":
-                            //stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
+                        case "PCN":
+                            stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "PDN":
                             stkdrcr = "N"; blactpost = true; blgstpost = true; break;
                         case "SBPOS":
