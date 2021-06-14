@@ -931,11 +931,18 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                         <div class="row">
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "SR")
                             {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Party bill no")
+                                        @if (Model.MENU_PARA == "SR")
+                                        {
+                                            @Html.Label("", "Adjusted Blno")
+                                        }
+                                        else
+                                        {
+                                            @Html.Label("", "Party bill no")
+                                        }
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <b style="color:Red;">*</b>
@@ -944,12 +951,29 @@
                                 </div>
                                 <div class="col-md-10">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO", onblur = "CheckBillNumber();" } })
+                                        @if (Model.MENU_PARA == "SR")
+                                        {
+                                            @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PREFNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','PREFNO','PREFNO=BLNO=1/PREFDT=BLDT=0/osAutono=Autono=5','SLCD/osAutono')", onblur = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','PREFNO','PREFNO=BLNO=1/PREFDT=BLDT=0/osAutono=Autono=5','SLCD/osAutono');", @placeholder = "Pref no" } })
+                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOSBillNumberDetails", PageControllerName)','Os Bill Details','PREFNO','PREFNO=BLNO=1/PREFDT=BLDT=0/osAutono=Autono=5','SLCD/osAutono')" />
+                                            <input type="hidden" id="osAutono" />
+                                        }
+                                        else
+                                        {
+                                            @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO", onblur = "CheckBillNumber();" } })
+                                        }
                                     </div>
+
                                 </div>
                                 <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Party bill dt")
+                                        @if (Model.MENU_PARA == "SR")
+                                        {
+                                            @Html.Label("", "Adjusted Bill dt")
+                                        }
+                                        else
+                                        {
+                                            @Html.Label("", "Party bill dt")
+                                        }
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <b style="color:Red;">*</b>
@@ -1530,7 +1554,7 @@
                                                     @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                                     @Html.HiddenFor(model => model.Last_TDT, new { id = "Last_TDT" })
                                                 </div>
-                                            </div>                                           
+                                            </div>
                                             <div class="col-md-1" style="width:auto;">
                                                 <div class="editor-label" style="margin-top: 6px;">
                                                     @Html.Label("", "Bar No.")

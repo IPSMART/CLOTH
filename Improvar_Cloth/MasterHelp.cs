@@ -3055,5 +3055,50 @@ namespace Improvar
             }
 
         }
+        public string OS_Bill_help(string blno, string GLCD, string SLCD, string BILLAUTONO = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO);
+            DataTable tbl = GenOSTbl(GLCD, SLCD, "", "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, blno);
+            if (blno.retStr() == "")
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    if (tbl.Rows[i]["BLNO"] != null && tbl.Rows[i]["BLDT"] != null)
+                    {
+                        string bldt = tbl.Rows[i]["BLDT"].retStr() == "" ? "" : tbl.Rows[i]["BLDT"].ToString().Substring(0, 10);
+                        SB.Append("<tr><td>" + tbl.Rows[i]["BLNO"] + "</td><td>" + bldt + "</td><td>" + tbl.Rows[i]["BLAMT"] + "</td><td>" + tbl.Rows[i]["bal_amt"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
+                    }
+                }
+                var hdr = "Bill Number" + Cn.GCS() + "Bill Date" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "Due Amt" + Cn.GCS()  + "Bill Autono";
+                return Generate_help(hdr, SB.ToString(), "4");
+            }
+            else
+            {
+                if (tbl.Rows.Count != 0)
+                {
+                    if (BILLAUTONO.retStr() != "")
+                    {
+                        var data = tbl.Select("AUTONO='" + BILLAUTONO + "'");
+                        if (data != null && data.Count() > 0)
+                        {
+                            tbl = data.CopyToDataTable();
+                        }
+                    }
+
+                    string str = "";
+                    str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "0";
+                }
+            }
+        }
+
     }
 }
