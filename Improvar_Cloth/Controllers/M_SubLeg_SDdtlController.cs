@@ -186,6 +186,7 @@ namespace Improvar.Controllers
                 if (subleg != null)
                 {
                     VE.GSTNO = subleg.GSTNO;
+                    VE.DISTRICT = subleg.SLAREA==null? subleg.DISTRICT: subleg.SLAREA;
                 }
                 var Agent = DBF.M_SUBLEG.Find(sl.AGSLCD);
                 if (Agent != null)
@@ -333,16 +334,17 @@ namespace Improvar.Controllers
                            SLCD = a.SLCD,
                            SLNM = b.SLNM,
                            PRCCD = a.PRCCD,
-                           COMPCD = a.COMPCD
+                           COMPCD = a.COMPCD,
+                           DISTRICT = b.SLAREA==null?b.DISTRICT:b.SLAREA,
                        }).ToList();
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code";
+            var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "District" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code";
             for (int j = 0; j <= MDT.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT[j].SLCD + "</td><td>" + MDT[j].SLNM + "</td><td>" + MDT[j].PRCCD + "</td><td>" + MDT[j].COMPCD + "</td></tr>");
+                SB.Append("<tr><td>" + MDT[j].SLCD + "</td><td>" + MDT[j].SLNM + "</td><td>" + MDT[j].DISTRICT + "</td><td>" + MDT[j].PRCCD + "</td><td>" + MDT[j].COMPCD + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "3", "3"));
+            return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "4", "4"));
 
         }
         public ActionResult GetPriceDetails(string val)
@@ -422,7 +424,8 @@ namespace Improvar.Controllers
                                 return Content("1");
                             }
                         }
-                        str = i.SLCD + Cn.GCS() + i.SLNM + Cn.GCS() + i.GSTNO;
+                        string disctrict = i.SLAREA == null ? i.DISTRICT : i.SLAREA;
+                        str = i.SLCD + Cn.GCS() + i.SLNM + Cn.GCS() + i.GSTNO + Cn.GCS() + disctrict;
                     }
                     return Content(str);
                 }

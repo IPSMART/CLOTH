@@ -18,7 +18,6 @@ namespace Improvar.ViewModels
         public List<DocumentThrough> DocumentThrough { get; set; }
         public List<DropDown_list_DelvType> DropDown_list_DelvType { get; set; }
         public string GSTNO { get; set; }
-        
-
+        public string DISTRICT { get; set; }
     }
 }
