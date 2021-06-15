@@ -2776,10 +2776,10 @@ namespace Improvar.Controllers
             }
         }
         public ActionResult GetOSBillNumberDetails(string val, string Code)
-        { 
+        {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var arr = Code.Split(Convert.ToChar(Cn.GCS()));
-            var slcd = arr[0];string blautono = "";
+            var slcd = arr[0]; string blautono = "";
             if (arr.Length > 1) blautono = arr[1];
             if (val.retStr() == "")
             {
@@ -4496,8 +4496,16 @@ namespace Improvar.Controllers
 
                                 if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") && VE.TTXNDTL[i].AGDOCNO.retStr() != "" && VE.TTXNDTL[i].AGDOCDT.retStr() != "")
                                 {
-                                    TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
-                                    TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;
+                                    if (!string.IsNullOrEmpty(TTXN.PREFNO) && !string.IsNullOrEmpty(TTXN.PREFDT.retStr()))
+                                    {
+                                        TTXNDTL.AGDOCNO = TTXN.PREFNO;
+                                        TTXNDTL.AGDOCDT = TTXN.PREFDT;
+                                    }
+                                    else
+                                    {
+                                        TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
+                                        TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;
+                                    }
                                 }
                                 TTXNDTL.LISTPRICE = VE.TTXNDTL[i].LISTPRICE;
                                 TTXNDTL.LISTDISCPER = VE.TTXNDTL[i].LISTDISCPER;
@@ -5354,7 +5362,7 @@ namespace Improvar.Controllers
                                     }
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                      gblamt = 0; groamt = 0; gtcsamt = 0;
+                                    gblamt = 0; groamt = 0; gtcsamt = 0;
 
                                     if (gs == 1)
                                     {
@@ -5364,7 +5372,7 @@ namespace Improvar.Controllers
                                             string AGAUTONO = "", AGBLAMT = "";
                                             string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : "PB";
                                             string agdocno = "", agdocdt = "";
-                                            if(!string.IsNullOrEmpty(TTXN.PREFNO)&& !string.IsNullOrEmpty(TTXN.PREFDT.retStr()))
+                                            if (!string.IsNullOrEmpty(TTXN.PREFNO) && !string.IsNullOrEmpty(TTXN.PREFDT.retStr()))
                                             {
                                                 agdocno = TTXN.PREFNO; agdocdt = TTXN.PREFDT.retDateStr();
                                             }
@@ -5499,7 +5507,7 @@ namespace Improvar.Controllers
                                     }
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST1, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-        gblamt = 0; groamt = 0;
+                                    gblamt = 0; groamt = 0;
                                 }
                             }
                         }

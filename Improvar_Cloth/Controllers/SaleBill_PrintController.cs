@@ -32,7 +32,6 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Document Printing";
                     ReportViewinHtml VE;
                     if (TempData["printparameter"] == null)
                     {
@@ -46,6 +45,52 @@ namespace Improvar.Controllers
 
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     //string reptype = "SALEBILL";
+                    switch (VE.MENU_PARA)
+                    {
+                        case "SBPCK":
+                            ViewBag.Title = "Packing Slip"; ViewBag.formname = "Packing Slip"; break;
+                        case "SB":
+                            ViewBag.Title = "Sales Bill (Agst Packing Slip)"; ViewBag.formname = "Sales Bill (Agst Packing Slip)"; break;
+                        case "SBDIR":
+                            ViewBag.Title = "Sales Bill"; ViewBag.formname = "Sales Bill"; break;
+                        case "SR":
+                            ViewBag.Title = "Sales Return (SRM)"; ViewBag.formname = "Sales Return (SRM)"; break;
+                        case "SBCM":
+                            ViewBag.Title = "Cash Memo"; ViewBag.formname = "Cash Memo"; break;
+                        case "SBCMR":
+                            ViewBag.Title = "Cash Memo Return Note"; ViewBag.formname = "Cash Memo Return Note"; break;
+                        case "SBEXP":
+                            ViewBag.Title = "Sales Bill (Export)"; ViewBag.formname = "Sales Bill (Export)"; break;
+                        case "PI":
+                            ViewBag.Title = "Proforma Invoice"; ViewBag.formname = "Proforma Invoice"; break;
+                        case "PB":
+                            ViewBag.Title = "Purchase Bill"; ViewBag.formname = "Purchase Bill"; break;
+                        case "PR":
+                            ViewBag.Title = "Purchase Return (PRM)"; ViewBag.formname = "Purchase Return (PRM)"; break;
+                        case "OP":
+                            ViewBag.Title = "Opening Stock"; ViewBag.formname = "Opening Stock"; break;
+                        case "SCN":
+                            ViewBag.Title = "Sales C/N (w/o Qty)"; ViewBag.formname = "Sales C/N (w/o Qty)"; break;
+                        case "SDN":
+                            ViewBag.Title = "Sales D/N (w/o Qty)"; ViewBag.formname = "Sales D/N (w/o Qty)"; break;
+                        case "PCN":
+                            ViewBag.Title = "Purchase C/N (w/o Qty)"; ViewBag.formname = "Purchase C/N (w/o Qty)"; break;
+                        case "PDN":
+                            ViewBag.Title = "Purchase D/N (w/o Qty)"; ViewBag.formname = "Purchase D/N (w/o Qty)"; break;
+                        case "OTH":
+                            ViewBag.Title = "Other Product Opening Stock"; ViewBag.formname = "Other Product Opening Stock"; break;
+                        case "PJRC":
+                            ViewBag.Title = "Receive from Party for Job"; ViewBag.formname = "Receive from Party for Job"; break;
+                        case "PJIS":
+                            ViewBag.Title = "Issue to Party after Job"; ViewBag.formname = "Issue to Party after Job"; break;
+                        case "PJRT":
+                            ViewBag.Title = "Return to Party w/o Job"; ViewBag.formname = "Return to Party w/o Job"; break;
+                        case "PJBL":
+                            ViewBag.Title = "Job Bill raised to Party"; ViewBag.formname = "Job Bill raised to Party"; break;
+                        case "SBPOS":
+                            ViewBag.Title = "Cash Sales"; ViewBag.formname = "Cash Sales"; ; break;
+                        default: ViewBag.Title = "Doc Print"; ViewBag.formname = "Doc Print"; break;
+                    }
                     string reptype = "SALEBILL";
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
@@ -139,7 +184,7 @@ namespace Improvar.Controllers
                     tdate = VE.TDT.retDateStr();   // Convert.ToString(Convert.ToDateTime(FC["TDT"].ToString())).Substring(0, 10);
                 }
                 string fdocno = VE.FDOCNO.retStr();// FC["FDOCNO"].ToString();
-                string tdocno = VE.FDOCNO.retStr();//  FC["TDOCNO"].ToString();
+                string tdocno = VE.TDOCNO.retStr();//  FC["TDOCNO"].ToString();
                 string doccd = VE.DOCCD.retStr();// FC["doccd"].ToString();
                 string docnm = DB.M_DOCTYPE.Find(doccd).DOCNM;
                 //string slcd = VE.TEXTBOX3;
