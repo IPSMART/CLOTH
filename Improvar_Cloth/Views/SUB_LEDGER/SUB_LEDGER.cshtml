@@ -12,6 +12,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $("#SRC_FLAG").attr("readonly", false);
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#doctype").attr("disabled", "true");
@@ -737,6 +738,21 @@
             @Html.HiddenFor(e => e.M_SUBLEG.EMD_NO)
             @Html.HiddenFor(a => a.M_SUBLEG.M_AUTONO)
             @Html.HiddenFor(a => a.maxdate)
+            @if (Model.DefaultAction == "V")
+            {
+                <div class="row" style="border: 2px groove;background-color:#bddbf5;margin-top: 5px;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                <label for="SrcFlagCaption">@Html.DisplayFor(model => model.SrcFlagCaption) </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="SRC_FLAG" class="form-control" placeholder="Flag" maxlength=20 />
+                        </div>
+                    </div>
+                </div>
+            }
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a data-toggle="tab" href="#Standard">Standard</a>
@@ -1009,7 +1025,7 @@
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "Location/City", maxlength = 40, @list = "DISTRICTlist" } })
+                                @Html.EditorFor(model => model.M_SUBLEG.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "City", maxlength = 40, @list = "DISTRICTlist" } })
                                 <datalist id="DISTRICTlist">
                                     @foreach (var jg in Model.Database_Combo1)
                                     {

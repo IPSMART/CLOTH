@@ -127,6 +127,7 @@ namespace Improvar.Controllers
                     {
                         VE.IsAPIEnabled = true;
                     }
+                    VE.SrcFlagCaption = "Name/GST/Code";
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_SUBLEG orderby p.SLCD select new IndexKey() { Navikey = p.SLCD }).ToList();
@@ -573,30 +574,34 @@ namespace Improvar.Controllers
             }
             return VE;
         }
-        public ActionResult SearchPannelData()
+        public ActionResult SearchPannelData(string SRC_FLAG)
         {
             try
             {
+                //if (SRC_FLAG.retStr() != "") str += "and(upper(d.styleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
                 var UNQSNO = Cn.getQueryStringUNQSNO();
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                var MDT = (from j in DBF.M_SUBLEG
-                           join o in DBF.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
-                           where (o.M_AUTONO == j.M_AUTONO)
-                           select new
-                           {
-                               SLCD = j.SLCD,
-                               SLNM = j.SLNM,
-                               GSTNO = j.GSTNO,
-                               SLAREA = j.SLAREA,
-                               DISTRICT = j.DISTRICT,
-                               PIN = j.PIN
-                           }).OrderBy(s => s.SLCD).ToList();
-
+                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                //var MDT1 = (from j in DBF.M_SUBLEG
+                //           join o in DBF.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
+                //           where (o.M_AUTONO == j.M_AUTONO)
+                //           select new
+                //           {
+                //               SLCD = j.SLCD,
+                //               SLNM = j.SLNM,
+                //               GSTNO = j.GSTNO,
+                //               SLAREA = j.SLAREA,
+                //               DISTRICT = j.DISTRICT,
+                //               PIN = j.PIN
+                //           }).OrderBy(s => s.SLCD).ToList();
+                string scm = CommVar.FinSchema(UNQSNO);
+                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN from "+scm+ ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
+                if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(j.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
+                DataTable MDT = masterHelp.SQLquery(sql);
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "GST" + Cn.GCS() + "District" + Cn.GCS() + "Area" + Cn.GCS() + "PIN";
-                for (int j = 0; j <= MDT.Count - 1; j++)
+                for (int j = 0; j <= MDT.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + MDT[j].SLCD + "</td><td>" + MDT[j].SLNM + "</td><td>" + MDT[j].GSTNO + "</td><td>" + MDT[j].DISTRICT + "</td><td>" + MDT[j].SLAREA + "</td><td>" + MDT[j].PIN + "</td></tr>");
+                    SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["GSTNO"].retStr() + "</td><td>" + MDT.Rows[j]["DISTRICT"].retStr() + " </td><td> " + MDT.Rows[j]["SLAREA"].retStr() + "</td><td> " + MDT.Rows[j]["PIN"].retStr() + "</td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0"));
             }
