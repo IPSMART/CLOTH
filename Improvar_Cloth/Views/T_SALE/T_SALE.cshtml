@@ -953,8 +953,8 @@
                                     <div class="editor-field">
                                         @if (Model.MENU_PARA == "SR")
                                         {
-                                            @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PREFNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','PREFNO','PREFNO=BLNO=1/PREFDT=BLDT=0/osAutono=Autono=5','SLCD/osAutono')", onblur = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','PREFNO','PREFNO=BLNO=1/PREFDT=BLDT=0/osAutono=Autono=5','SLCD/osAutono');", @placeholder = "Pref no" } })
-                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOSBillNumberDetails", PageControllerName)','Os Bill Details','PREFNO','PREFNO=BLNO=1/PREFDT=BLDT=0/osAutono=Autono=5','SLCD/osAutono')" />
+                                            @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PREFNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','PREFNO','PREFNO=BLNO=0/PREFDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono')", onblur = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','PREFNO','PREFNO=BLNO=0/PREFDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono');", @placeholder = "Pref no" } })
+                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOSBillNumberDetails", PageControllerName)','Os Bill Details','PREFNO','PREFNO=BLNO=0/PREFDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono')" />
                                             <input type="hidden" id="osAutono" />
                                         }
                                         else

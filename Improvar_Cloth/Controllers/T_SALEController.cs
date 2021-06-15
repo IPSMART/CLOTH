@@ -2776,7 +2776,7 @@ namespace Improvar.Controllers
             }
         }
         public ActionResult GetOSBillNumberDetails(string val, string Code)
-        {
+        { 
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var arr = Code.Split(Convert.ToChar(Cn.GCS()));
             var slcd = arr[0];string blautono = "";
