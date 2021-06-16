@@ -1540,10 +1540,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>AltBill_Sachi.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Report\Proforma_SNFP.rpt">
+    <Content Include="Report\Proforma_SNFP.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Proforma_SNFP.cs</LastGenOutput>
-    </EmbeddedResource>
+    </Content>
     <EmbeddedResource Include="Report\SaleBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Sachi.cs</LastGenOutput>
