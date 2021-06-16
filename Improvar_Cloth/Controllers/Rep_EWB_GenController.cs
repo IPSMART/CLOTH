@@ -644,6 +644,11 @@ namespace Improvar.Controllers
                     {
                         prejson.trgst = tbl.Rows[i]["trgst"].ToString();//an
                     }
+                    if (prejson.trgst == "")
+                    {
+                        prejson.trgst = null;
+                        prejson.trslnm = null;
+                    }
                     prejson.lrno = tbl.Rows[i]["lrno"].ToString();//ao 
                     if (tbl.Rows[i]["lrdt"].ToString() == "" && tbl.Rows[i]["lrno"].ToString() != "")
                     {
