@@ -9,6 +9,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $("#SRC_FLAG").attr("readonly", false);
         }
         else if ("@Model.DefaultAction" == "E") {
 
@@ -379,9 +380,23 @@
             <input type="hidden" id="transporter" value="T" />
             <input type="hidden" id="courier" value="U" />
             <input type="hidden" id="hslcd" value="D" />
+            @if (Model.DefaultAction == "V")
+            {
+                <div class="row" style="border: 2px groove;background-color:#bddbf5;margin-top: 5px;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                <label for="SrcFlagCaption">@Html.DisplayFor(model => model.SrcFlagCaption) </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="SRC_FLAG" class="form-control" placeholder="Flag" maxlength=20 />
+                        </div>
+                    </div>
+                </div>
+            }
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SUBLEG_COM.M_AUTONO)
-
             <div class="row">
                 <div class="col-md-6">
                     <div class="editor-field" style="margin-top: 4px;">
