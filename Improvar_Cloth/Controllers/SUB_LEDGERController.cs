@@ -127,7 +127,7 @@ namespace Improvar.Controllers
                     {
                         VE.IsAPIEnabled = true;
                     }
-                    VE.SrcFlagCaption = "Name/GST/Code";
+                    VE.SrcFlagCaption = "Name/GST/Code"; 
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_SUBLEG orderby p.SLCD select new IndexKey() { Navikey = p.SLCD }).ToList();
