@@ -278,5 +278,7 @@ namespace Improvar.ViewModels
         public double? BLQNTY { get; set; }
         [StringLength(15)]
         public string PCSTYPE { get; set; }
+        public string COMMONUNIQBAR { get; set; }
+        public string BARNO { get; set; }
     }
 }
