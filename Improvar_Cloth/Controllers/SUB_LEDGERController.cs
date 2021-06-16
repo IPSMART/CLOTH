@@ -127,7 +127,7 @@ namespace Improvar.Controllers
                     {
                         VE.IsAPIEnabled = true;
                     }
-                    VE.SrcFlagCaption = "Name/GST/Code";
+                    VE.SrcFlagCaption = "Name/GST/Code"; 
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_SUBLEG orderby p.SLCD select new IndexKey() { Navikey = p.SLCD }).ToList();
@@ -578,21 +578,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                //if (SRC_FLAG.retStr() != "") str += "and(upper(d.styleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
                 var UNQSNO = Cn.getQueryStringUNQSNO();
-                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                //var MDT1 = (from j in DBF.M_SUBLEG
-                //           join o in DBF.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
-                //           where (o.M_AUTONO == j.M_AUTONO)
-                //           select new
-                //           {
-                //               SLCD = j.SLCD,
-                //               SLNM = j.SLNM,
-                //               GSTNO = j.GSTNO,
-                //               SLAREA = j.SLAREA,
-                //               DISTRICT = j.DISTRICT,
-                //               PIN = j.PIN
-                //           }).OrderBy(s => s.SLCD).ToList();
                 string scm = CommVar.FinSchema(UNQSNO);
                 string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN from "+scm+ ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
                 if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(j.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";

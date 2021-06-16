@@ -38,7 +38,7 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     VE.DocumentThrough = masterHelp.DocumentThrough();
                     VE.DropDown_list_DelvType = salesfunc.GetforDelvTypeSelection();
-
+                    VE.SrcFlagCaption = "Name/GST/Code";
                     if (op.Length != 0)
                     {
                         string compcd = CommVar.Compcd(UNQSNO);
@@ -310,39 +310,18 @@ namespace Improvar.Controllers
             }
             return VE;
         }
-        public ActionResult SearchPannelData()
+        public ActionResult SearchPannelData(string SRC_FLAG)
         {
             string compcd = CommVar.Compcd(UNQSNO);
-            DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            var query = (from j in DB.M_SUBLEG_COM
-                         join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
-                         where (p.M_AUTONO == j.M_AUTONO) && j.COMPCD == compcd
-                         select new
-                         {
-                             SLCD = j.SLCD,
-                             PRCCD = j.PRCCD,
-                             COMPCD = j.COMPCD
-                         }).Distinct().OrderBy(s => s.SLCD).ToList();
-
-            var m_subleg = from q in DBF.M_SUBLEG
-                           select q;
-            var MDT = (from a in query
-                       join b in m_subleg on a.SLCD equals b.SLCD
-                       select new
-                       {
-                           SLCD = a.SLCD,
-                           SLNM = b.SLNM,
-                           PRCCD = a.PRCCD,
-                           COMPCD = a.COMPCD,
-                           DISTRICT = b.SLAREA==null?b.DISTRICT:b.SLAREA,
-                       }).ToList();
-
+            string scm = CommVar.CurSchema(UNQSNO); string scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "select j.SLCD,j.PRCCD,j.COMPCD,p.SLNM,p.GSTNO,nvl(p.SLAREA,p.DISTRICT) DISTRICT from " + scm + ".M_SUBLEG_COM j ," + scm + ".M_CNTRL_HDR o," + scmf + ".M_SUBLEG p where j.M_AUTONO=o.M_AUTONO and j.SLCD=p.SLCD and j.COMPCD = '" + compcd+"'   ";
+            if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(p.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(p.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
+            DataTable MDT = masterHelp.SQLquery(sql);
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
             var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "District" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code";
-            for (int j = 0; j <= MDT.Count - 1; j++)
+            for (int j = 0; j <= MDT.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT[j].SLCD + "</td><td>" + MDT[j].SLNM + "</td><td>" + MDT[j].DISTRICT + "</td><td>" + MDT[j].PRCCD + "</td><td>" + MDT[j].COMPCD + "</td></tr>");
+                SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["DISTRICT"].retStr() + "</td><td>" + MDT.Rows[j]["PRCCD"].retStr() + " </td><td> " + MDT.Rows[j]["COMPCD"].retStr() + "</td></tr>");
             }
             return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "4", "4"));
 
