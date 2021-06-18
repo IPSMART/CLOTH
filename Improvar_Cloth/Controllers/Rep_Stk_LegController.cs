@@ -333,7 +333,8 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["amtout"] = icramt;
                     }
                     //IR.Rows[rNo]["balqnty"] = icls;
-                    IR.Rows[rNo]["balqnty"] = tblqty;
+                    //IR.Rows[rNo]["balqnty"] = tblqty;
+                    IR.Rows[rNo]["balqnty"] = idr- icr;
 
                     top = top + iop;
                     tdr = tdr + idr; tdramt = tdramt + idramt;

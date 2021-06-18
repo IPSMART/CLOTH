@@ -623,7 +623,7 @@ namespace Improvar.Controllers
                                         GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
                                     }
                                     v.PRODGRPGSTPER = PRODGRPGSTPER;
-                                    v.GSTPER = GSTPER.retDbl();
+                                    //v.GSTPER = GSTPER.retDbl();
                                 }
                                 if (tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
