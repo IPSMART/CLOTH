@@ -306,7 +306,7 @@ namespace Improvar.Controllers
             try
             {
                 EWayBill_JSON EWB = new EWayBill_JSON();
-                EWB.version = "1.0.1118";
+                EWB.version = "1.0.0421";
                 var no_bill = (from I in prepare_JSON
                                select new
                                {
@@ -329,7 +329,8 @@ namespace Improvar.Controllers
                         billLists billList = new billLists();
                         billList.userGstin = prepare_JSON[i].frmgstno;
                         billList.supplyType = prepare_JSON[i].Supply_Type;
-                        billList.subSupplyType = Convert.ToInt32(prepare_JSON[i].SubSupply_Type);
+                        billList.subSupplyType = Convert.ToInt32(prepare_JSON[i].SubSupply_Type);                        
+                        billList.subSupplyDesc = "Supply";
                         billList.docType = prepare_JSON[i].Doctype;
                         billList.docNo = prepare_JSON[i].blno;
                         billList.docDate = prepare_JSON[i].bldt.ToShortDateString();

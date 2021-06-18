@@ -15,6 +15,7 @@ namespace Improvar.ViewModels
         public string userGstin { get; set; }
         public string supplyType { get; set; }
         public int subSupplyType { get; set; }
+        public string subSupplyDesc { get; set; }        
         public string docType { get; set; }
         public string docNo { get; set; }
         public string docDate { get; set; }
