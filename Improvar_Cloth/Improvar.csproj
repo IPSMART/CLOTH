@@ -722,10 +722,16 @@
       <DependentUpon>PrintBarcode_Tres_3X2.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Report\Proforma_SNFP.cs">
+    <Compile Include="Report\Proforma1_SNFP.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Proforma_SNFP.rpt</DependentUpon>
+      <DependentUpon>Proforma1_SNFP.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\Proforma2_SNFP.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Proforma2_SNFP.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\Rep_JobBill.cs">
@@ -1540,10 +1546,14 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>AltBill_Sachi.cs</LastGenOutput>
     </EmbeddedResource>
-    <Content Include="Report\Proforma_SNFP.rpt">
+    <EmbeddedResource Include="Report\Proforma1_SNFP.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
-      <LastGenOutput>Proforma_SNFP.cs</LastGenOutput>
-    </Content>
+      <LastGenOutput>Proforma1_SNFP.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\Proforma2_SNFP.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>Proforma2_SNFP.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\SaleBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Sachi.cs</LastGenOutput>

@@ -256,7 +256,7 @@
                                                     @Html.TextBoxFor(model => Model.TTXNDTL[i].BLUOMCD, new { id = "D_BLUOMCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
 
                                                     @*@Html.TextBoxFor(model => Model.TTXNDTL[i].BLUOMCD, new { id = "D_BLUOMCD_" + i, onkeyup = "GetHelp('" + @Url.Action("GetUOMDetails", "T_SALE") + "','" + "D_BLUOMCD_" + i + "','1','UOM Details','" + "D_BLUOMCD_" + i + "')", onblur = "SelectUOMCode(this.value," + i + ");", @class = " atextBoxFor textbox_image", maxlength = 10 })
-                                        <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetUOMDetails", "T_SALE" )','D_BLUOMCD_@i','1','UOM Details','D_BLUOMCD_@i')" />*@
+    <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetUOMDetails", "T_SALE" )','D_BLUOMCD_@i','1','UOM Details','D_BLUOMCD_@i')" />*@
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
@@ -268,7 +268,7 @@
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].LISTPRICE, new { htmlAttributes = new { id = "D_LISTPRICE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#D_');" } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "D_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, onblur = "RateUpdate(" + i + ",'#D_');", onkeydown = "CopyLastDiscData(this.value,'NO','D_LISTDISCPER_','NO','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_LISTDISCPER_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "D_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, @onchange = "RateUpdate(" + i + ",'#D_');", onkeydown = "CopyLastDiscData(this.value,'NO','D_LISTDISCPER_','NO','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_LISTDISCPER_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
@@ -277,7 +277,7 @@
                                         else
                                         {
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, onblur = "RateUpdate(" + i + ",'#D_');" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#D_');" } })
                                                     @*@Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#D_');" } })*@
                                                 </td>
                                         }
@@ -301,7 +301,7 @@
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].SCMDISCTYPE, new { id = "D_SCMDISCTYPE_" + i })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "D_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, onblur = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");", onkeydown = "CopyLastDiscData(this.value,D_SCMDISCTYPE_" + i + ".value,'D_SCMDISCRATE_','D_SCMDISCTYPE_','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_SCMDISCRATE_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "D_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");", onkeydown = "CopyLastDiscData(this.value,D_SCMDISCTYPE_" + i + ".value,'D_SCMDISCRATE_','D_SCMDISCTYPE_','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_SCMDISCRATE_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCAMT, new { htmlAttributes = new { id = "D_SCMDISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
@@ -313,7 +313,7 @@
                                                         @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE, new { id = "D_TDDISCTYPE_" + i })
                                                     </td>
                                                     <td class="">
-                                                        @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "D_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, onblur = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");", onkeydown = "CopyLastDiscData(this.value,D_TDDISCTYPE_" + i + ".value,'D_TDDISCRATE_','D_TDDISCTYPE_','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_TDDISCRATE_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "D_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");", onkeydown = "CopyLastDiscData(this.value,D_TDDISCTYPE_" + i + ".value,'D_TDDISCRATE_','D_TDDISCTYPE_','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_TDDISCRATE_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
                                                     </td>
                                                     <td class="">
                                                         @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCAMT, new { htmlAttributes = new { id = "D_TDDISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
@@ -328,7 +328,7 @@
                                                         @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
                                                     </td>
                                                     <td class="">
-                                                        @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onblur = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");", onkeydown = "CopyLastDiscData(this.value,D_DISCTYPE_" + i + ".value,'D_DISCRATE_','D_DISCTYPE_','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_DISCRATE_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");", onkeydown = "CopyLastDiscData(this.value,D_DISCTYPE_" + i + ".value,'D_DISCRATE_','D_DISCTYPE_','D_ITCD_','_T_SALE_DETAIL_GRID');RemoveLastDiscData('D_DISCRATE_','D_ITCD_','_T_SALE_DETAIL_GRID');" } })
                                                     </td>
                                                     <td class="">
                                                         @Html.EditorFor(model => Model.TTXNDTL[i].DISCAMT, new { htmlAttributes = new { id = "D_DISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
@@ -345,25 +345,25 @@
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_IGSTPER_" + i + ",D_NETAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_IGSTPER_" + i + ",D_NETAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].CGSTPER, new { htmlattributes = new { id = "D_CGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_CGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_CGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].SGSTPER, new { htmlattributes = new { id = "D_SGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_SGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_SGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].CESSPER, new { htmlattributes = new { id = "D_CESSPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].CESSAMT, new { htmlattributes = new { id = "D_CESSAMT_" + i, onblur = "AmountChange(this,D_TXBLVAL_" + i + ",D_CESSPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].CESSAMT, new { htmlattributes = new { id = "D_CESSAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_CESSPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].NETAMT, new { htmlattributes = new { id = "D_NETAMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
@@ -380,7 +380,7 @@
                                             </td>
 
                                             <td class="PJBLDiv">
-                                                @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "UpdateBarCodeRow_FrmDet(" + i + ");" })
+                                                @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" })
                                             </td>
                                         </tr>
                                 }

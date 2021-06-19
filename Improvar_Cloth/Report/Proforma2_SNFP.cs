@@ -16,14 +16,14 @@ namespace Improvar.Report {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class Proforma_SNFP : ReportClass {
+    public class Proforma2_SNFP : ReportClass {
         
-        public Proforma_SNFP() {
+        public Proforma2_SNFP() {
         }
         
         public override string ResourceName {
             get {
-                return "Proforma_SNFP.rpt";
+                return "Proforma2_SNFP.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace Improvar.Report {
         
         public override string FullResourceName {
             get {
-                return "Improvar.Report.Proforma_SNFP.rpt";
+                return "Improvar.Report.Proforma2_SNFP.rpt";
             }
             set {
                 // Do nothing
@@ -234,7 +234,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection5 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection14 {
             get {
                 return this.ReportDefinition.Sections[23];
             }
@@ -242,7 +242,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection10 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection5 {
             get {
                 return this.ReportDefinition.Sections[24];
             }
@@ -250,7 +250,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection11 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection10 {
             get {
                 return this.ReportDefinition.Sections[25];
             }
@@ -258,7 +258,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection12 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection11 {
             get {
                 return this.ReportDefinition.Sections[26];
             }
@@ -266,7 +266,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection6 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection12 {
             get {
                 return this.ReportDefinition.Sections[27];
             }
@@ -274,7 +274,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection7 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection6 {
             get {
                 return this.ReportDefinition.Sections[28];
             }
@@ -282,7 +282,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section ReportFooterSection1 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupFooterSection7 {
             get {
                 return this.ReportDefinition.Sections[29];
             }
@@ -290,7 +290,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section PageFooterSection2 {
+        public CrystalDecisions.CrystalReports.Engine.Section ReportFooterSection1 {
             get {
                 return this.ReportDefinition.Sections[30];
             }
@@ -298,9 +298,17 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section PageFooterSection1 {
+        public CrystalDecisions.CrystalReports.Engine.Section PageFooterSection2 {
             get {
                 return this.ReportDefinition.Sections[31];
+            }
+        }
+        
+        [Browsable(false)]
+        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+        public CrystalDecisions.CrystalReports.Engine.Section PageFooterSection1 {
+            get {
+                return this.ReportDefinition.Sections[32];
             }
         }
         
@@ -434,9 +442,9 @@ namespace Improvar.Report {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedProforma_SNFP : Component, ICachedReport {
+    public class CachedProforma2_SNFP : Component, ICachedReport {
         
-        public CachedProforma_SNFP() {
+        public CachedProforma2_SNFP() {
         }
         
         [Browsable(false)]
@@ -473,7 +481,7 @@ namespace Improvar.Report {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            Proforma_SNFP rpt = new Proforma_SNFP();
+            Proforma2_SNFP rpt = new Proforma2_SNFP();
             rpt.Site = this.Site;
             return rpt;
         }
