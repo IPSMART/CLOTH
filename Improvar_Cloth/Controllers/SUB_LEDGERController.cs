@@ -101,6 +101,22 @@ namespace Improvar.Controllers
                     deptlst.Add(deptobj4);
                     VE.DropDown_list = deptlst;
                     //=========For Dept Type===========//
+                    //=========For TOT194Q ===========//
+                    List<DropDown_list2> TOT = new List<DropDown_list2>();
+                    DropDown_list2 TOT1 = new DropDown_list2();
+                    TOT1.value = "";
+                    TOT1.text = "";
+                    TOT.Add(TOT1);
+                    DropDown_list2 TOT2 = new DropDown_list2();
+                    TOT2.value = "Y";
+                    TOT2.text = "Yes";
+                    TOT.Add(TOT2);
+                    DropDown_list2 TOT3 = new DropDown_list2();
+                    TOT3.value = "N";
+                    TOT3.text = "No";
+                    TOT.Add(TOT3);
+                    VE.DropDown_list2 = TOT;
+                    //=========End TOT194Q ===========//
                     //==== Database Combo ====//
 
                     VE.Database_Combo1 = (from i in DB.M_DISTRICT select new Database_Combo1() { FIELD_VALUE = i.DISTCD }).OrderBy(s => s.FIELD_VALUE).ToList();
@@ -1477,6 +1493,7 @@ namespace Improvar.Controllers
                             MSUBLEG.GSTNO = VE.M_SUBLEG.GSTNO.retStr().ToUpper();
                             MSUBLEG.REGNTYPE = VE.M_SUBLEG.REGNTYPE;
                             MSUBLEG.PANNO = VE.M_SUBLEG.PANNO;
+                            MSUBLEG.TOT194Q = VE.M_SUBLEG.TOT194Q;
                             MSUBLEG.CENNO = VE.M_SUBLEG.CENNO;
                             MSUBLEG.TANNO = VE.M_SUBLEG.TANNO;
                             MSUBLEG.CINNO = VE.M_SUBLEG.CINNO;

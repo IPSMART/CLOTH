@@ -245,5 +245,7 @@ namespace Improvar.Models
         public string CENNO { get; set; }
         [StringLength(40)]
         public string SUBDISTRICT { get; set; }
+        [StringLength(1)]
+        public string TOT194Q { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace Improvar.ViewModels
         public bool TCSAPPL { get; set; }
         public string PARTYNM { get; set; }
         public bool IsAPIEnabled { get; set; }
-
+        public List<DropDown_list2> DropDown_list2 { get; set; }
 
     }
 }
