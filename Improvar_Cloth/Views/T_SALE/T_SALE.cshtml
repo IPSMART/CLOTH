@@ -284,25 +284,27 @@
         }
 
         //
-        var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-        var rateblank = false;
-        if (GridRow != 0) {
-            for (var i = 0; i <= GridRow - 1; i++) {
-                if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
-                    rateblank = true;
-                    break;
+        if ("@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SBEXP") {
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            var rateblank = false;
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
+                        rateblank = true;
+                        break;
+                    }
                 }
-            }
-            if (rateblank == true) {
-                var slno = $("#B_SLNO_" + i).val();
-                msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(2)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                message_value = "B_RATE_" + i;
-                return false;
+                if (rateblank == true) {
+                    var slno = $("#B_SLNO_" + i).val();
+                    msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:nth-child(2)").addClass('active');
+                    //below set the  child sequence
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    message_value = "B_RATE_" + i;
+                    return false;
+                }
             }
         }
         //start of finalise
@@ -409,6 +411,33 @@
             });
             return false;
         }
+        @*if (("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SBEXP") && $("#withoutamtdatasave").val() != "N") {
+            debugger;
+            //checking amount
+            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+            var amtblankslno = "";
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if ($("#D_ITCD_" + i).val() != "" && retFloat($("#D_AMT_" + i).val()) == 0) {
+                        amtblankslno += $("#D_SLNO_" + i).val() + ",";
+                    }
+                }
+                if (amtblankslno != "") {
+                    amtblankslno = amtblankslno.slice(0, -1);
+                    if (confirm("Amount Not Enterd At Slno (" + amtblankslno + ") ! Are You Sure ? You Want To Save Bill !!")) {
+                        $("#withoutamtdatasave").val("")
+                        pageValidation("@Model.DefaultAction");
+                    }
+                    else {
+                        $("#withoutamtdatasave").val("N");
+                        $("#WaitingMode").hide();
+                        return false;
+                    }
+
+                }
+            }
+            // end checking amount
+        }*@
             //start of finalise
         else {
             return true;
@@ -632,6 +661,7 @@
         <input type="hidden" id="Defaultstyle" value="Style" />
         <input type="hidden" id="Barnohelpopen" value="Y" />
         <input type="hidden" id="UpDateTransporter" value="N" />
+            <input type="hidden" id="withoutamtdatasave" value="" />
         <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(a => a.Delete, new { id = "Delete" })
