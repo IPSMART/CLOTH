@@ -402,7 +402,7 @@ namespace Improvar.Controllers
                     //sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP k ";
                     //sql += " where k.COMPCD not in (select compcd from " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL where COMPCD = '" + sl.COMPCD + "'  ) ";
 
-                    sql += " select k.COMPCD,j.COMPNM,k.DEALSIN,k.INSPOLDESC,k.BLTERMS,k.DUEDATECALCON,k.BANKSLNO ";
+                    sql += " select j.COMPCD,j.COMPNM,k.DEALSIN,k.INSPOLDESC,k.BLTERMS,k.DUEDATECALCON,k.BANKSLNO ";
                     sql += " from " + CommVar.FinSchema(UNQSNO) + ".M_COMP j, " + CommVar.CurSchema(UNQSNO) + ".M_MGROUP_SPL k where j.COMPCD = k.COMPCD(+)";
 
                     var mmgrpspl = Master_Help.SQLquery(sql);
