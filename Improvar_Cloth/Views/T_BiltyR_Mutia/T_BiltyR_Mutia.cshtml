@@ -202,7 +202,7 @@
             var Table_name = "#T_BiltyR_Mutia_PopUp > tbody > tr";
             var lngth = $(Table_name).length;
             for (var i = 0; i <= lngth - 1; i++) {
-                //check with lrno                 
+                //check with lrno
                 var lrno = $("#LRNO_POPUP" + i).val();
                 if (LRNO == lrno) {
                     //$("#chkid_POPUP_" + i).checked = true;
@@ -214,7 +214,7 @@
         //    var Table_name = "#T_BiltyR_Mutia_PopUp > tbody > tr";
         //    var lngth = $(Table_name).length;
         //    for (var i = 0; i <= lngth - 1; i++) {
-        //        //check with lrno                 
+        //        //check with lrno
         //        var lrno = $("#LRNO_POPUP" + i).val();
         //        if (LRNO == lrno) {
         //            //$("#chkid_POPUP_" + i).checked = true;
@@ -244,7 +244,7 @@
                 type: 'post',
                 url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize()+"&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 
@@ -274,13 +274,33 @@
         $('.PopUp_Backround').fadeOut();
     }
 </script>
-@*<script>
-    function pageprinting()
-    {
+<script>
+    function UpdateStartingNo() {
         debugger;
-        $("#btnprint").click();
+        var startno = retFloat($("#STRTNO").val());
+        var Table_name = "#T_BiltyR_Mutia_Main > tbody > tr";
+        var lngth = $(Table_name).length;
+        var i = 0;
+        while (i <= lngth - 1) {
+            var baleno = $("#BALENO_" + i).val();
+            while ($("#BALENO_" + i).val() == baleno) {
+
+                $("#RSLNO_" + i).val(startno);
+                i++;
+                if (i > lngth - 1) break;
+            }
+            startno++;
+            if (i > lngth - 1) break;
+        }
     }
-</script>*@
+</script>
+@*<script>
+        function pageprinting()
+        {
+            debugger;
+            $("#btnprint").click();
+        }
+    </script>*@
 <script>
     function pageprinting() {
         debugger;
@@ -405,11 +425,11 @@
                     </div>
                     <div class="col-md-5">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_BALE_HDR.STARTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4} })
-                           
+                            @Html.EditorFor(model => model.T_BALE_HDR.STARTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @onchange = "UpdateStartingNo();" } })
+
                         </div>
                     </div>
-                  
+
                 </div>
             </div>
             <div class="row" style="margin-top:5px;">
