@@ -1830,7 +1830,7 @@ namespace Improvar.Controllers
                 if (slcd.retStr() != "") sqlc += "b.slcd in (" + slcd + ") and ";
                 sqlc += "c.doccd = '" + doccd + "' and ";
 
-                sql += " select a.autono, b.doctag, h.doccd, h.docno, h.docdt, b.duedays, h.canc_rem,to_char(h.usr_entdt, 'hh:mi') invisstime,'N' batchdlprint,  ";
+                sql += " select a.autono, b.doctag, h.doccd, h.docno, h.docdt, b.duedays, h.canc_rem,to_char(h.usr_entdt, 'HH24:MI') invisstime,'N' batchdlprint,  ";
                 sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, ";
                 sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
                 sql += " e.gstno, e.panno, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno, e.state, e.country, e.statecd, e.actnameof slactnameof,  ";
@@ -2759,8 +2759,8 @@ namespace Improvar.Controllers
                                 dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 dr1["fabitcd"] = tbl.Rows[i]["fabitcd"].ToString();
                                 dr1["fabitnm"] = tbl.Rows[i]["fabitnm"].ToString();
-                               
-                                
+
+
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
                                 //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
@@ -3142,11 +3142,19 @@ namespace Improvar.Controllers
                             {
                                 slnm = rsemailid1.Rows[iz]["slnm"].ToString();
                                 emlslcd = rsemailid1.Rows[iz]["slcd"].ToString();
-                                body += "<tr>";
-                                body += "<td>" + rsemailid1.Rows[iz]["docno"] + "</td>";
-                                body += "<td>" + rsemailid1.Rows[iz]["docdt"] + "</td>";
-                                body += "<td style='text-align:right'>" + Cn.Indian_Number_format((rsemailid1.Rows[iz]["blamt"]).retDbl().ToString(), "0.00") + "</td>";
-                                body += "</tr>";
+                                if (CommVar.ClientCode(UNQSNO) == "DIWH")
+                                {
+                                    body += "copy no " + rsemailid1.Rows[iz]["docno"] + " dated " + rsemailid1.Rows[iz]["docdt"] + " ";
+                                }
+                                else
+                                {
+                                    body += "<tr>";
+                                    body += "<td>" + rsemailid1.Rows[iz]["docno"] + "</td>";
+                                    body += "<td>" + rsemailid1.Rows[iz]["docdt"] + "</td>";
+                                    body += "<td style='text-align:right'>" + Cn.Indian_Number_format((rsemailid1.Rows[iz]["blamt"]).retDbl().ToString(), "0.00") + "</td>";
+                                    body += "</tr>";
+                                }
+
 
                                 chkfld = rsemailid1.Rows[iz]["autono"].ToString().Substring(0, rsemailid1.Rows[iz]["autono"].ToString().Length - 1);
 
@@ -3194,11 +3202,18 @@ namespace Improvar.Controllers
                             //System.Net.Mail.Attachment attchmail = new System.Net.Mail.Attachment(path_Save);
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
-
+                            string template = CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Salebill.htm";
                             string[,] emlaryBody = new string[7, 2];
                             if (VE.TEXTBOX5 != null)
                             {
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Sales Bill copy", "", emlaryBody, attchmail, grpemailid);
+                                emlaryBody[0, 0] = "{slnm}"; emlaryBody[0, 1] = slnm;
+                                emlaryBody[1, 0] = "{tbody}"; emlaryBody[1, 1] = body;
+                                emlaryBody[2, 0] = "{username}"; emlaryBody[2, 1] = System.Web.HttpContext.Current.Session["UR_NAME"].ToString();
+                                emlaryBody[3, 0] = "{compname}"; emlaryBody[3, 1] = compaddress.retCompValue("compnm");
+                                emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
+                                emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
+                                emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + VE.TEXTBOX5 + ";";
@@ -3224,7 +3239,8 @@ namespace Improvar.Controllers
                                 emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", "Salebill.htm", emlaryBody, attchmail, grpemailid);
+                                //bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", "Salebill.htm", emlaryBody, attchmail, grpemailid);
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
