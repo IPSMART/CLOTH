@@ -2232,6 +2232,8 @@ namespace Improvar.Controllers
                         blhead = "PURCHASE INVOICE"; break;
                     case "OP":
                         blhead = "OPENING STOCK"; break;
+                    case "JB":
+                        blhead = "TAX INVOICE"; break;
                     default: blhead = ""; break;
                 }
 
