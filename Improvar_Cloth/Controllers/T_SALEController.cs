@@ -4310,20 +4310,23 @@ namespace Improvar.Controllers
                     }
                     else if (VE.MENU_PARA == "PJBL")
                     {
-                        VE.PENDING_ISSUE = VE.PENDING_ISSUE.Where(a => a.Checked == true).ToList();
-                        for (int i = 0; i <= VE.PENDING_ISSUE.Count - 1; i++)
+                        if (VE.PENDING_ISSUE != null)
                         {
-                            T_TXN_LINKNO TTXNLINKNO1 = new T_TXN_LINKNO();
+                            VE.PENDING_ISSUE = VE.PENDING_ISSUE.Where(a => a.Checked == true).ToList();
+                            for (int i = 0; i <= VE.PENDING_ISSUE.Count - 1; i++)
+                            {
+                                T_TXN_LINKNO TTXNLINKNO1 = new T_TXN_LINKNO();
 
-                            TTXNLINKNO1.EMD_NO = TTXN.EMD_NO;
-                            TTXNLINKNO1.CLCD = TTXN.CLCD;
-                            TTXNLINKNO1.DTAG = TTXN.DTAG;
-                            TTXNLINKNO1.TTAG = TTXN.TTAG;
-                            TTXNLINKNO1.AUTONO = TTXN.AUTONO;
-                            TTXNLINKNO1.LINKAUTONO = VE.PENDING_ISSUE[i].ISSUEAUTONO;
+                                TTXNLINKNO1.EMD_NO = TTXN.EMD_NO;
+                                TTXNLINKNO1.CLCD = TTXN.CLCD;
+                                TTXNLINKNO1.DTAG = TTXN.DTAG;
+                                TTXNLINKNO1.TTAG = TTXN.TTAG;
+                                TTXNLINKNO1.AUTONO = TTXN.AUTONO;
+                                TTXNLINKNO1.LINKAUTONO = VE.PENDING_ISSUE[i].ISSUEAUTONO;
 
-                            dbsql = masterHelp.RetModeltoSql(TTXNLINKNO1);
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                dbsql = masterHelp.RetModeltoSql(TTXNLINKNO1);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
                         }
                     }
                     if (VE.MENU_PARA == "SB")
