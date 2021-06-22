@@ -143,7 +143,7 @@ namespace Improvar.Controllers
                     {
                         VE.IsAPIEnabled = true;
                     }
-                    VE.SrcFlagCaption = "Name/GST/Code"; 
+                    VE.SrcFlagCaption = "Name/GST/Code";
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_SUBLEG orderby p.SLCD select new IndexKey() { Navikey = p.SLCD }).ToList();
@@ -570,24 +570,29 @@ namespace Improvar.Controllers
                 VE.PartyGroup = (from i in DB.M_PARTYGRP select new PartyGroup() { PARTYCD = i.PARTYCD, PARTYNM = i.PARTYNM }).OrderBy(s => s.PARTYNM).ToList();
             }
             //VE.isLastYrSchema = CommVar.FinSchemaPrevYr(UNQSNO) == "" ? false : true;
-            ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchemaPrevYr(UNQSNO));
-            if (CommVar.FinSchemaPrevYr(UNQSNO) == "")
+            try
             {
-                VE.isPresentinLastYrSchema = "";
-            }
-            else
-            {
-                var SLCD = sl.SLCD;
-                VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_SUBLEG where (j.SLCD == SLCD) select j.SLCD).FirstOrDefault();
-                if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
+                ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchemaPrevYr(UNQSNO));
+                if (CommVar.FinSchemaPrevYr(UNQSNO) == "")
                 {
-                    VE.isPresentinLastYrSchema = "ADD";
+                    VE.isPresentinLastYrSchema = "";
                 }
                 else
                 {
-                    VE.isPresentinLastYrSchema = "EDIT";
+                    var SLCD = sl.SLCD;
+                    VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_SUBLEG where (j.SLCD == SLCD) select j.SLCD).FirstOrDefault();
+                    if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
+                    {
+                        VE.isPresentinLastYrSchema = "ADD";
+                    }
+                    else
+                    {
+                        VE.isPresentinLastYrSchema = "EDIT";
+                    }
                 }
             }
+            catch (Exception ex)
+            { }
             return VE;
         }
         public ActionResult SearchPannelData(string SRC_FLAG)
@@ -596,7 +601,7 @@ namespace Improvar.Controllers
             {
                 var UNQSNO = Cn.getQueryStringUNQSNO();
                 string scm = CommVar.FinSchema(UNQSNO);
-                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN from "+scm+ ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
+                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN from " + scm + ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
                 if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(j.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
                 DataTable MDT = masterHelp.SQLquery(sql);
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -1556,7 +1561,7 @@ namespace Improvar.Controllers
                             MSUBLEG.ADD4 = VE.M_SUBLEG.EXTADDR;
                             MSUBLEG.ADD5 = VE.M_SUBLEG.LANDMARK;
                             MSUBLEG.ADD6 = (VE.M_SUBLEG.DISTRICT + " " + VE.M_SUBLEG.PIN).Trim();
-                            MSUBLEG.ADD7 = (VE.M_SUBLEG.SUBDISTRICT.retStr() != ""?"DIST " + VE.M_SUBLEG.SUBDISTRICT.retStr() + " , "+VE.M_SUBLEG.STATE: VE.M_SUBLEG.STATE).Trim();
+                            MSUBLEG.ADD7 = (VE.M_SUBLEG.SUBDISTRICT.retStr() != "" ? "DIST " + VE.M_SUBLEG.SUBDISTRICT.retStr() + " , " + VE.M_SUBLEG.STATE : VE.M_SUBLEG.STATE).Trim();
                             if (VE.DefaultAction == "E")
                             {
                                 MSUBLEG.SLCD = VE.M_SUBLEG.SLCD;
