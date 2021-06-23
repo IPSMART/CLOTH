@@ -458,8 +458,10 @@ namespace Improvar.Controllers
                 }
                 VE.M_SITEM = sl;
                 string barnosql = getbarno(sl.ITCD).retSqlformat();
-
-                VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                if (barnosql.retStr() != "")
+                {
+                    VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                }
                 if (VE.DropDown_list1.Count > 0)
                 {
                     VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
@@ -478,23 +480,27 @@ namespace Improvar.Controllers
                 }
                 sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".T_BATCH_IMG_HDR WHERE barno in(" + barnosql + ")";
                 dt = masterHelp.SQLquery(sql);
-                VE.UploadBarImages = (from DataRow dr in dt.Rows
-                                      select new UploadDOC
-                                      {
-                                          docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
-                                          DOC_DESC = dr["DOC_DESC"].retStr(),
-                                          DOC_FILE = CommVar.WebUploadDocURL(dr["DOC_FLNAME"].retStr()),
-                                          DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
-                                      }).ToList();
-                foreach (var v in VE.UploadBarImages)
+                if (dt != null && dt.Rows.Count > 0)
                 {
-                    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
-                    FROMpath = Path.Combine(FROMpath, "");
-                    string TOPATH = CommVar.LocalUploadDocPath() + v.DOC_FILE_NAME;
-                    var tyy = Url.Action();
-                    Cn.CopyImage(FROMpath, TOPATH);
-                    VE.BarImages += Cn.GCS() + CommVar.WebUploadDocURL(v.DOC_FILE_NAME) + "~" + v.DOC_DESC;
+                    VE.UploadBarImages = (from DataRow dr in dt.Rows
+                                          select new UploadDOC
+                                          {
+                                              docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
+                                              DOC_DESC = dr["DOC_DESC"].retStr(),
+                                              DOC_FILE = CommVar.WebUploadDocURL(dr["DOC_FLNAME"].retStr()),
+                                              DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
+                                          }).ToList();
+                    foreach (var v in VE.UploadBarImages)
+                    {
+                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
+                        FROMpath = Path.Combine(FROMpath, "");
+                        string TOPATH = CommVar.LocalUploadDocPath() + v.DOC_FILE_NAME;
+                        var tyy = Url.Action();
+                        Cn.CopyImage(FROMpath, TOPATH);
+                        VE.BarImages += Cn.GCS() + CommVar.WebUploadDocURL(v.DOC_FILE_NAME) + "~" + v.DOC_DESC;
+                    }
                 }
+
 
                 if (VE.DefaultAction == "A")
                 {
