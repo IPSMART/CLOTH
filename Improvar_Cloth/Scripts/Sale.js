@@ -1079,7 +1079,15 @@ function UpdateBarCodeRow_FrmDet(i) {
                 $("#B_PAGESLNO_" + j).val($("#D_PAGESLNO_" + i).val());
             }
             $("#B_BLUOMCD_" + j).val($("#D_BLUOMCD_" + i).val());
-
+            if (MENU_PARA == "PJBL") {
+                $("#B_FREESTK_" + j).val($("#D_FREESTK_" + i).val());
+                if ($("#B_FREESTK_" + j).val() == "Y") {
+                    $("#B_RATE_" + j).attr('readonly', 'readonly');
+                }
+                else {
+                    $("#B_RATE_" + j).prop('readonly', false);
+                }
+            }
         }
     }
 }
@@ -2654,6 +2662,16 @@ function RateUpdate(index, strid) {
             $("#B_RPRATE_" + index).val(parseFloat(B_RPRATE).toFixed(2))
             $("#B_RPRATE_" + index).attr('title', parseFloat(B_RPRATE).toFixed(2))
         }
+    }
+    else if (MENU_PARA == "PJBL") {
+        if ($(strid + "FREESTK_" + index).val() == "Y") {
+            $(strid + "RATE_" + index).val(0);
+            $(strid + "RATE_" + index).attr('readonly', 'readonly');
+        }
+        else {
+            $(strid + "RATE_" + index).prop('readonly', false);
+        }
+
     }
     Sale_GetGstPer(index, strid);
     if (strid == "#B_") {

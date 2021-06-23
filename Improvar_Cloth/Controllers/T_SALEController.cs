@@ -91,6 +91,11 @@ namespace Improvar.Controllers
                     VE.VECHLTYPE = masterHelp.VECHLTYPE();
                     VE.TRANSMODE = masterHelp.TRANSMODE();
                     VE.DropDown_list1 = DISCTYPEINRATE();
+                    List<DropDown_list2> RETURN_TYPE = new List<DropDown_list2> {
+                    new DropDown_list2 { value = "N", text = "NO"},
+                    new DropDown_list2 { value = "Y", text = "YES"},
+                    };
+                    VE.RETURN_TYPE = RETURN_TYPE;
                     //string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     //if (autoEntryWork[0] == "yes")
                     //{
@@ -504,7 +509,7 @@ namespace Improvar.Controllers
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
                 str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
-                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,i.BLQNTY,k.CONVQTYPUNIT ";
+                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,i.BLQNTY,k.CONVQTYPUNIT,nvl(s.FREESTK,'N')FREESTK ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t ";
@@ -590,13 +595,14 @@ namespace Improvar.Controllers
                                     RECPROGSLNO = dr["RECPROGSLNO"].retShort(),
                                     BLQNTY = dr["BLQNTY"].retDbl(),
                                     CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
+                                    FREESTK = dr["FREESTK"].retStr(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
                 str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT, ";
-                str1 += "i.ITREM,i.AGDOCNO,i.AGDOCDT,i.LISTPRICE,i.LISTDISCPER,i.PAGENO,i.PAGESLNO,i.BLUOMCD,j.CONVQTYPUNIT ";
+                str1 += "i.ITREM,i.AGDOCNO,i.AGDOCDT,i.LISTPRICE,i.LISTDISCPER,i.PAGENO,i.PAGESLNO,i.BLUOMCD,j.CONVQTYPUNIT,nvl(i.FREESTK,'N')FREESTK ";
                 str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                 str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
@@ -659,6 +665,7 @@ namespace Improvar.Controllers
                                   PAGESLNO = dr["PAGESLNO"].retInt(),
                                   BLUOMCD = dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
                                   CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
+                                  FREESTK = dr["FREESTK"].retStr(),
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -1808,6 +1815,7 @@ namespace Improvar.Controllers
                                   x.RECPROGSLNO,
                                   x.CONVQTYPUNIT,
                                   //x.BLQNTY,
+                                  x.FREESTK
                               } into P
                               select new TTXNDTL
                               {
@@ -1857,6 +1865,7 @@ namespace Improvar.Controllers
                                   FABITNM = P.Key.FABITNM,
                                   RECPROGSLNO = P.Key.RECPROGSLNO,
                                   CONVQTYPUNIT = P.Key.CONVQTYPUNIT,
+                                  FREESTK = P.Key.FREESTK,
                               }).OrderBy(a => a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
@@ -1892,6 +1901,12 @@ namespace Improvar.Controllers
                         }
                     }
                 }
+                VE.DropDown_list1 = DISCTYPEINRATE();
+                List<DropDown_list2> RETURN_TYPE = new List<DropDown_list2> {
+                    new DropDown_list2 { value = "N", text = "NO"},
+                    new DropDown_list2 { value = "Y", text = "YES"},
+                    };
+                VE.RETURN_TYPE = RETURN_TYPE;
 
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -3463,6 +3478,13 @@ namespace Improvar.Controllers
                 VE.Database_Combo4 = (from n in DB.T_BATCHDTL
                                       select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 
+                VE.DropDown_list1 = DISCTYPEINRATE();
+                List<DropDown_list2> RETURN_TYPE = new List<DropDown_list2> {
+                    new DropDown_list2 { value = "N", text = "NO"},
+                    new DropDown_list2 { value = "Y", text = "YES"},
+                    };
+                VE.RETURN_TYPE = RETURN_TYPE;
+
                 VE.DefaultView = true;
                 ModelState.Clear();
                 return PartialView("_T_SALE_BarTab", VE);
@@ -4592,7 +4614,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5685,7 +5707,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5693,7 +5715,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

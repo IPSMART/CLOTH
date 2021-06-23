@@ -280,5 +280,6 @@ namespace Improvar.ViewModels
         public string PCSTYPE { get; set; }
         public string COMMONUNIQBAR { get; set; }
         public string BARNO { get; set; }
+        public List<DropDown_list2> RETURN_TYPE { get; set; }
     }
 }

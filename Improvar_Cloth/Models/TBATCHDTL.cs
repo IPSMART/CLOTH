@@ -196,5 +196,7 @@ namespace Improvar.Models
         public string RECPROGITCD { get; set; }
         public string RECPROGITSTYLE { get; set; }
         public double? CONVQTYPUNIT { get; set; }
+        [StringLength(1)]
+        public string FREESTK { get; set; }
     }
 }
