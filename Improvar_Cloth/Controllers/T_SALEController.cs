@@ -5236,7 +5236,71 @@ namespace Improvar.Controllers
                         }
 
 
-                        // TDS
+                        // Ronded off
+                        dbamt = Convert.ToDouble(VE.T_TXN.ROAMT);
+                        if (dbamt != 0)
+                        {
+                            string adrcr = cr;
+                            if (dbamt < 0) adrcr = dr;
+                            if (dbamt < 0) dbamt = dbamt * -1;
+
+                            isl = isl + 1;
+                            dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, tbl.Rows[0]["rogl"].ToString(), null,
+                                    dbamt, strrem, tbl.Rows[0]["parglcd"].ToString(), TTXN.SLCD, 0, 0, 0);
+                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                            if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
+                            else dbCrAmt = dbCrAmt + dbamt;
+                        }
+                        //Party wise posting
+                        isl = 1; //isl + 1;
+                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr,
+                            tbl.Rows[0]["parglcd"].ToString(), sslcd, Convert.ToDouble(VE.T_TXN.BLAMT), strrem, tbl.Rows[0]["prodglcd"].ToString(),
+                            null, dbqty, 0, dbcurramt);
+                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                        if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
+                        else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
+                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
+                                tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), Convert.ToDouble(VE.T_TXN.BLAMT), dbcurramt, strrem);
+                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+                        strblno = ""; strbldt = ""; strduedt = ""; strvtype = ""; strrefno = "";
+                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "SR")
+                        {
+                            strvtype = "CN";
+                        }
+                        else if (VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "PR")
+                        {
+                            strvtype = "DN";
+                        }
+                        else
+                        {
+                            strvtype = "BL";
+                        }
+                        strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
+                        {
+                            strblno = TTXN.PREFNO;
+                            strbldt = TTXN.PREFDT.ToString();
+                        }
+                        else
+                        {
+                            strbldt = TTXN.DOCDT.ToString();
+                            strblno = DOCPATTERN;
+                        }
+                        string blconslcd = TTXN.CONSLCD;
+                        if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
+                        if (blconslcd == sslcd) blconslcd = "";
+                        string blrem = "";
+                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") blrem = VE.T_TXNOTH.DOCREM;
+                        dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, dr,
+                           tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(isl),
+                           VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
+                           TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
+                           VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "", VE.T_TXNOTH.BLTYPE, blrem);
+                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+
+                        // TDS on purchase
                         if (VE.T_TDSTXN != null)
                         {
                             dbamt = VE.T_TDSTXN.TDSAMT.retDbl();
@@ -5310,68 +5374,6 @@ namespace Improvar.Controllers
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             ////TVCHBLADJ1 end
                         }
-                        // Ronded off
-                        dbamt = Convert.ToDouble(VE.T_TXN.ROAMT);
-                        if (dbamt != 0)
-                        {
-                            string adrcr = cr;
-                            if (dbamt < 0) adrcr = dr;
-                            if (dbamt < 0) dbamt = dbamt * -1;
-
-                            isl = isl + 1;
-                            dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, tbl.Rows[0]["rogl"].ToString(), null,
-                                    dbamt, strrem, tbl.Rows[0]["parglcd"].ToString(), TTXN.SLCD, 0, 0, 0);
-                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                            if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
-                            else dbCrAmt = dbCrAmt + dbamt;
-                        }
-                        //Party wise posting
-                        isl = 1; //isl + 1;
-                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr,
-                            tbl.Rows[0]["parglcd"].ToString(), sslcd, Convert.ToDouble(VE.T_TXN.BLAMT), strrem, tbl.Rows[0]["prodglcd"].ToString(),
-                            null, dbqty, 0, dbcurramt);
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                        if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
-                        else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
-                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
-                                tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), Convert.ToDouble(VE.T_TXN.BLAMT), dbcurramt, strrem);
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
-                        strblno = ""; strbldt = ""; strduedt = ""; strvtype = ""; strrefno = "";
-                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "SR")
-                        {
-                            strvtype = "CN";
-                        }
-                        else if (VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "PR")
-                        {
-                            strvtype = "DN";
-                        }
-                        else
-                        {
-                            strvtype = "BL";
-                        }
-                        strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
-                        {
-                            strblno = TTXN.PREFNO;
-                            strbldt = TTXN.PREFDT.ToString();
-                        }
-                        else
-                        {
-                            strbldt = TTXN.DOCDT.ToString();
-                            strblno = DOCPATTERN;
-                        }
-                        string blconslcd = TTXN.CONSLCD;
-                        if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
-                        if (blconslcd == sslcd) blconslcd = "";
-                        string blrem = "";
-                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") blrem = VE.T_TXNOTH.DOCREM;
-                        dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, dr,
-                           tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(isl),
-                           VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
-                           TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
-                           VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "", VE.T_TXNOTH.BLTYPE, blrem);
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                     }
                     if (blgstpost == true)
                     {
