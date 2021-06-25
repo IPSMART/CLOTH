@@ -26,11 +26,14 @@ namespace Improvar.ViewModels
         public T_VCH_GST T_VCH_GST { get; set; }
         public T_STKTRNF T_STKTRNF { get; set; }
         public T_TXNEINV T_TXNEINV { get; set; }
+        public T_TDSTXN T_TDSTXN { get; set; }
         public T_TXNEWB T_TXNEWB { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
+
+        public List<LOW_TDS_list> LOW_TDS_list { get; set; }
         public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
@@ -64,6 +67,8 @@ namespace Improvar.ViewModels
         public bool RoundOff { get; set; }
         public string GONM { get; set; }
         public string PRCNM { get; set; }
+        public string TDSNM1 { get; set; }
+        
         public string TransporterName { get; set; }
         public string POS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]

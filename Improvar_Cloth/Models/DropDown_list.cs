@@ -37,6 +37,13 @@ namespace Improvar.Models
         public string text { get; set; }
         public string value { get; set; }
     }
+
+    public class LOW_TDS_list
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+    }
+
     public class DropDown_list_text
     {
         public string text1 { get; set; }

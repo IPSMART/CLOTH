@@ -1921,7 +1921,33 @@ function DeleteDOCrow() {
     });
 
 }
-
+function TDSAMTCAL() {
+    debugger;
+    var TDS_ROUND = "Y";// $("#TDSROUND").val();
+    var TDSAMT = $("#TDSAMT").val();
+    if (TDSAMT == "") { TDSAMT = parseFloat(0); } else { TDSAMT = parseFloat(TDSAMT) }
+    var TDS_PER = $("#TDSPER").val(); var TDS_ON = $("#TDSON").val();
+    if (TDS_PER == "") { TDS_PER = parseFloat(0); } else { TDS_PER = parseFloat(TDS_PER) }
+    if (TDS_ON == "") { TDS_ON = parseFloat(0); } else { TDS_ON = parseFloat(TDS_ON) }
+    var tdsamt1 = parseFloat(parseFloat(TDS_ON) * parseFloat(TDS_PER) / 100).toFixed(2);
+    var tdsamt2 = tdsamt1.toString().split('.');
+    if (tdsamt2[1] > 0) {
+        if (TDS_ROUND == "Y") {
+            tdsamt1 = Math.round(tdsamt1); //==yes
+        }
+        else
+            if (TDS_ROUND == "N") {
+                tdsamt1 = Math.ceil(tdsamt1); //==nxt
+            }
+            else
+                if (TDS_ROUND == "L") {
+                    tdsamt1 = Math.floor(tdsamt1); //==least
+                }
+    }
+    if (Math.abs(tdsamt1 - TDSAMT) > 1) {
+        $("#TDSAMT").val(tdsamt1);
+    }
+}
 function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
     if (id == "") {
         $("#" + TDSHD.id).val("");

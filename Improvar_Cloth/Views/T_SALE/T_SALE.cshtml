@@ -636,7 +636,7 @@
         <input type="hidden" id="UrlDeleteRow" value="@Url.Action("DeleteRowBarno", PageControllerName)" />
         <input type="hidden" id="UrlAddDOCRow" value="@Url.Action("AddDOCRow", PageControllerName)" />
         <input type="hidden" id="UrlDeleteDOCRow" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
-        <input type="hidden" id="UrlSelectTDSCode" value="@Url.Action("GetTDSDetails", PageControllerName)" />
+        <input type="hidden" id="UrlSelectTDSCode" value="@Url.Action("GetTCSDetails", PageControllerName)" />
         <input type="hidden" id="UrlUploadImages" value="@Url.Action("UploadImages", PageControllerName )" />
         <input type="hidden" id="UrlSubLedgerDetails" value="@Url.Action("GetSubLedgerDetails", PageControllerName )" />
         <input type="hidden" id="UrlPendOrder" value="@Url.Action("GetPendOrder", PageControllerName )" />
@@ -1412,6 +1412,73 @@
                                     </div>
                                 </div>
                             }
+
+                            <div class="row">
+                                @if (Model.MENU_PARA == "PB")
+                    {
+                                    <div class="col-md-4">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "TDS Head")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.T_TDSTXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2','SLCD/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2','SLCD/DOCDT')", @placeholder = "TDSCODE" } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetTDSDetails", PageControllerName)','TDS Details','TDSCODE','TDSCODE=TDSCODE=1/TDSNM1=TDSNM=0/TDSPER=TDSPER=2','SLCD/DOCDT')" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TDSNM1, new { htmlAttributes = new { @class = "form-control", id = "TDSNM1", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "TDS Percentage")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field" style="margin-top:6px;">
+                                            @Html.EditorFor(model => model.T_TDSTXN.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "TDS Deducted on")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="editor-field" style="margin-top:6px;">
+                                            @Html.EditorFor(model => model.T_TDSTXN.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "TDS Amount")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.T_TDSTXN.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", onblur = "TDSAMTCAL();", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Lower TDS Ded.Type")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.DropDownListFor(model => model.T_TDSTXN.LOW_TDS, new SelectList(Model.LOW_TDS_list, "Value", "Text", Model.LOW_TDS_list), new { @class = "form-control", onchange = "GetTDSDescription(this.value);", })
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+
                             @if (Model.DefaultAction != "V")
                             {
                                 <div class="row">
@@ -2271,10 +2338,10 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeyup = "GetHelp('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSCODE,TDSNM,TCSPER);", @placeholder = "Code", maxlength = 3, onchange = "BillAmountCalculate();" } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)" />
+                                        @Html.EditorFor(model => model.T_TXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TCSCODE", onkeyup = "GetHelp('" + @Url.Action("GetTCSDetails", PageControllerName) + "','TCSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TCSCODE',DOCDT.value)", onblur = "SelectTDSCode(this.value,TCSCODE,TDSNM,TCSPER);", @placeholder = "Code", maxlength = 3, onchange = "BillAmountCalculate();" } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTCSDetails", PageControllerName)','TCSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TCSCODE',DOCDT.value)" />
                                     </div>
-                                    <input id="TDSAMTCAL" type="hidden" />
+                                    @*<input id="TDSAMTCAL" type="hidden" />*@
                                 </div>
                                 <div class="col-md-9">
                                     <div class="editor-field">

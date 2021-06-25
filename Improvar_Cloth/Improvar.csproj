@@ -630,6 +630,7 @@
     <Compile Include="Models\T_STCHALT_DTL.cs" />
     <Compile Include="Models\T_STCHALT_DTL_COMP.cs" />
     <Compile Include="Models\T_STKTRNF.cs" />
+    <Compile Include="Models\T_TDSTXN.cs" />
     <Compile Include="Models\T_TXN.cs" />
     <Compile Include="Models\T_TXNACK.cs" />
     <Compile Include="Models\T_TXNAMT.cs" />

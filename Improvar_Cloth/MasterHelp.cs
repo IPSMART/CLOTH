@@ -2406,6 +2406,16 @@ namespace Improvar
             };
             return (INVTYPE_list);
         }
+        public List<LOW_TDS_list> LOW_TDS_list()
+        {
+            List<LOW_TDS_list> DDL = new List<LOW_TDS_list>();
+            LOW_TDS_list DDL1 = new LOW_TDS_list(); DDL1.Text = ""; DDL1.Value = ""; DDL.Add(DDL1);
+            LOW_TDS_list DDL2 = new LOW_TDS_list(); DDL2.Text = "Y"; DDL2.Value = "Y"; DDL.Add(DDL2);
+            LOW_TDS_list DDL3 = new LOW_TDS_list(); DDL3.Text = "N"; DDL3.Value = "N"; DDL.Add(DDL3);
+            LOW_TDS_list DDL4 = new LOW_TDS_list(); DDL4.Text = "T"; DDL4.Value = "T"; DDL.Add(DDL4);
+            return (DDL);
+        }
+
         public List<EXPCD_list> EXPCD_list(string salpur = "S")
         {
             if (salpur == "P")
@@ -2507,7 +2517,7 @@ namespace Improvar
                 sql += "where a.tdscode = b.tdscode(+) ";
                 if (Caption.retStr() == "") sql += "and  nvl(b.sbilltds,'N') <> 'Y' and a.tdscode not in ('X','Y','Z') ";
                 DataTable dt = SQLquery(sql);
-                if (val == null)
+                if (val.retStr() == "")
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= dt.Rows.Count - 1; i++)
