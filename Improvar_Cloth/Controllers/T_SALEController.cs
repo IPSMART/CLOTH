@@ -489,7 +489,10 @@ namespace Improvar.Controllers
                 {
                     VE.TDSNM = DBF.M_TDS_CNTRL.Where(e => e.TDSCODE == TXN.TDSCODE).FirstOrDefault()?.TDSNM;
                 }
-                //
+                if (TTDS != null && TTDS.TDSCODE.retStr() != "")
+                {
+                    VE.TDSNM1 = DBF.M_TDS_CNTRL.Where(e => e.TDSCODE == TTDS.TDSCODE).FirstOrDefault()?.TDSNM;
+                }
                 if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
                 {
                     VE.EXPGLCD = DBF.T_VCH_GST.Where(a => a.AUTONO == TXN.AUTONO).Select(b => b.EXPGLCD).FirstOrDefault();
@@ -5252,14 +5255,14 @@ namespace Improvar.Controllers
                             else dbCrAmt = dbCrAmt + dbamt;
                         }
                         //Party wise posting
-                        isl = 1; //isl + 1;
-                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr,
+                       int Partyisl = 1; //isl + 1;
+                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(Partyisl), dr,
                             tbl.Rows[0]["parglcd"].ToString(), sslcd, Convert.ToDouble(VE.T_TXN.BLAMT), strrem, tbl.Rows[0]["prodglcd"].ToString(),
                             null, dbqty, 0, dbcurramt);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                         if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
                         else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
-                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
+                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(Partyisl), sslcd,
                                 tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), Convert.ToDouble(VE.T_TXN.BLAMT), dbcurramt, strrem);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
@@ -5293,7 +5296,7 @@ namespace Improvar.Controllers
                         string blrem = "";
                         if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") blrem = VE.T_TXNOTH.DOCREM;
                         dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, dr,
-                           tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(isl),
+                           tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(Partyisl),
                            VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                            TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
                            VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "", VE.T_TXNOTH.BLTYPE, blrem);
@@ -5352,7 +5355,7 @@ namespace Improvar.Controllers
 
                             string blno = DOCPATTERN, bldt = TTXN.DOCDT.ToString().retDateStr(); double tdson = VE.T_TDSTXN.TDSON.retDbl();
                             dbsql = masterHelp.InsVch_TdsTxn(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, blno, bldt, tbl.Rows[0]["parglcd"].ToString(), TTXN.SLCD,
-                               VE.T_TXN.TDSCODE, Convert.ToInt16(isl), TTXN.BLAMT.retDbl(), tdson, VE.T_TDSTXN.TDSPER.retDbl(), dbamt, bldt, null, "", "TDS");
+                               VE.T_TDSTXN.TDSCODE, Convert.ToInt16(isl), TTXN.BLAMT.retDbl(), tdson, VE.T_TDSTXN.TDSPER.retDbl(), dbamt, bldt, null, "", "TDS");
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                             ////TVCHBLADJ1 start
