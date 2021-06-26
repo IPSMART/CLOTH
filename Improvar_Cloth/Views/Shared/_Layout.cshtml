@@ -196,7 +196,7 @@
                 {
                     if(@tmprng==1){
                         e.preventDefault();
-                        location.href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para";
+                        location.href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&MP=@menu_para&searchValue=@Model.SearchValue";
                         e.preventDefault();
                         return false;
                     }
@@ -394,7 +394,7 @@
                                             {
                                                 setind = Model.Index;
                                                 <li class="menu-item" id="pencil_nav">
-                                                    <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                                    <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                                 </li>
                                             }
                                         }
@@ -406,14 +406,14 @@
                                         if (Model.SearchValue == null)
                                         {
                                             <li class="menu-item" id="pencil_nav">
-                                                <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                                <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                             </li>
                                         }
                                         else
                                         {
                                             setind = Model.Index;
                                             <li class="menu-item" id="pencil_nav">
-                                                <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                                <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                             </li>
                                         }
                                     }
@@ -424,14 +424,14 @@
                                 if (Model.SearchValue == null)
                                 {
                                     <li class="menu-item" id="pencil_nav">
-                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                     </li>
                                 }
                                 else
                                 {
                                     setind = Model.Index;
                                     <li class="menu-item" id="pencil_nav">
-                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                     </li>
                                 }
                             }
