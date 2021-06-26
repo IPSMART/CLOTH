@@ -242,11 +242,12 @@
                 return false;
             }
         }
+        var GridRow_bar = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        var GridRow_detail = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         @*if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {*@
-        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         var balenoexist = false;
-        if (GridRow != 0) {
-            for (var i = 0; i <= GridRow - 1; i++) {
+        if (GridRow_detail != 0) {
+            for (var i = 0; i <= GridRow_detail - 1; i++) {
                 if ($("#D_BALENO_" + i).val() != "") {
                     balenoexist = true;
                     break;
@@ -285,10 +286,10 @@
 
         //
         if ("@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SBEXP") {
-            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+
             var rateblank = false;
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
+            if (GridRow_bar != 0) {
+                for (var i = 0; i <= GridRow_bar - 1; i++) {
                     if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
                         if ("@Model.MENU_PARA" == "PJBL") {
                             if ($("#B_FREESTK_" + i).val() != "Y") {
@@ -316,12 +317,11 @@
             }
         }
         //start of finalise
-        if ($("#bardatachng").val() == "Y" && GridRow > 0) {
+        if ($("#bardatachng").val() == "Y" && GridRow_bar > 0) {
             debugger;
-            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
             var mtrlcdblank = false; var slnoblank = false; var glcdblank = false; var qntyblank = false;
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
+            if (GridRow_bar != 0) {
+                for (var i = 0; i <= GridRow_bar - 1; i++) {
                     if ($("#B_MTRLJOBCD_" + i).val() == "") {
                         mtrlcdblank = true;
                         break;
@@ -401,8 +401,8 @@
                     }
                     else {
                         $("#partialdivDetail").html(result);
-                        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
-                        for (var i = 0; i <= GridRow - 1; i++) {
+                        GridRow_detail = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                        for (var i = 0; i <= GridRow_detail - 1; i++) {
                             CalculateAmt_Details(i);
                         }
                         $("#bardatachng").val("N");
@@ -422,10 +422,9 @@
             @*if (("@Model.MENU_PARA" == "SBPCK" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SBDIR" || "@Model.MENU_PARA" == "SBEXP") && $("#withoutamtdatasave").val() != "N") {
             debugger;
             //checking amount
-            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
             var amtblankslno = "";
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
+            if (GridRow_detail != 0) {
+                for (var i = 0; i <= GridRow_detail - 1; i++) {
                     if ($("#D_ITCD_" + i).val() != "" && retFloat($("#D_AMT_" + i).val()) == 0) {
                         amtblankslno += $("#D_SLNO_" + i).val() + ",";
                     }
@@ -670,7 +669,7 @@
         <input type="hidden" id="Barnohelpopen" value="Y" />
         <input type="hidden" id="UpDateTransporter" value="N" />
         <input type="hidden" id="withoutamtdatasave" value="" />
-            <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
+        <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
             @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
             @Html.HiddenFor(a => a.Delete, new { id = "Delete" })
             @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
@@ -1573,25 +1572,25 @@
                                         }
                                         if ((Model.MENU_PARA == "SBPCK") && Model.DefaultAction != "V")
                                         {  <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Disc Type")
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Disc Type")
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-field">
-                                        @Html.DropDownListFor(model => model.DISCTYPEINRATE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DISCTYPEINRATE), new { @class = "form-control", id = "DISCTYPEINRATE", @title = "Disc Type", @TabIndex = -1 })
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-field">
+                                            @Html.DropDownListFor(model => model.DISCTYPEINRATE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DISCTYPEINRATE), new { @class = "form-control", id = "DISCTYPEINRATE", @title = "Disc Type", @TabIndex = -1 })
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Disc Rate")
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Disc Rate")
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate", @TabIndex = -1 } })
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate", @TabIndex = -1 } })
+                                        </div>
                                     </div>
-                                </div>
 
 
                                         }
@@ -1696,16 +1695,16 @@
                                         </div>*@
                                     @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC"))
                                     { <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Order Item Filter")
+                                        <div class="editor-field" style="margin-top: 6px;">
+                                            @Html.Label("", "Order Item Filter")
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-field" style="margin-top:6px;">
-                                        @Html.CheckBoxFor(model => model.itemfilter, new { id = "itemfilter", @TabIndex = -1 })
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-field" style="margin-top:6px;">
+                                            @Html.CheckBoxFor(model => model.itemfilter, new { id = "itemfilter", @TabIndex = -1 })
+                                        </div>
                                     </div>
-                                </div>
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                     }
                                     <div class="DivMergeBarItem col-md-1" style="width:auto;">
                                         <div class="editor-field" style="margin-top: 6px;">
@@ -1908,23 +1907,23 @@
                                                 </div>
                                                 @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SBPOS")
                                                 { <div class="col-md-1">
-                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
-                                                    <span class="has-float-label">
-                                                        @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @readonly = "readonly", @TabIndex = -1 } })
-                                                        <label for="QNTY" style="font-size: 87%;color: darkgreen;">Quantity</label>
-                                                    </span>
+                                                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                        <span class="has-float-label">
+                                                            @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @readonly = "readonly", @TabIndex = -1 } })
+                                                            <label for="QNTY" style="font-size: 87%;color: darkgreen;">Quantity</label>
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
                                                 }
                                                 else
                                                 { <div class="col-md-1">
-                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
-                                                    <span class="has-float-label">
-                                                        @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
-                                                        <label for="QNTY" style="font-size: 87%;color: darkgreen;">Quantity</label>
-                                                    </span>
+                                                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                        <span class="has-float-label">
+                                                            @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
+                                                            <label for="QNTY" style="font-size: 87%;color: darkgreen;">Quantity</label>
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
                                                 }
 
@@ -2313,12 +2312,12 @@
                             {
                                 if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)
                                 {<div class="row">
-                            <div class="col-md-1" style="width:auto;">
-                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno(Alt+G)" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update(Alt+I)" accesskey="I" title="Click to Update page no/page slno in Details Tab" disabled onclick="Update_Pageno_slno()" />
-                                <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_page_slno" value="Cancel" title="Click to Cancel for unchane page no/page slno in Details Tab" onclick="Cancel_Pageno_slno()" />
+                                <div class="col-md-1" style="width:auto;">
+                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno(Alt+G)" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update(Alt+I)" accesskey="I" title="Click to Update page no/page slno in Details Tab" disabled onclick="Update_Pageno_slno()" />
+                                    <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_page_slno" value="Cancel" title="Click to Cancel for unchane page no/page slno in Details Tab" onclick="Cancel_Pageno_slno()" />
+                                </div>
                             </div>
-                        </div>
                                 }
                             }
                         </div>
