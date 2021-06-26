@@ -175,8 +175,9 @@
                 return false;
             }
 
-
+            
             if (e.altKey && (e.which == 69)) {
+                //if (e.altKey ) {
                 //edit
                 if('@Model'!='null')
                 {
@@ -196,7 +197,7 @@
                 {
                     if(@tmprng==1){
                         e.preventDefault();
-                        location.href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&MP=@menu_para&searchValue=@Model.SearchValue";
+                        location.href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue";
                         e.preventDefault();
                         return false;
                     }
