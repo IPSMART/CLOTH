@@ -4554,19 +4554,19 @@ namespace Improvar.Controllers
                                 TTXNDTL.GLCD = VE.TTXNDTL[i].GLCD;
                                 TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
 
-                                if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") && VE.TTXNDTL[i].AGDOCNO.retStr() != "" && VE.TTXNDTL[i].AGDOCDT.retStr() != "")
+                                //if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") && VE.TTXNDTL[i].AGDOCNO.retStr() != "" && VE.TTXNDTL[i].AGDOCDT.retStr() != "")
+                                //{
+                                if (!string.IsNullOrEmpty(VE.ADJWITH_BLNO) && !string.IsNullOrEmpty(VE.ADJWITH_BLDT.retStr()))
                                 {
-                                    if (!string.IsNullOrEmpty(TTXN.PREFNO) && !string.IsNullOrEmpty(TTXN.PREFDT.retStr()))
-                                    {
-                                        TTXNDTL.AGDOCNO = TTXN.PREFNO;
-                                        TTXNDTL.AGDOCDT = TTXN.PREFDT;
-                                    }
-                                    else
-                                    {
-                                        TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
-                                        TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;
-                                    }
+                                    TTXNDTL.AGDOCNO = VE.ADJWITH_BLNO;
+                                    TTXNDTL.AGDOCDT = Convert.ToDateTime(VE.ADJWITH_BLDT);
                                 }
+                                else
+                                {
+                                    TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
+                                    TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;
+                                }
+                                // }
                                 TTXNDTL.LISTPRICE = VE.TTXNDTL[i].LISTPRICE;
                                 TTXNDTL.LISTDISCPER = VE.TTXNDTL[i].LISTDISCPER;
                                 TTXNDTL.PAGENO = VE.TTXNDTL[i].PAGENO;
@@ -5255,7 +5255,7 @@ namespace Improvar.Controllers
                             else dbCrAmt = dbCrAmt + dbamt;
                         }
                         //Party wise posting
-                       int Partyisl = 1; //isl + 1;
+                        int Partyisl = 1; //isl + 1;
                         dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(Partyisl), dr,
                             tbl.Rows[0]["parglcd"].ToString(), sslcd, Convert.ToDouble(VE.T_TXN.BLAMT), strrem, tbl.Rows[0]["prodglcd"].ToString(),
                             null, dbqty, 0, dbcurramt);
@@ -5495,11 +5495,10 @@ namespace Improvar.Controllers
                                         if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") && OSDATA.Rows.Count > 0)
                                         {
                                             string AGAUTONO = "", AGBLAMT = "";
-                                            string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : "PB";
                                             string agdocno = "", agdocdt = "";
-                                            if (!string.IsNullOrEmpty(TTXN.PREFNO) && !string.IsNullOrEmpty(TTXN.PREFDT.retStr()))
+                                            if (!string.IsNullOrEmpty(VE.ADJWITH_BLNO) && !string.IsNullOrEmpty(VE.ADJWITH_BLDT.retStr()))
                                             {
-                                                agdocno = TTXN.PREFNO; agdocdt = TTXN.PREFDT.retDateStr();
+                                                agdocno = VE.ADJWITH_BLNO; agdocdt = VE.ADJWITH_BLDT.retDateStr();
                                             }
                                             else
                                             {
@@ -5516,7 +5515,7 @@ namespace Improvar.Controllers
                                                 AGAUTONO = dt1.Rows[0]["autono"].retStr();
                                                 AGBLAMT = dt1.Rows[0]["BLAMT"].retStr();
 
-                                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, Convert.ToSByte(isl), VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
+                                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, 1, VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
                                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                             }
                                         }

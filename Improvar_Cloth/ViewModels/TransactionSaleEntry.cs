@@ -52,6 +52,8 @@ namespace Improvar.ViewModels
         public List<TTXNDTLPOPUP> TTXNDTLPOPUP { get; set; }
         public string M_SLIP_NO { get; set; }
         public string PSLCD { get; set; }
+        public string ADJWITH_BLNO { get; set; }
+        public string ADJWITH_BLDT { get; set; }
         public string SLNM { get; set; }
         public string PARTYCD { get; set; }
         public string SLAREA { get; set; }
