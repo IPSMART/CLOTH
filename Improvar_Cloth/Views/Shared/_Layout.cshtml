@@ -18,7 +18,7 @@
     <script src="~/Scripts/globalize.js"></script>
     <script src="~/Scripts/Globalization.culture.js"></script>
     <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
-   
+
     @Scripts.Render("~/Scripts/Multiple-Select-min.js?n=1")
     @Scripts.Render("~/Scripts/bootstrap-select.js?n=1")
     @Styles.Render("~/Content/bootstrap.css?Ver=" + Module.ContentVersion)
@@ -175,9 +175,9 @@
                 return false;
             }
 
-            
-            if (e.altKey && (e.which == 69)) {
-                //if (e.altKey ) {
+
+            //if (e.altKey && (e.which == 69)) {
+            if (e.altKey ) {
                 //edit
                 if('@Model'!='null')
                 {
@@ -197,7 +197,9 @@
                 {
                     if(@tmprng==1){
                         e.preventDefault();
-                        location.href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue";
+                        var parhQuer="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue";
+                        parhQuer=  parhQuer.replace("&#181;", "µ");
+                        location.href=parhQuer;
                         e.preventDefault();
                         return false;
                     }
@@ -395,7 +397,7 @@
                                             {
                                                 setind = Model.Index;
                                                 <li class="menu-item" id="pencil_nav">
-                                                    <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                                    <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                                 </li>
                                             }
                                         }
@@ -407,7 +409,7 @@
                                         if (Model.SearchValue == null)
                                         {
                                             <li class="menu-item" id="pencil_nav">
-                                                <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                                <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                             </li>
                                         }
                                         else
@@ -425,14 +427,14 @@
                                 if (Model.SearchValue == null)
                                 {
                                     <li class="menu-item" id="pencil_nav">
-                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                     </li>
                                 }
                                 else
                                 {
                                     setind = Model.Index;
                                     <li class="menu-item" id="pencil_nav">
-                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)"  class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
+                                        <a href="@path?op=E&key=P&Nindex=@setind&US=@US&MNUDET=@MNUDET&DC=@doc_Code&MP=@menu_para&searchValue=@Model.SearchValue" title="Edit Mode(Alt+E)" class="anchor_handleCls"><span class="glyphicon glyphicon-pencil" style="font-size:larger;color:chartreuse"></span></a>
                                     </li>
                                 }
                             }
@@ -713,36 +715,36 @@
                                         {
                                             if (Model.AuthorisationStatus == "A")
                                             {
-                                            <li class="menu-item" id="authorised_nav">
-                                                <a href="#" title="Click for Unauthorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:greenyellow;"></span></a>
-                                            </li>
+                                                <li class="menu-item" id="authorised_nav">
+                                                    <a href="#" title="Click for Unauthorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:greenyellow;"></span></a>
+                                                </li>
                                             }
                                             else if (Model.AuthorisationStatus == "N")
                                             {
-                                            <li class="menu-item" id="authorised_nav">
-                                                <a href="#" title="Click for Authorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-down" style="font-size:larger;color:mediumvioletred;"></span></a>
-                                            </li>
+                                                <li class="menu-item" id="authorised_nav">
+                                                    <a href="#" title="Click for Authorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-down" style="font-size:larger;color:mediumvioletred;"></span></a>
+                                                </li>
                                             }
                                             else
                                             {
-                                            <li class="menu-item" id="authorised_nav">
-                                                <a href="#" title="Click for Authorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:lightskyblue;"></span></a>
-                                            </li>
+                                                <li class="menu-item" id="authorised_nav">
+                                                    <a href="#" title="Click for Authorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:lightskyblue;"></span></a>
+                                                </li>
                                             }
                                         }
                                         else
                                         {
                                             if (Model.AuthorisationStatus == "A")
                                             {
-                                            <li class="menu-item" id="authorised_nav">
-                                                <a href="#" title="Authorised Record"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:greenyellow;"></span></a>
-                                            </li>
+                                                <li class="menu-item" id="authorised_nav">
+                                                    <a href="#" title="Authorised Record"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:greenyellow;"></span></a>
+                                                </li>
                                             }
                                             else if (Model.AuthorisationStatus == "N")
                                             {
-                                            <li class="menu-item" id="authorised_nav">
-                                                <a href="#" title="Rejected Record"><span class="glyphicon glyphicon-thumbs-down" style="font-size:larger;color:mediumvioletred;"></span></a>
-                                            </li>
+                                                <li class="menu-item" id="authorised_nav">
+                                                    <a href="#" title="Rejected Record"><span class="glyphicon glyphicon-thumbs-down" style="font-size:larger;color:mediumvioletred;"></span></a>
+                                                </li>
                                             }
                                         }
                                     }
