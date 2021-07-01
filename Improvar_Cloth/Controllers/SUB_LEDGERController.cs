@@ -297,14 +297,7 @@ namespace Improvar.Controllers
                 {
                     VE.Checked = false;
                 }
-                if (sl.TCSAPPL == "Y")
-                {
-                    VE.TCSAPPL = true;
-                }
-                else
-                {
-                    VE.TCSAPPL = false;
-                }
+                VE.TCSAPPL = sl.TCSAPPL == null ? true : sl.TCSAPPL == "Y" ? true : false;
                 if (sl.PARTYCD.retStr() != "")
                 {
                     string PARTYCD = sl.PARTYCD;
