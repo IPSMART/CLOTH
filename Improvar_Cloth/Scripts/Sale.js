@@ -2811,7 +2811,7 @@ function GetPartyDetails(id) {
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
         var AUTONO = $("#AUTONO").val();
-        var TDSCODE = $("#TDSCODE").val();
+        var TCSCODE = $("#TCSCODE").val();
         var Partycaption = "";
         if (MENU_PARA == "PB" || MENU_PARA == "PR") {
             Partycaption = "Supplier";
@@ -2826,7 +2826,7 @@ function GetPartyDetails(id) {
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
             url: $("#UrlSubLedgerDetails").val(),//"@Url.Action("GetSubLedgerDetails", PageControllerName)",
-            data: "&val=" + id + "&Code=" + code + "&Autono=" + AUTONO + "&linktdscode=" + TDSCODE,
+            data: "&val=" + id + "&Code=" + code + "&Autono=" + AUTONO + "&linktdscode=" + TCSCODE,
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
@@ -2856,7 +2856,7 @@ function GetPartyDetails(id) {
                         $("#TRANSLCD").val(returncolvalue(result, "TRSLCD"));
                         $("#TRANSLNM").val(returncolvalue(result, "TRSLNM"));
                         //tcs
-                        $("#TDSCODE").val(returncolvalue(result, "TCSCODE"));
+                        $("#TCSCODE").val(returncolvalue(result, "TCSCODE"));
                         $("#TDSNM").val(returncolvalue(result, "TCSNM"));
                         $("#TCSPER").val(returncolvalue(result, "TCSPER"));
                         $("#TDSLIMIT").val(returncolvalue(result, "TDSLIMIT"));
