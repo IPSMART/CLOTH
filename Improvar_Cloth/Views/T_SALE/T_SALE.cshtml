@@ -993,11 +993,11 @@
                                         }
                                     </div>
                                 </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                        </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                     </div>
+                                </div>
                             }
                         </div>
                         <div class="row">
@@ -1210,11 +1210,11 @@
                                         @Html.Label("", "Retail %")
                                     </div>
                                 </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.RPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "RPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
-                                        </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.RPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "RPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
+                                </div>
                                     <div class="col-md-1" style="width:auto;">
                                         <div class="editor-label" style="margin-top: 6px;">
                                             @Html.Label("", "Fixed Amount")
@@ -1408,11 +1408,11 @@
                                     </div>
                                 </div>
 
-                                    <div class="col-md-2">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "TDS Percentage")
-                                        </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS Percentage")
                                     </div>
+                                </div>
                                     <div class="col-md-1">
                                         <div class="editor-field" style="margin-top:6px;">
                                             @Html.EditorFor(model => model.T_TDSTXN.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
@@ -1557,11 +1557,11 @@
                                         @Html.DropDownListFor(model => model.DISCTYPEINRATE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DISCTYPEINRATE), new { @class = "form-control", id = "DISCTYPEINRATE", @title = "Disc Type", @TabIndex = -1 })
                                     </div>
                                 </div>
-                                    <div class="col-md-1" style="width:auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Disc Rate")
-                                        </div>
+                                <div class="col-md-1" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Disc Rate")
                                     </div>
+                                </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate", @TabIndex = -1 } })
@@ -1650,7 +1650,7 @@
                                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Get Barno" onclick="Sale_GetTTXNDTLDetails()" />
                                             </div>
                                         </div>
-                                
+
 
                                         <div class="row">
                                             <div id="popup_agdocno" class="row" style="margin-top: 11px;top:15%;left:15%;position:absolute;">
@@ -1681,7 +1681,7 @@
                                         @Html.CheckBoxFor(model => model.itemfilter, new { id = "itemfilter", @TabIndex = -1 })
                                     </div>
                                 </div>
-                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                 }
                                 <div class="DivMergeBarItem col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 6px;">
@@ -2093,7 +2093,7 @@
                                         @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
                                     </div>
                                 </div>
-                               <div class="row">
+                                <div class="row">
                                     @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                     {
                                         <div class="col-md-6">
@@ -2201,31 +2201,34 @@
                                         </div>
                                     }
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="editor-field" style="margin-top: 6px;">
-                                            @Html.Label("", "Adjusted Bill")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.ADJWITH_BLNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ADJWITH_BLNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','ADJWITH_BLNO','ADJWITH_BLNO=BLNO=0/ADJWITH_BLDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono')", onblur = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','ADJWITH_BLNO','ADJWITH_BLNO=BLNO=0/ADJWITH_BLDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono');", @placeholder = "Outstanding bill" } })
-                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOSBillNumberDetails", PageControllerName)','Os Bill Details','ADJWITH_BLNO','ADJWITH_BLNO=BLNO=0/ADJWITH_BLDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono')" />
-                                            <input type="hidden" id="osAutono" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="editor-field" style="margin-top: 6px;">
-                                            @Html.Label("", "Adjusted Bill dt")
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.ADJWITH_BLDT, new { htmlAttributes = new { @class = "form-control", id = "ADJWITH_BLDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                        </div>
-                                    </div>
-                                </div>
-                                                           }
+                                                                if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                                                {
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <div class="editor-field" style="margin-top: 6px;">
+                                                                                @Html.Label("", "Adjusted Bill")
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <div class="editor-field">
+                                                                                @Html.EditorFor(model => model.ADJWITH_BLNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ADJWITH_BLNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','ADJWITH_BLNO','ADJWITH_BLNO=BLNO=0/ADJWITH_BLDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono')", onblur = "GetHelpBlur('" + @Url.Action("GetOSBillNumberDetails", PageControllerName) + "','Os Bill Details','ADJWITH_BLNO','ADJWITH_BLNO=BLNO=0/ADJWITH_BLDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono');", @placeholder = "Outstanding bill" } })
+                                                                                <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOSBillNumberDetails", PageControllerName)','Os Bill Details','ADJWITH_BLNO','ADJWITH_BLNO=BLNO=0/ADJWITH_BLDT=BLDT=1/osAutono=Autono=4','SLCD/osAutono')" />
+                                                                                <input type="hidden" id="osAutono" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <div class="editor-field" style="margin-top: 6px;">
+                                                                                @Html.Label("", "Adjusted Bill dt")
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="editor-field">
+                                                                                @Html.EditorFor(model => model.ADJWITH_BLDT, new { htmlAttributes = new { @class = "form-control", id = "ADJWITH_BLDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    }
+                                                                }
                             <div class="row">
                                 <div class="col-md-3" style="width:auto;">
                                 </div>
@@ -2269,7 +2272,7 @@
                                             <p class="text-info" style="margin-top:-10px;">
                                                 2. Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows. <br />
                                                 3. Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows. <br />
-                                                4. If you select Adjusted bill then not need to select Against billno. 
+                                                4. If you select Adjusted bill then not need to select Against billno.
                                             </p>
                                             @if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E")
                                             {
