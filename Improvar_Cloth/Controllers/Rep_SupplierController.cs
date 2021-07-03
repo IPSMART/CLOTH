@@ -310,9 +310,8 @@ namespace Improvar.Controllers
 
                     HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others Qty");
                     if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others Value");
-                    HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock Qty");
-                    if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "stockamt", "double", "n,10,2", "Stock Value");
-
+                    HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Closing Stock Qty");
+                    if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "stockamt", "double", "n,10,2", "Closing Stock Value");
 
                     IR.Columns.Add("itgrpcd", typeof(string), "");
                     IR.Columns.Add("slcd", typeof(string), "");
@@ -383,10 +382,10 @@ namespace Improvar.Controllers
                                         }
                                         else if (tbl.Rows[i]["doctag"].retStr() == "PR")
                                         {
-                                            IR.Rows[rNo]["purretqnty"] = IR.Rows[rNo]["purretqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
-                                            if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = IR.Rows[rNo]["purretamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
-                                            opqnty -= tbl.Rows[i]["qnty"].retDbl();
-                                            opvalue -= tbl.Rows[i]["txblval"].retDbl();
+                                            IR.Rows[rNo]["purretqnty"] = IR.Rows[rNo]["purretqnty"].retDbl() + (tbl.Rows[i]["qnty"].retDbl() * -1);
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = IR.Rows[rNo]["purretamt"].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
+                                            opqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            opvalue += tbl.Rows[i]["txblval"].retDbl();
                                         }
                                         else if (tbl.Rows[i]["doctag"].retStr() == "TI")
                                         {
@@ -397,10 +396,10 @@ namespace Improvar.Controllers
                                         }
                                         else if (tbl.Rows[i]["doctag"].retStr() == "TO")
                                         {
-                                            IR.Rows[rNo]["transferoutqnty"] = IR.Rows[rNo]["transferoutqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
-                                            if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = IR.Rows[rNo]["transferoutamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
-                                            opqnty -= tbl.Rows[i]["qnty"].retDbl();
-                                            opvalue -= tbl.Rows[i]["txblval"].retDbl();
+                                            IR.Rows[rNo]["transferoutqnty"] = IR.Rows[rNo]["transferoutqnty"].retDbl() + (tbl.Rows[i]["qnty"].retDbl() * -1);
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = IR.Rows[rNo]["transferoutamt"].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
+                                            opqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            opvalue += tbl.Rows[i]["txblval"].retDbl();
                                         }
                                         else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "SR")
                                         {
@@ -408,20 +407,20 @@ namespace Improvar.Controllers
                                             {
                                                 string colnm = tbl.Rows[i]["loccd"].retStr() + "salesqnty";
                                                 IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + (tbl.Rows[i]["doctag"].retStr() == "SB" ? (tbl.Rows[i]["qnty"].retDbl() * -1) : tbl.Rows[i]["qnty"].retDbl());//modify by mithun
-                                                if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                                                if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
 
                                             }
                                             else
                                             {
                                                 IR.Rows[rNo]["salesqnty"] = IR.Rows[rNo]["salesqnty"].retDbl() + (tbl.Rows[i]["doctag"].retStr() == "SB" ? (tbl.Rows[i]["qnty"].retDbl() * -1) : tbl.Rows[i]["qnty"].retDbl());//modify by mithun
-                                                if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = IR.Rows[rNo]["salesamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                                                if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = IR.Rows[rNo]["salesamt"].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
 
                                             }
 
                                             if (tbl.Rows[i]["doctag"].retStr() == "SB")
                                             {
-                                                opqnty -= tbl.Rows[i]["qnty"].retDbl();
-                                                opvalue -= tbl.Rows[i]["txblval"].retDbl();
+                                                opqnty += tbl.Rows[i]["qnty"].retDbl();
+                                                opvalue += tbl.Rows[i]["txblval"].retDbl();
                                             }
                                             else
                                             {

@@ -6,12 +6,18 @@ using System.Data;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web;
+using OfficeOpenXml;
+using System.Globalization;
+using Oracle.ManagedDataAccess.Client;
+using System.Xml;
 
 namespace Improvar.Controllers
 {
     public class SUB_LEDGERController : Controller
     {
         // GET: SUB_LEDGER
+        string CS = null;
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
@@ -117,6 +123,22 @@ namespace Improvar.Controllers
                     TOT.Add(TOT3);
                     VE.DropDown_list2 = TOT;
                     //=========End TOT194Q ===========//
+                    //=========For pan_206ab_cca ===========//
+                    List<DropDown_list3> PAN206AB = new List<DropDown_list3>();
+                    DropDown_list3 PAN1 = new DropDown_list3();
+                    PAN1.value = "";
+                    PAN1.text = "No Recd";
+                    PAN206AB.Add(PAN1);
+                    DropDown_list3 PAN2 = new DropDown_list3();
+                    PAN2.value = "Y";
+                    PAN2.text = "Yes";
+                    PAN206AB.Add(PAN2);
+                    DropDown_list3 PAN3 = new DropDown_list3();
+                    PAN3.value = "N";
+                    PAN3.text = "No";
+                    PAN206AB.Add(PAN3);
+                    VE.DropDown_list3 = PAN206AB;
+                    //=========End pan_206ab_cca ===========//
                     //==== Database Combo ====//
 
                     VE.Database_Combo1 = (from i in DB.M_DISTRICT select new Database_Combo1() { FIELD_VALUE = i.DISTCD }).OrderBy(s => s.FIELD_VALUE).ToList();
@@ -297,14 +319,7 @@ namespace Improvar.Controllers
                 {
                     VE.Checked = false;
                 }
-                if (sl.TCSAPPL == "Y")
-                {
-                    VE.TCSAPPL = true;
-                }
-                else
-                {
-                    VE.TCSAPPL = false;
-                }
+                VE.TCSAPPL = sl.TCSAPPL == null ? true : sl.TCSAPPL == "Y" ? true : false;
                 if (sl.PARTYCD.retStr() != "")
                 {
                     string PARTYCD = sl.PARTYCD;
@@ -1562,6 +1577,8 @@ namespace Improvar.Controllers
                             MSUBLEG.ADD5 = VE.M_SUBLEG.LANDMARK;
                             MSUBLEG.ADD6 = (VE.M_SUBLEG.DISTRICT + " " + VE.M_SUBLEG.PIN).Trim();
                             MSUBLEG.ADD7 = (VE.M_SUBLEG.SUBDISTRICT.retStr() != "" ? "DIST " + VE.M_SUBLEG.SUBDISTRICT.retStr() + " , " + VE.M_SUBLEG.STATE : VE.M_SUBLEG.STATE).Trim();
+                            MSUBLEG.PANDT = VE.M_SUBLEG.PANDT;
+                            MSUBLEG.PAN_206AB_CCA = VE.M_SUBLEG.PAN_206AB_CCA;
                             if (VE.DefaultAction == "E")
                             {
                                 MSUBLEG.SLCD = VE.M_SUBLEG.SLCD;
@@ -2019,6 +2036,88 @@ namespace Improvar.Controllers
                 return Json(ex.Message + ex.InnerException, JsonRequestBehavior.AllowGet);
             }
         }
+        public DataTable ToDataTable(ExcelWorksheet ws)
+        {
+            var tbl = new DataTable();
+            foreach (var firstRowCell in ws.Cells[5, 1, 5, ws.Dimension.End.Column])
+                tbl.Columns.Add(firstRowCell.Text);
+            var startRow = 6;
+            for (var rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
+            {
+                var wsRow = ws.Cells[rowNum, 1, rowNum, ws.Dimension.End.Column];
+                var row = tbl.NewRow();
+                foreach (var cell in wsRow) row[cell.Start.Column - 1] = cell.Value;
+                tbl.Rows.Add(row);
+            }
+            return tbl;
 
+        }
+        public ActionResult UploadIncomeTaxFiles(SubLedgerEntry VE, FormCollection FC, HttpPostedFileBase file)
+        {
+            CS = Cn.GetConnectionString();
+            Cn.con = new OracleConnection(CS);
+            if (Cn.con.State == ConnectionState.Closed)
+            {
+                Cn.con.Open();
+            }
+            var new1 = Cn.con.BeginTransaction();
+            try
+            {
+                string scm1 = CommVar.FinSchema(UNQSNO);
+                DataTable IncomeTaxExceldt = new DataTable();
+                if (file.ContentLength > 0)
+                {
+                    string fileExtension = System.IO.Path.GetExtension(file.FileName);
+                    #region excel to datatable
+                    if (fileExtension != ".xlsx")
+                    {
+                        return Json("File Extention must be [.XLSX] ");
+                    }
+                    using (var package = new ExcelPackage(file.InputStream))
+                    {
+                        var currentSheet = package.Workbook.Worksheets;
+                        var workSheet = currentSheet.First();
+                        IncomeTaxExceldt = ToDataTable(workSheet);
+                    }
+                    #endregion
+                    for (int i = 0; i < IncomeTaxExceldt.Rows.Count; i++)
+                    {
+                        string sql = "";
+                        try
+                        {
+                            //	PAN	Name	PAN Allotment Date	PAN-Aadhaar Link Status	Specified Person u/s 206AB & 206CCA
+                            string PANno = IncomeTaxExceldt.Rows[i]["PAN"].ToString();
+                            string PANDTstr = (IncomeTaxExceldt.Rows[i]["PAN Allotment Date"]).retStr();
+                            DateTime Pandate = DateTime.ParseExact(PANDTstr, "dd-MM-yyyy", null);
+                            PANDTstr = Pandate.retDateStr();
+                            string PAN_206AB_CCA = IncomeTaxExceldt.Rows[i]["Specified Person u/s 206AB & 206CCA"].retStr();
+                            PAN_206AB_CCA = PAN_206AB_CCA == "No" ? "N" : "Y";
+                            sql = "update " + scm1 + ".M_SUBLEG set ";
+                            sql += "PANDT=to_date('" + PANDTstr + "', 'dd/mm/yyyy'),";
+                            sql += "PAN_206AB_CCA='" + PAN_206AB_CCA + "' ";
+                            sql += " where panno='" + PANno + "' ";
+                            Cn.com = new OracleCommand(sql, Cn.con);
+                            Cn.com.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            Cn.SaveException(ex, "Subledger update Pan sql:" + sql + "\n excel row no:" + i + 6);
+                        }
+
+                    }
+                }
+                new1.Commit();
+                Cn.con.Close();
+                ModelState.Clear();
+                return Json("S");
+            }
+            catch (Exception ex)
+            {
+                new1.Rollback();
+                Cn.SaveException(ex, "");
+                return Json(ex.InnerException + ex.Message);
+            }
+
+        }
     }
 }

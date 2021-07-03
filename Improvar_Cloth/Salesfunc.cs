@@ -28,7 +28,9 @@ namespace Improvar
             sql += "g.slnm,nvl(g.slarea,g.district) slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
             sql += "y.docdt lastbldt, y.scmdiscrate, y.scmdisctype,y.listdiscper, ";
-            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
+            //sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
+            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.panno,g.partycd, ";
+            sql += "(case when to_date('" + docdt + "', 'dd/mm/yyyy') < to_date('01/07/2021', 'dd/mm/yyyy') then nvl(g.tcsappl, 'Y') else  decode(nvl(g.tot194q, 'N'), 'Y', 'N', 'Y') end ) tcsappl ";
             sql += "from ";
 
             sql += "(select a.slcd from " + scmf + ".m_subleg a where a.slcd='" + slcd + "' ) z, ";
