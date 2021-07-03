@@ -247,5 +247,9 @@ namespace Improvar.Models
         public string SUBDISTRICT { get; set; }
         [StringLength(1)]
         public string TOT194Q { get; set; }
+        [StringLength(1)]
+        public string PAN_206AB_CCA { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? PANDT { get; set; }
     }
 }

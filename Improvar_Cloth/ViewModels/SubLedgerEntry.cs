@@ -37,6 +37,6 @@ namespace Improvar.ViewModels
         public string PARTYNM { get; set; }
         public bool IsAPIEnabled { get; set; }
         public List<DropDown_list2> DropDown_list2 { get; set; }
-
+        public List<DropDown_list3> DropDown_list3 { get; set; }
     }
 }

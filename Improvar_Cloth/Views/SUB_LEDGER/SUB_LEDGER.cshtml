@@ -832,7 +832,51 @@
         });
     }
 </script>
-
+<script>
+    function UploadIncomeTaxFiles(id) {
+        debugger;
+        var formData = new FormData();
+        var file = document.getElementById("file").files[0];
+        var filename = document.getElementById("file").value;
+        if (filename == "") {
+            msgWarning("Please Select IncomeTax Excel File");
+            return false;
+        }
+        formData.append("file", file);
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("UploadIncomeTaxFiles", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "S") {
+                    $("#WaitingMode").hide();
+                    $('#Msgdiv1').show();
+                    $('#success1').show();
+                    $("#msg_ok_success1").focus();
+                    $('#msgbody_success1').html("Excel Imported Successfully !");
+                }
+                else {
+                    $("#WaitingMode").hide();
+                    $("#Msgdiv1").show();
+                    $("#warning").show();
+                    $("#msgbody_warning").html(result);
+                    $("#btnok_warning").focus();
+                    return false;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1487,14 +1531,44 @@
                                 @Html.EditorFor(model => model.M_SUBLEG.PANNO, new { htmlAttributes = new { @class = "form-control", Id = "PANNO", @style = "text-transform:uppercase", maxlength = 15, @placeholder = "Pan No." } })
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Turnover Limit Cross For 194Q")
+                                @Html.Label("", "Pan Allotement Date")
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="editor-field">
-                                @Html.DropDownListFor(model => model.M_SUBLEG.TOT194Q, new SelectList(Model.DropDown_list2, "Value", "Text"), new { @class = "form-control", @id = "TOT194Q" })
+                                @Html.EditorFor(model => model.M_SUBLEG.PANDT, new { htmlAttributes = new { @class = "form-control", id = "PANDT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="col-md-6">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "IncomeTax Excel File")
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    <input type="file" class="form-control" id="file" name="file" />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    <button type="button" class="btn btn-primary" style="margin-top: 4px;padding: 2px 5px 2px 5px;" onclick="UploadIncomeTaxFiles('this.value');">Import</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Specified Person u/s 206AB & 206CCA")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.M_SUBLEG.PAN_206AB_CCA, new SelectList(Model.DropDown_list3, "Value", "Text"), new { @class = "form-control", id = "PAN_206AB_CCA " })
                             </div>
                         </div>
                     </div>
@@ -1536,15 +1610,15 @@
                     </div>
                     <div class="row">
                         @*<div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "GST No.")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SUBLEG.GSTNO, new { htmlAttributes = new { @class = "form-control", Id = "GSTNO", @style = "text-transform:uppercase", maxlength = 15, @placeholder = "GST No." } })
-                                </div>
-                            </div>*@
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "GST No.")
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SUBLEG.GSTNO, new { htmlAttributes = new { @class = "form-control", Id = "GSTNO", @style = "text-transform:uppercase", maxlength = 15, @placeholder = "GST No." } })
+                    </div>
+                </div>*@
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "GST Date")
@@ -1593,23 +1667,23 @@
                                     {
                                         if (Model.DefaultAction == "A")
                                         {
-                                    <option value="@i.COMPTYCD">@i.COMPTYNM</option>
+                                            <option value="@i.COMPTYCD">@i.COMPTYNM</option>
                                         }
                                         else
                                         {
                                             if (Model.M_SUBLEG == null)
                                             {
-                                    <option value="@i.COMPTYCD">@i.COMPTYNM</option>
+                                                <option value="@i.COMPTYCD">@i.COMPTYNM</option>
                                             }
                                             else
                                             {
                                                 if (Model.M_SUBLEG.SLCOMPTYPE == i.COMPTYCD)
                                                 {
-                                    <option value="@i.COMPTYCD" selected="selected">@i.COMPTYNM</option>
+                                                    <option value="@i.COMPTYCD" selected="selected">@i.COMPTYNM</option>
                                                 }
                                                 else
                                                 {
-                                    <option value="@i.COMPTYCD">@i.COMPTYNM</option>
+                                                    <option value="@i.COMPTYCD">@i.COMPTYNM</option>
                                                 }
                                             }
                                         }
@@ -1631,7 +1705,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -1675,22 +1748,33 @@
                             <div class="editor-label" style="margin-top: 6px;">
                                 @if (Model.DefaultAction != "V")
                                 {
-                                @Html.Label("", "Service Type Will depend on Company Type. It is autosaving property.")
+                                    @Html.Label("", "Service Type Will depend on Company Type. It is autosaving property.")
                                 }
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", " TCS Applicable")
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", " TCS Applicable")
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.TCSAPPL)
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="width:auto">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Turnover Limit Cross For 194Q")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.M_SUBLEG.TOT194Q, new SelectList(Model.DropDown_list2, "Value", "Text"), new { @class = "form-control", @id = "TOT194Q" })
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="editor-field" style="margin-top:6px;">
-                            @Html.CheckBoxFor(model => model.TCSAPPL)
-                        </div>
-                    </div>
-
                 </div>
                 <div id="Communication" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row">
@@ -1846,8 +1930,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <div id="OthAdd" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row">
                         <div class="col-md-3">
