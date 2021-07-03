@@ -4021,7 +4021,7 @@ namespace Improvar.Controllers
             try
             {
                 var AUTONO = VE.T_TXN.AUTONO;
-                var sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr where autono=" + AUTONO + "";
+                var sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr where autono='" + AUTONO + "'";
                 DataTable dt = masterHelp.SQLquery(sql);
 
                 SaleBill_PrintController RepPos = new SaleBill_PrintController();
