@@ -4018,22 +4018,20 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult T_SALE_POS(FormCollection FC, TransactionSalePosEntry VE)
         {
-            string retmag = SAVE(FC, VE, "SAVEANDPRINT");
-            var retarr = retmag.Split('~');
-            if (retarr.Length == 1)
+            try
             {
-                return Content(retmag);
-            }
-            else
-            {
+                var AUTONO = VE.T_TXN.AUTONO;
+                var sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr where autono=" + AUTONO + "";
+                DataTable dt = masterHelp.SQLquery(sql);
+
                 SaleBill_PrintController RepPos = new SaleBill_PrintController();
                 ReportViewinHtml RVH = new ReportViewinHtml();
-                RVH.DOCCD = retarr[0];
-                RVH.TDT = retarr[1];
-                RVH.FDT = retarr[1];
-                RVH.DOCNO = retarr[2];
-                RVH.FDOCNO = retarr[2];
-                RVH.TDOCNO = retarr[2];
+                RVH.DOCCD = dt.Rows[0]["DOCCD"].retStr();
+                RVH.TDT = dt.Rows[0]["DOCdt"].retDateStr();
+                RVH.FDT = dt.Rows[0]["DOCdt"].retDateStr();
+                RVH.DOCNO = dt.Rows[0]["doconlyno"].retStr();
+                RVH.FDOCNO = dt.Rows[0]["doconlyno"].retStr();
+                RVH.TDOCNO = dt.Rows[0]["doconlyno"].retStr();
                 RVH.MENU_PARA = VE.MENU_PARA;
                 DataTable repformat = salesfunc.getRepFormat("CASHMEMO");
                 if (repformat != null && repformat.Rows.Count > 0)
@@ -4044,6 +4042,21 @@ namespace Improvar.Controllers
                 RVH.TEXTBOX10 = "2";
                 return RepPos.SaleBill_Print(RVH, FC, "");
             }
+            catch
+            {
+
+            }
+            return null;
+            //string retmag = SAVE(FC, VE, "SAVEANDPRINT");
+            //var retarr = retmag.Split('~');
+            //if (retarr.Length == 1)
+            //{
+            //    return Content(retmag);
+            //}
+            //else
+            //{
+
+            //}
 
         }
     }

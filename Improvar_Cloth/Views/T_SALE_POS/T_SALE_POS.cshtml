@@ -214,6 +214,40 @@
             }
         });
     }
+    function SaveandPrint() {
+        if (requiredFieldValidator() != true) return;
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("SAVE", PageControllerName)",
+            data: $("form").serialize(),
+        beforesend: $("#WaitingMode").show(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            resultIndex = result.substring(0, 1);
+            if (resultIndex == "1") {
+                ClearAllSalePose();
+                var strrel = result.split("~");
+                if (strrel.length > 1) {
+                    var autono = strrel[1];
+                    $("#AUTONO").val(autono);
+                    jQuery("form").attr("target", "_blank");
+                    jQuery("form").submit();
+                }
+                else {
+                    msgWarning(result);
+                }
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+
+
+
 </script>
 @using (Html.BeginForm())
 {
@@ -502,7 +536,7 @@
                         @if (Model.DefaultAction == "A")
                         {
                             <div class="col-md-5">
-                                <input type="submit" formtarget="_blank" class="btn btn-info btn-sm" style="margin-top: 2px; padding: 2px 7px 1px 7px;" id="SaveAndPrint" value="Save & Print (Alt+P)" title="Save & Print" accesskey="P" />
+                                <input onclick="SaveandPrint()" class="btn btn-info btn-sm" style="margin-top: 2px; padding: 2px 7px 1px 7px;" id="SaveAndPrint" value="Save & Print (Alt+P)" title="Save & Print" accesskey="P" />
                             </div>
                         }
                     </div>
