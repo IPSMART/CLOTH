@@ -288,8 +288,10 @@ function FillBarcodeArea(str, Table, i) {
         }
         //$("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
         $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
-        //$("#SCMDISCTYPE").val(returncolvalue(str, "SCMDISCTYPE"));
-        $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
+        if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+            $("#SCMDISCTYPE").val(returncolvalue(str, "SCMDISCTYPE"));
+            $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
+        }
         $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
         $("#GLCD").val(returncolvalue(str, "GLCD"));
         $("#BARGENTYPETEMP").val(returncolvalue(str, "BARGENTYPE"));

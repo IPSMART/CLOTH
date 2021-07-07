@@ -2266,6 +2266,8 @@ namespace Improvar
         {
             var MSYSCNFG = salesfunc.M_SYSCNFG();
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
+            string doctag = "";
+            doctag = menupara.retStr() == "SR" ? "SB" : menupara.retStr() == "PR" ? "PB" : "";
             if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD);
@@ -2276,7 +2278,7 @@ namespace Improvar
             //}
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag);
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {
@@ -2439,7 +2441,7 @@ namespace Improvar
             }
         }
         public List<REV_CHRG> REV_CHRG()
-        { 
+        {
             List<REV_CHRG> Reverse = new List<REV_CHRG>();//add reverse charge option
             REV_CHRG Reverse0 = new REV_CHRG();
             Reverse0.Text = "No"; Reverse0.Value = "";
@@ -2777,7 +2779,7 @@ namespace Improvar
                 }
             }
         }
-        public string CashMemoNumber_help(string val,string fdt="",string tdt="")
+        public string CashMemoNumber_help(string val, string fdt = "", string tdt = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO); ;
@@ -2801,7 +2803,7 @@ namespace Improvar
                     SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
                 }
                 var hdr = "Cash Memo Number" + Cn.GCS() + "Date" + Cn.GCS() + "Autono";
-                return Generate_help(hdr, SB.ToString(),"2");
+                return Generate_help(hdr, SB.ToString(), "2");
             }
             else
             {
@@ -3083,7 +3085,7 @@ namespace Improvar
                         SB.Append("<tr><td>" + tbl.Rows[i]["BLNO"] + "</td><td>" + bldt + "</td><td>" + tbl.Rows[i]["BLAMT"] + "</td><td>" + tbl.Rows[i]["bal_amt"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
                     }
                 }
-                var hdr = "Bill Number" + Cn.GCS() + "Bill Date" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "Due Amt" + Cn.GCS()  + "Bill Autono";
+                var hdr = "Bill Number" + Cn.GCS() + "Bill Date" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "Due Amt" + Cn.GCS() + "Bill Autono";
                 return Generate_help(hdr, SB.ToString(), "4");
             }
             else
