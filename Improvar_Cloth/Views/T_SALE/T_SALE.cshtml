@@ -139,13 +139,13 @@
                     $(".colrcddiv").show();
                 }
             }
-            if ('@Model.MENU_PARA' == "PJBL") {
+            @*if ('@Model.MENU_PARA' == "PJBL") {
                 $('.PJBLDiv input').attr('readonly', 'readonly');
                 $('.PJBLDiv input').removeAttr("onblur");
                 $('.PJBLDiv input').attr('TabIndex', '-1');
                 $('.PJBLDiv').find(".Help_image_button_grid").hide();
                 $('.PJBLDiv input').removeAttr("onkeydown");
-            }
+            }*@
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -1466,7 +1466,7 @@
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
                             <div class="row">
-                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
+                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
                                     if (Model.M_SYSCNFG.MNTNBARNO == "Y")
                                     {
@@ -1692,7 +1692,7 @@
                                     @Html.CheckBoxFor(model => model.MergeBarItem, new { id = "MergeBarItem", @TabIndex = -1 })
                                 </div>
                             </div>
-                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
+                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                     {
                                 <div class="row">
                                     <div class="col-lg-11">

@@ -5639,7 +5639,7 @@ namespace Improvar.Controllers
 
                         #endregion
                     }
-                    if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT")
+                    if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "PJBL")
                     {
                         if (igst != 0 && (cgst + sgst) != 0)
                         {

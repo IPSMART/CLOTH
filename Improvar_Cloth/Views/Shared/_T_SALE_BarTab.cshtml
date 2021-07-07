@@ -145,7 +145,7 @@
                                     <th class="" style="width:30px; text-align:center">Img</th>
                                     <th class="">Image Upload</th>
 
-                                    @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
+                                    @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                     {
                                         if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                         {
@@ -521,7 +521,7 @@
                                                 }
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                             </td>
-                                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
+                                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                             {
                                                 if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                                 {
@@ -674,7 +674,7 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                     @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "PJBL")
+                                    @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                     {
                                         if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                         {

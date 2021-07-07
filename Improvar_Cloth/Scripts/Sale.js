@@ -36,6 +36,20 @@ function GetBarnoDetails(id, HelpFrom) {
         if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
         if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
         if ($("#GOCD").val() == "") { $("#GOCD").val(""); msgInfo("Godown not available.Please Select / Enter Godown"); message_value = "GOCD"; return false; }
+        if (MENU_PARA == "PJBL") {
+            if ($("#JOBHSNCODE").val() == "") {
+                msgInfo("Hsn code not available for this job  !!");
+                $("#STYLENO").val("");
+                message_value = "JOBCD";
+                return false;
+            }
+            if ($("#JOBEXPGLCD").val() == "") {
+                msgInfo("Expenses Ledger Code not available for this job  !!");
+                $("#STYLENO").val("");
+                message_value = "JOBCD";
+                return false;
+            }
+        }
         var MTRLJOBCD = $("#MTRLJOBCD").val();
         var PARTCD = $("#PARTCD").val();
         var docdt = $("#DOCDT").val();
@@ -274,7 +288,13 @@ function FillBarcodeArea(str, Table, i) {
         $("#PRODGRPGSTPER").val(PRODGRPGSTPER);
         $("#DISCRATE").val(returncolvalue(str, "DISCRATE"));
         //$("#DISCTYPE").val(returncolvalue(str, "DISCTYPE"));
-        $("#HSNCODE").val(returncolvalue(str, "HSNCODE"));
+        if (MENU_PARA == "PJBL") {
+            $("#HSNCODE").val($("#JOBHSNCODE").val());
+        }
+        else {
+            $("#HSNCODE").val(returncolvalue(str, "HSNCODE"));
+        }
+
 
         $("#SHADE").val(returncolvalue(str, "SHADE"));
         $("#BALENO").val(returncolvalue(str, "BALENO"));
@@ -293,7 +313,12 @@ function FillBarcodeArea(str, Table, i) {
             $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
         }
         $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
-        $("#GLCD").val(returncolvalue(str, "GLCD"));
+        if (MENU_PARA == "PJBL") {
+            $("#GLCD").val($("#JOBEXPGLCD").val());
+        }
+        else {
+            $("#GLCD").val(returncolvalue(str, "GLCD"));
+        }
         $("#BARGENTYPETEMP").val(returncolvalue(str, "BARGENTYPE"));
         $("#NEGSTOCK").val(returncolvalue(str, "NEGSTOCK"));
         $("#BarImages").val(returncolvalue(str, "BARIMAGE"));
@@ -2360,6 +2385,14 @@ function AddBarCodeGrid() {
     tr += '    <td class="sticky-cell" style="left:60px" title="' + TXNSLNO + '">';
     tr += '        <input  class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
     tr += '    </td>';
+    if (MENU_PARA == "PJBL") {
+        tr += ' <td class="">';
+        tr += ' <select class="atextBoxFor select_3d " data-val="true" data-val-length="The field FREESTK must be a string with a maximum length of 1." data-val-length-max="1" id="B_FREESTK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FREESTK" onchange="RateUpdate(' + rowindex + ',\'#B_\');">';
+        tr += '<option value="N">NO</option>';
+        tr += ' <option value="Y">YES</option>';
+        tr += '</select>';
+        tr += ' </td>';
+    }
     if (MENU_PARA == "SR" || MENU_PARA == "PR") {
         tr += ' <td class="" title="' + AGDOCNO + '">';
         tr += '  <input class=" atextBoxFor " id="B_AGDOCNO_' + rowindex + '" maxlength="16" name="TBATCHDTL[' + rowindex + '].AGDOCNO" type="text" value="' + AGDOCNO + '">';
