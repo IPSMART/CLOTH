@@ -138,8 +138,13 @@ namespace Improvar.Controllers
                     if (tdate.retStr() != "") str += "and e.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
                     if (fdocno != "") str += "and e.doconlyno >= '" + fdocno + "' ";
                     if (tdocno != "") str += "and e.doconlyno <= '" + tdocno + "'   ";
-                    str += "order by a.baleno,a.rslno "; // d.prefno, d.prefdt,
-                    tbl = masterHelp.SQLquery(str);
+                    if (CommVar.ClientCode(UNQSNO) == "SNFP")
+                    {str += "order by a.baleno,a.rslno ";
+                        }
+                    else {
+                        str += "order by a.rslno,a.baleno ";
+                    }
+                        tbl = masterHelp.SQLquery(str);
                 }
                 else if (VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB")
                 {

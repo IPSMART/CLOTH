@@ -892,6 +892,37 @@
         }
     }
 </script>
+<script>
+    function CheckDesignNumber() {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        var STYLE_NO = $("#STYLENO").val();
+        var M_AUTO_NO = $("#M_AUTONO").val();
+        if (STYLE_NO != "") {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("CheckDesignNumber", PageControllerName)",
+                data:
+                {
+                    STYLE_NO: STYLE_NO, M_AUTO_NO: M_AUTO_NO,
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Design Number Already Exists : Please Enter a Different Design Number !! ");
+                        message_value = "STYLENO";
+                        $("#STYLENO").val("");
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
 @section Scripts {
     <script>
         function ReloadWithData() {
@@ -923,7 +954,7 @@
             @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
             {<input type="hidden" id="fabitGrpcd" value="C" /> }
             @Html.HiddenFor(s => s.DefaultAction)
-            @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
+            @Html.HiddenFor(a => a.M_SITEM.M_AUTONO, new { id = "M_AUTONO" })
             @Html.HiddenFor(a => a.MENU_PARA)
             @Html.HiddenFor(a => a.STRPRICES)
             @if (Model.DefaultAction == "V")
@@ -973,7 +1004,7 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 30, @onkeyup = "toUpper(this);", @placeholder = "Design" } })
+                                    @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 30, @onkeyup = "toUpper(this);", @placeholder = "Design", onblur = "CheckDesignNumber();" } })
                                 </div>
                             </div>
                             @*<div class="row">*@

@@ -104,6 +104,7 @@ namespace Improvar.Controllers
                             VE.Delete = "D";
                         }
                     }
+                    VE.SrcFlagCaption = "Mobile No.";
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
@@ -824,7 +825,7 @@ namespace Improvar.Controllers
             //Cn.DateLock_Entry(VE, DB,   VE.T_CNTRL_HDR.DOCDT.Value);
             return VE;
         }
-        public ActionResult SearchPannelData(TransactionSalePosEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
+        public ActionResult SearchPannelData(TransactionSalePosEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT, string SRC_FLAG)
         {
             try
             {
@@ -835,13 +836,14 @@ namespace Improvar.Controllers
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
                 string sql = "";
 
-                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,d.RTDEBCD,e.RTDEBNM,d.nm ";
+                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,d.RTDEBCD,e.RTDEBNM,d.nm,d.mobile ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c , " + scm + ".T_TXNMEMO d," + scmf + ".M_RETDEB e ";
                 sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and a.autono=d.autono(+) and d.RTDEBCD=e.RTDEBCD(+) and  b.doccd in (" + doccd + ") and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.doconlyno like '%" + SRC_DOCNO.retStr() + "%') and ";
                 if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%' or d.RTDEBCD like ' % " + SRC_SLCD.retStr().ToUpper() + " % ' or upper(d.nm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and  ";
+                if (SRC_FLAG.retStr() != "") sql += "d.mobile like '%" + SRC_FLAG.retStr() + "%' and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
                 sql += "order by docdt, docno ";
                 DataTable tbl = masterHelp.SQLquery(sql);

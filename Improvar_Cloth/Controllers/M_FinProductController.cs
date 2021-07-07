@@ -1494,6 +1494,14 @@ namespace Improvar.Controllers
                 {
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
+                        //checking design no
+                        var query = (from c in DB.M_SITEM
+                                     where (c.STYLENO == VE.M_SITEM.STYLENO && c.M_AUTONO != VE.M_SITEM.M_AUTONO)
+                                     select c);
+                        if (query.Any())
+                        {
+                            return Content("Design Number Already Exists : Please Enter a Different Design Number !!");
+                        }
                         //checking bar code grid contain distinct value
                         if (VE.MSITEMBARCODE != null)
                         {
@@ -2119,6 +2127,28 @@ namespace Improvar.Controllers
                     str = i.PRODGRPCD + Cn.GCS() + i.PRODGRPNM;
                 }
                 return Content(str);
+            }
+            else
+            {
+                return Content("0");
+            }
+        }
+        public ActionResult CheckDesignNumber(string STYLE_NO, string M_AUTO_NO)
+        {
+            ItemMasterEntry VE = new ItemMasterEntry();
+            Cn.getQueryString(VE);
+            if (VE.DefaultAction == "A") M_AUTO_NO = "0";
+            long M_AUTONO = Convert.ToInt64(M_AUTO_NO);
+            STYLE_NO = STYLE_NO.retStr().Trim();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            if (STYLE_NO.retStr() == "") return Content("0");
+
+            var query = (from c in DB.M_SITEM
+                         where (c.STYLENO == STYLE_NO && c.M_AUTONO != M_AUTONO)
+                         select c);
+            if (query.Any())
+            {
+                return Content("1");
             }
             else
             {
