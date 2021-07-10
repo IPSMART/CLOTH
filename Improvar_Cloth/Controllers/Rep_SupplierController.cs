@@ -769,7 +769,7 @@ namespace Improvar.Controllers
             string sql = "";
             sql += " select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno, f.BRANDCD,";
             sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd, ";
-            sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty,sum(d.amt) basamt, sum(a.txblval)txblval, sum(a.othramt)othramt,sum(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0)) discamt, sum(d.igstamt)igstamt, sum(d.cgstamt)cgstamt, sum(d.sgstamt)sgstamt, sum(d.cessamt)cessamt ";
+            sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty,sum(d.amt) basamt, sum(a.txblval)txblval,d.NETAMT,sum(a.othramt)othramt,sum(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0)) discamt, sum(d.igstamt)igstamt, sum(d.cgstamt)cgstamt, sum(d.sgstamt)sgstamt, sum(d.cessamt)cessamt ";
             sql += Environment.NewLine + " from  ( ";
             //sql += "select d.compcd, d.loccd, a.barno, 'OP' doctag, d.docdt, d.docno, c.prefno, c.prefdt, a.shade, sum(a.nos)nos, ";
             //sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, sum(a.txblval) txblval, ";
@@ -851,7 +851,7 @@ namespace Improvar.Controllers
             if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
             sql += Environment.NewLine + "group by ";
             sql += Environment.NewLine + " e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno,f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno),f.BRANDCD, ";
-            sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ,(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0))";
+            sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) , nvl(cp.rate, 0) , nvl(rp.rate, 0) , f.uomcd, i.uomnm, i.decimals, g.itnm ,h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd ,d.NETAMT,(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0))";
             sql += Environment.NewLine + "order by docdt,barno ";
             DataTable tbl = MasterHelp.SQLquery(sql);
             if (tbl.Rows.Count == 0) return Content("no records..");
@@ -908,7 +908,8 @@ namespace Improvar.Controllers
                 wsSheet1.Cells[exlrowno, 14].Value = tbl.Rows[i]["rprate"].retDbl();
                 wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["basamt"].retDbl()+ tbl.Rows[i]["igstamt"].retDbl() + tbl.Rows[i]["cgstamt"].retDbl() + tbl.Rows[i]["sgstamt"].retDbl() + tbl.Rows[i]["cessamt"].retDbl();
                 wsSheet1.Cells[exlrowno, 16].Value = tbl.Rows[i]["discamt"].retDbl();
-                wsSheet1.Cells[exlrowno, 17].Value = (tbl.Rows[i]["basamt"].retDbl() + tbl.Rows[i]["othramt"].retDbl() - tbl.Rows[i]["discamt"].retDbl()).toRound();
+                //wsSheet1.Cells[exlrowno, 17].Value = (tbl.Rows[i]["basamt"].retDbl() + tbl.Rows[i]["othramt"].retDbl() - tbl.Rows[i]["discamt"].retDbl()).toRound();
+                wsSheet1.Cells[exlrowno, 17].Value = tbl.Rows[i]["NETAMT"].retDbl().toRound();
                 exlrowno++;
             }
             //for download//
