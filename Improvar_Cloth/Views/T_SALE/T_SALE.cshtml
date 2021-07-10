@@ -928,7 +928,7 @@
                         <div class="col-md-3">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD');", @placeholder = "Job Code", maxlength = 2 } })
-                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')" />
+                                <img src="~/Image/search.png" id="JOBCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0/JOBHSNCODE=HSNCODE/JOBEXPGLCD=EXPGLCD')" />
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -1215,11 +1215,11 @@
                                         @Html.EditorFor(model => model.RPPERMANUAL, new { htmlAttributes = new { @class = "form-control", id = "RPPERMANUAL", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
-                                    <div class="col-md-1" style="width:auto;">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Fixed Amount")
-                                        </div>
+                                <div class="col-md-1" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Fixed Amount")
                                     </div>
+                                </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.FIXEDAMT, new { htmlAttributes = new { @class = "form-control", id = "FIXEDAMT", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "Fixed Amount", onchange = "BarGridRateUpdate();" } })
@@ -1413,11 +1413,11 @@
                                         @Html.Label("", "TDS Percentage")
                                     </div>
                                 </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.EditorFor(model => model.T_TDSTXN.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
-                                        </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.EditorFor(model => model.T_TDSTXN.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
                                     </div>
+                                </div>
 
                                     <div class="col-md-2">
                                         <div class="editor-label" style="margin-top: 6px;">
@@ -1562,11 +1562,11 @@
                                         @Html.Label("", "Disc Rate")
                                     </div>
                                 </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate", @TabIndex = -1 } })
-                                        </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.DISCRTINRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRTINRATE", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Disc rate", @title = "Disc rate", @TabIndex = -1 } })
                                     </div>
+                                </div>
 
 
                                     }
@@ -2017,7 +2017,14 @@
                                             <div class="col-md-1">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
-                                                        @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 8, @title = "Hsncode", @placeholder = "Hsncode" } })
+                                                        @if (Model.MENU_PARA == "PJBL")
+                                                        {
+                                                            @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 8, @title = "Hsncode", @placeholder = "Hsncode", @readonly = "readonly", @TabIndex = -1 } })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 8, @title = "Hsncode", @placeholder = "Hsncode" } })
+                                                        }
                                                         <label for="HSNCODE" style="font-size: 87%;color: darkgreen;">Hsncode</label>
                                                     </span>
                                                 </div>

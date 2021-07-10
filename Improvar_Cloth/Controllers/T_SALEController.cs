@@ -252,7 +252,7 @@ namespace Improvar.Controllers
                                     var M_JOBMST = (from a in DB.M_JOBMST where a.FLAG1 == menudoccd select new { a.JOBCD, a.JOBNM, a.HSNCODE, a.EXPGLCD }).FirstOrDefault();
                                     if (M_JOBMST != null)
                                     {
-                                        TXN.JOBCD = M_JOBMST.JOBCD;
+                                        TTXN.JOBCD = M_JOBMST.JOBCD;
                                         VE.JOBNM = M_JOBMST.JOBNM;
                                         VE.JOBHSNCODE = M_JOBMST.HSNCODE;
                                         VE.JOBEXPGLCD = M_JOBMST.EXPGLCD;
@@ -592,7 +592,7 @@ namespace Improvar.Controllers
                                     PAGESLNO = dr["PAGESLNO"].retInt(),
                                     PCSTYPE = dr["PCSTYPE"].retStr(),
                                     NEGSTOCK = dr["NEGSTOCK"].retStr(),
-                                    BLUOMCD = dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
+                                    BLUOMCD = dr["BLUOMCD"].retStr() == "" ? "" : dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
                                     COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
                                     FABITCD = dr["FABITCD"].retStr(),
                                     FABITNM = dr["FABITNM"].retStr(),
@@ -2528,6 +2528,13 @@ namespace Improvar.Controllers
 
                 VE.Database_Combo4 = (from n in DB.T_BATCHDTL
                                       select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
+                List<DropDown_list2> RETURN_TYPE = new List<DropDown_list2> {
+                    new DropDown_list2 { value = "N", text = "NO"},
+                    new DropDown_list2 { value = "Y", text = "YES"},
+                    };
+                VE.RETURN_TYPE = RETURN_TYPE;
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_BarTab", VE);
@@ -4649,7 +4656,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5806,7 +5813,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5814,7 +5821,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

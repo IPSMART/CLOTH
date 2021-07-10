@@ -386,7 +386,14 @@
                                             }
 
                                             <td class="PJBLDiv">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12 } })
+                                                @if (Model.MENU_PARA == "PJBL")
+                                                {
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                                }
+                                                else
+                                                {
+                                                    @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                                }
                                             </td>
 
 
