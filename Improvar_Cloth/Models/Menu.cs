@@ -10,8 +10,9 @@ namespace Improvar.Models
     public class Menu 
     {
         public string ManuDetails { get; set; }
-        public string FavoriteManuDetails { get; set; }      
+        public string FavoriteManuDetails { get; set; }
         public string UNQSNO { get; set; }
+        public string PostAction { get; set; }
         public List<DashboardDetails> DashboardList { get; set; }
     }
     public class DashboardDetails

@@ -769,7 +769,8 @@ namespace Improvar.Controllers
             string sql = "";
             sql += " select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.docdt,a.docno, f.itgrpcd, h.itgrpnm, f.itnm, nvl(e.pdesign, f.styleno) styleno, f.BRANDCD,";
             sql += Environment.NewLine + " e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, nvl(rp.rate, 0) rprate, f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm, h.sapcode,a.prefno,a.prefdt,a.shade,a.sizecd, ";
-            sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty,sum(d.amt) basamt, sum(a.txblval)txblval,d.NETAMT,sum(a.othramt)othramt,sum(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0)) discamt, sum(d.igstamt)igstamt, sum(d.cgstamt)cgstamt, sum(d.sgstamt)sgstamt, sum(d.cessamt)cessamt ";
+            sql += Environment.NewLine + " sum(a.nos) nos,sum(a.qnty)qnty,sum(d.amt) basamt, sum(a.txblval)txblval,d.NETAMT,sum(a.othramt)othramt,sum(nvl(d.TDDISCAMT, 0) + nvl(d.SCMDISCAMT, 0) + nvl(d.DISCAMT, 0)) discamt,";
+            sql += Environment.NewLine + " sum(NVL(CGSTPER,0)) CGSTPER,sum(NVL(SGSTPER,0)) SGSTPER,sum(NVL(IGSTPER,0)) IGSTPER , sum(d.cgstamt)cgstamt, sum(d.sgstamt)sgstamt, sum(d.cessamt)cessamt ";
             sql += Environment.NewLine + " from  ( ";
             //sql += "select d.compcd, d.loccd, a.barno, 'OP' doctag, d.docdt, d.docno, c.prefno, c.prefdt, a.shade, sum(a.nos)nos, ";
             //sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, sum(a.txblval) txblval, ";
@@ -892,6 +893,9 @@ namespace Improvar.Controllers
             int exlrowno = 4;
             for (int i = 0; i < tbl.Rows.Count; i++)
             {
+                double gstper = tbl.Rows[i]["CGSTPER"].retDbl() + tbl.Rows[i]["SGSTPER"].retDbl() + tbl.Rows[i]["IGSTPER"].retDbl();
+                double INCLDISCOUNTAMT = ((tbl.Rows[i]["discamt"].retDbl() * (gstper + 100)) / 100).retDbl().toRound(2);
+
                 wsSheet1.Cells[exlrowno, 1].Value = "";
                 wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["docdt"].retDateStr("yyyy", "dd/MM/yyyy");//docdt
                 wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["barno"].retStr();
@@ -906,9 +910,8 @@ namespace Improvar.Controllers
                 wsSheet1.Cells[exlrowno, 12].Value = "";
                 wsSheet1.Cells[exlrowno, 13].Value = tbl.Rows[i]["qnty"].retDbl();
                 wsSheet1.Cells[exlrowno, 14].Value = tbl.Rows[i]["rprate"].retDbl();
-                wsSheet1.Cells[exlrowno, 15].Value = tbl.Rows[i]["basamt"].retDbl()+ tbl.Rows[i]["igstamt"].retDbl() + tbl.Rows[i]["cgstamt"].retDbl() + tbl.Rows[i]["sgstamt"].retDbl() + tbl.Rows[i]["cessamt"].retDbl();
-                wsSheet1.Cells[exlrowno, 16].Value = tbl.Rows[i]["discamt"].retDbl();
-                //wsSheet1.Cells[exlrowno, 17].Value = (tbl.Rows[i]["basamt"].retDbl() + tbl.Rows[i]["othramt"].retDbl() - tbl.Rows[i]["discamt"].retDbl()).toRound();
+                wsSheet1.Cells[exlrowno, 15].Value = (tbl.Rows[i]["NETAMT"].retDbl() + INCLDISCOUNTAMT).toRound();
+                wsSheet1.Cells[exlrowno, 16].Value = INCLDISCOUNTAMT;
                 wsSheet1.Cells[exlrowno, 17].Value = tbl.Rows[i]["NETAMT"].retDbl().toRound();
                 exlrowno++;
             }

@@ -30,38 +30,36 @@
                                         {
                                             for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                             {
-                                                <tr style="border-bottom:1pt solid #dbd7d7">
-                                                    <td style="padding-left:10px">
-                                                        <span>@Model.DashboardList[index].DataTable.Rows[i]["dname"] [@Model.DashboardList[index].DataTable.Rows[i]["doccd"]] &nbsp;</span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="container_imageDIV" title="Document No - @Model.DashboardList[index].DataTable.Rows[i]["docno"]" style="cursor:pointer">
-                                                            @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["total_docno"]) > 0)
+                                    <tr style="border-bottom:1pt solid #dbd7d7">
+                                        <td style="padding-left:10px">
+                                            <span>@Model.DashboardList[index].DataTable.Rows[i]["dname"] [@Model.DashboardList[index].DataTable.Rows[i]["doccd"]] &nbsp;</span>
+                                        </td>
+                                        <td>
+                                            <div class="container_imageDIV" title="Document No - @Model.DashboardList[index].DataTable.Rows[i]["docno"]" style="cursor:pointer">
+                                                @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["total_docno"]) > 0)
                                                             {
-                                                                var Sql = Model.DashboardList[index].DataTable.Rows[i]["doctype"] + "_" + Model.DashboardList[index].DataTable.Rows[i]["doccd"];
-                                                                var SqlStr = Model.DashboardList[index].DataTable.Rows[i]["URL"] + "&param_SQL=" + Sql;
-                                                                <a style="color:white" onclick="ThirdPartyCall('@SqlStr');">
-                                                                    <img src="~/Image/greenlight.png" height="50px" width="50px" />
-                                                                    <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
-                                                                </a>
+                                                            <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
+                                                                <img src="~/Image/greenlight.png" height="50px" width="50px" />
+                                                                <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
+                                                            </a>
                                                             }
                                                             else
                                                             {
-                                                                <img src="~/Image/redlight.png" height="50px" width="50px" />
-                                                                <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
+                                                            <img src="~/Image/redlight.png" height="50px" width="50px" />
+                                                            <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
                                                             }
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                            </div>
+                                        </td>
+                                    </tr>
                                             }
                                         }
                                         else
                                         {
-                                            <tr>
-                                                <td style="text-align:center;font-weight:bold;color:#fa0606">
-                                                    Pending Doc. Authorization Not Found !!
-                                                </td>
-                                            </tr>
+                                    <tr>
+                                        <td style="text-align:center;font-weight:bold;color:#fa0606">
+                                            Pending Doc. Authorization Not Found !!
+                                        </td>
+                                    </tr>
                                         }
                                     </table>
                                     }
@@ -102,36 +100,36 @@
                                             {
                                                 for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                                 {
-                                            <tr style="border-bottom:1pt solid #dbd7d7">
-                                                <td style="padding-left:10px">
-                                                    <span>@Model.DashboardList[index].DataTable.Rows[i]["Name"] &nbsp;</span>
-                                                </td>
-                                                <td>
-                                                    <div class="container_imageDIV" style="cursor:pointer">
-                                                        @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["Total"]) > 0)
+                                        <tr style="border-bottom:1pt solid #dbd7d7">
+                                            <td style="padding-left:10px">
+                                                <span>@Model.DashboardList[index].DataTable.Rows[i]["Name"] &nbsp;</span>
+                                            </td>
+                                            <td>
+                                                <div class="container_imageDIV" style="cursor:pointer">
+                                                    @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["Total"]) > 0)
                                                                 {
-                                                                <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
-                                                                    <img src="~/Image/greenlight.png" height="50px" width="50px" />
-                                                                    <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
-                                                                </a>
+                                                        <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
+                                                            <img src="~/Image/greenlight.png" height="50px" width="50px" />
+                                                            <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
+                                                        </a>
                                                                 }
                                                                 else
                                                                 {
-                                                                <img src="~/Image/redlight.png" height="50px" width="50px" />
-                                                                <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
+                                                        <img src="~/Image/redlight.png" height="50px" width="50px" />
+                                                        <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
                                                                 }
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                </div>
+                                            </td>
+                                        </tr>
                                                 }
                                             }
                                             else
                                             {
-                                            <tr>
-                                                <td style="text-align:center;font-weight:bold;color:#fa0606">
-                                                    Pending Not Found !!
-                                                </td>
-                                            </tr>
+                                        <tr>
+                                            <td style="text-align:center;font-weight:bold;color:#fa0606">
+                                                Pending Not Found !!
+                                            </td>
+                                        </tr>
                                             }
                                     </table>
                                     }
@@ -168,27 +166,27 @@
                                 <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
                                     @if (Model.DashboardList[index].DataTable != null)
                             {
-                            <table class="table compact table-condensed" style="color: darkcyan;">
-                                <thead>
-                                    <tr>
-                                        @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
+                                    <table class="table compact table-condensed" style="color: darkcyan;">
+                                        <thead>
+                                            <tr>
+                                                @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
                                             {
-                                            <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
+                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
                                             }
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                         {
-                                        <tr>
-                                            @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                    <tr>
+                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
                                                 {
-                                                <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
                                                 }
-                                        </tr>
+                                    </tr>
                                         }
-                                </tbody>
-                            </table>
+                                        </tbody>
+                                    </table>
                             }
                                 </div>
                             </div>
@@ -222,31 +220,86 @@
                                 <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
                                     @if (Model.DashboardList[index].DataTable != null)
                             {
-                            <table class="table table-condensed" style="color: darkcyan;">
-                                <thead>
-                                    <tr>
-                                        @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
+                                    <table class="table table-condensed" style="color: darkcyan;">
+                                        <thead>
+                                            <tr>
+                                                @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
                                             {
-                                            <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
+                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
                                             }
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                         {
-                                        <tr>
-                                            @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                    <tr>
+                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
                                                 {
-                                                <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
                                                 }
-                                        </tr>
+                                    </tr>
                                         }
-                                </tbody>
-                            </table>
+                                        </tbody>
+                                    </table>
                             }
                                 </div>
                             </div>
                             <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
+                                <img src="~/Image/squere.png" style="float:right;padding-top:3px;padding-right:25px" width="62px" height="40px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.DashboardList[index].BoardCode == "DB_SALCASU_PND_SLIP")
+        {
+            <div>
+                @Html.HiddenFor(model => model.DashboardList[index].BoardCode, new { id = "DB_SALCASU_PND_SLIP_BoardCode" })
+                @Html.HiddenFor(model => model.DashboardList[index].Permission, new { id = "DB_SALCASU_PND_SLIP_Permission" })
+                <div id="@Model.DashboardList[index].BoardCode">
+                    <div class="col-md-9">
+                        <div style="height:250px;border:4px solid #86abd8;border-radius:15px;position:relative;width:365px;margin-top:10px;margin-left:2px">
+                            <div class="row">
+                                <div class="col-sm-6 tabtitle" style="padding-top:5px;">
+                                    @Html.DisplayFor(model => model.DashboardList[index].Caption)
+                                </div>
+                                <div class="col-sm-3" style="padding-top:2px;"><span title="Last Updated Time" id="span_authenticationDash">@Html.DisplayFor(model => model.DashboardList[index].RefreshedTime)</span> </div>
+                                <div class="col-sm-1">
+                                    <span title="Refresh Board" class="glyphicon glyphicon-refresh" style="color:greenyellow;vertical-align:middle;cursor:pointer;"
+                                          onclick="UpdateDashboard('@Model.DashboardList[index].BoardCode',DB_SALCASU_PND_SLIP_Permission.id)"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
+                                    @if (Model.DashboardList[index].DataTable != null)
+                                    {
+                                        <table class="table table-condensed" style="color: darkcyan;">
+                                            <thead>
+                                                <tr>
+                                                    @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
+                                                    {
+                                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
+                                                {
+                                                    <tr>
+                                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                                        {
+                                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                                        }
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                </div>
+                            </div>
+                            <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
+                                <button class="btn-sm btn-info" name="PostAction" onclick="FormSubmit('@Model.DashboardList[index].BoardCode')" style="margin-top: 5px;">Excel</button>
                                 <img src="~/Image/squere.png" style="float:right;padding-top:3px;padding-right:25px" width="62px" height="40px" />
                             </div>
                         </div>
