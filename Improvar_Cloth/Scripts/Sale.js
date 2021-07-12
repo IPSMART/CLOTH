@@ -97,6 +97,10 @@ function GetBarnoDetails(id, HelpFrom) {
                                 $("#PRCCD").attr("readonly", "readonly");
                                 $('#PRCCD_HELP').hide();
                             }
+                            if (MENU_PARA == "PJBL" && (!$('#JOBCD').is('[readonly]'))) {
+                                $("#JOBCD").attr("readonly", "readonly");
+                                $('#JOBCD_HELP').hide();
+                            }
                             var value1 = modify_check_stylebarno();
                             if (value1 == "true") {
                                 FillBarcodeArea(result);
@@ -646,7 +650,7 @@ function UpdateBarCodeRow() {
                         //var r1 = retStr($("#GLCD").val()); var gg1 = retStr($("#B_GLCD_" + j).val())
                         //var s1 = retStr($("#SLNO").val()); var hh1 = retStr($("#B_SLNO_" + j).val())
                         //var t1 = retStr($("#FABITCD").val()); var ii1 = retStr($("#B_FABITCD_" + j).val())
-                        //var oo1 = retStr($("#PDESIGN").val()); var jj1 = retStr($("#B_PDESIGN_" + j).val())
+                        //var oo1 = retStr($("#BLUOMCD").val()); var jj1 = retStr($("#B_BLUOMCD_" + j).val())
                         //
                         if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
                             retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
@@ -1028,13 +1032,13 @@ function Fill_DetailData() {
                     CalculateAmt_Details(i);
                 }
                 $("#bardatachng").val("N");
-                if (MENU_PARA == "PJBL") {
-                    $('.PJBLDiv input').attr('readonly', 'readonly');
-                    $('.PJBLDiv input').removeAttr("onblur");
-                    $('.PJBLDiv input').attr('TabIndex', '-1');
-                    $('.PJBLDiv').find(".Help_image_button_grid").hide();
-                    $('.PJBLDiv input').removeAttr("onkeydown");
-                }
+                //if (MENU_PARA == "PJBL") {
+                //    $('.PJBLDiv input').attr('readonly', 'readonly');
+                //    $('.PJBLDiv input').removeAttr("onblur");
+                //    $('.PJBLDiv input').attr('TabIndex', '-1');
+                //    $('.PJBLDiv').find(".Help_image_button_grid").hide();
+                //    $('.PJBLDiv input').removeAttr("onkeydown");
+                //}
 
             }
             $("#WaitingMode").hide();
@@ -1095,7 +1099,7 @@ function UpdateBarCodeRow_FrmDet(i) {
             //}
             $("#B_ITREM_" + j).val(ITREM);
             $("#B_GSTPER_" + j).val(GSTPER);
-
+            $("#B_HSNCODE_" + j).val($("#D_HSNCODE_" + i).val());
             if (MENU_PARA == "SR" || MENU_PARA == "PR") {
                 $("#B_AGDOCNO_" + j).val($("#D_AGDOCNO_" + i).val());
                 $("#B_AGDOCDT_" + j).val($("#D_AGDOCDT_" + i).val());
@@ -4069,11 +4073,11 @@ function SelectIssue() {
                 $('#partialdivBarCodeTab').html(result);
                 Fill_DetailData();
 
-                $('.PJBLDiv input').attr('readonly', 'readonly');
-                $('.PJBLDiv input').removeAttr("onblur");
-                $('.PJBLDiv input').attr('TabIndex', '-1');
-                $('.PJBLDiv').find(".Help_image_button").hide();
-                $('.PJBLDiv input').removeAttr("onkeydown");
+                //$('.PJBLDiv input').attr('readonly', 'readonly');
+                //$('.PJBLDiv input').removeAttr("onblur");
+                //$('.PJBLDiv input').attr('TabIndex', '-1');
+                //$('.PJBLDiv').find(".Help_image_button").hide();
+                //$('.PJBLDiv input').removeAttr("onkeydown");
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
