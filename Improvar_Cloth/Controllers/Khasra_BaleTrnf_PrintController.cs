@@ -183,7 +183,9 @@ namespace Improvar.Controllers
                     sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
                     sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
                     sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
-                    sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
+                    //sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
+                    sql += "order by a.autono,a.slno,f.prefno, a.baleno ";
+
 
                     restbl = masterHelp.SQLquery(sql);
                     sql = "select a.autono,a.gocd hdrgocd,b.gonm hdrgonm,b.goadd1 hdrgoadd1,b.goadd2 hdrgoadd2,b.goadd3 hdrgoadd3,b.gophno hdrgophno,b.goemail hdrgoemail ";
