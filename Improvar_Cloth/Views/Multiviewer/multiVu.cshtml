@@ -332,6 +332,11 @@
                 }
             )
         }
+        function FormSubmit(CallFor) { 
+            $("#PostAction").val(CallFor);
+            jQuery("form").attr("target", "_blank");
+            $("form").submit();
+        }
     </script>
 </head>
 
@@ -459,9 +464,11 @@
     <div id="deshboard">
         @using (Html.BeginForm())
         {
+            @Html.HiddenFor(model => model.PostAction)
             <div class="row">
                 @Html.Partial("_Dashboard")
-            </div>}
+            </div>
+        }
     </div>
     <div style="width:100%; background-color:rgb(111, 163, 208); float:left; bottom:0px; margin-bottom:0; position:fixed; right:0; left:0px">
         <div class="abc sec1">

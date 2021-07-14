@@ -214,6 +214,10 @@ namespace Improvar.Controllers
                             {
                                 DashboardDetails.Add(new DashboardDetails { BoardCode = "INVBOARD2", Permission = "1", Caption = "INVBOARD2" });
                             }
+                            else if (MENU_PROGCALL == "DB_SALCASU_PND_SLIP")
+                            {
+                                DashboardDetails.Add(new DashboardDetails { BoardCode = "DB_SALCASU_PND_SLIP", Permission = "1", Caption = "Pending Paking Slip" });
+                            }
                         }
                         SB.Append(Menu);
                     }
@@ -318,7 +322,7 @@ namespace Improvar.Controllers
             sql += " from " + CommVar.CurSchema(UNQSNO) + ".M_USR_ACS p , APPL_MENU m ";
             sql += " where p.MENU_NAME=m.MENU_ID and p.MENU_INDEX=m.MENU_INDEX and p.USER_ID='" + CommVar.UserID() + "' and m.module_code='" + CommVar.ModuleCode() + "' and upper(MENU_FIND_ID)='" + code.ToUpper() + "' AND ";
             sql += "p.compcd = '" + CommVar.Compcd(UNQSNO) + "' and p.loccd = '" + CommVar.Loccd(UNQSNO) + "' and p.schema_name = '" + CommVar.CurSchema(UNQSNO) + "' " + fld2;
-        http://localhost:53704/TS_DOCAUTH/TS_DOCAUTH/?op=V&MNUDET="++"&US=Q0hFTUtPTEsyMDE5NDA3MTM=&DC=&MP=&param_SQL=yBwYqtpmZzR9rkMFTUWqjJGfAsaCOXPV2iioWExH6xw=
+            //      http://localhost:53704/TS_DOCAUTH/TS_DOCAUTH/?op=V&MNUDET="++"&US=Q0hFTUtPTEsyMDE5NDA3MTM=&DC=&MP=&param_SQL=yBwYqtpmZzR9rkMFTUWqjJGfAsaCOXPV2iioWExH6xw=
             //LinkUrl = "winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "')";
             //sql = "select menu_id,menu_name,menu_index,menu_type,menu_date_option from appl_menu where menu_progcall='" + MENU_PROGCALL + "' AND MODULE_CODE='"+MODULE_CODE+"'";
             DataTable DT = masterHelp.SQLquery(sql);
@@ -398,10 +402,11 @@ namespace Improvar.Controllers
         }
 
         //public dynamic UpdateDeshBoard(string BoardCode, string Permission, string callFrom, Menu Mnu)
-        public dynamic UpdateDeshBoard(Menu Mnu, string BoardCode)
+        public dynamic UpdateDeshBoard(Menu Mnu, string BoardCode, string CallingFor)
         {
             try
             {
+                string sql = "";
                 string DB = CommVar.CurSchema(UNQSNO);
                 string DBF = CommVar.FinSchema(UNQSNO);
                 List<DashboardDetails> DashboardDetails = (List<DashboardDetails>)Session["DashboardDetails"];
@@ -565,7 +570,48 @@ namespace Improvar.Controllers
                     #endregion
                     #region SALES
                     #endregion
+                    #region Salescasual
+                    if (det.BoardCode == "DB_SALCASU_PND_SLIP")
+                    {
+                        det.RefreshedTime = System.DateTime.Now.ToLongTimeString();
 
+                        //sql += " select distinct a.compcd||a.loccd
+                        //sql += " from sd_hpc2021.m_usr_acs a, appl_menu b
+                        //sql += " where a.menu_name=b.menu_id(+) and a.menu_index=b.menu_index(+) and a.user_id='IPSTEAM' and
+                        //sql += " b.menu_progcall='DB_SALCASU_PND_SLIP'
+                        sql = "";
+                        //  sql += " select a.autono, c.compcd, c.loccd, c.docno, c.docdt, a.slcd, d.slnm, nvl(d.slarea, d.district) slarea, nvl(b.qnty, 0) qnty from";
+                        sql += " select c.docno, TO_CHAR(c.docdt,'dd/mm/yyyy') docdt ,  d.slnm, nvl(d.slarea, d.district) slarea, nvl(b.qnty, 0) qnty from";
+                        sql += Environment.NewLine + " (select a.autono, a.slcd";
+                        sql += Environment.NewLine + " from " + DB + ".t_pslip a, " + DB + ".t_cntrl_hdr b, " + DB + ".t_txn_linkno c";
+                        sql += Environment.NewLine + " where a.autono = b.autono and a.autono = c.linkautono(+) and c.autono is null";
+                        sql += Environment.NewLine + " ";
+                        sql += Environment.NewLine + " and b.compcd || b.loccd in (";
+                        sql += Environment.NewLine + " select distinct a.compcd || a.loccd as comploccd";
+                        sql += Environment.NewLine + " from " + DB + ".m_usr_acs a, appl_menu b";
+                        sql += Environment.NewLine + " where a.menu_name = b.menu_id(+) and a.menu_index = b.menu_index(+) and a.user_id = '" + CommVar.UserID() + "' and";
+                        sql += Environment.NewLine + " b.menu_progcall = 'DB_SALCASU_PND_SLIP'";
+                        sql += Environment.NewLine + " ";
+                        sql += Environment.NewLine + " ) ";
+                        sql += Environment.NewLine + " ";
+                        sql += Environment.NewLine + " and nvl(b.cancel, 'N')= 'N' ) a,";
+                        sql += Environment.NewLine + " ";
+                        sql += Environment.NewLine + " (select a.autono, sum(a.qnty) qnty";
+                        sql += Environment.NewLine + " from " + DB + ".t_pslipdtl a, " + DB + ".m_sitem b";
+                        sql += Environment.NewLine + " where a.itcd = b.itcd(+)";
+                        sql += Environment.NewLine + " group by a.autono ) b,";
+                        sql += Environment.NewLine + " ";
+                        sql += Environment.NewLine + " " + DB + ".t_cntrl_hdr c, " + DBF + ".m_subleg d";
+                        sql += Environment.NewLine + " ";
+                        sql += Environment.NewLine + " where a.autono = b.autono(+) and a.slcd = d.slcd(+) and a.autono = c.autono";
+                        sql += Environment.NewLine + " order by compcd, docdt, docno";
+
+                        DataTable tbl = new DataTable();
+                        tbl = masterHelp.SQLquery(sql);
+                        det.DataTable = tbl;
+                        if (CallingFor == "DashboardDetails") return det;
+                    }
+                    #endregion
 
                 }
                 Mnu.DashboardList = DashboardDetails;
@@ -577,6 +623,23 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-
+        [HttpPost]
+        public ActionResult multiVu(Menu Mnu)
+        {
+            try
+            {
+                DashboardDetails det = (DashboardDetails)UpdateDeshBoard(Mnu, Mnu.PostAction, "DashboardDetails");
+                DataTable dt = det.DataTable;
+                if (dt.Rows.Count == 0) return Content("No data Found !");
+                DataTable[] exdt = new DataTable[1] { dt };
+                string[] sheetname = new string[1] { "Sheet1" };
+                masterHelp.ExcelfromDataTables(exdt, sheetname, Mnu.PostAction.retRepname(), false, det.Caption + " as on " + CommVar.CurrDate(UNQSNO));
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+            return null;
+        }
     }
 }
