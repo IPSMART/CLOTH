@@ -3,16 +3,25 @@
     $(document).ready(function () {
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_DETAIL_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
-
-    });
-
-</script>
-<script>
-    $(function () {
         if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
             $(".agdocdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         }
+        $(this).on('keydown', 'input,select,text,button', function (e) {
+            var tableheader = $('#_T_SALE_DETAIL_GRID').parent().parent();
+            var tr_index = $(this).parent().parent().index();
+            if (e.which == 40) { // down arrow
+                if (tr_index > 4 && tr_index % 4 == 0) {
+                    tableheader.animate({ scrollTop: tableheader.scrollTop() + 84 }, 300);//or+ 150 }, 300)
+                }
+            }
+            else if (e.which == 38) { // up arrow
+                if (tr_index % 2 == 0) {
+                    tableheader.animate({ scrollTop: tableheader.scrollTop() - 42 }, 300);
+                }
+            }
+        });
     });
+
 </script>
 <div style="transform: translate(0%, 0%);z-index: 1100;">
     <div class="table-responsive">

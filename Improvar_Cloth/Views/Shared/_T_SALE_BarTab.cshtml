@@ -4,6 +4,20 @@
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_PRODUCT_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
 
+        $(this).on('keydown', 'input,select,text,button', function (e) {
+            var tableheader = $('#_T_SALE_PRODUCT_GRID').parent().parent();
+            var tr_index = $(this).parent().parent().index();
+            if (e.which == 40) { // down arrow
+                if (tr_index > 2 && tr_index % 2== 0) {
+                    tableheader.animate({ scrollTop: tableheader.scrollTop() + 42 }, 300);//or+ 150 }, 300)
+                }
+            }
+            else if (e.which == 38) { // up arrow
+                if (tr_index % 2 == 0) {
+                    tableheader.animate({ scrollTop: tableheader.scrollTop() - 42 }, 300);
+                }
+            }
+        });
     });
 </script>
 <script>
