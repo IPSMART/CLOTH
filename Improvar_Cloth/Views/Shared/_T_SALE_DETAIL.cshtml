@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.TransactionSaleEntry
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function () { 
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_DETAIL_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
         if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
