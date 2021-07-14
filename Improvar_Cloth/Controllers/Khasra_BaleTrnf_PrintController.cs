@@ -139,12 +139,13 @@ namespace Improvar.Controllers
                     if (fdocno != "") str += "and e.doconlyno >= '" + fdocno + "' ";
                     if (tdocno != "") str += "and e.doconlyno <= '" + tdocno + "'   ";
                     if (CommVar.ClientCode(UNQSNO) == "SNFP")
-                    {str += "order by a.baleno,a.rslno ";
-                        }
+                    {
+                        str += "order by a.baleno,a.rslno ";
+                    }
                     else {
                         str += "order by a.rslno,a.baleno ";
                     }
-                        tbl = masterHelp.SQLquery(str);
+                    tbl = masterHelp.SQLquery(str);
                 }
                 else if (VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB")
                 {
@@ -182,7 +183,9 @@ namespace Improvar.Controllers
                     sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
                     sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
                     sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
-                    sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
+                    //sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
+                    sql += "order by a.autono,a.slno,f.prefno, a.baleno ";
+
 
                     restbl = masterHelp.SQLquery(sql);
                     sql = "select a.autono,a.gocd hdrgocd,b.gonm hdrgonm,b.goadd1 hdrgoadd1,b.goadd2 hdrgoadd2,b.goadd3 hdrgoadd3,b.gophno hdrgophno,b.goemail hdrgoemail ";
@@ -505,6 +508,8 @@ namespace Improvar.Controllers
                     }
                     else if (VE.MENU_PARA == "TRWB")
                     { tbl = restbl; filename = "Stk Trnf with Waybill (Bale)_".retRepname(); }
+                    else if (VE.MENU_PARA == "TRFB")
+                    { tbl = restbl; filename = "Stk Trnf w/o Waybill (Bale)_".retRepname(); }
                     else if (VE.MENU_PARA == "BLTR") { filename = "Receive from Mutia_".retRepname(); }
                     if (tbl.Rows.Count == 0)
                     {
@@ -513,7 +518,9 @@ namespace Improvar.Controllers
                     string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
                     Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo";
                     var sheetName = "";
-                    sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : "T_BiltyR_Mutia";
+                    //sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : "T_BiltyR_Mutia";
+                    sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill" : "T_BiltyR_Mutia";
+
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add(sheetName);
                     wsSheet1.Column(1).Width = 11.57;
@@ -538,7 +545,8 @@ namespace Improvar.Controllers
                         Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
                         wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
                         wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
-                        wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                        //wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                        wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
                     }
                     using (ExcelRange Rng = wsSheet1.Cells["A4:K4"])
                     {
@@ -560,7 +568,8 @@ namespace Improvar.Controllers
                     {
                         var curslno = 0; var cbaleno = "";
                         if (VE.MENU_PARA == "KHSR") { curslno = tbl.Rows[i]["slno"].retShort(); }
-                        else if (VE.MENU_PARA == "TRWB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                        //else if (VE.MENU_PARA == "TRWB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                        else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
                         else if (VE.MENU_PARA == "BLTR") { curslno = tbl.Rows[i]["rslno"].retShort(); }
                         if ((curslno != rslno || cbaleno != baleno) && i != 0)
                         {
@@ -628,8 +637,10 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
                         wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
                         wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
-                        wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? "" : tbl.Rows[i]["pcstype"].retStr();
-                        wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                        wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                        wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                        //wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                        //wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
                         wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
                         wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
                         wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl().toRound(2);
@@ -638,7 +649,8 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
                         if (VE.MENU_PARA == "KHSR")
                         { rslno = tbl.Rows[i]["slno"].retShort(); }
-                        else if (VE.MENU_PARA == "TRWB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                        else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                        //else if (VE.MENU_PARA == "TRWB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
                         else if (VE.MENU_PARA == "BLTR") { rslno = tbl.Rows[i]["rslno"].retShort(); }
                         exlrowno++;
                     }
