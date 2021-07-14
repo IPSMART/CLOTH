@@ -5535,6 +5535,7 @@ namespace Improvar.Controllers
 
                         if (VE.TTXNAMT != null)
                         {
+                            gs = VE.TTXNDTL.Select(a => a.SLNO).Max();
                             for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
                             {
 
