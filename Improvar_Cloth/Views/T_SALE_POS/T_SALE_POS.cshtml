@@ -116,7 +116,9 @@
             $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             $("#GSTNO").focus();
         }
-
+        if (event.altKey && KeyID == 80) {//for Alt+P Print on 
+            SaveandPrint();
+        }
     });
 </script>
 <script>
@@ -226,6 +228,7 @@
             resultIndex = result.substring(0, 1);
             if (resultIndex == "1") {
                 ClearAllSalePose();
+                $("#M_BARCODE").focus();
                 var strrel = result.split("~");
                 if (strrel.length > 1) {
                     var autono = strrel[1];
@@ -537,7 +540,7 @@
                         @if (Model.DefaultAction == "A")
                         {
                             <div class="col-md-5">
-                                <input onclick="SaveandPrint()" class="btn btn-info btn-sm" style="margin-top: 2px; padding: 2px 7px 1px 7px;" id="SaveAndPrint" value="Save & Print (Alt+P)" title="Save & Print" accesskey="P" />
+                                <input onclick="SaveandPrint()" class="btn btn-info btn-sm" style="margin-top: 2px; padding: 2px 7px 1px 7px;" id="SaveAndPrint" value="Save & Print (Alt+P)" title="Save & Print" />
                             </div>
                         }
                     </div>
