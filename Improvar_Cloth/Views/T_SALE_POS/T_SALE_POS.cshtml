@@ -300,6 +300,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSHADE, new { id = "MNTNSHADE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
         @Html.HiddenFor(a => a.M_SYSCNFG.CMROFFTYPE, new { id = "CMROFFTYPE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNOURDESIGN, new { id = "MNTNOURDESIGN" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -662,6 +663,13 @@
                         </div>
 
                     </div>
+                    <div class="row" style="margin-top: 6px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                        <div>
+                            <div id="partialdivSalesman" style="margin-top:0px;">
+                                @Html.Partial("_T_SALE_POS_SALESMAN")
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-1" id="divmtrljobcd">
@@ -939,13 +947,13 @@
                     </div>
                 </div>
                 <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                    <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                    @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                         <div>
                             <div id="partialdivSalesman" style="margin-top:0px;">
                                 @Html.Partial("_T_SALE_POS_SALESMAN")
                             </div>
                         </div>
-                    </div>
+                    </div>*@
                     <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                         <div>
                             <div id="partialdivPayment" style="margin-top:0px;">

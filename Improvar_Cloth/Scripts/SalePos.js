@@ -215,6 +215,7 @@ function AddMainRow(hlpstr) {
     var MNTNSHADE = $("#MNTNSHADE").val();
     var INCLRATEASK = $("#INCLRATEASK").val();
     var MNTNFLAGMTR = $("#MNTNFLAGMTR").val();
+    var MNTNOURDESIGN = $("#MNTNOURDESIGN").val();
 
     var BARNO = returncolvalue(hlpstr, "BARNO");
     var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
@@ -259,6 +260,7 @@ function AddMainRow(hlpstr) {
     if (INCLRATEASK == "Y") {
         INCLRATE = returncolvalue(hlpstr, "RATE");
     }
+    var PDESIGN = returncolvalue(hlpstr, "PDESIGN");
     var tr = "";
     tr += '<tr style="font-size:12px; font-weight:bold;">';
     tr += ' <td class="sticky-cell" title="true">';
@@ -307,6 +309,11 @@ function AddMainRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
     tr += ' </td>';
+    if (MNTNOURDESIGN == "Y") {
+        tr += ' <td class="" title="">';
+        tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_PDESIGN_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].PDESIGN" readonly="readonly" type="text" value="' + PDESIGN + '">';
+        tr += ' </td>';
+    }
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" readonly="readonly" type="text" value="' + HSNCODE + '">';
     tr += ' </td>';
