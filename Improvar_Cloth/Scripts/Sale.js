@@ -242,7 +242,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#SIZENM").val(returncolvalue(str, "SIZENM"));
         $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
         $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
-        if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK" || MENU_PARA == "SBPOS") {
+        if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK" || MENU_PARA == "SBPOS" || MENU_PARA == "PR") {
             if (retStr(returncolvalue(str, "uomcd")) == "PCS") {
                 $("#QNTY").val(1.000);
                 $("#NOS").val(returncolvalue(str, "NOS"));
@@ -352,7 +352,7 @@ function FillBarcodeArea(str, Table, i) {
             $("#BLQNTY").val($(FieldidStarting + "BLQNTY_" + i).val());
         }
         else {
-            if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK" || MENU_PARA == "SBPOS") {
+            if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK" || MENU_PARA == "SBPOS" || MENU_PARA == "PR") {
                 if (retStr($(FieldidStarting + "UOM_" + i).val()) == "PCS") {
                     $("#QNTY").val(1.000);
                 }
