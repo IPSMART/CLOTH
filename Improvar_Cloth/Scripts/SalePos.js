@@ -2063,13 +2063,21 @@ function CalculateDiscOnBill() {
 function ClearAllSalePose() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    ClearAllTextBoxes("AUTONO,MNTHCD,EMD_NO,ITCD,DOCNO,SHIPDOCNO,SHIPDOCDT,M_SLIP_NO,BLTYPE,IRNNO,MergeItem,REVCHRG,ROAMT,DISCONBILL,NETDUE,BLAMT,PAYAMT,OTHAMT,MEMOAMT,RETAMT,MaterialJobChk_,ALLMTRLJOBCD,M_BARCODE,STYLENO,M_BARCODE,R_BARCODE,PARTCD,R_STYLENO,FDT,TDT,R_DOCNO,BARNO,GSTNO,GSTSLNM,GSTSLADD1,GSTSLDIST,GSTSLPIN");
+    ClearAllTextBoxes("AUTONO,MNTHCD,EMD_NO,ITCD,DOCNO,SHIPDOCNO,SHIPDOCDT,M_SLIP_NO,BLTYPE,IRNNO,MergeItem,REVCHRG,ROAMT,DISCONBILL,NETDUE,BLAMT,PAYAMT,OTHAMT,MEMOAMT,RETAMT,MaterialJobChk_,ALLMTRLJOBCD,M_BARCODE,STYLENO,M_BARCODE,R_BARCODE,PARTCD,R_STYLENO,FDT,TDT,R_DOCNO,BARNO,GSTNO,GSTSLNM,GSTSLADD1,GSTSLDIST,GSTSLPIN,S_T_PER,S_T_ITAMT,S_T_BLAMT,T_PYMT_AMT");
     $("#_T_SALE_POS_PRODUCT_Tbody").html('');
     $("#_T_SALE_POS_RETURN_tbody").html('');
     $("#_T_SALE_POS_RETURN_POPUP_tbody").html('');
     $("#_T_SALE_POS_AMOUNT_tbody").html('');
-    $("#_T_SALE_POS_SALESMAN_tbody").html('');
-    $("#_T_SALE_POS_PAYMENT_tbody").html('');
+    //$("#_T_SALE_POS_SALESMAN_tbody").html('');
+    //$("#_T_SALE_POS_PAYMENT_tbody").html('');
+    var GridRowMain = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRowMain - 1; i++) {
+        ClearAllTextBoxes("S_SLNO_" + i + ",SLMSLCD_" + i + ",S_SLMSLNM_" + i + ",S_PER_" + i + ",S_ITAMT_" + i + ",S_BLAMT_" + i);
+    }
+    var GridRowMain = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
+    for (var i = 0; i <= GridRowMain - 1; i++) {
+        ClearAllTextBoxes("P_GLCD_" + i + ",P_SLNO_" + i + ",PYMTCD_" + i + ",P_PYMTNM_" + i + ",P_PYMTTYPE_" + i + ",P_AMT_" + i + ",P_CARDNO_" + i + ",P_INSTNO_" + i + ",P_INSTDT_" + i + ",P_PYMTREM_" + i );
+    }
 }
 //function CheckInclusivRateNetAmt(GridId, i) {
 //    debugger;
