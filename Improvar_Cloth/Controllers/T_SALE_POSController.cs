@@ -763,7 +763,7 @@ namespace Improvar.Controllers
                 VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
                 string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT,a.SLNO from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
-                str += "where a.SLMSLCD=b.slcd and a.autono='" + VE.T_TXN.AUTONO + "'";
+                str += "where a.SLMSLCD=b.slcd and a.autono='" + VE.T_TXN.AUTONO + "' order by a.slno ";
                 var SALSMN_DATA = masterHelp.SQLquery(str);
                 VE.TTXNSLSMN = (from DataRow dr in SALSMN_DATA.Rows
                                 select new TTXNSLSMN()
@@ -775,14 +775,38 @@ namespace Improvar.Controllers
                                     BLAMT = dr["BLAMT"].retDbl(),
                                     SLNO = Convert.ToByte(dr["SLNO"]),
                                 }).ToList();
+                if (VE.DefaultAction != "V" && VE.TTXNSLSMN != null && VE.TTXNSLSMN.Count > 0)
+                {
+                    int COUNT = 0;
+                    List<TTXNSLSMN> TPROGDTL = new List<TTXNSLSMN>();
+                    for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
+                    {
+                        TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                        MBILLDET = VE.TTXNSLSMN[i];
+                        TPROGDTL.Add(MBILLDET);
+                        COUNT++;
+                    }
+                    TTXNSLSMN MBILLDET1 = new TTXNSLSMN();
+
+                    int SERIAL = Convert.ToInt32(VE.TTXNSLSMN.Max(a => Convert.ToInt32(a.SLNO)));
+                    for (int j = COUNT; j <= 2; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNSLSMN OPENING_BL = new TTXNSLSMN();
+                        OPENING_BL.SLNO = SERIAL.retShort();
+                        TPROGDTL.Add(OPENING_BL);
+                    }
+
+                    VE.TTXNSLSMN = TPROGDTL;
+                }
                 double S_T_GROSS_AMT = 0; double T_BILL_AMT = 0;
                 //c
                 for (int p = 0; p <= VE.TTXNSLSMN.Count - 1; p++)
                 {
                     //VE.TTXNSLSMN[p].SLNO = (p + 1).retShort();
 
-                    S_T_GROSS_AMT = S_T_GROSS_AMT + VE.TTXNSLSMN[p].ITAMT.Value;
-                    T_BILL_AMT = T_BILL_AMT + VE.TTXNSLSMN[p].BLAMT.Value;
+                    S_T_GROSS_AMT = S_T_GROSS_AMT + VE.TTXNSLSMN[p].ITAMT.retDbl();
+                    T_BILL_AMT = T_BILL_AMT + VE.TTXNSLSMN[p].BLAMT.retDbl();
                 }
                 VE.T_ITAMT = S_T_GROSS_AMT.retDbl();
                 VE.T_BLAMT = T_BILL_AMT.retDbl();
