@@ -2063,7 +2063,7 @@ function CalculateDiscOnBill() {
 function ClearAllSalePose() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    ClearAllTextBoxes("AUTONO,MNTHCD,EMD_NO,ITCD,DOCNO,SHIPDOCNO,SHIPDOCDT,M_SLIP_NO,BLTYPE,IRNNO,MergeItem,REVCHRG,ROAMT,DISCONBILL,NETDUE,BLAMT,PAYAMT,OTHAMT,MEMOAMT,RETAMT,MaterialJobChk_,ALLMTRLJOBCD,M_BARCODE,STYLENO,M_BARCODE,R_BARCODE,PARTCD,R_STYLENO,FDT,TDT,R_DOCNO,BARNO,GSTNO,GSTSLNM,GSTSLADD1,GSTSLDIST,GSTSLPIN,S_T_PER,S_T_ITAMT,S_T_BLAMT,T_PYMT_AMT");
+    ClearAllTextBoxes("AUTONO,MNTHCD,EMD_NO,ITCD,DOCNO,SHIPDOCNO,SHIPDOCDT,M_SLIP_NO,BLTYPE,IRNNO,MergeItem,REVCHRG,ROAMT,DISCONBILL,NETDUE,BLAMT,PAYAMT,OTHAMT,MEMOAMT,RETAMT,MaterialJobChk_,ALLMTRLJOBCD,M_BARCODE,STYLENO,M_BARCODE,R_BARCODE,PARTCD,R_STYLENO,FDT,TDT,R_DOCNO,BARNO,GSTNO,GSTSLNM,GSTSLADD1,GSTSLDIST,GSTSLPIN,S_T_PER,S_T_ITAMT,S_T_BLAMT,T_PYMT_AMT,B_T_NOS,B_T_QNTY,B_T_FLAGMTR,B_T_GROSSAMT,B_T_DISCAMT,B_T_INCL_DISC,B_T_SCMDISCAMT,B_T_AMT,B_T_GSTAMT,B_T_NET_AMT,T_B_GROSSAMT,T_IGST_AMT,T_CGST_AMT,T_SGST_AMT,T_CESS_AMT,T_NET_AMT,R_T_NOS,R_T_QNTY,R_T_FLAGMTR,R_T_GROSS_AMT,R_T_DISCAMT,R_T_INCL_DISC,R_T_AMT,R_T_GSTAMT,R_T_NET_AMT,R_T_GROSS_AMT,R_T_IGST_AMT,R_T_CGST_AMT,R_T_SGST_AMT,R_T_CESS_AMT,R_T_NET_AMT");
     $("#_T_SALE_POS_PRODUCT_Tbody").html('');
     $("#_T_SALE_POS_RETURN_tbody").html('');
     $("#_T_SALE_POS_RETURN_POPUP_tbody").html('');
@@ -2072,11 +2072,12 @@ function ClearAllSalePose() {
     //$("#_T_SALE_POS_PAYMENT_tbody").html('');
     var GridRowMain = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRowMain - 1; i++) {
-        ClearAllTextBoxes("S_SLNO_" + i + ",SLMSLCD_" + i + ",S_SLMSLNM_" + i + ",S_PER_" + i + ",S_ITAMT_" + i + ",S_BLAMT_" + i);
+        ClearAllTextBoxes("SLMSLCD_" + i + ",S_SLMSLNM_" + i + ",S_PER_" + i + ",S_ITAMT_" + i + ",S_BLAMT_" + i);
+        if (i == 0) $("#S_PER_"+i).val("100.00");
     }
     var GridRowMain = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
     for (var i = 0; i <= GridRowMain - 1; i++) {
-        ClearAllTextBoxes("P_GLCD_" + i + ",P_SLNO_" + i + ",PYMTCD_" + i + ",P_PYMTNM_" + i + ",P_PYMTTYPE_" + i + ",P_AMT_" + i + ",P_CARDNO_" + i + ",P_INSTNO_" + i + ",P_INSTDT_" + i + ",P_PYMTREM_" + i );
+        ClearAllTextBoxes("P_AMT_" + i + ",P_CARDNO_" + i + ",P_INSTNO_" + i + ",P_INSTDT_" + i + ",P_PYMTREM_" + i );
     }
 }
 //function CheckInclusivRateNetAmt(GridId, i) {
