@@ -283,5 +283,18 @@ namespace Improvar
             int iNextSpace = input.LastIndexOf(" ", length, StringComparison.Ordinal);
             return string.Format("{0}", input.Substring(0, (iNextSpace > 0) ? iNextSpace : length).Trim());
         }
+        public static int GetColumnNumber(string name)
+        {
+            name = name.ToUpper();
+            int number = 0;
+            int pow = 1;
+            for (int i = name.Length - 1; i >= 0; i--)
+            {
+                number += (name[i] - 'A' + 1) * pow;
+                pow *= 26;
+            }
+
+            return number;
+        }
     }
 }

@@ -80,7 +80,7 @@ namespace Improvar.Controllers
         {
             if (CommVar.ClientCode(UNQSNO) == "BNBH")
             {
-                return ExtractRaymondPurchaseDBF();
+                return ExtractRaymondPurchaseExcel();
             }
             else if (CommVar.ClientCode(UNQSNO) == "LALF")
             {
@@ -89,64 +89,130 @@ namespace Improvar.Controllers
             return Content(CommVar.ClientCode(UNQSNO));
         }
 
-        public ActionResult ExtractRaymondPurchaseDBF()
+        //public ActionResult ExtractRaymondPurchaseDBF()
+        //{
+        //    try
+        //    {
+        //        DataUploadVM VE = new DataUploadVM();
+        //        if (Request.Files.Count > 0)
+        //        {
+        //            if (!System.IO.Directory.Exists(tmpPath)) { System.IO.Directory.CreateDirectory(tmpPath); }
+        //            tmpPath = "C:\\IPSMART\\Temp\\Raymond.dbf";
+        //            if (System.IO.File.Exists(tmpPath)) { System.IO.File.Delete(tmpPath); }
+        //            GC.Collect();
+        //            HttpFileCollectionBase files = Request.Files;
+        //            HttpPostedFileBase file = files[0];
+        //            string fname;
+        //            if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+        //            {
+        //                string[] testfiles = file.FileName.Split(new char[] { '\\' });
+        //                fname = testfiles[testfiles.Length - 1];
+        //            }
+        //            else
+        //            {
+        //                fname = file.FileName;
+        //            }
+        //            fname = System.IO.Path.Combine(tmpPath, "");
+        //            file.SaveAs(fname);
+
+        //            System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
+        //            obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + tmpPath + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
+        //            obdcconn.Open();
+        //            System.Data.Odbc.OdbcCommand oCmd = obdcconn.CreateCommand();
+        //            oCmd.CommandText = "SELECT * FROM " + tmpPath;
+        //            DataTable dbfdt = new DataTable();
+        //            dbfdt.Load(oCmd.ExecuteReader());
+        //            obdcconn.Close();
+        //            if (System.IO.File.Exists(tmpPath)) { System.IO.File.Delete(tmpPath); }
+        //            var outerDT = dbfdt.AsEnumerable()
+        //           .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
+        //           .Select(g =>
+        //           {
+        //               var row = dbfdt.NewRow();
+        //               row["CUSTOMERNO"] = g.Key.CUSTOMERNO;
+        //               row["INV_NO"] = g.Key.INV_NO;
+        //               row["INVDATE"] = g.Key.INVDATE;
+        //               row["LR_NO"] = g.Key.LR_NO;
+        //               row["LR_DATE"] = g.Key.LR_DATE;
+        //               row["CARR_NO"] = g.Key.CARR_NO;
+        //               row["CARR_NAME"] = g.Key.CARR_NAME;
+        //               row["FREIGHT"] = g.Sum(r => r.Field<double>("FREIGHT"));
+        //               row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
+        //               row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
+        //               row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
+        //               row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+        //               row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
+        //               row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
+        //               row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
+        //               row["CENT_AMT"] = g.Sum(r => r.Field<double>("CENT_AMT"));
+        //               row["STATE_TAX"] = g.Average(r => r.Field<double>("STATE_TAX"));
+        //               row["STATE_AMT"] = g.Sum(r => r.Field<double>("STATE_AMT"));
+        //               return row;
+        //           }).CopyToDataTable();
+
+        //            List<DUpGrid> DUGridlist = new List<DUpGrid>();
+        //            int slno = 0;
+        //            foreach (DataRow oudr in outerDT.Rows)
+        //            {
+        //                DUpGrid dupgrid = new DUpGrid();
+        //                dupgrid.Slno = ++slno;
+        //                dupgrid.BLNO = oudr["INV_NO"].retStr();
+        //                dupgrid.BLDT = oudr["INVDATE"].retDateStr();
+        //                dupgrid.Checked = true;
+        //                DUGridlist.Add(dupgrid);
+        //            }
+        //            VE.DUpGrid = DUGridlist;
+        //        }
+        //        VE.DefaultView = true;
+        //        ModelState.Clear();
+        //        return PartialView("_T_PBillUpload_Bill", VE);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Json("Error occurred. Error details: " + ex.Message);
+        //    }
+        //}
+        public ActionResult ExtractRaymondPurchaseExcel()
         {
             try
             {
                 DataUploadVM VE = new DataUploadVM();
                 if (Request.Files.Count > 0)
                 {
-                    if (!System.IO.Directory.Exists(tmpPath)) { System.IO.Directory.CreateDirectory(tmpPath); }
-                    tmpPath = "C:\\IPSMART\\Temp\\Raymond.dbf";
-                    if (System.IO.File.Exists(tmpPath)) { System.IO.File.Delete(tmpPath); }
-                    GC.Collect();
+                    DataTable dbfdt = new DataTable();
+                    dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
+                    dbfdt.Columns.Add("BLNO", typeof(string));
+                    dbfdt.Columns.Add("BLDT", typeof(string));
+
                     HttpFileCollectionBase files = Request.Files;
                     HttpPostedFileBase file = files[0];
-                    string fname;
-                    if (Request.Browser.Browser.ToUpper() == "IE" || Request.Browser.Browser.ToUpper() == "INTERNETEXPLORER")
+                    using (var package = new ExcelPackage(file.InputStream))
                     {
-                        string[] testfiles = file.FileName.Split(new char[] { '\\' });
-                        fname = testfiles[testfiles.Length - 1];
+                        var currentSheet = package.Workbook.Worksheets;
+                        var workSheet = currentSheet.First();
+                        var noOfCol = workSheet.Dimension.End.Column;
+                        var noOfRow = workSheet.Dimension.End.Row;
+                        int rowNum = 2;
+                        for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+                        {
+                            DataRow dr = dbfdt.NewRow();
+                            dr["EXCELROWNUM"] = rowNum;
+                            string BLNO = workSheet.Cells[rowNum, 10].Value.retStr();
+                            string BLDT = workSheet.Cells[rowNum, 11].Value.retStr().Replace(".", "/");
+                            dr["BLNO"] = BLNO;
+                            dr["BLDT"] = BLDT;
+                            dbfdt.Rows.Add(dr);
+                        }
                     }
-                    else
-                    {
-                        fname = file.FileName;
-                    }
-                    fname = System.IO.Path.Combine(tmpPath, "");
-                    file.SaveAs(fname);
 
-                    System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
-                    obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + tmpPath + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
-                    obdcconn.Open();
-                    System.Data.Odbc.OdbcCommand oCmd = obdcconn.CreateCommand();
-                    oCmd.CommandText = "SELECT * FROM " + tmpPath;
-                    DataTable dbfdt = new DataTable();
-                    dbfdt.Load(oCmd.ExecuteReader());
-                    obdcconn.Close();
-                    if (System.IO.File.Exists(tmpPath)) { System.IO.File.Delete(tmpPath); }
                     var outerDT = dbfdt.AsEnumerable()
-                   .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
+                   .GroupBy(g => new { BLNO = g["BLNO"], BLDT = g["BLDT"] })
                    .Select(g =>
                    {
                        var row = dbfdt.NewRow();
-                       row["CUSTOMERNO"] = g.Key.CUSTOMERNO;
-                       row["INV_NO"] = g.Key.INV_NO;
-                       row["INVDATE"] = g.Key.INVDATE;
-                       row["LR_NO"] = g.Key.LR_NO;
-                       row["LR_DATE"] = g.Key.LR_DATE;
-                       row["CARR_NO"] = g.Key.CARR_NO;
-                       row["CARR_NAME"] = g.Key.CARR_NAME;
-                       row["FREIGHT"] = g.Sum(r => r.Field<double>("FREIGHT"));
-                       row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
-                       row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
-                       row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
-                       row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
-                       row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
-                       row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
-                       row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
-                       row["CENT_AMT"] = g.Sum(r => r.Field<double>("CENT_AMT"));
-                       row["STATE_TAX"] = g.Average(r => r.Field<double>("STATE_TAX"));
-                       row["STATE_AMT"] = g.Sum(r => r.Field<double>("STATE_AMT"));
+                       row["BLNO"] = g.Key.BLNO;
+                       row["BLDT"] = g.Key.BLDT;
                        return row;
                    }).CopyToDataTable();
 
@@ -156,8 +222,8 @@ namespace Improvar.Controllers
                     {
                         DUpGrid dupgrid = new DUpGrid();
                         dupgrid.Slno = ++slno;
-                        dupgrid.BLNO = oudr["INV_NO"].retStr();
-                        dupgrid.BLDT = oudr["INVDATE"].retDateStr();
+                        dupgrid.BLNO = oudr["BLNO"].retStr();
+                        dupgrid.BLDT = oudr["BLDT"].retDateStr();
                         dupgrid.Checked = true;
                         DUGridlist.Add(dupgrid);
                     }
@@ -166,6 +232,7 @@ namespace Improvar.Controllers
                 VE.DefaultView = true;
                 ModelState.Clear();
                 return PartialView("_T_PBillUpload_Bill", VE);
+
             }
             catch (Exception ex)
             {
@@ -312,7 +379,7 @@ namespace Improvar.Controllers
             }
             if (CommVar.Compcd(UNQSNO) == "BNBH")
             {
-                VE = ReadRaymondPurchaseDBF(VE);
+                VE = ReadRaymondPurchaseExcel(VE);
             }
             else if (CommVar.Compcd(UNQSNO) == "LALF")
             {
@@ -324,28 +391,123 @@ namespace Improvar.Controllers
             }
             return View(VE);
         }
-        public DataUploadVM ReadRaymondPurchaseDBF(DataUploadVM VE)
+        public DataUploadVM ReadRaymondPurchaseExcel(DataUploadVM VE)
         {
             List<DUpGrid> DUGridlist = new List<DUpGrid>();
             try
             {
-                //Enable 32 bit application from IIS. to run dbf and ins  32 bit cryastal report 32 bit.
-                string Path = "C:\\IPSMART\\Temp";
-                if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
-                Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
-                if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
-                GC.Collect();
-                Request.Files["filePurchase"].SaveAs(Path);
+                ////Enable 32 bit application from IIS.to run dbf and ins  32 bit cryastal report 32 bit.
+                //string Path = "C:\\IPSMART\\Temp";
+                //if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
+                //Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
+                //if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
+                //GC.Collect();
+                //Request.Files["filePurchase"].SaveAs(Path);
 
-                System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
-                obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + Path + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
-                obdcconn.Open();
-                System.Data.Odbc.OdbcCommand oCmd = obdcconn.CreateCommand();
-                oCmd.CommandText = "SELECT * FROM " + Path;
+                //System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
+                //obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + Path + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
+                //obdcconn.Open();
+                //System.Data.Odbc.OdbcCommand oCmd = obdcconn.CreateCommand();
+                //oCmd.CommandText = "SELECT * FROM " + Path;
+                //DataTable dbfdt = new DataTable();
+                //dbfdt.Load(oCmd.ExecuteReader());
+                //obdcconn.Close();
+                //if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
+
+
                 DataTable dbfdt = new DataTable();
-                dbfdt.Load(oCmd.ExecuteReader());
-                obdcconn.Close();
-                if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
+                dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
+                dbfdt.Columns.Add("CUSTOMERNO", typeof(string));
+                dbfdt.Columns.Add("GSTINPLANT", typeof(string));
+                dbfdt.Columns.Add("INV_NO", typeof(string));
+                dbfdt.Columns.Add("INVDATE", typeof(string));
+                dbfdt.Columns.Add("LR_NO", typeof(string));
+                dbfdt.Columns.Add("LR_DATE", typeof(string));
+                dbfdt.Columns.Add("CARR_NO", typeof(string));
+                dbfdt.Columns.Add("CARR_NAME", typeof(string));
+                dbfdt.Columns.Add("FREIGHT", typeof(double));
+                dbfdt.Columns.Add("INSURANCE", typeof(double));
+                dbfdt.Columns.Add("INV_VALUE", typeof(double));
+                dbfdt.Columns.Add("TAX_AMT", typeof(double));
+                dbfdt.Columns.Add("INTEGR_TAX", typeof(double));
+                dbfdt.Columns.Add("INTEGR_AMT", typeof(double));
+                dbfdt.Columns.Add("CENT_TAX", typeof(double));
+                dbfdt.Columns.Add("CENT_AMT", typeof(double));
+                dbfdt.Columns.Add("STATE_TAX", typeof(double));
+                dbfdt.Columns.Add("STATE_AMT", typeof(double));
+                dbfdt.Columns.Add("MAT_GRP", typeof(string));
+                dbfdt.Columns.Add("MATERIAL", typeof(string));
+                dbfdt.Columns.Add("MAT_DESCRI", typeof(string));
+                dbfdt.Columns.Add("HSN_CODE", typeof(string));
+                dbfdt.Columns.Add("BALENO", typeof(string));
+                dbfdt.Columns.Add("GROSS_QTY", typeof(string));
+                dbfdt.Columns.Add("RATE", typeof(double));
+                dbfdt.Columns.Add("GROSS_AMT", typeof(double));
+                dbfdt.Columns.Add("W_FLG_Q", typeof(string));
+                dbfdt.Columns.Add("R_FLG_Q", typeof(string));
+                dbfdt.Columns.Add("QLTY_DISC", typeof(string));
+                dbfdt.Columns.Add("MKTG_DISC", typeof(string));
+                dbfdt.Columns.Add("GRADATION", typeof(string));
+                dbfdt.Columns.Add("FOC", typeof(string));
+                dbfdt.Columns.Add("NET_AMT", typeof(double));
+                dbfdt.Columns.Add("BATCH", typeof(string));
+                dbfdt.Columns.Add("TCSPER", typeof(double));
+                dbfdt.Columns.Add("TCSAMT", typeof(double));
+
+                HttpFileCollectionBase files = Request.Files;
+                HttpPostedFileBase file = files[0];
+                using (var package = new ExcelPackage(file.InputStream))
+                {
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    var startRow = 2;
+                    for (int rowNum = startRow; rowNum <= noOfRow; rowNum++)
+                    {
+                        var wsRow = workSheet.Cells[rowNum, 1, rowNum, workSheet.Dimension.End.Column];
+                        DataRow row = dbfdt.Rows.Add();
+                        row["EXCELROWNUM"] = rowNum;
+                        row["CUSTOMERNO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("I")].Value.retStr();
+                        row["INV_NO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("J")].Value.retStr();
+                        row["INVDATE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("K")].Value.retStr();
+                        row["LR_NO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("L")].Value.retStr();
+                        row["LR_DATE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("M")].Value.retStr();
+                        row["CARR_NO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("N")].Value.retStr();
+                        row["CARR_NAME"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("O")].Value.retStr();
+                        row["BALENO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("R")].Value.retStr();
+                        row["MAT_GRP"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("U")].Value.retStr();
+                        row["MATERIAL"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("V")].Value.retStr();
+                        row["BATCH"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("W")].Value.retStr();
+                        row["GRADATION"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("Z")].Value.retStr();
+                        row["FOC"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AA")].Value.retStr();
+                        row["GROSS_QTY"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AC")].Value.retStr();
+                        row["W_FLG_Q"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AG")].Value.retStr();
+                        row["R_FLG_Q"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AH")].Value.retStr();
+                        row["RATE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AJ")].Value.retStr();
+                        row["MKTG_DISC"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AL")].Value.retStr();
+                        row["GROSS_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AK")].Value.retStr();
+                        row["QLTY_DISC"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AM")].Value.retStr();
+                        row["INSURANCE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AP")].Value.retStr();
+                        row["INV_VALUE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AU")].Value.retStr();
+                        row["MAT_DESCRI"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("AW")].Value.retStr();
+                        row["HSN_CODE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BL")].Value.retStr();
+                        //row["TAX_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("ab")].Value.retStr();
+                        row["INTEGR_TAX"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BM")].Value.retStr();
+                        row["INTEGR_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BN")].Value.retStr();
+                        row["CENT_TAX"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BO")].Value.retStr();
+                        row["CENT_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BP")].Value.retStr();
+                        row["STATE_TAX"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BQ")].Value.retStr();
+                        row["STATE_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BR")].Value.retStr();
+                        row["GSTINPLANT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BW")].Value.retStr();
+                        row["FREIGHT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BY")].Value.retStr();
+                        row["NET_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BZ")].Value.retStr();
+                        row["TCSPER"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("CB")].Value.retStr();
+                        row["TCSAMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("CC")].Value.retStr();
+                    }
+                }
+
+
 
                 TransactionSaleEntry TMPVE = new TransactionSaleEntry();
                 T_SALEController TSCntlr = new T_SALEController();
@@ -371,13 +533,14 @@ namespace Improvar.Controllers
                    row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
                    row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
                    row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
-                   row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+                   //row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
                    row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
                    row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
                    row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
                    row["CENT_AMT"] = g.Sum(r => r.Field<double>("CENT_AMT"));
                    row["STATE_TAX"] = g.Average(r => r.Field<double>("STATE_TAX"));
                    row["STATE_AMT"] = g.Sum(r => r.Field<double>("STATE_AMT"));
+                   row["TCSAMT"] = g.Sum(r => r.Field<double>("TCSAMT"));
                    return row;
                }).CopyToDataTable();
 
@@ -404,7 +567,7 @@ namespace Improvar.Controllers
                     {//Selected row will upload only
                         continue;
                     }
-                    TTXN.TCSPER = 0;// 0.075;
+                    TTXN.TCSPER = 0.1;// 0.075;
                     dupgrid.BLNO = TTXN.PREFNO;
                     string Ddate = DateTime.ParseExact(oudr["INVDATE"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
                     TTXN.DOCDT = Convert.ToDateTime(Ddate);
@@ -426,12 +589,12 @@ namespace Improvar.Controllers
                     double cgstper = oudr["CENT_AMT"].retDbl();
                     double gstper = igstper == 0 ? (cgstper * 2) : igstper;
                     double blINV_VALUE = oudr["INV_VALUE"].retDbl();
-                    double bltaxable = oudr["TAX_AMT"].retDbl();
+                    double bltaxable = oudr["INTEGR_AMT"].retDbl() + oudr["CENT_AMT"].retDbl() + oudr["STATE_AMT"].retDbl();
                     double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
                     double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
                     var roffamt = (blINV_VALUE - calcultednet).toRound(2);
                     double blTAX_AMT = oudr["TAX_AMT"].retDbl();
-                    double tcsamt = 0;// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
+                    double tcsamt = oudr["tcsamt"].retDbl();// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
                     TTXN.BLAMT = blINV_VALUE + tcsamt;
                     //TTXN.TDSCODE = "X";
                     TTXN.ROYN = "Y";

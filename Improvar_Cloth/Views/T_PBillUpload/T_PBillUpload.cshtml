@@ -10,9 +10,9 @@
         if ("@CommVar.Compcd(Model.UNQSNO)" == "LALF") {
             document.getElementById("filePurchase").accept = ".xlsx";
         }
-        else if ("@CommVar.Compcd(Model.UNQSNO)" == "BNBH") {
+        @*else if ("@CommVar.Compcd(Model.UNQSNO)" == "BNBH") {
             document.getElementById("filePurchase").accept = ".dbf";
-        }
+        }*@
         $('#btnExtractFile').click(function () {
             if (window.FormData !== undefined) {
                 var fileUpload = $("#filePurchase").get(0);
@@ -88,7 +88,7 @@
                 </div>
                 <div class="col-md-8">
                     <div class="editor-field" style="margin-top: 4px;">
-                        <input type="file" id="filePurchase" name="filePurchase" required accept=".dbf" />
+                        <input type="file" id="filePurchase" name="filePurchase" required accept=".xlsx" />
                     </div>
                 </div>
                 <div class="col-md-2">
