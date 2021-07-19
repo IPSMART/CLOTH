@@ -205,7 +205,10 @@ namespace Improvar
                     }
                     else
                     {
-                        body = body.Replace(emailvar[i, 0], emailvar[i, 1]);
+                        if(emailvar[i, 1] != null)
+                        {
+                            body = body.Replace(emailvar[i, 0], emailvar[i, 1]);
+                        }
                     }
                 }
                 body = body.Replace("~", "<br />");

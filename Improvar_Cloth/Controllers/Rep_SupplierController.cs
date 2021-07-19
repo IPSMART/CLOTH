@@ -149,61 +149,7 @@ namespace Improvar.Controllers
                 if (reptype == "PurchasebillwiseStock")
                 {
                     ExcelPackage ExcelPkg = new ExcelPackage();
-                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
-                    //if (reptype == "AdityaBirlaStock")
-                    //{
-                    //    string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
-
-                    //    using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
-                    //    {
-                    //        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    //        Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
-                    //        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
-                    //        Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    //        Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                    //        Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    //        Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                    //        string[] Header = Excel_Header.Split('|');
-                    //        for (int j = 0; j < Header.Length; j++)
-                    //        {
-                    //            wsSheet1.Cells[1, j + 1].Value = Header[j];
-                    //        }
-                    //    }
-                    //    filename = "AdittyaBirlaStock".retRepname();
-                    //    int exlrowno = 2; var rslno = 0;
-
-                    //    DataView dv = new DataView(tbl);
-                    //    string[] COL = new string[] { "barno", "styleno", "lrdt", "baleno", "prefno", "prefdt" };
-                    //    tbl = dv.ToTable(true, COL);
-
-                    //    for (int i = 0; i < tbl.Rows.Count; i++)
-                    //    {
-                    //        double opqnty = 0;
-                    //        if (tbl.Rows[i]["doctag"].retStr() == "OP" || tbl.Rows[i]["doctag"].retStr() == "PB" || tbl.Rows[i]["doctag"].retStr() == "TI" || tbl.Rows[i]["doctag"].retStr() == "SR")
-                    //        {
-                    //            opqnty += tbl.Rows[i]["qnty"].retDbl();
-                    //        }
-                    //        else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "PR" || tbl.Rows[i]["doctag"].retStr() == "TO")
-                    //        {
-                    //            opqnty -= tbl.Rows[i]["qnty"].retDbl();
-                    //        }
-                    //        else
-                    //        {
-                    //            opqnty += tbl.Rows[i]["qnty"].retDbl();
-                    //        }
-                    //        wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
-                    //        wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
-                    //        wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
-                    //        wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retStr();
-                    //        wsSheet1.Cells[exlrowno, 5].Value = opqnty.retDbl();
-                    //        wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["rprate"].retDbl();
-
-                    //        exlrowno++;
-
-                    //    }
-                    //}
-                    //else
-                    //{
+                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");                   
                     DataTable Purtbl = new DataTable();
                     //if (reptype == "AdityaBirlaSale") { return GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
                     //else

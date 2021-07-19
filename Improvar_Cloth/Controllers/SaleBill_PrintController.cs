@@ -967,7 +967,7 @@ namespace Improvar.Controllers
                                 SLMSLNM = string.Join(",", (from DataRow dr in dtslm.Rows where dr["autono"].retStr() == auto1 select dr["slnm"].retStr()).Distinct());
                             }
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -1677,10 +1677,19 @@ namespace Improvar.Controllers
                             string uid = CommVar.UserID();
                             string MOBILE = DB1.USER_APPL.Find(uid).MOBILE;
                             string ldt = rsemailid1.Rows[rsemailid1.Rows.Count - 1]["docdt"].ToString();
+                            sql = "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
+                            sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
+                            sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
+                            sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std,a.phno2std, ";
+                            sql += "a.gstno, a.phno1, a.phno2, a.regemailid ";
+                            sql += "from " + Scmf + ".m_loca a, " + Scmf + ".m_comp b ";
+                            sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
+                            DataTable comptbl = masterHelp.SQLquery(sql);
+                            string compMobile = comptbl.Rows[0]["phno1"].ToString();
+                            string compEmail = comptbl.Rows[0]["regemailid"].ToString();
 
                             reportdocument.SetDataSource(rsemailid1);
                             reportdocument.SetParameterValue("billheading", blhead);
-
                             reportdocument.SetParameterValue("complogo", masterHelp.retCompLogo());
                             reportdocument.SetParameterValue("complogo1", masterHelp.retCompLogo1());
                             reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
@@ -1711,7 +1720,7 @@ namespace Improvar.Controllers
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
 
-                            string[,] emlaryBody = new string[7, 2];
+                            string[,] emlaryBody = new string[10, 2];
                             if (VE.TEXTBOX5 != null)
                             {
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "", "", emlaryBody, attchmail, grpemailid);
@@ -1726,6 +1735,8 @@ namespace Improvar.Controllers
                                 emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
+                                emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
+                                emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy of " + docnm, "Salebill.htm", emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true) sendemailids = sendemailids + rsemailid[z].email.ToString() + ";"; else sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
                             }
@@ -2444,7 +2455,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -3201,11 +3212,24 @@ namespace Improvar.Controllers
                             reportdocument.Close();
                             // email
 
+                            sql = "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
+                            sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
+                            sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
+                            sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std,a.phno2std, ";
+                            sql += "a.gstno, a.phno1, a.phno2, a.regemailid ";
+                            sql += "from " + Scmf + ".m_loca a, " + Scmf + ".m_comp b ";
+                            sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
+                            DataTable comptbl = masterHelp.SQLquery(sql);
+                            string compMobile = comptbl.Rows[0]["phno1"].ToString();
+                            string compEmail = comptbl.Rows[0]["regemailid"].ToString();
+
+
+
                             //System.Net.Mail.Attachment attchmail = new System.Net.Mail.Attachment(path_Save);
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
                             string template = CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Salebill.htm";
-                            string[,] emlaryBody = new string[7, 2];
+                            string[,] emlaryBody = new string[10, 2];
                             if (VE.TEXTBOX5 != null)
                             {
                                 emlaryBody[0, 0] = "{slnm}"; emlaryBody[0, 1] = slnm;
@@ -3215,6 +3239,8 @@ namespace Improvar.Controllers
                                 emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
+                                emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
+                                emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
@@ -3241,6 +3267,8 @@ namespace Improvar.Controllers
                                 emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
+                                emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
+                                emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
                                 //bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", "Salebill.htm", emlaryBody, attchmail, grpemailid);
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
@@ -3942,7 +3970,7 @@ namespace Improvar.Controllers
                             else { negamt = "N"; }
 
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -4424,6 +4452,19 @@ namespace Improvar.Controllers
                         i = ilast;
                     }
                 }
+
+                sql = "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
+                sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
+                sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
+                sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std,a.phno2std, ";
+                sql += "a.gstno, a.phno1, a.phno2, a.regemailid ";
+                sql += "from " + Scmf + ".m_loca a, " + Scmf + ".m_comp b ";
+                sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
+                DataTable comptbl = masterHelp.SQLquery(sql);
+                string compMobile = comptbl.Rows[0]["phno1"].ToString();
+                string compEmail = comptbl.Rows[0]["regemailid"].ToString();
+
+
                 string compaddress; string stremail = "";
                 compaddress = Salesfunc.retCompAddress(gocd, grpemailid);
                 stremail = compaddress.retCompValue("email");
@@ -4535,7 +4576,7 @@ namespace Improvar.Controllers
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
 
-                            string[,] emlaryBody = new string[7, 2];
+                            string[,] emlaryBody = new string[10, 2];
                             if (VE.TEXTBOX5 != null)
                             {
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "", "", emlaryBody, attchmail, grpemailid);
@@ -4550,6 +4591,8 @@ namespace Improvar.Controllers
                                 emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
+                                emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
+                                emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy of " + docnm, "Salebill.htm", emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true) sendemailids = sendemailids + rsemailid[z].email.ToString() + ";"; else sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
                             }
