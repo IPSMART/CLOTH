@@ -533,7 +533,7 @@ namespace Improvar.Controllers
                    row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
                    row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
                    row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
-                   //row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+                 //row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
                    row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
                    row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
                    row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));

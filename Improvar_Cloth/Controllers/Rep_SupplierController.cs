@@ -89,52 +89,54 @@ namespace Improvar.Controllers
                 DataTable tbl = new DataTable();
                 DataTable LOCDT = new DataTable("loccd");
 
-                if (reptype != "PurchasebillwiseStock" || reptype != "AdityaBirlaSale")
+                if (reptype == "AdityaBirlaStock") { return GetAdityaBirlaStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
+                else if (reptype == "AdityaBirlaSale") { return GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
+                if (reptype != "PurchasebillwiseStock")
                 {
                     string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
-                    sql += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
-                    sql += "nvl(rp.rate, 0) rprate, ";
-                    sql += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
-                    sql += " ";
-                    sql += "(select d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
-                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
-                    sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-                    sql += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
-                    sql += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
-                    sql += "group by d.compcd, d.loccd, a.barno, 'OP' ";
-                    sql += "union all ";
-                    sql += "select d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
-                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
-                    sql += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
-                    sql += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
-                    sql += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
-                    sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
-                    sql += "group by d.compcd, d.loccd, a.barno, c.doctag ) a, ";
-                    sql += " ";
-                    sql += "(select barno, effdt, prccd, rate from ( ";
-                    sql += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                    sql += "from " + scm + ".t_batchmst_price a ";
-                    sql += "where a.effdt <= to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b, ";
-                    sql += " ";
-                    sql += "(select barno, effdt, prccd, rate from ( ";
-                    sql += "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                    sql += "from " + scm + ".t_batchmst_price a ";
-                    sql += "where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, ";
-                    sql += " (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                    sql += " from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
-                    sql += " ";
-                    sql += "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, ";
-                    sql += "" + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
-                    sql += "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
-                    sql += "a.barno = b.barno(+) and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and ";
-                    sql += "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) ";
+                    sql += Environment.NewLine + "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
+                    sql += Environment.NewLine + "nvl(rp.rate, 0) rprate, ";
+                    sql += Environment.NewLine + "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
+                    sql += Environment.NewLine + " ";
+                    sql += Environment.NewLine + "(select d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                    sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
+                    sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
+                    sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+                    sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
+                    sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
+                    sql += Environment.NewLine + "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
+                    sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, 'OP' ";
+                    sql += Environment.NewLine + "union all ";
+                    sql += Environment.NewLine + "select d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                    sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
+                    sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
+                    sql += Environment.NewLine + "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+                    sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
+                    sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
+                    sql += Environment.NewLine + "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+                    sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, c.doctag ) a, ";
+                    sql += Environment.NewLine + " ";
+                    sql += Environment.NewLine + "(select barno, effdt, prccd, rate from ( ";
+                    sql += Environment.NewLine + "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a ";
+                    sql += Environment.NewLine + "where a.effdt <= to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b, ";
+                    sql += Environment.NewLine + " ";
+                    sql += Environment.NewLine + "(select barno, effdt, prccd, rate from ( ";
+                    sql += Environment.NewLine + "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a ";
+                    sql += Environment.NewLine + "where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, ";
+                    sql += Environment.NewLine + " (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql += Environment.NewLine + " from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
+                    sql += Environment.NewLine + " ";
+                    sql += Environment.NewLine + "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, ";
+                    sql += Environment.NewLine + "" + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
+                    sql += Environment.NewLine + "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
+                    sql += Environment.NewLine + "a.barno = b.barno(+) and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and ";
+                    sql += Environment.NewLine + "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) " + Environment.NewLine;
                     if (slcd.retStr() != "") sql += "and e.slcd in (" + slcd + ") ";
                     if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
                     if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
-                    sql += "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
+                    sql += Environment.NewLine + "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
                     tbl = MasterHelp.SQLquery(sql);
                     if (tbl.Rows.Count == 0) return Content("no records..");
 
@@ -144,118 +146,125 @@ namespace Improvar.Controllers
 
 
                 string filename = "";
-                if (reptype == "AdityaBirlaStock" || reptype == "PurchasebillwiseStock" || reptype == "AdityaBirlaSale")
+                if (reptype == "PurchasebillwiseStock")
                 {
                     ExcelPackage ExcelPkg = new ExcelPackage();
                     ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
-                    if (reptype == "AdityaBirlaStock")
+                    //if (reptype == "AdityaBirlaStock")
+                    //{
+                    //    string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
+
+                    //    using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
+                    //    {
+                    //        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    //        Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                    //        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                    //        Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //        Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    //        Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    //        Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //        string[] Header = Excel_Header.Split('|');
+                    //        for (int j = 0; j < Header.Length; j++)
+                    //        {
+                    //            wsSheet1.Cells[1, j + 1].Value = Header[j];
+                    //        }
+                    //    }
+                    //    filename = "AdittyaBirlaStock".retRepname();
+                    //    int exlrowno = 2; var rslno = 0;
+
+                    //    DataView dv = new DataView(tbl);
+                    //    string[] COL = new string[] { "barno", "styleno", "lrdt", "baleno", "prefno", "prefdt" };
+                    //    tbl = dv.ToTable(true, COL);
+
+                    //    for (int i = 0; i < tbl.Rows.Count; i++)
+                    //    {
+                    //        double opqnty = 0;
+                    //        if (tbl.Rows[i]["doctag"].retStr() == "OP" || tbl.Rows[i]["doctag"].retStr() == "PB" || tbl.Rows[i]["doctag"].retStr() == "TI" || tbl.Rows[i]["doctag"].retStr() == "SR")
+                    //        {
+                    //            opqnty += tbl.Rows[i]["qnty"].retDbl();
+                    //        }
+                    //        else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "PR" || tbl.Rows[i]["doctag"].retStr() == "TO")
+                    //        {
+                    //            opqnty -= tbl.Rows[i]["qnty"].retDbl();
+                    //        }
+                    //        else
+                    //        {
+                    //            opqnty += tbl.Rows[i]["qnty"].retDbl();
+                    //        }
+                    //        wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
+                    //        wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
+                    //        wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
+                    //        wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retStr();
+                    //        wsSheet1.Cells[exlrowno, 5].Value = opqnty.retDbl();
+                    //        wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["rprate"].retDbl();
+
+                    //        exlrowno++;
+
+                    //    }
+                    //}
+                    //else
+                    //{
+                    DataTable Purtbl = new DataTable();
+                    //if (reptype == "AdityaBirlaSale") { return GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
+                    //else
+
+                    { Purtbl = retPurchaseWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "PurchasebillwiseStock".retRepname(); }
+
+                    if (Purtbl.Rows.Count == 0) return Content("no records..");
+                    string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
+                    using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
                     {
-                        string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
-
-                        using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
+                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                        Rng.Style.Font.Size = 14; Rng.Style.Font.Bold = true;
+                        wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
+                    }
+                    using (ExcelRange Rng = wsSheet1.Cells["A2:Q2"])
+                    {
+                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                        Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
+                        wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
+                    }
+                    using (ExcelRange Rng = wsSheet1.Cells["A3:Q3"])
+                    {
+                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                        Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        string[] Header = Excel_Header.Split('|');
+                        for (int j = 0; j < Header.Length; j++)
                         {
-                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                            Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
-                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
-                            Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                            string[] Header = Excel_Header.Split('|');
-                            for (int j = 0; j < Header.Length; j++)
-                            {
-                                wsSheet1.Cells[1, j + 1].Value = Header[j];
-                            }
-                        }
-                        filename = "AdittyaBirlaStock".retRepname();
-                        int exlrowno = 2; var rslno = 0;
-                        for (int i = 0; i < tbl.Rows.Count; i++)
-                        {
-                            double opqnty = 0;
-                            if (tbl.Rows[i]["doctag"].retStr() == "OP" || tbl.Rows[i]["doctag"].retStr() == "PB" || tbl.Rows[i]["doctag"].retStr() == "TI" || tbl.Rows[i]["doctag"].retStr() == "SR")
-                            {
-                                opqnty += tbl.Rows[i]["qnty"].retDbl();
-                            }
-                            else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "PR" || tbl.Rows[i]["doctag"].retStr() == "TO")
-                            {
-                                opqnty -= tbl.Rows[i]["qnty"].retDbl();
-                            }
-                            else
-                            {
-                                opqnty += tbl.Rows[i]["qnty"].retDbl();
-                            }
-                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
-                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
-                            wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 5].Value = opqnty.retDbl();
-                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["rprate"].retDbl();
-
-                            exlrowno++;
-
+                            wsSheet1.Cells[3, j + 1].Value = Header[j];
                         }
                     }
-                    else
+
+                    int exlrowno = 4;
+                    for (int i = 0; i < Purtbl.Rows.Count; i++)
                     {
-                        DataTable Purtbl = new DataTable();
-                        if (reptype == "AdityaBirlaSale") { return GetSalesfromSupplier(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
-                        else { Purtbl = retPurchaseWiseStock(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); filename = "PurchasebillwiseStock".retRepname(); }
-
-                        if (Purtbl.Rows.Count == 0) return Content("no records..");
-                        string Excel_Header = "TYPE" + "|" + "Date" + "|" + "BARNO" + "|" + "CMNO" + "|" + "Matl Group" + "|" + "Dv" + "|" + "INVOICE" + "|" + "INVDATE" + "|" + "Material" + "|" + "SHADE" + "|" + "Grv" + "|" + "USP" + "|" + "QTY" + "|" + "MRP" + "|" + "Gross Value" + "|" + "Discount" + "|" + "Net Value";
-                        using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
-                        {
-                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
-                            Rng.Style.Font.Size = 14; Rng.Style.Font.Bold = true;
-                            wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
-                        }
-                        using (ExcelRange Rng = wsSheet1.Cells["A2:Q2"])
-                        {
-                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
-                            Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
-                            wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
-                        }
-                        using (ExcelRange Rng = wsSheet1.Cells["A3:Q3"])
-                        {
-                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                            Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
-                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
-                            Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                            Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                            string[] Header = Excel_Header.Split('|');
-                            for (int j = 0; j < Header.Length; j++)
-                            {
-                                wsSheet1.Cells[3, j + 1].Value = Header[j];
-                            }
-                        }
-
-                        int exlrowno = 4;
-                        for (int i = 0; i < Purtbl.Rows.Count; i++)
-                        {
-                            wsSheet1.Cells[exlrowno, 1].Value = "";
-                            wsSheet1.Cells[exlrowno, 2].Value = Purtbl.Rows[i]["docdt"].retDateStr("yyyy", "dd/MM/yyyy");//docdt
-                            wsSheet1.Cells[exlrowno, 3].Value = Purtbl.Rows[i]["barno"].retStr();
-                            wsSheet1.Cells[exlrowno, 4].Value = Purtbl.Rows[i]["docno"].retStr();//docno
-                            wsSheet1.Cells[exlrowno, 5].Value = Purtbl.Rows[i]["itgrpnm"].retStr();
-                            wsSheet1.Cells[exlrowno, 6].Value = Purtbl.Rows[i]["sapcode"].retStr();//sapcode
-                            wsSheet1.Cells[exlrowno, 7].Value = Purtbl.Rows[i]["prefno"].retStr();//prefno
-                            wsSheet1.Cells[exlrowno, 8].Value = Purtbl.Rows[i]["prefdt"].retDateStr("yyyy", "dd/MM/yyyy");//prefdt
-                            wsSheet1.Cells[exlrowno, 9].Value = Purtbl.Rows[i]["styleno"].retStr();
-                            wsSheet1.Cells[exlrowno, 10].Value = Purtbl.Rows[i]["shade"].retStr();//shade
-                            wsSheet1.Cells[exlrowno, 11].Value = Purtbl.Rows[i]["sizecd"].retStr();//sizecd
-                            wsSheet1.Cells[exlrowno, 12].Value = "";
-                            wsSheet1.Cells[exlrowno, 13].Value = Purtbl.Rows[i]["qnty"].retDbl();
-                            wsSheet1.Cells[exlrowno, 14].Value = Purtbl.Rows[i]["rprate"].retDbl();
-                            wsSheet1.Cells[exlrowno, 15].Value = Purtbl.Rows[i]["txblval"].retDbl();
-                            wsSheet1.Cells[exlrowno, 16].Value = Purtbl.Rows[i]["discamt"].retDbl();
-                            wsSheet1.Cells[exlrowno, 17].Value = Purtbl.Rows[i]["txblval"].retDbl() - (Purtbl.Rows[i]["discamt"].retDbl() + Purtbl.Rows[i]["othramt"].retDbl());
-                            exlrowno++;
-                        }
+                        wsSheet1.Cells[exlrowno, 1].Value = "";
+                        wsSheet1.Cells[exlrowno, 2].Value = Purtbl.Rows[i]["docdt"].retDateStr("yyyy", "dd/MM/yyyy");//docdt
+                        wsSheet1.Cells[exlrowno, 3].Value = Purtbl.Rows[i]["barno"].retStr();
+                        wsSheet1.Cells[exlrowno, 4].Value = Purtbl.Rows[i]["docno"].retStr();//docno
+                        wsSheet1.Cells[exlrowno, 5].Value = Purtbl.Rows[i]["itgrpnm"].retStr();
+                        wsSheet1.Cells[exlrowno, 6].Value = Purtbl.Rows[i]["sapcode"].retStr();//sapcode
+                        wsSheet1.Cells[exlrowno, 7].Value = Purtbl.Rows[i]["prefno"].retStr();//prefno
+                        wsSheet1.Cells[exlrowno, 8].Value = Purtbl.Rows[i]["prefdt"].retDateStr("yyyy", "dd/MM/yyyy");//prefdt
+                        wsSheet1.Cells[exlrowno, 9].Value = Purtbl.Rows[i]["styleno"].retStr();
+                        wsSheet1.Cells[exlrowno, 10].Value = Purtbl.Rows[i]["shade"].retStr();//shade
+                        wsSheet1.Cells[exlrowno, 11].Value = Purtbl.Rows[i]["sizecd"].retStr();//sizecd
+                        wsSheet1.Cells[exlrowno, 12].Value = "";
+                        wsSheet1.Cells[exlrowno, 13].Value = Purtbl.Rows[i]["qnty"].retDbl();
+                        wsSheet1.Cells[exlrowno, 14].Value = Purtbl.Rows[i]["rprate"].retDbl();
+                        wsSheet1.Cells[exlrowno, 15].Value = Purtbl.Rows[i]["txblval"].retDbl();
+                        wsSheet1.Cells[exlrowno, 16].Value = Purtbl.Rows[i]["discamt"].retDbl();
+                        wsSheet1.Cells[exlrowno, 17].Value = Purtbl.Rows[i]["txblval"].retDbl() - (Purtbl.Rows[i]["discamt"].retDbl() + Purtbl.Rows[i]["othramt"].retDbl());
+                        exlrowno++;
                     }
+                    // }
                     //for download//
                     Response.Clear();
                     Response.ClearContent();
@@ -1012,7 +1021,127 @@ namespace Improvar.Controllers
 
         }
 
+        public ActionResult GetAdityaBirlaStock(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string sql = "";
+            sql += "select barno,styleno,itgrpnm,uomnm,doctag,rprate,sum(qnty) qnty from ( ";
+            sql += Environment.NewLine + " select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
+            sql += Environment.NewLine + "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
+            sql += Environment.NewLine + "nvl(rp.rate, 0) rprate, ";
+            sql += Environment.NewLine + "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
+            sql += Environment.NewLine + " ";
+            sql += Environment.NewLine + "(select d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+            sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
+            sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
+            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+            sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
+            sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
+            sql += Environment.NewLine + "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
+            sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, 'OP' ";
+            sql += Environment.NewLine + "union all ";
+            sql += Environment.NewLine + "select d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+            sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
+            sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
+            sql += Environment.NewLine + "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
+            sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
+            sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
+            sql += Environment.NewLine + "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+            sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, c.doctag ) a, ";
+            sql += Environment.NewLine + " ";
+            sql += Environment.NewLine + "(select barno, effdt, prccd, rate from ( ";
+            sql += Environment.NewLine + "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a ";
+            sql += Environment.NewLine + "where a.effdt <= to_date('" + fdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) b, ";
+            sql += Environment.NewLine + " ";
+            sql += Environment.NewLine + "(select barno, effdt, prccd, rate from ( ";
+            sql += Environment.NewLine + "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a ";
+            sql += Environment.NewLine + "where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'CP' ) where rn = 1) cp, ";
+            sql += Environment.NewLine + " (select barno, effdt, prccd, rate from (select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += Environment.NewLine + " from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
+            sql += Environment.NewLine + " ";
+            sql += Environment.NewLine + "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, ";
+            sql += Environment.NewLine + "" + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
+            //sql += Environment.NewLine + "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
+            sql += Environment.NewLine + "where a.barno = e.barno and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
+            sql += Environment.NewLine + "a.barno = b.barno(+) and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and ";
+            sql += Environment.NewLine + "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) " + Environment.NewLine;
+            if (slcd.retStr() != "") sql += "and e.slcd in (" + slcd + ") ";
+            if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
+            if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
+            sql += Environment.NewLine + " ) a ";
+            sql += Environment.NewLine + "group by barno, styleno, itgrpnm, uomnm, doctag, rprate ";
+            sql += Environment.NewLine + "order by barno,styleno,itgrpnm,uomnm,doctag,rprate ";
+
+            var tbl = MasterHelp.SQLquery(sql);
+            if (tbl.Rows.Count == 0) return Content("no records..");
 
 
+            string filename = "AdittyaBirlaStock".retRepname();
+            ExcelPackage ExcelPkg = new ExcelPackage();
+            ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
+
+            string Excel_Header = "EanNumber" + "|" + "StyleCode" + "|" + "BrandName" + "|" + "UOM" + "|" + "StockQty" + "|" + "MRP";
+
+            using (ExcelRange Rng = wsSheet1.Cells["A1:F1"])
+            {
+                Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                string[] Header = Excel_Header.Split('|');
+                for (int j = 0; j < Header.Length; j++)
+                {
+                    wsSheet1.Cells[1, j + 1].Value = Header[j];
+                }
+            }
+            int exlrowno = 2; var rslno = 0;
+
+            //DataView dv = new DataView(tbl);
+            //string[] COL = new string[] { "barno", "styleno", "lrdt", "baleno", "prefno", "prefdt" };
+            //tbl = dv.ToTable(true, COL);
+
+            for (int i = 0; i < tbl.Rows.Count; i++)
+            {
+                double opqnty = 0;
+                //if (tbl.Rows[i]["doctag"].retStr() == "OP" || tbl.Rows[i]["doctag"].retStr() == "PB" || tbl.Rows[i]["doctag"].retStr() == "TI" || tbl.Rows[i]["doctag"].retStr() == "SR")
+                //{
+                //    opqnty += tbl.Rows[i]["qnty"].retDbl();
+                //}
+                //else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "PR" || tbl.Rows[i]["doctag"].retStr() == "TO")
+                //{
+                //    opqnty -= tbl.Rows[i]["qnty"].retDbl();
+                //}
+                //else
+                //{
+                //    opqnty += tbl.Rows[i]["qnty"].retDbl();
+                //}
+                wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["barno"].retStr();
+                wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["styleno"].retStr();
+                wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itgrpnm"].retStr();
+                wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["uomnm"].retStr();
+                wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["qnty"].retDbl();// opqnty.retDbl();
+                wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["rprate"].retDbl();
+
+                exlrowno++;
+
+            }//for
+            //for download//
+            Response.Clear();
+            Response.ClearContent();
+            Response.Buffer = true;
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // string filename = "AdittyaBirlaSales".retRepname();
+            Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+            Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+            Response.Flush();
+            Response.Close();
+            Response.End();
+            return Content("");
+        }
     }
 }
