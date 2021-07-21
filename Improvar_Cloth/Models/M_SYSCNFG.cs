@@ -108,6 +108,8 @@ namespace Improvar.Models
         public string PRICEINCODECOST { get; set; }
         [StringLength(5)]
         public string CMROFFTYPE { get; set; }
+        [StringLength(8)]
+        public string SHORTAGE_GLCD { get; set; }
 
     }
 }

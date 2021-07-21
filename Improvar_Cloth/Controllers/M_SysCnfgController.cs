@@ -331,6 +331,7 @@ namespace Improvar.Controllers
                     string SALDEBGLCD = sl.SALDEBGLCD.retStr();
                     string PURDEBGLCD = sl.PURDEBGLCD.retStr();
                     string RETDEBSLCD = sl.RETDEBSLCD.retStr();
+                    string SHORTAGE_GLCD = sl.SHORTAGE_GLCD.retStr();
                     if (class1cd != "")
                     {
                         var classnm = (from a in DBF.M_CLASS1 where a.CLASS1CD == class1cd select new { a.CLASS1NM }).FirstOrDefault();
@@ -350,6 +351,11 @@ namespace Improvar.Controllers
                     {
                         var salretglnm = (from a in DBF.M_SUBLEG where a.SLCD == RETDEBSLCD select new { a.SLNM }).FirstOrDefault();
                         VE.RETDEBSLNM = salretglnm.SLNM;
+                    }
+                    if (SHORTAGE_GLCD != "")
+                    {
+                        var shortglnm = (from a in DBF.M_GENLEG where a.GLCD == SHORTAGE_GLCD select new { a.GLNM }).FirstOrDefault();
+                        VE.SHORTAGE_GLNM = shortglnm.GLNM;
                     }
                     if (sl.RTDEBCD != null)
                     { var Party = DBF.M_RETDEB.Find(sl.RTDEBCD); if (Party != null) { VE.RTDBNM = Party.RTDEBNM; } }
@@ -622,6 +628,7 @@ namespace Improvar.Controllers
                         MSYSCNFG.PRICEINCODECOST = VE.M_SYSCNFG.PRICEINCODECOST;
                         MSYSCNFG.RTDEBCD = VE.M_SYSCNFG.RTDEBCD;
                         MSYSCNFG.DESIGNPATH = VE.M_SYSCNFG.DESIGNPATH;
+                        MSYSCNFG.SHORTAGE_GLCD = VE.M_SYSCNFG.SHORTAGE_GLCD;
                         if (VE.INC_RATE == true) { MSYSCNFG.INC_RATE = "Y"; } else { MSYSCNFG.INC_RATE = "N"; }
                         if (VE.MNTNSIZE == true) { MSYSCNFG.MNTNSIZE = "Y"; } else { MSYSCNFG.MNTNSIZE = "N"; }
                         if (VE.MNTNCOLOR == true) { MSYSCNFG.MNTNCOLOR = "Y"; } else { MSYSCNFG.MNTNCOLOR = "N"; }
