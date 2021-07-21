@@ -36,7 +36,7 @@ function GetBarnoDetails(id, HelpFrom) {
         if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
         if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
         if ($("#GOCD").val() == "") { $("#GOCD").val(""); msgInfo("Godown not available.Please Select / Enter Godown"); message_value = "GOCD"; return false; }
-        if (MENU_PARA == "PJBL") {
+        if (MENU_PARA == "PJBL" || MENU_PARA == "PJBR") {
             if ($("#JOBHSNCODE").val() == "") {
                 msgInfo("Hsn code not available for this job  !!");
                 $("#STYLENO").val("");
@@ -97,7 +97,7 @@ function GetBarnoDetails(id, HelpFrom) {
                                 $("#PRCCD").attr("readonly", "readonly");
                                 $('#PRCCD_HELP').hide();
                             }
-                            if (MENU_PARA == "PJBL" && (!$('#JOBCD').is('[readonly]'))) {
+                            if ((MENU_PARA == "PJBL" || MENU_PARA == "PJBR") && (!$('#JOBCD').is('[readonly]'))) {
                                 $("#JOBCD").attr("readonly", "readonly");
                                 $('#JOBCD_HELP').hide();
                             }
@@ -292,7 +292,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#PRODGRPGSTPER").val(PRODGRPGSTPER);
         $("#DISCRATE").val(returncolvalue(str, "DISCRATE"));
         //$("#DISCTYPE").val(returncolvalue(str, "DISCTYPE"));
-        if (MENU_PARA == "PJBL") {
+        if (MENU_PARA == "PJBL" || MENU_PARA == "PJBR") {
             $("#HSNCODE").val($("#JOBHSNCODE").val());
         }
         else {
@@ -317,7 +317,7 @@ function FillBarcodeArea(str, Table, i) {
             $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
         }
         $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
-        if (MENU_PARA == "PJBL") {
+        if (MENU_PARA == "PJBL" || MENU_PARA == "PJBR") {
             $("#GLCD").val($("#JOBEXPGLCD").val());
         }
         else {
@@ -435,7 +435,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#UOM").val($(FieldidStarting + "UOM_" + i).val());
         $("#GLCD").val($(FieldidStarting + "GLCD_" + i).val());
 
-        if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+        if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
             $("#AGDOCNO").val($(FieldidStarting + "AGDOCNO_" + i).val());
             $("#AGDOCDT").val($(FieldidStarting + "AGDOCDT_" + i).val());
         }
@@ -612,7 +612,7 @@ function UpdateBarCodeRow() {
                 countmatchslno = 0;
                 for (j = 0; j <= GridRowMain - 1; j++) {
                     var flag = true;
-                    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
                         if (retStr($("#AGDOCNO").val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#AGDOCDT").val()) != retStr($("#B_AGDOCDT_" + j).val())) {
                             flag = false;
                         }
@@ -801,7 +801,7 @@ function UpdateBarCodeRow() {
                 RateUpdate(j, '#B_');
 
             }
-            if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+            if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
                 $("#B_AGDOCNO_" + j).val($("#AGDOCNO").val());
                 $("#B_AGDOCDT_" + j).val($("#AGDOCDT").val());
             }
@@ -898,7 +898,7 @@ function ClearBarcodeArea(TAG) {
         }
         //}
     }
-    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+    if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
         ClearAllTextBoxes("AGDOCNO,AGDOCDT");
     }
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && MNTNLISTPRICE == "Y") {
@@ -1100,7 +1100,7 @@ function UpdateBarCodeRow_FrmDet(i) {
             $("#B_ITREM_" + j).val(ITREM);
             $("#B_GSTPER_" + j).val(GSTPER);
             $("#B_HSNCODE_" + j).val($("#D_HSNCODE_" + i).val());
-            if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+            if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
                 $("#B_AGDOCNO_" + j).val($("#D_AGDOCNO_" + i).val());
                 $("#B_AGDOCDT_" + j).val($("#D_AGDOCDT_" + i).val());
             }
@@ -2236,7 +2236,7 @@ function AddBarCodeGrid() {
                 countmatchslno = 0;
                 for (j = 0; j <= GridRowMain - 1; j++) {
                     var flag = true;
-                    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
                         if (retStr(AGDOCNO) != retStr($("#B_AGDOCNO_" + j).val()) || retStr(AGDOCDT) != retStr($("#B_AGDOCDT_" + j).val())) {
                             flag = false;
                         }
@@ -2397,7 +2397,7 @@ function AddBarCodeGrid() {
         tr += '</select>';
         tr += ' </td>';
     }
-    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+    if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
         tr += ' <td class="" title="' + AGDOCNO + '">';
         tr += '  <input class=" atextBoxFor " id="B_AGDOCNO_' + rowindex + '" maxlength="16" name="TBATCHDTL[' + rowindex + '].AGDOCNO" type="text" value="' + AGDOCNO + '">';
         tr += '  </td>';
@@ -3758,7 +3758,7 @@ function Sale_GetTTXNDTLDetails() {
     if (MENU_PARA == "PB" || MENU_PARA == "PR") {
         Partycaption = "Supplier";
     }
-    else if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPOS") {
+    else if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPOS" || MENU_PARA == "PJBR") {
         Partycaption = "Buyer";
     }
     else {

@@ -60,6 +60,8 @@
             ViewBag.Title = "Return to Party w/o Job"; ViewBag.Partycaption = "Party"; break;
         case "PJBL":
             ViewBag.Title = "Job Bill raised to Party"; ViewBag.Partycaption = "Party"; break;
+        case "PJBR":
+            ViewBag.Title = "Job Bill Return to Party"; ViewBag.Partycaption = "Party"; break;
         case "SBPOS":
             ViewBag.Title = "Cash Sales"; ViewBag.Partycaption = "Buyer"; break;
         default: ViewBag.Title = ""; ViewBag.Partycaption = "Party"; break;
@@ -207,7 +209,7 @@
         }
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter @ViewBag.Partycaption", "SLCD")) { return false; }
-        if ("@Model.MENU_PARA" == "PJBL") {
+        if ("@Model.MENU_PARA" == "PJBL" || "@Model.MENU_PARA" == "PJBR") {
             if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
         }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
@@ -291,7 +293,7 @@
             if (GridRow_bar != 0) {
                 for (var i = 0; i <= GridRow_bar - 1; i++) {
                     if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
-                        if ("@Model.MENU_PARA" == "PJBL") {
+                        if ("@Model.MENU_PARA" == "PJBL" || "@Model.MENU_PARA" == "PJBR") {
                             if ($("#B_FREESTK_" + i).val() != "Y") {
                                 rateblank = true;
                             }
@@ -485,7 +487,7 @@
             $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#SHIPDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
-            if ("@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "PR") {
+            if ("@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "PR" || "@Model.MENU_PARA" == "PJBR") {
                 $("#AGDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
                 $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
                 $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
@@ -916,8 +918,8 @@
                         }
                     </div>
                 }
-                @if (Model.MENU_PARA == "PJBL")
-                    {
+                @if (Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR")
+                {
                     <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -1593,12 +1595,12 @@
                                         }
                                     }
 
-                                    if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                    if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PJBR")
                                     {
                                         <div class="col-lg-9" style="border:groove 1px;">
                                             <div class="col-md-1" style="width:auto;">
                                                 <div class="editor-label" style="margin-top: 6px;">
-                                                    @if (Model.MENU_PARA == "SR")
+                                                    @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PJBR")
                                                     {
                                                         @Html.Label("", "Doc No.")
                                                     }
@@ -2017,7 +2019,7 @@
                                             <div class="col-md-1">
                                                 <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                     <span class="has-float-label">
-                                                        @if (Model.MENU_PARA == "PJBL")
+                                                        @if (Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR")
                                                         {
                                                             @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 8, @title = "Hsncode", @placeholder = "Hsncode", @readonly = "readonly", @TabIndex = -1 } })
                                                         }
@@ -2039,7 +2041,7 @@
                                                 @Html.HiddenFor(model => model.ALL_GSTPER, new { id = "ALL_GSTPER" })
                                                 @Html.HiddenFor(model => model.PRODGRPGSTPER, new { id = "PRODGRPGSTPER" })
                                             </div>
-                                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PJBR")
                                             {
                                                 <div class="col-md-6">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
@@ -2240,8 +2242,8 @@
                                 <div class="col-md-3" style="width:auto;">
                                 </div>
                             </div>
-                            @if (Model.MENU_PARA == "PJBL" && Model.DefaultAction != "V")
-                    {
+                            @if ((Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR") && Model.DefaultAction != "V")
+                            {
                                 <div class="row">
                                     <div class="col-lg-11" style="width:auto;">
                                         <div>

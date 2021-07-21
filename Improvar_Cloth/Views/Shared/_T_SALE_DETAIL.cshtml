@@ -52,7 +52,7 @@
                                     {
                                         <th class="" style="width: 55px;">Return</th>
                                     }
-                                    @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                    @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PJBR")
                                     {
                                         <th class="" style="width:150px;">Against Doc No.</th>
                                         <th class="" style="width:91px;">Against Doc Date</th>
@@ -211,7 +211,7 @@
                                                     @Html.DropDownListFor(model => model.TTXNDTL[i].FREESTK, new SelectList(Model.RETURN_TYPE, "Value", "Text", Model.TTXNDTL[i].FREESTK), new { @class = "atextBoxFor select_3d ", id = "D_FREESTK_" + i, @onchange = "RateUpdate(" + i + ",'#D_');" })
                                                 </td>
                                             }
-                                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PJBR")
                                             {
                                                 <td class="">
                                                     @Html.TextBoxFor(model => Model.TTXNDTL[i].AGDOCNO, new { id = "D_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" })
@@ -293,7 +293,7 @@
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
                                                 </td>
                                             }
-                                            else if (Model.MENU_PARA == "PJBL" && Model.TTXNDTL[i].FREESTK == "Y")
+                                            else if ((Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR" )&& Model.TTXNDTL[i].FREESTK == "Y")
                                             {
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @readonly = "readonly", @onchange = "RateUpdate(" + i + ",'#D_');" } })
@@ -395,7 +395,7 @@
                                             }
 
                                             <td class="PJBLDiv">
-                                                @if (Model.MENU_PARA == "PJBL")
+                                                @if (Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR")
                                                 {
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                                 }
@@ -446,7 +446,7 @@
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     }
-                                    @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                    @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PJBR")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
