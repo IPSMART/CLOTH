@@ -4081,7 +4081,7 @@ namespace Improvar.Controllers
                         case "PJBL":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "PJBR":
-                            stkdrcr = "D"; trcd = "SB"; strrem = "Sale" + strqty; break;
+                            stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SCN":
                             stkdrcr = "N"; dr = "C"; cr = "D"; blactpost = true; blgstpost = true; break;
                         case "SDN":

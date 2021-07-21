@@ -87,6 +87,8 @@ namespace Improvar.Controllers
                             ViewBag.Title = "Return to Party w/o Job"; ViewBag.formname = "Return to Party w/o Job"; break;
                         case "PJBL":
                             ViewBag.Title = "Job Bill raised to Party"; ViewBag.formname = "Job Bill raised to Party"; break;
+                        case "PJBR":
+                            ViewBag.Title = "Job Bill Return to Party"; ViewBag.formname = "Job Bill Return to Party"; break;
                         case "SBPOS":
                             ViewBag.Title = "Cash Sales"; ViewBag.formname = "Cash Sales"; ; break;
                         default: ViewBag.Title = "Doc Print"; ViewBag.formname = "Doc Print"; break;
@@ -94,7 +96,7 @@ namespace Improvar.Controllers
                     string reptype = "SALEBILL";
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
-                    if (VE.MENU_PARA == "PJBL") reptype = "PJBILL";
+                    if (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR") reptype = "PJBILL";
                     if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT") reptype = "ALTBILL";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
@@ -2245,6 +2247,8 @@ namespace Improvar.Controllers
                         blhead = "OPENING STOCK"; break;
                     case "JB":
                         blhead = "TAX INVOICE"; break;
+                    case "JQ":
+                        blhead = "CREDIT NOTE"; break;
                     default: blhead = ""; break;
                 }
 
