@@ -110,6 +110,8 @@ namespace Improvar.Models
         public string CMROFFTYPE { get; set; }
         [StringLength(8)]
         public string SHORTAGE_GLCD { get; set; }
+        [StringLength(1)]
+        public string CMCASHRECDAUTO { get; set; }
 
     }
 }

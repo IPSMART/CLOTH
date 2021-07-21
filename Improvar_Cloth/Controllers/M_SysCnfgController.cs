@@ -174,7 +174,9 @@ namespace Improvar.Controllers
                                                i.RPPRICEGEN,
                                                j.INACTIVE_TAG,
                                                i.INSPOLDESC,
-                                               i.CMROFFTYPE
+                                               i.CMROFFTYPE,
+                                               i.CMCASHRECDAUTO,
+                                               i.SHORTAGE_GLCD
                                            }).OrderByDescending(a => a.M_AUTONO).FirstOrDefault();
                             if (chkdata != null)
                             {
@@ -194,6 +196,7 @@ namespace Improvar.Controllers
                                 msyscnfg.RTDEBCD = chkdata.RTDEBCD;
                                 msyscnfg.DESIGNPATH = chkdata.DESIGNPATH;
                                 msyscnfg.INSPOLDESC = chkdata.INSPOLDESC;
+                                msyscnfg.SHORTAGE_GLCD = chkdata.SHORTAGE_GLCD;
                                 if (msyscnfg.CLASS1CD != null)
                                 {
                                     var classnm = (from a in DBF.M_CLASS1 where a.CLASS1CD == msyscnfg.CLASS1CD select new { a.CLASS1NM }).FirstOrDefault();
@@ -231,6 +234,7 @@ namespace Improvar.Controllers
                                 if (chkdata.MNTNPCSTYPE == "Y") { VE.MNTNPCSTYPE = true; } else { VE.MNTNPCSTYPE = false; }
                                 if (chkdata.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
                                 if (chkdata.COMMONUNIQBAR == "E") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
+                                
                                 if (chkdata.WPPRICEGEN != null)
                                 {
                                     VE.WPPRICEGENCD = chkdata.WPPRICEGEN.Substring(0, 2);
@@ -374,6 +378,7 @@ namespace Improvar.Controllers
                     if (sl.MNTNPCSTYPE == "Y") { VE.MNTNPCSTYPE = true; } else { VE.MNTNPCSTYPE = false; }
                     if (sl.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
                     if (sl.COMMONUNIQBAR == "E") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
+                    if (sl.CMCASHRECDAUTO == "Y") { VE.CMCASHRECDAUTO = true; } else { VE.CMCASHRECDAUTO = false; }
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
@@ -644,7 +649,7 @@ namespace Improvar.Controllers
                         if (VE.MNTNPCSTYPE == true) { MSYSCNFG.MNTNPCSTYPE = "Y"; } else { MSYSCNFG.MNTNPCSTYPE = "N"; }
                         if (VE.MNTNBARNO == true) { MSYSCNFG.MNTNBARNO = "Y"; } else { MSYSCNFG.MNTNBARNO = "N"; }
                         if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "E"; } else { MSYSCNFG.MNTNBARNO = "C"; }
-
+                         if (VE.CMCASHRECDAUTO == true) { MSYSCNFG.CMCASHRECDAUTO = "Y"; } else { MSYSCNFG.CMCASHRECDAUTO = "N"; }
                         if (VE.DefaultAction == "A")
                         {
                             M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
