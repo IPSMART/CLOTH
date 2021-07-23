@@ -1118,14 +1118,14 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        if (code_data[1] == "")
-                        {
-                            return Content("Please Select Agent !!");
-                        }
-                        else
-                        {
+                        //if (code_data[1] == "")
+                        //{
+                        //    return Content("Please Select Agent !!");
+                        //}
+                        //else
+                        //{
                             Code = code_data[0];
-                        }
+                        //}
                     }
 
 
