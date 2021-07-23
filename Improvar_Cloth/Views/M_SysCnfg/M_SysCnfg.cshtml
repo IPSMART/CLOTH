@@ -211,6 +211,7 @@
 
     }
 </script>
+<script></script>
 
 @using (Html.BeginForm())
 {
@@ -587,6 +588,25 @@
                                         </div>
                                     </div>
                                 </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-field" style="margin-top: 4px;">
+                                        @Html.Label("", "Shortage ledger")
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_SYSCNFG.SHORTAGE_GLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SHORTAGE_GLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Shortage ledger Details','SHORTAGE_GLCD','SHORTAGE_GLCD=GLCD=1/SHORTAGE_GLNM=GLNM=0','GLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Shortage ledger Details','SHORTAGE_GLCD','SHORTAGE_GLCD=GLCD=1/SHORTAGE_GLNM=GLNM=0','GLCDlinkcd');", @placeholder = "SHORTAGE_GLCD", maxlength = 8 } })
+                                        <img src="~/Image/search.png" id="help_SHORTAGEGLCD" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Shortage ledger Details','SHORTAGE_GLCD','SHORTAGE_GLCD=GLCD=1/SHORTAGE_GLNM=GLNM=0','GLCDlinkcd')" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.SHORTAGE_GLNM, new { htmlAttributes = new { @class = "form-control", id = "SHORTAGE_GLNM", @placeholder = "Shortage ledger Name", maxlength = 45, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
                                 @*<div class="row">
                 <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
@@ -774,6 +794,10 @@
                                 <tr>
                                     <td style="border:1px groove;">Maintain Uniq Bar No.</td>
                                     <td style="border:1px groove;">@Html.CheckBoxFor(model => model.COMMONUIQBAR, new { Style = "width:18px;height:18px;" })</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px groove;">Auto Cash Received</td>
+                                    <td style="border:1px groove;">@Html.CheckBoxFor(model => model.CMCASHRECDAUTO, new { Style = "width:18px;height:18px;" })</td>
                                 </tr>
                             </table>
                         </div>
