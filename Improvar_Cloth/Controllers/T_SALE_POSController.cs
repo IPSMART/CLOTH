@@ -17,7 +17,7 @@ namespace Improvar.Controllers
         // GET: T_SALE_POS_POS
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
-        EmailControl EmailControl = new EmailControl();
+        EmailControl EmailControl = new EmailControl(); DropDownHelp dropDownHelp = new DropDownHelp();
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_SALE_POS
@@ -49,7 +49,7 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-                    VE.BL_TYPE = masterHelp.BL_TYPE();
+                    VE.BL_TYPE = dropDownHelp.DropDownBLTYPE();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     //VE.DISC_TYPE = masterHelp.DISC_TYPE();
 
@@ -3848,7 +3848,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3863,7 +3863,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

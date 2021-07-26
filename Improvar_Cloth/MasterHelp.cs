@@ -2129,17 +2129,7 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
-        public List<BL_TYPE> BL_TYPE()
-        {
-            string scm = CommVar.CurSchema(UNQSNO);
-            string sql = "";
-            sql += "select BLTYPE from " + scm + ".M_BLTYPE ";
-            DataTable dt = SQLquery(sql);
-            List<BL_TYPE> BL_TYPE_list = new List<BL_TYPE>();
-            BL_TYPE_list = (from DataRow dr in dt.Rows
-                            select new BL_TYPE() { Text = dr["BLTYPE"].retStr(), Value = dr["BLTYPE"].retStr() }).OrderBy(s => s.Text).Distinct().ToList();
-            return BL_TYPE_list;
-        }
+     
         public List<DropDown_list_StkType> STK_TYPE()
         {
             string scm = CommVar.CurSchema(UNQSNO);

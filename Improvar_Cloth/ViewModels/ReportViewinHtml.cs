@@ -82,6 +82,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_RTCD> DropDown_list_RTCD { get; set; }
         public string SubLeg_Grp { get; set; }
         public string Agslnm { get; set; }
+        public string BlType { get; set; }
         public string Brandnm { get; set; }
         public string Itnm { get; set; }
         public string Slmslnm { get; set; }

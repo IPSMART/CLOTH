@@ -65,8 +65,8 @@ namespace Improvar
         public List<DropDown_list_AGSLCD> GetAgSlcdforSelection()
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
 
             string[] linkcode = { "A" };
             List<DropDown_list_AGSLCD> sllist = new List<DropDown_list_AGSLCD>();
@@ -87,8 +87,8 @@ namespace Improvar
         public List<DropDown_list_SLMSLCD> GetSlmSlcdforSelection()
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
 
             string[] linkcode = { "M" };
             List<DropDown_list_SLMSLCD> sllist = new List<DropDown_list_SLMSLCD>();
@@ -109,8 +109,8 @@ namespace Improvar
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<DropDown_list_EMPCD> GetEmpcdforSelection()
         {
-            ImprovarDB DBP = new ImprovarDB(Cn.GetConnectionString(),CommVar.PaySchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            ImprovarDB DBP = new ImprovarDB(Cn.GetConnectionString(), CommVar.PaySchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
 
             List<DropDown_list_EMPCD> sllist = new List<DropDown_list_EMPCD>();
             sllist = (from a in DBP.M_EMPMAS
@@ -124,8 +124,8 @@ namespace Improvar
         public List<DropDown_list_SLCD> GetSlcdforSelection(string linkcd = "")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (linkcd == "ALL" || linkcd == "")
             {
                 linkcd = string.Join(",", (from a in DBF.M_SUBLEG_LINK select a.LINKCD).Distinct().ToList());
@@ -153,8 +153,8 @@ namespace Improvar
 
         public List<DropDown_list_BRAND> GetBrandcddforSelection()
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
 
             List<DropDown_list_BRAND> sllist = new List<DropDown_list_BRAND>();
             sllist = (from a in DB.M_BRAND
@@ -167,8 +167,8 @@ namespace Improvar
         }
         public List<DropDown_list_GODOWN> GetGocdforSelection()
         {
-            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(),  CommVar.FinSchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
 
             List<DropDown_list_GODOWN> sllist = new List<DropDown_list_GODOWN>();
             sllist = (from a in DBF.M_GODOWN
@@ -181,8 +181,8 @@ namespace Improvar
         }
         public List<DropDown_list_TXN> GetTxnforSelection(string doctype, string hdrtbl)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO), scm =  CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string sql = "";
             if (doctype.IndexOf("'") <= 0) doctype = "'" + doctype + "'";
 
@@ -210,7 +210,7 @@ namespace Improvar
         public List<DropDown_list_DOCCD> GetDocCdforSelection(string doctype = "")
         {
             List<DropDown_list_DOCCD> sllist = new List<DropDown_list_DOCCD>();
-            string sql = "", scm =  CommVar.CurSchema(UNQSNO);
+            string sql = "", scm = CommVar.CurSchema(UNQSNO);
 
             sql += "select a.doccd, a.docnm, b.dname ";
             sql += "from " + scm + ".m_doctype a,  " + scm + ".m_dtype b where a.doctype=b.dcd(+) ";
@@ -221,7 +221,7 @@ namespace Improvar
             sllist = (from DataRow dr in tbl.Rows
                       select new DropDown_list_DOCCD()
                       {
-                          text = dr["docnm"].ToString() + (dr["dname"]==null?"":"["+dr["dname"].ToString()+"]"),
+                          text = dr["docnm"].ToString() + (dr["dname"] == null ? "" : "[" + dr["dname"].ToString() + "]"),
                           value = dr["doccd"].ToString(),
                       }).ToList();
             return sllist;
@@ -268,13 +268,14 @@ namespace Improvar
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             List<DropDown_list_ITEM> sllist = new List<DropDown_list_ITEM>();
-            string sql = "select (STYLENO || ITNM)ITSTYLE,ITCD from "+CommVar.CurSchema(UNQSNO)+ ".M_SITEM ";
+            string sql = "select (STYLENO || ITNM)ITSTYLE,ITCD from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM ";
             DataTable dt = MasterHelp.SQLquery(sql);
-            sllist = (from DataRow dr in dt.Rows select new DropDown_list_ITEM()
-            {
-                text = dr["ITSTYLE"].retStr(),
-                value = dr["ITCD"].retStr()
-            }).OrderBy(A => A.text).ToList();
+            sllist = (from DataRow dr in dt.Rows
+                      select new DropDown_list_ITEM()
+                      {
+                          text = dr["ITSTYLE"].retStr(),
+                          value = dr["ITCD"].retStr()
+                      }).OrderBy(A => A.text).ToList();
             return sllist;
         }
         public List<DropDown_list_ITGRP> GetItgrpcdforSelection(string itgrptype = "")
@@ -308,13 +309,13 @@ namespace Improvar
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var LineList = (from c in DB.M_JOBMST
-                         join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
-                         where i.INACTIVE_TAG == "N"
-                         select new DropDown_list_JOBCD
-                         {
-                             value = c.JOBCD,
-                             text = c.JOBNM
-                         }).ToList();
+                            join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                            where i.INACTIVE_TAG == "N"
+                            select new DropDown_list_JOBCD
+                            {
+                                value = c.JOBCD,
+                                text = c.JOBNM
+                            }).ToList();
             return LineList;
         }
         public List<DropDown_list_RTCD> GetRtDebCdforSelection()
@@ -344,6 +345,16 @@ namespace Improvar
             }
             return sllist;
         }
-
+        public List<DropDown_list_BLTYPE> DropDownBLTYPE()
+        {
+            string scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            sql += "select BLTYPE from " + scm + ".M_BLTYPE ";
+            DataTable dt = MasterHelp.SQLquery(sql);
+            List<DropDown_list_BLTYPE> BL_TYPE_list = new List<DropDown_list_BLTYPE>();
+            BL_TYPE_list = (from DataRow dr in dt.Rows
+                            select new DropDown_list_BLTYPE() { Text = dr["BLTYPE"].retStr(), Value = dr["BLTYPE"].retStr() }).OrderBy(s => s.Text).Distinct().ToList();
+            return BL_TYPE_list;
+        }
     }
 }

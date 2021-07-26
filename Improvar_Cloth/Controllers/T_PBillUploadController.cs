@@ -507,8 +507,6 @@ namespace Improvar.Controllers
                     }
                 }
 
-
-
                 TransactionSaleEntry TMPVE = new TransactionSaleEntry();
                 T_SALEController TSCntlr = new T_SALEController();
                 T_TXN TTXN = new T_TXN();
@@ -589,17 +587,17 @@ namespace Improvar.Controllers
                     double cgstper = oudr["CENT_AMT"].retDbl();
                     double gstper = igstper == 0 ? (cgstper * 2) : igstper;
                     double blINV_VALUE = oudr["INV_VALUE"].retDbl();
-                    double bltaxable = oudr["INTEGR_AMT"].retDbl() + oudr["CENT_AMT"].retDbl() + oudr["STATE_AMT"].retDbl();
-                    double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
-                    double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
-                    var roffamt = (blINV_VALUE - calcultednet).toRound(2);
-                    double blTAX_AMT = oudr["TAX_AMT"].retDbl();
+                    //double bltaxable = oudr["INTEGR_AMT"].retDbl() + oudr["CENT_AMT"].retDbl() + oudr["STATE_AMT"].retDbl();
+                    //double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
+                    //double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
+                    //var roffamt = (blINV_VALUE - calcultednet).toRound(2);
+                    //double blTAX_AMT = oudr["TAX_AMT"].retDbl();
                     double tcsamt = oudr["tcsamt"].retDbl();// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
                     TTXN.BLAMT = blINV_VALUE + tcsamt;
-                    //TTXN.TDSCODE = "X";
+                    TTXN.TDSCODE = "X";
                     TTXN.ROYN = "Y";
                     TMPVE.RoundOff = true;
-                    TTXN.TCSON = calcultednet;
+                    TTXN.TCSON = blINV_VALUE;
                     TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
                     sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";

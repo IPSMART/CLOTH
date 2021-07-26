@@ -18,8 +18,8 @@ namespace Improvar.Controllers
     {
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
-        EmailControl EmailControl = new EmailControl();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS;
+        EmailControl EmailControl = new EmailControl(); DropDownHelp dropDownHelp = new DropDownHelp();
+         T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_SALE
@@ -43,7 +43,7 @@ namespace Improvar.Controllers
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
 
-                    VE.BL_TYPE = masterHelp.BL_TYPE();
+                    VE.BL_TYPE = dropDownHelp.DropDownBLTYPE();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
                     VE.DISC_TYPE1 = masterHelp.DISC_TYPE1();
@@ -1118,14 +1118,14 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        //if (code_data[1] == "")
-                        //{
-                        //    return Content("Please Select Agent !!");
-                        //}
-                        //else
-                        //{
+                        if (code_data[1] == "")
+                        {
+                            return Content("Please Select Agent !!");
+                        }
+                        else
+                        {
                             Code = code_data[0];
-                        //}
+                        }
                     }
 
 

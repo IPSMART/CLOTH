@@ -48,6 +48,8 @@ namespace Improvar.Controllers
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
+                    var bltypelst = DropDownHelp.DropDownBLTYPE();
+                    VE.Agslnm = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
                     VE.FDT = CommVar.CurrDate(UNQSNO);     //CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     //=========For Report Type===========//
@@ -194,12 +196,13 @@ namespace Improvar.Controllers
                 string itgrpcd = "";
 
                 //string reptype = FC["reptype"].ToString();
-                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "";
+                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "";
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
                 if (FC.AllKeys.Contains("ITGRPCDvalue")) itgrpcd = CommFunc.retSqlformat(FC["ITGRPCDvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) selloccd = FC["loccdvalue"].retSqlformat();
                 if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
+                if (FC.AllKeys.Contains("bltypevalue")) bltype = CommFunc.retSqlformat(FC["bltypevalue"].ToString());
                 string txntag = "", doctype = ""; string regdsp = "";
                 txntag = "SALES";
                 if (VE.TEXTBOX7.retStr() != "")
@@ -255,93 +258,89 @@ namespace Improvar.Controllers
                     default: txntag = ""; break;
                 }
                 // }
-
-
-                string query = "";
-                query = "";
-
-                string query1 = "";
-                query1 += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, " + Environment.NewLine;
-                query1 += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
-                query1 += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
-                query1 += "   b.slno,b.stkdrcr, b.itcd, " + Environment.NewLine;
+                
+                string sql = "";
+                sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, " + Environment.NewLine;
+                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+                sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
+                sql += "   b.slno,b.stkdrcr, b.itcd, " + Environment.NewLine;
                 //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
-                query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
-                query1 += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
+                sql += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
+                sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
                 //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
-                query1 += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
-                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype  " + Environment.NewLine;
+                sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
+                sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype  " + Environment.NewLine;
 
-                query1 += " from ( " + Environment.NewLine;
-                query1 += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
-                query1 += "b.docdt, " + Environment.NewLine;
-                query1 += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt  " + Environment.NewLine;
+                sql += " from ( " + Environment.NewLine;
+                sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
+                sql += "b.docdt, " + Environment.NewLine;
+                sql += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt  " + Environment.NewLine;
 
-                query1 += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + Environment.NewLine;
-                query1 += " " + scmf + ".m_subleg c " + Environment.NewLine;
-                query1 += "  where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
-                query1 += "  and  b.compcd = '" + COM + "' " + Environment.NewLine;
-                if (selloccd == "") query1 += " and b.loccd = '" + LOC + "'  " + Environment.NewLine; else query1 += " and b.loccd in (" + selloccd + ")  " + Environment.NewLine;
-                if (GODOWN.retStr() != "") query1 += "and  a.GOCD in('" + GODOWN + "')  " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + Environment.NewLine;
+                sql += " " + scmf + ".m_subleg c " + Environment.NewLine;
+                sql += "  where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
+                sql += "  and  b.compcd = '" + COM + "' " + Environment.NewLine;
+                if (selloccd == "") sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine; else sql += " and b.loccd in (" + selloccd + ")  " + Environment.NewLine;
+                if (GODOWN.retStr() != "") sql += "and  a.GOCD in('" + GODOWN + "')  " + Environment.NewLine;
                 if (repsorton == "bldt")
                 {
-                    if (fdt != "") query1 += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  " + Environment.NewLine;
-                    if (tdt != "") query1 += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    if (fdt != "") sql += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  " + Environment.NewLine;
+                    if (tdt != "") sql += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
                 }
                 else
                 {
-                    if (fdt != "") query1 += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   " + Environment.NewLine;
-                    if (tdt != "") query1 += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    if (fdt != "") sql += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   " + Environment.NewLine;
+                    if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
                 }
-                query1 += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
-                query1 += " ) a,  " + Environment.NewLine;
+                sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
+                sql += " ) a,  " + Environment.NewLine;
 
-                query1 += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
-                query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
-                query1 += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
-                query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
-                query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f " + Environment.NewLine;
-                query1 += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) " + Environment.NewLine;
-                query1 += " group by " + Environment.NewLine;
-                query1 += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
-                query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
-                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
-                query1 += " union " + Environment.NewLine;
-                query1 += "select a.autono,'C' stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
-                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
-                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
-                query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b " + Environment.NewLine;
-                query1 += " where a.amtcd = b.amtcd " + Environment.NewLine;
-                query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
-                query1 += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l " + Environment.NewLine;
-                query1 += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+) " + Environment.NewLine;
-                query1 += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+)  " + Environment.NewLine;
-                if (selslcd != "") query1 += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
-                if (unselslcd != "") query1 += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
-                if (selagslcd != "") query1 += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
-                if (doctype != "") query1 += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
-                query1 += "order by ";
-                if (repsorton == "partywise") query1 += "slcd,prefdt,prefno,docdt,docno" + Environment.NewLine;
-                else if (repsorton == "bldt") query1 += "prefdt,prefno" + Environment.NewLine;
-                else query1 += "docdt";
+                sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+                sql += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
+                sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
+                sql += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f " + Environment.NewLine;
+                sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) " + Environment.NewLine;
+                sql += " group by " + Environment.NewLine;
+                sql += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+                sql += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
+                sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
+                sql += " union " + Environment.NewLine;
+                sql += "select a.autono,'C' stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
+                sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
+                sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
+                sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b " + Environment.NewLine;
+                sql += " where a.amtcd = b.amtcd " + Environment.NewLine;
+                sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
+                sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l " + Environment.NewLine;
+                sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+) " + Environment.NewLine;
+                sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+)  " + Environment.NewLine;
+                if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
+                if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
+                if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
+                if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+                sql += "order by ";
+                if (repsorton == "partywise") sql += "slcd,prefdt,prefno,docdt,docno" + Environment.NewLine;
+                else if (repsorton == "bldt") sql += "prefdt,prefno" + Environment.NewLine;
+                else sql += "docdt";
                 if (itmdtl == true)
                 {
-                    query1 += " , docno, slno ";
+                    sql += " , docno, slno ";
                 }
                 else
                 {
-                    query1 += " , docno, igstper, cgstper, sgstper ";
+                    sql += " , docno, igstper, cgstper, sgstper ";
                 }
 
-                string query2 = " select b.amt payamt,b.autono from " + scm1 + ".t_txnpymt b ";
-
-
-                DataTable tbl = MasterHelp.SQLquery(query1);
-                var tbl1 = MasterHelp.SQLquery(query2);
+                DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0)
                 {
                     return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
                 }
+                string query2 = " select b.amt payamt,b.autono from " + scm1 + ".t_txnpymt b ";
+                var paymentDt = MasterHelp.SQLquery(query2);
+               
                 if (dtlsumm == "E")
                 {
                     string colnm = ShowAllColumn(VE, "ExcelHeader");
@@ -351,30 +350,27 @@ namespace Improvar.Controllers
                         string[] COL = colnm.Split(',').ToArray();
                         tbl = dv.ToTable(true, COL);
                     }
-
-
                     DataTable[] exdt = new DataTable[1];
                     exdt[0] = tbl;
                     string[] sheetname = new string[1];
                     sheetname[0] = "Sheet1";
-                    //MasterHelp.ExcelfromDataTables(exdt, sheetname, regdsp + " Register".retRepname(), false, "");
                     RegExcelfromDataTables(exdt, sheetname, regdsp + " Register".retRepname(), false, regdsp + " Register");
                     return null;
                 }
                 else {
                     var cnt_blqnty = (from DataRow dr in tbl.Rows where dr["blqnty"].retDbl() != 0 select dr["blqnty"].retDbl()).ToList();
-                    DataTable rsStkPrcDesc;
-                    string query_new = "";
-                    query_new += "select distinct a.autono, c.prcdesc stkprcdesc, nvl(e.docrem,'') docrem ";
-                    query_new += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b, " + scm1 + ".m_itemplist c, " + scm1 + ".t_cntrl_hdr d, " + scm1 + ".T_CNTRL_HDR_REM e ";
-                    query_new += "where a.batchautono=b.batchautono(+) and b.itmprccd=c.itmprccd(+) and a.autono=d.autono(+) and a.autono=e.autono(+) and ";
-                    query_new += "d.compcd='" + COM + "' ";
-                    if (selloccd == "") query = query + " and d.loccd='" + LOC + "'  "; else query = query + " and d.loccd in (" + selloccd + ")  ";
-                    query_new += " and a.autono=e.autono(+) and (e.slno=1 or e.slno is null) ";
-                    if (fdt != "") query_new += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
-                    if (tdt != "") query_new += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+                  //  DataTable rsStkPrcDesc;
+                    //string query_new = "";
+                    //query_new += "select distinct a.autono, c.prcdesc stkprcdesc, nvl(e.docrem,'') docrem ";
+                    //query_new += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b, " + scm1 + ".m_itemplist c, " + scm1 + ".t_cntrl_hdr d, " + scm1 + ".T_CNTRL_HDR_REM e ";
+                    //query_new += "where a.batchautono=b.batchautono(+) and b.itmprccd=c.itmprccd(+) and a.autono=d.autono(+) and a.autono=e.autono(+) and ";
+                    //query_new += "d.compcd='" + COM + "' ";
+                    //if (selloccd == "") query_new = query_new + " and d.loccd='" + LOC + "'  "; else query_new = query_new + " and d.loccd in (" + selloccd + ")  ";
+                    //query_new += " and a.autono=e.autono(+) and (e.slno=1 or e.slno is null) ";
+                    //if (fdt != "") query_new += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
+                    //if (tdt != "") query_new += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
 
-                    rsStkPrcDesc = MasterHelp.SQLquery(query_new);
+                 //   rsStkPrcDesc = MasterHelp.SQLquery(query_new);
 
                     DataTable IR = new DataTable("mstrep");
                     Models.PrintViewer PV = new Models.PrintViewer();
@@ -605,7 +601,7 @@ namespace Improvar.Controllers
                                 {
                                     dr["tcsamt"] = tbl.Rows[i]["tcsamt"].retDbl();
                                     dr["roamt"] = tbl.Rows[i]["roamt"].retDbl();
-                                    var a = (from DataRow dr1 in tbl1.Rows
+                                    var a = (from DataRow dr1 in paymentDt.Rows
                                              where auto1 == dr1["autono"].retStr()
                                              select new { payamt = dr1["payamt"].retDbl() }).ToList();
                                     if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = a.Sum(b => b.payamt).retDbl();
@@ -1602,7 +1598,7 @@ namespace Improvar.Controllers
                         }
                         ws.Cells.AutoFitColumns();
                     }
-                   
+
                     //Read the Excel file in a byte array    
                     Byte[] fileBytes = pck.GetAsByteArray();
                     Response.ClearContent();
