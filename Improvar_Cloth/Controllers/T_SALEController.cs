@@ -19,7 +19,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl(); DropDownHelp dropDownHelp = new DropDownHelp();
-         T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS;
+        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_SALE
@@ -1118,14 +1118,14 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        if (code_data[1] == "")
-                        {
-                            return Content("Please Select Agent !!");
-                        }
-                        else
-                        {
+                        //if (code_data[1] == "")
+                        //{
+                        //    return Content("Please Select Agent !!");
+                        //}
+                        //else
+                        //{
                             Code = code_data[0];
-                        }
+                        //}
                     }
 
 
@@ -1855,11 +1855,14 @@ namespace Improvar.Controllers
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
                                   DISCTYPE_DESC = P.Key.DISCTYPE_DESC,
-                                  DISCRATE = P.Key.DISCRATE,
-                                  TDDISCRATE = P.Key.TDDISCRATE,
+                                  //DISCRATE = P.Key.DISCRATE,
+                                  DISCRATE = P.Key.DISCTYPE.retStr() == "F" ? P.Sum(A => A.DISCRATE) : P.Key.DISCRATE,
+                                  //TDDISCRATE = P.Key.TDDISCRATE,
+                                  TDDISCRATE = P.Key.TDDISCTYPE.retStr() == "F" ? P.Sum(A => A.TDDISCRATE) : P.Key.TDDISCRATE,
                                   TDDISCTYPE = P.Key.TDDISCTYPE,
                                   TDDISCTYPE_DESC = P.Key.TDDISCTYPE_DESC,
-                                  SCMDISCRATE = P.Key.SCMDISCRATE,
+                                  //SCMDISCRATE = P.Key.SCMDISCRATE,
+                                  SCMDISCRATE = P.Key.SCMDISCTYPE.retStr() == "F" ? P.Sum(A => A.SCMDISCRATE) : P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
                                   SCMDISCTYPE_DESC = P.Key.SCMDISCTYPE_DESC,
                                   ALL_GSTPER = P.Key.ALL_GSTPER.retStr() == "" ? P.Key.GSTPER.retStr() : P.Key.ALL_GSTPER,
