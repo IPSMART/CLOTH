@@ -2912,9 +2912,9 @@ namespace Improvar
         //    }
         //}
 
-        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "", bool skipstyleno = false, bool skippageno = false, string pagenoslno = "")
+        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "", bool skipstyleno = false, bool skippageno = false, string pagenoslno = "", bool balStockOnly = true)
         {
-            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno);
+            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno, balStockOnly);
             DataView dv = new DataView(tbl);
             string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono,blslno";
             colnm += skipstyleno == true ? "" : ",itcd,styleno";

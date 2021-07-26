@@ -95,7 +95,7 @@ namespace Improvar.Controllers
                 {
                     val = val.retSqlformat();
                 }
-                var str = MasterHelp.BaleNo_help(val, tdt, gocd, itcd, skipstyleno, skippageno, pageno);
+                var str = MasterHelp.BaleNo_help(val, tdt, gocd, itcd, skipstyleno, skippageno, pageno,false);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
