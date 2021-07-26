@@ -2035,7 +2035,7 @@ namespace Improvar
                 return "";
             }
         }
-        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "", string pagenoslno = "")
+        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "", string pagenoslno = "", bool balStockOnly = true)
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
 
@@ -2094,7 +2094,8 @@ namespace Improvar
             if (baleno != "") sql += "a.baleno||a.baleyr in (" + baleno + ") and ";
             if (gocd != "") sql += "a.gocd in (" + gocd + ") and ";
             if (pagenoslno.retStr() != "") sql += "g.pageno||'/'||g.pageslno in (" + pagenoslno + ") and ";
-            sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 ";
+            sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) ";
+            if (balStockOnly == true) sql += "and nvl(a.qnty, 0) > 0 ";
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, g.txblval, g.othramt, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno ";
             sql += "order by baleyr, baleno, styleno ";
