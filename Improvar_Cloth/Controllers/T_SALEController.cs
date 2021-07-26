@@ -1124,7 +1124,7 @@ namespace Improvar.Controllers
                         //}
                         //else
                         //{
-                            Code = code_data[0];
+                        Code = code_data[0];
                         //}
                     }
 
@@ -1855,11 +1855,14 @@ namespace Improvar.Controllers
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
                                   DISCTYPE_DESC = P.Key.DISCTYPE_DESC,
-                                  DISCRATE = P.Key.DISCRATE,
-                                  TDDISCRATE = P.Key.TDDISCRATE,
+                                  //DISCRATE = P.Key.DISCRATE,
+                                  DISCRATE = P.Key.DISCTYPE.retStr() == "F" ? P.Sum(A => A.DISCRATE) : P.Key.DISCRATE,
+                                  //TDDISCRATE = P.Key.TDDISCRATE,
+                                  TDDISCRATE = P.Key.TDDISCTYPE.retStr() == "F" ? P.Sum(A => A.TDDISCRATE) : P.Key.TDDISCRATE,
                                   TDDISCTYPE = P.Key.TDDISCTYPE,
                                   TDDISCTYPE_DESC = P.Key.TDDISCTYPE_DESC,
-                                  SCMDISCRATE = P.Key.SCMDISCRATE,
+                                  //SCMDISCRATE = P.Key.SCMDISCRATE,
+                                  SCMDISCRATE = P.Key.SCMDISCTYPE.retStr() == "F" ? P.Sum(A => A.SCMDISCRATE) : P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
                                   SCMDISCTYPE_DESC = P.Key.SCMDISCTYPE_DESC,
                                   ALL_GSTPER = P.Key.ALL_GSTPER.retStr() == "" ? P.Key.GSTPER.retStr() : P.Key.ALL_GSTPER,
