@@ -1124,7 +1124,7 @@ namespace Improvar.Controllers
                         //}
                         //else
                         //{
-                            Code = code_data[0];
+                        Code = code_data[0];
                         //}
                     }
 
@@ -6011,6 +6011,81 @@ namespace Improvar.Controllers
             DTYP2.value = "U";
             DTYP.Add(DTYP2);
             return DTYP;
+        }
+        public ActionResult Update_WpRpRate(TransactionSaleEntry VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    short EMD_NO = Convert.ToInt16((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
+                    for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                    {
+                        sql = "update " + schnm + ". T_BATCHMST set WPRATE='" + VE.TBATCHDTL[i].WPRATE + "',RPRATE='" + VE.TBATCHDTL[i].RPRATE + "' "
+                                + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "'   ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        string barno = VE.TBATCHDTL[i].BARNO.retStr();
+                        if (VE.TBATCHDTL[i].WPRATE.retDbl() != 0)
+                        {
+
+                            var T_BATCHMST_PRICE = DB1.T_BATCHMST_PRICE.Where(x => x.BARNO == barno && x.AUTONO == VE.T_TXN.AUTONO && x.PRCCD == "WP").ToList();
+                            if (T_BATCHMST_PRICE.Any())
+                            {
+                                sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.TBATCHDTL[i].WPRATE + " "
+                                        + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "' and PRCCD='WP' and EFFDT=to_date('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy')  ";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                sql = "insert into " + schnm + ".T_BATCHMST_PRICE  (EMD_NO, CLCD, DTAG, TTAG, BARNO,PRCCD, EFFDT, AUTONO, RATE) Values (" + EMD_NO + ", '" + CLCD + "', 'E', NULL, '" + VE.TBATCHDTL[i].BARNO + "','WP', TO_DATE('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy'), '" + VE.T_TXN.AUTONO + "', " + VE.TBATCHDTL[i].WPRATE + ")";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                        }
+                        if (VE.TBATCHDTL[i].RPRATE.retDbl() != 0)
+                        {
+                            var T_BATCHMST_PRICE = DB1.T_BATCHMST_PRICE.Where(x => x.BARNO == barno && x.AUTONO == VE.T_TXN.AUTONO && x.PRCCD == "RP").ToList();
+                            if (T_BATCHMST_PRICE.Any())
+                            {
+                                sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.TBATCHDTL[i].RPRATE + " "
+                                        + " where BARNO='" + VE.TBATCHDTL[i].BARNO + "' and AUTONO='" + VE.T_TXN.AUTONO + "' and PRCCD='RP' and EFFDT=to_date('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy')  ";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                sql = "insert into " + schnm + ".T_BATCHMST_PRICE  (EMD_NO, CLCD, DTAG, TTAG, BARNO,PRCCD, EFFDT, AUTONO, RATE) Values (" + EMD_NO + ", '" + CLCD + "', 'E', NULL, '" + VE.TBATCHDTL[i].BARNO + "','RP', TO_DATE('" + VE.T_TXN.DOCDT.retDateStr() + "','dd/mm/yyyy'), '" + VE.T_TXN.AUTONO + "', " + VE.TBATCHDTL[i].RPRATE + ")";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
         }
     }
 }

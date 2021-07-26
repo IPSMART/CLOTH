@@ -322,12 +322,38 @@ namespace Improvar.Controllers
                     string ContentFlg = "";
                     var schnm = CommVar.CurSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
+                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                    var T_BATCHMST_cnt = DB1.T_BATCHMST.Where(x => x.BARNO == VE.BARCODE).Select(a => a.AUTONO).Distinct().Count();
 
                     for (int i = 0; i <= VE.BARCODEPRICE.Count - 1; i++)
                     {
                         sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.BARCODEPRICE[i].RATE + " "
                                  + " where BARNO='" + VE.BARCODE + "' and PRCCD='" + VE.BARCODEPRICE[i].PRCCD.retStr() + "' and EFFDT=to_date('" + VE.BARCODEPRICE[i].EFFDT.retStr() + "','dd/mm/yyyy')  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        if (T_BATCHMST_cnt == 1)
+                        {
+                            if (VE.BARCODEPRICE[i].PRCCD.retStr() == "CP")
+                            {
+                                sql = "update " + schnm + ". T_BATCHMST set RATE='" + VE.BARCODEPRICE[i].RATE + "' "
+                                    + " where BARNO='" + VE.BARCODE + "'   ";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                            else if (VE.BARCODEPRICE[i].PRCCD.retStr() == "WP")
+                            {
+                                sql = "update " + schnm + ". T_BATCHMST set WPRATE='" + VE.BARCODEPRICE[i].RATE + "' "
+                                    + " where BARNO='" + VE.BARCODE + "'   ";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                            else if (VE.BARCODEPRICE[i].PRCCD.retStr() == "RP")
+                            {
+                                sql = "update " + schnm + ". T_BATCHMST set RPRATE='" + VE.BARCODEPRICE[i].RATE + "' "
+                                    + " where BARNO='" + VE.BARCODE + "'   ";
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
+                        }
+
+
                     }
 
                     ModelState.Clear();
