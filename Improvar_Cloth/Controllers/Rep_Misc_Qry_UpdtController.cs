@@ -95,7 +95,7 @@ namespace Improvar.Controllers
                 {
                     val = val.retSqlformat();
                 }
-                var str = MasterHelp.BaleNo_help(val, tdt, gocd, itcd, skipstyleno, skippageno, pageno,false);
+                var str = MasterHelp.BaleNo_help(val, tdt, gocd, itcd, skipstyleno, skippageno, pageno, false);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -201,18 +201,20 @@ namespace Improvar.Controllers
                 }
                 if (VE.TEXTBOX1 == "Change Style")
                 {
-                    sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "' "
-                    + " where AUTONO in(" + autono + ") and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'  ";
-                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    if (!string.IsNullOrEmpty(VE.ITCD2))
+                    {
+                        sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "' "
+                        + " where AUTONO in(" + autono + ") and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                    sql = "update " + schnm + ".T_BATCHMST set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
-                  + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "'  and BARNO='" + VE.OLDBARNO + "'  ";
-                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                        sql = "update " + schnm + ".T_BATCHMST set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
+                        + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "'  and BARNO='" + VE.OLDBARNO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                    sql = "update " + schnm + ".T_BATCHDTL set BARNO= '" + VE.NEWBARNO + "' "
-                + " where AUTONO in (" + autono + ")  and BARNO='" + VE.OLDBARNO + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "' ";
-                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
+                        sql = "update " + schnm + ".T_BATCHDTL set BARNO= '" + VE.NEWBARNO + "' "
+                        + " where AUTONO in (" + autono + ")  and BARNO='" + VE.OLDBARNO + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "' ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
                 }
                 else if (VE.TEXTBOX1 == "Change BaleNo")
                 {
