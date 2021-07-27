@@ -5,11 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Partycaption = "Party";
 
-    string COMMONUNIQBAR = "", MNTNCOLOR = "";
+    string COMMONUNIQBAR = "", MNTNCOLOR = "", MNTNWPRPPER="";
     if (Model != null && Model.M_SYSCNFG != null)
     {
         COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
         MNTNCOLOR = Model.M_SYSCNFG.MNTNCOLOR;
+        MNTNWPRPPER = Model.M_SYSCNFG.MNTNWPRPPER;
     }
     int doccdcnt = 0;
     if (Model != null && Model.DocumentType != null)
@@ -586,6 +587,14 @@
             $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             Edit_Pageno_slno();
         }
+        if (event.altKey && KeyID == 74 && "@Model.Delete" == "D" && ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH" || "@Model.MENU_PARA" == "PJRC") && "@MNTNWPRPPER" == "Y") {//for Alt+J (In Barcode tab Update Wholesale/Retail Rate)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(2)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            Edit_WpRpRate();
+        }
     });
 </script>
 @section Scripts {
@@ -658,6 +667,7 @@
         <input type="hidden" id="UrlGetBaleData" value="@Url.Action("GetBaleData", PageControllerName)" />
         <input type="hidden" id="UrlCopyRow" value="@Url.Action("CopyBarGridRow", PageControllerName)" />
         <input type="hidden" id="UrlLastAgentTransport" value="@Url.Action("LastAgentTransport", PageControllerName)" />
+        <input type="hidden" id="UrlUpdateWpRpRate" value="@Url.Action("Update_WpRpRate", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -1222,11 +1232,11 @@
                                         @Html.Label("", "Fixed Amount")
                                     </div>
                                 </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.FIXEDAMT, new { htmlAttributes = new { @class = "form-control", id = "FIXEDAMT", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "Fixed Amount", onchange = "BarGridRateUpdate();" } })
-                                        </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.FIXEDAMT, new { htmlAttributes = new { @class = "form-control", id = "FIXEDAMT", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "Fixed Amount", onchange = "BarGridRateUpdate();" } })
                                     </div>
+                                </div>
                             }
                             @if (Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SBPOS")
                             {
@@ -1421,16 +1431,16 @@
                                     </div>
                                 </div>
 
-                                    <div class="col-md-2">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "TDS Deducted on")
-                                        </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS Deducted on")
                                     </div>
-                                    <div class="col-md-2">
-                                        <div class="editor-field" style="margin-top:6px;">
-                                            @Html.EditorFor(model => model.T_TDSTXN.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
-                                        </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.EditorFor(model => model.T_TDSTXN.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
                                     </div>
+                                </div>
 
                                     <div class="col-md-2">
                                         <div class="editor-label" style="margin-top: 6px;">
@@ -2264,7 +2274,16 @@
                                     @Html.Partial("_T_SALE_BarTab")
                                 </div>
                             </div>
-
+                            @if (Model.DefaultAction == "V" && Model.Delete == "D" && (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
+                            {
+                                <div class="row">
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update WpRpRate" id="edit_WpRpRate" value="Update Wholesale/Retail Rate(Alt+J)" title="Click here for edit Wholesale or Retail Rate in Barcode Tab" onclick="Edit_WpRpRate()" />
+                                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_WpRpRate" value="Update(Alt+O)" accesskey="O" title="Click to Update Wholesale or Retail Rate in Barcode Tab" disabled onclick="Update_WpRpRate()" />
+                                        <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_WpRpRate" value="Cancel" title="Click to Cancel for unchane Wholesale or Retail Rate in Barcode Tab" onclick="Cancel_WpRpRate()" />
+                                    </div>
+                                </div>
+                            }
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                             {
                                 <div>

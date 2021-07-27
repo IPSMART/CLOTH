@@ -4323,6 +4323,48 @@ function CalculateDiscOnBill() {
     //END OVERALL DISCOUNT PROPOTION TO ROW WISE
     $("#bardatachng").val("Y");
 }
+function Edit_WpRpRate() {
+    debugger;
+    var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+    if (GridRow != 0) {
+        for (var i = 0; i <= GridRow - 1; i++) {
+            $("#B_WPRATE_" + i).attr("readonly", false);
+            $("#B_RPRATE_" + i).attr("readonly", false);
+            if (i == 0) $("#D_PAGENO_" + i).focus();
+        }
+    }
+    $("#edit_WpRpRate").hide();
+    $("#update_WpRpRate").show();
+    $("#cancel_WpRpRate").show();
+    $("#update_WpRpRate").prop("disabled", false);
+}
+
+function Cancel_WpRpRate() {
+    location.reload();
+}
+function Update_WpRpRate() {
+    debugger;
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlUpdateWpRpRate").val(),//"@Url.Action("Update_WpRpRate", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            if (result == "1") {
+                msgSuccess1("Update Successfully !");
+            }
+            else {
+                msgWarning(result);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
 
 
 
