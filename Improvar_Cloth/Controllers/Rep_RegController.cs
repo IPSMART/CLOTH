@@ -49,7 +49,7 @@ namespace Improvar.Controllers
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
                     var bltypelst = DropDownHelp.DropDownBLTYPE();
-                    VE.Agslnm = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
+                    VE.BlType = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
                     VE.FDT = CommVar.CurrDate(UNQSNO);     //CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     //=========For Report Type===========//
