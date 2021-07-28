@@ -261,7 +261,7 @@ namespace Improvar.Controllers
                                        PBLNO = dr["prefno"].retStr(),
                                        PBLDT = dr["prefdt"].retDateStr(),
                                        BALEOPEN = dr["BALEOPEN"].retStr(),
-                                   }).OrderBy(s => s.SLNO).ToList();
+                                   }).OrderBy(s => s.BALENO).ToList();
                 foreach (var v in VE.TBILTYKHASRA)
                 {
                     v.CheckedBALEOPEN = v.BALEOPEN.retStr() == "Y" ? true : false;
