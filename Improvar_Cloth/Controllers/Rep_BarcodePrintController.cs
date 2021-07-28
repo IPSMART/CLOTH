@@ -83,7 +83,8 @@ namespace Improvar.Controllers
                                            UOMCD = dr["uomcd"].retStr(),
                                            QNTY = dr["qnty"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
-                                       }).Distinct().OrderBy(s => s.TAXSLNO).ToList();
+                                       //}).Distinct().OrderBy(s => s.TAXSLNO).ToList();
+                                       }).ToList();
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
