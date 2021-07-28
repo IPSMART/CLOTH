@@ -204,15 +204,16 @@ namespace Improvar.Controllers
                     string slcd = TBH.MUTSLCD;
                     string slcd1 = TXN.SLCD;
                     if (slcd != null) { var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM }).FirstOrDefault(); VE.SLNM = subleg.SLNM; }
-                      
+
                     if (slcd1 != null)
-                    {var subleg1 = (from a in DBF.M_SUBLEG where a.SLCD == slcd1 select new { a.SLNM }).FirstOrDefault(); VE.SLNM1 = subleg1.SLNM; }
-                    
-                   
-                   
+                    { var subleg1 = (from a in DBF.M_SUBLEG where a.SLCD == slcd1 select new { a.SLNM }).FirstOrDefault(); VE.SLNM1 = subleg1.SLNM; }
+
+
+
                 }
-                if (TXNTRN.TRANSLCD!=null)
-                { var trnslcd = TXNTRN.TRANSLCD;
+                if (TXNTRN.TRANSLCD != null)
+                {
+                    var trnslcd = TXNTRN.TRANSLCD;
                     var subleg2 = (from a in DBF.M_SUBLEG where a.SLCD == trnslcd select new { a.SLNM }).FirstOrDefault(); VE.TRANSLNM = subleg2.SLNM;
                 }
                 var TBALE = DB.T_BALE.Where(t => t.AUTONO == TBH.AUTONO).FirstOrDefault();
@@ -241,7 +242,7 @@ namespace Improvar.Controllers
                                    where (dr["BALEOPEN"].retStr() == "Y" ? dr["slno"].retDbl() >= 1000 : dr["slno"].retDbl() <= 1000)
                                    select new TBILTYKHASRA()
                                    {
-                                       SLNO = dr["BALEOPEN"].retStr() == "Y"? (dr["slno"].retDbl()-1000).retShort():Convert.ToInt16(dr["slno"]),
+                                       SLNO = dr["BALEOPEN"].retStr() == "Y" ? (dr["slno"].retDbl() - 1000).retShort() : Convert.ToInt16(dr["slno"]),
                                        BLAUTONO = dr["blautono"].retStr(),
                                        LRDT = dr["lrdt"].retDateStr(),
                                        LRNO = dr["lrno"].retStr(),
@@ -261,7 +262,11 @@ namespace Improvar.Controllers
                                        PBLNO = dr["prefno"].retStr(),
                                        PBLDT = dr["prefdt"].retDateStr(),
                                        BALEOPEN = dr["BALEOPEN"].retStr(),
-                                   }).OrderBy(s => s.BALENO).ToList();
+                                   }).OrderBy(s => s.SLNO).ToList();
+                if (CommVar.ClientCode(UNQSNO) == "SNFP")
+                {
+                    VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+                }
                 foreach (var v in VE.TBILTYKHASRA)
                 {
                     v.CheckedBALEOPEN = v.BALEOPEN.retStr() == "Y" ? true : false;
@@ -418,7 +423,7 @@ namespace Improvar.Controllers
                 List<string> existingbale = new List<string>();
                 foreach (var i in VE.TBILTYKHASRA_POPUP)
                 {
-                    if (i.Checked == true ||i.CheckedAll==true)
+                    if (i.Checked == true || i.CheckedAll == true)
                     {
                         blautonos.Add(i.BLAUTONO);
                         baleno.Add(i.BALENO);
@@ -837,7 +842,7 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.TblUpdt("t_txnoth", TTXN.AUTONO, "E");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                             }
-                               
+
 
                             dbsql = MasterHelpFa.TblUpdt("T_txn", VE.T_BALE_HDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -880,7 +885,7 @@ namespace Improvar.Controllers
                         }
                         #endregion
 
-                        
+
 
                         int gs = 0; string strblno = "", strbldt = "", exemptype = "";
                         strbldt = TTXN.DOCDT.ToString();
@@ -935,16 +940,16 @@ namespace Improvar.Controllers
 
                                     List<T_BATCHDTL> TBATCHDTlst = new List<T_BATCHDTL>();
                                     var TBATCHDTlsttemp = (from r in DBb.T_BATCHDTL where r.AUTONO == BLAUTONO && r.TXNSLNO == BLSLNO select r).ToList();
-                                    foreach(var v in TBATCHDTlsttemp)
+                                    foreach (var v in TBATCHDTlsttemp)
                                     {
-                                       T_BATCHDTL TBATCHDTobj = new T_BATCHDTL();
+                                        T_BATCHDTL TBATCHDTobj = new T_BATCHDTL();
                                         foreach (PropertyInfo propA in v.GetType().GetProperties())
                                         {
                                             PropertyInfo propB = v.GetType().GetProperty(propA.Name);
                                             propB.SetValue(TBATCHDTobj, propA.GetValue(v, null), null);
                                         }
                                         TBATCHDTlst.Add(TBATCHDTobj);
-                                    }                                 
+                                    }
                                     for (int dtl = 0; dtl < TBATCHDTlst.Count; dtl++)
                                     {
                                         bslno++;
@@ -956,7 +961,7 @@ namespace Improvar.Controllers
                                         if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && lp == 0) TBATCHDTlst[dtl].BALENO = null;
                                         dbsql = masterHelp.RetModeltoSql(TBATCHDTlst[dtl]);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                      
+
                                     }
                                     //DBb.Entry(TBATCHDTlst).State = System.Data.Entity.EntityState.Detached;
 
@@ -1015,7 +1020,7 @@ namespace Improvar.Controllers
 
                                         BLAMT = 0; ROAMT = 0;
 
-                      
+
                                     }
                                     #endregion
                                 }
@@ -1068,7 +1073,7 @@ namespace Improvar.Controllers
                             dbsql = masterHelp.RetModeltoSql(TTXNEWB, "A", CommVar.FinSchema(UNQSNO));
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         }
-                      
+
                         //----------------------------------------------------------//
                         dbsql = masterHelp.RetModeltoSql(TXNTRANS);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -1077,7 +1082,7 @@ namespace Improvar.Controllers
                             dbsql = masterHelp.RetModeltoSql(TTXNOTH);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         }
-                           
+
 
                         if (VE.UploadDOC != null)// add
                         {
@@ -1107,7 +1112,7 @@ namespace Improvar.Controllers
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
-                        }   
+                        }
                         if (VE.DefaultAction == "A")
                         {
                             ContentFlg = "1" + " (Doc No.: " + DOCPATTERN + ")~" + TBHDR.AUTONO;
@@ -1146,7 +1151,7 @@ namespace Improvar.Controllers
                             dbsql = MasterHelpFa.TblUpdt("t_txnoth", VE.T_BALE_HDR.AUTONO, "D");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         }
-                       
+
                         dbsql = MasterHelpFa.TblUpdt("T_TXNTRANS", VE.T_BALE_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
@@ -1244,18 +1249,19 @@ namespace Improvar.Controllers
             try
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                string str = "",yr="";
+                string str = "", yr = "";
                 List<string> gocd = new List<string>();
                 DataTable dt = new DataTable();
-                var baleyr = (from i in DB.T_BALE where i.BALENO == VE.BALENO select new { i.BALEYR,i.GOCD }).Distinct().ToList();
-                foreach(var v in baleyr)
-                { yr = v.BALEYR;
+                var baleyr = (from i in DB.T_BALE where i.BALENO == VE.BALENO select new { i.BALEYR, i.GOCD }).Distinct().ToList();
+                foreach (var v in baleyr)
+                {
+                    yr = v.BALEYR;
                     gocd.Add(v.GOCD);
                 }
                 var sqlgocds = string.Join(",", gocd).retSqlformat();
                 var balenoyr = VE.BALENO + yr;
-                dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(),sqlgocds,balenoyr.retSqlformat(), "", "", VE.T_BALE_HDR.AUTONO.retStr());
-            if(dt.Rows.Count>0)
+                dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), sqlgocds, balenoyr.retSqlformat(), "", "", VE.T_BALE_HDR.AUTONO.retStr());
+                if (dt.Rows.Count > 0)
                 {
                     var data = (from DataRow dr in dt.Rows
                                 select new
@@ -1266,7 +1272,7 @@ namespace Improvar.Controllers
                     if (data != null) str = str += "^GONM=^" + gonm + Cn.GCS();
                     return Content(str);
                 }
-               else return Content(str);
+                else return Content(str);
 
             }
             catch (Exception ex)
