@@ -1079,6 +1079,12 @@ function UpdateBarCodeRow_FrmDet(i) {
     var LISTPRICE = $("#D_LISTPRICE_" + i).val();
     var LISTDISCPER = $("#D_LISTDISCPER_" + i).val();
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    var count = 0;
+    for (j = 0; j <= GridRowMain - 1; j++) {
+        if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
+            count++;
+        }
+    }
     for (j = 0; j <= GridRowMain - 1; j++) {
         if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
             if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && MNTNLISTPRICE == "Y") {
@@ -1089,11 +1095,31 @@ function UpdateBarCodeRow_FrmDet(i) {
             RateUpdate(j, '#B_');
             $("#B_DISCTYPE_" + j).val(DISCTYPE);
             $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE_DESC);
-            $("#B_DISCRATE_" + j).val(DISCRATE);
-            $("#B_TDDISCRATE_" + j).val(TDDISCRATE);
+            if (DISCTYPE == "F") {
+                var discrt = retFloat($("#D_DISCAMT_" + i).val()) / count;
+                $("#B_DISCRATE_" + j).val(retFloat(discrt).toFixed(2));
+            }
+            else {
+                $("#B_DISCRATE_" + j).val(DISCRATE);
+            }
+
             $("#B_TDDISCTYPE_" + j).val(TDDISCTYPE);
-            $("#B_SCMDISCRATE_" + j).val(SCMDISCRATE);
+            if (TDDISCTYPE == "F") {
+                var discrt = retFloat($("#D_TDDISCAMT_" + i).val()) / count;
+                $("#B_TDDISCRATE_" + j).val(retFloat(discrt).toFixed(2));
+            }
+            else {
+                $("#B_TDDISCRATE_" + j).val(TDDISCRATE);
+            }
+
             $("#B_SCMDISCTYPE_" + j).val(SCMDISCTYPE);
+            if (SCMDISCTYPE == "F") {
+                var discrt = retFloat($("#D_SCMDISCAMT_" + i).val()) / count;
+                $("#B_SCMDISCRATE_" + j).val(retFloat(discrt).toFixed(2));
+            }
+            else {
+                $("#B_SCMDISCRATE_" + j).val(SCMDISCRATE);
+            }
             //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
             $("#B_BALENO_" + j).val(BALENO);
             //}
