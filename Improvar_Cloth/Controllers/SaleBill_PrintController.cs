@@ -384,7 +384,7 @@ namespace Improvar.Controllers
                 sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,  ";
                 sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,  ";
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,  ";
-                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno from  ";
+                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno,''IRNNO from  ";
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
@@ -684,6 +684,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("SLMSLNM", typeof(string), "");
                 IR.Columns.Add("incl_disc", typeof(double), "");
                 IR.Columns.Add("barno", typeof(string), "");
+                IR.Columns.Add("QRIMGPATH", typeof(string), "");
+                IR.Columns.Add("IRNNO", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -1011,6 +1013,8 @@ namespace Improvar.Controllers
                             dr1["gocd"] = tbl.Rows[i]["gocd"].ToString();
                             dr1["gonm"] = tbl.Rows[i]["gonm"].ToString();
                             dr1["goadd1"] = tbl.Rows[i]["goadd1"].ToString();
+                            dr1["irnno"] = tbl.Rows[i]["irnno"].retStr() == "" ? "" : "IRN : " + tbl.Rows[i]["irnno"].ToString();
+                            dr1["QRIMGPATH"] = tbl.Rows[i]["IRNNO"].ToString() == "" ? "" : "C:\\IPSMART\\IRNQrcode\\" + tbl.Rows[i]["IRNNO"].ToString() + ".png";
                             //dr1["weekno"] = tbl.Rows[i]["weekno"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["weekno"]);
                             string cfld = "", rfld = ""; int rf = 0;
                             //if (tbl.Rows[i]["prtynm"].retStr() != "")
@@ -1368,6 +1372,7 @@ namespace Improvar.Controllers
                                 dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
+                                dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
                                 //dr1["itnm"] = (ic == 1 && CommVar.ClientCode(UNQSNO) == "SACH") ? (tbl.Rows[i]["itnm"].ToString() + " (" + tbl.Rows[i]["barno"].ToString() + ")") : tbl.Rows[i]["itnm"].ToString();
                                 dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
@@ -1704,6 +1709,7 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                            reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
                             System.Web.HttpContext.Current.Response.Buffer = false;
                             System.Web.HttpContext.Current.Response.ClearContent();
                             System.Web.HttpContext.Current.Response.ClearHeaders();
@@ -1770,6 +1776,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
+                    reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
 
                     if (printemail == "Excel")
                     {
@@ -3202,6 +3209,7 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                            reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
                             reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
                             Response.Buffer = false;
                             Response.ClearContent();
@@ -3317,6 +3325,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                    reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
                     reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
 
                     if (printemail == "Excel")
