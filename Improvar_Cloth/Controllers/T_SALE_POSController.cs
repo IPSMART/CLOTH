@@ -2971,11 +2971,15 @@ namespace Improvar.Controllers
                     }
                     #endregion
 
-                    if (dbqty == 0)
+                    //if (dbqty == 0)
+                    //{
+                    //    ContentFlg = "Quantity not entered"; goto dbnotsave;
+                    //}
+                    dbqty = dbqty - rdbqty;
+                    if (dbqty.retDbl() == 0)
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
-                    dbqty = dbqty - rdbqty;
                     isl = 1;
 
                     if (VE.TTXNAMT != null)
@@ -3848,7 +3852,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3863,7 +3867,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
