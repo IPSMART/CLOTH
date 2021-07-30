@@ -250,7 +250,7 @@ namespace Improvar.Controllers
                 {
                     sql += "select a.gocd, c.gonm, a.doccd, b.docnm, a.dttag, ";
                     sql += "sum((case a.drcr when 'D' then 1 when 'C' then - 1 end)) qty from ";
-                    sql += " (select distinct b.doccd, a.drcr, a.gocd, a.baleno, a.baleyr,c.itcd,d.itgrpcd, ";
+                    sql += " (select distinct b.doccd, a.drcr, a.gocd, a.baleno, a.baleyr, ";//c.itcd,d.itgrpcd,
                     sql += " (case when b.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') then 'OP' else 'CR' end) dttag ";
                     sql += "  from " + scm + ".t_bale a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txndtl c," + scm + ".m_sitem d ";
                     sql += "where a.autono = b.autono(+) and a.autono = c.autono and c.itcd = d.itcd and a.gocd is not null and ";
