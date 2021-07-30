@@ -2334,7 +2334,7 @@ namespace Improvar.Controllers
                             //{
                             //    var DATA = (from DataRow DR in rsStkPrcDesc.Rows where DR["autoitcd"].ToString() == auto1 + tbl.Rows[i]["itcd"].ToString() select DR["stkprcdesc"].ToString()).ToList();
                             //    if (DATA.Count > 0) dr1["stkprcdesc"] = DATA[0];
-                            //}
+                            //} 
                             dr1["gocd"] = tbl.Rows[i]["gocd"].ToString();
                             dr1["gonm"] = tbl.Rows[i]["gonm"].ToString();
                             dr1["goadd1"] = tbl.Rows[i]["goadd1"].ToString();
