@@ -1866,6 +1866,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("ntwt", typeof(double), "");
                 IR.Columns.Add("caltype", typeof(double), "");
                 IR.Columns.Add("slno", typeof(double), "");
+                IR.Columns.Add("txnslno", typeof(int), "");
                 IR.Columns.Add("itcd", typeof(string), "");
                 IR.Columns.Add("styleno", typeof(string), "");
                 IR.Columns.Add("itnm", typeof(string), "");
@@ -2028,6 +2029,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("fabitnm", typeof(string), "");
                 IR.Columns.Add("printby", typeof(string), "");
                 IR.Columns.Add("sagslnm", typeof(string), "");
+
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
 
@@ -2053,8 +2055,7 @@ namespace Improvar.Controllers
                 }
 
                 maxR = tbl.Rows.Count - 1;
-                Int32 i = 0; int istore = 0; //int lslno = 0;
-                int ilast = 0;
+                Int32 i = 0; int istore = 0; int lslno = 0; int ilast = 0;
                 string auto1 = ""; string copymode = ""; string blrem = ""; string itdsc = ""; string goadd = "";
                 string rupinwords = "";
                 int uomdecimal = 3; int uommaxdecimal = 0;
@@ -2106,7 +2107,7 @@ namespace Improvar.Controllers
                     for (int ic = 0; ic <= maxCopy; ic++)
                     {
                         i = istore;
-                        //lslno = 0;
+                        lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
                         double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double ddisc3 = 0; double dtxblval = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0; double dnqnty = 0;
@@ -2563,29 +2564,23 @@ namespace Improvar.Controllers
                             if (totalosamt != 0) dr1["totalosamt"] = totalosamt.ToINRFormat();
                             //dr1["destn"] = tbl.Rows[i]["destn"];
                             dr1["plsupply"] = tbl.Rows[i]["plsupply"];
-                            //dr1["poslno"] = tbl.Rows[i]["poslno"];
-                            //dr1["mtrlcd"] = tbl.Rows[i]["mtrlcd"];
-                            //dr1["bas_rate"] = Convert.ToDouble(tbl.Rows[i]["bas_rate"] == DBNull.Value ? 0 : tbl.Rows[i]["bas_rate"]).ToString("0.00");
-                            //dr1["pv_per"] = tbl.Rows[i]["pv_per"].ToString() == "" ? "" : tbl.Rows[i]["pv_per"].ToString() + " %";
-                            //if (tbl.Rows[i]["insby"].ToString().retStr() == "Y") dr1["insudesc"] = inspoldesc;
                             dr1["dealsin"] = dealsin;
                             dr1["blterms"] = blterms;
 
                             if (doctotprint == false)
                             {
                                 itdsc = "";
-                                delvchrg = false;
-                                //if (tbl.Rows[i]["itcd"].ToString() != "")
-                                //{
-                                //    lslno = lslno + 1;
-                                //}
-                                //else
-                                //{
-                                //    lslno = 0;
-                                //    delvchrg = true;
-                                //}
+                                if (tbl.Rows[i]["itcd"].ToString() != "")
+                                {
+                                    lslno = lslno + 1;
+                                    delvchrg = false;
+                                }
+                                else
+                                {
+                                    lslno = 0;
+                                    delvchrg = true;
+                                }
                                 if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
-                                //if (tbl.Rows[i]["prodcd"].ToString() != "") itdsc = itdsc + "PCD: " + tbl.Rows[i]["prodcd"].ToString() + " ";
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
                                 if (tbl.Rows[i]["itcd"].ToString() != "") dr1["caltype"] = 1; else dr1["caltype"] = 0;
                                 dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
@@ -2596,33 +2591,21 @@ namespace Improvar.Controllers
                                     { dr1["BL_TOP_DSC"] = "Being job changes for the following."; }
                                 }
 
-                                dr1["slno"] = tbl.Rows[i]["slno"].ToString(); // lslno;
+                                dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
-                                //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                //dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
+                                dr1["txnslno"] = tbl.Rows[i]["slno"].retInt();
                                 dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
                                 dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
                                 dr1["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
                                 dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 dr1["fabitcd"] = tbl.Rows[i]["fabitcd"].ToString();
                                 dr1["fabitnm"] = tbl.Rows[i]["fabitnm"].ToString();
-
-
-                                //if (tbl.Rows[i]["damstock"].ToString() == "D")
-                                //{
-                                //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
-                                //}
                                 dr1["itdesc"] = itdsc;
-                                //dr1["bltophead"] = tbl.Rows[i]["bltophead"].ToString();
-                                //dr1["makenm"] = tbl.Rows[i]["makenm"].ToString();
-                                //dr1["mrp"] = tbl.Rows[i]["mrp"];
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") dr1["batchdtl"] = "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
                                 dr1["nos"] = tbl.Rows[i]["nos"].ToString();
                                 dr1["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
-                                //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : (tbl.Rows[i]["qnty"]).retDbl();
-                                //dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl() - tbl.Rows[i]["flagmtr"].retDbl();
                                 if (VE.MENU_PARA == "PB")
                                 {
                                     dr1["netqnty"] = tbl.Rows[i]["qnty"].retDbl();
@@ -2632,23 +2615,22 @@ namespace Improvar.Controllers
                                 }
                                 dr1["flagmtr"] = tbl.Rows[i]["flagmtr"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
-                                string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());
-                                if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
-                                {
-                                    if (uomdecimal > 4) uomdecimal = 4;
-                                }
-                                if (uomdecimal > uommaxdecimal) uommaxdecimal = uomdecimal;
-                                if (VE.DOCCD == "SOOS" && uomdecimal == 6) uomdecimal = 4;
+                                //string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());
+                                //if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
+                                //{
+                                //    if (uomdecimal > 4) uomdecimal = 4;
+                                //}
+                                //if (uomdecimal > uommaxdecimal) uommaxdecimal = uomdecimal;
 
                                 dr1["qdecimal"] = uomdecimal;
 
                                 nuomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
-                                string dbnqtyu = string.Format("{0:N6}", (dr1["netqnty"]).retDbl());
-                                if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
-                                {
-                                    if (nuomdecimal > 4) nuomdecimal = 4;
-                                }
-                                if (nuomdecimal > nuommaxdecimal) nuommaxdecimal = nuomdecimal;
+                                //string dbnqtyu = string.Format("{0:N6}", (dr1["netqnty"]).retDbl());
+                                //if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
+                                //{
+                                //    if (nuomdecimal > 4) nuomdecimal = 4;
+                                //}
+                                //if (nuomdecimal > nuommaxdecimal) nuommaxdecimal = nuomdecimal;
                                 dr1["nqdecimal"] = nuomdecimal;
                                 dr1["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
                                 dr1["rate"] = tbl.Rows[i]["rate"].retDbl().ToString("0.00");
@@ -2694,27 +2676,12 @@ namespace Improvar.Controllers
                                             pcsdesc += "(F" + flagmtr + ")";
                                         }
                                     }
-
-                                    //if (batch_data[a]["scmdiscrate"].retDbl() > 0)
-                                    //{
-                                    //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                    //    pcsdesc += "-SL " + batch_data[a]["scmdiscrate"].retStr() + "% ";
-                                    //}
+                                    
                                     if (batch_data[a]["tddiscrate"].retDbl() > 0)
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += "-SL " + batch_data[a]["tddiscrate"].retStr() + "% ";
                                     }
-                                    //if (batch_data[a]["discrate"].retDbl() > 0)
-                                    //{
-                                    //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                    //    pcsdesc += "-SL " + batch_data[a]["discrate"].retStr() + "% ";
-                                    //}
-                                    //if (batch_data[a]["itrem"].retStr() != "")
-                                    //{
-                                    //    pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
-                                    //    pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
-                                    //}
                                     if (batch_data[a]["baleno"].retStr() != "")
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
@@ -2723,12 +2690,7 @@ namespace Improvar.Controllers
                                 }
                                 dr1["pcsdesc"] = pcsdesc;
                                 #endregion
-                                //dr1["poslno"] = tbl.Rows[i]["poslno"];
-                                //dr1["mtrlcd"] = tbl.Rows[i]["mtrlcd"];
                                 dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
-                                //dr1["bas_rate"] = (tbl.Rows[i]["bas_rate"] == DBNull.Value ? 0 : tbl.Rows[i]["bas_rate"]).retDbl().ToString("0.00");
-                                //dr1["pv_per"] = tbl.Rows[i]["pv_per"].ToString() == "" ? "" : tbl.Rows[i]["pv_per"].ToString() + " %";
-                                //if (tbl.Rows[i]["rateqntybag"].ToString() == "B") dr1["rateuomnm"] = "Case"; else dr1["rateuomnm"] = dr1["uomnm"];
                                 string strdsc = "";
                                 if (tbl.Rows[i]["tddiscamt"].retDbl() != 0)
                                 {
@@ -2817,7 +2779,7 @@ namespace Improvar.Controllers
                                 dr1["nos"] = dnos;
                                 dr1["qnty"] = dqnty;
                                 dr1["netqnty"] = dnqnty;
-                                if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
+                                //if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                 dr1["qdecimal"] = uommaxdecimal;
                                 dr1["amt"] = dbasamt;
                                 dr1["scmdiscamt"] = ddisc1.ToINRFormat();
