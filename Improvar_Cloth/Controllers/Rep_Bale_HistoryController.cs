@@ -40,7 +40,7 @@ namespace Improvar.Controllers
                     DataTable tbl = MasterHelp.SQLquery(qry);
                     //VE.DropDown_list1 = (from DataRow dr in tbl.Rows select new DropDown_list1() { value = dr["BaleNoBaleYrcd"].retStr(), text = dr["BaleNoBaleYr"].retStr() }).OrderBy(s => s.text).ToList();
                     VE.DropDown_list1 = (from DataRow dr in tbl.Rows select new DropDown_list1() { value = dr["BaleNoBaleYrcd"].retStr() }).OrderBy(s => s.text).ToList();
-                    VE.TEXTBOX1 = MasterHelp.ComboFill("BaleNoBaleYrcd", VE.DropDown_list1, "".retInt(),1);
+                    VE.TEXTBOX1 = MasterHelp.ComboFill("BaleNoBaleYrcd", VE.DropDown_list1, "".retInt(), 1);
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
                     VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
@@ -213,7 +213,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                                 IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].ToString();
-                                IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + (tbl.Rows[i]["baleopen"].retStr()=="Y"?" (Open)":"");
+                                IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + (tbl.Rows[i]["baleopen"].retStr() == "Y" ? " (Open)" : "");
                                 IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
                                 IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                                 itemfirst = false; balefirst = false;
@@ -346,9 +346,9 @@ namespace Improvar.Controllers
 
                     string pghdr1 = " Bale History Movement " + (fdt != "" ? " from " + fdt + " to " : "as on ") + tdt;
                     string repname = "Bale Report";
-                 
 
-                    PV = HC.ShowReport(IR, repname, pghdr1,"", true, true, "L", false);
+
+                    PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                     TempData[repname] = PV;
                     TempData[repname + "xxx"] = IR;

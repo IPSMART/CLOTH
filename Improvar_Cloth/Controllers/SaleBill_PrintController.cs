@@ -271,183 +271,71 @@ namespace Improvar.Controllers
                 str1 = "select doctype from " + Scm1 + ".m_doctype where doccd='" + VE.DOCCD + "'";
                 rsTmp = masterHelp.SQLquery(str1);
                 doctype = rsTmp.Rows[0]["doctype"].ToString();
-                string sql = "";
-                string sqlc = "";
-                sqlc += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + yr_cd + "' and ";
-                if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
-                if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
-                if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
-                if (slcd.retStr() != "") sqlc += "b.slcd in (" + slcd + ") and ";
-                sqlc += "c.doccd = '" + doccd + "' and ";
+                string sql = " " + Environment.NewLine;
+                sql = "";
+                sql += " select distinct a.autono, n.nm prtynm ,n.RTDEBCD,o.RTDEBNM,o.mobile rtdebmob,o.add1 rtdebadd1,o.add2 rtdebadd2,o.add3 rtdebadd3,o.add3 rtdebadd4,o.add3 rtdebadd5,o.add3 rtdebadd6,o.add3 rtdebadd7, " + Environment.NewLine;
+                sql += " o.city rtdebcity,o.statecd rtdebstcd,o.state rtdebstnm,o.email rtdebemail,o.pin rtdebpin,n.MOBILE prtymob,p.gstno prtygstno,  " + Environment.NewLine;
+                sql += " p.GSTSLNM prtygstslnm,p.GSTSLADD1 prtyadd1,''prtyadd2,''prtyadd3,''prtyadd4,''prtyadd5,''prtyadd6,''prtyadd7,p.GSTSLDIST prtydist,p.GSTSLPIN prtypin,b.doctag, h.doccd,  " + Environment.NewLine;
+                sql += "  h.docno, h.docdt, b.duedays, h.canc_rem, h.cancel,0 invisstime,'N' batchdlprint,   " + Environment.NewLine;
+                sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd,  " + Environment.NewLine;
+                sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,   " + Environment.NewLine;
+                sql += " e.gstno, e.panno, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno, e.state, e.country, e.statecd, e.actnameof slactnameof,   " + Environment.NewLine;
+                sql += " nvl(b.conslcd, b.slcd) cslcd, '' cpartycd, nvl(f.fullname, f.slnm) cslnm, f.add1 csladd1, f.add2 csladd2, f.add3 csladd3, f.add4 csladd4, f.add5 csladd5,  " + Environment.NewLine;
+                sql += " f.add6 csladd6, f.add7 csladd7, nvl(f.gstno, f.gstno) cgstno, nvl(f.panno, f.panno) cpanno,f.actnameof cslactnameof,  " + Environment.NewLine;
+                sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,   " + Environment.NewLine;
+                sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,   " + Environment.NewLine;
+                sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, a.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,   " + Environment.NewLine;
+                sql += " a.nos, nvl(a.qnty,0)qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt, d.docrem, d.docth, d.casenos, d.noofcases,   " + Environment.NewLine;
+                sql += " d.agslcd, m.slnm agslnm, a.agdocno, a.agdocdt, j.itgrpnm, j.shortnm,   " + Environment.NewLine;
+                sql += " nvl(a.igstper, 0)igstper, nvl(a.igstamt, 0)igstamt, nvl(a.cgstper, 0)cgstper, nvl(a.cgstamt, 0)cgstamt,   " + Environment.NewLine;
+                sql += " nvl(a.sgstper, 0)sgstper, nvl(a.sgstamt, 0)sgstamt, nvl(a.dutyper, 0)dutyper, nvl(a.dutyamt, 0)dutyamt, nvl(a.cessper, 0)cessper, nvl(a.cessamt, 0)cessamt,   " + Environment.NewLine;
+                sql += " nvl(a.igstper + a.cgstper + a.sgstper, 0) gstper, nvl(b.roamt, 0)roamt, nvl(b.blamt, 0) blamt, nvl(b.tcsper, 0) tcsper, nvl(b.tcsamt, 0) tcsamt, d.insby,   " + Environment.NewLine;
+                sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,   " + Environment.NewLine;
+                sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,   " + Environment.NewLine;
+                sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,   " + Environment.NewLine;
+                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno from   " + Environment.NewLine;
 
-                //sql += "select a.autono, b.itgrpcd, b.doctag, h.doccd, h.docno, h.docdt, b.areacd, b.invisstime, b.duedays,d.ADVRECDREM,d.ADVRECDAMT, h.canc_rem, h.cancel, ";
-                //sql += "a.itmprccd, o.mrp, l.prcdesc itmprcdesc, l.effdt prceffdt, ";
-                //sql += "b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, k.fssailicno, ";
-                //sql += "b.weekno, j.batchdlprint, j.grpemailid, h.usr_id, h.usr_entdt, h.vchrno, ";
+                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
+                sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,   " + Environment.NewLine;
+                sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,   " + Environment.NewLine;
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno   " + Environment.NewLine;
+                sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o   " + Environment.NewLine;
+                sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+)  and " + Environment.NewLine;
+                sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and   " + Environment.NewLine;
+                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and   " + Environment.NewLine;
+                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
+                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
+                sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)   " + Environment.NewLine;
+                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno), d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),   " + Environment.NewLine;
+                sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate,a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),   " + Environment.NewLine;
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno   " + Environment.NewLine;
+                sql += " union all   " + Environment.NewLine;
 
-                //sql += "nvl(e.pslcd,e.slcd) oslcd, j.debglcd, ";
-                //sql += "b.slcd, z.sapcd partycd, nvl(e.fullname,e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7  ";
-                //sql += "sladd7, e.gstno, e.panno, trim(e.regmobile||decode(e.regmobile,null,'',',')||e.slphno||decode(e.phno1,null,'',','||e.phno1)) phno, e.state, e.country, e.statecd,e.actnameof slactnameof,";
-                //sql += "nvl(b.conslcd,b.slcd) cslcd, '' cpartycd, nvl(f.fullname,f.slnm) cslnm, f.add1 csladd1, f.add2 csladd2, f.add3 csladd3, f.add4 csladd4, f.add5 csladd5, ";
-                //sql += "f.add6 csladd6, f.add7 csladd7, nvl(f.gstno,f.gstno) cgstno, nvl(f.panno,f.panno) cpanno,f.actnameof cslactnameof, ";
-                //sql += "trim(f.regmobile||decode(f.regmobile,null,'',',')||f.slphno||decode(f.phno1,null,'',','||f.phno1)) cphno, ";
-                //sql += "f.state cstate, f.statecd cstatecd, ";
+                sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,   " + Environment.NewLine;
+                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,   " + Environment.NewLine;
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,0 inclrate,'' barno   " + Environment.NewLine;
+                sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d   " + Environment.NewLine;
+                sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and   " + Environment.NewLine;
+                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and  " + Environment.NewLine;
+                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
+                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
+                sql += "c.doccd = '" + doccd + "'   " + Environment.NewLine;
+                sql += "and a.amtcd = d.amtcd(+)   " + Environment.NewLine;
+                sql += " ) a,   " + Environment.NewLine;
 
-                //sql += "b.porefno, b.porefdt, c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, ";
-                //sql += "c.lrno, c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, ";
-                //sql += "a.slno, a.itcd, a.itnm, a.itrem, a.damstock, a.batchdtl, a.packsize, a.prodcd, a.nosinbag, a.hsncode, a.nos, a.qnty, nvl(i.decimals,0) qdecimal, i.uomnm,  ";
-                //sql += "a.rate, a.rateqntybag, a.basamt, d.sapopdno, d.sapblno, d.sapshipno, d.docrem, d.docth, d.nopkgs, d.agslcd, m.slnm agslnm, ";
-                //sql += "a.tddisctype, a.tddiscrate, nvl(a.tddiscamt,0)tddiscamt, a.disctype, a.discrate, a.discamt, a.agdocno, a.agdocdt, nvl(d.bltophead,a.bltophead) bltophead, a.makenm, ";
-                //sql += "nvl(a.igstper,0)igstper, nvl(a.igstamt,0)igstamt, nvl(a.cgstper,0)cgstper, nvl(a.cgstamt,0)cgstamt, nvl(a.sgstper,0)sgstper, nvl(a.sgstamt,0)sgstamt, nvl(a.dutyper,0)dutyper, nvl(a.dutyamt,0)dutyamt, nvl(a.cessper,0)cessper, nvl(a.cessamt,0)cessamt, nvl(a.igstper+a.cgstper+a.sgstper,0) gstper,  ";
-                //sql += "nvl(b.roamt,0)roamt, nvl(b.blamt,0) blamt, nvl(b.tcsper,0) tcsper, nvl(b.tcsamt,0) tcsamt, d.insby, d.payterms,d.precarr,d.precarrrecpt,d.shipmarkno,d.portload,d.portdesc,d.finaldest,d.bankinter,d.insudesc, ";
-                //sql += "d.othnm, nvl(d.othadd1,f.othadd1) othadd1, decode(d.othadd1,null,f.othadd2,d.othadd2) othadd2, decode(d.othadd1,null,f.othadd3,d.othadd3) othadd3, decode(d.othadd1,null,f.othadd4,d.othadd4) othadd4, ";
-                //sql += " nvl(a.mtrlcd,n.mtrlcd) mtrlcd, nvl(a.poslno,n.poslno) poslno, nvl(d.plsupply,nvl(f.state,e.state)) plsupply, nvl(d.destn,e.district) destn, y.bas_rate, y.pv_per, decode(nvl(y.pv_per,0),0,'N','Y') pv_tag,b.curr_cd from ( ";
+                sql += " " + Scm1 + ".t_txndtl z, " + Scm1 + ".t_txn b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g,   " + Environment.NewLine;
+                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m, " + Scm1 + ".T_TXNMEMO n," + Scmf + ".M_RETDEB o ," + Scmf + ".T_VCH_GST p  " + Environment.NewLine;
+                sql += " where a.autono = z.autono(+) and a.slno = z.slno(+) and a.autono = b.autono and a.autono = c.autono(+) and a.autono = d.autono(+) and   " + Environment.NewLine;
+                sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and   " + Environment.NewLine;
+                sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+)  and b.autono = n.autono and n.RTDEBCD=o.RTDEBCD and b.autono=p.autono and  " + Environment.NewLine;
+                if (slcd.retStr() != "") sql += " b.slcd in (" + slcd + ") and  " + Environment.NewLine;
+                sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c   " + Environment.NewLine;
+                sql += " where a.autono = b.autono(+) and a.autono = c.autono(+)  and c.autono is null and b.doccd = '" + doccd + "' )    " + Environment.NewLine;
+                sql += " order by docno,autono,slno   " + Environment.NewLine;
 
-                //sql += "select a.autono, a.autono||a.slno autoslno, a.ordautoslno, nvl(a.itmprccd,b.itmprccd) itmprccd, a.slno, a.itcd, d.itnm, ";
-                //sql += "nvl(a.bluomcd,d.uomcd) uomcd, a.damstock, nvl(a.hsncode,nvl(d.hsncode,e.hsncode)) hsncode, a.itrem, d.prodcd, d.packsize, d.nosinbag, ";
-                //sql += "a.nos, nvl(a.blqnty,a.qnty) qnty, a.rate, nvl(e.rateqntybag,f.rateqntybag) rateqntybag, a.basamt, a.tddisctype, a.tddiscrate, a.tddiscamt, a.disctype, a.discrate, a.discamt, ";
-                //sql += "a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt, b.slcd||b.itgrpcd||c.compcd||c.loccd slitgrpcd, e.bltophead, g.makenm, ";
-                //sql += "listagg(o.batchno || ' (' || n.qnty || ')', ', ') within group (order by n.autono, n.slno, n.batchautono) batchdtl, ";
-                //sql += "a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.mtrlcd, a.poslno  ";
-                //sql += "from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_brgrp e, " + Scm1 + ".m_group f, " + Scm1 + ".m_make g, ";
-                //sql += Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o ";
-                //sql += "where a.autono=b.autono and a.autono=c.autono and a.itcd=d.itcd and a.autono=n.autono(+) and a.slno=n.slno(+) and n.batchautono=o.batchautono(+) and ";
-                //sql += sqlc;
-                //sql += "d.brgrpcd=e.brgrpcd(+) and b.itgrpcd=f.itgrpcd(+) and a.makecd=g.makecd(+) ";
-                //sql += "group by a.autono, a.autono||a.slno, a.ordautoslno, nvl(a.itmprccd,b.itmprccd), a.slno, a.itcd, d.itnm, ";
-                //sql += "nvl(a.bluomcd,d.uomcd), a.damstock, nvl(a.hsncode,nvl(d.hsncode,e.hsncode)), a.itrem, d.prodcd, d.packsize, d.nosinbag, ";
-                //sql += "a.nos, nvl(a.blqnty,a.qnty), a.rate, nvl(e.rateqntybag,f.rateqntybag), a.basamt, a.tddisctype, a.tddiscrate, a.tddiscamt, a.disctype, a.discrate, a.discamt, ";
-                //sql += "a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'), b.slcd||b.itgrpcd||c.compcd||c.loccd, e.bltophead, g.makenm, ";
-                //sql += "a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a. mtrlcd, a.poslno  ";
-                //if (CommVar.InvSchema(UNQSNO) != "")
-                //{
-                //    sql += "union all ";
-
-                //    sql += "select a.autono, a.autono||a.slno autoslno, '' ordautoslno, '' itmprccd, a.slno+500 slno, a.itcd, d.itdescn itnm, ";
-                //    sql += "d.uom uomcd, '' damstock, d.hsncd hsncode, a.itrem, '' prodcd, 0 packsize, 0 nosinbag, ";
-                //    sql += "0 nos, a.qnty, nvl(a.rate,0) rate, '' rateqntybag, 0 basamt, '' tddisctype, 0 tddiscrate, 0 tddiscamt, '' disctype, 0 discrate, 0 discamt, ";
-                //    sql += "'' agdocno, to_char('', 'dd/mm/yyyy') agdocdt, b.slcd||b.itgrpcd||c.compcd||c.loccd slitgrpcd, '' bltophead, '' makenm, ";
-                //    sql += "'' batchdtl, ";
-                //    sql += "nvl(a.igstper,0) igstper, nvl(a.igstamt,0) igstamt, nvl(a.cgstper,0) cgstper, nvl(a.cgstamt,0) cgstamt, nvl(a.sgstper,0) sgstper, nvl(a.sgstamt,0) sgstamt, 0 dutyper, 0 dutyamt, nvl(a.cessper,0) cessper, nvl(a.cessamt,0) cessamt,'' mtrlcd, '' poslno  ";
-                //    sql += "from " + Scm1 + ".t_txnproddtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + scmI + ".m_item d ";
-                //    sql += "where a.autono=b.autono and a.autono=c.autono and ";
-                //    sql += sqlc;
-                //    sql += "a.itcd=d.itcd ";
-                //}
-                //sql += "union all ";
-
-                //sql += "select a.autono, a.autono autoslno, '' ordautoslno, b.itmprccd, nvl(ascii(d.calccode),0)+1000 slno, '' itcd, d.amtnm||' '||a.amtdesc itnm, ";
-                //sql += "'' uomcd, '' damstock, a.hsncode hsncode,  '' itrem, '' prodcd, 0 packsize, 0 nosinbag, ";
-                //sql += "0 nos, 0 qnty, 0 rate, '' rateqntybag, a.amt basamt, '' tddisctype, 0 tddiscrate, 0 tddiscamt, '' disctype, 0 discrate, 0 discamt, ";
-                //sql += "'' agdocno, '' agdocdt, b.slcd||b.itgrpcd||c.compcd||c.loccd slitgrpcd, '' bltophead, '' makenm, '' batchdtl, ";
-                //sql += "a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt ,'' mtrlcd, '' poslno ";
-                //sql += "from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
-                //sql += "where a.autono=b.autono and a.autono=c.autono and ";
-                //sql += sqlc;
-                //sql += "a.amtcd=d.amtcd(+) ";
-                //sql += ") a, ";
-
-                //sql += "(select a.sapcd, a.slcd||a.itgrpcd||a.compcd||a.loccd slitgrpcd ";
-                //sql += "from " + Scm1 + ".m_subleg_sddtl_itgrp a ) z, ";
-
-                //sql += "(select a.autono||a.slno autoslno, a.bas_rate, a.pv_per ";
-                //sql += "from " + Scm1 + ".t_txndtl a ) y, ";
-
-                //sql += Scm1 + ".t_txn b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g, " + Scm1 + ".t_cntrl_hdr h, ";
-                //sql += Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scm1 + ".m_godown k, " + Scm1 + ".m_itemplist l, " + Scmf + ".m_subleg m, " + Scm1 + ".t_sorddtl n, " + Scm1 + ".m_itemplistdtl o ";
-                //sql += "where a.autono=b.autono and a.autono=c.autono(+) and a.autono=d.autono(+) and b.slcd=e.slcd and nvl(b.conslcd,b.slcd)=f.slcd(+) and c.translcd=g.slcd(+) and a.autono=h.autono and ";
-                //sql += "b.itgrpcd=j.itgrpcd(+) and a.uomcd=i.uomcd(+) and b.gocd=k.gocd(+) and a.itmprccd=l.itmprccd(+) and a.itmprccd=o.itmprccd(+) and a.itcd=o.itcd(+) and ";
-                //sql += "a.slitgrpcd=z.slitgrpcd(+) and d.agslcd=m.slcd(+) and a.ordautoslno=n.autoslno(+) and a.autoslno=y.autoslno(+) and ";
-                //sql += "a.autono not in ( ";
-                //sql += "select a.autono ";
-                //sql += "from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c ";
-                //sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.autono is null and ";
-                //sql += "b.doccd='" + doccd + "' ) ";
-                //sql += "order by docno,autono,slno";
-                sql += " select distinct a.autono, n.nm prtynm ,n.RTDEBCD,o.RTDEBNM,o.mobile rtdebmob,o.add1 rtdebadd1,o.add2 rtdebadd2,o.add3 rtdebadd3,o.add3 rtdebadd4,o.add3 rtdebadd5,o.add3 rtdebadd6,o.add3 rtdebadd7, ";
-                sql += " o.city rtdebcity,o.statecd rtdebstcd,o.state rtdebstnm,o.email rtdebemail,o.pin rtdebpin,n.MOBILE prtymob,p.gstno prtygstno, ";
-                sql += " p.GSTSLNM prtygstslnm,p.GSTSLADD1 prtyadd1,''prtyadd2,''prtyadd3,''prtyadd4,''prtyadd5,''prtyadd6,''prtyadd7,p.GSTSLDIST prtydist,p.GSTSLPIN prtypin,b.doctag, h.doccd, ";
-                sql += "  h.docno, h.docdt, b.duedays, h.canc_rem, h.cancel,0 invisstime,'N' batchdlprint,  ";
-                sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, ";
-                sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
-                sql += " e.gstno, e.panno, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno, e.state, e.country, e.statecd, e.actnameof slactnameof,  ";
-                sql += " nvl(b.conslcd, b.slcd) cslcd, '' cpartycd, nvl(f.fullname, f.slnm) cslnm, f.add1 csladd1, f.add2 csladd2, f.add3 csladd3, f.add4 csladd4, f.add5 csladd5, ";
-                sql += " f.add6 csladd6, f.add7 csladd7, nvl(f.gstno, f.gstno) cgstno, nvl(f.panno, f.panno) cpanno,f.actnameof cslactnameof, ";
-                sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  ";
-                sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,  ";
-                sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, a.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  ";
-                sql += " a.nos, nvl(a.qnty,0)qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
-                sql += " d.agslcd, m.slnm agslnm, a.agdocno, a.agdocdt, j.itgrpnm, j.shortnm,  ";
-                sql += " nvl(a.igstper, 0)igstper, nvl(a.igstamt, 0)igstamt, nvl(a.cgstper, 0)cgstper, nvl(a.cgstamt, 0)cgstamt,  ";
-                sql += " nvl(a.sgstper, 0)sgstper, nvl(a.sgstamt, 0)sgstamt, nvl(a.dutyper, 0)dutyper, nvl(a.dutyamt, 0)dutyamt, nvl(a.cessper, 0)cessper, nvl(a.cessamt, 0)cessamt,  ";
-                sql += " nvl(a.igstper + a.cgstper + a.sgstper, 0) gstper, nvl(b.roamt, 0)roamt, nvl(b.blamt, 0) blamt, nvl(b.tcsper, 0) tcsper, nvl(b.tcsamt, 0) tcsamt, d.insby,  ";
-                sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,  ";
-                sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,  ";
-                sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,  ";
-                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno from  ";
-
-                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
-                sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
-                sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno  ";
-                sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  ";
-                sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+)  and";
-                sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and  ";
-                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
-                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
-                sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
-                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno), d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
-                sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate,a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno  ";
-                sql += " union all  ";
-
-                sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,  ";
-                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,0 inclrate,'' barno  ";
-                sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
-                sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
-                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
-                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
-                sql += "c.doccd = '" + doccd + "'  ";
-                sql += "and a.amtcd = d.amtcd(+)  ";
-                sql += " ) a,  ";
-
-                sql += " " + Scm1 + ".t_txndtl z, " + Scm1 + ".t_txn b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g,  ";
-                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m, " + Scm1 + ".T_TXNMEMO n," + Scmf + ".M_RETDEB o ," + Scmf + ".T_VCH_GST p ";
-                sql += " where a.autono = z.autono(+) and a.slno = z.slno(+) and a.autono = b.autono and a.autono = c.autono(+) and a.autono = d.autono(+) and  ";
-                sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and  ";
-                sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+)  and b.autono = n.autono and n.RTDEBCD=o.RTDEBCD and b.autono=p.autono and ";
-                if (slcd.retStr() != "") sql += " b.slcd in (" + slcd + ") and ";
-                sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c  ";
-                sql += " where a.autono = b.autono(+) and a.autono = c.autono(+)  and c.autono is null and b.doccd = '" + doccd + "' )   ";
-                sql += " order by docno,autono,slno  ";
-
-                DataTable tbl = new DataTable();
-                tbl = masterHelp.SQLquery(sql);
+                DataTable tbl = masterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
 
-                DataTable rsStkPrcDesc;
-                //sql = "";
-                //sql += "select distinct a.autono, a.autono||a.itcd autoitcd, e.prcdesc stkprcdesc ";
-                //sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_batchmst d, " + Scm1 + ".t_txn b, " + Scm1 + ".m_itemplist e, " + Scm1 + ".t_cntrl_hdr c ";
-                //sql += "where a.batchautono=d.batchautono(+) and d.itmprccd=e.itmprccd(+) and a.autono=b.autono(+) and ";
-                //sql += sqlc;
-                //sql += "a.autono=c.autono ";
-                //rsStkPrcDesc = masterHelp.SQLquery(sql);
-
-                //string blterms = "", inspoldesc = "", dealsin = "";
-                //Int16 bankslno = 0;
-                //sql = "select blterms, inspoldesc, dealsin, nvl(bankslno,0) bankslno from " + Scm1 + ".m_mgroup_spl where compcd='" + CommVar.Compcd(UNQSNO) + "' and itgrpcd='" + tbl.Rows[0]["itgrpcd"].ToString() + "'";
-                //DataTable rsMgroupSpl = masterHelp.SQLquery(sql);
-                //if (rsMgroupSpl.Rows.Count > 0)
-                //{
-                //    if (rsMgroupSpl.Rows[0]["blterms"].ToString() != "") blterms = rsMgroupSpl.Rows[0]["blterms"].ToString();
-                //    inspoldesc = rsMgroupSpl.Rows[0]["inspoldesc"].ToString();
-                //    dealsin = rsMgroupSpl.Rows[0]["dealsin"].ToString();
-                //    bankslno = Convert.ToInt16(rsMgroupSpl.Rows[0]["bankslno"]);
-                //}
                 string blterms = "", inspoldesc = "", dealsin = "";
                 Int16 bankslno = 0;
                 sql = "select blterms, inspoldesc, dealsin, nvl(bankslno,0) bankslno from " + Scm1 + ".m_mgroup_spl where compcd='" + CommVar.Compcd(UNQSNO) + "' ";
@@ -460,12 +348,12 @@ namespace Improvar.Controllers
                     bankslno = Convert.ToInt16(rsMgroupSpl.Rows[0]["bankslno"]);
                 }
                 sql = "";
-                sql += "select a.autono,a.SLMSLCD,nvl(b.SHORTNM,b.SLNM)SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm1 + ".t_txnslsmn a," + Scmf + ".m_subleg b," + Scm1 + ".t_cntrl_hdr c ";
-                sql += "where a.SLMSLCD=b.slcd and a.autono=c.autono(+) ";
-                sql += "and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
-                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
-                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
+                sql += "select a.autono,a.SLMSLCD,nvl(b.SHORTNM,b.SLNM)SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm1 + ".t_txnslsmn a," + Scmf + ".m_subleg b," + Scm1 + ".t_cntrl_hdr c  " + Environment.NewLine;
+                sql += "where a.SLMSLCD=b.slcd and a.autono=c.autono(+)  " + Environment.NewLine;
+                sql += "and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and   " + Environment.NewLine;
+                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and  " + Environment.NewLine;
+                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
+                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
                 sql += "c.doccd = '" + doccd + "'  ";
                 DataTable dtslm = masterHelp.SQLquery(sql);
 
@@ -710,8 +598,7 @@ namespace Improvar.Controllers
                 maxR = tbl.Rows.Count - 1;
                 Int32 i = 0; int istore = 0; int lslno = 0; int ilast = 0;
                 string auto1 = ""; string copymode = ""; string blrem = ""; string itdsc = "";
-                /*string blhead = "";*/
-                string fssailicno = ""; /*string grpemailid = "";*/ string goadd = ""/*, gocd = ""*/;
+                string goadd = ""/*, gocd = ""*/;
                 string rupinwords = "";
                 int uomdecimal = 3; int uommaxdecimal = 0;
 
@@ -746,8 +633,6 @@ namespace Improvar.Controllers
 
                 while (i <= maxR)
                 {
-
-                    //grpemailid = tbl.Rows[i]["grpemailid"].ToString();
                     gocd = tbl.Rows[i]["gocd"].ToString();
                     goadd = tbl.Rows[i]["goadd1"].ToString() + " " + tbl.Rows[i]["goadd2"].ToString() + " " + tbl.Rows[i]["goadd3"].ToString();
                     if (tbl.Rows[i]["gophno"].ToString() != "") goadd = goadd + " Phone : " + tbl.Rows[i]["gophno"].ToString();
@@ -824,25 +709,14 @@ namespace Improvar.Controllers
                             {
                                 foreach (var k in GST_DATA)
                                 {
-                                    //if (k.IGSTAMT != 0) { dtldsc += "(+) IGST @ " + Cn.Indian_Number_format(k.IGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.IGSTAMT).ToINRFormat() + "~"; }
-                                    //if (k.CGSTAMT != 0) { dtldsc += "(+) CGST @ " + Cn.Indian_Number_format(k.CGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.CGSTAMT).ToINRFormat() + "~"; }
-                                    //if (k.SGSTAMT != 0) { dtldsc += "(+) SGST @ " + Cn.Indian_Number_format(k.SGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.SGSTAMT).ToINRFormat() + "~"; }
                                     tpaymt = k.TPAMT.retDbl();
-                                    //if (k.TPAMT.retDbl() != 0) { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(k.TPAMT).ToINRFormat(); }
                                     tqnty = tqnty + Convert.ToDouble(k.TQNTY);
                                     tnos = tnos + Convert.ToDouble(k.TNOS);
                                     tamt = tamt + Convert.ToDouble(k.TAMT);
                                     tpamt = k.TPAMT.retDbl();
-                                    //tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
                                 }
                             }
                             if (tpaymt != 0) { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
-                            //if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
-                            //{
-                            //    dtldsc += "(-) " + tbl.Rows[0]["ADVRECDREM"].retStr() + "~";
-                            //    dtlamt += tbl.Rows[0]["ADVRECDAMT"].retDbl().ToINRFormat() + "~";
-                            //}
-
                             var HSN_DATA = (from a in DBF.T_VCH_GST
                                             where a.AUTONO == auto1
                                             group a by new { HSNCODE = a.HSNCODE, IGSTPER = a.IGSTPER, CGSTPER = a.CGSTPER, SGSTPER = a.SGSTPER } into x
@@ -992,22 +866,13 @@ namespace Improvar.Controllers
                             dr1["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
                             dr1["upiimg"] = "";
                             dr1["upidesc"] = "";
-                            //dr1["areacd"] = tbl.Rows[i]["areacd"].ToString();
                             dr1["invisstime"] = tbl.Rows[i]["invisstime"].retDbl();
                             dr1["duedays"] = duedays;
-                            //dr1["itmprccd"] = tbl.Rows[i]["itmprccd"].ToString();
-                            //dr1["itmprcdesc"] = tbl.Rows[i]["itmprcdesc"].ToString();
-                            //dr1["prceffdt"] = tbl.Rows[i]["prceffdt"] == DBNull.Value ? "" : tbl.Rows[i]["prceffdt"].ToString().Substring(0, 10).ToString();
                             dr1["duedt"] = Convert.ToDateTime(tbl.Rows[i]["docdt"].ToString()).AddDays(duedays).ToString().retDateStr();
                             dr1["packby"] = tbl.Rows[i]["packby"].retStr();
                             dr1["selby"] = tbl.Rows[i]["selby"].retStr();
                             dr1["dealby"] = tbl.Rows[i]["dealby"].retStr();
                             dr1["payterms"] = payterms;
-                            //if (rsStkPrcDesc.Rows.Count > 0 && tbl.Rows[i]["itgrpcd"].ToString() == "G001" && doctotprint == false)
-                            //{
-                            //    var DATA = (from DataRow DR in rsStkPrcDesc.Rows where DR["autoitcd"].ToString() == auto1 + tbl.Rows[i]["itcd"].ToString() select DR["stkprcdesc"].ToString()).ToList();
-                            //    if (DATA.Count > 0) dr1["stkprcdesc"] = DATA[0];
-                            //}
                             dr1["gocd"] = tbl.Rows[i]["gocd"].ToString();
                             dr1["gonm"] = tbl.Rows[i]["gonm"].ToString();
                             dr1["goadd1"] = tbl.Rows[i]["goadd1"].ToString();
@@ -1271,13 +1136,6 @@ namespace Improvar.Controllers
                             //dr1["nopkgs"] = tbl.Rows[i]["nopkgs"];
                             dr1["blremarks"] = blrem;
 
-                            //dr1["precarr"] = tbl.Rows[i]["precarr"];
-                            //dr1["precarrrecpt"] = tbl.Rows[i]["precarrrecpt"];
-                            //dr1["shipmarkno"] = tbl.Rows[i]["shipmarkno"];
-                            //dr1["portload"] = tbl.Rows[i]["portload"];
-                            //dr1["portdesc"] = tbl.Rows[i]["portdesc"];
-                            //dr1["finaldest"] = tbl.Rows[i]["finaldest"];
-                            //dr1["bankinter"] = tbl.Rows[i]["bankinter"];
 
                             //Bank Detals
                             dr1["bankactno"] = bankactno;
@@ -1287,8 +1145,6 @@ namespace Improvar.Controllers
                             dr1["bankadd"] = bankadd;
                             dr1["bankrtgs"] = bankrtgs;
 
-                            //dr1["dtldsc"] = dtldsc;
-                            //dr1["dtlamt"] = dtlamt;
                             dr1["dtldsc"] = dtldsc;
                             dr1["dtlamt"] = dtlamt;
                             if (netpaybleamt.retDbl() > 0)
@@ -1331,13 +1187,6 @@ namespace Improvar.Controllers
                             dr1["hsn_tgstamt2"] = total_gstamt2.ToINRFormat();
                             dr1["hsn_tgstamt3"] = total_gstamt3.ToINRFormat();
                             if (totalosamt != 0) dr1["totalosamt"] = totalosamt.ToINRFormat();
-                            //dr1["destn"] = tbl.Rows[i]["destn"];
-                            //dr1["plsupply"] = tbl.Rows[i]["plsupply"];
-                            //dr1["poslno"] = tbl.Rows[i]["poslno"];
-                            //dr1["mtrlcd"] = tbl.Rows[i]["mtrlcd"];
-                            //dr1["bas_rate"] = Convert.ToDouble(tbl.Rows[i]["bas_rate"] == DBNull.Value ? 0 : tbl.Rows[i]["bas_rate"]).ToString("0.00");
-                            //dr1["pv_per"] = tbl.Rows[i]["pv_per"].ToString() == "" ? "" : tbl.Rows[i]["pv_per"].ToString() + " %";
-                            //if (tbl.Rows[i]["insby"].ToString().retStr() == "Y") dr1["insudesc"] = inspoldesc;
                             dr1["dealsin"] = dealsin;
                             dr1["blterms"] = blterms;
 
@@ -1355,11 +1204,6 @@ namespace Improvar.Controllers
                                     delvchrg = true;
                                 }
                                 if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
-                                //if (Convert.ToDouble(tbl.Rows[i]["nosinbag"]) != 0)
-                                //{
-                                //    double dbnopcks = Convert.ToDouble(tbl.Rows[i]["nosinbag"]) * Convert.ToDouble(tbl.Rows[i]["nos"]);
-                                //    itdsc = itdsc + "CLD: " + Convert.ToDouble(tbl.Rows[i]["nosinbag"]).ToString("0") + " NOPCKS: " + dbnopcks.ToString();
-                                //}
                                 if (itdsc == "" && CommVar.ClientCode(UNQSNO) == "RATN") itdsc = tbl.Rows[i]["itnm"].ToString();
                                 //if (tbl.Rows[i]["prodcd"].ToString() != "") itdsc = itdsc + "PCD: " + tbl.Rows[i]["prodcd"].ToString() + " ";
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
@@ -1466,11 +1310,6 @@ namespace Improvar.Controllers
                                 ddisc2 = ddisc2 + (dr1["discamt"].ToString()).retDbl();
                                 dtxblval = dtxblval + (dr1["txblval"].ToString()).retDbl();
                                 tincldisc += (dr1["incl_disc"].ToString()).retDbl();
-                                //if (VE.TEXTBOX6 == "SaleBill_rec.rpt")
-                                //{
-                                //    if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
-                                //    { dr1["blamt"] = (dtxblval - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat(); }
-                                //}
                                 dcgstamt = dcgstamt + (dr1["cgstamt"].ToString()).retDbl();
                                 dsgstamt = dsgstamt + (dr1["sgstamt"].ToString()).retDbl();
                                 dnetamt = dnetamt + (dr1["netamt"].ToString()).retDbl();
@@ -1548,7 +1387,7 @@ namespace Improvar.Controllers
                                         }
                                         dr1["nos"] = dnos;
                                         dr1["qnty"] = dqnty;
-                                        if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
+                                        //if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                         dr1["qdecimal"] = uommaxdecimal;
                                         dr1["amt"] = dbasamt;
                                         dr1["tddiscamt"] = ddisc1;
@@ -1643,8 +1482,9 @@ namespace Improvar.Controllers
 
                             var rsemailid1 = queryq.AsDataView().ToTable();
 
-                            if (doctype == "CINV") reportdocument.Load(Server.MapPath("~/Report/CommSaleBill.rpt"));
-                            else reportdocument.Load(Server.MapPath(rptname));
+                            //if (doctype == "CINV") reportdocument.Load(Server.MapPath("~/Report/CommSaleBill.rpt"));
+                            //else
+                            reportdocument.Load(Server.MapPath(rptname));
 
                             maxR = rsemailid1.Rows.Count - 1;
                             Int32 iz = 0;
@@ -2213,10 +2053,9 @@ namespace Improvar.Controllers
                 }
 
                 maxR = tbl.Rows.Count - 1;
-                Int32 i = 0; int istore = 0; int lslno = 0; int ilast = 0;
-                string auto1 = ""; string copymode = ""; string blrem = ""; string itdsc = "";
-                /*string blhead = "";*/
-                string fssailicno = ""; /*string grpemailid = "";*/ string goadd = ""/*, gocd = ""*/;
+                Int32 i = 0; int istore = 0; //int lslno = 0;
+                int ilast = 0;
+                string auto1 = ""; string copymode = ""; string blrem = ""; string itdsc = ""; string goadd = "";
                 string rupinwords = "";
                 int uomdecimal = 3; int uommaxdecimal = 0;
                 int nuomdecimal = 3; int nuommaxdecimal = 0;
@@ -2267,7 +2106,7 @@ namespace Improvar.Controllers
                     for (int ic = 0; ic <= maxCopy; ic++)
                     {
                         i = istore;
-                        lslno = 0;
+                        //lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
                         double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double ddisc3 = 0; double dtxblval = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0; double dnqnty = 0;
@@ -2338,11 +2177,6 @@ namespace Improvar.Controllers
                                     tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
                                 }
                             }
-                            //if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
-                            //{
-                            //    dtldsc += "(-) " + tbl.Rows[0]["ADVRECDREM"].retStr() + "~";
-                            //    dtlamt += tbl.Rows[0]["ADVRECDAMT"].retDbl().ToINRFormat() + "~";
-                            //}
 
                             var HSN_DATA = (from a in DBF.T_VCH_GST
                                             where a.AUTONO == auto1
@@ -2740,23 +2574,17 @@ namespace Improvar.Controllers
                             if (doctotprint == false)
                             {
                                 itdsc = "";
-                                if (tbl.Rows[i]["itcd"].ToString() != "")
-                                {
-                                    lslno = lslno + 1;
-                                    delvchrg = false;
-                                }
-                                else
-                                {
-                                    lslno = 0;
-                                    delvchrg = true;
-                                }
-                                if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
-                                //if (Convert.ToDouble(tbl.Rows[i]["nosinbag"]) != 0)
+                                delvchrg = false;
+                                //if (tbl.Rows[i]["itcd"].ToString() != "")
                                 //{
-                                //    double dbnopcks = Convert.ToDouble(tbl.Rows[i]["nosinbag"]) * Convert.ToDouble(tbl.Rows[i]["nos"]);
-                                //    itdsc = itdsc + "CLD: " + Convert.ToDouble(tbl.Rows[i]["nosinbag"]).ToString("0") + " NOPCKS: " + dbnopcks.ToString();
+                                //    lslno = lslno + 1;
                                 //}
-                                if (itdsc == "" && CommVar.ClientCode(UNQSNO) == "RATN") itdsc = tbl.Rows[i]["itnm"].ToString();
+                                //else
+                                //{
+                                //    lslno = 0;
+                                //    delvchrg = true;
+                                //}
+                                if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
                                 //if (tbl.Rows[i]["prodcd"].ToString() != "") itdsc = itdsc + "PCD: " + tbl.Rows[i]["prodcd"].ToString() + " ";
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
                                 if (tbl.Rows[i]["itcd"].ToString() != "") dr1["caltype"] = 1; else dr1["caltype"] = 0;
@@ -2768,7 +2596,7 @@ namespace Improvar.Controllers
                                     { dr1["BL_TOP_DSC"] = "Being job changes for the following."; }
                                 }
 
-                                dr1["slno"] = lslno;
+                                dr1["slno"] = tbl.Rows[i]["slno"].ToString(); // lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
                                 //dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
@@ -2821,10 +2649,7 @@ namespace Improvar.Controllers
                                     if (nuomdecimal > 4) nuomdecimal = 4;
                                 }
                                 if (nuomdecimal > nuommaxdecimal) nuommaxdecimal = nuomdecimal;
-                                if (VE.DOCCD == "SOOS" && nuomdecimal == 6) nuomdecimal = 4;
-
                                 dr1["nqdecimal"] = nuomdecimal;
-
                                 dr1["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
                                 dr1["rate"] = tbl.Rows[i]["rate"].retDbl().ToString("0.00");
                                 dr1["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : (tbl.Rows[i]["amt"]).retDbl();
@@ -2965,17 +2790,11 @@ namespace Improvar.Controllers
                                 ddisc2 = ddisc2 + (tbl.Rows[i]["tddiscamt"]).retDbl();
                                 ddisc3 = ddisc3 + (tbl.Rows[i]["discamt"]).retDbl();
                                 dtxblval = dtxblval + (dr1["txblval"].ToString()).retDbl();
-                                //if (VE.TEXTBOX6 == "SaleBill_rec.rpt")
-                                //{
-                                //    if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
-                                //    { dr1["blamt"] = (dtxblval - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat(); }
-                                //}
                                 dcgstamt = dcgstamt + (dr1["cgstamt"].ToString()).retDbl();
                                 dsgstamt = dsgstamt + (dr1["sgstamt"].ToString()).retDbl();
                                 dnetamt = dnetamt + (dr1["netamt"].ToString()).retDbl();
                             }
                             IR.Rows.Add(dr1);
-
                             if (totalreadyprint == false)
                             {
                                 if (i == maxR) doctotprint = true;
@@ -2986,115 +2805,34 @@ namespace Improvar.Controllers
                             {
                                 doctotprint = true; totalreadyprint = false; delvchrg = false;
                             }
-                            if (CommVar.ClientCode(UNQSNO) == "RATN")
-                            {
-                                if (dchrg != null && dchrg.Count() > 0)
-                                {
-                                    if (tbl.Rows[i]["itcd"].ToString() == "")
-                                    {
-                                        if (doctotprint == true && totalreadyprint == false)
-                                        {
-                                            dr1 = IR.NewRow();
-                                            dr1["menu_para"] = VE.MENU_PARA;
-                                            dr1["autono"] = auto1 + copymode;
-                                            dr1["copymode"] = copymode;
-                                            dr1["docno"] = tbl.Rows[i]["docno"].ToString();
-                                            if (CommVar.ClientCode(UNQSNO) == "RATN")
-                                            {
-                                                dr1["itdesc"] = "Total";
-                                            }
-                                            else
-                                            {
-                                                dr1["itnm"] = "Total";
-                                            }
-                                            dr1["nos"] = dnos;
-                                            dr1["qnty"] = dqnty;
-                                            dr1["netqnty"] = dnqnty;
-                                            if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
-                                            dr1["qdecimal"] = uommaxdecimal;
-                                            dr1["amt"] = dbasamt;
-                                            dr1["scmdiscamt"] = ddisc1.ToINRFormat();
-                                            dr1["tddiscamt"] = ddisc2.ToINRFormat();
-                                            dr1["discamt"] = ddisc3.ToINRFormat();
-                                            dr1["txblval"] = dtxblval.ToINRFormat();
-                                            dr1["cgstamt"] = dcgstamt;
-                                            dr1["sgstamt"] = dsgstamt;
-                                            dr1["netamt"] = dnetamt;
-                                            dr1["titdiscamt"] = ddisc1 + ddisc2 + ddisc3;
-                                            dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
-                                            totalreadyprint = true;
-                                            goto docstart;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (doctotprint == true && totalreadyprint == false)
-                                    {
-                                        dr1 = IR.NewRow();
-                                        dr1["menu_para"] = VE.MENU_PARA;
-                                        dr1["autono"] = auto1 + copymode;
-                                        dr1["copymode"] = copymode;
-                                        dr1["docno"] = tbl.Rows[i]["docno"].ToString();
 
-                                        if (CommVar.ClientCode(UNQSNO) == "RATN")
-                                        {
-                                            dr1["itdesc"] = "Total";
-                                        }
-                                        else
-                                        {
-                                            dr1["itnm"] = "Total";
-                                        }
-                                        dr1["nos"] = dnos;
-                                        dr1["qnty"] = dqnty;
-                                        dr1["netqnty"] = dnqnty;
-                                        if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
-                                        dr1["qdecimal"] = uommaxdecimal;
-                                        dr1["amt"] = dbasamt;
-                                        dr1["scmdiscamt"] = ddisc1.ToINRFormat();
-                                        dr1["tddiscamt"] = ddisc2.ToINRFormat();
-                                        dr1["discamt"] = ddisc3.ToINRFormat();
-                                        dr1["txblval"] = dtxblval.ToINRFormat();
-                                        dr1["cgstamt"] = dcgstamt;
-                                        dr1["sgstamt"] = dsgstamt;
-                                        dr1["netamt"] = dnetamt;
-                                        dr1["titdiscamt"] = ddisc1 + ddisc2 + ddisc3;
-                                        dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
-                                        totalreadyprint = true;
-                                        goto docstart;
-                                    }
-                                }
-                            }
-                            else
+                            if (doctotprint == true && totalreadyprint == false)
                             {
-                                if (doctotprint == true && totalreadyprint == false)
-                                {
-                                    dr1 = IR.NewRow();
-                                    dr1["autono"] = auto1 + copymode;
-                                    dr1["copymode"] = copymode;
-                                    dr1["docno"] = tbl.Rows[i]["docno"].ToString();
+                                dr1 = IR.NewRow();
+                                dr1["autono"] = auto1 + copymode;
+                                dr1["copymode"] = copymode;
+                                dr1["docno"] = tbl.Rows[i]["docno"].ToString();
 
-                                    dr1["itnm"] = "Total";
-                                    if (CommVar.ClientCode(UNQSNO) == "RATN") dr1["itdesc"] = "Total";
-                                    dr1["nos"] = dnos;
-                                    dr1["qnty"] = dqnty;
-                                    dr1["netqnty"] = dnqnty;
-                                    if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
-                                    dr1["qdecimal"] = uommaxdecimal;
-                                    dr1["amt"] = dbasamt;
-                                    dr1["scmdiscamt"] = ddisc1.ToINRFormat();
-                                    dr1["tddiscamt"] = ddisc2.ToINRFormat();
-                                    dr1["discamt"] = ddisc3.ToINRFormat();
-                                    dr1["txblval"] = dtxblval.ToINRFormat();
-                                    dr1["cgstamt"] = dcgstamt;
-                                    dr1["sgstamt"] = dsgstamt;
-                                    dr1["netamt"] = dnetamt;
-                                    dr1["titdiscamt"] = ddisc1 + ddisc2 + ddisc3;
-                                    dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
-                                    totalreadyprint = true;
-                                    goto docstart;
-                                }
+                                dr1["itnm"] = "Total";
+                                dr1["nos"] = dnos;
+                                dr1["qnty"] = dqnty;
+                                dr1["netqnty"] = dnqnty;
+                                if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
+                                dr1["qdecimal"] = uommaxdecimal;
+                                dr1["amt"] = dbasamt;
+                                dr1["scmdiscamt"] = ddisc1.ToINRFormat();
+                                dr1["tddiscamt"] = ddisc2.ToINRFormat();
+                                dr1["discamt"] = ddisc3.ToINRFormat();
+                                dr1["txblval"] = dtxblval.ToINRFormat();
+                                dr1["cgstamt"] = dcgstamt;
+                                dr1["sgstamt"] = dsgstamt;
+                                dr1["netamt"] = dnetamt;
+                                dr1["titdiscamt"] = ddisc1 + ddisc2 + ddisc3;
+                                dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
+                                totalreadyprint = true;
+                                goto docstart;
                             }
+
                             doctotprint = false;
                             i = i + 1;
                             ilast = i;
