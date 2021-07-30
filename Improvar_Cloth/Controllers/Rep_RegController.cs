@@ -70,6 +70,7 @@ namespace Improvar.Controllers
                         RT.Add(new DropDown_list1 { value = "Proforma", text = "Proforma Invoice" });
                         RT.Add(new DropDown_list1 { value = "Sales Cash Memo", text = "Sales Cash Memo" });
                         RT.Add(new DropDown_list1 { value = "Cash Memo Credit Note", text = "Cash Memo Credit Note" });
+                        RT.Add(new DropDown_list1 { value = "Cash Sales", text = "Cash Sales" });
                         VE.DropDown_list1 = RT;
                     }
                     else if (VE.MENU_PARA == "CM")
@@ -236,6 +237,9 @@ namespace Improvar.Controllers
                     case "Sales Cash Memo":
                         txntag = "'SB'";
                         doctype = "'SBCM'"; break;
+                    case "Cash Sales":
+                        txntag = "'SB'";
+                        doctype = "'SBPOS'"; break;
                     case "Cash Memo Credit Note":
                         txntag = "'SB'";
                         doctype = "'SBCMR'"; break;
