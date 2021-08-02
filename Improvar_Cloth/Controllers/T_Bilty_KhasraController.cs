@@ -263,7 +263,7 @@ namespace Improvar.Controllers
                                        PBLDT = dr["prefdt"].retDateStr(),
                                        BALEOPEN = dr["BALEOPEN"].retStr(),
                                    }).OrderBy(s => s.SLNO).ToList();
-                if (CommVar.ClientCode(UNQSNO) == "SNFP")
+                if (CommVar.ClientCode(UNQSNO) == "SNFP" && VE.MENU_PARA == "KHSR")
                 {
                     VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
                 }
@@ -388,6 +388,10 @@ namespace Improvar.Controllers
                     var selectedbillbaleno = VE.TBILTYKHASRA.Select(e => e.BALENO).Distinct().ToList();
                     VE.TBILTYKHASRA_POPUP.Where(x => selectedbill.Contains(x.BLAUTONO) && selectedbillbaleno.Contains(x.BALENO)).ForEach(e => e.Checked = true);
                 }
+                if (CommVar.ClientCode(UNQSNO) == "SNFP" && VE.MENU_PARA == "KHSR")
+                {
+                    VE.TBILTYKHASRA_POPUP = VE.TBILTYKHASRA_POPUP.OrderBy(a => a.BALENO).ToList();
+                }
                 for (int p = 0; p <= VE.TBILTYKHASRA_POPUP.Count - 1; p++)
                 {
                     if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB") { VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1001); }
@@ -479,12 +483,16 @@ namespace Improvar.Controllers
                 {
                     VE.TBILTYKHASRA.AddRange(newdata);
                 }
+                if (CommVar.ClientCode(UNQSNO) == "SNFP" && VE.MENU_PARA == "KHSR")
+                {
+                    VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+                }
                 for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
                 {
                     VE.TBILTYKHASRA[i].SLNO = Convert.ToInt16(i + 1);
                 }
                 var balecnt = VE.TBILTYKHASRA.Select(a => a.BALENO).Distinct().Count();
-
+              
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_Bilty_Khasra_Main", VE);
