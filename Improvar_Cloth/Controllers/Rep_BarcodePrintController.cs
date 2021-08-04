@@ -161,6 +161,7 @@ namespace Improvar.Controllers
             sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and ";
             sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and ";
             sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) and a.sizecd=j.sizecd(+) ";
+            sql += " order by x.txnslno";
             DataTable tbl = masterHelp.SQLquery(sql);
 
             return tbl;
