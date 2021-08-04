@@ -851,7 +851,8 @@ function CalculateRowAmt(GridId, i) {
         if (DISCONBILLPERROW != 0) {
             var GSTPER = retFloat($("#B_GSTPER_" + i).val());
             var QNTY = retFloat($("#B_QNTY_" + i).val());
-            var DISCAMT = retFloat(((DISCONBILLPERROW * 100) / (GSTPER + 100)) * QNTY).toFixed(2);
+            //var DISCAMT = retFloat(((DISCONBILLPERROW * 100) / (GSTPER + 100)) * QNTY).toFixed(2);//if qnty multiply then row wise disc double.error come in tres
+            var DISCAMT = retFloat(((DISCONBILLPERROW * 100) / (GSTPER + 100))).toFixed(2);
             $("#B_SCMDISCAMT_" + i).val(DISCAMT);
             $("#B_SCMDISCRATE_" + i).val(DISCAMT);
             $("#B_SCMDISCTYPE_" + i).val("F");

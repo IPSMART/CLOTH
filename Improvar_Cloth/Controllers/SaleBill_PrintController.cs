@@ -843,7 +843,7 @@ namespace Improvar.Controllers
                                 SLMSLNM = string.Join(",", (from DataRow dr in dtslm.Rows where dr["autono"].retStr() == auto1 select dr["slnm"].retStr()).Distinct());
                             }
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -2295,7 +2295,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -2676,7 +2676,7 @@ namespace Improvar.Controllers
                                             pcsdesc += "(F" + flagmtr + ")";
                                         }
                                     }
-                                    
+
                                     if (batch_data[a]["tddiscrate"].retDbl() > 0)
                                     {
                                         pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
@@ -2780,7 +2780,7 @@ namespace Improvar.Controllers
                                 dr1["qnty"] = dqnty;
                                 dr1["netqnty"] = dnqnty;
                                 //if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
-                                dr1["qdecimal"] = uommaxdecimal;
+                                dr1["qdecimal"] = tbl.Rows[i]["qdecimal"].retDbl();// uommaxdecimal;
                                 dr1["amt"] = dbasamt;
                                 dr1["scmdiscamt"] = ddisc1.ToINRFormat();
                                 dr1["tddiscamt"] = ddisc2.ToINRFormat();
@@ -3676,7 +3676,7 @@ namespace Improvar.Controllers
                             else { negamt = "N"; }
 
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
