@@ -106,7 +106,6 @@ D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.WebPages.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.WebPages.Deployment.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.WebPages.Razor.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.Optimization.xml
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csproj.ResolveComReference.cache
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.pdb
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\csc.exe
@@ -206,8 +205,6 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAsse
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csproj.ResolveComReference.cache
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.pdb
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\BarcodeLib.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\BarcodeLib.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\BouncyCastle.Crypto.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.dll
@@ -220,3 +217,15 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.pdb
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.xml
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\itextsharp.xml
 D:\current project\CLOTH\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\BarcodeLib.Barcode.CrystalReports.dll
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\BouncyCastle.Crypto.dll
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.dll
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.dll
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\itextsharp.dll
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\QRCoder.dll
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.pdb
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.xml
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.pdb
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.xml
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\itextsharp.xml
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
