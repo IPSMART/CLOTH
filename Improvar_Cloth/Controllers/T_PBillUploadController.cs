@@ -631,7 +631,7 @@ namespace Improvar.Controllers
                         }
                     }
 
-                    string LR_DATE = DateTime.ParseExact(oudr["LR_DATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    string LR_DATE = DateTime.ParseExact(oudr["LR_DATE"].ToString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
                     TXNTRANS.LRNO = oudr["LR_NO"].ToString();
                     TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     //----------------------------------------------------------//
