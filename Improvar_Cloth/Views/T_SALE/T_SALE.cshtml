@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Partycaption = "Party";
 
-    string COMMONUNIQBAR = "", MNTNCOLOR = "", MNTNWPRPPER="";
+    string COMMONUNIQBAR = "", MNTNCOLOR = "", MNTNWPRPPER = "";
     if (Model != null && Model.M_SYSCNFG != null)
     {
         COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
@@ -1339,9 +1339,10 @@
                                 </div>
                             </div>
                         }
-                        @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR")
-                        {
-                            <div class="row">
+
+                        <div class="row">
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR")
+                            {
                                 <div class="col-md-5" style="margin-top: 6px;">
                                     <div class="editor-label">
                                         @Html.Label("", "Bar Generation")
@@ -1352,8 +1353,21 @@
                                         @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                            {
+                                <div class="col-md-6" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Return Adjust with Bill")
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="margin-right: -41px;">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.CheckBoxFor(model => model.ReturnAdjustwithBill, new { id = "ReturnAdjustwithBill" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
 
                         <div class="row">
                             <div class="col-md-5">
@@ -1442,11 +1456,11 @@
                                     </div>
                                 </div>
 
-                                    <div class="col-md-2">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "TDS Amount")
-                                        </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS Amount")
                                     </div>
+                                </div>
                                     <div class="col-md-2">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.T_TDSTXN.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", onblur = "TDSAMTCAL();", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })

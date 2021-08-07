@@ -67,6 +67,7 @@ namespace Improvar.ViewModels
         public double TOTTAX { get; set; }
         public double TOTTAXVAL { get; set; }
         public bool RoundOff { get; set; }
+        public bool ReturnAdjustwithBill { get; set; }        
         public string GONM { get; set; }
         public string PRCNM { get; set; }
         public string TDSNM1 { get; set; }

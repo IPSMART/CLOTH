@@ -315,7 +315,10 @@ namespace Improvar.Controllers
                         {
                             FreightCharges(VE, VE.T_TXN.AUTONO);
                         }
-
+                        if (CommVar.ModuleCode() == "SALESCLOTH")
+                        {
+                            VE.ReturnAdjustwithBill = true;
+                        }
                         var mtrljobcd = (from a in DB.M_MTRLJOBMST
                                          join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
                                          where b.INACTIVE_TAG == "N"
@@ -4670,7 +4673,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5510,7 +5513,7 @@ namespace Improvar.Controllers
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     gblamt = 0; groamt = 0; gtcsamt = 0;
 
-                                    if (gs == 1)
+                                    if (gs == 1 && VE.ReturnAdjustwithBill == true)
                                     {
                                         #region if return then auto adjustment
                                         if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR") && OSDATA.Rows.Count > 0)
@@ -5528,7 +5531,6 @@ namespace Improvar.Controllers
                                             sql = "select a.autono,a.blamt from " + scmf + ".t_vch_bl a ";
                                             sql += "where a.blno = '" + agdocno + "'  ";
                                             sql += "and a.bldt = to_date('" + agdocdt + "','dd/mm/yyyy')";
-
 
                                             DataTable dt1 = masterHelp.SQLquery(sql);
                                             if (dt1 != null && dt1.Rows.Count > 0)
@@ -5828,7 +5830,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5836,7 +5838,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
