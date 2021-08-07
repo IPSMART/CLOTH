@@ -119,7 +119,7 @@
     }
 </script>
 <script>
-    function GetBarCode(id) {
+    function GetBarCode1(id) {
         debugger;
         if (id == "") {
             ClearAllTextBoxes("BARNO,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
@@ -132,7 +132,10 @@
                 data: "&val=" + id,
                 success: function (result) {
                     var MSG = result.indexOf('#helpDIV');
-                    if (MSG <= 0) {
+                    if (MSG >= 0) {
+                        $('#helpDIV').html(result);
+                        return;
+                    }
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
                             $("#BARNO").val(returncolvalue(result, "barno"));
@@ -144,8 +147,7 @@
                             $("#FABITNM").val(returncolvalue(result, "itnm"));
                             $("#PDESIGN").val(returncolvalue(result, "pdesign"));
                             $("#BLSLNO").val(returncolvalue(result, "balnos"));
-                        }
-                    }
+                        }                    
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
@@ -207,11 +209,28 @@
             </div>
             <div class="col-md-6">
                 <div class="editor-field">
-                    @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARNO", onkeydown = "GetBarCode('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARNO','BARNO=BARNO=0','FDT')", onblur = "GetBarCode(this.value)", @placeholder = "Bar Code", maxlength = 25 } })
+                    @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARNO','BARNO=BARNO=0','FDT')", onblur = "GetBarCode1(this.value)", @placeholder = "Bar Code", maxlength = 25 } })
                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARNO','BARNO=BARNO=0','FDT')" />
                     <input type="hidden" id="FDT" />
                 </div>
             </div>
+            @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Style No")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','BARNO')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','BARNO')", @placeholder = "Design No", maxlength = 25 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','BARNO')" />
+                        <input type="hidden" id="MTRLJOBCD" />
+                        <input type="hidden" id="PARTCD" />
+                        <input type="hidden" id="ITCD" />
+                    </div>
+                </div>
+            </div>*@
             <div class="col-lg-1">
                 <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
                     <table id="exampleLT" border="1" style="width: auto;">
@@ -237,11 +256,11 @@
                 @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
             </div>
             <div class="row">
-                <div class="col-md-3">
+                @*<div class="col-md-3">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @title = "STYLENO", @placeholder = "STYLENO", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
-                </div>
+                </div>*@
                 <div class="col-md-3">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
