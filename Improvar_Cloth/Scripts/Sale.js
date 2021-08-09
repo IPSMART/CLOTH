@@ -2633,9 +2633,19 @@ function AddBarCodeGrid() {
     tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale();" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="">';
     //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
-    tr += '    <td class="" title="' + BARCODE + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARCODE + '">';
-    tr += '    </td>';
+
+
+    if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+        tr += '    <td class="" title="' + BARCODE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="text" value="' + BARCODE + '">';
+        tr += '    </td>';
+    }
+    else {
+        tr += '    <td class="" title="' + BARCODE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARCODE + '">';
+        tr += '    </td>';
+    }
+
     tr += '   <td class=""> ';
     tr += ' <input type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="' + NoOfBarImages + '" readonly="readonly" placeholder="">';
     tr += '   </td> ';
