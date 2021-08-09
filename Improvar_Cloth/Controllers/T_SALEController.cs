@@ -3937,7 +3937,13 @@ namespace Improvar.Controllers
                 {
                     balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
                 }
-
+                int minhsnlen = 0;
+                var sql = "select minhsnlen from " + CommVar.FinSchema(UNQSNO) + ".m_comp where compcd='" + CommVar.Compcd(UNQSNO) + "'";
+                var compdt = masterHelp.SQLquery(sql);
+                if (compdt != null)
+                {
+                    minhsnlen = compdt.Rows[0]["minhsnlen"].retInt();
+                }
                 DataTable baledata = new DataTable();
                 if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "PJBR") && balenocount > 0)
                 {
@@ -4104,7 +4110,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "PR") slcdpara = "PB";
                     //M_SYSCNFG MSYSCNFG = DB.M_SYSCNFG.FirstOrDefault();
                     M_SYSCNFG MSYSCNFG = salesfunc.M_SYSCNFG();
-                    string sql = "";
+                    sql = "";
                     if (MSYSCNFG == null)
                     {
                         ContentFlg = "Debtor/Creditor code not setup/No data found at m_syscnfg"; goto dbnotsave;
@@ -4533,7 +4539,13 @@ namespace Improvar.Controllers
                                 TTXNDTL.SIZECD = VE.TTXNDTL[i].SIZECD;
                                 TTXNDTL.STKDRCR = stkdrcr;
                                 TTXNDTL.STKTYPE = VE.TTXNDTL[i].STKTYPE;
+
                                 TTXNDTL.HSNCODE = VE.TTXNDTL[i].HSNCODE;
+                                if (minhsnlen != 0 && TTXNDTL.HSNCODE.retStr().Length < minhsnlen)
+                                {
+                                    ContentFlg = "HSNCODE(" + TTXNDTL.HSNCODE + ") less than " + minhsnlen + " at Item master at rowno:" + VE.TBATCHDTL[i].SLNO + " and itcd=" + VE.TBATCHDTL[i].ITCD + ". Make sure hsn length should be" + minhsnlen; goto dbnotsave;
+
+                                }
                                 TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
                                 TTXNDTL.PCSREM = VE.TTXNDTL[i].PCSREM;
                                 TTXNDTL.FREESTK = VE.TTXNDTL[i].FREESTK;
