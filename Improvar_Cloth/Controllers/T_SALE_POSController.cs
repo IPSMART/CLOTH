@@ -3461,8 +3461,15 @@ namespace Improvar.Controllers
                             double multamt = 1;
                             if (VE.MENU_PARA == "SBCM")
                             {
-                                multamt = -1;
-                                proddrcr = negamt == "Y" ? dr : cr;
+                                if(negamt == "Y")
+                                {
+                                    proddrcr = dr;
+                                }
+                                else
+                                {
+                                    multamt = -1;
+                                    proddrcr = cr;
+                                }
 
                             }
                             else
