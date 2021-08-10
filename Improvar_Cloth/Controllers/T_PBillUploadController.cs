@@ -473,7 +473,7 @@ namespace Improvar.Controllers
                         row["INVDATE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("L")].Value.retStr();
                         row["LR_NO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("N")].Value.retStr();
                         row["LR_DATE"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("O")].Value.retStr();
-                        row["CARR_NO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("P")].Value.retStr();
+                        row["CARR_NO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("P")].Value.retStr().TrimStart('0');
                         row["CARR_NAME"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("Q")].Value.retStr();
                         row["BALENO"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("T")].Value.retStr();
                         row["MAT_GRP"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("W")].Value.retStr();
