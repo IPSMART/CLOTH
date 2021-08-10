@@ -5405,11 +5405,7 @@ namespace Improvar.Controllers
                     }
                     if (blgstpost == true)
                     {
-                        DataTable OSDATA = new DataTable();
-                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR")
-                        {
-                            OSDATA = masterHelp.GenOSTbl(tbl.Rows[0]["parglcd"].ToString(), VE.T_TXN.SLCD, VE.T_TXN.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", VE.T_TXN.AUTONO, "");
-                        }
+
                         #region TVCHGST Table update    
 
                         int gs = 0;
@@ -5517,38 +5513,42 @@ namespace Improvar.Controllers
                                     if (gs == 1 && VE.ReturnAdjustwithBill == true)
                                     {
                                         #region if return then auto adjustment
-                                        if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR") && OSDATA.Rows.Count > 0)
+                                        if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR"))
                                         {
-                                            string AGAUTONO = "", AGBLAMT = "";
-                                            string agdocno = "", agdocdt = "";
-                                            var cntagdocno = VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct().ToList();
-                                            if (cntagdocno.Count > 1)
-                                            {//allow only one against docno per invoice
-                                                agdocno = string.Join(",", VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct());
-                                                ContentFlg = "Allow only one Invoice (" + agdocno + ") to adjusting !!";
-                                                goto dbnotsave;
-                                            }
-                                            if (!string.IsNullOrEmpty(VE.ADJWITH_BLNO) && !string.IsNullOrEmpty(VE.ADJWITH_BLDT.retStr()))
+                                            DataTable OSDATA = masterHelp.GenOSTbl(tbl.Rows[0]["parglcd"].ToString(), VE.T_TXN.SLCD, VE.T_TXN.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", VE.T_TXN.AUTONO, "");
+                                            if (OSDATA.Rows.Count > 0)
                                             {
-                                                agdocno = VE.ADJWITH_BLNO; agdocdt = VE.ADJWITH_BLDT.retDateStr();
-                                            }
-                                            else
-                                            {
-                                                agdocno = VE.TTXNDTL[i].AGDOCNO; agdocdt = VE.TTXNDTL[i].AGDOCDT.retDateStr();
-                                            }
-                                            sql = "select a.autono,a.blamt from " + scmf + ".t_vch_bl a ";
-                                            sql += "where a.blno = '" + agdocno + "'  ";
-                                            sql += "and a.bldt = to_date('" + agdocdt + "','dd/mm/yyyy')";
+                                                string AGAUTONO = "", AGBLAMT = "";
+                                                string agdocno = "", agdocdt = "";
+                                                var cntagdocno = VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct().ToList();
+                                                if (cntagdocno.Count > 1)
+                                                {//allow only one against docno per invoice
+                                                    agdocno = string.Join(",", VE.TBATCHDTL.Select(a => a.AGDOCNO).Distinct());
+                                                    ContentFlg = "Allow only one Invoice (" + agdocno + ") to adjusting !!";
+                                                    goto dbnotsave;
+                                                }
+                                                if (!string.IsNullOrEmpty(VE.ADJWITH_BLNO) && !string.IsNullOrEmpty(VE.ADJWITH_BLDT.retStr()))
+                                                {
+                                                    agdocno = VE.ADJWITH_BLNO; agdocdt = VE.ADJWITH_BLDT.retDateStr();
+                                                }
+                                                else
+                                                {
+                                                    agdocno = VE.TTXNDTL[i].AGDOCNO; agdocdt = VE.TTXNDTL[i].AGDOCDT.retDateStr();
+                                                }
+                                                sql = "select a.autono,a.blamt from " + scmf + ".t_vch_bl a ";
+                                                sql += "where a.blno = '" + agdocno + "'  ";
+                                                sql += "and a.bldt = to_date('" + agdocdt + "','dd/mm/yyyy')";
 
-                                            DataTable dt1 = masterHelp.SQLquery(sql);
-                                            if (dt1 != null && dt1.Rows.Count > 0)
-                                            {
-                                                AGAUTONO = dt1.Rows[0]["autono"].retStr();
-                                                AGBLAMT = dt1.Rows[0]["BLAMT"].retStr();
+                                                DataTable dt1 = masterHelp.SQLquery(sql);
+                                                if (dt1 != null && dt1.Rows.Count > 0)
+                                                {
+                                                    AGAUTONO = dt1.Rows[0]["autono"].retStr();
+                                                    AGBLAMT = dt1.Rows[0]["BLAMT"].retStr();
 
-                                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, 1, VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
-                                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                                            }
+                                                    dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), AGAUTONO, 1, AGBLAMT.retDbl(), TTXN.AUTONO, 1, VE.T_TXN.BLAMT.retDbl(), VE.T_TXN.BLAMT.retDbl());
+                                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                                }
+                                            }//    if (OSDATA.Rows.Count > 0)
                                         }
                                         #endregion
                                     }
