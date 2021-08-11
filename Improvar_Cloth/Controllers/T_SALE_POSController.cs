@@ -3464,10 +3464,10 @@ namespace Improvar.Controllers
                                 if(negamt == "Y")
                                 {
                                     proddrcr = dr;
+                                    multamt = -1;
                                 }
                                 else
                                 {
-                                    multamt = -1;
                                     proddrcr = cr;
                                 }
 
