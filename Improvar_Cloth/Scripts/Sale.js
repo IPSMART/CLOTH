@@ -2630,7 +2630,7 @@ function AddBarCodeGrid() {
         tr += '    </td>';
     }
     tr += '    <td class="">';
-    tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale();" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="">';
+    tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" onclick="OpenZoomTextBoxModal(this.id)" style="cursor:pointer" type="text" value="">';
     //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
 
@@ -3053,9 +3053,101 @@ function CalculateTcsAmt(TCSAMT) {
             }
     return TCSAMT;
 }
-function HasChangeBarSale() {
+//function HasChangeBarSale() {
+//    var DefaultAction = $("#DefaultAction").val();
+//    if (DefaultAction == "V") return true;
+//    $("#bardatachng").val("Y");
+//}
+function HasChangeBarSale(BlslnoRegen, index) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var ModuleCode = $("#ModuleCode").val();
+    if (BlslnoRegen == "Y") {
+        //get bill slno
+        var TXNSLNO = 0;
+        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        if (GridRowMain == 0) {
+            TXNSLNO = 1;
+        }
+        else {
+            if (document.getElementById("MergeBarItem").checked == true) {
+                var allslno = [];
+                var matchslno = [];
+                var pageno = [];
+                var bluom = [];
+                countmatchslno = 0;
+                for (j = 0; j <= GridRowMain - 1; j++) {
+                    var flag = true;
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
+                        if (retStr($("#B_AGDOCNO_" + index).val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#B_AGDOCDT_" + index).val()) != retStr($("#B_AGDOCDT_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && MNTNLISTPRICE == "Y") {
+                        if (retFloat($("#B_LISTPRICE_" + index).val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#B_LISTDISCPER_" + index).val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                    if (retStr($("#B_BALENO_" + index).val()) != retStr($("#B_BALENO_" + j).val())) {
+                        flag = false;
+                    }
+                    //}
+                    if (flag == true) {
+                        if (retStr($("#B_ITGRPCD_" + index).val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#B_MTRLJOBCD_" + index).val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                     retStr($("#B_MTBARCODE_" + index).val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#B_ITCD_" + index).val()) == retStr($("#B_ITCD_" + j).val()) &&
+                     retStr($("#B_DISCTYPE_" + index).val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#B_TDDISCTYPE_" + index).val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                      retStr($("#B_SCMDISCTYPE_" + index).val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#B_UOM_" + index).val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#B_STKTYPE_" + index).val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#B_RATE_" + index).val()) == retFloat($("#B_RATE_" + j).val()) &&
+                     retFloat($("#B_DISCRATE_" + index).val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#B_SCMDISCRATE_" + index).val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#B_TDDISCRATE_" + index).val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#B_GSTPER_" + index).val()) == retFloat($("#B_GSTPER_" + j).val()) &&
+                     retFloat($("#B_FLAGMTR_" + index).val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#B_HSNCODE_" + index).val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#B_PRODGRPGSTPER_" + index).val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                     retStr($("#B_GLCD_" + index).val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#B_FABITCD_" + index).val()) == retStr($("#B_FABITCD_" + j).val()) &&
+                            //retFloat(BLQNTY).toFixed(3) == retFloat($("#B_BLQNTY_" + j).val()).toFixed(3) && 
+                            retStr($("#B_SLNO_" + index).val()) != retStr($("#B_SLNO_" + j).val()) &&
+                     retStr($("#B_BLUOMCD_" + index).val()) == retStr($("#B_BLUOMCD_" + j).val()) && retStr($("#B_ITREM_" + index).val()) == retStr($("#B_ITREM_" + j).val())) {
+
+                            matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                                var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                                str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
+                                str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
+                                pageno[countmatchslno] = str1;
+                            }
+                            var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                            str1 += "^BLUOMCD=^" + retStr($("#B_BLUOMCD_" + j).val()) + String.fromCharCode(181);
+                            bluom[countmatchslno] = str1;
+
+                            countmatchslno++;
+                        }
+                    }
+                    if (retInt($("#B_SLNO_" + index).val()) != retInt($("#B_SLNO_" + j).val())) {
+                        allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
+                    }
+                }
+
+                if (matchslno.length > 0) {
+                    TXNSLNO = Math.max.apply(Math, matchslno);
+
+                }
+                if (TXNSLNO == 0) {
+                    for (var i = 1; i <= allslno.length; i++) {
+                        var tyy = allslno.indexOf(i);
+                        if (tyy == -1) {
+                            TXNSLNO = i;
+                        }
+                    }
+                }
+                if (TXNSLNO == 0) {
+                    TXNSLNO = Math.max.apply(Math, allslno);
+                    TXNSLNO++;
+                }
+            }
+            else {
+                TXNSLNO = retInt(SLNO);
+            }
+        }
+        $("#B_TXNSLNO_" + index).val(TXNSLNO);
+    }
     $("#bardatachng").val("Y");
 }
 function GetPendOrder(BtnId) {
