@@ -2976,7 +2976,7 @@ namespace Improvar.Controllers
                     //    ContentFlg = "Quantity not entered"; goto dbnotsave;
                     //}
                     dbqty = dbqty - rdbqty;
-                    if (dbqty.retDbl() == 0)
+                    if (dbqty + rdbqty == 0)
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
@@ -3461,7 +3461,7 @@ namespace Improvar.Controllers
                             double multamt = 1;
                             if (VE.MENU_PARA == "SBCM")
                             {
-                                if(negamt == "Y")
+                                if (negamt == "Y")
                                 {
                                     proddrcr = dr;
                                     multamt = -1;
@@ -3859,7 +3859,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3874,7 +3874,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
