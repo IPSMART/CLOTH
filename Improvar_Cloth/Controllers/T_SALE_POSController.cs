@@ -2976,7 +2976,7 @@ namespace Improvar.Controllers
                     //    ContentFlg = "Quantity not entered"; goto dbnotsave;
                     //}
                     dbqty = dbqty - rdbqty;
-                    if (dbqty + rdbqty == 0)
+                    if (dbqty > 0 || rdbqty > 0)
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
@@ -3463,12 +3463,12 @@ namespace Improvar.Controllers
                             {
                                 if (negamt == "Y")
                                 {
-                                    proddrcr = dr;
+                                    proddrcr = cr;
                                     multamt = -1;
                                 }
                                 else
                                 {
-                                    proddrcr = cr;
+                                    proddrcr = dr;
                                 }
 
                             }
@@ -3527,8 +3527,8 @@ namespace Improvar.Controllers
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST.PORTCD = VE.T_VCH_GST.PORTCD;
                                     TVCHGST.OTHRAMT = 0;
-                                    TVCHGST.ROAMT = groamt;
-                                    TVCHGST.BLAMT = gblamt;
+                                    TVCHGST.ROAMT = groamt * multamt;
+                                    TVCHGST.BLAMT = gblamt * multamt;
                                     TVCHGST.DNCNSALPUR = dncntag;
                                     TVCHGST.CONSLCD = TTXN.CONSLCD;
                                     TVCHGST.APPLTAXRATE = 0;
