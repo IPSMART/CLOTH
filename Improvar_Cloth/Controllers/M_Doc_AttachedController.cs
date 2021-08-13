@@ -73,8 +73,10 @@ namespace Improvar.Controllers
         {
             try
             {
-                fdt = Convert.ToString(Convert.ToDateTime(fdt)).Substring(0, 10);
-                tdt = Convert.ToString(Convert.ToDateTime(tdt)).Substring(0, 10);
+                //fdt = Convert.ToString(Convert.ToDateTime(fdt)).Substring(0, 10);
+                //tdt = Convert.ToString(Convert.ToDateTime(tdt)).Substring(0, 10);
+                fdt = fdt.retDateStr();
+                tdt = fdt.retDateStr();
                 fddt = Convert.ToString(Convert.ToDateTime(fddt)).Substring(0, 10);
                 tddt = Convert.ToString(Convert.ToDateTime(tddt)).Substring(0, 10);
                 Trans_document_Attach TDA = new Trans_document_Attach();

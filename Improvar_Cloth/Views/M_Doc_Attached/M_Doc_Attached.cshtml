@@ -93,16 +93,16 @@
         }
         var fdt = $("#FDT").val();
         var tdt = $("#TDT").val();
-        if (fdt == "") {
-            msgInfo(" Enter Entry From Date !! ");
-            message_value = "FDT";
-            return false;
-        }
-        if (tdt == "") {
-            msgInfo(" Enter Entry To Date !! ");
-            message_value = "TDT";
-            return false;
-        }
+        //if (fdt == "") {
+        //    msgInfo(" Enter Entry From Date !! ");
+        //    message_value = "FDT";
+        //    return false;
+        //}
+        //if (tdt == "") {
+        //    msgInfo(" Enter Entry To Date !! ");
+        //    message_value = "TDT";
+        //    return false;
+        //}
         var fddt = $("#FDDT").val();
         var tddt = $("#TDDT").val();
         if (fddt == "") {
@@ -219,33 +219,11 @@
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-5">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "From Entry Date")
-                </div>
-            </div>
-            <div class="col-md-7" style="margin-left:4px">
-                <div class="editor-field">
-                    <input type="date" name="FDT" id="FDT" required class="form-control" style="background-color:#fbfabc" />
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "To Entry Date")
-                </div>
-            </div>
-            <div class="col-md-7" style="margin-left:4px">
-                <div class="editor-field">
-                    <input type="date" name="TDT" required id="TDT" class="form-control" style="background-color:#fbfabc" />
-                </div>
-            </div>
-        </div>
         <div class="row">
             <div class="col-md-5">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "From Document Date")
+                    <b style="color:red"><sup>*</sup></b>
                 </div>
             </div>
             <div class="col-md-7" style="margin-left:4px">
@@ -256,6 +234,7 @@
             <div class="col-md-5">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "To Document Date")
+                    <b style="color:red"><sup>*</sup></b>
                 </div>
             </div>
             <div class="col-md-7" style="margin-left:4px">
@@ -263,7 +242,7 @@
                     <input type="date" name="TDDT" required id="TDDT" class="form-control" style="background-color:#dcf8ea" />
                 </div>
             </div>
-            <div class="col-md-6" style="margin-top:-19px">
+            <div class="col-md-6" style="margin-top:0px">
                 <input id="GETTRAN" type="button" value="Get Transaction" class="btn btn-info" title="Get Transaction" onclick="GetTransaction();" />              
             </div>
             <div class="col-md-6" style="margin-top:-19px">               
@@ -271,6 +250,28 @@
             </div>
             <div class="col-md-1" style="margin-top:-19px">
                 <input id="STVATTCHCAN" type="button" value="Cancel Attachment" class="btn btn-info" style="display:none" onclick="GETBACKTRAN();" title="Cancel Attachment"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "From Entry Date")
+                </div>
+            </div>
+            <div class="col-md-7" style="margin-left:4px">
+                <div class="editor-field">
+                    <input type="date" name="FDT" id="FDT" class="form-control" style="background-color:#fbfabc" />
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "To Entry Date")
+                </div>
+            </div>
+            <div class="col-md-7" style="margin-left:4px">
+                <div class="editor-field">
+                    <input type="date" name="TDT"  id="TDT" class="form-control" style="background-color:#fbfabc" />
+                </div>
             </div>
         </div>
         <div id="prow" class="row" style="padding-top:5px">
