@@ -2975,11 +2975,11 @@ namespace Improvar.Controllers
                     //{
                     //    ContentFlg = "Quantity not entered"; goto dbnotsave;
                     //}
-                    dbqty = dbqty - rdbqty;
-                    if (dbqty > 0 || rdbqty > 0)
+                    if (dbqty < 0 && rdbqty < 0)
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
+                    dbqty = dbqty - rdbqty;
                     isl = 1;
 
                     if (VE.TTXNAMT != null)
