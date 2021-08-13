@@ -1550,8 +1550,13 @@ namespace Improvar.Controllers
             {
                 //sequence of Code variable MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/HelpFrom
                 TransactionSaleEntry VE = new TransactionSaleEntry();
-                Cn.getQueryString(VE);
+                Cn.getQueryString(VE); string str = ""; bool showonlycommonbar = true;
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                //if new barcode generate then commonbarcode=E transaction barcode comes on blure only. (For Lal Fashion) change by Neha
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                { if (val.retStr() != "") { showonlycommonbar = false; }
+                }   
+                //end
                 string barnoOrStyle = val.retStr();
                 string MTRLJOBCD = data[0].retSqlformat();
                 string PARTCD = data[1].retStr();
@@ -1567,7 +1572,7 @@ namespace Improvar.Controllers
                 {
                     barnoOrStyle = barnoOrStyle.ToUpper();
                 }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO);
+                 str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar); 
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
