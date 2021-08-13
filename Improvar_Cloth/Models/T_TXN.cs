@@ -112,5 +112,7 @@ namespace Improvar.Models
         public string INCL_RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? ADVADJ { get; set; }
+        [StringLength(1)]
+        public string MERGEINDTL { get; set; }
     }
 }
