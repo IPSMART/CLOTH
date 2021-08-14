@@ -135,7 +135,7 @@ namespace Improvar.Controllers
 
 
 
-                DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd);
+              
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("");
@@ -143,7 +143,7 @@ namespace Improvar.Controllers
                 Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
 
                 // Report begins
-                i = 0; maxR = tbl.Rows.Count - 1;
+              //  i = 0; maxR = tbl.Rows.Count - 1;
 
                 string pghdr1 = "";
                 string repname = "Stock_Val" + System.DateTime.Now;
@@ -153,14 +153,17 @@ namespace Improvar.Controllers
 
                 if (summary == "D")
                 {
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"", "CP");
                     return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "S")
                 {
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"","CP");
                     return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems);
                 }
                 else if (summary == "G")
                 {
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"","CP");
                     return Godownwise(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "B")
@@ -550,6 +553,7 @@ namespace Improvar.Controllers
                     {
                         double avrt = 0;
                         if (iqnty != 0) avrt = iamt / iqnty;
+
                         gocd = tbl.Rows[i]["gocd"].ToString();
 
                         foreach (DataRow amtdr in amtDT.Rows)
@@ -557,8 +561,10 @@ namespace Improvar.Controllers
                             if (gocd == amtdr["gocd"].retStr())
                             {
                                 amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["balqnty"].retDbl();
-                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
                                 tqty_ += tbl.Rows[i]["balqnty"].retDbl();
+                                //IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
+                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tqty_;
+
                             }
                         }
                         i++;
