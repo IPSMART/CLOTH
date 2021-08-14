@@ -174,7 +174,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                string sql = "select * from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
+                string sql = "select PRICEINCODE from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
                 var dtsyscnfg = masterHelp.SQLquery(sql); string PRICEINCODE = "";
                 if (dtsyscnfg != null && dtsyscnfg.Rows.Count > 0)
                 {
