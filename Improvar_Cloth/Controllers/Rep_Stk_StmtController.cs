@@ -257,7 +257,7 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
 
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Detail) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -337,6 +337,9 @@ namespace Improvar.Controllers
             if (ageingperiod >= 4) HC.GetPrintHeader(IR, "stk4qty", "double", "n,14,3", "> " + due3tDys.ToString() + ";Qty");
             if (ageingperiod >= 4) HC.GetPrintHeader(IR, "stk4amt", "double", "n,14,2", "> " + due3tDys.ToString() + ";Amt");
             maxR = tbl.Rows.Count - 1;
+            DataView dv = new DataView(tbl);
+            dv.Sort = "itgrpcd, itcd ASC";
+            tbl = dv.ToTable();
 
             string strbrgrpcd = "", stritcd = "";
             double gamt = 0, gqnty = 0;
@@ -469,7 +472,7 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Summary) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -585,7 +588,7 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
 
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Godown Wise) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -991,7 +994,7 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
 
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Barcode Wise Summary) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
