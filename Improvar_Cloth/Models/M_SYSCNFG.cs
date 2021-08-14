@@ -112,6 +112,7 @@ namespace Improvar.Models
         public string SHORTAGE_GLCD { get; set; }
         [StringLength(1)]
         public string CMCASHRECDAUTO { get; set; }
-
+        [StringLength(1)]
+        public string MERGEINDTL { get; set; }
     }
 }

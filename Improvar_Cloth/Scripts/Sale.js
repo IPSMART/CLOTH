@@ -606,7 +606,7 @@ function UpdateBarCodeRow() {
             TXNSLNO = 1;
         }
         else {
-            if (document.getElementById("MergeBarItem").checked == true) {
+            if (document.getElementById("MERGEINDTL").checked == true) {
                 var allslno = [];
                 var matchslno = [];
                 countmatchslno = 0;
@@ -2254,7 +2254,7 @@ function AddBarCodeGrid() {
             TXNSLNO = 1;
         }
         else {
-            if (document.getElementById("MergeBarItem").checked == true) {
+            if (document.getElementById("MERGEINDTL").checked == true) {
                 var allslno = [];
                 var matchslno = [];
                 var pageno = [];
@@ -3071,7 +3071,7 @@ function HasChangeBarSale(BlslnoRegen, index) {
             TXNSLNO = 1;
         }
         else {
-            if (document.getElementById("MergeBarItem").checked == true) {
+            if (document.getElementById("MERGEINDTL").checked == true) {
                 var allslno = [];
                 var matchslno = [];
                 var pageno = [];

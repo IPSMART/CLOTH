@@ -49,8 +49,8 @@ namespace Improvar.ViewModels
         public string CMROFFTYPE { get; set; }
         public string CMROFFAMT { get; set; }
         public bool CMCASHRECDAUTO { get; set; }
-        
 
+        public bool MERGEINDTL { get; set; }
 
 
     }

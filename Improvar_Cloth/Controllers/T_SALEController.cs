@@ -271,7 +271,7 @@ namespace Improvar.Controllers
                                     TTXN.BARGENTYPE = VE.M_SYSCNFG.COMMONUNIQBAR.retStr() == "E" ? "E" : "C";
                                 }
                                 VE.T_TXN = TTXN;
-
+                                VE.MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr() == "Y" ? true : false;
                                 T_TXNOTH TXNOTH = new T_TXNOTH();
                                 if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TXNOTH.PAYTERMS = "NETT CASH, NO LESS";
                                 VE.T_TXNOTH = TXNOTH;
@@ -341,14 +341,14 @@ namespace Improvar.Controllers
                         VE.SHOWMTRLJOBCD = mtrljobcd.Count() > 1 ? "Y" : "N";
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
                         VE.SHOWSTKTYPE = VE.DropDown_list_StkType.Count > 1 ? "Y" : "N";
-                        if (CommVar.ClientCode(UNQSNO) == "SACH")
-                        {
-                            VE.MergeBarItem = false;
-                        }
-                        else
-                        {
-                            VE.MergeBarItem = true;
-                        }
+                        //if (CommVar.ClientCode(UNQSNO) == "SACH")
+                        //{
+                        //    VE.MERGEINDTL = false;
+                        //}
+                        //else
+                        //{
+                        //    VE.MERGEINDTL = true;
+                        //}
                     }
                     else
                     {
@@ -434,6 +434,7 @@ namespace Improvar.Controllers
                 TCH = DB.T_CNTRL_HDR.Find(TXN.AUTONO);
                 if (TXN.ROYN == "Y") VE.RoundOff = true;
                 else VE.RoundOff = false;
+                VE.MERGEINDTL = TXN.MERGEINDTL == "Y" ? true : false;
                 TXNTRN = DB.T_TXNTRANS.Find(TXN.AUTONO);
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
                 TTXNEINV = DBF.T_TXNEINV.Find(TXN.AUTONO);
@@ -1554,8 +1555,9 @@ namespace Improvar.Controllers
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 //if new barcode generate then commonbarcode=E transaction barcode comes on blure only. (For Lal Fashion) change by Neha
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
-                { if (val.retStr() != "") { showonlycommonbar = false; }
-                }   
+                {
+                    if (val.retStr() != "") { showonlycommonbar = false; }
+                }
                 //end
                 string barnoOrStyle = val.retStr();
                 string MTRLJOBCD = data[0].retSqlformat();
@@ -1572,7 +1574,7 @@ namespace Improvar.Controllers
                 {
                     barnoOrStyle = barnoOrStyle.ToUpper();
                 }
-                 str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar); 
+                str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3831,7 +3833,7 @@ namespace Improvar.Controllers
                         propB.SetValue(TBATCHDTLobj, propA.GetValue(TBATCHDTLobjtemp, null), null);
                     }
                     TBATCHDTLobj.SLNO = (++MAXSLNO).retShort();
-                    if (VE.MergeBarItem == false)
+                    if (VE.MERGEINDTL == false)
                     {
                         TBATCHDTLobj.TXNSLNO = (++MAXBLSLNO).retShort();
                     }
@@ -4229,6 +4231,7 @@ namespace Improvar.Controllers
                     TTXN.TCSON = VE.T_TXN.TCSON;
                     TTXN.TDSCODE = VE.T_TXN.TDSCODE;
                     TTXN.JOBCD = VE.T_TXN.JOBCD;
+                    TTXN.MERGEINDTL = VE.MERGEINDTL == true ? "Y" : "N";
                     if (VE.DefaultAction == "E")
                     {
                         dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
@@ -4679,7 +4682,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5844,7 +5847,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -5852,7 +5855,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
