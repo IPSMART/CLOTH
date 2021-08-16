@@ -147,6 +147,11 @@ namespace Improvar.Controllers
 
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                         VE.SrcFlagCaption = "Bale No.";
+                        if (TempData["LoadFromExisting" + VE.MENU_PARA].retStr() != "")
+                        {
+                            loadOrder = "N";
+                            TempData.Remove("LoadFromExisting" + VE.MENU_PARA);
+                        }
                         if (op == "E" || op == "D" || op == "V" || loadOrder.retStr().Length > 1)
                         {
                             if (searchValue.Length != 0)
@@ -419,7 +424,7 @@ namespace Improvar.Controllers
 
             TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN();
 
-            if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
+            if (VE.IndexKey.Count != 0 || (loadOrder.retStr().Length > 1 && index >= 0))
             {
                 string[] aa = null;
                 if (searchValue.Length == 0)
@@ -5333,7 +5338,7 @@ namespace Improvar.Controllers
                            VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                            TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
                            VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "",
-                           VE.T_TXNOTH.BLTYPE, blrem,VE.T_TXNOTH.SAGSLCD);
+                           VE.T_TXNOTH.BLTYPE, blrem, VE.T_TXNOTH.SAGSLCD);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
 
@@ -5716,6 +5721,7 @@ namespace Improvar.Controllers
                         ContentFlg = "2";
                     }
                     OraTrans.Commit();
+                    if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && VE.DefaultAction == "A") TempData["LoadFromExisting" + VE.MENU_PARA] = TTXN.AUTONO.retStr();
                     if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "")//need to delete profma when salebill done from profma
                     {
                         T_SALEController TSCntlr = new T_SALEController();
