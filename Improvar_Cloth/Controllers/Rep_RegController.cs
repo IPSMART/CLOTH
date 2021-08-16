@@ -265,7 +265,7 @@ namespace Improvar.Controllers
                 
                 string sql = "";
                 sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, " + Environment.NewLine;
-                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
                 sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
                 sql += "   b.slno,b.stkdrcr, b.itcd, " + Environment.NewLine;
                 //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
@@ -316,8 +316,9 @@ namespace Improvar.Controllers
                 sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b " + Environment.NewLine;
                 sql += " where a.amtcd = b.amtcd " + Environment.NewLine;
                 sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
-                sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l " + Environment.NewLine;
-                sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+) " + Environment.NewLine;
+                sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
+                sql += "" + scmf + ".m_subleg m " + Environment.NewLine;
+                sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
                 sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+)  " + Environment.NewLine;
                 if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
                 if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
@@ -421,6 +422,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party;Name");
                         HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent;Name");
+                        HC.GetPrintHeader(IR, "sagslnm", "string", "c,40", "Sub Agent;Name");
                         if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
@@ -443,6 +445,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party; Name");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
+                        if (dtlsumm != "C") HC.GetPrintHeader(IR, "sagslnm", "string", "c,40", "Sub Agent; Name");
                         if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
                         if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
@@ -571,6 +574,7 @@ namespace Improvar.Controllers
                                     dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                     if (dtlsumm != "C") dr["slarea"] = tbl.Rows[i]["slarea"].ToString();
                                     if (dtlsumm != "C") dr["agslnm"] = tbl.Rows[i]["agslnm"].ToString();
+                                    if (dtlsumm != "C") dr["sagslnm"] = tbl.Rows[i]["sagslnm"].ToString();
                                     if (dtlsumm != "C" && VE.Checkbox1 == true) dr["bltype"] = tbl.Rows[i]["bltype"].retStr();
                                 }
                                 else
