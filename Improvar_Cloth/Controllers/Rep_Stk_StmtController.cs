@@ -135,7 +135,7 @@ namespace Improvar.Controllers
 
 
 
-                DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd);
+              
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("");
@@ -143,7 +143,7 @@ namespace Improvar.Controllers
                 Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
 
                 // Report begins
-                i = 0; maxR = tbl.Rows.Count - 1;
+              //  i = 0; maxR = tbl.Rows.Count - 1;
 
                 string pghdr1 = "";
                 string repname = "Stock_Val" + System.DateTime.Now;
@@ -153,14 +153,17 @@ namespace Improvar.Controllers
 
                 if (summary == "D")
                 {
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"", "CP");
                     return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "S")
                 {
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"","CP");
                     return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems);
                 }
                 else if (summary == "G")
                 {
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"","CP");
                     return Godownwise(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "B")
@@ -257,7 +260,7 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
 
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Detail) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -337,6 +340,9 @@ namespace Improvar.Controllers
             if (ageingperiod >= 4) HC.GetPrintHeader(IR, "stk4qty", "double", "n,14,3", "> " + due3tDys.ToString() + ";Qty");
             if (ageingperiod >= 4) HC.GetPrintHeader(IR, "stk4amt", "double", "n,14,2", "> " + due3tDys.ToString() + ";Amt");
             maxR = tbl.Rows.Count - 1;
+            DataView dv = new DataView(tbl);
+            dv.Sort = "itgrpcd, itcd ASC";
+            tbl = dv.ToTable();
 
             string strbrgrpcd = "", stritcd = "";
             double gamt = 0, gqnty = 0;
@@ -469,7 +475,7 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Summary) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -547,6 +553,7 @@ namespace Improvar.Controllers
                     {
                         double avrt = 0;
                         if (iqnty != 0) avrt = iamt / iqnty;
+
                         gocd = tbl.Rows[i]["gocd"].ToString();
 
                         foreach (DataRow amtdr in amtDT.Rows)
@@ -554,8 +561,10 @@ namespace Improvar.Controllers
                             if (gocd == amtdr["gocd"].retStr())
                             {
                                 amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["balqnty"].retDbl();
-                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
                                 tqty_ += tbl.Rows[i]["balqnty"].retDbl();
+                                //IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
+                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tqty_;
+
                             }
                         }
                         i++;
@@ -585,7 +594,7 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
 
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Godown Wise) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -991,7 +1000,7 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
 
-            pghdr1 = "Stock Valuation as on " + ASDT;
+            pghdr1 = "Stock Valuation(Barcode Wise Summary) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
