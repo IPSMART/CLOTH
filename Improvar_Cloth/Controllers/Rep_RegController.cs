@@ -262,7 +262,7 @@ namespace Improvar.Controllers
                     default: txntag = ""; break;
                 }
                 // }
-                
+
                 string sql = "";
                 sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, " + Environment.NewLine;
                 sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
@@ -310,7 +310,9 @@ namespace Improvar.Controllers
                 sql += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
                 sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
-                sql += "select a.autono,'C' stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
+                sql += "select a.autono,";
+                if (txntag == "SB" || txntag == "PR") { sql += "'C'"; } else { sql += "'D'"; }
+                sql += " stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
                 sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
                 sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
                 sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b " + Environment.NewLine;
@@ -345,7 +347,7 @@ namespace Improvar.Controllers
                 }
                 string query2 = " select b.amt payamt,b.autono from " + scm1 + ".t_txnpymt b ";
                 var paymentDt = MasterHelp.SQLquery(query2);
-               
+
                 if (dtlsumm == "E")
                 {
                     string colnm = ShowAllColumn(VE, "ExcelHeader");
@@ -364,7 +366,7 @@ namespace Improvar.Controllers
                 }
                 else {
                     var cnt_blqnty = (from DataRow dr in tbl.Rows where dr["blqnty"].retDbl() != 0 select dr["blqnty"].retDbl()).ToList();
-                  //  DataTable rsStkPrcDesc;
+                    //  DataTable rsStkPrcDesc;
                     //string query_new = "";
                     //query_new += "select distinct a.autono, c.prcdesc stkprcdesc, nvl(e.docrem,'') docrem ";
                     //query_new += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b, " + scm1 + ".m_itemplist c, " + scm1 + ".t_cntrl_hdr d, " + scm1 + ".T_CNTRL_HDR_REM e ";
@@ -375,7 +377,7 @@ namespace Improvar.Controllers
                     //if (fdt != "") query_new += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
                     //if (tdt != "") query_new += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
 
-                 //   rsStkPrcDesc = MasterHelp.SQLquery(query_new);
+                    //   rsStkPrcDesc = MasterHelp.SQLquery(query_new);
 
                     DataTable IR = new DataTable("mstrep");
                     Models.PrintViewer PV = new Models.PrintViewer();
