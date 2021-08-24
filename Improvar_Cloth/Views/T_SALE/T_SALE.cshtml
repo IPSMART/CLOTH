@@ -90,12 +90,12 @@
         if ("@Model.SHOWSTKTYPE" != "Y") {
             $(".divstktype").hide();
         }
-        if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@COMMONUNIQBAR" == "E" && "@Model.DefaultAction" != "V") {
+        @*if (("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PR") && "@COMMONUNIQBAR" == "E" && "@Model.DefaultAction" != "V") {
             $(".DivMergeBarItem").show();
         }
         else {
             $(".DivMergeBarItem").hide();
-        }
+        }*@
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#update_page_slno").hide();
@@ -1395,6 +1395,14 @@
                                     @Html.EditorFor(model => model.T_TXNOTH.POREFDT, new { htmlAttributes = new { @class = "form-control", id = "POREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                 </div>
                             </div>
+                            <div class="DivMergeBarItem col-md-1" style="width:auto;">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Merge Item in Detail")
+                                </div>
+                            </div>
+                            <div class="DivMergeBarItem col-md-1" style="width:auto;margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.MERGEINDTL, new { id = "MERGEINDTL", @TabIndex = -1 })
+                            </div>
                         </div>
                         @if (Model.MENU_PARA == "SCN" || Model.MENU_PARA == "SDN" || Model.MENU_PARA == "PCN" || Model.MENU_PARA == "PDN")
                         {
@@ -1471,11 +1479,11 @@
                                         @Html.EditorFor(model => model.T_TDSTXN.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", onblur = "TDSAMTCAL();", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
                                     </div>
                                 </div>
-                                    <div class="col-md-5">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Lower TDS Ded.Type")
-                                        </div>
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Lower TDS Ded.Type")
                                     </div>
+                                </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.DropDownListFor(model => model.T_TDSTXN.LOW_TDS, new SelectList(Model.LOW_TDS_list, "Value", "Text", Model.LOW_TDS_list), new { @class = "form-control", onchange = "GetTDSDescription(this.value);", })
@@ -1714,14 +1722,7 @@
                                 </div>
                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                 }
-                                <div class="DivMergeBarItem col-md-1" style="width:auto;">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Merge Item in Detail")
-                                    </div>
-                                </div>
-                                <div class="DivMergeBarItem col-md-1" style="width:auto;margin-top:6px;">
-                                    @Html.CheckBoxFor(model => model.MERGEINDTL, new { id = "MERGEINDTL", @TabIndex = -1 })
-                                </div>
+                                
                             </div>
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                     {
