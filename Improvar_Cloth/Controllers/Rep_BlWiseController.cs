@@ -89,6 +89,11 @@ namespace Improvar.Controllers
                 VE.DropDown_list_SubLegGrp = DropDownHelp.GetSubLegGrpforSelection();
                 VE.SubLeg_Grp = MasterHelp.ComboFill("slcdgrpcd", VE.DropDown_list_SubLegGrp, 0, 1);
 
+                var T_VCH_BL_REMLst = (from i in DBF.T_VCH_BL_REM
+                                       select new Database_Combo1()
+                                       { FIELD_VALUE = i.CTG }).Distinct().OrderBy(s => s.FIELD_VALUE).ToList();
+                VE.TEXTBOX7 = MasterHelp.ComboFill("ctg", T_VCH_BL_REMLst, 0, 0);
+
                 if (ModuleCode == "SALESCHEM")
                 {
                     DataTable clsdata = MasterHelp.SQLquery(query);
@@ -104,6 +109,17 @@ namespace Improvar.Controllers
                     VE.DropDown_list_Class1 = DropDownHelp.DropDown_list_Class1();
                 }
                 VE.CLASS1CD = MasterHelp.ComboFill("class1cd", VE.DropDown_list_Class1, 0, 1);
+
+                sql = "select distinct nvl(vchtype,' ') vchtype from " + FScm1 + ".t_vch_bl ";
+                var dt1 = masterhelpfa.SQLquery(sql);
+
+                VE.DropDown_list3 = (from DataRow dr in dt1.Rows
+                           select new DropDown_list3()
+                           {
+                               value = dr["vchtype"].ToString(),
+                               text = dr["vchtype"].ToString(),
+
+                           }).ToList();
 
                 VE.Checkbox2 = false;
                 VE.Checkbox3 = true;
@@ -129,12 +145,14 @@ namespace Improvar.Controllers
             Cn.getQueryString(VE);
             string ModuleCode = CommVar.ModuleCode(); // Session["ModuleCode"].ToString();
             string scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            bool ShowPymtHoldRem = false;
+            if (VE.Checkbox16 == true) ShowPymtHoldRem = true;
             string sql = "", sqlc = "";
             try
             {
                 if (VE.MENU_PARA.Split(',').Count() > 1) Para2 = VE.MENU_PARA.Split(',')[1].retStr();
 
-                string selglcd = "", selclass1cd = "", linkcd = "", selagslcd = "", selstate = "", seldistrict = "", selflag = "";
+                string selglcd = "", selclass1cd = "", linkcd = "", selagslcd = "", selstate = "", seldistrict = "", selflag = "", selPymtHoldCtg = "", selvchtype = "";
                 TD = VE.TDT;
                 string acsel1 = "";
                 if (FC.AllKeys.Contains("glcdvalue"))
@@ -160,6 +178,8 @@ namespace Improvar.Controllers
                 if (selglcd == "") return Content("You have to select One General Ledger...");
                 if (FC.AllKeys.Contains("class1cdvalue")) selclass1cd = FC["class1cdvalue"].ToString().retSqlformat();
                 if (FC.AllKeys.Contains("AGENT")) selagslcd = FC["AGENT"].ToString().retSqlformat();
+                if (FC.AllKeys.Contains("ctgvalue")) selPymtHoldCtg = FC["ctgvalue"].ToString().retSqlformat();
+                if (FC.AllKeys.Contains("VCHTYPE")) selvchtype = FC["VCHTYPE"].ToString().retSqlformat();
 
                 if (VE.TEXTBOX6 != null) selflag = "'" + VE.TEXTBOX6 + "'";
                 if (ModuleCode == "SALESCHEM")
@@ -207,14 +227,11 @@ namespace Improvar.Controllers
                 string OsBill = "Y";
                 if (optRepOpt == "NIL") OsBill = "N"; else if (optRepOpt == "ALL") OsBill = "A";
                 if (VE.Checkbox14 == true) OsBill = "Y";
-                if (VE.Checkbox15 == true)
-                {
-                    tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, VE.Checkbox15, "", "", selrtdebcd);
-                }
-                else
-                {
-                    tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, VE.Checkbox4, "", "", selrtdebcd);
-                }
+                string showagentpara = "";
+                if (VE.Checkbox4 == true) showagentpara = "A"; else if (VE.Checkbox17 == true) showagentpara = "S";
+
+                tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, showagentpara, "", "", selrtdebcd, ShowPymtHoldRem, selPymtHoldCtg, selvchtype);
+
                 string osmsg = masterhelpfa.CheckOSTbl(tbl);
                 if (osmsg != "OK") return Content(osmsg);
 
@@ -242,7 +259,7 @@ namespace Improvar.Controllers
                     string curdocautono = "null", txnupto = TD;
                     sqlc = "";
                     //sqlc += "select a.autono||a.r_slno vautoslno, a.i_autono||a.i_slno autoslno, b.docdt, nvl(e.blno,b.doccd||b.doconlyno) doccdno, b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem, ";
-                    sqlc += "select a.autono||a.r_slno vautoslno, a.i_autono||a.i_slno autoslno, b.docdt, nvl(e.blno,b.docno) doccdno, b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem, ";
+                    sqlc += "select a.autono, a.autono||a.r_slno vautoslno, a.i_autono||a.i_slno autoslno, b.docdt, nvl(e.blno,b.docno) doccdno, b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem, ";
                     sqlc += "sum(decode(a.r_autono||a.r_slno," + curdocautono + ",nvl(a.adj_amt,0),0) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
                     sqlc += "sum(decode(a.r_autono||a.r_slno," + curdocautono + ",0,nvl(a.adj_amt,0)) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
                     sqlc += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".m_genleg d, " + scmf + ".t_vch_bl e ";
@@ -251,13 +268,17 @@ namespace Improvar.Controllers
                     if (selglcd != "") sqlc += "c.glcd in (" + selglcd + ") and ";
                     if (selslcd != "") sqlc += "c.slcd in (" + selslcd + ") and ";
                     sqlc += "a.autono=b.autono and nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' ";
-                    sqlc += "group by a.autono||a.r_slno, a.i_autono||a.i_slno, b.docdt, nvl(e.blno,b.docno), b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem ";
+                    sqlc += "group by a.autono, a.autono||a.r_slno, a.i_autono||a.i_slno, b.docdt, nvl(e.blno,b.docno), b.docno, b.doccd, e.bltype, e.vchtype, a.pymtrem ";
 
                     sql = "";
 
+                    sql += "select a.autono, d.docnm, a.vautoslno, a.autoslno, a.docdt, a.doccdno, a.docno, a.doccd, a.bltype, a.vchtype, a.pymtrem, a.cur_adj, a.adj_amt from  ( ";
                     sql += sqlc;
                     sql += "union all ";
                     sql += sqlc.Replace("i_", "r_").Replace(",1,-1", ",-1,1");
+
+                    sql += ") a, " + scmf + ".t_vch_bl b, " + scmf + ".t_cntrl_hdr c, " + scmf + ".m_doctype d where a.autono=c.autono and c.doccd=d.doccd and a.autoslno=b.autono||b.slno ";
+                    if (selslcd != "") sql += "and b.slcd in (" + selslcd + ") ";
                     sql += "order by autoslno, docdt, docno";
                     txn = MasterHelp.SQLquery(sql);
 
@@ -282,11 +303,12 @@ namespace Improvar.Controllers
         {
             try
             {
-                bool ordrefprint = false, blamtprint = false, itamtprint = false, showAgent = false, showcrbalsep = false;
+                bool ordrefprint = false, blamtprint = false, itamtprint = false, showAgent = false, showcrbalsep = false, ShowPymtHoldRem = false;
                 string crbalhead = "Cr.";
                 if (VE.Checkbox2 == true) ordrefprint = true;
                 if (VE.Checkbox5 == true) showcrbalsep = true;
                 if (VE.Checkbox4 == true) showAgent = true;
+                if (VE.Checkbox16 == true) ShowPymtHoldRem = true;
                 string due_caldt = FC["ddco"];//Due days calculate on   
                 string ShowDuedaysfrom = FC["ddshowas"]; // D=due date B=Doc Dt
                 string days_aging = VE.TEXTBOX5; // Days aging value
@@ -534,7 +556,7 @@ namespace Improvar.Controllers
 
                             TimeSpan TSdys, TCdys;
                             //calculate credit days
-                            cdays = Convert.ToDouble(tbl.Rows[i]["crdays"]);
+                            cdays = tbl.Rows[i]["crdays"].retDbl();
                             if (cdays == 0)
                             {
                                 if (tbl.Rows[i]["duedt"].ToString() == "") cdays = 0;
@@ -596,7 +618,7 @@ namespace Improvar.Controllers
                                     //IR.Rows[rNo]["docno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i]["tchdocno"].ToString();
                                 }
-                                if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr();
+                                if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr() + (tbl.Rows[i]["sagshortnm"].retStr() == "" ? "" : " - " + tbl.Rows[i]["sagshortnm"].retStr());
                                 if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
                                 if (tbl.Rows[i]["blno"].ToString() == "") IR.Rows[rNo]["blno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
                                 else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
@@ -822,10 +844,31 @@ namespace Improvar.Controllers
                 bool itamtprint = VE.Checkbox6;
                 bool PymtDaysprint = VE.Checkbox13; //added from sn fabric not want
                 string due_caldt = FC["ddco"];//Due days calculate on   
-
+                bool showagent = (VE.Checkbox4 == true || VE.Checkbox17 == true ? true : false);
+                string agdsp = "Agent";
+                if (VE.Checkbox17 == true) agdsp = "Sub Agent";
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("os");
+
+                if (showagent == true)
+                {
+                    if (FC["Sorting"].retStr() == "DOC")
+                    {
+                        tbl.DefaultView.Sort = (VE.Checkbox17 == true ? "sagslnm,sagslcd" : "agslnm,agslcd") + ",glcd,slnm,slcd,docdt,bldt1,docno";
+                        tbl = tbl.DefaultView.ToTable();
+                    }
+                    else
+                    {
+                        tbl.DefaultView.Sort = (VE.Checkbox17 == true ? "sagslnm,sagslcd" : "agslnm,agslcd") + ",glcd,slnm,slcd,bldt1,docdt,docno";
+                        tbl = tbl.DefaultView.ToTable();
+                    }
+                }
+                if (Para2 != "")
+                {
+                    tbl.DefaultView.Sort = "agslnm,agslcd,glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
+                    tbl = tbl.DefaultView.ToTable();
+                }
 
                 string glcd = tbl.Rows[0]["glcd"].ToString(); string glnm = tbl.Rows[0]["glnm"].ToString();
                 string dtlsumm = format;
@@ -850,6 +893,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "adjdt", "string", "c,10", "Adj;Date");
                     HC.GetPrintHeader(IR, "adjamt", "double", "n,16,2", "Adj Amt");
                     HC.GetPrintHeader(IR, "dueamt", "double", "n,16,2", "Due Amt");
+                    if (VE.Checkbox12 == true && dtlsumm == "D") HC.GetPrintHeader(IR, "blrem", "string", "c,35", "Remarks");
                     if (PymtDaysprint == true) HC.GetPrintHeader(IR, "pdays", "double", "n,4,0", "Payment;Days");
                     HC.GetPrintHeader(IR, "prem", "string", "c,15", "Payment;Remarks");
                     if (dtlsumm == "D" && VE.Checkbox2 == true)
@@ -878,182 +922,217 @@ namespace Improvar.Controllers
                 Int32 maxR = 0, i = 0, rNo = 0;
 
                 i = 0; maxR = tbl.Rows.Count - 1;
-
+                string agslcdfld1 = "agslcd", agslcdfld2 = "agslnm";
+                if (VE.Checkbox17 == true) { agslcdfld1 = "sagslcd"; agslcdfld2 = "sagslnm"; }
+                double gdueamt = 0, adueamt = 0;
                 while (i <= maxR)
                 {
                     glcd1 = tbl.Rows[i]["glcd"].ToString();
-
-                    slcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
-                    slnm1 = (Para2 == "" ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["rtdebnm"].ToString());
-                    slphno1 = (Para2 == "" ? tbl.Rows[i]["phno"].retStr() : tbl.Rows[i]["rtdebmobile"].retStr());
-                    slcity1 = (Para2 == "" ? tbl.Rows[i]["slcity"].ToString() : tbl.Rows[i]["retdebarea"].ToString());
-                    if (dtlsumm == "D")
+                    string chkagslcd = tbl.Rows[i][agslcdfld1].retStr();
+                    if (showagent == true)
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-
-                        string sldsp = "";
-                        sldsp = slnm1;
-                        sldsp += "<span style='font-weight:100;font-size:11px;'>" + " [" + slcity1 + "]  " + " </span>";
-                        sldsp += "<span style='font-weight:100;font-size:9px;'>" + " " + slcd1 + "  " + " </span>";
-                        if (slphno1 != "") sldsp += IR.Rows[rNo]["Dammy"] + " Ph. " + " </span>" + slphno1;
+                        string sldsp = agdsp + " - ";
+                        sldsp += tbl.Rows[i][agslcdfld2].retStr();
+                        //sldsp += "<span style='font-weight:100;font-size:11px;'>" + " [" + slcity1 + "]  " + " </span>";
+                        sldsp += "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i][agslcdfld1].retStr() + "  " + " </span>";
                         IR.Rows[rNo]["Dammy"] = sldsp;
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
-                    double tdays = 0, tdueamt = 0, tbills = 0;
-                    slno1++;
-                    while (tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                    adueamt = 0;
+                    while (tbl.Rows[i]["glcd"].ToString() == glcd1 && tbl.Rows[i][agslcdfld1].ToString() == chkagslcd)
                     {
-                        TimeSpan TSdys, TCdys;
-                        //calculate credit days
-                        cdays = Convert.ToDouble(tbl.Rows[i]["crdays"]);
-                        if (cdays == 0)
+                        slcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
+                        slnm1 = (Para2 == "" ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["rtdebnm"].ToString());
+                        slphno1 = (Para2 == "" ? tbl.Rows[i]["phno"].retStr() : tbl.Rows[i]["rtdebmobile"].retStr());
+                        slcity1 = (Para2 == "" ? tbl.Rows[i]["slcity"].ToString() : tbl.Rows[i]["retdebarea"].ToString());
+                        if (dtlsumm == "D")
                         {
-                            if (tbl.Rows[i]["duedt"].ToString() == "") cdays = 0;
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+
+                            string sldsp = "";
+                            sldsp = slnm1;
+                            sldsp += "<span style='font-weight:100;font-size:11px;'>" + " [" + slcity1 + "]  " + " </span>";
+                            sldsp += "<span style='font-weight:100;font-size:9px;'>" + " " + slcd1 + "  " + " </span>";
+                            if (slphno1 != "") sldsp += IR.Rows[rNo]["Dammy"] + " Ph. " + " </span>" + slphno1;
+                            IR.Rows[rNo]["Dammy"] = sldsp;
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                        }
+                        double tdays = 0, tdueamt = 0, tbills = 0;
+                        slno1++;
+                        while (tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                        {
+                            TimeSpan TSdys, TCdys;
+                            //calculate credit days
+                            cdays = Convert.ToDouble(tbl.Rows[i]["crdays"]);
+                            if (cdays == 0)
+                            {
+                                if (tbl.Rows[i]["duedt"].ToString() == "") cdays = 0;
+                                else
+                                {
+                                    if (tbl.Rows[i]["bldt"].ToString() != null && tbl.Rows[i]["bldt"].ToString() != "") TCdys = Convert.ToDateTime(tbl.Rows[i]["duedt"]) - Convert.ToDateTime(tbl.Rows[i]["bldt"].ToString().Substring(0, 10));
+                                    else TCdys = Convert.ToDateTime(tbl.Rows[i]["duedt"]) - Convert.ToDateTime(tbl.Rows[i]["docdt"].ToString().Substring(0, 10));
+                                    cdays = TCdys.Days;
+                                }
+                            }
+                            //
+                            double checkdays = cdays;
+                            days = 0;
+                            string checkdt = "";
+                            if (due_caldt == "D" || due_caldt == "L")
+                            {
+                                if (due_caldt == "D") checkdt = tbl.Rows[i]["duedt"].retStr(); else checkdt = tbl.Rows[i]["lrdt"].retStr();
+                                if (checkdt == "") checkdt = tbl.Rows[i]["docdt"].retStr();
+                                TSdys = Convert.ToDateTime(TD) - Convert.ToDateTime(checkdt);
+                                days = cdays + TSdys.Days;
+                            }
                             else
                             {
-                                if (tbl.Rows[i]["bldt"].ToString() != null && tbl.Rows[i]["bldt"].ToString() != "") TCdys = Convert.ToDateTime(tbl.Rows[i]["duedt"]) - Convert.ToDateTime(tbl.Rows[i]["bldt"].ToString().Substring(0, 10));
-                                else TCdys = Convert.ToDateTime(tbl.Rows[i]["duedt"]) - Convert.ToDateTime(tbl.Rows[i]["docdt"].ToString().Substring(0, 10));
-                                cdays = TCdys.Days;
+                                TSdys = Convert.ToDateTime(TD) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
+                                days = TSdys.Days;
                             }
+                            if (ShowDuedaysfrom == "D") { days = days - cdays; checkdays = 0; }
+                            if (days < 0) days = 0;
+                            string iautoslno = tbl.Rows[i]["autoslno"].ToString();
+                            var rsTxn = (from DataRow dr in txn.Rows
+                                         select new
+                                         {
+                                             vautoslno = dr["vautoslno"],
+                                             autoslno = dr["autoslno"],
+                                             adjdt = dr["docdt"],
+                                             adjdocno = dr["docno"],
+                                             adjno = dr["doccdno"],
+                                             adjamt = dr["adj_amt"],
+                                             vchtype = dr["vchtype"],
+                                             pymtrem = dr["pymtrem"],
+                                             docnm = dr["docnm"],
+                                         }).Where(a => a.autoslno.ToString() == iautoslno).ToList();
+                            bool recshow = true;
+                            if (rsTxn != null)
+                            {
+                                if (rsTxn.Count == 1 && rsTxn[0].vautoslno.ToString() == iautoslno && Math.Abs(rsTxn[0].adjamt.ToString().retDbl()) == Math.Abs(tbl.Rows[i]["amt"].ToString().retDbl())) recshow = (VE.Checkbox11 == true ? true : false);
+                            }
+                            if (recshow == true)
+                            {
+                                if (dtlsumm == "D")
+                                {
+                                    if (ShowDuedaysfrom == "D") checkdays = 0;
+                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    if (VE.MENU_PARA.Split(',')[0].retStr() == "CR")
+                                    {
+                                        IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
+                                        //IR.Rows[rNo]["docno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
+                                        IR.Rows[rNo]["docno"] = tbl.Rows[i]["tchdocno"].ToString();
+                                    }
+                                    if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr() + (tbl.Rows[i]["sagshortnm"].retStr() == "" ? "" : " - " + tbl.Rows[i]["sagshortnm"].retStr());
+                                    if (tbl.Rows[i]["blno"].ToString() == "") IR.Rows[rNo]["blno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
+                                    else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
+                                    if (tbl.Rows[i]["bldt"].ToString() == "") IR.Rows[rNo]["bldt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
+                                    else IR.Rows[rNo]["bldt"] = tbl.Rows[i]["bldt"].ToString();
+                                    if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
+                                    if (PymtDaysprint == true) IR.Rows[rNo]["cdays"] = days; //cdays
+                                    IR.Rows[rNo]["blamt"] = tbl.Rows[i]["amt"].ToString().retDbl();
+
+                                    if (VE.Checkbox12 == true && dtlsumm == "D") IR.Rows[rNo]["blrem"] = tbl.Rows[i]["billrem"];
+                                    if (itamtprint == true) IR.Rows[rNo]["itamt"] = tbl.Rows[i]["itamt"].ToString().retDbl();
+                                    if (VE.Checkbox2 == true && dtlsumm == "D") IR.Rows[rNo]["ordno"] = tbl.Rows[i]["ordno"];
+                                    if (VE.Checkbox2 == true && dtlsumm == "D") IR.Rows[rNo]["orddt"] = tbl.Rows[i]["orddt"];
+                                    if (VE.Checkbox9 == true && dtlsumm == "D") IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"];
+                                    if ((VE.Checkbox3 == true || VE.Checkbox9 == true) && dtlsumm == "D") IR.Rows[rNo]["lrdt"] = tbl.Rows[i]["lrdt"];
+                                    if (VE.Checkbox9 == true && dtlsumm == "D") IR.Rows[rNo]["transnm"] = tbl.Rows[i]["transnm"];
+                                }
+                                days = 0;
+                                double dueamt = tbl.Rows[i]["amt"].ToString().retDbl();
+                                #region //Check in txn Datatable
+                                if (rsTxn != null)
+                                {
+                                    bool newrow = false;
+                                    foreach (var txdr in rsTxn)
+                                    {
+                                        days = 0;
+                                        if (ShowDuedaysfrom == "D" && tbl.Rows[i]["duedt"].ToString() == "") days = 0;
+                                        else if (txdr.adjdt.ToString() == "") days = 0;
+                                        else
+                                        {
+                                            if (ShowDuedaysfrom == "D") TSdys = Convert.ToDateTime(txdr.adjdt.ToString()) - Convert.ToDateTime(tbl.Rows[i]["duedt"]);
+                                            else TSdys = Convert.ToDateTime(txdr.adjdt.ToString()) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
+                                            days = TSdys.Days;
+                                            if (days < 0) days = 0;
+                                        }
+
+                                        if (dtlsumm == "D")
+                                        {
+                                            if (newrow == true)
+                                            {
+                                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                            }
+                                            IR.Rows[rNo]["adjdt"] = txdr.adjdt.ToString().retDateStr();
+                                            IR.Rows[rNo]["adjno"] = (txdr.autoslno == txdr.vautoslno || txdr.adjdocno.retStr() == txdr.adjno.retStr() ? txdr.adjdocno : txdr.adjno.retStr() + "/" + txdr.adjdocno.retStr());
+                                            IR.Rows[rNo]["adjamt"] = txdr.adjamt.ToString();
+                                            if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = days;
+                                            string prem = "";
+                                            switch (txdr.vchtype.ToString())
+                                            {
+                                                case "ADV":
+                                                    prem = "Adv"; break;
+                                                case "DSC":
+                                                    prem = "Disc"; break;
+                                                case "TDS":
+                                                    prem = "TDS"; break;
+                                                default:
+                                                    prem = ""; break;
+                                            }
+                                            IR.Rows[rNo]["prem"] = prem + txdr.docnm.retStr() + (txdr.pymtrem.retStr() != "" ? " # " : "") + txdr.pymtrem.retStr();
+                                        }
+                                        if (tbl.Rows[i]["amt"].ToString().retDbl() < 0) dueamt = dueamt + txdr.adjamt.ToString().retDbl();
+                                        else dueamt = dueamt - txdr.adjamt.ToString().retDbl();
+                                        newrow = true;
+                                    }
+                                }
+                                #endregion
+                                if (dtlsumm == "D") IR.Rows[rNo]["dueamt"] = dueamt;
+                                tdays = tdays + days;
+                                tbills = tbills + 1;
+                                tdueamt = tdueamt + dueamt;
+                            }
+                            i++;
+                            if (i > maxR) break;
                         }
-                        //
-                        double checkdays = cdays;
-                        days = 0;
-                        string checkdt = "";
-                        if (due_caldt == "D" || due_caldt == "L")
+                        double avdays = 0;
+                        if (tdays > 0) avdays = tdays / tbills;
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        if (dtlsumm == "D")
                         {
-                            if (due_caldt == "D") checkdt = tbl.Rows[i]["duedt"].retStr(); else checkdt = tbl.Rows[i]["lrdt"].retStr();
-                            if (checkdt == "") checkdt = tbl.Rows[i]["docdt"].retStr();
-                            TSdys = Convert.ToDateTime(TD) - Convert.ToDateTime(checkdt);
-                            days = cdays + TSdys.Days;
+                            IR.Rows[rNo]["blno"] = "Totals";
+                            //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
                         }
                         else
                         {
-                            TSdys = Convert.ToDateTime(TD) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
-                            days = TSdys.Days;
+                            IR.Rows[rNo]["slno"] = slno1;
+                            IR.Rows[rNo]["blno"] = tbl.Rows[i - 1]["slcd"].ToString();
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].ToString();
                         }
-                        if (ShowDuedaysfrom == "D") { days = days - cdays; checkdays = 0; }
-                        if (days < 0) days = 0;
-                        string iautoslno = tbl.Rows[i]["autoslno"].ToString();
-                        var rsTxn = (from DataRow dr in txn.Rows
-                                     select new
-                                     {
-                                         vautoslno = dr["vautoslno"],
-                                         autoslno = dr["autoslno"],
-                                         adjdt = dr["docdt"],
-                                         adjdocno = dr["docno"],
-                                         adjno = dr["doccdno"],
-                                         adjamt = dr["adj_amt"],
-                                         vchtype = dr["vchtype"],
-                                         pymtrem = dr["pymtrem"],
-                                     }).Where(a => a.autoslno.ToString() == iautoslno).ToList();
-                        bool recshow = true;
-                        if (rsTxn != null)
-                        {
-                            if (rsTxn.Count == 1 && rsTxn[0].vautoslno.ToString() == iautoslno && Math.Abs(rsTxn[0].adjamt.ToString().retDbl()) == Math.Abs(tbl.Rows[i]["amt"].ToString().retDbl())) recshow = (VE.Checkbox11 == true ? true : false);
-                        }
-                        if (recshow == true)
-                        {
-                            if (dtlsumm == "D")
-                            {
-                                if (ShowDuedaysfrom == "D") checkdays = 0;
-                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                if (VE.MENU_PARA.Split(',')[0].retStr() == "CR")
-                                {
-                                    IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
-                                    //IR.Rows[rNo]["docno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
-                                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["tchdocno"].ToString();
-                                }
-                                if (VE.Checkbox15 == true) IR.Rows[rNo]["agshortnm"] = tbl.Rows[i]["agshortnm"].retStr();
-                                if (tbl.Rows[i]["blno"].ToString() == "") IR.Rows[rNo]["blno"] = tbl.Rows[i]["doccd"].ToString() + tbl.Rows[i]["docno"].ToString();
-                                else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
-                                if (tbl.Rows[i]["bldt"].ToString() == "") IR.Rows[rNo]["bldt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
-                                else IR.Rows[rNo]["bldt"] = tbl.Rows[i]["bldt"].ToString();
-                                if (bltype == true) IR.Rows[rNo]["bltype"] = tbl.Rows[i]["bltype"].retStr();
-                                if (PymtDaysprint == true) IR.Rows[rNo]["cdays"] = days; //cdays
-                                IR.Rows[rNo]["blamt"] = tbl.Rows[i]["amt"].ToString().retDbl();
-                                if (itamtprint == true) IR.Rows[rNo]["itamt"] = tbl.Rows[i]["itamt"].ToString().retDbl();
-                                if (VE.Checkbox2 == true && dtlsumm == "D") IR.Rows[rNo]["ordno"] = tbl.Rows[i]["ordno"];
-                                if (VE.Checkbox2 == true && dtlsumm == "D") IR.Rows[rNo]["orddt"] = tbl.Rows[i]["orddt"];
-                                if (VE.Checkbox9 == true && dtlsumm == "D") IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"];
-                                if ((VE.Checkbox3 == true || VE.Checkbox9 == true) && dtlsumm == "D") IR.Rows[rNo]["lrdt"] = tbl.Rows[i]["lrdt"];
-                                if (VE.Checkbox9 == true && dtlsumm == "D") IR.Rows[rNo]["transnm"] = tbl.Rows[i]["transnm"];
-                            }
-                            days = 0;
-                            double dueamt = tbl.Rows[i]["amt"].ToString().retDbl();
-                            #region //Check in txn Datatable
-                            if (rsTxn != null)
-                            {
-                                bool newrow = false;
-                                foreach (var txdr in rsTxn)
-                                {
-                                    days = 0;
-                                    if (ShowDuedaysfrom == "D" && tbl.Rows[i]["duedt"].ToString() == "") days = 0;
-                                    else if (txdr.adjdt.ToString() == "") days = 0;
-                                    else
-                                    {
-                                        if (ShowDuedaysfrom == "D") TSdys = Convert.ToDateTime(txdr.adjdt.ToString()) - Convert.ToDateTime(tbl.Rows[i]["duedt"]);
-                                        else TSdys = Convert.ToDateTime(txdr.adjdt.ToString()) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
-                                        days = TSdys.Days;
-                                        if (days < 0) days = 0;
-                                    }
-
-                                    if (dtlsumm == "D")
-                                    {
-                                        if (newrow == true)
-                                        {
-                                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                        }
-                                        IR.Rows[rNo]["adjdt"] = txdr.adjdt.ToString().retDateStr();
-                                        IR.Rows[rNo]["adjno"] = (txdr.autoslno == txdr.vautoslno || txdr.adjdocno.retStr() == txdr.adjno.retStr() ? txdr.adjdocno : txdr.adjno.retStr() + "/" + txdr.adjdocno.retStr());
-                                        IR.Rows[rNo]["adjamt"] = txdr.adjamt.ToString();
-                                        if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = days;
-                                        string prem = "";
-                                        switch (txdr.vchtype.ToString())
-                                        {
-                                            case "ADV":
-                                                prem = "Adv"; break;
-                                            case "DSC":
-                                                prem = "Disc"; break;
-                                            case "TDS":
-                                                prem = "TDS"; break;
-                                            default:
-                                                prem = ""; break;
-                                        }
-                                        IR.Rows[rNo]["prem"] = prem + (txdr.pymtrem.retStr() != "" ? " # " : "") + txdr.pymtrem.retStr();
-                                    }
-                                    if (tbl.Rows[i]["amt"].ToString().retDbl() < 0) dueamt = dueamt + txdr.adjamt.ToString().retDbl();
-                                    else dueamt = dueamt - txdr.adjamt.ToString().retDbl();
-                                    newrow = true;
-                                }
-                            }
-                            #endregion
-                            if (dtlsumm == "D") IR.Rows[rNo]["dueamt"] = dueamt;
-                            tdays = tdays + days;
-                            tbills = tbills + 1;
-                            tdueamt = tdueamt + dueamt;
-                        }
-                        i++;
+                        IR.Rows[rNo]["dueamt"] = tdueamt;
+                        if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = avdays;
+                        adueamt = adueamt + tdueamt;
+                        gdueamt = gdueamt + tdueamt;
                         if (i > maxR) break;
                     }
-                    double avdays = 0;
-                    if (tdays > 0) avdays = tdays / tbills;
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    if (dtlsumm == "D")
+                    if (showagent == true)
                     {
-                        IR.Rows[rNo]["blno"] = "Totals";
-                        //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["blno"] = agdsp + " ( " + tbl.Rows[i - 1][agslcdfld2].retStr() + " Totals";
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
+                        IR.Rows[rNo]["dueamt"] = adueamt;
                     }
-                    else
-                    {
-                        IR.Rows[rNo]["slno"] = slno1;
-                        IR.Rows[rNo]["blno"] = tbl.Rows[i - 1]["slcd"].ToString();
-                        IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].ToString();
-                    }
-                    IR.Rows[rNo]["dueamt"] = tdueamt;
-                    if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = avdays;
+                    if (i > maxR) break;
                 }
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["blno"] = "Grand Totals";
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
+                IR.Rows[rNo]["dueamt"] = gdueamt;
+
                 pghdr1 = "Bill Wise Outstanding (Pay Days) of " + glnm + " (" + glcd + ") " + (Para2 == "" ? "" : "[Retail Party] ") + "as on " + TD;
                 if (submitbutton == "Download Excel")
                 {

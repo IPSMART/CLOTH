@@ -647,6 +647,7 @@
     <Compile Include="Models\T_TXN_LINKNO.cs" />
     <Compile Include="Models\T_VCH_BL.cs" />
     <Compile Include="Models\T_VCH_BL_ADJ.cs" />
+    <Compile Include="Models\T_VCH_BL_REM.cs" />
     <Compile Include="Models\T_VCH_CLASS.cs" />
     <Compile Include="Models\T_VCH_DET.cs" />
     <Compile Include="Models\T_VCH_GST.cs" />

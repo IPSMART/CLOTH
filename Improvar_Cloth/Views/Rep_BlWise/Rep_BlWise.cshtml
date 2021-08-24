@@ -68,6 +68,15 @@
             }
 
         });
+        $("#Checkbox16").change(function () {
+            debugger;
+            if ($(this).is(':checked')) {
+                $('#divPymtRemCTG').show();
+            } else {
+                $('#divPymtRemCTG').hide();
+            }
+        });
+
     });
 </script>
 <script>
@@ -75,6 +84,18 @@
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     });
+</script>
+<script>
+    function ChkAgentSubagent(id) {
+        debugger;
+        var Checkbox4 = document.getElementById("Checkbox4");
+        var Checkbox17 = document.getElementById("Checkbox17");
+        if (id == "Checkbox4")
+       {//Checkbox17.checked = false;
+         $('#Checkbox17').attr('checked', false);
+        }
+        else if (id == "Checkbox17") { $('#Checkbox4').attr('checked', false); }
+    }
 </script>
 @{
     string PageControllerName = "Rep_BlWise";
@@ -161,6 +182,37 @@
                                 }
                             </optgroup>
                         </select>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:6px">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Voucher Type")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="VCHTYPE" name="VCHTYPE" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                            <optgroup label="AGENT">
+                                @foreach (var i in Model.DropDown_list3)
+                                {
+                                    <option value="@i.value">
+                                        @i.text
+                                    </option>
+                                }
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:6px;display:none" id="divPymtRemCTG">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Bill Remarks Category")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.TEXTBOX7))
                     </div>
                 </div>
                 <div class="row">
@@ -387,7 +439,7 @@
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox9, new { Style = "width:18px;height:18px;" })</td>
                     </tr>
                     <tr>
-                        <td style="border:1px groove;">Print Recd Amt Row in All Report Type</td>
+                        <td style="border:1px groove;">Print Recd Amt in All Report Type</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox11, new { Style = "width:18px;height:18px;" })</td>
                     </tr>
                     <tr>
@@ -397,7 +449,11 @@
 
                     <tr>
                         <td style="border:1px groove;">Show Agent wise</td>
-                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, new { Style = "width:18px;height:18px;" })</td>
+                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, new { Style = "width:18px;height:18px;",id= "Checkbox4", onclick = "ChkAgentSubagent('Checkbox4');" })</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px groove;">Show Sub Agent Wise</td>
+                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox17, new { Style = "width:18px;height:18px;", id = "Checkbox17", onclick = "ChkAgentSubagent('Checkbox17');" })</td>
                     </tr>
                     <tr>
                         <td style="border:1px groove;">Show Consignee</td>
@@ -431,147 +487,16 @@
                         <td style="border:1px groove;">Show Agent Column</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox15, new { Style = "width:18px;height:18px;" })</td>
                     </tr>
+                    <tr>
+                        <td style="border:1px groove;">Show Pymt Hold Remarks</td>
+                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox16, new { Style = "width:18px;height:18px;" })</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px groove;">Show only UnAdjusted Reference</td>
+                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox18, new { Style = "width:18px;height:18px;" })</td>
+                    </tr>
                 </table>
             </div>
         </div>
-
-        
-      
-        @*<div class="row">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Adjust Credit Bal (fifo)")
-
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="editor-field" style="margin-top: 5px;">
-                    @Html.Label("", "Adjust Credit Bal (fifo)")
-                    @Html.CheckBoxFor(model => model.Checkbox7, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-1">
-                <div class="editor-label" style="margin-top: 6px;">
-
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Print Order No")
-                    @Html.CheckBoxFor(model => model.Checkbox2, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-1">
-                <div class="editor-label" style="margin-top: 6px;">
-
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Print LR Date")
-                    @Html.CheckBoxFor(model => model.Checkbox3, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Print LR Info")
-                    @Html.CheckBoxFor(model => model.Checkbox9, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Print Recd Amt Row in All")
-                    @Html.CheckBoxFor(model => model.Checkbox11, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-6" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Print Received Amt")
-                    @Html.CheckBoxFor(model => model.Checkbox10, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Show Agent wise")
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Show Agent wise")
-                    @Html.CheckBoxFor(model => model.Checkbox4, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="editor-label" style="margin-top: 6px;">
-                </div>
-            </div>
-            <div class="col-md-6" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Show Consignee")
-                    @Html.CheckBoxFor(model => model.Checkbox8, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Show Negative Amt Seperate")
-                    @Html.CheckBoxFor(model => model.Checkbox5, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Show Item Value")
-                </div>
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Show Item Value")
-                    @Html.CheckBoxFor(model => model.Checkbox6, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Bill Date Range")
-                </div>
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Bill Date Range")
-                    @Html.CheckBoxFor(model => model.Checkbox1, new { Style = "width:18px;height:18px;" })
-                </div>
-            </div>
-            <div class="col-md-4" name="bdr" style="display:none;">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Bill Date From")
-                    <b style="color:Red;">
-                        <sup>*</sup>
-                    </b>
-                </div>
-            </div>
-            <div class="col-md-4" name="bdr" style="display:none;">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX3", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-                </div>
-            </div>
-            <div class="col-md-4" name="bdr" style="display:none;">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Bill Date To")
-                    <b style="color:Red;">
-                        <sup>*</sup>
-                    </b>
-                </div>
-            </div>
-            <div class="col-md-4" name="bdr" style="display:none;">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX4", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-                </div>
-            </div>
-        </div>*@
-     
-
-       
-
     </div>
 }

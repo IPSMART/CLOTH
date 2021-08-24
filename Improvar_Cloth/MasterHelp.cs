@@ -3062,7 +3062,7 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO);
             string LOC = CommVar.Loccd(UNQSNO);
-            DataTable tbl = GenOSTbl(GLCD, SLCD, "", "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, blno);
+            DataTable tbl = GenOSTbl(GLCD, SLCD, "", "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", "", blno);
             if (blno.retStr() == "")
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();

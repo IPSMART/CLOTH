@@ -63,12 +63,11 @@ namespace Improvar
             string str = Cn.Indian_Number_format(amt.ToString(), style);
             return str;
         }
-        public static string retSqlformat(this object codestr)
+        public static string retSqlformat(this string codestr)
         {
-            codestr = codestr.retStr().Replace("'", "");
             string rtval = "";
-            string[] cdval = codestr.ToString().Split(',');
-            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString().Trim() != "")
+            string[] cdval = codestr.retStr().Split(',');
+            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString() != "")
             {
                 rtval = "'" + string.Join("','", cdval) + "'";
             }

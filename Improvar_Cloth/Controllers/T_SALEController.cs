@@ -5529,7 +5529,7 @@ namespace Improvar.Controllers
                                         #region if return then auto adjustment
                                         if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR"))
                                         {
-                                            DataTable OSDATA = masterHelp.GenOSTbl(tbl.Rows[0]["parglcd"].ToString(), VE.T_TXN.SLCD, VE.T_TXN.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", VE.T_TXN.AUTONO, "");
+                                            DataTable OSDATA = masterHelp.GenOSTbl(tbl.Rows[0]["parglcd"].ToString(), VE.T_TXN.SLCD, VE.T_TXN.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", "", "", VE.T_TXN.AUTONO, "");
                                             if (OSDATA.Rows.Count > 0)
                                             {
                                                 string AGAUTONO = "", AGBLAMT = "";
