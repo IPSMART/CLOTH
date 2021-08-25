@@ -2029,6 +2029,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("fabitnm", typeof(string), "");
                 IR.Columns.Add("printby", typeof(string), "");
                 IR.Columns.Add("sagslnm", typeof(string), "");
+                IR.Columns.Add("name", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2346,7 +2347,7 @@ namespace Improvar.Controllers
                             //if (tbl.Rows[i]["partycd"].ToString() != "") dr1["partycd"] = "SAP - " + tbl.Rows[i]["partycd"].ToString();
                             dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
-
+                            dr1["name"] = VE.TEXTBOX5.retStr() == "" ? tbl.Rows[i]["slnm"].ToString() : VE.TEXTBOX5.retStr();
 
                             string cfld = "", rfld = ""; int rf = 0;
                             for (int f = 1; f <= 6; f++)
