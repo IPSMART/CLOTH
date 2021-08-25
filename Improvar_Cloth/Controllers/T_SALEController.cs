@@ -124,14 +124,14 @@ namespace Improvar.Controllers
                                        orderby p.DOCDT, p.DOCNO
                                        where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
                                        select new IndexKey() { Navikey = p.AUTONO }).ToList();
-                        if (VE.MENU_PARA == "SB" && op == "V" && searchValue != "")
-                        {
-                            var chk_autono = VE.IndexKey.Where(a => a.Navikey == searchValue).ToList();
-                            if (chk_autono.Count == 0)
-                            {
-                                searchValue = "";
-                            }
-                        }
+                        //if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && op != "A" && searchValue != "")
+                        //{
+                        //    var chk_autono = VE.IndexKey.Where(a => a.Navikey == searchValue).ToList();
+                        //    if (chk_autono.Count == 0)
+                        //    {
+                        //        searchValue = "";
+                        //    }
+                        //}
 
                         //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                         var MSYSCNFG = salesfunc.M_SYSCNFG();
@@ -147,11 +147,11 @@ namespace Improvar.Controllers
 
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                         VE.SrcFlagCaption = "Bale No.";
-                        if (TempData["LoadFromExisting" + VE.MENU_PARA].retStr() != "")
-                        {
-                            loadOrder = "N";
-                            TempData.Remove("LoadFromExisting" + VE.MENU_PARA);
-                        }
+                        //if (TempData["LoadFromExisting" + VE.MENU_PARA].retStr() != "")
+                        //{
+                        //    loadOrder = "N";
+                        //    TempData.Remove("LoadFromExisting" + VE.MENU_PARA);
+                        //}
                         if (op == "E" || op == "D" || op == "V" || loadOrder.retStr().Length > 1)
                         {
                             if (searchValue.Length != 0)
@@ -424,7 +424,8 @@ namespace Improvar.Controllers
 
             TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN();
 
-            if (VE.IndexKey.Count != 0 || (loadOrder.retStr().Length > 1 && index >= 0))
+            //if (VE.IndexKey.Count != 0 || (loadOrder.retStr().Length > 1 && index >= 0))
+            if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
             {
                 string[] aa = null;
                 if (searchValue.Length == 0)
@@ -3051,8 +3052,8 @@ namespace Improvar.Controllers
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
-
-                var data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", VE.T_TXN.AUTONO.retSqlformat(), ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                string autono = VE.T_TXN.AUTONO.retStr() == "" ? "" : VE.T_TXN.AUTONO.retStr().retSqlformat();
+                var data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
 
                 if (VE.TBATCHDTL != null)
                 {
@@ -5721,7 +5722,7 @@ namespace Improvar.Controllers
                         ContentFlg = "2";
                     }
                     OraTrans.Commit();
-                    if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && VE.DefaultAction == "A") TempData["LoadFromExisting" + VE.MENU_PARA] = TTXN.AUTONO.retStr();
+                    //if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && VE.DefaultAction == "A") TempData["LoadFromExisting" + VE.MENU_PARA] = TTXN.AUTONO.retStr();
                     if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "")//need to delete profma when salebill done from profma
                     {
                         T_SALEController TSCntlr = new T_SALEController();

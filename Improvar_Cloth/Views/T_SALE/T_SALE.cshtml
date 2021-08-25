@@ -288,7 +288,7 @@
         }
 
         //
-        if ("@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SBEXP") {
+        @*if ("@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SBEXP") {*@//bhura w/o rate bill not save
 
             var rateblank = false;
             if (GridRow_bar != 0) {
@@ -318,7 +318,7 @@
                     return false;
                 }
             }
-        }
+        //}
         //start of finalise
         if ($("#bardatachng").val() == "Y" && GridRow_bar > 0) {
             debugger;
@@ -611,6 +611,7 @@
             var key1 = "searchValue";
             url = updateQueryStringParameter(url, key1, searchValue);
             url = updateQueryStringParameter(url, "loadOrder", searchValue1);
+            url = updateQueryStringParameter(url, "RemoveParam", "loadOrder~searchValue");
             window.location = url;
         }
         function ReloadWithPSLIP() {
@@ -620,6 +621,7 @@
             var key1 = "searchValue";
             url = updateQueryStringParameter(url, key1, searchValue);
             url = updateQueryStringParameter(url, "loadOrder", searchValue1);
+            url = updateQueryStringParameter(url, "RemoveParam", "loadOrder~searchValue");
             window.location = url;
         }
         function ReloadWithDATA(searchValueID, searchValue1, searchValue2) {
@@ -632,6 +634,7 @@
             var key1 = "searchValue";
             url = updateQueryStringParameter(url, key1, searchValue);
             url = updateQueryStringParameter(url, "loadOrder", searchValue1);
+            url = updateQueryStringParameter(url, "RemoveParam", "loadOrder~searchValue");
             window.location = url;
         }
     </script>

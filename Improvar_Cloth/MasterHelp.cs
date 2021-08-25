@@ -2129,7 +2129,7 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
-     
+
         public List<DropDown_list_StkType> STK_TYPE()
         {
             string scm = CommVar.CurSchema(UNQSNO);
@@ -2916,7 +2916,8 @@ namespace Improvar
         {
             DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno, balStockOnly);
             DataView dv = new DataView(tbl);
-            string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono,blslno";
+            //string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono,blslno";//data duplicate for blslno
+            string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono";
             colnm += skipstyleno == true ? "" : ",itcd,styleno";
             colnm += skippageno == true ? "" : ",pageno,pageslno,pagenoslno";
             string[] a = colnm.Split(',');
@@ -2945,7 +2946,9 @@ namespace Improvar
                     string str = ToReturnFieldValues("", tbl);
                     if (skipstyleno == false)
                     {
-                        string sql = "select distinct barno from  " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl where autono='" + tbl.Rows[0]["blautono"].retStr() + "' and slno='" + tbl.Rows[0]["blslno"].retStr() + "' ";
+                        //string sql = "select distinct barno from  " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl where autono='" + tbl.Rows[0]["blautono"].retStr() + "' and slno='" + tbl.Rows[0]["blslno"].retStr() + "' ";//data duplicate for blslno
+                        string sql = "select distinct a.barno from  " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl a," + CommVar.CurSchema(UNQSNO) + ".t_txndtl b ";
+                        sql += "where a.autono=b.autono and a.txnslno=b.slno and b.autono='" + tbl.Rows[0]["blautono"].retStr() + "' and b.itcd='" + tbl.Rows[0]["itcd"].retStr() + "' ";
                         DataTable dt = SQLquery(sql);
                         if (dt != null)
                         {
