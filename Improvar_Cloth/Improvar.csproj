@@ -778,6 +778,12 @@
       <DependentUpon>SaleBill_Job.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\SaleBill_Letterhead.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SaleBill_Letterhead.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\SaleBill_Sachi.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1557,6 +1563,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Proforma2_SNFP.cs</LastGenOutput>
     </EmbeddedResource>
+    <Content Include="Report\SaleBill_Letterhead.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SaleBill_Letterhead.cs</LastGenOutput>
+    </Content>
     <EmbeddedResource Include="Report\SaleBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Sachi.cs</LastGenOutput>

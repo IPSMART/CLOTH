@@ -259,6 +259,7 @@ function pageValidation(id, MNUDET, UNQSNO) {
                 beforesend: $("#WaitingMode").show(),
                 data: $('form').serialize(),
                 success: function (result) {
+                    debugger;
                     result = result;
                     resultIndex = result.substring(0, 1);
                     if (resultIndex == "1") {
@@ -273,6 +274,7 @@ function pageValidation(id, MNUDET, UNQSNO) {
                             msgSuccess1("Save Successfully" + outr);
                             $("#SearchValue").val(strrel[1]);
                         }
+
                         return false;
                     }
                     else if (resultIndex == "2") {
@@ -822,7 +824,7 @@ function OpenCheckRemarks() {
     document.getElementById("CHK_Remarks").focus();
 }
 function CHK_Remark_close() {
-    document.getElementById("CHK_Remarks").value = ""; 
+    document.getElementById("CHK_Remarks").value = "";
     document.getElementById("CHK_overlay").style.display = "none";
     document.getElementById("Authorise_overlay").style.display = "none";
 }
@@ -1341,6 +1343,7 @@ function DocumentDateCHK(dateField, auto, current_date_auto_if_blank) {
 
 var message_value;
 function closeDiv(id, flag) {
+    debugger;
     $(id).hide();
     var will_go = message_value;
     $("#" + will_go).focus();
@@ -1352,10 +1355,25 @@ function closeDiv(id, flag) {
         else {
             if (typeof (Storage) !== "undefined") {
                 var TEMPC = localStorage.getItem("ADDCONTROL");
+                var RemoveParamNm = getQueryStringParameter("RemoveParam");
                 if (TEMPC == "NOTAUTOADD") {
                     var crntLocation = document.location.href;
                     var ViewLocation = crntLocation.replace("op=A", "op=V");
                     ViewLocation = updateQueryStringParameter(ViewLocation, "searchValue", servl);
+                    location.href = ViewLocation;
+                }
+                else if (typeof (RemoveParamNm) !== "undefined") {
+                    var crntLocation = document.location.href;
+                    var ViewLocation = crntLocation;
+                    var arrRemoveParamNm = RemoveParamNm.split("~");
+                    if (arrRemoveParamNm.length != null && arrRemoveParamNm.length > 0) {
+                        for (var i = 0; i <= arrRemoveParamNm.length - 1; i++) {
+                            var param = arrRemoveParamNm[i];
+                            var paramval = getQueryStringParameter(param);
+                            ViewLocation = ViewLocation.replace(param + "=" + paramval, "");
+                        }
+                    }
+                    ViewLocation = ViewLocation.replace("RemoveParam=" + RemoveParamNm, "");
                     location.href = ViewLocation;
                 }
                 else {
@@ -1457,9 +1475,9 @@ function CloseZoomTextBoxModal() {
     $("#" + ZoomTextBoxModalId).focus();
 }
 var hlpblurval = "";
-function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formdata) {
+function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds, formdata) {
     debugger;
-    if($("#" + hlpfield).prop('readonly')) return true
+    if ($("#" + hlpfield).prop('readonly')) return true
     const keyName = event.key;
     const keyType = event.type;
     var blurvalue = "";
