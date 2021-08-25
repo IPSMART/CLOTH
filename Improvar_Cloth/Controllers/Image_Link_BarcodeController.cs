@@ -202,7 +202,7 @@ namespace Improvar.Controllers
             int slno = 0;
             try
             {
-                var BarImages = BarImage.retStr().Trim(Convert.ToChar(179)).Split(Convert.ToChar(179));
+                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
                 foreach (string image in BarImages)
                 {
                     if (image != "")
@@ -219,9 +219,13 @@ namespace Improvar.Controllers
                         mdoc.BARNO = BARNO;
                         mdoc.DOC_EXTN = extension;
                         doc.Add(mdoc);
-                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
+                        string tmpdir = CommVar.SaveFolderPath() + "/ItemImages/";
+                        if (!Directory.Exists(tmpdir)) Directory.CreateDirectory(tmpdir);
+                        string topath = tmpdir + mdoc.DOC_FLNAME;
                         topath = Path.Combine(topath, "");
-                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        var addarr = imagedes[0].Split('/');
+                        var tempimgName = (addarr[addarr.Length - 1]);
+                        string frompath = CommVar.LocalUploadDocPath(tempimgName);
                         Cn.CopyImage(frompath, topath);
                     }
                 }
@@ -233,7 +237,6 @@ namespace Improvar.Controllers
             var result = Tuple.Create(doc);
             return result;
         }
-
         public ActionResult UploadImages(string ImageStr, string ImageName, string ImageDesc)
         {
             try

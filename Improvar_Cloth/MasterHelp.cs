@@ -3058,7 +3058,6 @@ namespace Improvar
                     return "Invalid Job Code ! Please Enter a Valid Job Code !!";
                 }
             }
-
         }
         public string OS_Bill_help(string blno, string GLCD, string SLCD, string BILLAUTONO = "")
         {
