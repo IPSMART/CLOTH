@@ -1377,6 +1377,9 @@ function closeDiv(id, flag) {
                     location.href = ViewLocation;
                 }
                 else {
+                    //var crntLocation = document.location.href;//if error comes in RemoveParam part
+                    //ViewLocation = updateQueryStringParameter(ViewLocation, "searchValue", servl);
+                    //location.href = ViewLocation;
                     location.reload();
                 }
             } else {
