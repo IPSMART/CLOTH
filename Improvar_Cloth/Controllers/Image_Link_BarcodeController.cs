@@ -136,16 +136,18 @@ namespace Improvar.Controllers
             try
             {
                 ImageLinkBarcode VE = new ImageLinkBarcode();
-                Cn.getQueryString(VE);
+                Cn.getQueryString(VE); string GOCD = "";
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string DOCDT = System.DateTime.Now.ToShortDateString();
                 string BARNO = data[0].retSqlformat();
-                //string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
+                if(BARNO != "'click'")
+                { GOCD = data[4].retSqlformat(); }
+                if (BARNO == "'click'") BARNO = "";
                 //string PRCCD = data[3].retStr();
                 string MTRLJOBCD = data[2].retSqlformat();
                 bool exactbarno = data[1].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || val == "") { MTRLJOBCD = data[3].retStr(); }
-                var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT,"","","", MTRLJOBCD,"", exactbarno,"", BARNO);
+                var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT,"",GOCD,"", MTRLJOBCD,"", exactbarno,"", BARNO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

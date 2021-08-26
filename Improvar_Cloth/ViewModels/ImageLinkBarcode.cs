@@ -20,5 +20,7 @@ namespace Improvar.ViewModels
         public string FABITNM { get; set; }
         public string PDESIGN { get; set; }
         public string BLSLNO { get; set; }
+        public string GONM { get; set; }
+        
     }
 }
