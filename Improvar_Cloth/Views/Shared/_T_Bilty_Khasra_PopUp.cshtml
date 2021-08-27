@@ -29,7 +29,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
-                    <table id="T_Bilty_Khasra_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:700px;">
+                    <table id="T_Bilty_Khasra_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:729px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 @if (Model.MENU_PARA == "KHSR")
@@ -47,8 +47,12 @@
                                 <th class="" style="width:100px;">LR No</th>
                                 <th class="" style="width:100px;">LR Date</th>
                                 <th class="" style="width:100px;">Bale No</th>
+                                @if (Model.MENU_PARA == "KHSR")
+                                {
+                                    <th class="" style="width: 100px;">Doc. No</th>
+                                }
                                 <th class="" style="width: 100px;">Bill No</th>
-                                <th class="" style="width:55px;">Bill Date</th>
+                                <th class="" style="width:74px;">Bill Date</th>
 
                             </tr>
                         </thead>
@@ -76,6 +80,7 @@
                                         }
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].SLNO, new { id = "SLNO_POPUP_" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].ShortSLNO, new { id = "ShortSLNO_POPUP_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].LRNO, new { id = "LRNO_POPUP_" + i, @class = " atextBoxFor ", maxlength = 20, @readonly = "readonly" })
@@ -86,6 +91,12 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].BALENO, new { id = "BALENO_POPUP_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
+                                        @if (Model.MENU_PARA == "KHSR")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].DOCNO, new { id = "DOCNO_POPUP_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
+                                        }
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].PREFNO, new { id = "PREFNO_POPUP_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>

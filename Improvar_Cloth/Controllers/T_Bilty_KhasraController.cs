@@ -364,7 +364,7 @@ namespace Improvar.Controllers
                 {
                     var GetPendig_Data = salesfunc.getPendKhasra(VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", (VE.T_BALE_HDR.AUTONO.retStr() == "" ? "" : VE.T_BALE_HDR.AUTONO.retSqlformat()));
                     DataView dv = new DataView(GetPendig_Data);
-                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "docno" };
                     dt = dv.ToTable(true, COL);
                 }
                 else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
@@ -380,7 +380,8 @@ namespace Improvar.Controllers
                                              LRDT = dr["lrdt"].retDateStr(),
                                              BALENO = dr["baleno"].retStr(),
                                              PREFNO = dr["prefno"].retStr(),
-                                             PREFDT = dr["PREFDT"].retDateStr()
+                                             PREFDT = dr["PREFDT"].retDateStr(),
+                                             DOCNO = VE.MENU_PARA == "KHSR" ? dr["docno"].retStr() : "",
                                          }).Distinct().ToList();
                 if (VE.TBILTYKHASRA != null)
                 {//checked when opend secone times.
@@ -394,7 +395,14 @@ namespace Improvar.Controllers
                 }
                 for (int p = 0; p <= VE.TBILTYKHASRA_POPUP.Count - 1; p++)
                 {
-                    if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB") { VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1001); }
+                    if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
+                    {
+                        VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1001);
+                        if (VE.TBILTYKHASRA != null)
+                        {
+                            VE.TBILTYKHASRA_POPUP[p].ShortSLNO = VE.TBILTYKHASRA.Where(a => a.BLAUTONO == VE.TBILTYKHASRA_POPUP[p].BLAUTONO && a.BALENO == VE.TBILTYKHASRA_POPUP[p].BALENO).Select(a => a.SLNO).FirstOrDefault();
+                        }
+                    }
                     else { VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1); }
                     VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1);
                 }
@@ -453,6 +461,8 @@ namespace Improvar.Controllers
                     existingbale = VE.TBILTYKHASRA.Select(a => a.BLAUTONO + a.BALENO).ToList();
                 }
                 var newdata = (from DataRow dr in dt.Rows
+                               join b in VE.TBILTYKHASRA_POPUP on dr["blautono"].retStr() + dr["baleno"].retStr() equals b.BLAUTONO + b.BALENO into x
+                               from b in x.DefaultIfEmpty()
                                where !existingbale.Contains(dr["blautono"].retStr() + dr["baleno"].retStr())
                                && baleno.Contains(dr["baleno"].retStr())
                                && blautonos.Contains(dr["blautono"].retStr())
@@ -473,7 +483,8 @@ namespace Improvar.Controllers
                                    BALEYR = dr["baleyr"].retStr(),
                                    BLSLNO = dr["blslno"].retShort(),
                                    PBLNO = dr["prefno"].retStr(),
-                                   PBLDT = dr["prefdt"].retDateStr()
+                                   PBLDT = dr["prefdt"].retDateStr(),
+                                   SLNO = b.ShortSLNO
                                }).Distinct().ToList();
                 if (VE.TBILTYKHASRA == null)
                 {
@@ -486,6 +497,10 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "KHSR")
                 {
                     VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+                }
+                else
+                {
+                    VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.SLNO).ToList();
                 }
                 for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
                 {

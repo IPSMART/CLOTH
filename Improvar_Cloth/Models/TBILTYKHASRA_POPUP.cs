@@ -22,6 +22,7 @@ namespace Improvar.Models
         public string BALEYR { get; set; }
         public bool Checked_LRNO { get; set; }
         public bool CheckedAll { get; set; }
-        
+        public short ShortSLNO { get; set; }
+        public string DOCNO { get; set; }
     }
 }

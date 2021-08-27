@@ -211,6 +211,8 @@
     //}
     function SelectMatchingCheckBoxes(index, checkboxid, matchingid, tableid) {
         debugger;
+        var arrIndex = [];
+        var k = 0;
         var arrmatchingfld = matchingid.split('/');
         var chkbox = document.getElementById(checkboxid + index).checked;
         if (chkbox == true) {
@@ -233,6 +235,8 @@
                     if (lrnoflag == true) {
                         document.getElementById("chkid_K_POPUP_" + i).checked = true;
                     }
+                    arrIndex[k] = i;
+                    k++;
                 }
             }
         }
@@ -256,6 +260,28 @@
                     if (lrnoflag == true) {
                         document.getElementById("chkid_K_POPUP_" + i).checked = false;
                     }
+                }
+            }
+        }
+
+        //short slno genarate according to selection
+        if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
+            var Table_name = "#" + tableid + " > tbody > tr";
+            var lngth = $(Table_name).length;
+            var arrShortSLNO = [];
+            k = 0;
+            for (var i = 0; i <= lngth - 1; i++) {
+                if (document.getElementById(checkboxid + i).checked == true) {
+                    arrShortSLNO[k] = $("#ShortSLNO_POPUP_" + i).val();
+                    k++;
+                }
+            }
+            var maxShortSLNO = Math.max.apply(Math, arrShortSLNO);
+            for (var i = 0; i <= arrIndex.length - 1; i++) {
+                var RIndex = arrIndex[i]
+                if (document.getElementById(checkboxid + RIndex).checked == true) {
+                    maxShortSLNO++;
+                    $("#ShortSLNO_POPUP_" + RIndex).val(maxShortSLNO);
                 }
             }
         }
@@ -646,7 +672,7 @@
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
-                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:750px;">
+                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:773px;">
                 </div>
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">

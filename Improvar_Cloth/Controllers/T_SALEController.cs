@@ -1576,11 +1576,17 @@ namespace Improvar.Controllers
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string AUTONO = data[9].retStr() == "" ? "" : data[9].retStr().retSqlformat();
+                string SLCD = "";
+                if ((VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR") && data[11].retStr() == "E")
+                {
+                    SLCD = data[10].retStr() == "" ? "" : data[10].retStr().retSqlformat();
+                }
+
                 if (data[7].retStr() == "Bar")
                 {
                     barnoOrStyle = barnoOrStyle.ToUpper();
                 }
-                str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar);
+                str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar, SLCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -4494,7 +4500,7 @@ namespace Improvar.Controllers
                     }
 
                     //if (balenocount > 0 && (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP"))
-                    if (balenocount > 0)
+                    if (balenocount > 0 && VE.T_TXN.GOCD != "SHOP")//shop logic for snfp,bale out two times
                     {
                         T_BALE_HDR TBALEHDR = new T_BALE_HDR();
                         TBALEHDR.EMD_NO = TTXN.EMD_NO;
@@ -4629,7 +4635,7 @@ namespace Improvar.Controllers
                                 duty = duty + Convert.ToDouble(VE.TTXNDTL[i].DUTYAMT);
 
                                 //if (VE.TTXNDTL[i].BALENO.retStr() != "" && (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP"))
-                                if (VE.TTXNDTL[i].BALENO.retStr() != "")
+                                if (VE.TTXNDTL[i].BALENO.retStr() != "" && VE.T_TXN.GOCD != "SHOP")//shop logic for snfp,bale out two times
                                 {
                                     T_BALE TBALE = new T_BALE();
                                     TBALE.EMD_NO = TTXN.EMD_NO;

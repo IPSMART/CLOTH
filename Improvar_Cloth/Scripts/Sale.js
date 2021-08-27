@@ -59,7 +59,9 @@ function GetBarnoDetails(id, HelpFrom) {
         var allmtrljobcd = $("#ALLMTRLJOBCD").val();
         var BARCODE = $("#BARCODE").val();
         var AUTONO = $("#AUTONO").val();
-        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE + String.fromCharCode(181) + AUTONO;
+        var SLCD = $("#SLCD").val();
+        var SYSCNFGCOMMONUNIQBAR = $("#SYSCNFGCOMMONUNIQBAR").val();
+        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE + String.fromCharCode(181) + AUTONO + String.fromCharCode(181) + SLCD + String.fromCharCode(181) + SYSCNFGCOMMONUNIQBAR;
 
         var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
         if (HelpFrom == "Bar") {
