@@ -2276,9 +2276,9 @@ namespace Improvar
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
                     SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
-                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") + "</tr>");
+                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") +"<td>" + tbl.Rows[i]["gocd"] + "</td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "");
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "") + Cn.GCS() + "Godown";
                 return Generate_help(hdr, SB.ToString());
             }
             else

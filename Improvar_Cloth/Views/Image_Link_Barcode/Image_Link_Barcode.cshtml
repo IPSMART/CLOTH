@@ -124,17 +124,24 @@
     }
 </script>
 <script>
-    function GetBarCode1(id) {
+    function GetBarCode1(id,tag) {
         debugger;
         if (id == "") {
-            ClearAllTextBoxes("BARNO,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
+            ClearAllTextBoxes("BARNO,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO,GOCD,GONM");
         }
         else {
             var BARNO = $('#BARNO').val();
             var Defaultbar = $('#Defaultbar').val();
+            if(tag=="y")
+            {
+                var Defaultstyle = $('#Defaultstyle').val();
+                Defaultbar=Defaultstyle;
+            }
+            
             var MTRLJOBCD = $('#MTRLJOBCD').val();
             var ALLMTRLJOBCD = $('#ALLMTRLJOBCD').val();
-            var code = BARNO + String.fromCharCode(181) + Defaultbar + String.fromCharCode(181) + MTRLJOBCD + String.fromCharCode(181) + ALLMTRLJOBCD;
+            var GOCD = $('#GOCD').val();
+            var code = BARNO + String.fromCharCode(181) + Defaultbar + String.fromCharCode(181) + MTRLJOBCD + String.fromCharCode(181) + ALLMTRLJOBCD + String.fromCharCode(181) + GOCD;
             $.ajax({
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
@@ -157,6 +164,9 @@
                             $("#FABITNM").val(returncolvalue(result, "itnm"));
                             $("#PDESIGN").val(returncolvalue(result, "pdesign"));
                             $("#BLSLNO").val(returncolvalue(result, "balnos"));
+                            $("#GOCD").val(returncolvalue(result, "GOCD"));
+                            $("#GONM").val(returncolvalue(result, "GONM"));
+                            
                         }                    
                     else {
                         $('#helpDIV').html("");
@@ -181,7 +191,9 @@
             var arr = $("#BarImages").val().split(String.fromCharCode(179));
             $.each(arr, function (index, value) {
                 var imgname = (value.split('~')[0]);
-                var id = (imgname).split('.')[0];
+                var addarr = imgname.split('/');
+                //var id = (imgname).split('.')[0];
+                var id = (addarr[addarr.length - 1]).split('.')[0];
                 var ImageDesc = (value.split('~')[1]);
                 var htm = "";
                 htm += '<div class="col-lg-4" id="' + id + '">';
@@ -200,6 +212,7 @@
         }
     }
 </script>
+<script></script>
 
 @using (Html.BeginForm(Model.ActionName, PageControllerName, FormMethod.Post))
 {
@@ -212,7 +225,7 @@
             <input type="hidden" id="ImageStr" value="" />
             <input type="hidden" id="Defaultstyle" value="Style" />
             <input type="hidden" id="Defaultbar" value="Bar" />
-            <input type="hidden" id="Onclicktbar" value="" />
+            <input type="hidden" id="Onclicktbar" value="click" />
 
             <div class="col-md-1">
                 <div class="editor-label" style="margin-top: 6px;">
@@ -222,9 +235,10 @@
             </div>
             <div class="col-md-6">
                 <div class="editor-field">
-                    @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARNO','BARNO=BARNO=0','Onclicktbar/Defaultbar/MTRLJOBCD/ALLMTRLJOBCD')", onblur = "GetBarCode1(this.value)", @placeholder = "Bar Code", maxlength = 25 } })
-                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARNO','BARNO=BARNO=0','Onclicktbar/Defaultbar/MTRLJOBCD/ALLMTRLJOBCD')" />
+                    @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARNO','BARNO=BARNO=0/GOCD=GOCD=7','Onclicktbar/Defaultbar/MTRLJOBCD/ALLMTRLJOBCD')", onblur = "GetBarCode1(this.value)", @placeholder = "Bar Code", maxlength = 25 } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARNO','BARNO=BARNO=0/GOCD=GOCD=7','Onclicktbar/Defaultbar/MTRLJOBCD/ALLMTRLJOBCD')" />
                     <input type="hidden" id="FDT" />
+                    <input type="hidden" id="GOCD" />
                 </div>
             </div>
             <div class="row">
@@ -236,8 +250,10 @@
                 </div>
                 <div class="col-md-8">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','Onclicktbar/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/ITGRPNM=ITGRPNM/FABITNM=itnm/PDESIGN=pdesign/BLSLNO=balnos','BARNO/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')", @placeholder = "Design No", maxlength = 25 } })
-                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','Onclicktbar/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')" />
+                        @*@Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','Onclicktbar/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/ITGRPNM=ITGRPNM/FABITNM=itnm/PDESIGN=pdesign/BLSLNO=balnos','BARNO/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')", @placeholder = "Design No", maxlength = 25 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd','Onclicktbar/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')" />*@
+                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd/GOCD=GOCD7','Onclicktbar/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')", onblur = "GetBarCode1(this.value,'y')", @placeholder = "Design No", maxlength = 25 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','STYLENO','STYLENO=STYLENO=3/BARNO=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/ITCD=itcd/GOCD=GOCD=7','Onclicktbar/Defaultstyle/MTRLJOBCD/ALLMTRLJOBCD')" />
                         <input type="hidden" id="MTRLJOBCD" />
                         <input type="hidden" id="PARTCD" />
                         <input type="hidden" id="ITCD" />
@@ -292,6 +308,11 @@
                 <div class="col-md-3">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.BLSLNO, new { htmlAttributes = new { @class = "form-control", id = "BLSLNO", @title = "BLSLNO", @placeholder = "BLSLNO", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", id = "GONM", @title = "Godown", @placeholder = "Godown", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
             </div>
