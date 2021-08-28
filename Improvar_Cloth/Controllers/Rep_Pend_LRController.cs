@@ -10,9 +10,9 @@ using OfficeOpenXml.Style;
 
 namespace Improvar.Controllers
 {
-    public class Rep_Rate_QueryController : Controller
+    public class Rep_Pend_LRController : Controller
     {
-        // GET: Rep_Rate_Query
+        // GET: Rep_Pend_LR
         Connection Cn = new Connection();
         MasterHelp MasterHelp = new MasterHelp();
         Salesfunc Salesfunc = new Salesfunc();
@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         string fdt = ""; string tdt = ""; bool showpacksize = false, showrate = false;
         string modulecode = CommVar.ModuleCode();
-        public ActionResult Rep_Rate_Query()
+        public ActionResult Rep_Pend_LR()
         {
             try
             {
@@ -30,19 +30,11 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Rate Query Register";
+                    ViewBag.formname = "Pending Bilty";
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-                    //=========For Report Type===========//
-                    List<DropDown_list1> RT = new List<DropDown_list1>();
-                    RT.Add(new DropDown_list1 { value = "Sales", text = "Sales" });
-                    RT.Add(new DropDown_list1 { value = "Purchase", text = "Purchase" });
-                    VE.DropDown_list1 = RT;
-                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("D,C");
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("T");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-                    VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
-                    VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
-                    VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.DefaultView = true;
                     return View(VE);
@@ -55,7 +47,7 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult Rep_Rate_Query(FormCollection FC, ReportViewinHtml VE)
+        public ActionResult Rep_Pend_LR(FormCollection FC, ReportViewinHtml VE)
         {
             try
             {
@@ -63,20 +55,10 @@ namespace Improvar.Controllers
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
                 bool showitems = false;
                 bool exldump = false, showdocno = false; bool ShowPendings = VE.Checkbox1; bool viewUom = VE.Checkbox2;
-                string slcd = "", selitcd="";
+                string slcd = "", selitcd = "";
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
-                if (FC.AllKeys.Contains("itcdvalue")) selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
-                var DOCTYPE = "";
-                switch (VE.TEXTBOX1)
-                {
-                    case "Sales":
-                        DOCTYPE = "SBILD,SPSLP,SBILL,SBCM"; break;
-                    case "Purchase":
-                        DOCTYPE = "SPBL"; break;
-                    default: DOCTYPE = ""; break;
-                }
 
-                DataTable tbl = Salesfunc.GetRateHistory(slcd, selitcd, DOCTYPE.retStr().retSqlformat(), selitcd,fdt,tdt);
+                DataTable tbl = Salesfunc.getPendRecfromMutia(tdt, slcd);
                 tbl.DefaultView.Sort = "docdt desc";
                 tbl = tbl.DefaultView.ToTable();
                 Int32 i = 0;
@@ -99,23 +81,23 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "Pcstype", "string", "c,10", "Pcstype");
                 HC.GetPrintHeader(IR, "Qnty", "double", "n,15,3", "Qnty");
                 HC.GetPrintHeader(IR, "Rate", "double", "n,15,3", "Rate");
-                  Int32 rNo = 0;
+                Int32 rNo = 0;
                 // Report begins
                 i = 0; maxR = tbl.Rows.Count - 1;
                 int slno = 0;
                 while (i <= maxR)
                 {
-                        slno++;
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["slno"] = slno;
-                        IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
-                        IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
-                        IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
-                        IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
-                        IR.Rows[rNo]["city"] = tbl.Rows[i]["city"].retStr();
-                        if (tbl.Rows[i]["qnty"].retDbl() != 0) IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                        if (tbl.Rows[i]["rate"].retDbl() != 0) IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                        IR.Rows[rNo]["Pcstype"] = tbl.Rows[i]["Pcstype"].retStr();
+                    slno++;
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["slno"] = slno;
+                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
+                    IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
+                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
+                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
+                    IR.Rows[rNo]["city"] = tbl.Rows[i]["city"].retStr();
+                    if (tbl.Rows[i]["qnty"].retDbl() != 0) IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+                    if (tbl.Rows[i]["rate"].retDbl() != 0) IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                    IR.Rows[rNo]["Pcstype"] = tbl.Rows[i]["Pcstype"].retStr();
                     i++;
                     if (i > maxR) break;
                 }

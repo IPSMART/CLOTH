@@ -1651,7 +1651,7 @@ namespace Improvar
             if (tbl.Rows.Count == 1) rtval = tbl.Rows[0]["amt"].retDbl();
             return rtval;
         }
-        public DataTable GetRateHistory(string slcd, string partycd, string doctype, string itcd)
+        public DataTable GetRateHistory(string slcd, string partycd, string doctype, string itcd,string fdt="",string tdt="")
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
@@ -1665,6 +1665,8 @@ namespace Improvar
             if (partycd.retStr() != "") sql += "or e.partycd=" + partycd + " ";
             if (slcd.retStr() != "" || partycd.retStr() != "") sql += ") ";
             sql += "  and c.doctype in (" + doctype + ") ";
+            if (fdt != "") sql += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
+            if (tdt != "") sql += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
             sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype ";
             sql += "order by d.docdt,d.docno desc ";
             var dt = masterHelpFa.SQLquery(sql);
