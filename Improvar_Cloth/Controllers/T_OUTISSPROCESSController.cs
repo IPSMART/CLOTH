@@ -1860,7 +1860,7 @@ namespace Improvar.Controllers
                 TransactionOutIssProcess VE = new TransactionOutIssProcess();
                 Cn.getQueryString(VE);
                 //var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
-                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr(), PARTYCD.retStr(), VE.DOC_CODE.retStr().retSqlformat(), ITCD.retStr());
+                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), PARTYCD.retStr().retSqlformat(), VE.DOC_CODE.retStr().retSqlformat(), ITCD.retStr().retSqlformat());
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {

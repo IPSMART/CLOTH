@@ -1656,13 +1656,16 @@ namespace Improvar
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
 
-            sql += "select distinct a.slcd, a.autono, d.docno, d.docdt, b.qnty, b.rate, e.slnm, e.district city, ";
-            sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, scmdisctype ";
-            sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
-            sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd  and d.compcd='" + COM + "' and ";
-            sql += "itcd ='" + itcd + "' and (e.slcd = '" + slcd + "' ";
-            if (partycd.retStr() != "") sql += "or e.partycd='" + partycd + "' ";
-            sql += ") and c.doctype in (" + doctype + ") ";
+            sql += "select a.slcd, a.autono, d.docno, d.docdt, sum(nvl(f.qnty,0)) qnty, b.rate, e.slnm, e.district city, ";
+            sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype  ";
+            sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e," + scm + ".T_BATCHDTL f," + scm + ".M_SITEM g  ";
+            sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd and a.autono=f.autono  and b.itcd=g.itcd(+) and b.slno=f.txnslno and d.compcd='" + COM + "'  ";
+            if (itcd.retStr() != "") sql += " and b.itcd in(" + itcd + ") ";
+            if (slcd.retStr() != "") sql += " and (e.slcd = " + slcd + " ";
+            if (partycd.retStr() != "") sql += "or e.partycd=" + partycd + " ";
+            if (slcd.retStr() != "" || partycd.retStr() != "") sql += ") ";
+            sql += "  and c.doctype in (" + doctype + ") ";
+            sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype ";
             sql += "order by d.docdt,d.docno desc ";
             var dt = masterHelpFa.SQLquery(sql);
             return dt;

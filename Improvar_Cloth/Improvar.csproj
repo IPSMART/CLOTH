@@ -303,6 +303,7 @@
     <Compile Include="Controllers\Rep_Pend_JobController.cs" />
     <Compile Include="Controllers\Rep_Job_regController.cs" />
     <Compile Include="Controllers\Rep_PorterController.cs" />
+    <Compile Include="Controllers\Rep_Rate_QueryController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_SalesManController.cs" />
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
@@ -1446,6 +1447,7 @@
     <Content Include="Views\Shared\_Rep_Bar_History_AddNewBarno.cshtml" />
     <Content Include="Views\Rep_SalesMan\Rep_SalesMan.cshtml" />
     <Content Include="Views\Shared\_Rep_Reg_Column.cshtml" />
+    <Content Include="Views\Rep_Rate_Query\Rep_Rate_Query.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
