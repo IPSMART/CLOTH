@@ -1360,7 +1360,7 @@ namespace Improvar
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "")
+        public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "", string lrnoLike = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
@@ -1420,6 +1420,7 @@ namespace Improvar
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
             if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
+            if (lrnoLike.retStr() != "") sql += "and e.lrno like '%" + lrnoLike.retStr() + "%'  ";
             //sql += " and ( nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 or b.bnos is null) ";
             sql += " and ( (nvl(b.bnos, 0)-nvl(c.bnos,0) > 0) or (b.bnos is null and 1 - nvl(c.bnos, 0) > 0)) ";
             tbl = masterHelpFa.SQLquery(sql);

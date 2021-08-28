@@ -30,7 +30,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Pending Bilty";
+                    ViewBag.formname = "Pending Bilty Register";
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("T");
@@ -53,14 +53,10 @@ namespace Improvar.Controllers
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
-                bool showitems = false;
-                bool exldump = false, showdocno = false; bool ShowPendings = VE.Checkbox1; bool viewUom = VE.Checkbox2;
-                string slcd = "", selitcd = "";
-                if (FC.AllKeys.Contains("slcdvalue")) slcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
-
-                DataTable tbl = Salesfunc.getPendRecfromMutia(tdt, slcd);
-                tbl.DefaultView.Sort = "docdt desc";
-                tbl = tbl.DefaultView.ToTable();
+                string slcd = "", lrnoLike = "";
+                if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString();
+                lrnoLike = VE.TEXTBOX1;
+                DataTable tbl = Salesfunc.getPendRecfromMutia(tdt, slcd,"","","",lrnoLike);
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "", gonm = "";
@@ -73,14 +69,14 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 HC.RepStart(IR, 3);
                 HC.GetPrintHeader(IR, "slno", "double", "n,8", "Sl No.");
-                HC.GetPrintHeader(IR, "slcd", "string", "c,20", "Party Code");
-                HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
-                HC.GetPrintHeader(IR, "city", "string", "c,20", "City");
-                HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Bill Date");
-                HC.GetPrintHeader(IR, "docno", "string", "c,20", "Bill No");
-                HC.GetPrintHeader(IR, "Pcstype", "string", "c,10", "Pcstype");
-                HC.GetPrintHeader(IR, "Qnty", "double", "n,15,3", "Qnty");
-                HC.GetPrintHeader(IR, "Rate", "double", "n,15,3", "Rate");
+                HC.GetPrintHeader(IR, "lrno", "string", "c,20", "LR No");
+                HC.GetPrintHeader(IR, "lrdt", "string", "d,10", "LR Date");
+                HC.GetPrintHeader(IR, "baleno", "string", "c,35", "Bale No");
+                HC.GetPrintHeader(IR, "sortno", "string", "c,20", "Sort No");
+                HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Pcs");
+                HC.GetPrintHeader(IR, "Mtrs", "string", "c,10", "Mtrs");
+                HC.GetPrintHeader(IR, "prefdt", "string", "d,10", "Entry Date");
+                HC.GetPrintHeader(IR, "pageno", "string", "c,20", "Page No");
                 Int32 rNo = 0;
                 // Report begins
                 i = 0; maxR = tbl.Rows.Count - 1;
@@ -90,19 +86,19 @@ namespace Improvar.Controllers
                     slno++;
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["slno"] = slno;
-                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
-                    IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
-                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
-                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
-                    IR.Rows[rNo]["city"] = tbl.Rows[i]["city"].retStr();
+                    IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
+                    IR.Rows[rNo]["lrdt"] = tbl.Rows[i]["lrdt"].retDateStr();
+                    IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
+                    IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
+                    IR.Rows[rNo]["sortno"] = tbl.Rows[i]["nos"].retStr();
                     if (tbl.Rows[i]["qnty"].retDbl() != 0) IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                    if (tbl.Rows[i]["rate"].retDbl() != 0) IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                    IR.Rows[rNo]["Pcstype"] = tbl.Rows[i]["Pcstype"].retStr();
+                    IR.Rows[rNo]["Mtrs"] = tbl.Rows[i]["uomcd"].retStr();
+                    IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr();
                     i++;
                     if (i > maxR) break;
                 }
-                string pghdr1 = "Rate Query Register from " + fdt + " to " + tdt;
-                string repname = "Rate Query Register";
+                string pghdr1 = "Pending Bilty Register from " + fdt + " to " + tdt;
+                string repname = "Pending Bilty Register";
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;
