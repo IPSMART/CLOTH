@@ -68,16 +68,16 @@ namespace Improvar.Controllers
                     int row = 2;
                     for (row = 2; row <= noOfRow; row++)
                     {
-                        string grpnm = workSheet.Cells[row, 2].Value.ToString();
-                        string style = workSheet.Cells[row, 3].Value.ToString() + workSheet.Cells[row, 4].Value.ToString();
-                        string HSNCODE = workSheet.Cells[row, 5].Value.ToString();
+                        string grpnm = workSheet.Cells[row, 1].Value.ToString();
+                        string style = workSheet.Cells[row, 2].Value.ToString() + workSheet.Cells[row, 3].Value.ToString().Split('-')[0];
+                        string HSNCODE = workSheet.Cells[row, 7].Value.ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE, "","", "F", "C","");
-                        sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where barno='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
+                        sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno ='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
                         var dt = masterHelp.SQLquery(sql);
                         if (dt.Rows.Count > 0) continue;
-                        double CP = workSheet.Cells[row, 5].Value.retDbl();
+                        double CP = workSheet.Cells[row, 4].Value.retDbl();
                         double WP = workSheet.Cells[row, 5].Value.retDbl();
-                        double RP = workSheet.Cells[row, 5].Value.retDbl();
+                        double RP = workSheet.Cells[row, 6].Value.retDbl();
                         msg = Salesfunc.CreatePricelist(ItemDet.BARNO, VE.TDT, CP, WP, RP);
                         if (msg != "ok")
                         {
