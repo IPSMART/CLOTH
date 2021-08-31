@@ -2263,6 +2263,7 @@ namespace Improvar.Controllers
                                     total_gstamt3 = total_gstamt3 + Convert.ToDouble(k.TSGSTAMT);
                                 }
                             }
+                            uommaxdecimal = tbl.Rows[i]["qdecimal"].retInt();
                         }
 
                         while (tbl.Rows[i]["autono"].ToString() == auto1)
@@ -2784,7 +2785,7 @@ namespace Improvar.Controllers
                                 dr1["qnty"] = dqnty;
                                 dr1["netqnty"] = dnqnty;
                                 //if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
-                                dr1["qdecimal"] = tbl.Rows[i]["qdecimal"].retDbl();// uommaxdecimal;
+                                dr1["qdecimal"] = uommaxdecimal;
                                 dr1["amt"] = dbasamt;
                                 dr1["scmdiscamt"] = ddisc1.ToINRFormat();
                                 dr1["tddiscamt"] = ddisc2.ToINRFormat();
