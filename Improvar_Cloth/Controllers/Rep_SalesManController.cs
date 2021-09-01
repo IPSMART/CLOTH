@@ -121,8 +121,8 @@ namespace Improvar.Controllers
                 sql += "order by slnm,autono											";
                 if (reptype == "S")
                 {
-                    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd,sum(a.mult) mult,sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
-                    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd ";
+                    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd, a.mult, sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
+                    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd, a.mult ";
                     sql += " order by slnm";
                 }
 
@@ -265,9 +265,9 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["slnm"] = "Total of [" + tbl.Rows[i - 1]["slnm"] + "] ";
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                             //if (showitems == true && reptype == "D")
-                            IR.Rows[rNo]["qnty"] = pqnty;
-                            IR.Rows[rNo]["txblval"] = pamt1;
-                            IR.Rows[rNo]["blamt"] = pamt2;
+                            //IR.Rows[rNo]["qnty"] = pqnty;
+                            //IR.Rows[rNo]["txblval"] = pamt1;
+                            //IR.Rows[rNo]["blamt"] = pamt2;
                             IR.Rows[rNo]["shqnty"] = pshrqnty;
                             IR.Rows[rNo]["shtxblval"] = pshblamt;
                             IR.Rows[rNo]["shblamt"] = pshtxblval;
@@ -283,9 +283,9 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
                             }
                             // if (showitems == true && reptype == "D")
-                            IR.Rows[rNo]["qnty"] = pqnty;
-                            IR.Rows[rNo]["txblval"] = pamt1;
-                            IR.Rows[rNo]["blamt"] = pamt2;
+                            //IR.Rows[rNo]["qnty"] = pqnty;
+                            //IR.Rows[rNo]["txblval"] = pamt1;
+                            //IR.Rows[rNo]["blamt"] = pamt2;
                             IR.Rows[rNo]["shqnty"] = pshrqnty;
                             IR.Rows[rNo]["shtxblval"] = pshtxblval;
                             IR.Rows[rNo]["shblamt"] = pshblamt;
@@ -315,10 +315,10 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["slnm"] = "Grand Total";
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                 // if (showitems == true && reptype == "D")
-                IR.Rows[rNo]["qnty"] = gqnty;
-                IR.Rows[rNo]["txblval"] = gamt1;
+                //IR.Rows[rNo]["qnty"] = gqnty;
+                //IR.Rows[rNo]["txblval"] = gamt1;
                 //if (showitems == false)
-                IR.Rows[rNo]["blamt"] = gamt2;
+                //IR.Rows[rNo]["blamt"] = gamt2;
                 IR.Rows[rNo]["shqnty"] = gshrqnty;
                 IR.Rows[rNo]["shtxblval"] = gshtxblval;
                 IR.Rows[rNo]["shblamt"] = gshblamt;
