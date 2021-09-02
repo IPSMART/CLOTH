@@ -622,6 +622,14 @@ namespace Improvar.Controllers
                                     CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                                     FREESTK = dr["FREESTK"].retStr(),
                                 }).OrderBy(s => s.SLNO).ToList();
+                int count = 0; var latbaleno = "";
+                for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                { var baleno = VE.TBATCHDTL[i].BALENO;
+                    var salebalno = (from j in VE.TBATCHDTL where j.BALENO == baleno select j.BALENO).Distinct().FirstOrDefault();
+                    if(salebalno!=null && latbaleno!= salebalno)
+                    { count = count + 1; latbaleno = salebalno; }
+                }
+                VE.TOTBALENO = count.retDbl();
 
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";

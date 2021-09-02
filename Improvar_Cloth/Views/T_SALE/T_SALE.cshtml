@@ -290,34 +290,34 @@
         //
         @*if ("@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SBEXP") {*@//bhura w/o rate bill not save
 
-            var rateblank = false;
-            if (GridRow_bar != 0) {
-                for (var i = 0; i <= GridRow_bar - 1; i++) {
-                    if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
-                        if ("@Model.MENU_PARA" == "PJBL" || "@Model.MENU_PARA" == "PJBR") {
-                            if ($("#B_FREESTK_" + i).val() != "Y") {
-                                rateblank = true;
-                            }
-                        }
-                        else {
+        var rateblank = false;
+        if (GridRow_bar != 0) {
+            for (var i = 0; i <= GridRow_bar - 1; i++) {
+                if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
+                    if ("@Model.MENU_PARA" == "PJBL" || "@Model.MENU_PARA" == "PJBR") {
+                        if ($("#B_FREESTK_" + i).val() != "Y") {
                             rateblank = true;
                         }
-
-                        break;
                     }
-                }
-                if (rateblank == true) {
-                    var slno = $("#B_SLNO_" + i).val();
-                    msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
-                    $("li").removeClass("active").addClass("");
-                    $(".nav-tabs li:nth-child(2)").addClass('active');
-                    //below set the  child sequence
-                    $(".tab-content div").removeClass("active");
-                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    message_value = "B_RATE_" + i;
-                    return false;
+                    else {
+                        rateblank = true;
+                    }
+
+                    break;
                 }
             }
+            if (rateblank == true) {
+                var slno = $("#B_SLNO_" + i).val();
+                msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "B_RATE_" + i;
+                return false;
+            }
+        }
         //}
         //start of finalise
         if ($("#bardatachng").val() == "Y" && GridRow_bar > 0) {
@@ -1018,6 +1018,19 @@
                                         @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                     </div>
                                 </div>
+                                if (Model.MENU_PARA == "PB" && Model.DefaultAction=="V")
+                                {<div class="col-md-4" style="width:auto">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Bale No.")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TOTBALENO, new { htmlAttributes = new { @class = "form-control", id = "TOTBALENO", maxlength = 15, @TabIndex = -1, @placeholder = "Total Baleno.", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+
+                                </div>
+                            </div>
+                                }
                             }
                         </div>
                         <div class="row">
@@ -1487,11 +1500,11 @@
                                         @Html.Label("", "Lower TDS Ded.Type")
                                     </div>
                                 </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.T_TDSTXN.LOW_TDS, new SelectList(Model.LOW_TDS_list, "Value", "Text", Model.LOW_TDS_list), new { @class = "form-control", onchange = "GetTDSDescription(this.value);", })
-                                        </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.T_TDSTXN.LOW_TDS, new SelectList(Model.LOW_TDS_list, "Value", "Text", Model.LOW_TDS_list), new { @class = "form-control", onchange = "GetTDSDescription(this.value);", })
                                     </div>
+                                </div>
                             }
                         </div>
 
@@ -1725,7 +1738,7 @@
                                 </div>
                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                 }
-                                
+
                             </div>
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                     {
