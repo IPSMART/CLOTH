@@ -637,7 +637,7 @@ namespace Improvar.Controllers
                     //----------------------------------------------------------//
                     string PURGLCD = "";
 
-                    DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
+                    DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'","baleno,excelrownum").CopyToDataTable();
                     double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
