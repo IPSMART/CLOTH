@@ -48,6 +48,8 @@ namespace Improvar.Controllers
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
+                    VE.SubAgent = MasterHelp.ComboFill("sagslcd", VE.DropDown_list_SLCD, 0, 1);
                     var bltypelst = DropDownHelp.DropDownBLTYPE();
                     VE.BlType = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
                     VE.FDT = CommVar.CurrDate(UNQSNO);     //CommVar.FinStartDate(UNQSNO);
@@ -197,12 +199,13 @@ namespace Improvar.Controllers
                 string itgrpcd = "";
 
                 //string reptype = FC["reptype"].ToString();
-                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "";
+                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "",selSagslcd="";
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
                 if (FC.AllKeys.Contains("ITGRPCDvalue")) itgrpcd = CommFunc.retSqlformat(FC["ITGRPCDvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) selloccd = FC["loccdvalue"].retSqlformat();
                 if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
+                if (FC.AllKeys.Contains("sagslcdvalue")) selSagslcd = CommFunc.retSqlformat(FC["sagslcdvalue"].ToString());
                 if (FC.AllKeys.Contains("bltypevalue")) bltype = CommFunc.retSqlformat(FC["bltypevalue"].ToString());
                 string txntag = "", doctype = ""; string regdsp = "";
                 txntag = "SALES";
@@ -325,6 +328,7 @@ namespace Improvar.Controllers
                 if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
                 if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
                 if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
+                if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
                 sql += "order by ";
