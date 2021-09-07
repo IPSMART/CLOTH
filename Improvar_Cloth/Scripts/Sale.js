@@ -244,7 +244,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#SIZENM").val(returncolvalue(str, "SIZENM"));
         $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
         $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
-        if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK" || MENU_PARA == "SBPOS" || MENU_PARA == "PR") {
+        if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK" || MENU_PARA == "SBPOS" || MENU_PARA == "PR" || MENU_PARA == "PI") {
             if (retStr(returncolvalue(str, "uomcd")) == "PCS") {
                 $("#QNTY").val(1.000);
                 $("#NOS").val(returncolvalue(str, "NOS"));

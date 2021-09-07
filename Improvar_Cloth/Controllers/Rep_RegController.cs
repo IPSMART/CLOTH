@@ -647,7 +647,7 @@ namespace Improvar.Controllers
                                 if (dtlsumm != "C") dr["disc2"] = bdisc2;
                                 dr["taxableval"] = btaxable;
                                 if (dtlsumm == "C") dr["gstper"] = tbl.Rows[i]["gstper"].retDbl();
-                                if (dtlsumm == "C") dr["gstamt"] = tbl.Rows[i]["gstamt"].retDbl();
+                                if (dtlsumm == "C") dr["gstamt"] = bigstamt + bcgstamt + bsgstamt;    /* tbl.Rows[i]["gstamt"].retDbl();*/
                                 if (dtlsumm != "C") dr["igstper"] = bigstper;
                                 if (dtlsumm != "C") dr["cgstper"] = bcgstper;
                                 if (dtlsumm != "C") dr["sgstper"] = bsgstper;
