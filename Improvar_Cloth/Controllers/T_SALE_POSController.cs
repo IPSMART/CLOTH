@@ -4077,7 +4077,7 @@ namespace Improvar.Controllers
                 }
                 RVH.TEXTBOX7 = "Half";
                 RVH.TEXTBOX10 = "2";
-                return RepPos.SaleBill_Print(RVH, FC, "");
+                return RepPos.SaleBill_Print(RVH, FC, "PrintToPrinter");
             }
             catch
             {
