@@ -1450,6 +1450,7 @@ function ItcdClr() {
 }
 
 function AmountCalculation(i) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var A_NOS = document.getElementById("T_NOS").value;
@@ -1581,29 +1582,30 @@ function AmountCalculateTotal() {
     var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
     var GridRow = $("#AMOUNT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
+        var mult = $("#ADDLESS_" + i).val() == "A" ? 1 : -1;
         var CURR_AMT = document.getElementById("ACURR_AMT_" + i).value;
-        if (CURR_AMT != "") { T_CURR_AMT = T_CURR_AMT + parseFloat(CURR_AMT); } else { T_CURR_AMT = T_CURR_AMT + parseFloat(0); }
+        if (CURR_AMT != "") { T_CURR_AMT = T_CURR_AMT + parseFloat(CURR_AMT * mult); } else { T_CURR_AMT = T_CURR_AMT + parseFloat(0); }
 
         var AMT = document.getElementById("A_AMT_" + i).value;
-        if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+        if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT * mult); } else { T_AMT = T_AMT + parseFloat(0); }
 
         var IGST_AMT = document.getElementById("AIGSTAMT_" + i).value;
-        if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
+        if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT * mult); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
 
         var CGST_AMT = document.getElementById("ACGSTAMT_" + i).value;
-        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT* mult); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
 
         var SGST_AMT = document.getElementById("ASGSTAMT_" + i).value;
-        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT* mult); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
 
         var CESS_AMT = document.getElementById("ACESSAMT_" + i).value;
-        if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
+        if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT * mult); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
 
         var DUTY_AMT = document.getElementById("ADUTYAMT_" + i).value;
-        if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
+        if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT* mult); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
 
         var NET_AMT = document.getElementById("ANETAMT_" + i).value;
-        if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
+        if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT * mult); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
 
     }
     document.getElementById("A_T_CURR").value = parseFloat(T_CURR_AMT).toFixed(2);

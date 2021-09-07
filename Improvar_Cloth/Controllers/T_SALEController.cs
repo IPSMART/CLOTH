@@ -624,9 +624,10 @@ namespace Improvar.Controllers
                                 }).OrderBy(s => s.SLNO).ToList();
                 int count = 0; var latbaleno = "";
                 for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
-                { var baleno = VE.TBATCHDTL[i].BALENO;
+                {
+                    var baleno = VE.TBATCHDTL[i].BALENO;
                     var salebalno = (from j in VE.TBATCHDTL where j.BALENO == baleno select j.BALENO).Distinct().FirstOrDefault();
-                    if(salebalno!=null && latbaleno!= salebalno)
+                    if (salebalno != null && latbaleno != salebalno)
                     { count = count + 1; latbaleno = salebalno; }
                 }
                 VE.TOTBALENO = count.retDbl();
@@ -956,15 +957,17 @@ namespace Improvar.Controllers
                     if (VE.TTXNAMT[p].CESSPER_DESP == 0) { VE.TTXNAMT[p].CESSPER_DESP = CESS_PER; }
                     if (VE.TTXNAMT[p].DUTYPER == 0) { VE.TTXNAMT[p].DUTYPER = DUTY_PER; }
 
-                    A_TOTAL_CURR = A_TOTAL_CURR + VE.TTXNAMT[p].CURR_AMT.Value;
-                    A_TOTAL_AMOUNT = A_TOTAL_AMOUNT + VE.TTXNAMT[p].AMT.Value;
-                    A_IGST_AMT = A_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
-                    A_CGST_AMT = A_CGST_AMT + VE.TTXNAMT[p].CGSTAMT.Value;
-                    A_SGST_AMT = A_SGST_AMT + VE.TTXNAMT[p].SGSTAMT.Value;
-                    A_CESS_AMT = A_CESS_AMT + VE.TTXNAMT[p].CESSAMT.Value;
-                    A_DUTY_AMT = A_DUTY_AMT + VE.TTXNAMT[p].DUTYAMT.Value;
+                    double amult = 1;
+                    if (VE.TTXNAMT[p].ADDLESS == "L") amult = -1; else amult = 1;
+                    A_TOTAL_CURR = A_TOTAL_CURR + (VE.TTXNAMT[p].CURR_AMT.retDbl() * amult);
+                    A_TOTAL_AMOUNT = A_TOTAL_AMOUNT + (VE.TTXNAMT[p].AMT.retDbl() * amult);
+                    A_IGST_AMT = A_IGST_AMT + (VE.TTXNAMT[p].IGSTAMT.retDbl() * amult);
+                    A_CGST_AMT = A_CGST_AMT + (VE.TTXNAMT[p].CGSTAMT.retDbl() * amult);
+                    A_SGST_AMT = A_SGST_AMT + (VE.TTXNAMT[p].SGSTAMT.retDbl() * amult);
+                    A_CESS_AMT = A_CESS_AMT + (VE.TTXNAMT[p].CESSAMT.retDbl() * amult);
+                    A_DUTY_AMT = A_DUTY_AMT + (VE.TTXNAMT[p].DUTYAMT.retDbl() * amult);
                     VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
-                    A_TOTAL_NETAMOUNT = A_TOTAL_NETAMOUNT + VE.TTXNAMT[p].NETAMT.Value;
+                    A_TOTAL_NETAMOUNT = A_TOTAL_NETAMOUNT + (VE.TTXNAMT[p].NETAMT.retDbl() * amult);
                 }
                 VE.A_T_CURR = A_TOTAL_CURR;
                 VE.A_T_AMOUNT = A_TOTAL_AMOUNT;
@@ -2048,16 +2051,18 @@ namespace Improvar.Controllers
 
                 for (int p = 0; p <= VE.TTXNAMT.Count - 1; p++)
                 {
+                    double mult = VE.TTXNAMT[p].ADDLESS == "A" ? 1 : -1;
+
                     VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
 
-                    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
-                    A_T_CURR_AMT = A_T_CURR_AMT + VE.TTXNAMT[p].CURR_AMT.Value;
-                    A_T_AMT = A_T_AMT + VE.TTXNAMT[p].AMT.Value;
-                    A_T_IGST_AMT = A_T_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
-                    A_T_CGST_AMT = A_T_CGST_AMT + VE.TTXNAMT[p].CGSTAMT.Value;
-                    A_T_SGST_AMT = A_T_SGST_AMT + VE.TTXNAMT[p].SGSTAMT.Value;
-                    A_T_CESS_AMT = A_T_CESS_AMT + VE.TTXNAMT[p].CESSAMT.Value;
-                    A_T_DUTY_AMT = A_T_DUTY_AMT + VE.TTXNAMT[p].DUTYAMT.Value;
+                    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.retDbl() + VE.TTXNAMT[p].IGSTAMT.retDbl() + VE.TTXNAMT[p].CGSTAMT.retDbl() + VE.TTXNAMT[p].SGSTAMT.retDbl() + VE.TTXNAMT[p].CESSAMT.retDbl() + VE.TTXNAMT[p].DUTYAMT.retDbl();
+                    A_T_CURR_AMT = A_T_CURR_AMT + (VE.TTXNAMT[p].CURR_AMT.retDbl() * mult);
+                    A_T_AMT = A_T_AMT + (VE.TTXNAMT[p].AMT.retDbl() * mult);
+                    A_T_IGST_AMT = A_T_IGST_AMT + (VE.TTXNAMT[p].IGSTAMT.retDbl() * mult);
+                    A_T_CGST_AMT = A_T_CGST_AMT + (VE.TTXNAMT[p].CGSTAMT.retDbl() * mult);
+                    A_T_SGST_AMT = A_T_SGST_AMT + (VE.TTXNAMT[p].SGSTAMT.retDbl() * mult);
+                    A_T_CESS_AMT = A_T_CESS_AMT + (VE.TTXNAMT[p].CESSAMT.retDbl() * mult);
+                    A_T_DUTY_AMT = A_T_DUTY_AMT + (VE.TTXNAMT[p].DUTYAMT.retDbl() * mult);
                 }
                 A_T_NET_AMT = A_T_NET_AMT + A_T_AMT + A_T_IGST_AMT + A_T_CGST_AMT + A_T_SGST_AMT + A_T_CESS_AMT + A_T_DUTY_AMT;
                 VE.A_T_CURR = A_T_CURR_AMT;
@@ -5090,11 +5095,13 @@ namespace Improvar.Controllers
                                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                     }
                                 }
-                                igst = igst + Convert.ToDouble(VE.TTXNAMT[i].IGSTAMT);
-                                cgst = cgst + Convert.ToDouble(VE.TTXNAMT[i].CGSTAMT);
-                                sgst = sgst + Convert.ToDouble(VE.TTXNAMT[i].SGSTAMT);
-                                cess = cess + Convert.ToDouble(VE.TTXNAMT[i].CESSAMT);
-                                duty = duty + Convert.ToDouble(VE.TTXNAMT[i].DUTYAMT);
+                                int amult = 1;
+                                if (VE.TTXNAMT[i].ADDLESS == "L") amult = -1;
+                                igst = igst + Convert.ToDouble(VE.TTXNAMT[i].IGSTAMT * amult);
+                                cgst = cgst + Convert.ToDouble(VE.TTXNAMT[i].CGSTAMT * amult);
+                                sgst = sgst + Convert.ToDouble(VE.TTXNAMT[i].SGSTAMT * amult);
+                                cess = cess + Convert.ToDouble(VE.TTXNAMT[i].CESSAMT * amult);
+                                duty = duty + Convert.ToDouble(VE.TTXNAMT[i].DUTYAMT * amult);
                             }
                         }
                     }
@@ -5622,6 +5629,8 @@ namespace Improvar.Controllers
                                     {
                                         exemptype = "";
                                     }
+                                    int gmult = 1;
+                                    if (VE.TTXNAMT[i].ADDLESS == "L") gmult = -1;
                                     gs = gs + 1;
                                     T_VCH_GST TVCHGST1 = new T_VCH_GST();
                                     TVCHGST1.EMD_NO = TTXN.EMD_NO;
@@ -5642,15 +5651,15 @@ namespace Improvar.Controllers
 
                                     TVCHGST1.HSNCODE = VE.TTXNAMT[i].HSNCODE;
                                     TVCHGST1.ITNM = VE.TTXNAMT[i].AMTNM;
-                                    TVCHGST1.AMT = VE.TTXNAMT[i].AMT.retDbl();
+                                    TVCHGST1.AMT = VE.TTXNAMT[i].AMT.retDbl() * gmult;
                                     TVCHGST1.CGSTPER = VE.TTXNAMT[i].CGSTPER.retDbl();
                                     TVCHGST1.SGSTPER = VE.TTXNAMT[i].SGSTPER.retDbl();
                                     TVCHGST1.IGSTPER = VE.TTXNAMT[i].IGSTPER.retDbl();
-                                    TVCHGST1.CGSTAMT = VE.TTXNAMT[i].CGSTAMT.retDbl();
-                                    TVCHGST1.SGSTAMT = VE.TTXNAMT[i].SGSTAMT.retDbl();
-                                    TVCHGST1.IGSTAMT = VE.TTXNAMT[i].IGSTAMT.retDbl();
+                                    TVCHGST1.CGSTAMT = VE.TTXNAMT[i].CGSTAMT.retDbl() * gmult;
+                                    TVCHGST1.SGSTAMT = VE.TTXNAMT[i].SGSTAMT.retDbl() * gmult;
+                                    TVCHGST1.IGSTAMT = VE.TTXNAMT[i].IGSTAMT.retDbl() * gmult;
                                     TVCHGST1.CESSPER = VE.TTXNAMT[i].CESSPER.retDbl();
-                                    TVCHGST1.CESSAMT = VE.TTXNAMT[i].CESSAMT.retDbl();
+                                    TVCHGST1.CESSAMT = VE.TTXNAMT[i].CESSAMT.retDbl() * gmult;
                                     TVCHGST1.DRCR = cr;
                                     TVCHGST1.QNTY = 0;
                                     TVCHGST1.UOM = "OTH";
@@ -5682,7 +5691,7 @@ namespace Improvar.Controllers
                                     TVCHGST1.LUTDT = VE.T_VCH_GST.LUTDT;
                                     TVCHGST1.TCSPER = TTXN.TCSPER.retDbl();
                                     TVCHGST1.TCSAMT = gtcsamt.retDbl();
-                                    TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT.retDbl();
+                                    TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT.retDbl() * gmult;
                                     TVCHGST1.RATE = VE.TTXNAMT[i].AMTRATE.retDbl();
                                     TVCHGST1.PINV = pinv;
                                     if (VE.MENU_PARA == "PR")
