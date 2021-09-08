@@ -239,17 +239,20 @@ namespace Improvar.Controllers
                                 if (chkdata.WPPRICEGEN != null)
                                 {
                                     VE.WPPRICEGENCD = chkdata.WPPRICEGEN.Substring(0, 2);
-                                    VE.WPPRICEGENAMT = chkdata.WPPRICEGEN.Substring(2, 2);
+                                    var a = chkdata.WPPRICEGEN.Substring(2).Length;
+                                    VE.WPPRICEGENAMT = chkdata.WPPRICEGEN.Substring(2, a);
                                 }
                                 if (chkdata.RPPRICEGEN != null)
                                 {
                                     VE.RPPRICEGENCD = chkdata.RPPRICEGEN.Substring(0, 2);
-                                    VE.RPPRICEGENAMT = chkdata.RPPRICEGEN.Substring(2, 2);
+                                    var a = chkdata.RPPRICEGEN.Substring(2).Length;
+                                    VE.RPPRICEGENAMT = chkdata.RPPRICEGEN.Substring(2, a);
                                 }
                                 if (chkdata.CMROFFTYPE != null)
                                 {
                                     VE.CMROFFTYPE = chkdata.CMROFFTYPE.Substring(0, 2);
-                                    VE.CMROFFAMT = chkdata.CMROFFTYPE.Substring(2, 2);
+                                    var a = chkdata.CMROFFTYPE.Substring(2).Length;
+                                    VE.CMROFFAMT = chkdata.CMROFFTYPE.Substring(2, a);
                                 }
                                 if (chkdata.INACTIVE_TAG == "Y")
                                 {
@@ -308,8 +311,7 @@ namespace Improvar.Controllers
         }
         public SysCnfgMasterEntry Navigation(SysCnfgMasterEntry VE, ImprovarDB DB, int index, string searchValue)
         {
-            try
-            {
+           
                 sl = new M_SYSCNFG();
                 sll = new M_CNTRL_HDR();
                 sBRND = new M_BRAND();
@@ -384,17 +386,20 @@ namespace Improvar.Controllers
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
-                        VE.WPPRICEGENAMT = sl.WPPRICEGEN.Substring(2, 2);
+                    var a = sl.WPPRICEGEN.Substring(2).Length;
+                    VE.WPPRICEGENAMT = sl.WPPRICEGEN.Substring(2, a);
                     }
                     if (sl.RPPRICEGEN.retStr() != "")
                     {
                         VE.RPPRICEGENCD = sl.RPPRICEGEN.Substring(0, 2);
-                        VE.RPPRICEGENAMT = sl.RPPRICEGEN.Substring(2, 2);
+                        var a= sl.RPPRICEGEN.Substring(2).Length;
+                        VE.RPPRICEGENAMT = sl.RPPRICEGEN.Substring(2,a);
                     }
                     if (sl.CMROFFTYPE.retStr() != "")
                     {
                         VE.CMROFFTYPE = sl.CMROFFTYPE.Substring(0, 2);
-                        VE.CMROFFAMT = sl.CMROFFTYPE.Substring(2, 2);
+                    var a = sl.CMROFFTYPE.Substring(2).Length;
+                    VE.CMROFFAMT = sl.CMROFFTYPE.Substring(2, a);
                     }
                     if (sll.INACTIVE_TAG == "Y")
                     {
@@ -452,11 +457,6 @@ namespace Improvar.Controllers
                     }
 
                 }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-            }
             return VE;
         }
         public ActionResult SearchPannelData()
