@@ -219,6 +219,7 @@ namespace Improvar.Controllers
                             if (parkID == "")
                             {
                                 T_TXN TTXN = new T_TXN();
+                                T_TXNOTH TTXNOTH = new T_TXNOTH();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                 {
@@ -275,11 +276,52 @@ namespace Improvar.Controllers
                                 {
                                     TTXN.BARGENTYPE = VE.M_SYSCNFG.COMMONUNIQBAR.retStr() == "E" ? "E" : "C";
                                 }
+                                if (VE.MENU_PARA == "SBPOS")
+                                {
+                                    TTXN.SLCD = TempData["LASTSLCD" + VE.MENU_PARA].retStr();
+                                    if (TTXN.SLCD.retStr() == "")
+                                    {
+                                        if (VE.DocumentType.Count() > 0)
+                                        {
+                                            string doccd = VE.DocumentType.FirstOrDefault().value;
+                                            TTXN.SLCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.SLCD).FirstOrDefault();
+                                        }
+                                    }
+                                    string slcd = TTXN.SLCD.retStr();
+
+                                    if (slcd != "")
+                                    {
+                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD }).FirstOrDefault();
+                                        VE.SLNM = subleg.SLNM;
+                                        VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
+                                        VE.GSTNO = subleg.GSTNO;
+                                        VE.PSLCD = subleg.PSLCD;
+                                        VE.PARTYCD = subleg.PARTYCD;
+                                        VE.TCSAPPL = subleg.TCSAPPL;
+                                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                                        VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
+                                        string panno = subleg.PANNO;
+
+                                        string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
+                                        var party_data = salesfunc.GetSlcdDetails(TTXN.SLCD.retStr(), TTXN.DOCDT.retStr().Remove(10), "", DOCTAG);
+                                        if (party_data != null && party_data.Rows.Count > 0)
+                                        {
+                                            string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
+                                            VE.SLDISCDESC = (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
+                                            TTXNOTH.TAXGRPCD = party_data.Rows[0]["TAXGRPCD"].retStr();
+                                            TTXNOTH.PRCCD = party_data.Rows[0]["PRCCD"].retStr();
+                                            if (TTXNOTH.PRCCD.retStr() != "")
+                                            {
+                                                VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == TTXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
+                                            }
+                                        }
+                                    }
+                                }
                                 VE.T_TXN = TTXN;
                                 VE.MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr() == "Y" ? true : false;
-                                T_TXNOTH TXNOTH = new T_TXNOTH();
-                                if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TXNOTH.PAYTERMS = "NETT CASH, NO LESS";
-                                VE.T_TXNOTH = TXNOTH;
+                                //T_TXNOTH TXNOTH = new T_TXNOTH();
+                                if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TTXNOTH.PAYTERMS = "NETT CASH, NO LESS";
+                                VE.T_TXNOTH = TTXNOTH;
 
                                 //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
                                 //{
@@ -3072,7 +3114,7 @@ namespace Improvar.Controllers
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 string autono = VE.T_TXN.AUTONO.retStr() == "" ? "" : VE.T_TXN.AUTONO.retStr().retSqlformat();
-                var data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                var data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr().retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
 
                 if (VE.TBATCHDTL != null)
                 {
@@ -4212,6 +4254,7 @@ namespace Improvar.Controllers
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
                         TempData["LASTROUNDOFF" + VE.MENU_PARA] = VE.RoundOff == true ? "Y" : "N";
+                        TempData["LASTSLCD" + VE.MENU_PARA] = VE.T_TXN.SLCD;
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
