@@ -116,7 +116,7 @@
             $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             $("#GSTNO").focus();
         }
-        if (event.altKey && KeyID == 80) {//for Alt+P Print on 
+        if (event.altKey && KeyID == 80) {//for Alt+P Print on
             SaveandPrint();
         }
     });
@@ -248,9 +248,13 @@
                         }
                     }
                     else if (resultIndex == "2") {
-                        $("#M_BARCODE").focus();
-                            jQuery("form").attr("target", "_blank");
-                            jQuery("form").submit();
+                        debugger;
+                        var crntLocation1 = document.location.href;
+                        var ViewLocation1 = crntLocation1.replace("op=E", "op=V");
+                        location.href = ViewLocation1;
+                        jQuery("form").attr("target", "_blank");
+                        jQuery("form").submit();
+                      //  window.print();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -375,16 +379,16 @@
                             </div>
                         }
                         <div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Bill Type")
-                                </div>
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Bill Type")
                             </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
-                                </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
+                            </div>
 
-                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-5">
@@ -547,7 +551,7 @@
                                 </div>
                             </div>
                         }
-                        @if (Model.DefaultAction == "A"|| Model.DefaultAction == "E")
+                        @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
                         {
                             <div class="col-md-5">
                                 <input onclick="SaveandPrint()" class="btn btn-info btn-sm" style="margin-top: 2px; padding: 2px 7px 1px 7px;" id="SaveAndPrint" value="Save & Print (Alt+P)" title="Save & Print" />
@@ -967,12 +971,12 @@
                 </div>
                 <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                        <div>
-                            <div id="partialdivSalesman" style="margin-top:0px;">
-                                @Html.Partial("_T_SALE_POS_SALESMAN")
+                            <div>
+                                <div id="partialdivSalesman" style="margin-top:0px;">
+                                    @Html.Partial("_T_SALE_POS_SALESMAN")
+                                </div>
                             </div>
-                        </div>
-                    </div>*@
+                        </div>*@
                     <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                         <div>
                             <div id="partialdivPayment" style="margin-top:0px;">
