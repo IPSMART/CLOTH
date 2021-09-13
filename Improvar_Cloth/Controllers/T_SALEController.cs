@@ -6015,12 +6015,12 @@ namespace Improvar.Controllers
             sql = "";
             sql += "select a.autono,b.docno,b.docdt,c.docnm ";
             sql += "from " + scm + ".T_BALE a,  " + scm + ".t_cntrl_hdr b,  " + scm + ".m_doctype c ";
-            sql += "where a.autono = B.AUTONO and b.doccd = c.DOCCD and a.blautono = '" + autono + "' ";
+            sql += "where a.autono = B.AUTONO and b.doccd = c.DOCCD and nvl(b.cancel,'N') = 'N'  and a.blautono = '" + autono + "'  ";
             sql += "and a.autono not in ('" + autono + "')";
             sql += "union all ";
             sql += "select a.autono,b.docno,b.docdt,c.docnm  ";
-            sql += "from  " + fcm + ".T_vch_bl_adj a," + scm + ".t_cntrl_hdr b ," + scm + ".m_doctype c  ";
-            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD and  a.i_autono='" + autono + "'  ";
+            sql += "from  " + fcm + ".T_vch_bl_adj a," + fcm + ".t_cntrl_hdr b ," + fcm + ".m_doctype c  ";
+            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD  and nvl(b.cancel,'N') = 'N'  and (a.i_autono='" + autono + "' OR a.r_autono='" + autono + "'  )";
             DataTable dt = masterHelp.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
