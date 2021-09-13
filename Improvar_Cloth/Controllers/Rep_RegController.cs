@@ -73,6 +73,8 @@ namespace Improvar.Controllers
                         RT.Add(new DropDown_list1 { value = "Sales Cash Memo", text = "Sales Cash Memo" });
                         RT.Add(new DropDown_list1 { value = "Cash Memo Credit Note", text = "Cash Memo Credit Note" });
                         RT.Add(new DropDown_list1 { value = "Cash Sales", text = "Cash Sales" });
+                        RT.Add(new DropDown_list1 { value = "Job Bill raised to Party", text = "Job Bill raised to Party" });
+
                         VE.DropDown_list1 = RT;
                     }
                     else if (VE.MENU_PARA == "CM")
@@ -262,7 +264,10 @@ namespace Improvar.Controllers
                         txntag = "'PD'"; break;
                     case "PCWOQ":
                         txntag = "'PC'"; break;
+                    case "Job Bill raised to Party":
+                        txntag = "'JB'"; break;
                     default: txntag = ""; break;
+
                 }
                 // }
 
