@@ -3074,11 +3074,11 @@ namespace Improvar
                     if (tbl.Rows[i]["BLNO"] != null && tbl.Rows[i]["BLDT"] != null)
                     {
                         string bldt = tbl.Rows[i]["BLDT"].retStr() == "" ? "" : tbl.Rows[i]["BLDT"].ToString().Substring(0, 10);
-                        SB.Append("<tr><td>" + tbl.Rows[i]["BLNO"] + "</td><td>" + bldt + "</td><td>" + tbl.Rows[i]["BLAMT"] + "</td><td>" + tbl.Rows[i]["bal_amt"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
+                        SB.Append("<tr><td>" + tbl.Rows[i]["BLNO"] + "</td><td>" + bldt + "</td><td>" + tbl.Rows[i]["BLAMT"] + "</td><td>" + tbl.Rows[i]["bal_amt"] + "</td><td>" + tbl.Rows[i]["TCHDOCNO"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
                     }
                 }
-                var hdr = "Bill Number" + Cn.GCS() + "Bill Date" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "Due Amt" + Cn.GCS() + "Bill Autono";
-                return Generate_help(hdr, SB.ToString(), "4");
+                var hdr = "Bill Number" + Cn.GCS() + "Bill Date" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "Due Amt" + Cn.GCS() + "Docno" + Cn.GCS() + "Bill Autono";
+                return Generate_help(hdr, SB.ToString(), "5");
             }
             else
             {
