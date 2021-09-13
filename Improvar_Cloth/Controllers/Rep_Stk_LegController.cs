@@ -132,8 +132,8 @@ namespace Improvar.Controllers
 
                 string sql = "";
                 sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
-                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from ";
-                sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, ";
+                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate,a.pageslno, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from ";
+                sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate,a.pageslno, ";
                 sql += "sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, ";
                 sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c," + scm1 + ".m_doctype d, ";
@@ -149,7 +149,7 @@ namespace Improvar.Controllers
                 if (selgocd.retStr() != "") sql += "and a.gocd in (" + selgocd + ") ";
                 //if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval ) a, ";
+                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval,a.pageslno ) a, ";
 
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos ";
                 sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, ";
@@ -204,6 +204,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "prefno", "string", "c,16", "P Blno");
                 HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Particulars");
                 HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");
+                HC.GetPrintHeader(IR, "pageslno", "string", "c,10", "page slno");
                 HC.GetPrintHeader(IR, "qntyin", "double", qdsp, "Qnty (In)");
                 if (VE.Checkbox1 == true)
                 {
@@ -290,6 +291,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] + " [" + gonm + "]" : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + " " + tbl.Rows[i]["district"] + "]";
                             //if (showbatch == true) IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchnos"];
                             IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                            IR.Rows[rNo]["pageslno"] = tbl.Rows[i]["pageslno"].ToString();
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
                             {
                                 IR.Rows[rNo]["qntyin"] = dbqty;
@@ -334,7 +336,7 @@ namespace Improvar.Controllers
                     }
                     //IR.Rows[rNo]["balqnty"] = icls;
                     //IR.Rows[rNo]["balqnty"] = tblqty;
-                    IR.Rows[rNo]["balqnty"] = idr- icr;
+                    IR.Rows[rNo]["balqnty"] = idr - icr;
 
                     top = top + iop;
                     tdr = tdr + idr; tdramt = tdramt + idramt;
