@@ -3075,7 +3075,7 @@ function HasChangeBarSale(BlslnoRegen, index) {
             TXNSLNO = 1;
         }
         else {
-            if (document.getElementById("MERGEINDTL").checked == true) {
+            //if (document.getElementById("MERGEINDTL").checked == true) {
                 var allslno = [];
                 var matchslno = [];
                 var pageno = [];
@@ -3127,8 +3127,17 @@ function HasChangeBarSale(BlslnoRegen, index) {
                     if (retInt($("#B_SLNO_" + index).val()) != retInt($("#B_SLNO_" + j).val())) {
                         allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
                     }
+                    else
+                    {
+                        allslno[j] = 1;
+                       
+                       
+                    }
+                    //if (allslno.length == 0)
+                    //{ allslno[j] = retInt(1); }
+                    
                 }
-
+                if (document.getElementById("MERGEINDTL").checked == true) {
                 if (matchslno.length > 0) {
                     TXNSLNO = Math.max.apply(Math, matchslno);
 
@@ -3147,7 +3156,10 @@ function HasChangeBarSale(BlslnoRegen, index) {
                 }
             }
             else {
-                TXNSLNO = retInt(SLNO);
+                    //TXNSLNO = retInt(SLNO);
+                   
+                   TXNSLNO = Math.max.apply(Math, allslno);
+                   
             }
         }
         $("#B_TXNSLNO_" + index).val(TXNSLNO);
