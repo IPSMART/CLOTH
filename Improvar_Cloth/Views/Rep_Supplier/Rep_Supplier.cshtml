@@ -120,9 +120,12 @@
                         
                         }
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX1, "PurchasebillwiseStock")  @Html.Label("Purchase Wise Stock (Excel)")
+                            @*@Html.RadioButtonFor(g => g.TEXTBOX1, "PurchasebillwiseStock")  @Html.Label("Purchase Wise Stock (Excel)")*@
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "PurchasebillwiseStock")  @Html.Label("Stock Ledger(Barcode wise)")
                         </label>
-
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "ClosingStockBarcode")  @Html.Label("Closing Stock (Barcode wise)")
+                        </label>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10PX">
