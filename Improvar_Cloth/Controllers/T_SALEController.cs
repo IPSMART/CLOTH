@@ -3991,6 +3991,8 @@ namespace Improvar.Controllers
             //Cn.getQueryString(VE);
             //Oracle Queries
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            ImprovarDB DBF1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
             OracleCommand OraCmd = OraCon.CreateCommand();
@@ -4269,6 +4271,17 @@ namespace Improvar.Controllers
                         DOCPATTERN = VE.T_CNTRL_HDR.DOCNO;
                         TTXN.DTAG = "E";
                     }
+                    #region check Packing Slip and Sales Bill (Agst Packing Slip) docno same
+                    if (VE.MENU_PARA == "SB" && VE.T_TXN_LINKNO.LINKAUTONO.retStr() != "" && VE.DefaultAction == "A")
+                    {
+                        var packslipdocno = DB1.T_CNTRL_HDR.Where(a => a.AUTONO == VE.T_TXN_LINKNO.LINKAUTONO).Select(a => a.DOCONLYNO).FirstOrDefault();
+                        if (packslipdocno != TTXN.DOCNO)
+                        {
+                            ContentFlg = "Packing Slip Document No (" + packslipdocno + ") and Sales Bill (Agst Packing Slip) Document No (" + TTXN.DOCNO + ") not match !!";
+                            goto dbnotsave;
+                        }
+                    }
+                    #endregion
                     //TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
                     TTXN.DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString();
                     TTXN.SLCD = VE.T_TXN.SLCD;
@@ -4308,7 +4321,7 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                        ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                        //ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                         var comp = DB1.T_BATCHMST.Where(x => x.AUTONO == TTXN.AUTONO).OrderBy(s => s.AUTONO).ToList();
                         foreach (var v in comp)
                         {
@@ -4522,8 +4535,8 @@ namespace Improvar.Controllers
                         T_TXNEWB TTXNEWB = new T_TXNEWB();
                         string action = "A";
 
-                        ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                        var txnweb_data = DB1.T_TXNEWB.Where(a => a.AUTONO == TTXN.AUTONO).Select(b => b.AUTONO).ToList();
+                        //ImprovarDB DBF1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                        var txnweb_data = DBF1.T_TXNEWB.Where(a => a.AUTONO == TTXN.AUTONO).Select(b => b.AUTONO).ToList();
                         if (txnweb_data != null && txnweb_data.Count > 0)
                         {
                             action = "E";
