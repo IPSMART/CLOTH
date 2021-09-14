@@ -4272,7 +4272,7 @@ namespace Improvar.Controllers
                         TTXN.DTAG = "E";
                     }
                     #region check Packing Slip and Sales Bill (Agst Packing Slip) docno same
-                    if (VE.MENU_PARA == "SB" && VE.T_TXN_LINKNO.LINKAUTONO.retStr() != "" && VE.DefaultAction == "A")
+                    if (VE.MENU_PARA == "SB" && VE.T_TXN_LINKNO.LINKAUTONO.retStr() != "" && VE.DefaultAction == "A" && CommVar.ClientCode(UNQSNO) == "TRES")
                     {
                         var packslipdocno = DB1.T_CNTRL_HDR.Where(a => a.AUTONO == VE.T_TXN_LINKNO.LINKAUTONO).Select(a => a.DOCONLYNO).FirstOrDefault();
                         if (packslipdocno != TTXN.DOCNO)
