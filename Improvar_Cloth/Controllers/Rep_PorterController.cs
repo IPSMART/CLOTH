@@ -60,77 +60,92 @@ namespace Improvar.Controllers
             try
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                fdt = VE.FDT.retDateStr()==""? VE.TDT.retDateStr(): VE.FDT.retDateStr();
+                fdt = VE.FDT.retDateStr() == "" ? VE.TDT.retDateStr() : VE.FDT.retDateStr();
                 tdt = VE.TDT.retDateStr();
                 string selslcd = "", porter = "", doccd = "";
                 if (FC.AllKeys.Contains("doccdvalue")) doccd = FC["doccdvalue"].retSqlformat();
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("portervalue")) porter = CommFunc.retSqlformat(FC["portervalue"].ToString());
-
-                string sql = "select a.docdt,g.docno,a.doccd,a.slcd partycd,e.slnm partynm,c.mutslcd portercd,f.slnm porternm,e.slarea,c.noofcases,b.nos,b.qnty,d.uomcd ";
-                sql += " from " + scm + ".t_txn a ," + scm + ".t_txndtl b, " + scm + ".t_txnoth c, " + scm + ".M_SITEM d, " + scmf + ".M_SUBLEG e, " + scmf + ".M_SUBLEG f," + scm + ".t_cntrl_hdr g  ";
-                sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and b.itcd = d.itcd and a.slcd = e.slcd(+) and c.mutslcd=f.slcd(+)and  a.autono=g.autono and a.doccd in('SSPSL','SSBIL') ";
-                if (doccd.retStr() != "") sql += "and a.doccd in("+doccd+") ";
-                if (fdt.retStr() != "") sql += "and a.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
-                if (tdt.retStr() != "") sql += "and a.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
-                if (selslcd.retStr() != "") sql += "and a.slcd in(" + selslcd + ") ";
-                if (porter.retStr() != "") sql += "and c.mutslcd in(" + porter + ") ";
-                sql += "order by portercd,a.docdt,a.docno,partycd ";
-
-                DataTable tbl = MasterHelp.SQLquery(sql);
-
-                if (tbl.Rows.Count == 0)
+                string dtlsumm = FC["DtlSumm"].ToString(); string sql = "",descrption="";
+                if (dtlsumm == "D")
                 {
-                    return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
+                    descrption = "Detail";
+                    sql = "select a.docdt,g.docno,a.doccd,a.slcd partycd,e.slnm partynm,c.mutslcd portercd,f.slnm porternm,e.slarea,c.noofcases,b.nos,b.qnty,d.uomcd ";
+                    sql += " from " + scm + ".t_txn a ," + scm + ".t_txndtl b, " + scm + ".t_txnoth c, " + scm + ".M_SITEM d, " + scmf + ".M_SUBLEG e, " + scmf + ".M_SUBLEG f," + scm + ".t_cntrl_hdr g  ";
+                    sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and b.itcd = d.itcd and a.slcd = e.slcd(+) and c.mutslcd=f.slcd(+)and  a.autono=g.autono and a.doccd in('SSPSL','SSBIL') ";
+                    if (doccd.retStr() != "") sql += "and a.doccd in(" + doccd + ") ";
+                    if (fdt.retStr() != "") sql += "and a.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
+                    if (tdt.retStr() != "") sql += "and a.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    if (selslcd.retStr() != "") sql += "and a.slcd in(" + selslcd + ") ";
+                    if (porter.retStr() != "") sql += "and c.mutslcd in(" + porter + ") ";
+                    sql += "order by portercd,a.docdt,a.docno,partycd ";
                 }
-                DataTable IR = new DataTable("mstrep");
-
-                Models.PrintViewer PV = new Models.PrintViewer();
-                HtmlConverter HC = new HtmlConverter();
-
-                HC.RepStart(IR, 2);
-                HC.GetPrintHeader(IR, "docno", "string", "c,12", "Bill No.");
-                HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Bill Date");
-                HC.GetPrintHeader(IR, "partynm", "string", "c,25", "Party Name");
-                HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
-                HC.GetPrintHeader(IR, "porternm", "string", "c,25", "Porter Name");
-                HC.GetPrintHeader(IR, "noofcases", "double", "c,15", "NO OF PACKAGE");
-                HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
-                HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "QUANTITY");
-                HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
-
-                Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
-                i = 0; maxR = tbl.Rows.Count - 1;
-
-                while (i <= maxR)
-                {
-
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
-                    IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
-                    IR.Rows[rNo]["partynm"] = tbl.Rows[i]["partynm"].retStr();
-                    IR.Rows[rNo]["slarea"] = tbl.Rows[i]["slarea"].retStr();
-                    IR.Rows[rNo]["porternm"] = tbl.Rows[i]["porternm"].retStr();
-                    IR.Rows[rNo]["noofcases"] = tbl.Rows[i]["noofcases"].retDbl();
-                    IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
-                    IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
-                    i = i + 1;
-                    if (i > maxR) break;
-
+                else {
+                    descrption = "Summary";
+                    sql = "select docdt, docno, doccd, partycd, partynm, portercd, porternm, slarea, uomcd, noofcases, nos, qnty from( ";
+                    sql += "select a.docdt,g.docno,a.doccd,a.slcd partycd,e.slnm partynm,c.mutslcd portercd,f.slnm porternm,e.slarea,d.uomcd,sum(nvl(c.noofcases,0))noofcases,sum(nvl(b.nos,0))nos,sum(nvl(b.qnty,0))qnty ";
+                    sql += " from " + scm + ".t_txn a ," + scm + ".t_txndtl b, " + scm + ".t_txnoth c, " + scm + ".M_SITEM d, " + scmf + ".M_SUBLEG e, " + scmf + ".M_SUBLEG f," + scm + ".t_cntrl_hdr g  ";
+                    sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and b.itcd = d.itcd and a.slcd = e.slcd(+) and c.mutslcd=f.slcd(+)and  a.autono=g.autono and a.doccd in('SSPSL','SSBIL') ";
+                    if (doccd.retStr() != "") sql += "and a.doccd in(" + doccd + ") ";
+                    if (fdt.retStr() != "") sql += "and a.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
+                    if (tdt.retStr() != "") sql += "and a.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    if (selslcd.retStr() != "") sql += "and a.slcd in(" + selslcd + ") ";
+                    if (porter.retStr() != "") sql += "and c.mutslcd in(" + porter + ") ";
+                    sql += "group by a.docdt,g.docno,a.doccd,a.slcd,e.slnm,c.mutslcd,f.slnm,e.slarea,d.uomcd )";
+                    sql += "order by portercd,docdt,docno,partycd ";
                 }
 
-                string pghdr1 = "";
-                string repname = "Porter Register";
-                pghdr1 = repname + (fdt != "" ? " from " + fdt + " to " : "as on ") + tdt;
+                    DataTable tbl = MasterHelp.SQLquery(sql);
 
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                    if (tbl.Rows.Count == 0)
+                    {
+                        return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
+                    }
+                    DataTable IR = new DataTable("mstrep");
 
-                TempData[repname] = PV;
-                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+                    Models.PrintViewer PV = new Models.PrintViewer();
+                    HtmlConverter HC = new HtmlConverter();
 
+                    HC.RepStart(IR, 2);
+                    HC.GetPrintHeader(IR, "docno", "string", "c,12", "Bill No.");
+                    HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Bill Date");
+                    HC.GetPrintHeader(IR, "partynm", "string", "c,25", "Party Name");
+                    HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
+                    HC.GetPrintHeader(IR, "porternm", "string", "c,25", "Porter Name");
+                    HC.GetPrintHeader(IR, "noofcases", "double", "c,15", "NO OF PACKAGE");
+                    HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
+                    HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "QUANTITY");
+                    HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
 
-            }
+                    Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                    i = 0; maxR = tbl.Rows.Count - 1;
+
+                    while (i <= maxR)
+                    {
+
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
+                        IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
+                        IR.Rows[rNo]["partynm"] = tbl.Rows[i]["partynm"].retStr();
+                        IR.Rows[rNo]["slarea"] = tbl.Rows[i]["slarea"].retStr();
+                        IR.Rows[rNo]["porternm"] = tbl.Rows[i]["porternm"].retStr();
+                        IR.Rows[rNo]["noofcases"] = tbl.Rows[i]["noofcases"].retDbl();
+                        IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                        IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+                        IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                        i = i + 1;
+                        if (i > maxR) break;
+
+                    }
+                    string pghdr1 = "";
+                    string repname = "Porter Register"+" ["+ descrption+"]";
+                    pghdr1 = repname + (fdt != "" ? " from " + fdt + " to " : "as on ") + tdt;
+
+                    PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+
+                    TempData[repname] = PV;
+                    return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+                }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
