@@ -135,7 +135,7 @@ namespace Improvar.Controllers
 
 
 
-              
+
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("");
@@ -143,7 +143,7 @@ namespace Improvar.Controllers
                 Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
 
                 // Report begins
-              //  i = 0; maxR = tbl.Rows.Count - 1;
+                //  i = 0; maxR = tbl.Rows.Count - 1;
 
                 string pghdr1 = "";
                 string repname = "Stock_Val" + System.DateTime.Now;
@@ -153,22 +153,22 @@ namespace Improvar.Controllers
 
                 if (summary == "D")
                 {
-                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"", "CP");
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "S")
                 {
-                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"","CP");
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems);
                 }
                 else if (summary == "G")
                 {
-                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd,"","CP");
+                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Godownwise(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "B")
                 {
-                    return SummaryWise_Barcode(FC, VE, COM, LOC, asdt, prcd, selitgrpcd,selgocd,selitcd);
+                    return SummaryWise_Barcode(FC, VE, COM, LOC, asdt, prcd, selitgrpcd, selgocd, selitcd);
                 }
                 else
                 {
@@ -688,7 +688,7 @@ namespace Improvar.Controllers
             summarybarcode.Columns.Add("netadj", typeof(double), "");
             summarybarcode.Columns.Add("balqty", typeof(double), "");
             summarybarcode.Columns.Add("balval", typeof(double), "");
-
+            summarybarcode.Columns.Add("itfabitcd", typeof(string), "");
 
             while (i <= maxR)
             {
@@ -768,6 +768,7 @@ namespace Improvar.Controllers
                     summarybarcode.Rows[rNo]["barno"] = tbl1.Rows[i]["barno"].retStr();
                     summarybarcode.Rows[rNo]["uomcd"] = tbl1.Rows[i]["uomcd"].retStr();
                     summarybarcode.Rows[rNo]["uomnm"] = tbl1.Rows[i]["uomnm"].retStr();
+                    summarybarcode.Rows[rNo]["itfabitcd"] = tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr();
                     summarybarcode.Rows[rNo]["qnty"] = tbl1.Rows[i]["qnty"].retDbl();
                     summarybarcode.Rows[rNo]["txblval"] = tbl1.Rows[i]["txblval"].retDbl();
 
@@ -795,9 +796,12 @@ namespace Improvar.Controllers
                 i++;
                 if (i > maxR) break;
             }
-
+            summarybarcode.DefaultView.Sort = "itgrpcd,itcd,fabitcd,styleno,barno";
+            summarybarcode = summarybarcode.DefaultView.ToTable();
             #endregion
-
+            string chkfld1 = "", chkval1 = "", chkfld2 = "", chkval2 = "";
+            chkfld1 = VE.Checkbox3 == true ? "styleno" : "itfabitcd";
+            chkfld2 = VE.Checkbox4 == true ? "barno" : "itfabitcd";
 
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
@@ -836,29 +840,59 @@ namespace Improvar.Controllers
 
                 while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd)
                 {
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    islno++;
-                    IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i]["itgrpcd"].ToString();
-                    IR.Rows[rNo]["slno"] = islno;
-                    if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i]["barno"].ToString();
-                    IR.Rows[rNo]["itnm"] = tbl1.Rows[i]["fabitnm"].ToString();
-                    if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i]["styleno"].ToString();
-                    IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i]["uomcd"].ToString();
-                    IR.Rows[rNo]["opqty"] = summarybarcode.Rows[i]["opqty"].retDbl();
-                    IR.Rows[rNo]["opval"] = summarybarcode.Rows[i]["opval"].retDbl();
-                    IR.Rows[rNo]["netpur"] = summarybarcode.Rows[i]["netpur"].retDbl();
-                    IR.Rows[rNo]["purval"] = summarybarcode.Rows[i]["purval"].retDbl();
-                    IR.Rows[rNo]["karqty"] = summarybarcode.Rows[i]["karqty"].retDbl();
-                    IR.Rows[rNo]["karval"] = summarybarcode.Rows[i]["karval"].retDbl();
-                    IR.Rows[rNo]["netsale"] = summarybarcode.Rows[i]["netsale"].retDbl();
-                    IR.Rows[rNo]["salevalue"] = summarybarcode.Rows[i]["salevalue"].retDbl();
-                    IR.Rows[rNo]["approval"] = summarybarcode.Rows[i]["approval"].retDbl();
-                    IR.Rows[rNo]["netstktrans"] = summarybarcode.Rows[i]["netstktrans"].retDbl();
-                    IR.Rows[rNo]["netadj"] = summarybarcode.Rows[i]["netadj"].retDbl();
-                    IR.Rows[rNo]["balqty"] = summarybarcode.Rows[i]["balqty"].retDbl();
-                    IR.Rows[rNo]["balval"] = summarybarcode.Rows[i]["balval"].retDbl();
+                    string itcdfabitcd = summarybarcode.Rows[i]["itfabitcd"].retStr();
+                    while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr())
+                    {
+                        chkval1 = summarybarcode.Rows[i][chkfld1].ToString();
+                        while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString())
+                        {
+                            chkval2 = summarybarcode.Rows[i][chkfld2].ToString();
+                            double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
 
-                    i++;
+                            while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString() && chkval2 == summarybarcode.Rows[i][chkfld2].ToString())
+                            {
+
+                                opqty += summarybarcode.Rows[i]["opqty"].retDbl();
+                                opval += summarybarcode.Rows[i]["opval"].retDbl();
+                                netpur += summarybarcode.Rows[i]["netpur"].retDbl();
+                                purval += summarybarcode.Rows[i]["purval"].retDbl();
+                                karqty += summarybarcode.Rows[i]["karqty"].retDbl();
+                                karval += summarybarcode.Rows[i]["karval"].retDbl();
+                                netsale += summarybarcode.Rows[i]["netsale"].retDbl();
+                                salevalue += summarybarcode.Rows[i]["salevalue"].retDbl();
+                                approval += summarybarcode.Rows[i]["approval"].retDbl();
+                                netstktrans += summarybarcode.Rows[i]["netstktrans"].retDbl();
+                                netadj += summarybarcode.Rows[i]["netadj"].retDbl();
+                                balqty += summarybarcode.Rows[i]["balqty"].retDbl();
+                                balval += summarybarcode.Rows[i]["balval"].retDbl();
+                                i++;
+                                if (i > maxB) break;
+                            }
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            islno++;
+                            IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
+                            IR.Rows[rNo]["slno"] = islno;
+                            if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
+                            IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
+                            if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
+                            IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
+                            IR.Rows[rNo]["opqty"] = opqty;
+                            IR.Rows[rNo]["opval"] = opval;
+                            IR.Rows[rNo]["netpur"] = netpur;
+                            IR.Rows[rNo]["purval"] = purval;
+                            IR.Rows[rNo]["karqty"] = karqty;
+                            IR.Rows[rNo]["karval"] = karval;
+                            IR.Rows[rNo]["netsale"] = netsale;
+                            IR.Rows[rNo]["salevalue"] = salevalue;
+                            IR.Rows[rNo]["approval"] = approval;
+                            IR.Rows[rNo]["netstktrans"] = netstktrans;
+                            IR.Rows[rNo]["netadj"] = netadj;
+                            IR.Rows[rNo]["balqty"] = balqty;
+                            IR.Rows[rNo]["balval"] = balval;
+                            if (i > maxB) break;
+                        }
+                        if (i > maxB) break;
+                    }
                     if (i > maxB) break;
                 }
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
