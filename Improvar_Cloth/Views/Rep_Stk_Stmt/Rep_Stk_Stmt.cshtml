@@ -13,7 +13,7 @@
 <script src="~/Scripts/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-      
+
         SummaryBarcodeChange();
     });
 </script>
@@ -49,13 +49,17 @@
     });
 </script>
 <script>
-    function SummaryBarcodeChange()
-    {
+    function SummaryBarcodeChange() {
         debugger;
         var val = ($("#TEXTBOX3").find(":selected").val());
-        if (val == "B")
-        { $("#summeryBarcode").show(); }
-        else { $("#summeryBarcode").hide(); }
+        if (val == "B") {
+            $("#summeryBarcode").show();
+            $(".summeryBarcode1").show();
+        }
+        else {
+            $("#summeryBarcode").hide();
+            $(".summeryBarcode1").hide();
+        }
     }
 </script>
 @using (Html.BeginForm())
@@ -65,218 +69,238 @@
         <div class="form-horizontal">
             @Html.HiddenFor(s => s.DefaultAction)
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
-                <div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Item Group")
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        @(new HtmlString(Model.Itgrpnm))
-                    </div>
-                </div>
                 <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 4px;">
-                            @Html.Label("", "As on Date")
+                    <div class="col-lg-9">
+                        <div class="row" style="margin-top:6px">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top:5px">
+                                    @Html.Label("", "Item Group")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @(new HtmlString(Model.Itgrpnm))
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 4px;">
+                                    @Html.Label("", "As on Date")
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-label" style="margin-top: 4px;">
+                                        @Html.Label("", "Calculation Type")
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.TEXTBOX2, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX2), new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>*@
+                        <div class="row" style="margin-top:6px">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top:5px">
+                                    @Html.Label("", "Godown")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @(new HtmlString(Model.Gonm))
+                            </div>
+                        </div>
+                        @*<div class="row" style="margin-top:6px">
+                                <div class="col-lg-2">
+                                    <div class="editor-label" style="margin-top:5px">
+                                        @Html.Label("", "Broad Group")
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    @(new HtmlString(Model.Brgrpnm))
+                                </div>
+                            </div>*@
+                        <div class="row" style="margin-top:6px">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top:5px">
+                                    @Html.Label("", "Item")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @(new HtmlString(Model.Itnm))
+                            </div>
+                        </div>
+                        @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Summary")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.CheckBoxFor(model => model.Checkbox1)
+                                    </div>
+                                </div>
+                            </div>*@
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 4px;">
+                                    @Html.Label("", "Rep Type")
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.TEXTBOX3, new SelectList(Model.DropDown_list2, "Value", "Text", Model.TEXTBOX3), new { @class = "form-control", id = "TEXTBOX3", onchange = "SummaryBarcodeChange();" })
+                                </div>
+                            </div>
+                        </div>
+                        <div id="summeryBarcode">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Price Code")
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Print Design No")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.CheckBoxFor(model => model.Checkbox3)
+                                    </div>
+                                </div>
+                            </div>*@
+                            @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Print Barcode No")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.CheckBoxFor(model => model.Checkbox4)
+                                    </div>
+                                </div>
+                            </div>*@
+                            @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Show Only Balance")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.CheckBoxFor(model => model.Checkbox5)
+                                    </div>
+                                </div>
+                            </div>*@
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Stock ageing")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field" style="margin-top: 5px;">
+                                    @Html.EditorFor(model => model.TEXTBOX5, new { htmlAttributes = new { @class = "form-control", autocomplete = "off", id = "TextBox5", min = 0, Max = 3, type = "number" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="rowd1" style="display:none">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Days Range 1")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field" style="margin-top: 5px;">
+                                    <input type="text" name="days1" id="days1" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="rowd2" style="display:none">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Days Range 2")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field" style="margin-top: 5px;">
+                                    <input type="text" name="days2" id="days2" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="rowd3" style="display:none">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Days Range 3")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field" style="margin-top: 5px;">
+                                    <input type="text" id="days3" name="days3" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                            <div class="col-lg-2">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Ignore Items in Summary")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field">
+                                    @Html.CheckBoxFor(model => model.Checkbox2)
+                                </div>
+                            </div>
+                        </div>*@
+                        <div class="row" style="margin-top:10PX">
+                            <div class="col-lg-2">
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
-                        </div>
-                    </div>
-                </div>
-                @*<div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 4px;">
-                            @Html.Label("", "Calculation Type")
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="editor-field">
-                            @Html.DropDownListFor(model => model.TEXTBOX2, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX2), new { @class = "form-control" })
-                        </div>
-                    </div>
-                </div>*@
+                    <div class="col-lg-3">
+                        <table style="border:1px solid;margin-top: 8px;">
+                            <tr>
+                                <td style="border:1px groove;">Ignore Items in Summary</td>
+                                <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox2, new { Style = "width:18px;height:18px;" })</td>
+                            </tr>
+                            <tr class="summeryBarcode1">
+                                <td style="border:1px groove;">Print Design No</td>
+                                <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3, new { Style = "width:18px;height:18px;" })</td>
+                            </tr>
+                            <tr class="summeryBarcode1">
+                                <td style="border:1px groove;">Print Barcode No</td>
+                                <td style="border:1px groove;"> @Html.CheckBoxFor(model => model.Checkbox4, new { Style = "width:18px;height:18px;" })</td>
+                            </tr>
 
-                <div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Godown")
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        @(new HtmlString(Model.Gonm))
-                    </div>
-                </div>
-
-                @*<div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Broad Group")
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        @(new HtmlString(Model.Brgrpnm))
-                    </div>
-                </div>*@
-
-                <div class="row" style="margin-top:6px">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:5px">
-                            @Html.Label("", "Item")
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        @(new HtmlString(Model.Itnm))
-                    </div>
-                </div>
-
-                @*<div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 6px;">
-                                @Html.Label("", "Summary")
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="editor-field">
-                                @Html.CheckBoxFor(model => model.Checkbox1)
-                            </div>
-                        </div>
-                    </div>*@
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 4px;">
-                            @Html.Label("", "Rep Type")
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="editor-field">
-                            @Html.DropDownListFor(model => model.TEXTBOX3, new SelectList(Model.DropDown_list2, "Value", "Text", Model.TEXTBOX3), new { @class = "form-control",id= "TEXTBOX3", onchange="SummaryBarcodeChange();" })
-                        </div>
-                    </div>
-                </div>
-                <div id="summeryBarcode">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Price Code")
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 6px;">
-                                @Html.Label("", "Print Design No")
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="editor-field">
-                                @Html.CheckBoxFor(model => model.Checkbox3)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 6px;">
-                                @Html.Label("", "Print Barcode No")
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="editor-field">
-                                @Html.CheckBoxFor(model => model.Checkbox4)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 6px;">
-                                @Html.Label("", "Show Only Balance")
-                            </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="editor-field">
-                                @Html.CheckBoxFor(model => model.Checkbox5)
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Stock ageing")
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="editor-field" style="margin-top: 5px;">
-                            @Html.EditorFor(model => model.TEXTBOX5, new { htmlAttributes = new { @class = "form-control", autocomplete = "off", id = "TextBox5", min = 0, Max = 3, type = "number" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row" id="rowd1" style="display:none">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Days Range 1")
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="editor-field" style="margin-top: 5px;">
-                            <input type="text" name="days1" id="days1" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row" id="rowd2" style="display:none">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Days Range 2")
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="editor-field" style="margin-top: 5px;">
-                            <input type="text" name="days2" id="days2" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row" id="rowd3" style="display:none">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Days Range 3")
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="editor-field" style="margin-top: 5px;">
-                            <input type="text" id="days3" name="days3" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-field" style="margin-top: 6px;">
-                            @Html.Label("", "Ignore Items in Summary")
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="editor-field">
-                            @Html.CheckBoxFor(model => model.Checkbox2)
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:10PX">
-                    <div class="col-lg-2">
-                    </div>
-                    <div class="col-lg-6">
-                        <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                            <tr class="summeryBarcode1">
+                                <td style="border:1px groove;">Show Only Balance</td>
+                                <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5, new { Style = "width:18px;height:18px;" })</td>
+                            </tr>                           
+                        </table>
                     </div>
                 </div>
             </div>
@@ -284,7 +308,6 @@
     }
     <div class="container">
         <div id="helpDIV" style="z-index: 2;">
-
         </div>
     </div>
 }
