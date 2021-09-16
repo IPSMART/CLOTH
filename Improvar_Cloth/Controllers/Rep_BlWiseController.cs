@@ -4,6 +4,7 @@ using System.Data;
 using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
+using System.Collections.Generic;
 
 namespace Improvar.Controllers
 {
@@ -124,13 +125,21 @@ namespace Improvar.Controllers
                 VE.Checkbox2 = false;
                 VE.Checkbox3 = true;
                 VE.Checkbox3 = false;
-                VE.Checkbox4 = false;
                 VE.Checkbox5 = false;
                 VE.Checkbox6 = false;
                 VE.TEXTBOX5 = "0";
                 VE.DefaultView = true;
                 VE.ExitMode = 1;
                 VE.DefaultDay = 0;
+
+                List<DropDown_list1> RT = new List<DropDown_list1>();
+
+                RT.Add(new DropDown_list1 { value = "", text = "" });
+                RT.Add(new DropDown_list1 { value = "A", text = "Agent wise" });
+                RT.Add(new DropDown_list1 { value = "S", text = "Sub Agent Wise" });
+                RT.Add(new DropDown_list1 { value = "ST", text = "State wise" });
+                VE.DropDown_list1 = RT;
+
                 if (CommVar.Compcd(UNQSNO) == "SNFP")
                 {
                     VE.Checkbox14 = true; //Skip clear bills
@@ -228,9 +237,8 @@ namespace Improvar.Controllers
                 if (optRepOpt == "NIL") OsBill = "N"; else if (optRepOpt == "ALL") OsBill = "A";
                 if (VE.Checkbox14 == true) OsBill = "Y";
                 string showagentpara = "";
-                if (VE.Checkbox4 == true) showagentpara = "A"; else if (VE.Checkbox17 == true) showagentpara = "S";
-
-                tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, showagentpara, "", "", selrtdebcd, ShowPymtHoldRem, selPymtHoldCtg, selvchtype);
+                if (VE.TEXTBOX1 == "A" || VE.TEXTBOX1 == "S") showagentpara = VE.TEXTBOX1.retStr();
+                tbl = masterhelpfa.GenOSTbl(selglcd, selslcd, bldtto, TD, "", bldtfrom, selclass1cd, linkcd, OsBill, selagslcd, selstate, seldistrict, "", selflag, crbaladjauto, VE.Checkbox8, unselslcd, selslcdgrpcd, showagentpara, "", "", selrtdebcd, ShowPymtHoldRem, selPymtHoldCtg, selvchtype, VE.Checkbox19);
 
                 string osmsg = masterhelpfa.CheckOSTbl(tbl);
                 if (osmsg != "OK") return Content(osmsg);
@@ -303,11 +311,10 @@ namespace Improvar.Controllers
         {
             try
             {
-                bool ordrefprint = false, blamtprint = false, itamtprint = false, showAgent = false, showcrbalsep = false, ShowPymtHoldRem = false;
+                bool ordrefprint = false, blamtprint = false, itamtprint = false, showcrbalsep = false, ShowPymtHoldRem = false;
                 string crbalhead = "Cr.";
                 if (VE.Checkbox2 == true) ordrefprint = true;
                 if (VE.Checkbox5 == true) showcrbalsep = true;
-                if (VE.Checkbox4 == true) showAgent = true;
                 if (VE.Checkbox16 == true) ShowPymtHoldRem = true;
                 string due_caldt = FC["ddco"];//Due days calculate on   
                 string ShowDuedaysfrom = FC["ddshowas"]; // D=due date B=Doc Dt
@@ -320,7 +327,6 @@ namespace Improvar.Controllers
                 string selslcdgrpcd = "";
 
                 if (FC.AllKeys.Contains("slcdgrpcdvalue")) selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString());
-                if (selslcdgrpcd.retStr() != "") showAgent = true;
                 if (reptypesel == "FORM2")
                 {
                     blamtprint = true;
@@ -361,22 +367,37 @@ namespace Improvar.Controllers
                     days5 = FC["days5"];
                 }
 
-                if (showAgent == true)
+                string showagentstate = VE.TEXTBOX1.retStr();
+                string agfld = "", agheaddsp = "", agstfld = "agslcd", showagentpara = "";
+                switch (VE.TEXTBOX1)
+                {
+                    case "A":
+                        agfld = "agslnm,agslcd"; agheaddsp = "Agent - "; agstfld = "agslcd"; showagentpara = "A"; break;
+                    case "ST":
+                        agfld = "state"; agheaddsp = "State - "; agstfld = "state"; showagentpara = ""; break;
+                    case "S":
+                        agfld = "sagslnm,sagslcd"; agheaddsp = "Sub Agent - "; agstfld = "sagslcd"; showagentpara = "S"; break;
+                    default:
+                        agfld = ""; agheaddsp = ""; agstfld = "slcd"; showagentpara = ""; break;
+                }
+                if (selslcdgrpcd.retStr() != "") { agfld = "parentnm,parentcd"; agstfld = "parentcd"; showagentstate = "A"; }
+
+                if (showagentstate.retStr() != "")
                 {
                     if (FC["Sorting"].retStr() == "DOC")
                     {
-                        tbl.DefaultView.Sort = "agslnm,agslcd,glcd,slnm,slcd,docdt,bldt1,docno";
+                        tbl.DefaultView.Sort = (agfld == "" ? "" : agfld + ",") + "glcd,slnm,slcd,docdt,bldt1,docno";
                         tbl = tbl.DefaultView.ToTable();
                     }
                     else
                     {
-                        tbl.DefaultView.Sort = "agslnm,agslcd,glcd,slnm,slcd,bldt1,docdt,docno";
+                        tbl.DefaultView.Sort = (agfld == "" ? "" : agfld + ",") + "glcd,slnm,slcd,bldt1,docdt,docno";
                         tbl = tbl.DefaultView.ToTable();
                     }
                 }
                 if (Para2 != "")
                 {
-                    tbl.DefaultView.Sort = "agslnm,agslcd,glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
+                    tbl.DefaultView.Sort = (agfld == ""?"":agfld + ",") + "glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
                     tbl = tbl.DefaultView.ToTable();
                 }
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -429,7 +450,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "docno", "string", "c,15", "Doc No.");
                     }
                     HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill Date");
-                    HC.GetPrintHeader(IR, "blno", "string", "c,15", "Bill No.");
+                    HC.GetPrintHeader(IR, "blno", "string", "c,18", "Bill No.");
                     if (bltype == true) HC.GetPrintHeader(IR, "bltype", "string", "c,5", "Bill Type");
                     if (reptypesel == "FORM1") HC.GetPrintHeader(IR, "cdays", "double", "n,4,0", "Cr.Days");
                     string duedaysdsp = "";
@@ -492,23 +513,36 @@ namespace Improvar.Controllers
                 Int32 maxR = 0, i = 0, rNo = 0;
 
                 i = 0; maxR = tbl.Rows.Count - 1;
-                string agheaddsp = "Agent - ";
-                if (selslcdgrpcd.retStr() != "") agheaddsp = "Group - ";
                 while (i <= maxR)
                 {
-                    agslcd1 = tbl.Rows[i]["agslcd"].ToString();
-                    agslnm1 = tbl.Rows[i]["agslnm"].ToString();
-                    agslcity1 = tbl.Rows[i]["agslcity"].ToString();
+                    if (showagentstate == "ST")
+                    {
+                        agslcd1 = tbl.Rows[i]["state"].ToString();
+                        agslnm1 = tbl.Rows[i]["state"].ToString();
+                        agslcity1 = "";
+                    }
+                    else
+                    {
+                        agslcd1 = tbl.Rows[i][agstfld].ToString();
+                        agslnm1 = (showagentstate == "S"? tbl.Rows[i]["sagslnm"].ToString():tbl.Rows[i]["agslnm"].ToString());
+                        agslcity1 = (showagentstate == "S" ? tbl.Rows[i]["sagslcity"].ToString() : tbl.Rows[i]["agslcity"].ToString());
+                    }
                     aamt2 = 0; abalamt2 = 0; anamt2 = 0; acramt2 = 0;
                     adue1Amt = 0; adue2Amt = 0; adue3Amt = 0; adue4Amt = 0; adue5Amt = 0; adue6Amt = 0;
-                    if (showAgent == true)
+                    if (showagentstate != "")
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         string agdsp = "";
-                        agdsp = "<span style='font-weight:100;font-size:11px;'>" + agheaddsp + agslcd1 + "  " + " </span>" + tbl.Rows[i]["agslnm"];
-                        if (agslcity1 != "") agdsp += "<span style='font-weight:100;font-size:13px;'>" + " [" + agslcity1 + "]  " + " </span>";
-                        if (tbl.Rows[i]["agphno"].ToString() != "") agdsp += " Ph. " + " </span>" + tbl.Rows[i]["agphno"];
-
+                        if (showagentstate == "A" || showagentstate == "S")
+                        {
+                            agdsp = "<span style='font-weight:100;font-size:11px;'>" + agheaddsp + agslcd1 + "  " + " </span>" + agslnm1;
+                            if (agslcity1 != "") agdsp += "<span style='font-weight:100;font-size:13px;'>" + " [" + agslcity1 + "]  " + " </span>";
+                            if (tbl.Rows[i]["agphno"].ToString() != "" && showagentstate == "A" ) agdsp += " Ph. " + " </span>" + tbl.Rows[i]["agphno"];
+                        }
+                        else
+                        {
+                            agdsp = "<span style='font-weight:100;font-size:11px;'>" + "State - " + " </span>" + tbl.Rows[i]["state"];
+                        }
                         IR.Rows[rNo]["Dammy"] = agdsp;
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
@@ -516,7 +550,7 @@ namespace Improvar.Controllers
                     {
                         agslcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
                     }
-                    while (showAgent == true ? tbl.Rows[i]["agslcd"].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1)
+                    while (showagentstate != "" ? tbl.Rows[i][agstfld].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1)
                     {
                         glcd1 = tbl.Rows[i]["glcd"].ToString();
                         slcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
@@ -550,7 +584,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        while ((showAgent == true ? tbl.Rows[i]["agslcd"].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1) && tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                        while ((showagentstate != "" ? tbl.Rows[i][agstfld].ToString() == agslcd1 : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == agslcd1) && tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
                         {
                             if (dtlsumm == "D") IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
 
@@ -736,7 +770,7 @@ namespace Improvar.Controllers
                         if (i > maxR) break;
                     }
                     //Agent Totals
-                    if (showAgent == true)
+                    if (showagentstate != "")
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["blno"] = agheaddsp + "Total";
@@ -820,7 +854,7 @@ namespace Improvar.Controllers
                     exdt[0] = IR;
                     string[] sheetname = new string[1];
                     sheetname[0] = "Sheet1";
-                    MasterHelp.ExcelfromDataTables(exdt, sheetname, "Bill_Outstanding".retRepname(), false, pghdr1);
+                    MasterHelp.ExcelfromDataTables(exdt, sheetname, "Bill_Outstanding".retRepname(), false, pghdr1, false);
                     return Content("Downloaded");
                 }
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
@@ -844,25 +878,36 @@ namespace Improvar.Controllers
                 bool itamtprint = VE.Checkbox6;
                 bool PymtDaysprint = VE.Checkbox13; //added from sn fabric not want
                 string due_caldt = FC["ddco"];//Due days calculate on   
-                bool showagent = (VE.Checkbox4 == true || VE.Checkbox17 == true ? true : false);
-                string agdsp = "Agent";
-                if (VE.Checkbox17 == true) agdsp = "Sub Agent";
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("os");
 
-                if (showagent == true)
+                string showagentstate = VE.TEXTBOX1.retStr();
+                string agfld = "", agheaddsp = "", agstfld = "", showagentpara = "";
+                string agslcdfld1 = "", agslcdfld2 = "";
+                switch (VE.TEXTBOX1)
+                {
+                    case "A":
+                        agfld = "agslnm,agslcd"; agheaddsp = "Agent - "; agstfld = "agslcd"; showagentpara = "A"; agslcdfld1 = "agslcd"; agslcdfld2 = "agslnm"; break;
+                    case "ST":
+                        agfld = "state"; agheaddsp = "State - "; agstfld = "state"; showagentpara = ""; agslcdfld1 = "state"; agslcdfld2 = "state"; break;
+                    case "S":
+                        agfld = "sagslnm,sagslcd"; agheaddsp = "Sub Agent - "; agstfld = "sagslcd"; showagentpara = "S"; agslcdfld1 = "sagslcd"; agslcdfld2 = "sagslnm"; break;
+                    default:
+                        agfld = ""; agheaddsp = ""; agstfld = "slcd"; agslcdfld1 = "slcd"; showagentpara = ""; break;
+                }
+
+                if (showagentstate.retStr() != "")
                 {
                     if (FC["Sorting"].retStr() == "DOC")
                     {
-                        tbl.DefaultView.Sort = (VE.Checkbox17 == true ? "sagslnm,sagslcd" : "agslnm,agslcd") + ",glcd,slnm,slcd,docdt,bldt1,docno";
-                        tbl = tbl.DefaultView.ToTable();
+                        tbl.DefaultView.Sort = agfld + ",glcd,slnm,slcd,docdt,bldt1,docno";
                     }
                     else
                     {
-                        tbl.DefaultView.Sort = (VE.Checkbox17 == true ? "sagslnm,sagslcd" : "agslnm,agslcd") + ",glcd,slnm,slcd,bldt1,docdt,docno";
-                        tbl = tbl.DefaultView.ToTable();
+                        tbl.DefaultView.Sort = agfld + ",glcd,slnm,slcd,bldt1,docdt,docno";
                     }
+                    tbl = tbl.DefaultView.ToTable();
                 }
                 if (Para2 != "")
                 {
@@ -884,7 +929,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "docno", "string", "c,15", "Doc;No.");
                     }
                     HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill;Date");
-                    HC.GetPrintHeader(IR, "blno", "string", "c,17", "Bill;No.");
+                    HC.GetPrintHeader(IR, "blno", "string", "c,18", "Bill;No.");
                     if (bltype == true) HC.GetPrintHeader(IR, "bltype", "string", "c,5", "Bill Type");
                     if (itamtprint == true) HC.GetPrintHeader(IR, "itamt", "double", "n,16,2", "Item Value");
                     HC.GetPrintHeader(IR, "blamt", "double", "n,16,2", "Op/Bill Amt");
@@ -922,17 +967,15 @@ namespace Improvar.Controllers
                 Int32 maxR = 0, i = 0, rNo = 0;
 
                 i = 0; maxR = tbl.Rows.Count - 1;
-                string agslcdfld1 = "agslcd", agslcdfld2 = "agslnm";
-                if (VE.Checkbox17 == true) { agslcdfld1 = "sagslcd"; agslcdfld2 = "sagslnm"; }
                 double gdueamt = 0, adueamt = 0;
                 while (i <= maxR)
                 {
                     glcd1 = tbl.Rows[i]["glcd"].ToString();
                     string chkagslcd = tbl.Rows[i][agslcdfld1].retStr();
-                    if (showagent == true)
+                    if (showagentstate != "")
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        string sldsp = agdsp + " - ";
+                        string sldsp = agheaddsp + " - ";
                         sldsp += tbl.Rows[i][agslcdfld2].retStr();
                         //sldsp += "<span style='font-weight:100;font-size:11px;'>" + " [" + slcity1 + "]  " + " </span>";
                         sldsp += "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i][agslcdfld1].retStr() + "  " + " </span>";
@@ -1105,7 +1148,7 @@ namespace Improvar.Controllers
                         {
                             IR.Rows[rNo]["blno"] = "Totals";
                             //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;border-top: 1px solid;";
                         }
                         else
                         {
@@ -1119,11 +1162,11 @@ namespace Improvar.Controllers
                         gdueamt = gdueamt + tdueamt;
                         if (i > maxR) break;
                     }
-                    if (showagent == true)
+                    if (showagentstate != "")
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["blno"] = agdsp + " ( " + tbl.Rows[i - 1][agslcdfld2].retStr() + " Totals";
-                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
+                        IR.Rows[rNo]["blno"] = agheaddsp + " ( " + tbl.Rows[i - 1][agslcdfld2].retStr() + " Totals";
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;border-top: 1px solid;";
                         IR.Rows[rNo]["dueamt"] = adueamt;
                     }
                     if (i > maxR) break;
@@ -1144,7 +1187,7 @@ namespace Improvar.Controllers
                     exdt[0] = IR;
                     string[] sheetname = new string[1];
                     sheetname[0] = "Sheet1";
-                    MasterHelp.ExcelfromDataTables(exdt, sheetname, "Bill_Outstanding".retRepname(), false, pghdr1);
+                    MasterHelp.ExcelfromDataTables(exdt, sheetname, "Bill_Outstanding".retRepname(), false, pghdr1, true);
                     return Content("Downloaded");
                 }
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);

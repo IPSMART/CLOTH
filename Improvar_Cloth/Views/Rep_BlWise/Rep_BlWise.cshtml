@@ -398,6 +398,16 @@
                 </div>
                 <div class="row">
                     <div class="col-md-8">
+                        <div class="editor-field" style="margin-top: 6px;">
+                            @Html.Label("", "Agent/State")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Sorting By")
                         </div>
@@ -447,14 +457,14 @@
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox10, new { Style = "width:18px;height:18px;" })</td>
                     </tr>
 
-                    <tr>
+                    @*<tr>
                         <td style="border:1px groove;">Show Agent wise</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, new { Style = "width:18px;height:18px;",id= "Checkbox4", onclick = "ChkAgentSubagent('Checkbox4');" })</td>
                     </tr>
                     <tr>
                         <td style="border:1px groove;">Show Sub Agent Wise</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox17, new { Style = "width:18px;height:18px;", id = "Checkbox17", onclick = "ChkAgentSubagent('Checkbox17');" })</td>
-                    </tr>
+                    </tr>*@
                     <tr>
                         <td style="border:1px groove;">Show Consignee</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox8, new { Style = "width:18px;height:18px;" })</td>
@@ -494,6 +504,10 @@
                     <tr>
                         <td style="border:1px groove;">Show only UnAdjusted Reference</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox18, new { Style = "width:18px;height:18px;" })</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px groove;">Take Pymt upto Date agnst Specific Date Range</td>
+                        <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox19, new { Style = "width:18px;height:18px;" })</td>
                     </tr>
                 </table>
             </div>

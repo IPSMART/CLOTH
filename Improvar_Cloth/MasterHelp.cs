@@ -2671,7 +2671,7 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
-        public void ExcelfromDataTables(DataTable[] dt, string[] sheetname, string filename, bool isRowHighlight, string Caption)
+        public void ExcelfromDataTables(DataTable[] dt, string[] sheetname, string filename, bool isRowHighlight, string Caption, bool IsTotalAdd = true)
         {
             try
             {
@@ -2701,26 +2701,31 @@ namespace Improvar
                             }
                             ws.Cells[++row, 1].LoadFromDataTable(dt[i], true);
                         }
-                        int strtRow = row + 1;
-                        row = row + dt[i].Rows.Count;
-                        using (ExcelRange Rng = ws.Cells[++row, 1, row, dt[i].Columns.Count])
+                        if (IsTotalAdd)
                         {
-                            Rng.Style.Font.Bold = true;
-                        }
-                        ws.Cells[row, 1].Value = "Sub Total";
-                        int column = 0;
-                        foreach (DataColumn dc in dt[i].Columns)
-                        {
-                            ++column;
-                            if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal) || dc.DataType == typeof(int))
+                            int strtRow = row + 1;
+                            row = row + dt[i].Rows.Count;
+                            using (ExcelRange Rng = ws.Cells[++row, 1, row, dt[i].Columns.Count])
                             {
-                                ws.Cells[row, column, row, column].Formula = "=sum(" + ws.Cells[strtRow, column].Address + ":" + ws.Cells[row - 1, column].Address + ")";
+                                Rng.Style.Font.Bold = true;
                             }
-                            if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal))
+
+                            ws.Cells[row, 1].Value = "Sub Total";
+                            int column = 0;
+                            foreach (DataColumn dc in dt[i].Columns)
                             {
-                                ws.Column(column).Style.Numberformat.Format = "0.00";
+                                ++column;
+                                if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal) || dc.DataType == typeof(int))
+                                {
+                                    ws.Cells[row, column, row, column].Formula = "=sum(" + ws.Cells[strtRow, column].Address + ":" + ws.Cells[row - 1, column].Address + ")";
+                                }
+                                if (dc.DataType == typeof(double) || dc.DataType == typeof(decimal))
+                                {
+                                    ws.Column(column).Style.Numberformat.Format = "0.00";
+                                }
                             }
                         }
+
                     }
                     //Read the Excel file in a byte array    
                     Byte[] fileBytes = pck.GetAsByteArray();
