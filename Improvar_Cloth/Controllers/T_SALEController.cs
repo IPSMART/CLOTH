@@ -4087,7 +4087,7 @@ namespace Improvar.Controllers
                         {
                             string diffitcd = difList.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
                             //OraTrans.Rollback();
-                            OraCon.Dispose();
+                           // OraCon.Dispose();
                             ContentFlg = "Barcode grid & Detail grid itcd [" + diffitcd + "] wise qnty, nos should match !!";
                             goto dbnotsave;
                         }
@@ -6076,7 +6076,7 @@ namespace Improvar.Controllers
             sql += "union all ";
             sql += "select a.autono,b.docno,b.docdt,c.docnm  ";
             sql += "from  " + fcm + ".T_vch_bl_adj a," + fcm + ".t_cntrl_hdr b ," + fcm + ".m_doctype c  ";
-            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD  and nvl(b.cancel,'N') = 'N'  and (a.i_autono='" + autono + "' OR a.r_autono='" + autono + "'  )";
+            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD  and nvl(b.cancel,'N') = 'N'  and (a.i_autono='" + autono + "' OR a.r_autono='" + autono + "'  )and a.autono not in ('" + autono + "')";
             DataTable dt = masterHelp.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
