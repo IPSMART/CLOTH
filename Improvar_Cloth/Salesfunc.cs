@@ -1301,7 +1301,7 @@ namespace Improvar
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "", string translcd = "")
+        public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "", string translcd = "", string lrnoLike = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1312,7 +1312,7 @@ namespace Improvar
 
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
-            sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM from ";
+            sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM,g.styleno,f.qnty,g.uomcd,f.pageno from ";
 
             sql += "(select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
             sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
@@ -1331,11 +1331,12 @@ namespace Improvar
             sql += "a.autono = d.autono(+) ";
             sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
 
-            sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e ";
-            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+) and ";
+            sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e," + schema + ".t_txndtl f," + schema + ".m_sitem g ";
+            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+)and a.baleno=f.baleno(+) and f.itcd = g.itcd(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
             if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
             if (translcd.retStr() != "") sql += " and c.TRANSLCD in(" + translcd + ")  ";
+            if (lrnoLike.retStr() != "") sql += "and c.lrno like '%" + lrnoLike.retStr() + "%'  ";
             sql += " and 1 - nvl(b.bnos, 0) > 0 ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;

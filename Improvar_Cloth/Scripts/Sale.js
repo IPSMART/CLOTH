@@ -457,6 +457,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#UpdateRow_Barcode").show();
     }
     changeBARGENTYPE();
+    debugger;
     var ModuleCode = $("#ModuleCode").val();
 
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") {
@@ -469,12 +470,20 @@ function FillBarcodeArea(str, Table, i) {
         }
     }
     if (event.key == "F8") {
+        debugger;
         if (ModuleCode.indexOf("SALESCLOTH") != -1) {
             if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && retFloat($("#CONVQTYPUNIT").val()).toFixed(0) != "0") {
                 $("#BLQNTY").focus();
             }
             else {
-                $("#CUTLENGTH").focus();
+                if (MNTNSHADE == "Y") {
+                    $("#SHADE").focus();
+                }
+                else
+                {
+                    $("#CUTLENGTH").focus();
+                }
+                
             }
 
         }
@@ -496,7 +505,6 @@ function FillBarcodeArea(str, Table, i) {
                 }
             }
         }
-
     }
     else if (str != "") {
         if (ModuleCode.indexOf("SALESCLOTH") != -1) {

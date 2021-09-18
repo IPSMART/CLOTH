@@ -64,6 +64,19 @@
                         @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control", id = "LRNO" } })
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Pending Bilty")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <div class="editor-field">
+                            <input type="radio" name="BltyPending" value="I" checked />Issue to Mutia Pending
+                            <input type="radio" name="BltyPending" value="R" />Receive from Pending
+                        </div>
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>

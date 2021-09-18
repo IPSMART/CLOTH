@@ -53,14 +53,20 @@ namespace Improvar.Controllers
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
-                string slcd = "", lrnoLike = "";
+                string slcd = "", lrnoLike = "", BltyPending="";
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString();
                 lrnoLike = VE.TEXTBOX1;
-                DataTable tbl = Salesfunc.getPendRecfromMutia(tdt, slcd,"","","",lrnoLike);
+                BltyPending = FC["BltyPending"].ToString();
+                DataTable tbl = new DataTable();
+                if (BltyPending=="R")
+                {  tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike); }
+                else {  tbl = Salesfunc.getPendBiltytoIssue(tdt,"", "", "", slcd, lrnoLike); }
+                DataView dv = new DataView(tbl);
+                DataTable tbl1 = dv.ToTable(true);
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "", gonm = "";
-                if (tbl.Rows.Count == 0)
+                if (tbl1.Rows.Count == 0)
                 {
                     return RedirectToAction("NoRecords", "RPTViewer");
                 }
@@ -79,21 +85,21 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "pageno", "string", "c,20", "Page No");
                 Int32 rNo = 0;
                 // Report begins
-                i = 0; maxR = tbl.Rows.Count - 1;
+                i = 0; maxR = tbl1.Rows.Count - 1;
                 int slno = 0;
                 while (i <= maxR)
                 {
                     slno++;
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["slno"] = slno;
-                    IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
-                    IR.Rows[rNo]["lrdt"] = tbl.Rows[i]["lrdt"].retDateStr();
-                    IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
-                    IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
-                    IR.Rows[rNo]["sortno"] = tbl.Rows[i]["nos"].retStr();
-                    if (tbl.Rows[i]["qnty"].retDbl() != 0) IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                    IR.Rows[rNo]["Mtrs"] = tbl.Rows[i]["uomcd"].retStr();
-                    IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr();
+                    IR.Rows[rNo]["lrno"] = tbl1.Rows[i]["lrno"].retStr();
+                    IR.Rows[rNo]["lrdt"] = tbl1.Rows[i]["lrdt"].retDateStr();
+                    IR.Rows[rNo]["prefdt"] = tbl1.Rows[i]["prefdt"].retDateStr();
+                    IR.Rows[rNo]["baleno"] = tbl1.Rows[i]["baleno"].retStr();
+                    IR.Rows[rNo]["sortno"] = tbl1.Rows[i]["styleno"].retStr();
+                    if (tbl1.Rows[i]["qnty"].retDbl() != 0) IR.Rows[rNo]["qnty"] = tbl1.Rows[i]["qnty"].retDbl();
+                    IR.Rows[rNo]["Mtrs"] = tbl1.Rows[i]["uomcd"].retStr();
+                    IR.Rows[rNo]["pageno"] = tbl1.Rows[i]["pageno"].retStr();
                     i++;
                     if (i > maxR) break;
                 }
