@@ -1232,9 +1232,9 @@ namespace Improvar
         }
 
         public DataTable GenOSTbl(string selglcd = "", string selslcd = "", string billupto = "", string txnupto = "", string currautono = "",
-           string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
-           string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
-           string selslgrpcd = "", string showagent = "", string blno = "", string skipautono = "", string selrtdebcd = "", bool ShowPymtHoldRem = false, string selPymtHoldCtg = "", string showonlyunadj = "")
+              string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
+              string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
+              string selslgrpcd = "", string showagent = "", string blno = "", string skipautono = "", string selrtdebcd = "", bool ShowPymtHoldRem = false, string selPymtHoldCtg = "", string showonlyunadj = "", bool pymttakenuptodt = false)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "", sqlc = "";
@@ -1297,7 +1297,7 @@ namespace Improvar
                 sql += "a.sagslcd, n.slnm sagslnm, nvl(n.shortnm,n.slcd) sagshortnm,  n.district sagslcity, nvl(n.regmobile,n.phno1) sagphno, ";
                 sql += "a.blno, a.bldt, nvl(a.bldt1,a.docdt) bldt1, a.ordno, a.orddt, to_char(nvl(a.duedt,a.docdt),'dd/mm/yyyy') duedt, a.crdays, a.bal_amt, a.class1cd, a.prv_adj, a.cur_adj, ";
                 sql += "g.class1nm, a.vchtype, a.bltype, a.loccd, a.conslcd, a.pymtrem, a.blrem, b.blrem billrem, ";
-                sql += "e.glnm, e.linkcd, f.slnm, nvl(f.slarea,f.district) slcity, nvl(f.regmobile,f.phno1) phno, j.slnm conslnm, nvl(j.slarea,j.district) conslarea, '' ctg from ";
+                sql += "e.glnm, e.linkcd, f.state, f.slnm, nvl(f.slarea,f.district) slcity, nvl(f.regmobile,f.phno1) phno, j.slnm conslnm, nvl(j.slarea,j.district) conslarea, '' ctg from ";
 
                 //single query starts
                 sql += "(select a.glcd||" + oraslcd + " glslcd, a.glcd||" + oraslcd + (showagent != "" ? "||nvl(a." + agfld + ",'')" : "") + " glslagcd, a.glcd, " + oraslcd + " slcd, ";
@@ -1339,8 +1339,16 @@ namespace Improvar
 
                 sql += scmf + ".m_genleg e, " + scmf + ".m_subleg k ";
                 sql += "where a.autono=b.autono and a.autono||a.slno=c.autoslno(+) and a.glcd=e.glcd(+) and a.slcd=k.slcd(+) and ";
-                if (billfrom.retStr() != "") sql += "(nvl(a.vchtype,' ') <> 'BL' or b.docdt >= to_date('" + billfrom + "','dd/mm/yyyy')) and ";
-                if (billupto.retStr() != "") sql += "(nvl(a.vchtype,' ') <> 'BL' or b.docdt <= to_date('" + billupto + "','dd/mm/yyyy')) and ";
+                if (pymttakenuptodt == true)
+                {
+                    if (billfrom.retStr() != "") sql += "(nvl(a.vchtype,' ') <> 'BL' or b.docdt >= to_date('" + billfrom + "','dd/mm/yyyy')) and ";
+                    if (billupto.retStr() != "") sql += "(nvl(a.vchtype,' ') <> 'BL' or b.docdt <= to_date('" + billupto + "','dd/mm/yyyy')) and ";
+                }
+                else
+                {
+                    if (billfrom.retStr() != "") sql += "(b.docdt >= to_date('" + billfrom + "','dd/mm/yyyy')) and ";
+                    if (billupto.retStr() != "") sql += "(b.docdt <= to_date('" + billupto + "','dd/mm/yyyy')) and ";
+                }
                 if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
                 if (selglcd.retStr() != "") sql += "a.glcd in (" + selglcd + ") and ";
                 if (selslcd.retStr() != "") sql += "a.slcd in (" + selslcd + ") and ";
@@ -1398,7 +1406,7 @@ namespace Improvar
                 if (selstate.retStr() != "") sql += "f.state in (" + selstate + ") and ";
                 if (seldistrict.retStr() != "") sql += "f.district in (" + seldistrict + ") and ";
                 if (selflag.retStr() != "") sql += "a.flag in (" + selflag + ") and ";
-                if (selslgrpcd.retStr() != "") sql += "(s.parentcd in (" + selslgrpcd + ") ) and ";
+                if (selslgrpcd.retStr() != "") sql += "(nvl(s.parentcd,' ') in (" + selslgrpcd + ") ) and ";
                 if (linkcd.retStr() != "") sql += "e.linkcd='" + linkcd + "' and ";
                 if (showonlyunadj != "") sql += "nvl(a.vchtype,' ') in (" + showonlyunadj + ") and ";
                 sql += "a.agslcd=i.slcd(+) and a.conslcd=j.slcd(+) and a.slcd=k.slcd and a.slcdclass1cd=s.slcdclass1cd(+) and a.sagslcd=n.slcd(+) ";
@@ -1429,6 +1437,7 @@ namespace Improvar
                     tbl.Columns.Add("itamt", typeof(double));
                     tbl.Columns.Add("lrno", typeof(string));
                     tbl.Columns.Add("lrdt", typeof(string));
+                    tbl.Columns.Add("state", typeof(string));
                     tbl.Columns.Add("transnm", typeof(string));
                     tbl.Columns.Add("agslcd", typeof(string));
                     tbl.Columns.Add("agslnm", typeof(string));
@@ -1539,6 +1548,7 @@ namespace Improvar
                                 tbl.Rows[rNo]["lrno"] = tbldr.Rows[i]["lrno"].ToString();
                                 tbl.Rows[rNo]["lrdt"] = tbldr.Rows[i]["lrdt"].ToString();
                                 tbl.Rows[rNo]["transnm"] = tbldr.Rows[i]["transnm"].ToString();
+                                tbl.Rows[rNo]["state"] = tbldr.Rows[i]["state"].ToString();
                                 tbl.Rows[rNo]["agslcd"] = tbldr.Rows[i]["agslcd"].ToString();
                                 tbl.Rows[rNo]["agslnm"] = tbldr.Rows[i]["agslnm"].ToString();
                                 tbl.Rows[rNo]["agshortnm"] = tbldr.Rows[i]["agshortnm"].ToString();
@@ -1617,6 +1627,7 @@ namespace Improvar
                                     tbl.Rows[rNo]["lrno"] = tblcr.Rows[i]["lrno"].ToString();
                                     tbl.Rows[rNo]["lrdt"] = tblcr.Rows[i]["lrdt"].ToString();
                                     tbl.Rows[rNo]["transnm"] = tblcr.Rows[i]["transnm"].ToString();
+                                    tbl.Rows[rNo]["state"] = tblcr.Rows[i]["state"].ToString();
                                     tbl.Rows[rNo]["agslcd"] = tblcr.Rows[i]["agslcd"].ToString();
                                     tbl.Rows[rNo]["agslnm"] = tblcr.Rows[i]["agslnm"].ToString();
                                     tbl.Rows[rNo]["agshortnm"] = tblcr.Rows[i]["agshortnm"].ToString();
