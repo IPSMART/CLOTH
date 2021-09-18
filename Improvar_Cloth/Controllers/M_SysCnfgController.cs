@@ -391,7 +391,7 @@ namespace Improvar.Controllers
                     }
                     if (sl.RPPRICEGEN.retStr() != "")
                     {
-                        VE.RPPRICEGENCD = sl.RPPRICEGEN.Substring(0, 2);
+                        VE.RPPRICEGENCD = sl.RPPRICEGEN.Substring(0,2);
                         var a= sl.RPPRICEGEN.Substring(2).Length;
                         VE.RPPRICEGENAMT = sl.RPPRICEGEN.Substring(2,a);
                     }
@@ -614,15 +614,15 @@ namespace Improvar.Controllers
                         MSYSCNFG.RETDEBSLCD = VE.M_SYSCNFG.RETDEBSLCD;
                         if (VE.WPPRICEGENCD.retStr() != "")
                         {
-                            MSYSCNFG.WPPRICEGEN = VE.WPPRICEGENCD.retStr() + VE.WPPRICEGENAMT.retStr().PadLeft(2, '0');//NR99
+                            MSYSCNFG.WPPRICEGEN = VE.WPPRICEGENCD.retStr() + VE.WPPRICEGENAMT.retStr();//.PadLeft(2, '0')    //NR99
                         }
                         if (VE.RPPRICEGENCD.retStr() != "")
                         {
-                            MSYSCNFG.RPPRICEGEN = VE.RPPRICEGENCD.retStr() + VE.RPPRICEGENAMT.retStr().PadLeft(2, '0');//NT99
+                            MSYSCNFG.RPPRICEGEN = VE.RPPRICEGENCD.retStr() + VE.RPPRICEGENAMT.retStr();//NT99
                         }
                         if (VE.CMROFFTYPE.retStr() != "")
                         {
-                            MSYSCNFG.CMROFFTYPE = VE.CMROFFTYPE.retStr() + VE.CMROFFAMT.retStr().PadLeft(2, '0');//NR99
+                            MSYSCNFG.CMROFFTYPE = VE.CMROFFTYPE.retStr() + VE.CMROFFAMT.retStr();//NR99
                         }
                         //MSYSCNFG.DEALSIN = VE.M_SYSCNFG.DEALSIN;
                         MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
