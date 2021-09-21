@@ -295,7 +295,7 @@ namespace Improvar.Controllers
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,   " + Environment.NewLine;
                 sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno from   " + Environment.NewLine;
 
-                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
+                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,   " + Environment.NewLine;
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,   " + Environment.NewLine;
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno   " + Environment.NewLine;
@@ -306,7 +306,7 @@ namespace Improvar.Controllers
                 if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
                 if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and   " + Environment.NewLine;
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)   " + Environment.NewLine;
-                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno), d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),   " + Environment.NewLine;
+                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),   " + Environment.NewLine;
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate,a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),   " + Environment.NewLine;
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno   " + Environment.NewLine;
                 sql += " union all   " + Environment.NewLine;
@@ -1704,7 +1704,7 @@ namespace Improvar.Controllers
                 sql += "when nvl(s.einvappl,'N')='Y' and p.irnno is null and e.gstno is not null and s.expcd is null and s.salpur='S' then 'I' end) cancel,p.irnno, ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm from  ";
 
-                sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, o.pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
+                sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " a.itrem, a.baleno, a.nos, decode( nvl(a.blqnty, 0),0,a.qnty,nvl(a.blqnty, 0)) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,  ";
@@ -1724,7 +1724,7 @@ namespace Improvar.Controllers
                 }
 
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
-                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm,o.pdesign, d.styleno, nvl(a.bluomcd,d.uomcd), nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
+                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno), nvl(a.bluomcd,d.uomcd), nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
                 sql += " a.itrem, a.baleno, a.nos, decode( nvl(a.blqnty, 0),0,a.qnty,nvl(a.blqnty, 0)), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.listprice,a.listdiscper  ";
