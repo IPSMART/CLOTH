@@ -531,7 +531,7 @@ namespace Improvar.Controllers
                    row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
                    row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
                    row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
-                 //row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+                   //row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
                    row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
                    row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
                    row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
@@ -637,7 +637,7 @@ namespace Improvar.Controllers
                     //----------------------------------------------------------//
                     string PURGLCD = "";
 
-                    DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'","baleno,excelrownum").CopyToDataTable();
+                    DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'", "baleno,excelrownum").CopyToDataTable();
                     double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
@@ -900,41 +900,105 @@ namespace Improvar.Controllers
                     var noOfCol = workSheet.Dimension.End.Column;
                     var noOfRow = workSheet.Dimension.End.Row;
                     int rowNum = 2;
-                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
-                    {
-                        DataRow dr = dbfdt.NewRow();
-                        dr["EXCELROWNUM"] = rowNum;
-                        string ITGRPNM = workSheet.Cells[rowNum, 3].Value.retStr();
-                        string GRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
-                        string STYLE = workSheet.Cells[rowNum, 5].Value.retStr();
-                        string SIZENM = workSheet.Cells[rowNum, 6].Value.retStr();
-                        string BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
-                        string BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
-                        string HSN = workSheet.Cells[rowNum, 9].Value.retStr();
-                        string BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
-                        double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
-                        double TAXPER = workSheet.Cells[rowNum, 12].Value.retDbl();
-                        double MRP = workSheet.Cells[rowNum, 13].Value.retDbl();
-                        double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
-                        double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
-                        double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
-                        dr["ITGRPNM"] = ITGRPNM;
-                        dr["GRPNM"] = GRPNM;
-                        dr["STYLE"] = STYLE;
-                        dr["SIZENM"] = SIZENM;
-                        dr["BLNO"] = BLNO;
-                        dr["BARNO"] = BARNO;
-                        dr["HSN"] = HSN;
-                        dr["BLDT"] = BLDT;
-                        dr["QNTY"] = QNTY;
-                        dr["TAXPER"] = TAXPER;
-                        dr["MRP"] = MRP;
-                        dr["TXBL"] = TXBL;
-                        dr["TAXAMT"] = TAXAMT;
-                        dr["NETVALUE"] = NETVALUE;
-                        dbfdt.Rows.Add(dr);
+                    #region old
+                    //for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+                    //{
+                    //    DataRow dr = dbfdt.NewRow();
+                    //    dr["EXCELROWNUM"] = rowNum;
+                    //    string ITGRPNM = workSheet.Cells[rowNum, 3].Value.retStr();
+                    //    string GRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
+                    //    string STYLE = workSheet.Cells[rowNum, 5].Value.retStr();
+                    //    string SIZENM = workSheet.Cells[rowNum, 6].Value.retStr();
+                    //    string BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+                    //    string BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
+                    //    string HSN = workSheet.Cells[rowNum, 9].Value.retStr();
+                    //    string BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
+                    //    double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
+                    //    double TAXPER = workSheet.Cells[rowNum, 12].Value.retDbl();
+                    //    double MRP = workSheet.Cells[rowNum, 13].Value.retDbl();
+                    //    double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
+                    //    double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
+                    //    double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
+                    //    dr["ITGRPNM"] = ITGRPNM;
+                    //    dr["GRPNM"] = GRPNM;
+                    //    dr["STYLE"] = STYLE;
+                    //    dr["SIZENM"] = SIZENM;
+                    //    dr["BLNO"] = BLNO;
+                    //    dr["BARNO"] = BARNO;
+                    //    dr["HSN"] = HSN;
+                    //    dr["BLDT"] = BLDT;
+                    //    dr["QNTY"] = QNTY;
+                    //    dr["TAXPER"] = TAXPER;
+                    //    dr["MRP"] = MRP;
+                    //    dr["TXBL"] = TXBL;
+                    //    dr["TAXAMT"] = TAXAMT;
+                    //    dr["NETVALUE"] = NETVALUE;
+                    //    dbfdt.Rows.Add(dr);
 
+                    //}
+                    #endregion
+                    Int32 maxR = 0; string BLNO = "", BLDT="", BARNO = "";
+                    maxR = noOfRow;
+                    while (rowNum <= maxR)
+                    {
+                        BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+                      
+                        while (workSheet.Cells[rowNum, 7].Value.retStr() == BLNO)
+                        {
+                            BLDT = workSheet.Cells[rowNum, 10].Value.retStr();
+                            while (workSheet.Cells[rowNum, 10].Value.retStr() == BLDT)
+                            {
+                                double tqny = 0, ttxbl = 0, ttaxamt = 0, tnetvalue = 0;
+                                BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
+                                while (workSheet.Cells[rowNum, 8].Value.retStr() == BARNO)
+                                {
+                                    tqny += workSheet.Cells[rowNum, 11].Value.retDbl();
+                                    ttxbl += workSheet.Cells[rowNum, 14].Value.retDbl();
+                                    ttaxamt += workSheet.Cells[rowNum, 15].Value.retDbl();
+                                    tnetvalue += workSheet.Cells[rowNum, 16].Value.retDbl();
+                                    rowNum++;
+                                    if (rowNum > maxR) break;
+                                }
+                                DataRow dr = dbfdt.NewRow();
+                                dr["EXCELROWNUM"] = rowNum - 1;
+                                string ITGRPNM = workSheet.Cells[rowNum - 1, 3].Value.retStr();
+                                string GRPNM = workSheet.Cells[rowNum - 1, 4].Value.retStr();
+                                string STYLE = workSheet.Cells[rowNum - 1, 5].Value.retStr();
+                                string SIZENM = workSheet.Cells[rowNum - 1, 6].Value.retStr();
+                                //BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+                                //BARNO = workSheet.Cells[rowNum-1, 8].Value.retStr();
+                                string HSN = workSheet.Cells[rowNum - 1, 9].Value.retStr();
+                                //BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
+                                //double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
+                                double TAXPER = workSheet.Cells[rowNum - 1, 12].Value.retDbl();
+                                double MRP = workSheet.Cells[rowNum - 1, 13].Value.retDbl();
+                                //double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
+                                //double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
+                                //double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
+                                dr["ITGRPNM"] = ITGRPNM;
+                                dr["GRPNM"] = GRPNM;
+                                dr["STYLE"] = STYLE;
+                                dr["SIZENM"] = SIZENM;
+                                dr["BLNO"] = BLNO;
+                                dr["BARNO"] = BARNO;
+                                dr["HSN"] = HSN;
+                                dr["BLDT"] = BLDT;
+                                dr["QNTY"] = tqny;
+                                dr["TAXPER"] = TAXPER;
+                                dr["MRP"] = MRP;
+                                dr["TXBL"] = ttxbl;
+                                dr["TAXAMT"] = ttaxamt;
+                                dr["NETVALUE"] = tnetvalue;
+                                dbfdt.Rows.Add(dr);
+                                if (rowNum > maxR) break;
+                            }
+                            if (rowNum > maxR) break;
+                        }
+                     
+                        if (rowNum > maxR) break;
                     }
+                 
+
                 }
                 TransactionSaleEntry TMPVE = new TransactionSaleEntry();
                 T_SALEController TSCntlr = new T_SALEController();
