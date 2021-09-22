@@ -231,6 +231,7 @@ namespace Improvar.Controllers
                                 }
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
+                                string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
                                 TempData.Keep();
                                 if (TTXN.GOCD.retStr() == "")
                                 {
@@ -256,6 +257,19 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 VE.RoundOff = ROUNDOFF == "Y" ? true : false;
+                                if (MERGEINDTL == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        MERGEINDTL = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.MERGEINDTL).FirstOrDefault();
+                                    }
+                                    if (MERGEINDTL == null || MERGEINDTL.retStr() == "")
+                                    {
+                                        MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr();
+                                    }
+                                }
+                                VE.MERGEINDTL = MERGEINDTL.retStr() == "Y" ? true : false;
                                 if (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR")
                                 {
                                     string doccd = "";
@@ -335,7 +349,7 @@ namespace Improvar.Controllers
                                     VE.T_TXNMEMO = TTXNMEMO;
                                 }
                                 VE.T_TXN = TTXN;
-                                VE.MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr() == "Y" ? true : false;
+                                //VE.MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr() == "Y" ? true : false;
                                 //T_TXNOTH TXNOTH = new T_TXNOTH();
                                 if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TTXNOTH.PAYTERMS = "NETT CASH, NO LESS";
                                 VE.T_TXNOTH = TTXNOTH;
@@ -4306,6 +4320,7 @@ namespace Improvar.Controllers
                         TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
                         TempData["LASTROUNDOFF" + VE.MENU_PARA] = VE.RoundOff == true ? "Y" : "N";
                         TempData["LASTSLCD" + VE.MENU_PARA] = VE.T_TXN.SLCD;
+                        TempData["LASTMERGEINDTL" + VE.MENU_PARA] = VE.MERGEINDTL == true ? "Y" : "N";
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
