@@ -869,6 +869,496 @@ namespace Improvar.Controllers
             VE.DUpGrid = DUGridlist;
             return VE;
         }
+        //public DataUploadVM ReadAdityaBirlaPTfile(DataUploadVM VE)
+        //{
+        //    List<DUpGrid> DUGridlist = new List<DUpGrid>();
+        //    try
+        //    {
+        //        DataTable dbfdt = new DataTable();
+        //        dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
+        //        dbfdt.Columns.Add("ITGRPNM", typeof(string));
+        //        dbfdt.Columns.Add("GRPNM", typeof(string));
+        //        dbfdt.Columns.Add("STYLE", typeof(string));
+        //        dbfdt.Columns.Add("SIZENM", typeof(string));
+        //        dbfdt.Columns.Add("BLNO", typeof(string));
+        //        dbfdt.Columns.Add("BARNO", typeof(string));
+        //        dbfdt.Columns.Add("HSN", typeof(string));
+        //        dbfdt.Columns.Add("BLDT", typeof(string));
+        //        dbfdt.Columns.Add("QNTY", typeof(double));
+        //        dbfdt.Columns.Add("TAXPER", typeof(double));
+        //        dbfdt.Columns.Add("MRP", typeof(double));
+        //        dbfdt.Columns.Add("TXBL", typeof(double));
+        //        dbfdt.Columns.Add("TAXAMT", typeof(double));
+        //        dbfdt.Columns.Add("NETVALUE", typeof(double));
+
+        //        HttpFileCollectionBase files = Request.Files;
+        //        HttpPostedFileBase file = files[0];
+        //        using (var package = new ExcelPackage(file.InputStream))
+        //        {
+        //            var currentSheet = package.Workbook.Worksheets;
+        //            var workSheet = currentSheet.First();
+        //            var noOfCol = workSheet.Dimension.End.Column;
+        //            var noOfRow = workSheet.Dimension.End.Row;
+        //            int rowNum = 2;
+        //            #region old
+        //            //for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+        //            //{
+        //            //    DataRow dr = dbfdt.NewRow();
+        //            //    dr["EXCELROWNUM"] = rowNum;
+        //            //    string ITGRPNM = workSheet.Cells[rowNum, 3].Value.retStr();
+        //            //    string GRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
+        //            //    string STYLE = workSheet.Cells[rowNum, 5].Value.retStr();
+        //            //    string SIZENM = workSheet.Cells[rowNum, 6].Value.retStr();
+        //            //    string BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+        //            //    string BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
+        //            //    string HSN = workSheet.Cells[rowNum, 9].Value.retStr();
+        //            //    string BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
+        //            //    double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
+        //            //    double TAXPER = workSheet.Cells[rowNum, 12].Value.retDbl();
+        //            //    double MRP = workSheet.Cells[rowNum, 13].Value.retDbl();
+        //            //    double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
+        //            //    double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
+        //            //    double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
+        //            //    dr["ITGRPNM"] = ITGRPNM;
+        //            //    dr["GRPNM"] = GRPNM;
+        //            //    dr["STYLE"] = STYLE;
+        //            //    dr["SIZENM"] = SIZENM;
+        //            //    dr["BLNO"] = BLNO;
+        //            //    dr["BARNO"] = BARNO;
+        //            //    dr["HSN"] = HSN;
+        //            //    dr["BLDT"] = BLDT;
+        //            //    dr["QNTY"] = QNTY;
+        //            //    dr["TAXPER"] = TAXPER;
+        //            //    dr["MRP"] = MRP;
+        //            //    dr["TXBL"] = TXBL;
+        //            //    dr["TAXAMT"] = TAXAMT;
+        //            //    dr["NETVALUE"] = NETVALUE;
+        //            //    dbfdt.Rows.Add(dr);
+
+        //            //}
+        //            #endregion
+        //            Int32 maxR = 0; string BLNO = "", BLDT="", BARNO = "";
+        //            maxR = noOfRow;
+        //            while (rowNum <= maxR)
+        //            {
+        //                BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+
+        //                while (workSheet.Cells[rowNum, 7].Value.retStr() == BLNO)
+        //                {
+        //                    BLDT = workSheet.Cells[rowNum, 10].Value.retStr();
+        //                    while (workSheet.Cells[rowNum, 10].Value.retStr() == BLDT)
+        //                    {
+        //                        double tqny = 0, ttxbl = 0, ttaxamt = 0, tnetvalue = 0;
+        //                        BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
+        //                        while (workSheet.Cells[rowNum, 8].Value.retStr() == BARNO)
+        //                        {
+        //                            tqny += workSheet.Cells[rowNum, 11].Value.retDbl();
+        //                            ttxbl += workSheet.Cells[rowNum, 14].Value.retDbl();
+        //                            ttaxamt += workSheet.Cells[rowNum, 15].Value.retDbl();
+        //                            tnetvalue += workSheet.Cells[rowNum, 16].Value.retDbl();
+        //                            rowNum++;
+        //                            if (rowNum > maxR) break;
+        //                        }
+        //                        DataRow dr = dbfdt.NewRow();
+        //                        dr["EXCELROWNUM"] = rowNum - 1;
+        //                        string ITGRPNM = workSheet.Cells[rowNum - 1, 3].Value.retStr();
+        //                        string GRPNM = workSheet.Cells[rowNum - 1, 4].Value.retStr();
+        //                        string STYLE = workSheet.Cells[rowNum - 1, 5].Value.retStr();
+        //                        string SIZENM = workSheet.Cells[rowNum - 1, 6].Value.retStr();
+        //                        //BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+        //                        //BARNO = workSheet.Cells[rowNum-1, 8].Value.retStr();
+        //                        string HSN = workSheet.Cells[rowNum - 1, 9].Value.retStr();
+        //                        //BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
+        //                        //double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
+        //                        double TAXPER = workSheet.Cells[rowNum - 1, 12].Value.retDbl();
+        //                        double MRP = workSheet.Cells[rowNum - 1, 13].Value.retDbl();
+        //                        //double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
+        //                        //double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
+        //                        //double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
+        //                        dr["ITGRPNM"] = ITGRPNM;
+        //                        dr["GRPNM"] = GRPNM;
+        //                        dr["STYLE"] = STYLE;
+        //                        dr["SIZENM"] = SIZENM;
+        //                        dr["BLNO"] = BLNO;
+        //                        dr["BARNO"] = BARNO;
+        //                        dr["HSN"] = HSN;
+        //                        dr["BLDT"] = BLDT;
+        //                        dr["QNTY"] = tqny;
+        //                        dr["TAXPER"] = TAXPER;
+        //                        dr["MRP"] = MRP;
+        //                        dr["TXBL"] = ttxbl;
+        //                        dr["TAXAMT"] = ttaxamt;
+        //                        dr["NETVALUE"] = tnetvalue;
+        //                        dbfdt.Rows.Add(dr);
+        //                        if (rowNum > maxR) break;
+        //                    }
+        //                    if (rowNum > maxR) break;
+        //                }
+
+        //                if (rowNum > maxR) break;
+        //            }
+
+
+        //        }
+        //        TransactionSaleEntry TMPVE = new TransactionSaleEntry();
+        //        T_SALEController TSCntlr = new T_SALEController();
+        //        T_TXN TTXN = new T_TXN();
+        //        T_TXNTRANS TXNTRANS = new T_TXNTRANS();
+        //        T_TXNOTH TTXNOTH = new T_TXNOTH();
+        //        TMPVE.DefaultAction = "A";
+        //        TMPVE.MENU_PARA = "PB";
+        //        var outerDT = dbfdt.AsEnumerable()
+        //          .GroupBy(g => new { BLNO = g["BLNO"], BLDT = g["BLDT"] })
+        //          .Select(g =>
+        //          {
+        //              var row = dbfdt.NewRow();
+        //              row["BLNO"] = g.Key.BLNO;
+        //              row["BLDT"] = g.Key.BLDT;
+        //              //row["GRP_SAPCD"] = g.OrderBy(r => r["GRP_SAPCD"].ToString()).First();
+        //              //row["ITGRPNM"] = g.OrderBy(r => r["ITGRPNM"].ToString()).First();
+        //              //row["STYLE"] = g.OrderBy(r => r["STYLE"]).First();
+        //              //row["SIZENM"] = g.OrderBy(r => r["SIZENM"]).First();
+        //              //row["BARNO"] = g.OrderBy(r => r["BARNO"]).First();
+        //              //row["HSN"] = g.OrderBy(r => r["HSN"]).First();
+        //              row["QNTY"] = g.Sum(r => r.Field<double>("QNTY"));
+        //              //row["TAXPER"] = g.Average(r => r.Field<double>("TAXPER"));
+        //              //row["MRP"] = g.Sum(r => r.Field<double>("MRP"));
+        //              row["TXBL"] = g.Sum(r => r.Field<double>("TXBL"));
+        //              row["TAXAMT"] = g.Sum(r => r.Field<double>("TAXAMT"));
+        //              row["NETVALUE"] = g.Sum(r => r.Field<double>("NETVALUE"));
+        //              return row;
+        //          }).CopyToDataTable();
+
+
+        //        TTXN.EMD_NO = 0;
+        //        TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
+        //        TTXN.CLCD = CommVar.ClientCode(UNQSNO);
+        //        TTXN.SLCD = VE.SLCD;
+        //        var stcode = VE.GSTNO.retStr().Substring(0, 2); bool igstappl = false;
+        //        if (stcode != "19") igstappl = true;
+        //        // freai j, pf=i,ins k
+        //        //string AMTCD_FREIGHT = DB.M_AMTTYPE.Where(m => m.CALCCODE == "J").FirstOrDefault()?.AMTCD;
+        //        //string AMTCD_INSURANCE = DB.M_AMTTYPE.Where(m => m.CALCCODE == "K").FirstOrDefault()?.AMTCD;
+        //        //string AMTCD_PackFordng = DB.M_AMTTYPE.Where(m => m.CALCCODE == "I").FirstOrDefault()?.AMTCD;
+        //        //
+        //        foreach (DataRow oudr in outerDT.Rows)
+        //        {
+        //            short txnslno = 0;
+        //            List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
+        //            List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
+        //            List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
+        //            DUpGrid dupgrid = new DUpGrid();
+        //            TTXN.GOCD = "SHOP";
+        //            TTXN.DOCTAG = "PB";
+        //            TTXN.BARGENTYPE = "E";
+        //            TTXN.PREFNO = oudr["BLNO"].ToString();
+
+        //            if (VE.DUpGrid.Where(m => m.Checked == true & m.BLNO == TTXN.PREFNO).FirstOrDefault() == null)
+        //            {//Selected row will upload only
+        //                continue;
+        //            }
+        //            TTXN.TCSPER = 0;// 0.075;
+        //            dupgrid.BLNO = TTXN.PREFNO;
+        //            string Ddate = DateTime.ParseExact(oudr["BLDT"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+        //            TTXN.DOCDT = Convert.ToDateTime(Ddate);
+        //            dupgrid.BLDT = Ddate;
+        //            TTXN.PREFDT = TTXN.DOCDT;
+        //            dupgrid.BLNO = TTXN.PREFNO;
+        //            dupgrid.CUSTOMERNO = VE.GSTNO;
+
+
+        //            TTXNOTH.PRCCD = "CP";
+        //            //double blINV_VALUE = oudr["NETVALUE"].retDbl();
+        //            //double bltaxable = oudr["TXBL"].retDbl();
+        //            //double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
+        //            //double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
+        //            //var roffamt = (blINV_VALUE - calcultednet).toRound(2);
+        //            //double blTAX_AMT = oudr["TAX_AMT"].retDbl();
+        //            double tcsamt = 0;// (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
+        //            //TTXN.BLAMT = blINV_VALUE + tcsamt;
+        //            //TMPVE.RoundOff = true;
+        //            TTXN.TDSCODE = "X";
+        //            TTXN.ROYN = "Y";
+        //            //TTXN.TCSON = calcultednet;
+        //            TTXN.TCSAMT = tcsamt;
+        //            dupgrid.TCSAMT = tcsamt.ToString();
+        //            sql = "";
+        //            sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
+        //            sql += " where   a.autono=b.autono and a.PREFNO='" + TTXN.PREFNO + "' and a.slcd='" + TTXN.SLCD + "' ";
+        //            var dt = masterHelp.SQLquery(sql);
+        //            if (dt.Rows.Count > 0)
+        //            {
+        //                dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
+        //                dupgrid.BLNO = TTXN.PREFNO;
+        //                dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
+        //                dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
+        //                dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
+        //                DUGridlist.Add(dupgrid);
+        //                continue;
+        //            }
+        //            else
+        //            {
+        //                dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
+        //                dupgrid.BLAMT = TTXN.BLAMT.retStr();
+        //            }
+
+        //            TXNTRANS.LRNO = null;
+        //            TXNTRANS.LRDT = null;
+        //            //----------------------------------------------------------//
+        //            string PURGLCD = "";
+        //            DataTable innerDt = dbfdt.Select("BLNO='" + TTXN.PREFNO + "'").CopyToDataTable();
+        //            double txable = 0, gstamt = 0; short batchslno = 0;
+        //            foreach (DataRow inrdr in innerDt.Rows)
+        //            {
+        //                //detail tab start
+        //                TTXNDTL TTXNDTL = new TTXNDTL();
+        //                string pdesign = inrdr["STYLE"].ToString();
+        //                string ITGRPNM = inrdr["ITGRPNM"].ToString();
+        //                string GRPNM = inrdr["GRPNM"].ToString();
+        //                string BARNO = inrdr["BARNO"].ToString();
+        //                string itnm = ITGRPNM + " " + GRPNM;
+        //                string HSNCODE = inrdr["HSN"].ToString();
+        //                string MRP = inrdr["MRP"].ToString();
+        //                TTXNDTL.UOM = "PCS";
+        //                ItemDet ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
+        //                TTXNDTL.ITCD = ItemDet.ITCD;
+        //                PURGLCD = ItemDet.PURGLCD;
+        //                TTXNDTL.ITSTYLE = pdesign;
+        //                TTXNDTL.MTRLJOBCD = "FS";
+        //                TTXNDTL.STKDRCR = "D";
+        //                TTXNDTL.STKTYPE = "F";
+        //                TTXNDTL.HSNCODE = HSNCODE;
+        //                //TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
+        //                //TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
+        //                //TTXNDTL.BALENO = inrdr["BALENO"].ToString();
+        //                TTXNDTL.GOCD = "SHOP";
+        //                TTXNDTL.QNTY = inrdr["QNTY"].retDbl(); // NET_QTY
+        //                TTXNDTL.NOS = TTXNDTL.QNTY;
+        //                if (TTXNDTL.QNTY != 0)
+        //                {
+        //                    TTXNDTL.RATE = (inrdr["TXBL"].retDbl() / TTXNDTL.QNTY).retDbl().toRound(2);
+        //                }
+        //                //TTXNDTL.pd = null;
+        //                //string grade = inrdr["GRADATION"].ToString();
+        //                //string foc = inrdr["FOC"].ToString();
+        //                //string pCSTYPE = PCSTYPE(grade, foc);
+        //                //double W_FLG_Q = Math.Abs(inrdr["W_FLG_Q"].retDbl());
+        //                //double R_FLG_Q = Math.Abs(inrdr["R_FLG_Q"].retDbl());
+        //                //double discamt = Math.Abs(inrdr["QLTY_DISC"].retDbl());
+        //                //double discamt1 = Math.Abs(inrdr["MKTG_DISC"].retDbl());
+        //                //double Flagamt = (W_FLG_Q + R_FLG_Q) * TTXNDTL.RATE.retDbl();
+        //                //TTXNDTL.TOTDISCAMT = Flagamt;
+        //                //TTXNDTL.DISCTYPE = "F";
+        //                //TTXNDTL.DISCRATE = discamt;
+        //                //TTXNDTL.DISCAMT = discamt;
+        //                //TTXNDTL.SCMDISCTYPE = "F";
+        //                //TTXNDTL.SCMDISCRATE = discamt1;
+        //                string SIZENM = inrdr["SIZENM"].retStr(); ;
+        //                TTXNDTL.SIZECD = Salesfunc.CreateSizeMaster(SIZENM);
+        //                TTXNDTL.GLCD = PURGLCD;
+        //                TTXNDTL.TXBLVAL = inrdr["TXBL"].retDbl();
+        //                txable += TTXNDTL.TXBLVAL.retDbl();
+        //                double gstper = inrdr["TAXPER"].retDbl();
+        //                double igstper = 0;
+        //                double cgstper = 0;
+        //                double sgstper = 0;
+        //                double itmgstamt = inrdr["TAXAMT"].retDbl().toRound(2);
+        //                if (igstappl)
+        //                {
+        //                    TTXNOTH.TAXGRPCD = "I001";
+        //                    igstper = gstper;
+        //                    TTXNDTL.IGSTPER = igstper;
+        //                    TTXNDTL.IGSTAMT = itmgstamt.retDbl();
+        //                }
+        //                else {
+        //                    TTXNOTH.TAXGRPCD = "C001";
+        //                    cgstper = gstper / 2;
+        //                    sgstper = gstper / 2;
+        //                    TTXNDTL.CGSTPER = cgstper;
+        //                    TTXNDTL.SGSTPER = sgstper;
+        //                    TTXNDTL.CGSTAMT = (itmgstamt / 2).toRound(2);// inrdr["CENT_AMT"].retDbl();   // gstamt += TTXNDTL.CGSTAMT.retDbl();
+        //                    TTXNDTL.SGSTAMT = TTXNDTL.CGSTAMT.retDbl(); // gstamt += TTXNDTL.SGSTAMT.retDbl();
+        //                }
+
+        //                TTXNDTL.GSTPER = TTXNDTL.IGSTPER.retDbl() + TTXNDTL.CGSTPER.retDbl() + TTXNDTL.SGSTPER.retDbl();
+
+        //                gstamt += TTXNDTL.CGSTAMT.retDbl() + TTXNDTL.SGSTAMT.retDbl() + TTXNDTL.IGSTAMT.retDbl();
+        //                //double NET_AMT = ((TTXNDTL.TXBLVAL * (100 + gstper)) / 100).retDbl();
+        //                double NET_AMT = TTXNDTL.TXBLVAL.retDbl() + TTXNDTL.CGSTAMT.retDbl() + TTXNDTL.SGSTAMT.retDbl() + TTXNDTL.IGSTAMT.retDbl();
+        //                TTXNDTL.AMT = TTXNDTL.TXBLVAL.retDbl();
+        //                TTXNDTL.NETAMT = NET_AMT.toRound(2);
+        //                //TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE).FirstOrDefault();
+        //                //if (tmpTTXNDTL != null)
+        //                //{
+        //                //    foreach (var tmpdtl in TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE && r.FLAGMTR == TTXNDTL.FLAGMTR && r.DISCRATE == TTXNDTL.DISCRATE && r.SCMDISCRATE == TTXNDTL.SCMDISCRATE))
+        //                //    {
+        //                //        tmpdtl.NOS += TTXNDTL.NOS;
+        //                //        tmpdtl.QNTY += TTXNDTL.QNTY;
+        //                //        tmpdtl.AMT += TTXNDTL.AMT;
+        //                //        tmpdtl.TOTDISCAMT += TTXNDTL.TOTDISCAMT;
+        //                //        tmpdtl.DISCAMT += TTXNDTL.DISCAMT;
+        //                //        tmpdtl.SCMDISCAMT += TTXNDTL.SCMDISCAMT;
+        //                //        tmpdtl.TXBLVAL += TTXNDTL.TXBLVAL;
+        //                //        tmpdtl.IGSTAMT += TTXNDTL.IGSTAMT;
+        //                //        tmpdtl.CGSTAMT += TTXNDTL.CGSTAMT;
+        //                //        tmpdtl.SGSTAMT += TTXNDTL.SGSTAMT;
+        //                //        tmpdtl.NETAMT += TTXNDTL.NETAMT;
+        //                //        TTXNDTL.SLNO = tmpdtl.SLNO;
+        //                //    }
+        //                //}
+        //                //else
+        //                //{
+        //                TTXNDTL.SLNO = ++txnslno;
+        //                TTXNDTLlist.Add(TTXNDTL);
+        //                //}
+
+        //                TBATCHDTL TBATCHDTL = new TBATCHDTL();
+        //                TBATCHDTL.TXNSLNO = TTXNDTL.SLNO;
+        //                TBATCHDTL.SLNO = ++batchslno;
+        //                TBATCHDTL.BARNO = BARNO;
+        //                TBATCHDTL.ITCD = TTXNDTL.ITCD;
+        //                TBATCHDTL.BARGENTYPE = TTXN.BARGENTYPE;
+        //                TBATCHDTL.COMMONUNIQBAR = TTXN.BARGENTYPE;
+        //                TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
+        //                TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
+        //                TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
+        //                TBATCHDTL.STKDRCR = TTXNDTL.STKDRCR;
+        //                TBATCHDTL.NOS = TTXNDTL.NOS;
+        //                TBATCHDTL.QNTY = TTXNDTL.QNTY;
+        //                TBATCHDTL.BLQNTY = TTXNDTL.BLQNTY;
+        //                TBATCHDTL.FLAGMTR = TTXNDTL.FLAGMTR;
+        //                TBATCHDTL.ITREM = TTXNDTL.ITREM;
+        //                TBATCHDTL.UOM = TTXNDTL.UOM;
+        //                TBATCHDTL.RATE = TTXNDTL.RATE;
+        //                TBATCHDTL.DISCRATE = TTXNDTL.DISCRATE;
+        //                TBATCHDTL.DISCTYPE = TTXNDTL.DISCTYPE;
+        //                TBATCHDTL.SCMDISCRATE = TTXNDTL.SCMDISCRATE;
+        //                TBATCHDTL.SCMDISCTYPE = TTXNDTL.SCMDISCTYPE;
+        //                TBATCHDTL.TDDISCRATE = TTXNDTL.TDDISCRATE;
+        //                TBATCHDTL.TDDISCTYPE = TTXNDTL.TDDISCTYPE;
+        //                TBATCHDTL.SIZECD = TTXNDTL.SIZECD;
+        //                //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
+        //                //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
+        //                TBATCHDTL.PDESIGN = pdesign;
+        //                //TBATCHDTL.MILLNM = TTXNDTL.MILLNM;
+        //                //TBATCHDTL.BATCHNO = inrdr["BATCH"].ToString();
+        //                TBATCHDTL.BALEYR = TTXNDTL.BALENO.retStr() == "" ? "" : TTXNDTL.BALEYR;
+        //                TBATCHDTL.BALENO = TTXNDTL.BALENO;
+        //                //if (VE.MENU_PARA == "SBPCK")
+        //                //{
+        //                //    TBATCHDTL.ORDAUTONO = TTXNDTL.ORDAUTONO;
+        //                //    TBATCHDTL.ORDSLNO = TTXNDTL.ORDSLNO;
+        //                //}
+        //                TBATCHDTL.LISTPRICE = TTXNDTL.LISTPRICE;
+        //                TBATCHDTL.LISTDISCPER = TTXNDTL.LISTDISCPER;
+        //                //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
+        //                TBATCHDTL.STKTYPE = TTXNDTL.STKTYPE;
+        //                TBATCHDTL.RPRATE = MRP.retDbl();
+        //                //if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && VE.M_SYSCNFG.MNTNPCSTYPE == "Y")
+        //                //{
+        //                //    TBATCHDTL.PCSTYPE = TTXNDTL.PCSTYPE;
+        //                //}
+        //                TBATCHDTLlist.Add(TBATCHDTL);
+        //            }// inner loop of TTXNDTL
+        //             //Amount tab start
+        //             //if (oudr["FREIGHT"].retDbl() != 0)
+        //             //{
+        //             //    TTXNAMT TTXNAMT = new TTXNAMT();
+        //             //    TTXNAMT.SLNO = 1;
+        //             //    TTXNAMT.GLCD = PURGLCD;
+        //             //    TTXNAMT.AMTCD = AMTCD_FREIGHT;
+        //             //    TTXNAMT.AMTDESC = "FREIGHT";
+        //             //    TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
+        //             //    TTXNAMT.HSNCODE = "";
+        //             //    TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
+        //             //    if (igstper > 0)
+        //             //    {
+        //             //        TTXNAMT.IGSTPER = igstper;
+        //             //        TTXNAMT.IGSTAMT = (oudr["FREIGHT"].retDbl() * igstper / 100).toRound(2); gstamt += TTXNAMT.IGSTAMT.retDbl();
+        //             //    }
+        //             //    else
+        //             //    {
+        //             //        TTXNAMT.CGSTPER = cgstper;
+        //             //        TTXNAMT.CGSTAMT = (oudr["FREIGHT"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.CGSTAMT.retDbl();
+        //             //        TTXNAMT.SGSTPER = cgstper;
+        //             //        TTXNAMT.SGSTAMT = (oudr["FREIGHT"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.SGSTAMT.retDbl();
+        //             //    }
+        //             //    TTXNAMTlist.Add(TTXNAMT);
+        //             //}
+        //             //if (oudr["INSURANCE"].retDbl() != 0)
+        //             //{
+        //             //    TTXNAMT TTXNAMT = new TTXNAMT();
+        //             //    TTXNAMT.SLNO = 2;
+        //             //    TTXNAMT.GLCD = PURGLCD;
+        //             //    TTXNAMT.AMTCD = AMTCD_INSURANCE;
+        //             //    TTXNAMT.AMTDESC = "INSURANCE";
+        //             //    TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
+        //             //    TTXNAMT.HSNCODE = "";
+        //             //    TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
+        //             //    if (igstper > 0)
+        //             //    {
+        //             //        TTXNAMT.IGSTPER = igstper;
+        //             //        TTXNAMT.IGSTAMT = (oudr["INSURANCE"].retDbl() * igstper / 100).toRound(2); gstamt += TTXNAMT.IGSTAMT.retDbl();
+        //             //    }
+        //             //    else
+        //             //    {
+        //             //        TTXNAMT.CGSTPER = cgstper;
+        //             //        TTXNAMT.CGSTAMT = (oudr["INSURANCE"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.CGSTAMT.retDbl();
+        //             //        TTXNAMT.SGSTPER = cgstper;
+        //             //        TTXNAMT.SGSTAMT = (oudr["INSURANCE"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.SGSTAMT.retDbl();
+        //             //    }
+        //             //    TTXNAMTlist.Add(TTXNAMT);
+        //             //}
+        //             //           //Amount tab end
+        //             //same barno should not repeat 
+        //            string duplicates = "";
+        //            duplicates = string.Join(",", TBATCHDTLlist.GroupBy(s => s.BARNO)
+        //                   .Where(g => g.Count() > 1)
+        //                   .Select(g => g.Key).ToList());
+
+        //            //
+
+        //            double billvalbfroff = txable + gstamt;
+        //            double billvalafroff = (txable + gstamt).toRound(0);
+        //            TTXN.BLAMT = billvalafroff; dupgrid.BLAMT = TTXN.BLAMT.ToString();
+        //            TMPVE.RoundOff = true;
+        //            TTXN.ROAMT = (billvalafroff - billvalbfroff).toRound(2);
+        //            dupgrid.ROAMT = TTXN.ROAMT.retStr();
+        //            TMPVE.T_TXN = TTXN;
+        //            TMPVE.T_TXNTRANS = TXNTRANS;
+        //            TMPVE.T_TXNOTH = TTXNOTH;
+        //            TMPVE.TTXNDTL = TTXNDTLlist;
+        //            TMPVE.TBATCHDTL = TBATCHDTLlist;
+        //            TMPVE.TTXNAMT = TTXNAMTlist;
+        //            TMPVE.T_VCH_GST = new T_VCH_GST();
+        //            string tslCont = "";
+        //            if (duplicates.retStr() == "")
+        //            {
+        //                tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
+
+        //                tslCont = tslCont.retStr().Split('~')[0];
+        //                if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
+        //                else dupgrid.MESSAGE = tslCont;
+        //            }
+        //            else
+        //            {
+        //                dupgrid.MESSAGE = "Same barno " + duplicates + "should not repeat !!";
+        //            }
+        //            DUGridlist.Add(dupgrid);
+
+
+        //        }//outer
+        //        VE.STATUS = "Data Uploaded Successfully";
+
+        //    }//try
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        VE.STATUS = ex.Message + ex.StackTrace;
+        //    }
+        //    VE.DUpGrid = DUGridlist;
+        //    return VE;
+        //}
         public DataUploadVM ReadAdityaBirlaPTfile(DataUploadVM VE)
         {
             List<DUpGrid> DUGridlist = new List<DUpGrid>();
@@ -900,105 +1390,41 @@ namespace Improvar.Controllers
                     var noOfCol = workSheet.Dimension.End.Column;
                     var noOfRow = workSheet.Dimension.End.Row;
                     int rowNum = 2;
-                    #region old
-                    //for (rowNum = 2; rowNum <= noOfRow; rowNum++)
-                    //{
-                    //    DataRow dr = dbfdt.NewRow();
-                    //    dr["EXCELROWNUM"] = rowNum;
-                    //    string ITGRPNM = workSheet.Cells[rowNum, 3].Value.retStr();
-                    //    string GRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
-                    //    string STYLE = workSheet.Cells[rowNum, 5].Value.retStr();
-                    //    string SIZENM = workSheet.Cells[rowNum, 6].Value.retStr();
-                    //    string BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
-                    //    string BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
-                    //    string HSN = workSheet.Cells[rowNum, 9].Value.retStr();
-                    //    string BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
-                    //    double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
-                    //    double TAXPER = workSheet.Cells[rowNum, 12].Value.retDbl();
-                    //    double MRP = workSheet.Cells[rowNum, 13].Value.retDbl();
-                    //    double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
-                    //    double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
-                    //    double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
-                    //    dr["ITGRPNM"] = ITGRPNM;
-                    //    dr["GRPNM"] = GRPNM;
-                    //    dr["STYLE"] = STYLE;
-                    //    dr["SIZENM"] = SIZENM;
-                    //    dr["BLNO"] = BLNO;
-                    //    dr["BARNO"] = BARNO;
-                    //    dr["HSN"] = HSN;
-                    //    dr["BLDT"] = BLDT;
-                    //    dr["QNTY"] = QNTY;
-                    //    dr["TAXPER"] = TAXPER;
-                    //    dr["MRP"] = MRP;
-                    //    dr["TXBL"] = TXBL;
-                    //    dr["TAXAMT"] = TAXAMT;
-                    //    dr["NETVALUE"] = NETVALUE;
-                    //    dbfdt.Rows.Add(dr);
-
-                    //}
-                    #endregion
-                    Int32 maxR = 0; string BLNO = "", BLDT="", BARNO = "";
-                    maxR = noOfRow;
-                    while (rowNum <= maxR)
+                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
                     {
-                        BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
-                      
-                        while (workSheet.Cells[rowNum, 7].Value.retStr() == BLNO)
-                        {
-                            BLDT = workSheet.Cells[rowNum, 10].Value.retStr();
-                            while (workSheet.Cells[rowNum, 10].Value.retStr() == BLDT)
-                            {
-                                double tqny = 0, ttxbl = 0, ttaxamt = 0, tnetvalue = 0;
-                                BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
-                                while (workSheet.Cells[rowNum, 8].Value.retStr() == BARNO)
-                                {
-                                    tqny += workSheet.Cells[rowNum, 11].Value.retDbl();
-                                    ttxbl += workSheet.Cells[rowNum, 14].Value.retDbl();
-                                    ttaxamt += workSheet.Cells[rowNum, 15].Value.retDbl();
-                                    tnetvalue += workSheet.Cells[rowNum, 16].Value.retDbl();
-                                    rowNum++;
-                                    if (rowNum > maxR) break;
-                                }
-                                DataRow dr = dbfdt.NewRow();
-                                dr["EXCELROWNUM"] = rowNum - 1;
-                                string ITGRPNM = workSheet.Cells[rowNum - 1, 3].Value.retStr();
-                                string GRPNM = workSheet.Cells[rowNum - 1, 4].Value.retStr();
-                                string STYLE = workSheet.Cells[rowNum - 1, 5].Value.retStr();
-                                string SIZENM = workSheet.Cells[rowNum - 1, 6].Value.retStr();
-                                //BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
-                                //BARNO = workSheet.Cells[rowNum-1, 8].Value.retStr();
-                                string HSN = workSheet.Cells[rowNum - 1, 9].Value.retStr();
-                                //BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
-                                //double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
-                                double TAXPER = workSheet.Cells[rowNum - 1, 12].Value.retDbl();
-                                double MRP = workSheet.Cells[rowNum - 1, 13].Value.retDbl();
-                                //double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
-                                //double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
-                                //double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
-                                dr["ITGRPNM"] = ITGRPNM;
-                                dr["GRPNM"] = GRPNM;
-                                dr["STYLE"] = STYLE;
-                                dr["SIZENM"] = SIZENM;
-                                dr["BLNO"] = BLNO;
-                                dr["BARNO"] = BARNO;
-                                dr["HSN"] = HSN;
-                                dr["BLDT"] = BLDT;
-                                dr["QNTY"] = tqny;
-                                dr["TAXPER"] = TAXPER;
-                                dr["MRP"] = MRP;
-                                dr["TXBL"] = ttxbl;
-                                dr["TAXAMT"] = ttaxamt;
-                                dr["NETVALUE"] = tnetvalue;
-                                dbfdt.Rows.Add(dr);
-                                if (rowNum > maxR) break;
-                            }
-                            if (rowNum > maxR) break;
-                        }
-                     
-                        if (rowNum > maxR) break;
-                    }
-                 
+                        DataRow dr = dbfdt.NewRow();
+                        dr["EXCELROWNUM"] = rowNum;
+                        string ITGRPNM = workSheet.Cells[rowNum, 3].Value.retStr();
+                        string GRPNM = workSheet.Cells[rowNum, 4].Value.retStr();
+                        string STYLE = workSheet.Cells[rowNum, 5].Value.retStr();
+                        string SIZENM = workSheet.Cells[rowNum, 6].Value.retStr();
+                        string BLNO = workSheet.Cells[rowNum, 7].Value.retStr();
+                        string BARNO = workSheet.Cells[rowNum, 8].Value.retStr();
+                        string HSN = workSheet.Cells[rowNum, 9].Value.retStr();
+                        string BLDT = workSheet.Cells[rowNum, 10].Value.retDateStr();
+                        double QNTY = workSheet.Cells[rowNum, 11].Value.retDbl();
+                        double TAXPER = workSheet.Cells[rowNum, 12].Value.retDbl();
+                        double MRP = workSheet.Cells[rowNum, 13].Value.retDbl();
+                        double TXBL = workSheet.Cells[rowNum, 14].Value.retDbl();
+                        double TAXAMT = workSheet.Cells[rowNum, 15].Value.retDbl();
+                        double NETVALUE = workSheet.Cells[rowNum, 16].Value.retDbl();
+                        dr["ITGRPNM"] = ITGRPNM;
+                        dr["GRPNM"] = GRPNM;
+                        dr["STYLE"] = STYLE;
+                        dr["SIZENM"] = SIZENM;
+                        dr["BLNO"] = BLNO;
+                        dr["BARNO"] = BARNO;
+                        dr["HSN"] = HSN;
+                        dr["BLDT"] = BLDT;
+                        dr["QNTY"] = QNTY;
+                        dr["TAXPER"] = TAXPER;
+                        dr["MRP"] = MRP;
+                        dr["TXBL"] = TXBL;
+                        dr["TAXAMT"] = TAXAMT;
+                        dr["NETVALUE"] = NETVALUE;
+                        dbfdt.Rows.Add(dr);
 
+                    }
                 }
                 TransactionSaleEntry TMPVE = new TransactionSaleEntry();
                 T_SALEController TSCntlr = new T_SALEController();
@@ -1106,7 +1532,32 @@ namespace Improvar.Controllers
                     TXNTRANS.LRDT = null;
                     //----------------------------------------------------------//
                     string PURGLCD = "";
-                    DataTable innerDt = dbfdt.Select("BLNO='" + TTXN.PREFNO + "'").CopyToDataTable();
+                    DataView dv = new DataView(dbfdt);
+                    dv.Sort = "blno,bldt,barno";
+                    dbfdt = dv.ToTable();
+                    var inDT = dbfdt.AsEnumerable()
+               .GroupBy(g => new { BLNO = g["BLNO"], BLDT = g["BLDT"], BARNO = g["BARNO"], STYLE = g["STYLE"], ITGRPNM = g["ITGRPNM"], GRPNM = g["GRPNM"], HSN = g["HSN"], MRP = g["MRP"], SIZENM = g["SIZENM"], TAXPER = g["TAXPER"] })
+               .Select(g =>
+               {
+                   var row = dbfdt.NewRow();
+                   row["BLNO"] = g.Key.BLNO;
+                   row["BLDT"] = g.Key.BLDT;
+                   row["BARNO"] = g.Key.BARNO;
+                   row["STYLE"] = g.Key.STYLE;
+                   row["ITGRPNM"] = g.Key.ITGRPNM;
+                   row["GRPNM"] = g.Key.GRPNM;
+                   row["HSN"] = g.Key.HSN;
+                   row["MRP"] = g.Key.MRP;
+                   row["SIZENM"] = g.Key.SIZENM;
+                   row["TAXPER"] = g.Key.TAXPER;
+                   row["QNTY"] = g.Sum(r => r.Field<double>("QNTY"));
+                   row["TXBL"] = g.Sum(r => r.Field<double>("TXBL"));
+                   row["TAXAMT"] = g.Sum(r => r.Field<double>("TAXAMT"));
+                   row["NETVALUE"] = g.Sum(r => r.Field<double>("NETVALUE"));
+                   return row;
+               }).CopyToDataTable();
+
+                    DataTable innerDt = inDT.Select("BLNO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
