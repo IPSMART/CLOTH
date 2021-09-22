@@ -906,6 +906,38 @@
                         </div>
                     }
                 </div>
+                @if (Model.MENU_PARA == "SBPOS")
+                {
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Name")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNMEMO.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name" } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNMEMO.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Mobile No.", maxlength = 10 } })
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNMEMO.ADDR, new { htmlAttributes = new { @class = "form-control", id = "ADDR_", @placeholder = "Address", maxlength = 200 } })
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNMEMO.CITY, new { htmlAttributes = new { @class = "form-control", id = "CITY_", @placeholder = "City", maxlength = 30 } })
+                            </div>
+                        </div>
+
+                    </div>
+                }
                 @if (Model.MENU_PARA == "SB")
                     {
                     <div class="row">

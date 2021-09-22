@@ -19,7 +19,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl(); DropDownHelp dropDownHelp = new DropDownHelp();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS;
+        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS; T_TXNMEMO TXNMEMO;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_SALE
@@ -201,6 +201,10 @@ namespace Improvar.Controllers
                             VE.T_TXN_LINKNO = TTXNLINKNO;
                             VE.T_TXNEINV = TTXNEINV;
                             VE.T_TDSTXN = TTDS;
+                            if (VE.MENU_PARA == "SBPOS")
+                            {
+                                VE.T_TXNMEMO = TXNMEMO;
+                            }
                             if (loadOrder.retStr().Length > 1)
                             {
                                 if (VE.MENU_PARA != "SBDIR")
@@ -278,6 +282,7 @@ namespace Improvar.Controllers
                                 }
                                 if (VE.MENU_PARA == "SBPOS")
                                 {
+                                    T_TXNMEMO TTXNMEMO = new T_TXNMEMO();
                                     TTXN.SLCD = TempData["LASTSLCD" + VE.MENU_PARA].retStr();
                                     if (TTXN.SLCD.retStr() == "")
                                     {
@@ -291,7 +296,7 @@ namespace Improvar.Controllers
 
                                     if (slcd != "")
                                     {
-                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD }).FirstOrDefault();
+                                        var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
                                         VE.SLNM = subleg.SLNM;
                                         VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                                         VE.GSTNO = subleg.GSTNO;
@@ -315,7 +320,19 @@ namespace Improvar.Controllers
                                                 VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == TTXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
                                             }
                                         }
+                                        TTXNMEMO.NM = VE.SLNM;
+                                        TTXNMEMO.MOBILE = subleg.REGMOBILE.retStr();
+                                        var addrs = subleg.ADD1.retStr() == "" ? "" : (subleg.ADD1 + " ");
+                                        addrs += subleg.ADD2.retStr() == "" ? "" : (subleg.ADD2 + " ");
+                                        addrs += subleg.ADD3.retStr() == "" ? "" : (subleg.ADD3 + " ");
+                                        addrs += subleg.ADD4.retStr() == "" ? "" : (subleg.ADD4 + " ");
+                                        addrs += subleg.ADD5.retStr() == "" ? "" : (subleg.ADD5 + " ");
+                                        addrs += subleg.ADD6.retStr() == "" ? "" : (subleg.ADD6 + " ");
+                                        addrs += subleg.ADD7.retStr() == "" ? "" : (subleg.ADD7 + " ");
+                                        TTXNMEMO.ADDR = addrs.TrimEnd();
+                                        TTXNMEMO.CITY = subleg.DISTRICT;
                                     }
+                                    VE.T_TXNMEMO = TTXNMEMO;
                                 }
                                 VE.T_TXN = TTXN;
                                 VE.MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr() == "Y" ? true : false;
@@ -464,7 +481,7 @@ namespace Improvar.Controllers
             string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
 
-            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN();
+            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO();
 
             //if (VE.IndexKey.Count != 0 || (loadOrder.retStr().Length > 1 && index >= 0))
             if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
@@ -568,6 +585,10 @@ namespace Improvar.Controllers
                         VE.JOBEXPGLCD = jobdata.EXPGLCD;
                         VE.JOBHSNCODE = jobdata.HSNCODE;
                     }
+                }
+                if (VE.MENU_PARA == "SBPOS")
+                {
+                    TXNMEMO = DB.T_TXNMEMO.Find(TXN.AUTONO);
                 }
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
@@ -4043,6 +4064,34 @@ namespace Improvar.Controllers
                 }
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
+                    var subleg = (from a in DBF1.M_SUBLEG where a.SLCD == VE.T_TXN.SLCD select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
+
+                    if (VE.MENU_PARA == "SBPOS")
+                    {
+                        if (VE.T_TXNMEMO.NM.retStr() == "")
+                        {
+                            VE.T_TXNMEMO.NM = subleg.SLNM;
+                        }
+                        if (VE.T_TXNMEMO.MOBILE.retStr() == "")
+                        {
+                            VE.T_TXNMEMO.MOBILE = subleg.REGMOBILE.retStr();
+                        }
+                        if (VE.T_TXNMEMO.ADDR.retStr() == "")
+                        {
+                            var addrs = subleg.ADD1.retStr() == "" ? "" : (subleg.ADD1 + " ");
+                            addrs += subleg.ADD2.retStr() == "" ? "" : (subleg.ADD2 + " ");
+                            addrs += subleg.ADD3.retStr() == "" ? "" : (subleg.ADD3 + " ");
+                            addrs += subleg.ADD4.retStr() == "" ? "" : (subleg.ADD4 + " ");
+                            addrs += subleg.ADD5.retStr() == "" ? "" : (subleg.ADD5 + " ");
+                            addrs += subleg.ADD6.retStr() == "" ? "" : (subleg.ADD6 + " ");
+                            addrs += subleg.ADD7.retStr() == "" ? "" : (subleg.ADD7 + " ");
+                            VE.T_TXNMEMO.ADDR = addrs.TrimEnd();
+                        }
+                        if (VE.T_TXNMEMO.CITY.retStr() == "")
+                        {
+                            VE.T_TXNMEMO.CITY = subleg.DISTRICT;
+                        }
+                    }
                     string PIAUTONO = "";
                     if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A")
                     {
@@ -4087,7 +4136,7 @@ namespace Improvar.Controllers
                         {
                             string diffitcd = difList.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
                             //OraTrans.Rollback();
-                           // OraCon.Dispose();
+                            // OraCon.Dispose();
                             ContentFlg = "Barcode grid & Detail grid itcd [" + diffitcd + "] wise qnty, nos should match !!";
                             goto dbnotsave;
                         }
@@ -4098,7 +4147,7 @@ namespace Improvar.Controllers
                     T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                     T_TXNOTH TTXNOTH = new T_TXNOTH();
                     T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
-
+                    T_TXNMEMO TTXNMEMO = new T_TXNMEMO();
                     string DOCPATTERN = "";
                     string docpassrem = "";
                     bool blactpost = true, blgstpost = true;
@@ -4351,6 +4400,11 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql = masterHelp.TblUpdt("t_txntrans", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        if (VE.MENU_PARA == "SBPOS")
+                        {
+                            dbsql = masterHelp.TblUpdt("t_txnmemo", TTXN.AUTONO, "E");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        }
                         dbsql = masterHelp.TblUpdt("t_txnoth", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         if (VE.MENU_PARA == "SB" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR")
@@ -4463,7 +4517,24 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.RetModeltoSql(TTXNOTH);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    if (VE.MENU_PARA == "SBPOS")
+                    {
+                        //--------------------------T_TXNMEMO--------------------------------//
 
+                        TTXNMEMO.EMD_NO = TTXN.EMD_NO;
+                        TTXNMEMO.CLCD = TTXN.CLCD;
+                        TTXNMEMO.DTAG = TTXN.DTAG;
+                        TTXNMEMO.TTAG = TTXN.TTAG;
+                        TTXNMEMO.AUTONO = TTXN.AUTONO;
+                        TTXNMEMO.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
+                        TTXNMEMO.NM = VE.T_TXNMEMO.NM;
+                        TTXNMEMO.MOBILE = VE.T_TXNMEMO.MOBILE;
+                        TTXNMEMO.CITY = VE.T_TXNMEMO.CITY;
+                        TTXNMEMO.ADDR = VE.T_TXNMEMO.ADDR;
+                        dbsql = masterHelp.RetModeltoSql(TTXNMEMO);
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        //----------------------------------------------------------//
+                    }
                     if (VE.MENU_PARA == "SB")
                     {
                         TTXNLINKNO.EMD_NO = TTXN.EMD_NO;
@@ -5855,6 +5926,12 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txntrans", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    if (VE.MENU_PARA == "SBPOS")
+                    {
+                        dbsql = masterHelp.TblUpdt("T_TXNMEMO", VE.T_TXN.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                    }
                     if (VE.MENU_PARA == "SB" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR")
                     {
                         dbsql = masterHelp.TblUpdt("t_txn_linkno", VE.T_TXN.AUTONO, "D");
