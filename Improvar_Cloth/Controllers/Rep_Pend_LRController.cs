@@ -60,9 +60,9 @@ namespace Improvar.Controllers
                 DataTable tbl = new DataTable();
                 if (BltyPending=="R")
                 {  tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike); }
-                else {  tbl = Salesfunc.getPendBiltytoIssue(tdt,"", "", "", slcd, lrnoLike); }
+                else {  tbl = Salesfunc.getPendBiltytoIssue(tdt,"", "", "", slcd.retSqlformat(), lrnoLike); }
                 DataView dv = new DataView(tbl);
-                DataTable tbl1 = dv.ToTable(true);
+                DataTable tbl1 = dv.ToTable(true, "lrno","lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "", gonm = "";
