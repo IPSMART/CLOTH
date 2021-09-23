@@ -1050,7 +1050,7 @@
                                         @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                     </div>
                                 </div>
-                                if (Model.MENU_PARA == "PB" && Model.DefaultAction=="V")
+                                if (Model.MENU_PARA == "PB" && Model.DefaultAction == "V")
                                 {<div class="col-md-4" style="width:auto">
                                 <div class="editor-field" style="margin-top: 6px;">
                                     @Html.Label("", "Total Bale No.")
@@ -1451,6 +1451,17 @@
                             <div class="DivMergeBarItem col-md-1" style="width:auto;margin-top:6px;">
                                 @Html.CheckBoxFor(model => model.MERGEINDTL, new { id = "MERGEINDTL", @TabIndex = -1 })
                             </div>
+                            @if (Model.MENU_PARA == "PI")
+                            {
+                                <div class="col-md-1" style="width:auto;">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Stock Hold")
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="width:auto;margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.STOCKHOLD, new { id = "STOCKHOLD", @TabIndex = -1 })
+                                </div>
+                            }
                         </div>
                         @if (Model.MENU_PARA == "SCN" || Model.MENU_PARA == "SDN" || Model.MENU_PARA == "PCN" || Model.MENU_PARA == "PDN")
                         {

@@ -232,6 +232,7 @@ namespace Improvar.Controllers
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
+                                string STKDRCR = TempData["LASTSTKDRCR" + VE.MENU_PARA].retStr();
                                 TempData.Keep();
                                 if (TTXN.GOCD.retStr() == "")
                                 {
@@ -270,6 +271,18 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 VE.MERGEINDTL = MERGEINDTL.retStr() == "Y" ? true : false;
+                              
+                                if (STKDRCR == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.DOCCD == doccd select new { STKDRCR= j.STKDRCR ,AUTONO=i.AUTONO}).OrderByDescending(s=>s.AUTONO).FirstOrDefault();
+                                        if(Getstkdrcr!=null)
+                                        { STKDRCR = Getstkdrcr.STKDRCR; }
+                                    }
+                                }
+                                VE.STOCKHOLD = STKDRCR == "C" ? true : false;
                                 if (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR")
                                 {
                                     string doccd = "";
@@ -603,6 +616,10 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "SBPOS")
                 {
                     TXNMEMO = DB.T_TXNMEMO.Find(TXN.AUTONO);
+                }
+                var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.AUTONO == TXN.AUTONO select new { STKDRCR = j.STKDRCR, AUTONO = i.AUTONO }).OrderBy(s => s.AUTONO).FirstOrDefault();
+                if(Getstkdrcr!=null)
+                { VE.STOCKHOLD = Getstkdrcr.STKDRCR == "C" ? true : false;
                 }
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
@@ -4203,7 +4220,7 @@ namespace Improvar.Controllers
                         case "SBEXP":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale Export" + strqty; break;
                         case "PI":
-                            stkdrcr = "0"; blactpost = false; blgstpost = false; break;
+                            stkdrcr = VE.STOCKHOLD==true? "C":"0"; blactpost = false; blgstpost = false; break;
                         case "PB":
                             stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "PR":
@@ -4321,6 +4338,7 @@ namespace Improvar.Controllers
                         TempData["LASTROUNDOFF" + VE.MENU_PARA] = VE.RoundOff == true ? "Y" : "N";
                         TempData["LASTSLCD" + VE.MENU_PARA] = VE.T_TXN.SLCD;
                         TempData["LASTMERGEINDTL" + VE.MENU_PARA] = VE.MERGEINDTL == true ? "Y" : "N";
+                        TempData["LASTSTKDRCR" + VE.MENU_PARA] = stkdrcr;
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
