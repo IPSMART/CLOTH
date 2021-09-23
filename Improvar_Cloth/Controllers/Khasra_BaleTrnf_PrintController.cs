@@ -50,6 +50,8 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Sotck Transfer Bale Printing"; break;
                         case "BLTR":
                             ViewBag.formname = "Receive from Mutia Report"; break;
+                        case "TRWB":
+                            ViewBag.formname = "Sotck Transfer With Waybill  Bale Printing"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -184,8 +186,9 @@ namespace Improvar.Controllers
                     sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
                     sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
                     //sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
-                    sql += "order by a.autono,a.slno,f.prefno, a.baleno ";
-
+                    if(CommVar.ClientCode(UNQSNO)== "SNFP" && VE.MENU_PARA == "TRFB")
+                    { sql += "order by a.autono, f.prefno, a.baleno,a.slno "; }
+                    else { sql += "order by a.autono,a.slno,f.prefno, a.baleno "; }
 
                     restbl = masterHelp.SQLquery(sql);
                     sql = "select a.autono,a.gocd hdrgocd,b.gonm hdrgonm,b.goadd1 hdrgoadd1,b.goadd2 hdrgoadd2,b.goadd3 hdrgoadd3,b.gophno hdrgophno,b.goemail hdrgoemail ";
