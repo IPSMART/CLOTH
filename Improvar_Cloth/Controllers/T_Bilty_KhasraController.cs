@@ -370,6 +370,9 @@ namespace Improvar.Controllers
                 else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
                 {
                     dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
+                    DataView dv = new DataView(dt);
+                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                    dt = dv.ToTable(true, COL);
                 }
 
                 VE.TBILTYKHASRA_POPUP = (from DataRow dr in dt.Rows
