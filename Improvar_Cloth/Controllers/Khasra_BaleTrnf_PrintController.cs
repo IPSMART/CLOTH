@@ -187,7 +187,7 @@ namespace Improvar.Controllers
                     sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
                     //sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
                     if(CommVar.ClientCode(UNQSNO)== "SNFP" && VE.MENU_PARA == "TRFB")
-                    { sql += "order by a.autono, f.prefno, a.baleno,a.slno "; }
+                    { sql += "order by a.autono,a.baleno,f.prefno,a.slno "; }
                     else { sql += "order by a.autono,a.slno,f.prefno, a.baleno "; }
 
                     restbl = masterHelp.SQLquery(sql);
