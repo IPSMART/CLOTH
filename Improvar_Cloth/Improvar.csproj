@@ -726,6 +726,12 @@
       <DependentUpon>PrintBarcode_Tres_3X2.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\PrintBarcode_Tres_3X2_Old.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintBarcode_Tres_3X2_Old.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\Proforma1_SNFP.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1564,6 +1570,10 @@
     <EmbeddedResource Include="Report\AltBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>AltBill_Sachi.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2_Old.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PrintBarcode_Tres_3X2_Old.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\Proforma1_SNFP.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
