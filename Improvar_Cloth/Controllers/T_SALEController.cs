@@ -271,14 +271,14 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 VE.MERGEINDTL = MERGEINDTL.retStr() == "Y" ? true : false;
-                              
+
                                 if (STKDRCR == "")
                                 {
                                     if (VE.DocumentType.Count() > 0)
                                     {
                                         string doccd = VE.DocumentType.FirstOrDefault().value;
-                                        var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.DOCCD == doccd select new { STKDRCR= j.STKDRCR ,AUTONO=i.AUTONO}).OrderByDescending(s=>s.AUTONO).FirstOrDefault();
-                                        if(Getstkdrcr!=null)
+                                        var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.DOCCD == doccd select new { STKDRCR = j.STKDRCR, AUTONO = i.AUTONO }).OrderByDescending(s => s.AUTONO).FirstOrDefault();
+                                        if (Getstkdrcr != null)
                                         { STKDRCR = Getstkdrcr.STKDRCR; }
                                     }
                                 }
@@ -618,8 +618,9 @@ namespace Improvar.Controllers
                     TXNMEMO = DB.T_TXNMEMO.Find(TXN.AUTONO);
                 }
                 var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.AUTONO == TXN.AUTONO select new { STKDRCR = j.STKDRCR, AUTONO = i.AUTONO }).OrderBy(s => s.AUTONO).FirstOrDefault();
-                if(Getstkdrcr!=null)
-                { VE.STOCKHOLD = Getstkdrcr.STKDRCR == "C" ? true : false;
+                if (Getstkdrcr != null)
+                {
+                    VE.STOCKHOLD = Getstkdrcr.STKDRCR == "C" ? true : false;
                 }
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
@@ -1913,6 +1914,19 @@ namespace Improvar.Controllers
                     x.BLQNTY = x.BLQNTY.retDbl();
                     x.CONVQTYPUNIT = x.CONVQTYPUNIT.retDbl();
                 });
+                #region if Merge Same Item false thn blslno should not duplicate
+                if (VE.MERGEINDTL == false)
+                {
+                    var duplicateslno = string.Join(",", VE.TBATCHDTL
+                    .GroupBy(s => s.TXNSLNO)
+                    .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
+                    if(duplicateslno.retStr() != "")
+                    {
+                        return Content("if Merge Same Item is Uncheck in Main tab then Bill Sl (" + duplicateslno + ") Should not duplicate in barcode tab!");
+                    }
+
+                }
+                #endregion
                 VE.TTXNDTL = (from x in VE.TBATCHDTL
                               group x by new
                               {
@@ -2025,7 +2039,8 @@ namespace Improvar.Controllers
               .Where(g => g.Count() > 1)
               .Select(y => y.Key)
               .ToList()));
-                    return Content(slno);
+                    //return Content(slno);
+                    return Content("Bill Sl (" + slno + ") duplicate in barcode tab!");
                 }
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
@@ -4220,7 +4235,7 @@ namespace Improvar.Controllers
                         case "SBEXP":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale Export" + strqty; break;
                         case "PI":
-                            stkdrcr = VE.STOCKHOLD==true? "C":"0"; blactpost = false; blgstpost = false; break;
+                            stkdrcr = VE.STOCKHOLD == true ? "C" : "0"; blactpost = false; blgstpost = false; break;
                         case "PB":
                             stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "PR":

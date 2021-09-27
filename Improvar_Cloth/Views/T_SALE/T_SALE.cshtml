@@ -392,7 +392,8 @@
                 data: $('form').serialize(),
                 success: function (result) {
                     if (result.indexOf("_T_SALE_DETAIL_GRID") == -1) {
-                        msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
+                        //msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
+                        msgInfo(result);
                         $("#WaitingMode").hide();
                         $("li").removeClass("active").addClass("");
                         $(".nav-tabs li:nth-child(2)").addClass('active');
@@ -1445,7 +1446,7 @@
                             </div>
                             <div class="DivMergeBarItem col-md-1" style="width:auto;">
                                 <div class="editor-field" style="margin-top: 6px;">
-                                    @Html.Label("", "Merge Item in Detail")
+                                    @Html.Label("", "Merge Same Item in Detail")
                                 </div>
                             </div>
                             <div class="DivMergeBarItem col-md-1" style="width:auto;margin-top:6px;">

@@ -1019,7 +1019,8 @@ function Fill_DetailData() {
         data: $('form').serialize(),
         success: function (result) {
             if (result.indexOf("_T_SALE_DETAIL_GRID") == -1) {
-                msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
+                //msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
+                msgInfo(result);
                 $("#WaitingMode").hide();
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(2)").addClass('active');

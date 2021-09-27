@@ -1902,6 +1902,7 @@ function UpdateBarCodeRow(hlpstr, slno) {
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var MNTNOURDESIGN = $("#MNTNOURDESIGN").val();
+    var INCLRATEASK = $("#INCLRATEASK").val();
     var INCLRATE = 0;
     if (INCLRATEASK == "Y") {
         INCLRATE = returncolvalue(hlpstr, "RATE");
@@ -1971,19 +1972,15 @@ function UpdateBarCodeRow(hlpstr, slno) {
             $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
             CalculateInclusiveRate(j, '_T_SALE_POS_PRODUCT_GRID')
-
-            if (INCLRATEASK != "Y") {
-                $("#M_STYLENO").val('');
-                $("#M_STYLENO").focus();
-            } else {
-                $("#M_BARCODE").val('');
-                $("#M_BARCODE").focus();
-            }
-
         }
-
     }
-
+    if (INCLRATEASK != "Y") {
+        $("#M_STYLENO").val('');
+        $("#M_STYLENO").focus();
+    } else {
+        $("#M_BARCODE").val('');
+        $("#M_BARCODE").focus();
+    }
 
 }
 function GetData() {
@@ -2074,11 +2071,11 @@ function ClearAllSalePose() {
     var GridRowMain = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRowMain - 1; i++) {
         ClearAllTextBoxes("SLMSLCD_" + i + ",S_SLMSLNM_" + i + ",S_PER_" + i + ",S_ITAMT_" + i + ",S_BLAMT_" + i);
-        if (i == 0) $("#S_PER_"+i).val("100.00");
+        if (i == 0) $("#S_PER_" + i).val("100.00");
     }
     var GridRowMain = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
     for (var i = 0; i <= GridRowMain - 1; i++) {
-        ClearAllTextBoxes("P_AMT_" + i + ",P_CARDNO_" + i + ",P_INSTNO_" + i + ",P_INSTDT_" + i + ",P_PYMTREM_" + i );
+        ClearAllTextBoxes("P_AMT_" + i + ",P_CARDNO_" + i + ",P_INSTNO_" + i + ",P_INSTDT_" + i + ",P_PYMTREM_" + i);
     }
 }
 //function CheckInclusivRateNetAmt(GridId, i) {
