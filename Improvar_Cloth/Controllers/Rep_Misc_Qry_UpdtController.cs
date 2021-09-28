@@ -32,7 +32,9 @@ namespace Improvar.Controllers
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Style", text = "Change Style No in Bale" });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Pageno", text = "Change Pageno in Bale" });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change BaleNo", text = "Change Bale No." });
+                    CHNGSTYL.Add(new DropDown_list1 { value = "Change PREFNO && PREFDT", text = "Change PartyBill No. && PartyBill Dt." }); 
                     VE.DropDown_list1 = CHNGSTYL;
+                    VE.NEWPREFDT = Cn.getCurrentDate(VE.mindate);
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -158,6 +160,39 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
+        public ActionResult GetDOCNO(string val, string code)
+        {
+            var str = MasterHelp.DOCNO_PUR_help(val);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
+        }
+        public ActionResult CheckBillNumber(RepMiscQryUpdt VE, string BILL_NO, string SUPPLIER, string AUTO_NO)
+        {
+            Cn.getQueryString(VE);
+            if (VE.DefaultAction == "A") AUTO_NO = "";
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM_CD = CommVar.Compcd(UNQSNO);
+            if (BILL_NO.retStr() == "") return Content("0");
+
+            var query = (from c in DB.T_TXN
+                         join d in DB.T_CNTRL_HDR on c.AUTONO equals d.AUTONO
+                         where (c.PREFNO == BILL_NO && c.SLCD == SUPPLIER && c.AUTONO != AUTO_NO && d.COMPCD == COM_CD)
+                         select c);
+            if (query.Any())
+            {
+                return Content("1");
+            }
+            else
+            {
+                return Content("0");
+            }
+        }
         public ActionResult Save(RepMiscQryUpdt VE)
         {
             Cn.getQueryString(VE);
@@ -175,6 +210,7 @@ namespace Improvar.Controllers
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string ContentFlg = "";
                 var schnm = CommVar.CurSchema(UNQSNO);
+                var schnmf = CommVar.FinSchema(UNQSNO);
                 var CLCD = CommVar.ClientCode(UNQSNO);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string autono = "";
@@ -186,20 +222,56 @@ namespace Improvar.Controllers
                 {
                     autono = VE.BLAUTONO3;
                 }
+                else if (VE.TEXTBOX1 == "Change PREFNO && PREFDT")
+                { autono = VE.BLAUTONO4;
+                }
                 else
                 {
                     autono = VE.BLAUTONO2;
                 }
-                var dt = DB.T_BALE.Where(a => a.BLAUTONO == autono).Select(a => a.AUTONO).Distinct().ToArray();
-                if (dt.Count() > 0)
+                if (VE.TEXTBOX1 == "Change PREFNO && PREFDT")
                 {
-                    autono = autono.retSqlformat() + "," + dt.retSqlfromStrarray();
+                    //var dt = DB.T_TXN.Where(a => a.AUTONO == autono).Select(a => a.AUTONO).Distinct().ToArray();
+                    //if (dt.Count() > 0)
+                    //{
+                    //    autono = autono.retSqlformat() + "," + dt.retSqlfromStrarray();
+                    //}
+                    //else
+                    //{
+                        autono = autono.retSqlformat();
+                    //}
                 }
                 else
                 {
-                    autono = autono.retSqlformat();
+                    var dt = DB.T_BALE.Where(a => a.BLAUTONO == autono).Select(a => a.AUTONO).Distinct().ToArray();
+                    if (dt.Count() > 0)
+                    {
+                        autono = autono.retSqlformat() + "," + dt.retSqlfromStrarray();
+                    }
+                    else
+                    {
+                        autono = autono.retSqlformat();
+                    }
                 }
-                if (VE.TEXTBOX1 == "Change Style")
+                if (VE.TEXTBOX1 == "Change PREFNO && PREFDT")
+                {
+                    if (!string.IsNullOrEmpty(VE.NEWPREFNO) && !string.IsNullOrEmpty(VE.NEWPREFDT.retDateStr()))
+                    {
+                        sql = "update " + schnm + ". T_TXN set  PREFNO= '" + VE.NEWPREFNO + "', PREFDT=TO_DATE('" + VE.NEWPREFDT.retDateStr() + "','dd/mm/yyyy')  "
+                         + " where AUTONO in(" + autono + ") and  PREFNO= '" + VE.OLDPREFNO + "' and PREFDT=TO_DATE('" + VE.OLDPREFDT.retDateStr() + "','dd/mm/yyyy') ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        sql = "update " + schnmf + ".T_VCH_BL set  BLNO= '" + VE.NEWPREFNO + "',BLDT= TO_DATE('" + VE.NEWPREFDT.retDateStr() + "','dd/mm/yyyy')  "
+                        + " where AUTONO in(" + autono + ") and  BLNO= '" + VE.OLDPREFNO + "'  and BLDT=TO_DATE('" + VE.OLDPREFDT.retDateStr() + "','dd/mm/yyyy') ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        sql = "update " + schnmf + ".T_VCH_GST set BLNO= '" + VE.NEWPREFNO + "',BLDT= TO_DATE('" + VE.NEWPREFDT.retDateStr() + "','dd/mm/yyyy')  "
+                        + " where AUTONO in (" + autono + ")   and  BLNO= '" + VE.OLDPREFNO + "'  and BLDT=TO_DATE('" + VE.OLDPREFDT.retDateStr() + "','dd/mm/yyyy')";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+                }
+
+             else if (VE.TEXTBOX1 == "Change Style")
                 {
                     if (!string.IsNullOrEmpty(VE.ITCD2))
                     {

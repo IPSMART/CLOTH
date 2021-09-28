@@ -731,6 +731,7 @@ namespace Improvar.Controllers
                                 if (i > maxR) break;
                             }
                         }
+                        if (i > maxR) break;
                     }
 
 
