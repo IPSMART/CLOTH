@@ -337,9 +337,9 @@ namespace Improvar.Controllers
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
                 sql += "order by ";
-                if (repsorton == "partywise") sql += "slcd,prefdt,prefno,docdt,docno" + Environment.NewLine;
-                else if (repsorton == "bldt") sql += "prefdt,prefno" + Environment.NewLine;
-                else sql += "docdt";
+                if (repsorton == "partywise") { sql += "slcd,a.prefdt,prefno,a.docdt,docno" + Environment.NewLine; }
+                else if (repsorton == "bldt") { sql += "a.prefdt,prefno" + Environment.NewLine; }
+                else { sql += "a.docdt"; }
                 if (itmdtl == true)
                 {
                     sql += " , docno, slno ";
