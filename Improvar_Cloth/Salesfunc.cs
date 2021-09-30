@@ -1663,7 +1663,7 @@ namespace Improvar
             sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e," + scm + ".T_BATCHDTL f," + scm + ".M_SITEM g  ";
             sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd and a.autono=f.autono  and b.itcd=g.itcd(+) and b.slno=f.txnslno and d.compcd='" + COM + "'  ";
             if (itcd.retStr() != "") sql += " and b.itcd in(" + itcd + ") ";
-            if (slcd.retStr() != "") sql += " and (e.slcd = " + slcd + " ";
+            if (slcd.retStr() != "") sql += " and (e.slcd in(" + slcd + ") ";
             if (partycd.retStr() != "") sql += "or e.partycd=" + partycd + " ";
             if (slcd.retStr() != "" || partycd.retStr() != "") sql += ") ";
             sql += "  and c.doctype in (" + doctype + ") ";

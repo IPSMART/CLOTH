@@ -20,6 +20,7 @@
     $(function () {
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#NEWPREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     });
 </script>
 <script>
@@ -38,6 +39,11 @@
 
         else if (val == "Change BaleNo") {
             if (!emptyFieldCheck("Select/Enter Bale No.", "NEWBALENO")) { return false; }
+        }
+        else if (val == "Change PREFNO && PREFDT") {
+            if (!emptyFieldCheck("Select/Enter Document No.", "DOCNO")) { return false; }
+            if (!emptyFieldCheck("Select/Enter New Party Bill No.", "NEWPREFNO")) { return false; }
+            if (!emptyFieldCheck("Select/Enter New Party Bill Date", "NEWPREFDT")) { return false; }
         }
         else {
             if (!emptyFieldCheck("Select/Enter Bale No.", "BALENO2")) { return false; }
@@ -71,13 +77,16 @@
         debugger;
         var val = ($("#TEXTBOX1").find(":selected").val());
         if (val == "Change Style") {
-            $("#1stdiv").show(); $("#2nddiv").hide(); $("#3rddiv").hide();
+            $("#1stdiv").show(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide();
         }
         else if (val == "Change BaleNo") {
-            $("#2nddiv").hide(); $("#1stdiv").hide(); $("#3rddiv").show();
+            $("#2nddiv").hide(); $("#1stdiv").hide(); $("#3rddiv").show(); $("#4thdiv").hide();
+        }
+        else if (val == "Change PREFNO && PREFDT") {
+            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").show();
         }
         else {
-            $("#1stdiv").hide(); $("#3rddiv").hide(); $("#2nddiv").show();
+            $("#1stdiv").hide(); $("#3rddiv").hide(); $("#2nddiv").show(); $("#4thdiv").hide();
         }
     }
 </script>
@@ -92,7 +101,7 @@
                 data: { BALENO: NEWBALENO },
                 success: function (result) {
                     if (result == "1") {
-                        msgInfo("Bale No Already Exists, Please Enter a Different Bale No !! ");
+                        msgInfo("Bale No Already Exists, Please Enter a Different Bale No. !! ");
                         message_value = "NEWBALENO";
                         $("#NEWBALENO").val("");
                         return false;
@@ -108,6 +117,67 @@
 
         }
 
+    }
+</script>
+<script>
+    function ChkPrefno() {
+        var NEWPREFNO = $("#NEWPREFNO").val();
+        var NEWPREFDT = $("#NEWPREFDT").val();
+        if (NEWPREFNO != "" && NEWPREFDT != "") {
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("CheckPrefno", PageControllerName)",
+                data: { PREFNO: NEWPREFNO, PREFDT: NEWPREFDT },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Party Bill No. && Party Bill Date Already Exists, Please Enter a Different Party Bill No. && Party Bill Date !! ");
+                        message_value = "NEWPREFNO";
+                        $("#NEWPREFNO").val("");
+                        return false;
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+
+    }
+
+
+    function CheckBillNumber() {
+        debugger;
+        var BILL_NO = $("#NEWPREFNO").val();
+        var SUPPLIER = $("#SLCD").val();
+        var AUTO_NO = $("#BLAUTONO4").val();
+        if (BILL_NO != "") {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("CheckBillNumber", PageControllerName)",
+                data:
+                {
+                    BILL_NO: BILL_NO, SUPPLIER: SUPPLIER, AUTO_NO: AUTO_NO,
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo("Bill Number Already Exists, for Particular Supplier Code : Please Enter a Different Bill Number !! ");
+                        message_value = "NEWPREFNO";
+                        $("#NEWPREFNO").val("");
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
     }
 </script>
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
@@ -357,6 +427,102 @@
                     <div class="col-md-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.NEWBALENO, new { htmlAttributes = new { @class = "form-control", id = "NEWBALENO", maxlength = 30, @placeholder = "New Bale No", autocomplete = "off", onchange = "ChkBaleno();" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="4thdiv">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                        </div>
+                    </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetDOCNO", PageControllerName) + "','Document Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT')", onblur = "GetHelpBlur('" + @Url.Action("GetDOCNO", PageControllerName) + "','Document Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT');", @placeholder = "Code", maxlength = 30 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetDOCNO", PageControllerName)','Proforma Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT')" />
+                                
+                            </div>
+                        </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 6px;">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 10, @placeholder = "dd/mm/yyyy", @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Supplier Code")
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 6px;">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", maxlength = 20, @title = "Only for View", @placeholder = "Supplier Code", @readonly = "readonly", @TabIndex = -1 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top:6px;">
+                            @Html.Label("", "Supplier Name")
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="margin-top: 6px;">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 10, @title = "Only for View", @placeholder = "Supplier Name", @readonly = "readonly", @TabIndex = -1 } })
+                            @Html.HiddenFor(model => model.BLAUTONO4, new { id = "BLAUTONO4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Old Party Bill No.")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.OLDPREFNO, new { htmlAttributes = new { @class = "form-control", id = "OLDPREFNO", maxlength = 30, @placeholder = "Old Party Bill No", @TabIndex = -1, @readonly = "readonly" } })
+                         
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Old Party Bill Date")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.OLDPREFDT, new { htmlAttributes = new { @class = "form-control", id = "OLDPREFDT", maxlength = 30, @placeholder = "dd/mm/yyyy", @TabIndex = -1, @readonly = "readonly" } })
+                          
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "New Party Bill No.")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.NEWPREFNO, new { htmlAttributes = new { @class = "form-control", id = "NEWPREFNO", maxlength = 16, @placeholder = "New Party Bill No", onblur = "CheckBillNumber();" } })
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "New Party Bill Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.NEWPREFDT, new { htmlAttributes = new { @class = "form-control", id = "NEWPREFDT", onchange = "DocdtChange(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                           
                         </div>
                     </div>
                 </div>

@@ -3108,6 +3108,51 @@ namespace Improvar
                 }
             }
         }
+        public string DOCNO_PUR_help(string val)
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO);
+                var COMPCD = CommVar.Compcd(UNQSNO);
+                var LOCCD = CommVar.Loccd(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string sql = "";
+                sql += "select distinct b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.SLCD,a.AUTONO ,c.SLNM,a.PREFNO,to_char(a.PREFDT,'dd/mm/yyyy') PREFDT from " + scm + ".T_TXN a," + scm + ".T_CNTRL_HDR b,  ";
+                sql += scmf + ".M_SUBLEG c where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.PREFNO is not null and PREFDT is not null and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' ";
+                if (valsrch.retStr() != "") sql += " and upper(b.DOCNO) = '" + valsrch + "' ";
+                sql += "  order by DOCNO,DOCDT ";
+                DataTable tbl = SQLquery(sql);
+                if (val.retStr() == "")
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["DOCNO"] + "</td><td>" + tbl.Rows[i]["DOCDT"].retDateStr() + "</td><td>" + tbl.Rows[i]["SLCD"] + "</td><td>" + tbl.Rows[i]["SLNM"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
+                    }
+                    var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Party Code" + Cn.GCS() + "Party Name" + Cn.GCS() + "Autono";
+                    return Generate_help(hdr, SB.ToString(), "4");
+                }
+                else
+                {
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Document No. ! Please Select / Enter a Valid Document No. !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
 
+        }
     }
 }

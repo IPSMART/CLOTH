@@ -76,7 +76,7 @@ namespace Improvar.Controllers
                     default: DOCTYPE = ""; break;
                 }
 
-                DataTable tbl = Salesfunc.GetRateHistory(slcd, selitcd, DOCTYPE.retStr().retSqlformat(), selitcd,fdt,tdt);
+                DataTable tbl = Salesfunc.GetRateHistory(slcd, "", DOCTYPE.retStr().retSqlformat(), selitcd,fdt,tdt);
                 tbl.DefaultView.Sort = "docdt desc";
                 tbl = tbl.DefaultView.ToTable();
                 Int32 i = 0;

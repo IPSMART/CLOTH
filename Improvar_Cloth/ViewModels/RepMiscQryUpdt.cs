@@ -50,6 +50,7 @@ namespace Improvar.ViewModels
         public string M_BARCODE { get; set; }
         public string MTRLJOBCD { get; set; }
         public string PARTCD { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string DOCDT { get; set; }
         public string TAXGRPCD { get; set; }
         public string PRCCD { get; set; }
@@ -59,5 +60,15 @@ namespace Improvar.ViewModels
         public string OLDPAGENOSLNO { get; set; }
         public string OLDBARNO { get; set; }
         public string NEWBARNO { get; set; }
+        public string DOCNO { get; set; }
+        public string SLCD { get; set; }
+        public string SLNM { get; set; }
+        public string BLAUTONO4 { get; set; }
+        public string OLDPREFNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public string OLDPREFDT { get; set; }
+        public string NEWPREFNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? NEWPREFDT { get; set; }
     }
 }
