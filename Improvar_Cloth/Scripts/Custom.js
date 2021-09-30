@@ -1242,7 +1242,105 @@ function inputfocus() {
         }
     });
 }
-function DocumentDateCHK(dateField, auto, current_date_auto_if_blank) {
+//function DocumentDateCHK(dateField, auto, current_date_auto_if_blank) {
+//    auto = auto || true;
+//    current_date_auto_if_blank = current_date_auto_if_blank || false;
+//    var currentYEAR = new Date().getFullYear().toString();
+//    var currentMONTH = (new Date().getMonth() + 1).toString();
+//    currentMONTH = currentMONTH.padStart(2, '0');
+//    var min = $("#" + dateField.id).datepicker("option", "minDate");
+//    var max = $("#" + dateField.id).datepicker("option", "maxDate");
+//    var maxdate = null;
+//    var mindate = null;
+//    if (max == null || max == "") {
+//        maxdate = new Date("2040-03-31");
+//    }
+//    else {
+//        var dateParts = max.split("/");
+//        maxdate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+//    }
+//    if (min == null || min == "") {
+//        mindate = new Date("1950-04-01");
+//    }
+//    else {
+//        var dateParts1 = min.split("/");
+//        mindate = new Date(dateParts1[2], dateParts1[1] - 1, dateParts1[0]);
+//    }
+//    var dateParts2 = dateField.value.split("/");
+//    if (auto == true) {
+//        if (dateParts2[0].length == 0) {
+//            if (current_date_auto_if_blank == true) {
+//                dateParts2[0] = new Date().getDate().toString().padStart(2, '0');
+//            }
+//            else {
+//                return false;
+//            }
+//        }
+//        else if (dateParts2[0].length == 1) {
+//            dateParts2[0] = dateParts2[0].padStart(2, '0');
+//        }
+//        else {
+//            var ddt = parseInt(dateParts2[0]);
+//            if (ddt <= 31) {
+//                dateParts2[0] = dateParts2[0].padStart(2, '0');
+//            }
+//            else {
+//                dateParts2[0] = new Date().getDate().toString().padStart(2, '0');
+//            }
+//        }
+//        if (dateParts2[1] == null) {
+//            dateParts2[1] = currentMONTH;
+//        }
+//        else if (dateParts2[1].length == 1) {
+//            dateParts2[1] = dateParts2[1].padStart(2, '0');
+//        }
+//        else {
+//            var ddt = parseInt(dateParts2[1]);
+//            if (ddt <= 12) {
+//                dateParts2[1] = dateParts2[1].padStart(2, '0');
+//            }
+//            else {
+//                dateParts2[1] = currentMONTH;
+//            }
+//        }
+//        if (dateParts2[2] == null) {
+//            dateParts2[2] = currentYEAR;
+//        }
+//        else (dateParts2[2].length < 4)
+//        {
+//            dateParts2[2] = dateParts2[2].padStart(4, '20');;
+//        }
+//    }
+//    var inputdate = new Date(dateParts2[2], dateParts2[1] - 1, dateParts2[0]);
+//    var invalid = inputdate.toString();
+//    if (invalid == "Invalid Date") {
+//        msgInfo("Invalid Date [Date Put In Hand].Retype Date to the date box. !!");
+//        message_value = dateField.id;
+//        return false;
+//    }
+//    if (inputdate < mindate || inputdate > maxdate) {
+//        msgInfo("Date not correct or Date not valid between permission date .[Date Put In Hand].Retype Date to the date box. !! ");
+//        message_value = dateField.id;
+//        return false;
+//    }
+//    if (auto == true) {
+//        var day = inputdate.getDate().toString().padStart(2, '0');
+//        var mon = (inputdate.getMonth() + 1).toString().padStart(2, '0');
+//        var yy = inputdate.getFullYear().toString();
+//        if (typeof disableddates !== 'undefined') {
+//            var currentdate = day + "/" + mon + "/" + yy;
+//            if (disableddates.length > 0) {
+//                if ($.inArray(currentdate, disableddates) != -1) {
+//                    msgInfo("Date not correct or Date not valid between permission date .[Date Put In Hand].Retype Date to the date box. !! ");
+//                    message_value = dateField.id;
+//                    return false;
+//                }
+//            }
+//        }
+//        dateField.value = day + "/" + mon + "/" + yy;
+//    }
+//}
+function DocumentDateCHK(dateField, auto, current_date_auto_if_blank, disabledt) {
     auto = auto || true;
     current_date_auto_if_blank = current_date_auto_if_blank || false;
     var currentYEAR = new Date().getFullYear().toString();
@@ -1327,7 +1425,7 @@ function DocumentDateCHK(dateField, auto, current_date_auto_if_blank) {
         var day = inputdate.getDate().toString().padStart(2, '0');
         var mon = (inputdate.getMonth() + 1).toString().padStart(2, '0');
         var yy = inputdate.getFullYear().toString();
-        if (typeof disableddates !== 'undefined') {
+        if (typeof disableddates !== 'undefined' && disabledt != false) {
             var currentdate = day + "/" + mon + "/" + yy;
             if (disableddates.length > 0) {
                 if ($.inArray(currentdate, disableddates) != -1) {
@@ -1340,7 +1438,6 @@ function DocumentDateCHK(dateField, auto, current_date_auto_if_blank) {
         dateField.value = day + "/" + mon + "/" + yy;
     }
 }
-
 var message_value;
 function closeDiv(id, flag) {
     debugger;
