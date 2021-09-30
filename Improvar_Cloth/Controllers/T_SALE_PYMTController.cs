@@ -499,7 +499,9 @@ namespace Improvar.Controllers
                     vhautoslno = string.Join(",", DBF.T_VCH_DET.Where(a => a.AUTONO == autono).Select(s => s.AUTONO + s.SLNO).ToArray()).retSqlformat();
                 }
                 var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", vhautoslno, "", "", "", "Y", "", "", "", "", "", false, false, "", "", "", "", autono, rtdebcd);
-                var RTR = OSDATA.Rows[0]["slno"].GetType();
+                if(OSDATA.Rows.Count<0)
+                { var RTR = OSDATA.Rows[0]["slno"].GetType(); }
+               
                 var OSList = (from customer in OSDATA.AsEnumerable()
                               where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
