@@ -158,7 +158,11 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
-                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD, VE.T_TXNPYMT_HDR.RTDEBCD, "");
+                                    string rtdebcd = "";
+                                    if (VE.T_TXNPYMT_HDR!=null)
+                                    { rtdebcd = VE.T_TXNPYMT_HDR.RTDEBCD; }
+                                   
+                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD, rtdebcd, "");
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
 
