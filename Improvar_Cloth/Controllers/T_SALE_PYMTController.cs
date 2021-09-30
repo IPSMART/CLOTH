@@ -1071,7 +1071,8 @@ namespace Improvar.Controllers
                                 if (VE.TTXNPYMT[i].GLCD.retStr() != "" && VE.TTXNPYMT[i].AMT.retDbl() != 0)
                                 {
                                     //string pymtrem = "Cash";
-                                    string pymtrem = VE.TTXNPYMT[i].PYMTNM;
+                                    //string pymtrem = VE.TTXNPYMT[i].PYMTNM;
+                                    string pymtrem = VE.RTDEBNM.retStr()+" "+ VE.TTXNPYMT[i].PYMTREM.retStr();
                                     pslno++; adjslno++;
                                     dbsql = masterHelp.InsVch_Det(TCH.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, Convert.ToSByte(pslno + 100), cr,
                                         parglcd, sslcd, VE.TTXNPYMT[i].AMT.retDbl(), pymtrem, VE.TTXNPYMT[i].GLCD);
