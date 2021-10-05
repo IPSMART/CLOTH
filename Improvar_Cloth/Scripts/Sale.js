@@ -479,11 +479,10 @@ function FillBarcodeArea(str, Table, i) {
                 if (MNTNSHADE == "Y") {
                     $("#SHADE").focus();
                 }
-                else
-                {
+                else {
                     $("#CUTLENGTH").focus();
                 }
-                
+
             }
 
         }
@@ -1602,16 +1601,16 @@ function AmountCalculateTotal() {
         if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT * mult); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
 
         var CGST_AMT = document.getElementById("ACGSTAMT_" + i).value;
-        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT* mult); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT * mult); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
 
         var SGST_AMT = document.getElementById("ASGSTAMT_" + i).value;
-        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT* mult); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT * mult); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
 
         var CESS_AMT = document.getElementById("ACESSAMT_" + i).value;
         if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT * mult); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
 
         var DUTY_AMT = document.getElementById("ADUTYAMT_" + i).value;
-        if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT* mult); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
+        if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT * mult); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
 
         var NET_AMT = document.getElementById("ANETAMT_" + i).value;
         if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT * mult); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
@@ -2900,6 +2899,7 @@ function GetPartyDetails(id) {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
         var AUTONO = $("#AUTONO").val();
         var TCSCODE = $("#TCSCODE").val();
+        var bltype = $("#BLTYPE").val();
         var Partycaption = "";
         if (MENU_PARA == "PB" || MENU_PARA == "PR") {
             Partycaption = "Supplier";
@@ -2914,7 +2914,7 @@ function GetPartyDetails(id) {
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
             url: $("#UrlSubLedgerDetails").val(),//"@Url.Action("GetSubLedgerDetails", PageControllerName)",
-            data: "&val=" + id + "&Code=" + code + "&Autono=" + AUTONO + "&linktdscode=" + TCSCODE,
+            data: "&val=" + id + "&Code=" + code + "&Autono=" + AUTONO + "&linktdscode=" + TCSCODE + "&bltype=" + bltype,
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
@@ -3085,68 +3085,67 @@ function HasChangeBarSale(BlslnoRegen, index) {
         }
         else {
             //if (document.getElementById("MERGEINDTL").checked == true) {
-                var allslno = [];
-                var matchslno = [];
-                var pageno = [];
-                var bluom = [];
-                countmatchslno = 0;
-                for (j = 0; j <= GridRowMain - 1; j++) {
-                    var flag = true;
-                    if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
-                        if (retStr($("#B_AGDOCNO_" + index).val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#B_AGDOCDT_" + index).val()) != retStr($("#B_AGDOCDT_" + j).val())) {
-                            flag = false;
-                        }
-                    }
-                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && MNTNLISTPRICE == "Y") {
-                        if (retFloat($("#B_LISTPRICE_" + index).val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#B_LISTDISCPER_" + index).val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
-                            flag = false;
-                        }
-                    }
-                    //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-                    if (retStr($("#B_BALENO_" + index).val()) != retStr($("#B_BALENO_" + j).val())) {
+            var allslno = [];
+            var matchslno = [];
+            var pageno = [];
+            var bluom = [];
+            countmatchslno = 0;
+            for (j = 0; j <= GridRowMain - 1; j++) {
+                var flag = true;
+                if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
+                    if (retStr($("#B_AGDOCNO_" + index).val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#B_AGDOCDT_" + index).val()) != retStr($("#B_AGDOCDT_" + j).val())) {
                         flag = false;
                     }
-                    //}
-                    if (flag == true) {
-                        if (retStr($("#B_ITGRPCD_" + index).val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#B_MTRLJOBCD_" + index).val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
-                     retStr($("#B_MTBARCODE_" + index).val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#B_ITCD_" + index).val()) == retStr($("#B_ITCD_" + j).val()) &&
-                     retStr($("#B_DISCTYPE_" + index).val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#B_TDDISCTYPE_" + index).val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
-                      retStr($("#B_SCMDISCTYPE_" + index).val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#B_UOM_" + index).val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#B_STKTYPE_" + index).val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#B_RATE_" + index).val()) == retFloat($("#B_RATE_" + j).val()) &&
-                     retFloat($("#B_DISCRATE_" + index).val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#B_SCMDISCRATE_" + index).val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#B_TDDISCRATE_" + index).val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#B_GSTPER_" + index).val()) == retFloat($("#B_GSTPER_" + j).val()) &&
-                     retFloat($("#B_FLAGMTR_" + index).val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#B_HSNCODE_" + index).val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#B_PRODGRPGSTPER_" + index).val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                     retStr($("#B_GLCD_" + index).val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#B_FABITCD_" + index).val()) == retStr($("#B_FABITCD_" + j).val()) &&
-                            //retFloat(BLQNTY).toFixed(3) == retFloat($("#B_BLQNTY_" + j).val()).toFixed(3) && 
-                            retStr($("#B_SLNO_" + index).val()) != retStr($("#B_SLNO_" + j).val()) &&
-                     retStr($("#B_BLUOMCD_" + index).val()) == retStr($("#B_BLUOMCD_" + j).val()) && retStr($("#B_ITREM_" + index).val()) == retStr($("#B_ITREM_" + j).val())) {
-
-                            matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
-                            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
-                                var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
-                                str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
-                                str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
-                                pageno[countmatchslno] = str1;
-                            }
-                            var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
-                            str1 += "^BLUOMCD=^" + retStr($("#B_BLUOMCD_" + j).val()) + String.fromCharCode(181);
-                            bluom[countmatchslno] = str1;
-
-                            countmatchslno++;
-                        }
-                    }
-                    if (retInt($("#B_SLNO_" + index).val()) != retInt($("#B_SLNO_" + j).val())) {
-                        allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
-                    }
-                    else
-                    {
-                        allslno[j] = 1;
-                       
-                       
-                    }
-                    //if (allslno.length == 0)
-                    //{ allslno[j] = retInt(1); }
-                    
                 }
-                if (document.getElementById("MERGEINDTL").checked == true) {
+                if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && MNTNLISTPRICE == "Y") {
+                    if (retFloat($("#B_LISTPRICE_" + index).val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#B_LISTDISCPER_" + index).val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
+                        flag = false;
+                    }
+                }
+                //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                if (retStr($("#B_BALENO_" + index).val()) != retStr($("#B_BALENO_" + j).val())) {
+                    flag = false;
+                }
+                //}
+                if (flag == true) {
+                    if (retStr($("#B_ITGRPCD_" + index).val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#B_MTRLJOBCD_" + index).val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                 retStr($("#B_MTBARCODE_" + index).val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#B_ITCD_" + index).val()) == retStr($("#B_ITCD_" + j).val()) &&
+                 retStr($("#B_DISCTYPE_" + index).val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#B_TDDISCTYPE_" + index).val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                  retStr($("#B_SCMDISCTYPE_" + index).val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#B_UOM_" + index).val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#B_STKTYPE_" + index).val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#B_RATE_" + index).val()) == retFloat($("#B_RATE_" + j).val()) &&
+                 retFloat($("#B_DISCRATE_" + index).val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#B_SCMDISCRATE_" + index).val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) && retFloat($("#B_TDDISCRATE_" + index).val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#B_GSTPER_" + index).val()) == retFloat($("#B_GSTPER_" + j).val()) &&
+                 retFloat($("#B_FLAGMTR_" + index).val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#B_HSNCODE_" + index).val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#B_PRODGRPGSTPER_" + index).val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                 retStr($("#B_GLCD_" + index).val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#B_FABITCD_" + index).val()) == retStr($("#B_FABITCD_" + j).val()) &&
+                        //retFloat(BLQNTY).toFixed(3) == retFloat($("#B_BLQNTY_" + j).val()).toFixed(3) && 
+                        retStr($("#B_SLNO_" + index).val()) != retStr($("#B_SLNO_" + j).val()) &&
+                 retStr($("#B_BLUOMCD_" + index).val()) == retStr($("#B_BLUOMCD_" + j).val()) && retStr($("#B_ITREM_" + index).val()) == retStr($("#B_ITREM_" + j).val())) {
+
+                        matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                            var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                            str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
+                            str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
+                            pageno[countmatchslno] = str1;
+                        }
+                        var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                        str1 += "^BLUOMCD=^" + retStr($("#B_BLUOMCD_" + j).val()) + String.fromCharCode(181);
+                        bluom[countmatchslno] = str1;
+
+                        countmatchslno++;
+                    }
+                }
+                if (retInt($("#B_SLNO_" + index).val()) != retInt($("#B_SLNO_" + j).val())) {
+                    allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
+                }
+                else {
+                    allslno[j] = 1;
+
+
+                }
+                //if (allslno.length == 0)
+                //{ allslno[j] = retInt(1); }
+
+            }
+            if (document.getElementById("MERGEINDTL").checked == true) {
                 if (matchslno.length > 0) {
                     TXNSLNO = Math.max.apply(Math, matchslno);
 
@@ -3165,10 +3164,10 @@ function HasChangeBarSale(BlslnoRegen, index) {
                 }
             }
             else {
-                    //TXNSLNO = retInt(SLNO);
-                   
-                   TXNSLNO = Math.max.apply(Math, allslno);
-                   
+                //TXNSLNO = retInt(SLNO);
+
+                TXNSLNO = Math.max.apply(Math, allslno);
+
             }
         }
         $("#B_TXNSLNO_" + index).val(TXNSLNO);
@@ -4509,6 +4508,32 @@ function Update_WpRpRate() {
             }
             else {
                 msgWarning(result);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+function ChangeBltype() {
+    debugger;
+    if ($("#SLCD").val() == "") return true;
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlChangeBltype").val(),//"@Url.Action("ChangeBltype", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            var MSG = result.indexOf(String.fromCharCode(181));
+            if (MSG >= 0) {
+                $("#SLDISCDESC").val(returncolvalue(result, "SLDISCDESC"));
+            }
+            else {
+                msgWarning(result);
+                message_value = "BLTYPE";
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

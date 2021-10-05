@@ -677,6 +677,7 @@
         <input type="hidden" id="UrlCopyRow" value="@Url.Action("CopyBarGridRow", PageControllerName)" />
         <input type="hidden" id="UrlLastAgentTransport" value="@Url.Action("LastAgentTransport", PageControllerName)" />
         <input type="hidden" id="UrlUpdateWpRpRate" value="@Url.Action("Update_WpRpRate", PageControllerName)" />
+        <input type="hidden" id="UrlChangeBltype" value="@Url.Action("ChangeBltype", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -714,6 +715,7 @@
         @Html.HiddenFor(a => a.SHOWMTRLJOBCD, new { id = "SHOWMTRLJOBCD" })
         @Html.HiddenFor(a => a.SHOWSTKTYPE, new { id = "SHOWSTKTYPE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.COMMONUNIQBAR, new { id = "SYSCNFGCOMMONUNIQBAR" })
+        @Html.HiddenFor(a => a.SHOWBLTYPE, new { id = "SHOWBLTYPE" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -798,7 +800,7 @@
                     </div>
                     <div class="col-md-2 divbltype">
                         <div class="editor-field">
-                            @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
+                            @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" , @onchange = "ChangeBltype();" })
                         </div>
                     </div>
                     @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.DefaultAction == "V")

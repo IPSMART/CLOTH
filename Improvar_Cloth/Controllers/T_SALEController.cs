@@ -311,12 +311,20 @@ namespace Improvar.Controllers
                                 {
                                     T_TXNMEMO TTXNMEMO = new T_TXNMEMO();
                                     TTXN.SLCD = TempData["LASTSLCD" + VE.MENU_PARA].retStr();
+                                    string bltype = TempData["LASTBLTYPE" + VE.MENU_PARA].retStr();
                                     if (TTXN.SLCD.retStr() == "")
                                     {
                                         if (VE.DocumentType.Count() > 0)
                                         {
                                             string doccd = VE.DocumentType.FirstOrDefault().value;
                                             TTXN.SLCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.SLCD).FirstOrDefault();
+                                            bltype = (from a in DB.T_TXN
+                                                      join b in DB.T_TXNOTH on a.AUTONO equals b.AUTONO into x
+                                                      from b in x.DefaultIfEmpty()
+                                                      where a.DOCCD == doccd
+                                                      orderby a.AUTONO descending
+                                                      select b.BLTYPE
+                                                     ).FirstOrDefault();
                                         }
                                     }
                                     string slcd = TTXN.SLCD.retStr();
@@ -335,7 +343,8 @@ namespace Improvar.Controllers
                                         string panno = subleg.PANNO;
 
                                         string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
-                                        var party_data = salesfunc.GetSlcdDetails(TTXN.SLCD.retStr(), TTXN.DOCDT.retStr().Remove(10), "", DOCTAG);
+                                        bltype = bltype.retStr() == "" ? "" : bltype.retSqlformat();
+                                        var party_data = salesfunc.GetSlcdDetails(TTXN.SLCD.retStr(), TTXN.DOCDT.retStr().Remove(10), "", DOCTAG, bltype);
                                         if (party_data != null && party_data.Rows.Count > 0)
                                         {
                                             string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
@@ -555,7 +564,8 @@ namespace Improvar.Controllers
                     panno = subleg.PANNO;
 
                     string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
-                    var party_data = salesfunc.GetSlcdDetails(TXN.SLCD.retStr(), TXN.DOCDT.retStr().Remove(10), "", DOCTAG);
+                    string bltype = TXNOTH.BLTYPE.retStr() == "" ? "" : TXNOTH.BLTYPE.retStr().retSqlformat();
+                    var party_data = salesfunc.GetSlcdDetails(TXN.SLCD.retStr(), TXN.DOCDT.retStr().Remove(10), "", DOCTAG, bltype);
                     if (party_data != null && party_data.Rows.Count > 0)
                     {
                         string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
@@ -1115,11 +1125,12 @@ namespace Improvar.Controllers
                 List<DocumentType> DocumentType = new List<DocumentType>();
                 DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
+                VE.SHOWBLTYPE = dropDownHelp.DropDownBLTYPE().Count > 0 ? "Y" : "N";
                 string sql = "";
 
-                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno ";
-                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d ";
-                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono and ";
+                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype ";
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d, " + scm + ".t_txnoth e ";
+                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono and a.autono=e.autono(+) and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%' or a.prefno like '%" + SRC_DOCNO.retStr() + "%') and  ";
@@ -1132,21 +1143,31 @@ namespace Improvar.Controllers
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
-                    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
+                    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "Bill Amt"
+                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
-                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>" + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>"
+                            + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>"
+                            + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
+                            + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
+                            + "<td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                     }
-                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "6", "6"));
+                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "7" : "6"), (VE.SHOWBLTYPE.retStr() == "Y" ? "7" : "6")));
                 }
                 else
                 {
-                    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
+                    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt"
+                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
-                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"]
+                            + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>"
+                            + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
+                            + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
+                            + "<td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                     }
-                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "5" : "4"), (VE.SHOWBLTYPE.retStr() == "Y" ? "5" : "4")));
                 }
             }
             catch (Exception ex)
@@ -1210,7 +1231,7 @@ namespace Improvar.Controllers
             DataTable dt = masterHelp.SQLquery(sql);
             return dt;
         }
-        public ActionResult GetSubLedgerDetails(string val, string Code, string Autono, string linktdscode)
+        public ActionResult GetSubLedgerDetails(string val, string Code, string Autono, string linktdscode, string bltype)
         {
             try
             {
@@ -1260,7 +1281,8 @@ namespace Improvar.Controllers
                         if (str.IndexOf(Cn.GCS()) > 0)
                         {
                             string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
-                            var party_data = salesfunc.GetSlcdDetails(val, code_data[1], "", DOCTAG);
+                            bltype = bltype.retStr() == "" ? "" : bltype.retSqlformat();
+                            var party_data = salesfunc.GetSlcdDetails(val, code_data[1], "", DOCTAG, bltype);
                             if (party_data != null && party_data.Rows.Count > 0)
                             {
                                 if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") party_data.Rows[0]["TCSAPPL"] = "N";
@@ -1920,7 +1942,7 @@ namespace Improvar.Controllers
                     var duplicateslno = string.Join(",", VE.TBATCHDTL
                     .GroupBy(s => s.TXNSLNO)
                     .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
-                    if(duplicateslno.retStr() != "")
+                    if (duplicateslno.retStr() != "")
                     {
                         return Content("if Merge Same Item is Uncheck in Main tab then Bill Sl (" + duplicateslno + ") Should not duplicate in barcode tab!");
                     }
@@ -4354,6 +4376,7 @@ namespace Improvar.Controllers
                         TempData["LASTSLCD" + VE.MENU_PARA] = VE.T_TXN.SLCD;
                         TempData["LASTMERGEINDTL" + VE.MENU_PARA] = VE.MERGEINDTL == true ? "Y" : "N";
                         TempData["LASTSTKDRCR" + VE.MENU_PARA] = stkdrcr;
+                        TempData["LASTBLTYPE" + VE.MENU_PARA] = VE.T_TXNOTH.BLTYPE;
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
@@ -6315,6 +6338,30 @@ namespace Improvar.Controllers
                     Cn.SaveException(ex, "");
                     return Content(ex.Message + ex.InnerException);
                 }
+            }
+        }
+        public ActionResult ChangeBltype(TransactionSaleEntry VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                string bltype = VE.T_TXNOTH.BLTYPE.retStr() == "" ? "" : VE.T_TXNOTH.BLTYPE.retSqlformat();
+                string slcd = VE.T_TXN.SLCD;
+                string docdt = VE.T_TXN.DOCDT.retDateStr();
+                string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
+                var party_data = salesfunc.GetSlcdDetails(slcd, docdt, "", DOCTAG, bltype);
+                string SLDISCDESC = "";
+                if (party_data != null && party_data.Rows.Count > 0)
+                {
+                    string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
+                    SLDISCDESC += "^" + "SLDISCDESC" + "=^" + (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10))) + Cn.GCS();
+                }
+                return Content(SLDISCDESC);
+            }
+            catch (Exception Ex)
+            {
+                Cn.SaveException(Ex, "");
+                return Content(Ex.Message + Ex.InnerException);
             }
         }
     }
