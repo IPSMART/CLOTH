@@ -161,6 +161,7 @@ namespace Improvar.Controllers
                                     string rtdebcd = "";
                                     if (VE.T_TXNPYMT_HDR!=null)
                                     { rtdebcd = VE.T_TXNPYMT_HDR.RTDEBCD; }
+                                    else { rtdebcd = TXNMEMO.RTDEBCD; }
                                    
                                     VE = GetOutstInvoice(VE, VE.RETDEBSLCD, rtdebcd, "");
                                 }
@@ -1314,6 +1315,15 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        public ActionResult UpDateAdjustment(SalePymtEntry VE, string slcd, string rtdebcd)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            VE = GetOutstInvoice(VE, VE.RETDEBSLCD, rtdebcd, "");
+           
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_PYMT_Adjustment", VE);
         }
     }
 }
