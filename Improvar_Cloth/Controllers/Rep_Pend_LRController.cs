@@ -53,16 +53,16 @@ namespace Improvar.Controllers
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
-                string slcd = "", lrnoLike = "", BltyPending="";
-                if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString();
+                string slcd = "", lrnoLike = "", BltyPending = "";
+                if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString().retSqlformat();
                 lrnoLike = VE.TEXTBOX1;
                 BltyPending = FC["BltyPending"].ToString();
                 DataTable tbl = new DataTable();
-                if (BltyPending=="R")
-                {  tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike); }
-                else {  tbl = Salesfunc.getPendBiltytoIssue(tdt,"", "", "", slcd.retSqlformat(), lrnoLike); }
+                if (BltyPending == "R")
+                { tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike); }
+                else { tbl = Salesfunc.getPendBiltytoIssue(tdt, "", "", "", slcd, lrnoLike); }
                 DataView dv = new DataView(tbl);
-                DataTable tbl1 = dv.ToTable(true, "lrno","lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
+                DataTable tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "", gonm = "";
@@ -103,8 +103,9 @@ namespace Improvar.Controllers
                     i++;
                     if (i > maxR) break;
                 }
-                string pghdr1 = "Pending Bilty Register from " + fdt + " to " + tdt;
-                string repname = "Pending Bilty Register";
+                string head = BltyPending == "R" ? "Receive from Mutia" : "Issue to Mutia";
+                string pghdr1 = "Pending " + head + " Register from " + fdt + " to " + tdt;
+                string repname = ("Pend " + head + " Reg").retRepname();
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;

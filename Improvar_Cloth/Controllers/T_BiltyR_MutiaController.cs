@@ -302,8 +302,9 @@ namespace Improvar.Controllers
         {
             try
             {
+                MUTSLCD = MUTSLCD.retStr() == "" ? "" : MUTSLCD.retSqlformat();
                 var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD); DataView dv = new DataView(GetPendig_Data);
-                string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt","status" };
+                string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "status" };
                 GetPendig_Data = dv.ToTable(true, COL);
                 VE.TBILTYR_POPUP = (from DataRow dr in GetPendig_Data.Rows
                                     select new TBILTYR_POPUP
@@ -342,6 +343,7 @@ namespace Improvar.Controllers
             Cn.getQueryString(VE);
             try
             {
+                MUTSLCD = MUTSLCD.retStr() == "" ? "" : MUTSLCD.retSqlformat();
                 string GC = Cn.GCS();
                 List<string> blautonos = new List<string>();
                 foreach (var i in VE.TBILTYR_POPUP)
@@ -473,7 +475,7 @@ namespace Improvar.Controllers
                     int j = 0;
                     while (j <= tbilyr.Count - 1)
                     {
-                       
+
                         int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
                         int RSERIAL = 0;
                         string baleno = tbilyr[j].BALENO.retStr();

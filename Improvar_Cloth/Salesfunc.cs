@@ -1301,6 +1301,46 @@ namespace Improvar
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
+        //public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "", string translcd = "", string lrnoLike = "")
+        //{
+        //    //showbatchno = true;
+        //    string UNQSNO = CommVar.getQueryStringUNQSNO();
+        //    DataTable tbl = new DataTable();
+        //    string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+        //    if (schema == "") schema = scm;
+        //    string sql = "";
+
+        //    sql = "";
+        //    sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
+        //    sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM,g.styleno,f.qnty,g.uomcd,f.pageno from ";
+
+        //    sql += "(select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+        //    sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
+        //    sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+        //    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+        //    if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+        //    sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
+        //    // sql += "a.autono not in (select blautono from " + schema + ".t_bale) and ";
+        //    sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ) a, ";
+
+        //    sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+        //    sql += "sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos ";
+        //    sql += " from " + schema + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
+        //    sql += "where a.autono = b.autono(+) and ";
+        //    if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+        //    sql += "a.autono = d.autono(+) ";
+        //    sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
+
+        //    sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e," + schema + ".t_txndtl f," + schema + ".m_sitem g ";
+        //    sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+)and a.baleno=f.baleno(+) and f.itcd = g.itcd(+) and ";
+        //    sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
+        //    if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
+        //    if (translcd.retStr() != "") sql += " and c.TRANSLCD in(" + translcd + ")  ";
+        //    if (lrnoLike.retStr() != "") sql += "and c.lrno like '%" + lrnoLike.retStr() + "%'  ";
+        //    sql += " and 1 - nvl(b.bnos, 0) > 0 ";
+        //    tbl = masterHelpFa.SQLquery(sql);
+        //    return tbl;
+        //}
         public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "", string translcd = "", string lrnoLike = "")
         {
             //showbatchno = true;
@@ -1331,17 +1371,26 @@ namespace Improvar
             sql += "a.autono = d.autono(+) ";
             sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
 
+            sql += " (select a.blautono, a.balenoyr,  ";
+            sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos  from ";
+            sql += " (select a.blautono, a.baleyr || a.baleno balenoyr, a.drcr ";
+            sql += " from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d  ";
+            sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+            sql += "b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ) a ";
+            sql += " group by a.blautono, a.balenoyr) h,	";
+
             sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e," + schema + ".t_txndtl f," + schema + ".m_sitem g ";
             sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+)and a.baleno=f.baleno(+) and f.itcd = g.itcd(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
+            sql += "and a.autono = h.blautono(+) and a.balenoyr = h.balenoyr(+) ";
             if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
             if (translcd.retStr() != "") sql += " and c.TRANSLCD in(" + translcd + ")  ";
             if (lrnoLike.retStr() != "") sql += "and c.lrno like '%" + lrnoLike.retStr() + "%'  ";
-            sql += " and 1 - nvl(b.bnos, 0) > 0 ";
+            sql += " and 1 - nvl(b.bnos, 0) > 0 and 1 - nvl(h.bnos, 0) > 0 ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-
         public DataTable getPendingPackslip(string docdt, string slcd, string skipautono = "")
         {
             DataTable tbl;
@@ -1419,7 +1468,7 @@ namespace Improvar
             sql += " a.blautono = c.blautono(+) and a.balenoyr = c.balenoyr(+) and  ";
             sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and a.blautono = g.autono(+) and a.baleno=g.baleno(+) and ";
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
-            if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
+            if (mutslcd.retStr() != "") sql += " and a.mutslcd in (" + mutslcd + ")  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
             if (lrnoLike.retStr() != "") sql += "and e.lrno like '%" + lrnoLike.retStr() + "%'  ";
             //sql += " and ( nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 or b.bnos is null) ";
