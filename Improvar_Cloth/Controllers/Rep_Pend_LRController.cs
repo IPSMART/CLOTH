@@ -63,6 +63,8 @@ namespace Improvar.Controllers
                 else { tbl = Salesfunc.getPendBiltytoIssue(tdt, "", "", "", slcd, lrnoLike); }
                 DataView dv = new DataView(tbl);
                 DataTable tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
+                tbl1.DefaultView.Sort = "lrno";
+                tbl1 = tbl1.DefaultView.ToTable();
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "", gonm = "";
