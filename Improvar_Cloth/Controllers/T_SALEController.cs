@@ -2966,11 +2966,16 @@ namespace Improvar.Controllers
             if (VE.DefaultAction == "A") AUTO_NO = "";
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             string COM_CD = CommVar.Compcd(UNQSNO);
+            string YR_CD = CommVar.YearCode(UNQSNO);
+            DateTime FinStartDate = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO));
+            DateTime FinEndDate = Convert.ToDateTime(CommVar.FinEndDate(UNQSNO));
             if (BILL_NO.retStr() == "") return Content("0");
 
             var query = (from c in DB.T_TXN
                          join d in DB.T_CNTRL_HDR on c.AUTONO equals d.AUTONO
-                         where (c.PREFNO == BILL_NO && c.SLCD == SUPPLIER && c.AUTONO != AUTO_NO && d.COMPCD == COM_CD)
+                         where (c.PREFNO == BILL_NO && c.SLCD == SUPPLIER && c.AUTONO != AUTO_NO && d.COMPCD == COM_CD
+                         && d.YR_CD == YR_CD && d.DOCDT >= FinStartDate && d.DOCDT <= FinEndDate //for sachi saree same billno already used in opening stock so add logic yr and finyr dt
+                         )
                          select c);
             if (query.Any())
             {
