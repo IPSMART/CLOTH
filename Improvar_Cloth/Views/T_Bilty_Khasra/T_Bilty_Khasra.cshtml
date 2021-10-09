@@ -152,8 +152,10 @@
             url: "@Url.Action("DeleteRow", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
                 $("#partialdivMain").animate({ marginTop: '0px' }, 50);
-                $("#partialdivMain").html(result);
+                $("#partialdivMain").html(res[0]);
+                $("#BALECOUNT").val(res[1]);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();

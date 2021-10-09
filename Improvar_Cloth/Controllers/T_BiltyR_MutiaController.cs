@@ -573,9 +573,11 @@ namespace Improvar.Controllers
 
                 }
                 VE.TBILTYR = ITEMSIZE;
+                var balecnt = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count();
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_BiltyR_Mutia_Main", VE);
+                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyR_Mutia_Main", VE);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
             }
             catch (Exception ex)
             {

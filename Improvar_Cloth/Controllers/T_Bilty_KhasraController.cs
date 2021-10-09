@@ -558,9 +558,11 @@ namespace Improvar.Controllers
 
                 }
                 VE.TBILTYKHASRA = ITEMSIZE;
+                var balecnt = VE.TBILTYKHASRA.Select(a => a.BALENO).Distinct().Count();
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_Bilty_Khasra_Main", VE);
+                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_Bilty_Khasra_Main", VE);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
             }
             catch (Exception ex)
             {

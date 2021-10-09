@@ -233,7 +233,7 @@ namespace Improvar.Controllers
                     VE.DRCR = q.DRCR;
 
                 }
-
+                VE.BALECOUNT = VE.TBILTY.Select(a => a.BALENO).Distinct().Count().retStr();
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
@@ -391,15 +391,28 @@ namespace Improvar.Controllers
                 {
                     VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
                 }
-
+                var balecnt = VE.TBILTY.Select(a => a.BALENO).Distinct().Count();
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_BiltyG_Mutia_Main", VE);
+                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyG_Mutia_Main", VE);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message);
+            }
+        }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
             }
         }
         public ActionResult DeleteRow(TransactionBiltyGMutiaEntry VE)
@@ -422,9 +435,11 @@ namespace Improvar.Controllers
 
                 }
                 VE.TBILTY = ITEMSIZE;
+                var balecnt = VE.TBILTY.Select(a => a.BALENO).Distinct().Count();
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_BiltyG_Mutia_Main", VE);
+                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyG_Mutia_Main", VE);
+                return Content(GRN_MAIN + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + balecnt);
             }
             catch (Exception ex)
             {
