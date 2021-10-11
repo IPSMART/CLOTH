@@ -52,7 +52,7 @@ namespace Improvar.Controllers
                     VE.SubAgent = MasterHelp.ComboFill("sagslcd", VE.DropDown_list_SLCD, 0, 1);
                     var bltypelst = DropDownHelp.DropDownBLTYPE();
                     VE.BlType = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
-                    if (VE.MENU_PARA == "PB" && CommVar.ClientCode(UNQSNO) == "SNFP")
+                    if (VE.MENU_PARA != "CM")
                     {
                         VE.FDT = CommVar.FinStartDate(UNQSNO);
                     }
