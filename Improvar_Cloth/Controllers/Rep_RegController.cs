@@ -52,7 +52,12 @@ namespace Improvar.Controllers
                     VE.SubAgent = MasterHelp.ComboFill("sagslcd", VE.DropDown_list_SLCD, 0, 1);
                     var bltypelst = DropDownHelp.DropDownBLTYPE();
                     VE.BlType = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
-                    VE.FDT = CommVar.FinStartDate(UNQSNO);
+                    if (VE.MENU_PARA == "PB" && CommVar.ClientCode(UNQSNO) == "SNFP")
+                    {
+                        VE.FDT = CommVar.FinStartDate(UNQSNO);
+                    }
+                    else { VE.FDT = CommVar.CurrDate(UNQSNO); }
+
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     //=========For Report Type===========//
                     List<DropDown_list1> RT = new List<DropDown_list1>();
@@ -201,7 +206,7 @@ namespace Improvar.Controllers
                 string itgrpcd = "";
 
                 //string reptype = FC["reptype"].ToString();
-                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "",selSagslcd="";
+                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "", selSagslcd = "";
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
                 if (FC.AllKeys.Contains("ITGRPCDvalue")) itgrpcd = CommFunc.retSqlformat(FC["ITGRPCDvalue"].ToString());
@@ -338,7 +343,7 @@ namespace Improvar.Controllers
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
                 sql += "order by ";
                 if (repsorton == "partywise") { sql += "slcd,a.prefdt,prefno,a.docdt,docno" + Environment.NewLine; }
-                else if (repsorton == "bldt") { sql += "a.prefdt,prefno" + Environment.NewLine; } 
+                else if (repsorton == "bldt") { sql += "a.prefdt,prefno" + Environment.NewLine; }
                 else { sql += "a.docdt"; }
                 if (itmdtl == true)
                 {
