@@ -1721,6 +1721,13 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    if (VE.MENU_PARA == "SBDIR")
+                    {
+                        if (str.retCompValue("PRODGRPGSTPER").retStr() == "")
+                        {
+                            return Content("Please link up Product Group with Tax Rate for this Item (" + str.retCompValue("STYLENO").retStr() + "" + str.retCompValue("ITNM").retStr() + ") !!");
+                        }
+                    }
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
                     string glcd = "";
                     glcd = str.retCompValue(MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr());
