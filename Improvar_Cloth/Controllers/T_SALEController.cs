@@ -1721,7 +1721,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    if (VE.MENU_PARA == "SBDIR")
+                    if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "PI")
                     {
                         if (str.retCompValue("PRODGRPGSTPER").retStr() == "")
                         {
@@ -4745,6 +4745,13 @@ namespace Improvar.Controllers
                         {
                             if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "")
                             {
+                                if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "PI")
+                                {
+                                    if (VE.TTXNDTL[i].PRODGRPGSTPER.retStr() == "")
+                                    {
+                                        ContentFlg = "Please link up Product Group with Tax Rate for this Item (" + VE.TTXNDTL[i].ITSTYLE.retStr() + ") !!"; goto dbnotsave;
+                                    }
+                                }
                                 if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
                                 else
                                 {
