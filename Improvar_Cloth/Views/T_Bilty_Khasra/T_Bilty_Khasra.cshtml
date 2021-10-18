@@ -342,6 +342,7 @@
         $('.PopUp_Backround').fadeOut();
     }
     function GodownBaleopenFill(index) {
+        debugger;
         var GOCD = $("#GOCD_" + index).val();
         var GONM = $("#GONM_" + index).val();
         var FLAG1 = $("#FLAG1_" + index).val();
@@ -444,6 +445,7 @@
                                 $("#GONM_" + index).val(returncolvalue(result, "GONM"));
                                 $("#FLAG1_" + index).val(returncolvalue(result, "FLAG1"));
                                 GodownBaleopenFill(index);
+                                $("#lasttypingindex").val(index);
                             }
                             else {
                                 $('#helpDIV').html("");
@@ -501,6 +503,29 @@
 
 
 </script>
+<script>
+    function GetLastGodown(index) {
+        if (event.key != "F8") {
+            return true;
+        }
+        var lastindex = $("#lasttypingindex").val();
+        var lastGOCD = $("#GOCD_" + lastindex).val();
+        var lastGONM = $("#GONM_" + lastindex).val();
+        var lastFLAG1 = $("#FLAG1_" + lastindex).val();
+        var lastcheckedblopn = document.getElementById("CheckedBALEOPEN_" + lastindex).checked;
+
+        $("#GOCD_" + index).val(lastGOCD);
+        $("#GONM_" + index).val(lastGONM);
+        $("#FLAG1_" + index).val(lastFLAG1);
+        if (lastcheckedblopn == true) {
+            document.getElementById("CheckedBALEOPEN_" + index).checked = true;
+        }
+        else {
+            document.getElementById("CheckedBALEOPEN_" + index).checked = false;
+        }
+        GodownBaleopenFill(index);
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -513,6 +538,7 @@
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="S" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
+        <input type="hidden" id="lasttypingindex" value="" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BALE_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
@@ -694,6 +720,9 @@
                                     @Html.EditorFor(model => model.BALECOUNT, new { htmlAttributes = new { @class = "form-control", id = "BALECOUNT", @placeholder = "Total Bale", @readonly = "readonly", tabindex = "-1" } })
 
                                 </div>
+                            </div>
+                            <div class="col-md-11" style="margin-top: 6px;">
+                                <p class="text-info">* Press <b>F8</b> in <b>To Godown</b> of Bilty Details Grid to get <b>last Godown,Bale Open</b></p>
                             </div>
                         </div>
                     </div>

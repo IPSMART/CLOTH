@@ -52,13 +52,12 @@ namespace Improvar.Controllers
                     VE.SubAgent = MasterHelp.ComboFill("sagslcd", VE.DropDown_list_SLCD, 0, 1);
                     var bltypelst = DropDownHelp.DropDownBLTYPE();
                     VE.BlType = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
-                    if (VE.MENU_PARA == "CM")
+                    if (VE.MENU_PARA != "CM")
                     {
-                        VE.FDT = CommVar.CurrDate(UNQSNO);
-                    }
-                    else {
                         VE.FDT = CommVar.FinStartDate(UNQSNO);
                     }
+                    else { VE.FDT = CommVar.CurrDate(UNQSNO); }
+
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     //=========For Report Type===========//
                     List<DropDown_list1> RT = new List<DropDown_list1>();

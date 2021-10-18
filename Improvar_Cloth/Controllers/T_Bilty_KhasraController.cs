@@ -223,7 +223,8 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
-                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,decode(a.baleopen,'Y',b.gocd,a.gocd)gocd,decode(a.baleopen,'Y',b.gonm,a.gonm)gonm,a.flag1,  ";
+                //str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,decode(a.baleopen,'Y',b.gocd,a.gocd)gocd,decode(a.baleopen,'Y',b.gonm,a.gonm)gonm,a.flag1,  ";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,decode(a.baleopen,'Y',b.gocd,a.gocd)gocd,decode(a.baleopen,'Y',b.gonm,a.gonm)gonm,decode(a.baleopen,'Y',b.flag1,a.flag1)flag1,  ";
                 str += "a.itcd, a.styleno, a.itnm,a.uomcd,a.nos,a.qnty,a.rate,a.pageno,a.pageslno,a.itstyle,a.prefno,a.prefdt,a.baleopen from ( ";
 
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,b.flag1,  ";
@@ -234,7 +235,7 @@ namespace Improvar.Controllers
                 str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' ";
                 str += "order by a.slno ) a, ";
 
-                str += "(select a.gocd,b.gonm,a.slno+1000  slno,a.autono from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000)b ";
+                str += "(select a.gocd,b.gonm,a.slno+1000  slno,a.autono,b.flag1 from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000)b ";
                 str += "where a.autono=b.autono(+) and a.slno=b.slno(+)  ";
 
                 DataTable TBILTYKHASRAtbl = masterHelp.SQLquery(str);
