@@ -605,7 +605,7 @@ namespace Improvar.Controllers
                     var dt = masterHelp.SQLquery(sql);
                     if (dt.Rows.Count > 0)
                     {
-                        dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
+                        dupgrid.MESSAGE = "Already Added at docno:" + dt.Rows[0]["docno"].ToString();
                         dupgrid.BLNO = TTXN.PREFNO;
                         dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
                         dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
@@ -853,6 +853,10 @@ namespace Improvar.Controllers
                     TMPVE.TTXNAMT = TTXNAMTlist;
                     TMPVE.T_VCH_GST = new T_VCH_GST();
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
+                    var duplicateslno = string.Join(",", TMPVE.TBATCHDTL
+                                               .GroupBy(s => s.TXNSLNO)
+                                               .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
+                    TMPVE.MERGEINDTL = duplicateslno.retStr() != "" ? true : false;
                     tslCont = tslCont.retStr().Split('~')[0];
                     if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
                     else dupgrid.MESSAGE = tslCont;
@@ -1514,7 +1518,7 @@ namespace Improvar.Controllers
                     var dt = masterHelp.SQLquery(sql);
                     if (dt.Rows.Count > 0)
                     {
-                        dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
+                        dupgrid.MESSAGE = "Already Added at docno:" + dt.Rows[0]["docno"].ToString();
                         dupgrid.BLNO = TTXN.PREFNO;
                         dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
                         dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
@@ -1782,6 +1786,11 @@ namespace Improvar.Controllers
                     TMPVE.TBATCHDTL = TBATCHDTLlist;
                     TMPVE.TTXNAMT = TTXNAMTlist;
                     TMPVE.T_VCH_GST = new T_VCH_GST();
+                    var duplicateslno = string.Join(",", TMPVE.TBATCHDTL
+                   .GroupBy(s => s.TXNSLNO)
+                   .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
+                    TMPVE.MERGEINDTL = duplicateslno.retStr() != "" ? true : false;
+
                     string tslCont = "";
                     if (duplicates.retStr() == "")
                     {
