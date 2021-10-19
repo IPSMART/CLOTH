@@ -1343,6 +1343,8 @@
                                     @Html.EditorFor(model => model.TOTTAXVAL, new { htmlAttributes = new { @class = "form-control", id = "TOTTAXVAL", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Taxable Value", @readonly = "readonly" } })
                                 </div>
                             </div>
+                            @if (Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PJIS" && Model.MENU_PARA != "PJRT")
+                            {
                             <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Total Tax")
@@ -1353,7 +1355,7 @@
                                     @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
                                 </div>
                             </div>
-
+                            }
                             <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Rounded off")

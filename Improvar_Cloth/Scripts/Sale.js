@@ -1770,11 +1770,12 @@ function BillAmountCalculate(TAG) {
     //if (event.key != "F8" && TAG == "TCSON" && event.key != undefined) {
     //    return true;
     //}
+    var MENU_PARA = $("#MENU_PARA").val();
     var R_TOTAL_BILL_AMOUNT = 0;
     var TOTAL_ROUND = 0;
     var netamt = 0;
     var ROUND_TAG = document.getElementById("RoundOff").checked;
-    var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
+    var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0, D_TOTALAMT = 0;
     var T_NOS = $("#T_NOS").val();
     if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
 
@@ -1811,6 +1812,9 @@ function BillAmountCalculate(TAG) {
     var A_T_NET = $("#A_T_NET").val();
     if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
 
+    var T_AMT = $("#T_AMT").val();
+    if (T_AMT != "") { D_TOTALAMT = D_TOTALAMT + parseFloat(T_AMT); } else { D_TOTALAMT = D_TOTALAMT + parseFloat(0); }
+
     var totaltaxval = 0;
     totaltaxval = parseFloat(parseFloat(D_TOTALTAXVAL) + parseFloat(A_TOTALTAXVAL)).toFixed(2);
 
@@ -1818,7 +1822,12 @@ function BillAmountCalculate(TAG) {
     totaltax = parseFloat(parseFloat(D_TOTALIGST) + parseFloat(A_TOTALIGST) + parseFloat(D_TOTALCGST) + parseFloat(A_TOTALCGST) + parseFloat(D_TOTALSGST) + parseFloat(A_TOTALSGST)).toFixed(2);
 
     var totalbillamt = 0;
-    totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
+    if (MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PJIS" || MENU_PARA == "PJRT") {
+        totalbillamt = parseFloat(parseFloat(D_TOTALAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
+    }
+    else {
+        totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
+    }
 
     $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(0));
     $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
@@ -1827,7 +1836,6 @@ function BillAmountCalculate(TAG) {
 
     //tcs
     var TCSPER = 0; TCSAMT = 0; TCSON = 0;
-    var MENU_PARA = $("#MENU_PARA").val();
     if (MENU_PARA != "SR" || MENU_PARA != "PR") {
         TCSPER = retFloat(document.getElementById("TCSPER").value).toFixed(3);
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
