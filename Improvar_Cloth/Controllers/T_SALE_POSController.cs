@@ -3407,14 +3407,14 @@ namespace Improvar.Controllers
                                     TVCHGST.HSNCODE = VE.TsalePos_TBATCHDTL[i].HSNCODE;
                                     TVCHGST.ITNM = (VE.TsalePos_TBATCHDTL[i].ITNM.retStr() + " ").TrimStart(' ') + VE.TsalePos_TBATCHDTL[i].ITSTYLE;
                                     TVCHGST.AMT = VE.TsalePos_TBATCHDTL[i].TXBLVAL.retDbl();
-                                    TVCHGST.CGSTPER = VE.TsalePos_TBATCHDTL[i].CGSTPER;
-                                    TVCHGST.SGSTPER = VE.TsalePos_TBATCHDTL[i].SGSTPER;
-                                    TVCHGST.IGSTPER = VE.TsalePos_TBATCHDTL[i].IGSTPER;
-                                    TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL[i].CGSTAMT;
-                                    TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL[i].SGSTAMT;
-                                    TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL[i].IGSTAMT;
-                                    TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL[i].CESSPER;
-                                    TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL[i].CESSAMT;
+                                    TVCHGST.CGSTPER = VE.TsalePos_TBATCHDTL[i].CGSTPER.retDbl();
+                                    TVCHGST.SGSTPER = VE.TsalePos_TBATCHDTL[i].SGSTPER.retDbl();
+                                    TVCHGST.IGSTPER = VE.TsalePos_TBATCHDTL[i].IGSTPER.retDbl();
+                                    TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl();
+                                    TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl();
+                                    TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL[i].IGSTAMT.retDbl();
+                                    TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL[i].CESSPER.retDbl();
+                                    TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL[i].CESSAMT.retDbl();
                                     TVCHGST.DRCR = proddrcr;//cr;
                                     TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl());
                                     TVCHGST.UOM = VE.TsalePos_TBATCHDTL[i].UOM;
@@ -3503,14 +3503,14 @@ namespace Improvar.Controllers
                                     TVCHGST.HSNCODE = VE.TsalePos_TBATCHDTL_RETURN[i].HSNCODE;
                                     TVCHGST.ITNM = (VE.TsalePos_TBATCHDTL_RETURN[i].ITNM.retStr() + " ").TrimStart(' ') + VE.TsalePos_TBATCHDTL_RETURN[i].ITSTYLE;
                                     TVCHGST.AMT = VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL * multamt;
-                                    TVCHGST.CGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER;
-                                    TVCHGST.SGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER;
-                                    TVCHGST.IGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER;
-                                    TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT * multamt;
-                                    TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT * multamt;
-                                    TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT * multamt;
-                                    TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER;
-                                    TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT * multamt;
+                                    TVCHGST.CGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER.retDbl();
+                                    TVCHGST.SGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER.retDbl();
+                                    TVCHGST.IGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER.retDbl();
+                                    TVCHGST.CGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl() * multamt;
+                                    TVCHGST.SGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl() * multamt;
+                                    TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl() * multamt;
+                                    TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER.retDbl();
+                                    TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT.retDbl() * multamt;
                                     TVCHGST.DRCR = proddrcr;// dr;
                                     TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl()) * multamt;
                                     TVCHGST.UOM = VE.TsalePos_TBATCHDTL_RETURN[i].UOM;
@@ -3619,14 +3619,14 @@ namespace Improvar.Controllers
                                     TVCHGST1.HSNCODE = VE.TTXNAMT[i].HSNCODE;
                                     TVCHGST1.ITNM = VE.TTXNAMT[i].AMTNM;
                                     TVCHGST1.AMT = VE.TTXNAMT[i].AMT;
-                                    TVCHGST1.CGSTPER = VE.TTXNAMT[i].CGSTPER;
-                                    TVCHGST1.SGSTPER = VE.TTXNAMT[i].SGSTPER;
-                                    TVCHGST1.IGSTPER = VE.TTXNAMT[i].IGSTPER;
-                                    TVCHGST1.CGSTAMT = VE.TTXNAMT[i].CGSTAMT;
-                                    TVCHGST1.SGSTAMT = VE.TTXNAMT[i].SGSTAMT;
-                                    TVCHGST1.IGSTAMT = VE.TTXNAMT[i].IGSTAMT;
-                                    TVCHGST1.CESSPER = VE.TTXNAMT[i].CESSPER;
-                                    TVCHGST1.CESSAMT = VE.TTXNAMT[i].CESSAMT;
+                                    TVCHGST1.CGSTPER = VE.TTXNAMT[i].CGSTPER.retDbl();
+                                    TVCHGST1.SGSTPER = VE.TTXNAMT[i].SGSTPER.retDbl();
+                                    TVCHGST1.IGSTPER = VE.TTXNAMT[i].IGSTPER.retDbl();
+                                    TVCHGST1.CGSTAMT = VE.TTXNAMT[i].CGSTAMT.retDbl();
+                                    TVCHGST1.SGSTAMT = VE.TTXNAMT[i].SGSTAMT.retDbl();
+                                    TVCHGST1.IGSTAMT = VE.TTXNAMT[i].IGSTAMT.retDbl();
+                                    TVCHGST1.CESSPER = VE.TTXNAMT[i].CESSPER.retDbl();
+                                    TVCHGST1.CESSAMT = VE.TTXNAMT[i].CESSAMT.retDbl();
                                     TVCHGST1.DRCR = proddrcr;// cr;
                                     TVCHGST1.QNTY = 0;
                                     TVCHGST1.UOM = "OTH";
@@ -3859,7 +3859,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3874,7 +3874,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
