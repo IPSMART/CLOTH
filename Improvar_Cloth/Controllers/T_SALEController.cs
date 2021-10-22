@@ -375,7 +375,8 @@ namespace Improvar.Controllers
                                 //T_TXNOTH TXNOTH = new T_TXNOTH();
                                 if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TTXNOTH.PAYTERMS = "NETT CASH, NO LESS";
                                 VE.T_TXNOTH = TTXNOTH;
-
+                                if ((VE.MENU_PARA == "PR") && (CommVar.ClientCode(UNQSNO) == "SACH" || CommVar.ClientCode(UNQSNO) == "LALF"))
+                                { VE.ReturnAdjustwithBill = true; }
                                 //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
                                 //{
                                 //    DataTable data = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
