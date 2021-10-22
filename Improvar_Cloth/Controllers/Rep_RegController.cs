@@ -462,7 +462,7 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "sagslnm", "string", "c,40", "Sub Agent; Name");
-                        if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
+                        if ((dtlsumm == "D"|| dtlsumm == "C") && (VE.TEXTBOX1 == "Proforma")) HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
                         if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
@@ -598,7 +598,7 @@ namespace Improvar.Controllers
                                     dr["slnm"] = tbl.Rows[i]["nm"].ToString();
                                     dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 }
-                                if (dtlsumm == "D" && VE.TEXTBOX1 == "Proforma") dr["docremoth"] = tbl.Rows[i]["docrem"].ToString();
+                                if ((dtlsumm == "D" || dtlsumm == "C")&&(VE.TEXTBOX1 == "Proforma")) dr["docremoth"] = tbl.Rows[i]["docrem"].ToString();
                                 if (dtlsumm != "C") dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
                                 if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                 if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
