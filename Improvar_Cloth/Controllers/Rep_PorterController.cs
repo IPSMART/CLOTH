@@ -43,7 +43,7 @@ namespace Improvar.Controllers
                     VE.DropDown_list_DOCCD = DropDownHelp.GetDocCdforSelection("'SBILD','SPSLP'");
                     VE.TEXTBOX2 = MasterHelp.ComboFill("doccd", VE.DropDown_list_DOCCD, 0, 1);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
-
+                    VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -82,8 +82,8 @@ namespace Improvar.Controllers
                 }
                 else {
                     descrption = "Summary";
-                    sql = "select docdt, docno, doccd, partycd, partynm, portercd, porternm, slarea, uomcd, noofcases, nos, qnty from( ";
-                    sql += "select a.docdt,g.docno,a.doccd,a.slcd partycd,e.slnm partynm,c.mutslcd portercd,f.slnm porternm,e.slarea,d.uomcd,sum(nvl(c.noofcases,0))noofcases,sum(nvl(b.nos,0))nos,sum(nvl(b.qnty,0))qnty ";
+                    sql = "select docdt, docno, doccd, partycd, partynm, portercd, porternm, slarea, uomcd, noofcases, nos, qnty,docrem from( ";
+                    sql += "select a.docdt,g.docno,a.doccd,a.slcd partycd,e.slnm partynm,c.mutslcd portercd,f.slnm porternm,e.slarea,d.uomcd,sum(nvl(c.noofcases,0))noofcases,sum(nvl(b.nos,0))nos,sum(nvl(b.qnty,0))qnty,c.docrem ";
                     sql += " from " + scm + ".t_txn a ," + scm + ".t_txndtl b, " + scm + ".t_txnoth c, " + scm + ".M_SITEM d, " + scmf + ".M_SUBLEG e, " + scmf + ".M_SUBLEG f," + scm + ".t_cntrl_hdr g  ";
                     sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and b.itcd = d.itcd and a.slcd = e.slcd(+) and c.mutslcd=f.slcd(+)and  a.autono=g.autono and a.doccd in('SSPSL','SSBIL') ";
                     if (doccd.retStr() != "") sql += "and a.doccd in(" + doccd + ") ";
@@ -91,7 +91,7 @@ namespace Improvar.Controllers
                     if (tdt.retStr() != "") sql += "and a.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
                     if (selslcd.retStr() != "") sql += "and a.slcd in(" + selslcd + ") ";
                     if (porter.retStr() != "") sql += "and c.mutslcd in(" + porter + ") ";
-                    sql += "group by a.docdt,g.docno,a.doccd,a.slcd,e.slnm,c.mutslcd,f.slnm,e.slarea,d.uomcd )";
+                    sql += "group by a.docdt,g.docno,a.doccd,a.slcd,e.slnm,c.mutslcd,f.slnm,e.slarea,d.uomcd,c.docrem )";
                     sql += "order by portercd,docdt,docno,partycd ";
                 }
 
@@ -111,13 +111,15 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Bill Date");
                     HC.GetPrintHeader(IR, "partynm", "string", "c,25", "Party Name");
                     HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
+                    if (dtlsumm == "S") HC.GetPrintHeader(IR, "docrem", "string", "c,35", "Doc. Remarks");
                     HC.GetPrintHeader(IR, "porternm", "string", "c,25", "Porter Name");
                     HC.GetPrintHeader(IR, "noofcases", "double", "c,15", "NO OF PACKAGE");
                     HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
                     HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "QUANTITY");
                     HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
+                    
 
-                    Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
                     i = 0; maxR = tbl.Rows.Count - 1;
 
                     while (i <= maxR)
@@ -133,6 +135,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
                         IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                         IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                        if (dtlsumm == "S") IR.Rows[rNo]["docrem"] = tbl.Rows[i]["docrem"].retStr();
                         i = i + 1;
                         if (i > maxR) break;
 
