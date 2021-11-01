@@ -1410,7 +1410,7 @@ namespace Improvar
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "", string lrnoLike = "")
+        public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "", string lrnoLike = "", bool ShowOnlyAfterIssue = false)
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
@@ -1422,7 +1422,7 @@ namespace Improvar
             sql += " select a.blautono, a.mutslcd, a.trem, j.slnm mutianm, j.regmobile, a.baleno, a.baleyr, e.lrno, e.lrdt,	 ";
             sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.slno blslno, g.nos, g.qnty,	";
             sql += " '' shade, g.pageno, g.pageslno, ";
-            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0)-nvl(c.bnos,0) bnos, h.styleno||' '||h.itnm  itstyle,a.status from ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0)-nvl(c.bnos,0) bnos, h.styleno||' '||h.itnm  itstyle,a.status,f.docdt from ";
 
             sql += "( ";
             sql += "select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,'Issued' status ";
@@ -1430,19 +1430,20 @@ namespace Improvar
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
             sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ";
+            if (ShowOnlyAfterIssue == false)
+            {
+                sql += "union all ";
 
-            sql += "union all ";
-
-            //sql += "select distinct a.autono blautono, '' mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
-            sql += "select distinct a.autono blautono, e.translcd mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr,'Direct' status ";
-            sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d, " + schema + ".t_txntrans e ";
-            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
-            sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";
-            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
-            if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
-            sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
-            sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ";
-
+                //sql += "select distinct a.autono blautono, '' mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+                sql += "select distinct a.autono blautono, e.translcd mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr,'Direct' status ";
+                sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d, " + schema + ".t_txntrans e ";
+                sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
+                sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";
+                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+                if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
+                sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
+                sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ";
+            }
             sql += ") a, ";
 
             sql += " (select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,	";

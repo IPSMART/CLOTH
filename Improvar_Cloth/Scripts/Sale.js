@@ -4290,6 +4290,7 @@ function GetBaleData() {
         data: $('form').serialize(),
         success: function (result) {
             debugger;
+            $("#BALENO_HELP").val("");
             $('#partialdivBarCodeTab').html(result);
             var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
             for (var i = 0; i <= GridRow - 1; i++) {

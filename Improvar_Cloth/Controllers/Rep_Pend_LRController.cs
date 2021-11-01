@@ -57,12 +57,22 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString().retSqlformat();
                 lrnoLike = VE.TEXTBOX1;
                 BltyPending = FC["BltyPending"].ToString();
+                bool ShowOnlyAfterIssue = VE.Checkbox1;
+                bool ShowDocDate = VE.Checkbox2;
                 DataTable tbl = new DataTable();
                 if (BltyPending == "R")
-                { tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike); }
+                { tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike, ShowOnlyAfterIssue); }
                 else { tbl = Salesfunc.getPendBiltytoIssue(tdt, "", "", "", slcd, lrnoLike); }
                 DataView dv = new DataView(tbl);
-                DataTable tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
+                DataTable tbl1 = new DataTable();
+                if (BltyPending == "R" && ShowDocDate == true)
+                {
+                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno","docdt");
+                }
+                else
+                {
+                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
+                }
                 tbl1.DefaultView.Sort = "lrno";
                 tbl1 = tbl1.DefaultView.ToTable();
                 Int32 i = 0;
@@ -79,6 +89,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "slno", "double", "n,8", "Sl No.");
                 HC.GetPrintHeader(IR, "lrno", "string", "c,20", "LR No");
                 HC.GetPrintHeader(IR, "lrdt", "string", "d,10", "LR Date");
+                if (ShowDocDate == true) HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Doc. Date");
                 HC.GetPrintHeader(IR, "baleno", "string", "c,35", "Bale No");
                 HC.GetPrintHeader(IR, "sortno", "string", "c,20", "Sort No");
                 HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Pcs");
@@ -96,6 +107,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["slno"] = slno;
                     IR.Rows[rNo]["lrno"] = tbl1.Rows[i]["lrno"].retStr();
                     IR.Rows[rNo]["lrdt"] = tbl1.Rows[i]["lrdt"].retDateStr();
+                    if (ShowDocDate == true) IR.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"].retDateStr();
                     IR.Rows[rNo]["prefdt"] = tbl1.Rows[i]["prefdt"].retDateStr();
                     IR.Rows[rNo]["baleno"] = tbl1.Rows[i]["baleno"].retStr();
                     IR.Rows[rNo]["sortno"] = tbl1.Rows[i]["styleno"].retStr();

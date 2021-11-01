@@ -24,7 +24,24 @@
 
     });
 </script>
-<script></script>
+<script>
+    function PendingBiltyChange() {
+        debugger;
+        var BltyPending = $("input[type='radio'][name='BltyPending']:checked").val();
+        if (BltyPending == "R") {
+            if ("@CommVar.ClientCode(Model.UNQSNO)" == "BNBH") {
+                document.getElementById("Checkbox1").checked = true;
+                document.getElementById("Checkbox2").checked = true;
+            }
+            $("#ReceiveFilterDiv").show();
+        }
+        else {
+            document.getElementById("Checkbox1").checked = false;
+            document.getElementById("Checkbox2").checked = false;
+            $("#ReceiveFilterDiv").hide();
+        }
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -72,8 +89,22 @@
                     </div>
                     <div class="col-lg-10">
                         <div class="editor-field">
-                            <input type="radio" name="BltyPending" value="I" checked />Issue to Mutia Pending
-                            <input type="radio" name="BltyPending" value="R" />Receive from Mutia Pending
+                            <input type="radio" name="BltyPending" value="I" checked onchange="PendingBiltyChange()" />Issue to Mutia Pending
+                            <input type="radio" name="BltyPending" value="R" onchange="PendingBiltyChange()" />Receive from Mutia Pending
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="ReceiveFilterDiv" style="display:none;">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="editor-field">
+                            @Html.CheckBoxFor(model => model.Checkbox1, new { id = "Checkbox1" })  @Html.Label("", "Show Report After Issue Only")
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="editor-field">
+                            @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2" })  @Html.Label("", "Show Doc. Date")
                         </div>
                     </div>
                 </div>

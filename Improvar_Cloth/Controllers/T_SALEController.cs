@@ -3739,84 +3739,92 @@ namespace Improvar.Controllers
 
                 if (tbl != null && tbl.Rows.Count > 0)
                 {
-                    VE.TBATCHDTL = (from DataRow dr in tbl.Rows
-                                    select new TBATCHDTL()
-                                    {
-                                        SLNO = dr["SLNO"].retShort(),
-                                        TXNSLNO = dr["TXNSLNO"].retShort(),
-                                        ITGRPCD = dr["ITGRPCD"].retStr(),
-                                        ITGRPNM = dr["ITGRPNM"].retStr(),
-                                        MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
-                                        MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
-                                        MTBARCODE = dr["MTBARCODE"].retStr(),
-                                        ITCD = dr["ITCD"].retStr(),
-                                        ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
-                                        UOM = dr["UOMCD"].retStr(),
-                                        STYLENO = dr["STYLENO"].retStr(),
-                                        PARTCD = dr["PARTCD"].retStr(),
-                                        PARTNM = dr["PARTNM"].retStr(),
-                                        PRTBARCODE = dr["PRTBARCODE"].retStr(),
-                                        COLRCD = dr["COLRCD"].retStr(),
-                                        COLRNM = dr["COLRNM"].retStr(),
-                                        CLRBARCODE = dr["CLRBARCODE"].retStr(),
-                                        SIZECD = dr["SIZECD"].retStr(),
-                                        SIZENM = dr["SIZENM"].retStr(),
-                                        SZBARCODE = dr["SZBARCODE"].retStr(),
-                                        SHADE = dr["SHADE"].retStr(),
-                                        QNTY = dr["QNTY"].retDbl(),
-                                        NOS = dr["NOS"].retDbl(),
-                                        RATE = dr["RATE"].retDbl(),
-                                        DISCRATE = dr["DISCRATE"].retDbl(),
-                                        DISCTYPE = dr["DISCTYPE"].retStr(),
-                                        DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["DISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                        TDDISCRATE = dr["TDDISCRATE"].retDbl(),
-                                        TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["TDDISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                        TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
-                                        SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["SCMDISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                        SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
-                                        SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
-                                        STKTYPE = dr["STKTYPE"].retStr(),
-                                        STKNAME = dr["STKNAME"].retStr(),
-                                        BARNO = dr["BARNO"].retStr(),
-                                        HSNCODE = dr["HSNCODE"].retStr(),
-                                        BALENO = dr["BALENO"].retStr(),
-                                        PDESIGN = dr["PDESIGN"].retStr(),
-                                        OURDESIGN = dr["OURDESIGN"].retStr(),
-                                        FLAGMTR = dr["FLAGMTR"].retDbl(),
-                                        LOCABIN = dr["LOCABIN"].retStr(),
-                                        BALEYR = dr["BALEYR"].retStr(),
-                                        BARGENTYPE = dr["BARGENTYPE"].retStr(),
-                                        GLCD = dr["GLCD"].retStr(),
-                                        WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
-                                        RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
-                                        ITREM = dr["ITREM"].retStr(),
-                                        ORDAUTONO = dr["ORDAUTONO"].retStr(),
-                                        ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
-                                        ORDDOCNO = dr["ORDDOCNO"].retStr(),
-                                        ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
-                                        WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
-                                        RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
-                                        AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
-                                        AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
-                                        LISTPRICE = dr["LISTPRICE"].retDbl(),
-                                        LISTDISCPER = dr["LISTDISCPER"].retDbl(),
-                                        CUTLENGTH = dr["CUTLENGTH"].retDbl(),
-                                        PAGENO = dr["PAGENO"].retInt(),
-                                        PAGESLNO = dr["PAGESLNO"].retInt(),
-                                        PCSTYPE = dr["PCSTYPE"].retStr(),
-                                        NEGSTOCK = dr["NEGSTOCK"].retStr(),
-                                        BLUOMCD = dr["BLUOMCD"].retStr(),
-                                        COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
-                                        FABITCD = dr["FABITCD"].retStr(),
-                                        FABITNM = dr["FABITNM"].retStr(),
-                                        WPPER = dr["WPPER"].retDbl(),
-                                        RPPER = dr["RPPER"].retDbl(),
-                                        RECPROGSLNO = dr["BLSLNO"].retShort(),
-                                    }).ToList();
+                    var TBATCHDTL = (from DataRow dr in tbl.Rows
+                                     select new TBATCHDTL()
+                                     {
+                                         SLNO = dr["SLNO"].retShort(),
+                                         TXNSLNO = dr["TXNSLNO"].retShort(),
+                                         ITGRPCD = dr["ITGRPCD"].retStr(),
+                                         ITGRPNM = dr["ITGRPNM"].retStr(),
+                                         MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
+                                         MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                         MTBARCODE = dr["MTBARCODE"].retStr(),
+                                         ITCD = dr["ITCD"].retStr(),
+                                         ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
+                                         UOM = dr["UOMCD"].retStr(),
+                                         STYLENO = dr["STYLENO"].retStr(),
+                                         PARTCD = dr["PARTCD"].retStr(),
+                                         PARTNM = dr["PARTNM"].retStr(),
+                                         PRTBARCODE = dr["PRTBARCODE"].retStr(),
+                                         COLRCD = dr["COLRCD"].retStr(),
+                                         COLRNM = dr["COLRNM"].retStr(),
+                                         CLRBARCODE = dr["CLRBARCODE"].retStr(),
+                                         SIZECD = dr["SIZECD"].retStr(),
+                                         SIZENM = dr["SIZENM"].retStr(),
+                                         SZBARCODE = dr["SZBARCODE"].retStr(),
+                                         SHADE = dr["SHADE"].retStr(),
+                                         QNTY = dr["QNTY"].retDbl(),
+                                         NOS = dr["NOS"].retDbl(),
+                                         RATE = dr["RATE"].retDbl(),
+                                         DISCRATE = dr["DISCRATE"].retDbl(),
+                                         DISCTYPE = dr["DISCTYPE"].retStr(),
+                                         DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["DISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                         TDDISCRATE = dr["TDDISCRATE"].retDbl(),
+                                         TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["TDDISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                         TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
+                                         SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["SCMDISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                         SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
+                                         SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
+                                         STKTYPE = dr["STKTYPE"].retStr(),
+                                         STKNAME = dr["STKNAME"].retStr(),
+                                         BARNO = dr["BARNO"].retStr(),
+                                         HSNCODE = dr["HSNCODE"].retStr(),
+                                         BALENO = dr["BALENO"].retStr(),
+                                         PDESIGN = dr["PDESIGN"].retStr(),
+                                         OURDESIGN = dr["OURDESIGN"].retStr(),
+                                         FLAGMTR = dr["FLAGMTR"].retDbl(),
+                                         LOCABIN = dr["LOCABIN"].retStr(),
+                                         BALEYR = dr["BALEYR"].retStr(),
+                                         BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                         GLCD = dr["GLCD"].retStr(),
+                                         WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
+                                         RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
+                                         ITREM = dr["ITREM"].retStr(),
+                                         ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                         ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
+                                         ORDDOCNO = dr["ORDDOCNO"].retStr(),
+                                         ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
+                                         WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
+                                         RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
+                                         AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
+                                         AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
+                                         LISTPRICE = dr["LISTPRICE"].retDbl(),
+                                         LISTDISCPER = dr["LISTDISCPER"].retDbl(),
+                                         CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                         PAGENO = dr["PAGENO"].retInt(),
+                                         PAGESLNO = dr["PAGESLNO"].retInt(),
+                                         PCSTYPE = dr["PCSTYPE"].retStr(),
+                                         NEGSTOCK = dr["NEGSTOCK"].retStr(),
+                                         BLUOMCD = dr["BLUOMCD"].retStr(),
+                                         COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                         FABITCD = dr["FABITCD"].retStr(),
+                                         FABITNM = dr["FABITNM"].retStr(),
+                                         WPPER = dr["WPPER"].retDbl(),
+                                         RPPER = dr["RPPER"].retDbl(),
+                                         RECPROGSLNO = dr["BLSLNO"].retShort(),
+                                     }).ToList();
+                    if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
+                    {
+                        VE.TBATCHDTL.AddRange(TBATCHDTL);
+                    }
+                    else
+                    {
+                        VE.TBATCHDTL = TBATCHDTL;
+                    }
                     int j = 0;
                     string ITGRPCD = "", MTRLJOBCD = "", ITCD = "", DISCTYPE = "", TDDISCTYPE = "", SCMDISCTYPE = "", UOM = "",
                         STKTYPE = "", GLCD = "", FABITCD = "",
-                        PDESIGN = "", HSNCODE = "", PRODGRPGSTPER = "";
+                        PDESIGN = "", HSNCODE = "", PRODGRPGSTPER = "", BLUOMCD = "", RECPROGSLNO = "", BALENO = "";
                     double RATE = 0, DISCRATE = 0, SCMDISCRATE = 0, TDDISCRATE = 0, GSTPER = 0;
                     int TXNSLNO = 1, SLNO = 1;
                     while (j <= VE.TBATCHDTL.Count - 1)
@@ -3839,7 +3847,9 @@ namespace Improvar.Controllers
                         GLCD = VE.TBATCHDTL[j].GLCD.retStr();
                         FABITCD = VE.TBATCHDTL[j].FABITCD.retStr();
                         PDESIGN = VE.TBATCHDTL[j].PDESIGN.retStr();
-
+                        BLUOMCD = VE.TBATCHDTL[j].BLUOMCD.retStr();
+                        RECPROGSLNO = VE.TBATCHDTL[j].RECPROGSLNO.retStr();
+                        BALENO = VE.TBATCHDTL[j].BALENO.retStr();
 
                         while (ITGRPCD == VE.TBATCHDTL[j].ITGRPCD.retStr() && MTRLJOBCD == VE.TBATCHDTL[j].MTRLJOBCD.retStr()
                             && ITCD == VE.TBATCHDTL[j].ITCD.retStr() &&
@@ -3847,9 +3857,10 @@ namespace Improvar.Controllers
                   SCMDISCTYPE == VE.TBATCHDTL[j].SCMDISCTYPE.retStr() && UOM == VE.TBATCHDTL[j].UOM.retStr() && STKTYPE == VE.TBATCHDTL[j].STKTYPE.retStr() && RATE == VE.TBATCHDTL[j].RATE.retDbl() &&
                  DISCRATE == VE.TBATCHDTL[j].DISCRATE.retDbl() && SCMDISCRATE == VE.TBATCHDTL[j].SCMDISCRATE.retDbl() && TDDISCRATE == VE.TBATCHDTL[j].TDDISCRATE.retDbl() && GSTPER == VE.TBATCHDTL[j].GSTPER.retDbl() &&
                  HSNCODE == VE.TBATCHDTL[j].HSNCODE.retStr() && PRODGRPGSTPER == VE.TBATCHDTL[j].PRODGRPGSTPER.retStr() &&
-                 GLCD == VE.TBATCHDTL[j].GLCD.retStr() && FABITCD == VE.TBATCHDTL[j].FABITCD.retStr() && PDESIGN == VE.TBATCHDTL[j].PDESIGN.retStr())
+                 GLCD == VE.TBATCHDTL[j].GLCD.retStr() && FABITCD == VE.TBATCHDTL[j].FABITCD.retStr() && PDESIGN == VE.TBATCHDTL[j].PDESIGN.retStr()
+                 && BLUOMCD == VE.TBATCHDTL[j].BLUOMCD.retStr() && RECPROGSLNO == VE.TBATCHDTL[j].RECPROGSLNO.retStr() && BALENO == VE.TBATCHDTL[j].BALENO.retStr())
                         {
-                            VE.TBATCHDTL[j].TXNSLNO = TXNSLNO.retShort();
+                            VE.TBATCHDTL[j].TXNSLNO = VE.MERGEINDTL == true ? TXNSLNO.retShort() : SLNO.retShort();
                             VE.TBATCHDTL[j].SLNO = SLNO.retShort();
                             SLNO++;
                             j++;
