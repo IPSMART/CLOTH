@@ -942,7 +942,7 @@ function ClearBarcodeArea(TAG) {
         }
     }
 }
-function Fill_DetailData() {
+function Fill_DetailData(TAG) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
@@ -1032,11 +1032,13 @@ function Fill_DetailData() {
             else {
                 //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivDetail").html(result);
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(3)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                if (TAG != "N") {
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:nth-child(3)").addClass('active');
+                    //below set the  child sequence
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                }
                 var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
                 for (var i = 0; i <= GridRow - 1; i++) {
                     CalculateAmt_Details(i);
@@ -4298,7 +4300,7 @@ function GetBaleData() {
                     RateUpdate(i, '#B_');
                 }
             }
-            Fill_DetailData();
+            Fill_DetailData("N");
             GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
             for (var i = 0; i <= GridRow - 1; i++) {
                 if (retStr($("#D_ITCD_" + i).val()) != "") {
