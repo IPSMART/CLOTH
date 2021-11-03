@@ -34,7 +34,7 @@ namespace Improvar.Controllers
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
 
-                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("M");
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("M,E");
                     VE.Slmslnm = MasterHelp.ComboFill("slmslcd", VE.DropDown_list_SLCD, 0, 1);
 
                     VE.FDT = CommVar.FinStartDate(UNQSNO);
