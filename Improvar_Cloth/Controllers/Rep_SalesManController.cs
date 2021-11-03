@@ -117,7 +117,7 @@ namespace Improvar.Controllers
                 sql += "group by a.autono, b.uomcd, d.itgrpnm,d.itgrpcd) c, ";
                 sql += "" + scm + ".t_cntrl_hdr d, " + scmf + ".m_subleg e ";
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and a.slmslcd=e.slcd(+) ";
-                if (selagslcd != "") sql += "a.slmslcd in (" + selagslcd + ") ";
+                if (selagslcd != "") sql += "and a.slmslcd in (" + selagslcd + ") ";
                 sql += "order by slnm,autono											";
                 if (reptype == "S")
                 {
