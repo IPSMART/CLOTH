@@ -149,7 +149,7 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (TransactionBiltyRMutiaEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            VE = (TransactionBiltyRMutiaEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
                     }
                     else
@@ -317,6 +317,11 @@ namespace Improvar.Controllers
                                         PREFDT = dr["prefdt"].retDateStr(),
                                         STATUS = dr["STATUS"].retStr()
                                     }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                if (VE.TBILTYR != null)
+                {//checked when opend secone times.
+                    var selectedbillautoslno = VE.TBILTYR.Select(e => e.BLAUTONO + e.BALENO).Distinct().ToList();
+                    VE.TBILTYR_POPUP.Where(x => selectedbillautoslno.Contains(x.BLAUTONO + x.BALENO)).ForEach(e => e.Checked = true);
+                }
                 for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
                 {
                     VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
@@ -442,7 +447,9 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    var existingbale = VE.TBILTYR.Select(e => e.BLAUTONO + e.BLSLNO).Distinct().ToList();
                     var tbilyr = (from DataRow dr in GetPendig_Data.Rows
+                                  where !existingbale.Contains(dr["blautono"].retStr() + dr["blslno"].retStr())
                                   select new TBILTYR
                                   {
                                       BLAUTONO = dr["blautono"].retStr(),
@@ -493,7 +500,7 @@ namespace Improvar.Controllers
                         {
                             TBILTYR MLI1 = new TBILTYR();
                             SERIAL++;
-                            MLI1.Checked = true;
+                            //MLI1.Checked = true;
                             MLI1.BLAUTONO = tbilyr[j].BLAUTONO.retStr();
                             MLI1.ITCD = tbilyr[j].ITCD.retStr();
                             MLI1.ITNM = tbilyr[j].ITNM.retStr();
@@ -524,6 +531,30 @@ namespace Improvar.Controllers
 
                     }
                     VE.TBILTYR = MLocIFSC1;
+                }
+                if (CommVar.ClientCode(UNQSNO) == "SNFP")
+                {
+                    VE.TBILTYR= VE.TBILTYR.OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                    var startno = VE.T_BALE_HDR.STARTNO;
+                    if (startno == null) startno = 1;
+                    int i = 0;
+                    while (i <= VE.TBILTYR.Count - 1)
+                    {
+                        string baleno = VE.TBILTYR[i].BALENO.retStr();
+                        while (VE.TBILTYR[i].BALENO == baleno)
+                        {
+                            if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                            VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
+                            VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
+                            //VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                            VE.TBILTYR[i].RSLNO = startno.retShort();
+
+                            i++;
+                            if (i > VE.TBILTYR.Count - 1) break;
+                        }
+                        startno++;
+                        if (i > VE.TBILTYR.Count - 1) break;
+                    }
                 }
                 var balecnt = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count();
 
@@ -679,22 +710,30 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionBiltyRMutiaEntry stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, TransactionBiltyRMutiaEntry stream)
         {
             try
             {
-                Connection cn = new Connection();
-                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO).ToString() + "*" + DateTime.Now;
+                Cn.getQueryString(stream);
+                if (stream.T_CNTRL_HDR.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_CNTRL_HDR.DOCCD.retStr();
+                }
+                string MNUDET = stream.MENU_DETAILS;
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
+                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
                 ID = ID.Replace(" ", "_");
                 string Userid = Session["UR_ID"].ToString();
                 INI Handel_ini = new INI();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 string JR = javaScriptSerializer.Serialize(stream);
-                Handel_ini.IniWriteValue(Userid, ID, cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
                 return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
         }
@@ -707,6 +746,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return ex.Message;
             }
         }

@@ -160,11 +160,13 @@ namespace Improvar.Controllers
 
                     sql += "from  ( ";
                     sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
-                    sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-1000,a.slno)slno,d.docno,d.docdt,a.baleopen,e.slcd,f.slnm,f.fullname,f.regemailid,f.add1,f.add2, f.add3,f.add4,f.add5,f.add6,f.add7,f.gstno, f.panno,f.regmobile, ";
+                    //sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-1000,a.slno)slno,d.docno,d.docdt,a.baleopen,e.slcd,f.slnm,f.fullname,f.regemailid,f.add1,f.add2, f.add3,f.add4,f.add5,f.add6,f.add7,f.gstno, f.panno,f.regmobile, ";
+                    sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-5000,a.slno)slno,d.docno,d.docdt,a.baleopen,e.slcd,f.slnm,f.fullname,f.regemailid,f.add1,f.add2, f.add3,f.add4,f.add5,f.add6,f.add7,f.gstno, f.panno,f.regmobile, ";
                     sql += "f.slphno,f.phno1,f.state,f.country, f.statecd, f.actnameof ";
                     sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ," + scm + ".t_txn e," + scmf + ".m_subleg f ";
                     sql += "where a.autono = b.autono(+) and a.autono = d.autono(+)and c.autono = e.autono(+) and e.slcd=f.slcd(+) and ";
-                    sql += "a.autono=c.autono(+) and decode(a.baleopen,'Y',a.slno-1000,a.slno)=c.slno(+) and c.stkdrcr in ('D','C') and ";
+                    //sql += "a.autono=c.autono(+) and decode(a.baleopen,'Y',a.slno-1000,a.slno)=c.slno(+) and c.stkdrcr in ('D','C') and ";
+                    sql += "a.autono=c.autono(+) and decode(a.baleopen,'Y',a.slno-5000,a.slno)=c.slno(+) and c.stkdrcr in ('D','C') and ";
                     sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
                     sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
                     if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
@@ -180,7 +182,8 @@ namespace Improvar.Controllers
                     //if (itgrpcd != "") sql += "and f.itgrpcd in (" + itgrpcd + ")  ";
                     //if (itcd != "") sql += "and a.itcd in (" + itcd + ")  ";
                     //if (baleno != "") sql += "and a.baleno||baleyr in (" + baleno + ")  ";
-                    sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+)  and a.slno <1000 ";
+                    //sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+)  and a.slno <1000 ";
+                    sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+)  and a.slno <5000 ";
                     sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
                     sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
                     sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";

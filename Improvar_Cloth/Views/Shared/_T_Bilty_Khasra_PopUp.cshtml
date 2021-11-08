@@ -38,7 +38,13 @@
                                         <input type="checkbox" name="AllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, 'T_Bilty_Khasra_PopUp', 'CheckedAll_', 'search')" />
                                     </th>
                                 }
-                                <th class="sticky-cell" style="width: 27px;">Bale No</th>
+                                <th class="sticky-cell" style="width: 27px;">
+                                    Bale No
+                                    @if (Model.MENU_PARA != "KHSR")
+                                    {
+                                        <input type="checkbox" name="AllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, 'T_Bilty_Khasra_PopUp', 'chkid_K_POPUP_', 'search')" />
+                                    }
+                                </th>
                                 @if (Model.MENU_PARA == "KHSR")
                                 {
                                     <th class="sticky-cell" style="width: 27px;">LR No</th>

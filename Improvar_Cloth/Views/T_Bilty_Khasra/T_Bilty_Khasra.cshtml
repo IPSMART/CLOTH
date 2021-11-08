@@ -504,8 +504,8 @@
 
 </script>
 <script>
-    function GetLastGodown(index) {
-        if (event.key != "F8") {
+    function GetLastGodownGrid(index) {
+        if (event.key != "F4") {
             return true;
         }
         var lastindex = $("#lasttypingindex").val();
@@ -524,6 +524,43 @@
             document.getElementById("CheckedBALEOPEN_" + index).checked = false;
         }
         GodownBaleopenFill(index);
+    }
+    function CopyLastGodownGrid(index) {
+        if (event.key != "F8") {
+            return true;
+        }
+        $("#WaitingMode").show();
+        var lastGOCD = $("#GOCD_" + index).val();
+        var lastGONM = $("#GONM_" + index).val();
+        var lastFLAG1 = $("#FLAG1_" + index).val();
+        var lastcheckedblopn = document.getElementById("CheckedBALEOPEN_" + index).checked;
+        var Table_name = "#T_Bilty_Khasra_Main > tbody > tr";
+        for (var i = 0; i <= $(Table_name).length - 1; i++) {
+            $("#GOCD_" + i).val(lastGOCD);
+            $("#GONM_" + i).val(lastGONM);
+            $("#FLAG1_" + i).val(lastFLAG1);
+            if (lastcheckedblopn == true) {
+                document.getElementById("CheckedBALEOPEN_" + i).checked = true;
+            }
+            else {
+                document.getElementById("CheckedBALEOPEN_" + i).checked = false;
+            }
+        }
+        $("#WaitingMode").hide();
+    }
+    function RemoveLastGodownGrid(index) {
+        if (event.key != "F9") {
+            return true;
+        }
+        $("#WaitingMode").show();
+        var Table_name = "#T_Bilty_Khasra_Main > tbody > tr";
+        for (var i = 0; i <= $(Table_name).length - 1; i++) {
+            $("#GOCD_" + i).val("");
+            $("#GONM_" + i).val("");
+            $("#FLAG1_" + i).val("");
+            document.getElementById("CheckedBALEOPEN_" + i).checked = false;
+        }
+        $("#WaitingMode").hide();
     }
 </script>
 @using (Html.BeginForm())
@@ -722,7 +759,11 @@
                                 </div>
                             </div>
                             <div class="col-md-11" style="margin-top: 6px;">
-                                <p class="text-info">* Press <b>F8</b> in <b>To Godown</b> of Bilty Details Grid to get <b>last Godown,Bale Open</b></p>
+                                <p class="text-info">
+                                    * Press <b>F4</b> in <b>To Godown</b> of Bilty Details Grid to get <b>last Godown,Bale Open</b><br />
+                                    ** Press <b>F8</b> on <b>To Godown</b> of Bilty Details Grid to <b>copy Godown,Bale Open</b> in all rows<br />
+                                    *** Press <b>F9</b> on <b>To Godown</b> of Bilty Details Grid to <b>remove Godown,Bale Open</b> in all rows<br />
+                                </p>
                             </div>
                         </div>
                     </div>

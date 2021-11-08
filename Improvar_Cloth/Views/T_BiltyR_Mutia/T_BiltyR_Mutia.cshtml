@@ -157,7 +157,7 @@
                 type: 'POST',
                 url: "@Url.Action("GetPendingData", PageControllerName)",
                 beforesend: $("#WaitingMode").show(),
-                data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date and Mutia Name."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
@@ -440,7 +440,7 @@
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
-                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:15%;position:absolute;">
                 </div>
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">

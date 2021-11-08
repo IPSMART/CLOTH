@@ -149,7 +149,7 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (TransactionKhasraEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            VE = (TransactionKhasraEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
                         VE.VECHLTYPE = masterHelp.VECHLTYPE();
                         VE.TRANSMODE = masterHelp.TRANSMODE();
@@ -235,15 +235,18 @@ namespace Improvar.Controllers
                 str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' ";
                 str += "order by a.slno ) a, ";
 
-                str += "(select a.gocd,b.gonm,a.slno+1000  slno,a.autono,b.flag1 from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000)b ";
+                //str += "(select a.gocd,b.gonm,a.slno+1000  slno,a.autono,b.flag1 from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000)b ";
+                str += "(select a.gocd,b.gonm,a.slno+5000  slno,a.autono,b.flag1 from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 5000)b ";
                 str += "where a.autono=b.autono(+) and a.slno=b.slno(+)  ";
 
                 DataTable TBILTYKHASRAtbl = masterHelp.SQLquery(str);
                 VE.TBILTYKHASRA = (from DataRow dr in TBILTYKHASRAtbl.Rows
-                                   where (dr["BALEOPEN"].retStr() == "Y" ? dr["slno"].retDbl() >= 1000 : dr["slno"].retDbl() <= 1000)
+                                       //where (dr["BALEOPEN"].retStr() == "Y" ? dr["slno"].retDbl() >= 1000 : dr["slno"].retDbl() <= 1000)
+                                   where (dr["BALEOPEN"].retStr() == "Y" ? dr["slno"].retDbl() >= 5000 : dr["slno"].retDbl() <= 5000)
                                    select new TBILTYKHASRA()
                                    {
-                                       SLNO = dr["BALEOPEN"].retStr() == "Y" ? (dr["slno"].retDbl() - 1000).retShort() : Convert.ToInt16(dr["slno"]),
+                                       //SLNO = dr["BALEOPEN"].retStr() == "Y" ? (dr["slno"].retDbl() - 1000).retShort() : Convert.ToInt16(dr["slno"]),
+                                       SLNO = dr["BALEOPEN"].retStr() == "Y" ? (dr["slno"].retDbl() - 5000).retShort() : Convert.ToInt16(dr["slno"]),
                                        BLAUTONO = dr["blautono"].retStr(),
                                        LRDT = dr["lrdt"].retDateStr(),
                                        LRNO = dr["lrno"].retStr(),
@@ -665,22 +668,30 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionKhasraEntry stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, TransactionKhasraEntry stream)
         {
             try
             {
-                Connection cn = new Connection();
-                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO).ToString() + "*" + DateTime.Now;
+                Cn.getQueryString(stream);
+                if (stream.T_CNTRL_HDR.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_CNTRL_HDR.DOCCD.retStr();
+                }
+                string MNUDET = stream.MENU_DETAILS;
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
+                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
                 ID = ID.Replace(" ", "_");
                 string Userid = Session["UR_ID"].ToString();
                 INI Handel_ini = new INI();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 string JR = javaScriptSerializer.Serialize(stream);
-                Handel_ini.IniWriteValue(Userid, ID, cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
                 return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
         }
@@ -693,6 +704,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return ex.Message;
             }
         }
@@ -816,7 +828,8 @@ namespace Improvar.Controllers
                         int slno = 0;
 
                         if (VE.MENU_PARA == "KHSR") { stkdrcr = "D"; doctag = "KH"; slno = 0; }
-                        else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB") { stkdrcr = "C"; doctag = "TR"; slno = 1000; }
+                        //else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB") { stkdrcr = "C"; doctag = "TR"; slno = 1000; }
+                        else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB") { stkdrcr = "C"; doctag = "TR"; slno = 5000; }
 
                         TTXN.AUTONO = TBHDR.AUTONO;
                         TTXN.CLCD = TBHDR.CLCD;
@@ -921,9 +934,11 @@ namespace Improvar.Controllers
                         strblno = DOCPATTERN;
 
                         string gocd = "";
-                        int bslno = 0, mxlp = 1;
+                        //int bslno = 0, mxlp = 1;
+                        int mxlp = 1;
                         for (int lp = 0; lp <= mxlp; lp++)
                         {
+                            int bslno = 0;
                             for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
                             {
                                 if (VE.TBILTYKHASRA[i].SLNO != 0)
@@ -937,7 +952,8 @@ namespace Improvar.Controllers
                                         T_BALE TBILTYKHASRA = new T_BALE();
                                         TBILTYKHASRA.CLCD = TBHDR.CLCD;
                                         TBILTYKHASRA.AUTONO = TBHDR.AUTONO;
-                                        TBILTYKHASRA.SLNO = (VE.TBILTYKHASRA[i].SLNO + (lp == 0 ? 0 : 1000)).retShort();
+                                        //TBILTYKHASRA.SLNO = (VE.TBILTYKHASRA[i].SLNO + (lp == 0 ? 0 : 1000)).retShort();
+                                        TBILTYKHASRA.SLNO = (VE.TBILTYKHASRA[i].SLNO + (lp == 0 ? 0 : 5000)).retShort();
                                         TBILTYKHASRA.BLAUTONO = VE.TBILTYKHASRA[i].BLAUTONO;
                                         TBILTYKHASRA.DRCR = stkdrcr;
                                         TBILTYKHASRA.LRDT = Convert.ToDateTime(VE.TBILTYKHASRA[i].LRDT);
@@ -957,7 +973,8 @@ namespace Improvar.Controllers
                                     short BLSLNO = VE.TBILTYKHASRA[i].BLSLNO;
                                     T_TXNDTL TTXNDTL = DBb.T_TXNDTL.Where(r => r.AUTONO == BLAUTONO && r.SLNO == BLSLNO).FirstOrDefault();
                                     TTXNDTL.AUTONO = TBHDR.AUTONO;
-                                    TTXNDTL.SLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
+                                    //TTXNDTL.SLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
+                                    TTXNDTL.SLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 5000)).retShort();
                                     TTXNDTL.STKDRCR = stkdrcr;
                                     TTXNDTL.GOCD = gocd;
                                     TTXNDTL.BALENO = VE.TBILTYKHASRA[i].BALENO;
@@ -983,10 +1000,12 @@ namespace Improvar.Controllers
                                     {
                                         bslno++;
                                         TBATCHDTlst[dtl].AUTONO = TBHDR.AUTONO;
-                                        TBATCHDTlst[dtl].SLNO = Convert.ToInt16(bslno + (lp == 0 ? 0 : 1000));
+                                        //TBATCHDTlst[dtl].SLNO = Convert.ToInt16(bslno + (lp == 0 ? 0 : 1000));
+                                        TBATCHDTlst[dtl].SLNO = Convert.ToInt16(bslno + (lp == 0 ? 0 : 5000));
                                         TBATCHDTlst[dtl].GOCD = gocd;
                                         TBATCHDTlst[dtl].STKDRCR = stkdrcr;
-                                        TBATCHDTlst[dtl].TXNSLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
+                                        //TBATCHDTlst[dtl].TXNSLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
+                                        TBATCHDTlst[dtl].TXNSLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 5000)).retShort();
                                         if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && lp == 0) TBATCHDTlst[dtl].BALENO = null;
                                         dbsql = masterHelp.RetModeltoSql(TBATCHDTlst[dtl]);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();

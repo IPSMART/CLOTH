@@ -1,5 +1,11 @@
 ﻿@model Improvar.ViewModels.TransactionKhasraEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_Bilty_Khasra_Main'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
 
+</script>
 <div style="overflow-y:auto;">
     <div class="table-responsive">
 
@@ -22,10 +28,10 @@
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="" style="width:27px;">SL. No.</th>
+                                <th class="" style="width:71px;">SL. No.</th>
                                 <th class="" style="width:110px;">Item Code</th>
                                 <th class="" style="width:257px;">Item Name</th>
-                                <th class="" style="width:111px;text-align:right;">Nos</th>
+                                <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width:111px;text-align:right;">Rate</th>
                                 <th class="" style="width:47px;">UOM</th>
@@ -54,7 +60,7 @@
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BLSLNO, new { id = "BLSLNO_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SLNO, new { id = "SLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITCD, new { id = "ITCD_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
@@ -86,7 +92,7 @@
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1');", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0');GodownBaleopenFill(" + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1')" />*@
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1','GOCD');GetLastGodown(" + i + ")", onblur = "GetGodown(this.value," + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1','GOCD');GetLastGodownGrid(" + i + ");CopyLastGodownGrid(" + i + ");RemoveLastGodownGrid(" + i + ")", onblur = "GetGodown(this.value," + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1','GOCD')" />
                                         </td>
                                         <td class="">
