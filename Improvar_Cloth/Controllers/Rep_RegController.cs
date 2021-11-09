@@ -108,6 +108,14 @@ namespace Improvar.Controllers
                     }
                     //=========End Report Type===========//
 
+                    //=========For Report Type===========//
+                    List<DropDown_list4> ALLRT = new List<DropDown_list4>();
+                    ALLRT.Add(new DropDown_list4 { value = "", text = "--SELECT--" });
+                    ALLRT.Add(new DropDown_list4 { value = "All Sales", text = "All Sales" });
+                    ALLRT.Add(new DropDown_list4 { value = "All Purchase", text = "All Purchase" });
+                    VE.DropDown_list4 = ALLRT;
+                    //=========End Report Type===========//
+
 
                     VE.DropDown_list3 = (from i in DBF.M_LOCA
                                          where i.COMPCD == com
@@ -216,9 +224,9 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("bltypevalue")) bltype = CommFunc.retSqlformat(FC["bltypevalue"].ToString());
                 string txntag = "", doctype = ""; string regdsp = "";
                 txntag = "SALES";
-                if (VE.TEXTBOX7.retStr() != "")
+                if (VE.TEXTBOX8.retStr() != "")
                 {
-                    regdsp = VE.TEXTBOX7.ToString() + " Register";
+                    regdsp = VE.TEXTBOX8.ToString() + " Register";
                 }
                 else
                 {
@@ -233,47 +241,62 @@ namespace Improvar.Controllers
                 //bool saprefnoprint = VE.Checkbox5;
                 bool orddetprint = VE.Checkbox7;
                 bool SeparateAchead = VE.Checkbox8;
-                switch (VE.TEXTBOX1)
+                if (VE.TEXTBOX8.retStr() != "")
                 {
-                    case "Sales":
-                        txntag = "'SB'";
-                        doctype = "'SBILD','SPSLP'"; break;
-                    case "Purchase":
-                        txntag = "'PB'";
-                        doctype = "'SPBL'"; break;
-                    case "Sales Return":
-                        txntag = "'SR'";
-                        doctype = "'SRET'"; break;
-                    case "Sales Cash Memo":
-                        txntag = "'SB'";
-                        doctype = "'SBCM'"; break;
-                    case "Cash Sales":
-                        txntag = "'SB'";
-                        doctype = "'SBPOS'"; break;
-                    case "Cash Memo Credit Note":
-                        txntag = "'SB'";
-                        doctype = "'SBCMR'"; break;
-                    case "Purchase Return":
-                        txntag = "'PR'";
-                        doctype = "'SPRM'"; break;
-                    case "Opening Stock":
-                        txntag = "'OP'"; break;
-                    case "Proforma":
-                        txntag = "'PI'";
-                        doctype = "'PROF'"; break;
-                    case "SDWOQ":
-                        txntag = "'SD'"; break;
-                    case "SCWOQ":
-                        txntag = "'SC'"; break;
-                    case "PDWOQ":
-                        txntag = "'PD'"; break;
-                    case "PCWOQ":
-                        txntag = "'PC'"; break;
-                    case "Job Bill raised to Party":
-                        txntag = "'JB'"; break;
-                    default: txntag = ""; break;
-
+                    switch (VE.TEXTBOX8)
+                    {
+                        case "All Sales":
+                            txntag = "'SB','SR','SD','SC'"; break;
+                        case "All Purchase":
+                            txntag = "'PB','PR','PD','PC'"; break;
+                        default: txntag = ""; break;
+                    }
                 }
+                else
+                {
+                    switch (VE.TEXTBOX1)
+                    {
+                        case "Sales":
+                            txntag = "'SB'";
+                            doctype = "'SBILD','SPSLP'"; break;
+                        case "Purchase":
+                            txntag = "'PB'";
+                            doctype = "'SPBL'"; break;
+                        case "Sales Return":
+                            txntag = "'SR'";
+                            doctype = "'SRET'"; break;
+                        case "Sales Cash Memo":
+                            txntag = "'SB'";
+                            doctype = "'SBCM'"; break;
+                        case "Cash Sales":
+                            txntag = "'SB'";
+                            doctype = "'SBPOS'"; break;
+                        case "Cash Memo Credit Note":
+                            txntag = "'SB'";
+                            doctype = "'SBCMR'"; break;
+                        case "Purchase Return":
+                            txntag = "'PR'";
+                            doctype = "'SPRM'"; break;
+                        case "Opening Stock":
+                            txntag = "'OP'"; break;
+                        case "Proforma":
+                            txntag = "'PI'";
+                            doctype = "'PROF'"; break;
+                        case "SDWOQ":
+                            txntag = "'SD'"; break;
+                        case "SCWOQ":
+                            txntag = "'SC'"; break;
+                        case "PDWOQ":
+                            txntag = "'PD'"; break;
+                        case "PCWOQ":
+                            txntag = "'PC'"; break;
+                        case "Job Bill raised to Party":
+                            txntag = "'JB'"; break;
+                        default: txntag = ""; break;
+
+                    }
+                }
+
                 // }
 
                 string sql = "";
@@ -416,7 +439,7 @@ namespace Improvar.Controllers
                     amtDT.Columns.Add("AmtItcdtotAmt", typeof(double));
 
                     Int32 i = 0, istore = 0, rNo = 0, maxR = tbl.Rows.Count - 1;
-                    if (((VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ" || VE.TEXTBOX7 == "PCWOQ"))) showpbill = true;
+                    if (VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ" || VE.TEXTBOX7 == "PCWOQ" || VE.TEXTBOX8 == "All Purchase") showpbill = true;
                     #region Normal Report               
                     HC.RepStart(IR, 3);
                     if (dtlsumm != "C")
@@ -462,7 +485,7 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "agslnm", "string", "c,40", "Agent; Name");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "sagslnm", "string", "c,40", "Sub Agent; Name");
-                        if ((dtlsumm == "D"|| dtlsumm == "C") && (VE.TEXTBOX1 == "Proforma")) HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
+                        if ((dtlsumm == "D" || dtlsumm == "C") && (VE.TEXTBOX1 == "Proforma")) HC.GetPrintHeader(IR, "docremoth", "string", "c,35", "Doc. Remarks");
                         if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
@@ -598,7 +621,7 @@ namespace Improvar.Controllers
                                     dr["slnm"] = tbl.Rows[i]["nm"].ToString();
                                     dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                                 }
-                                if ((dtlsumm == "D" || dtlsumm == "C")&&(VE.TEXTBOX1 == "Proforma")) dr["docremoth"] = tbl.Rows[i]["docrem"].ToString();
+                                if ((dtlsumm == "D" || dtlsumm == "C") && (VE.TEXTBOX1 == "Proforma")) dr["docremoth"] = tbl.Rows[i]["docrem"].ToString();
                                 if (dtlsumm != "C") dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
                                 if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                 if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
