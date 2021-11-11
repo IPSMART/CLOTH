@@ -351,11 +351,13 @@ namespace Improvar.Controllers
                 MUTSLCD = MUTSLCD.retStr() == "" ? "" : MUTSLCD.retSqlformat();
                 string GC = Cn.GCS();
                 List<string> blautonos = new List<string>();
+                List<string> arrbaleno = new List<string>();
                 foreach (var i in VE.TBILTYR_POPUP)
                 {
                     if (i.Checked == true)
                     {
                         blautonos.Add(i.BLAUTONO);
+                        arrbaleno.Add(i.BALENO);
                     }
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
@@ -393,6 +395,7 @@ namespace Improvar.Controllers
                 if (VE.TBILTYR == null)
                 {
                     VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
+                                  where arrbaleno.Contains(dr["baleno"].retStr())
                                   select new TBILTYR
                                   {
                                       BLAUTONO = dr["blautono"].retStr(),
@@ -449,7 +452,8 @@ namespace Improvar.Controllers
                 {
                     var existingbale = VE.TBILTYR.Select(e => e.BLAUTONO + e.BLSLNO).Distinct().ToList();
                     var tbilyr = (from DataRow dr in GetPendig_Data.Rows
-                                  where !existingbale.Contains(dr["blautono"].retStr() + dr["blslno"].retStr())
+                                  where arrbaleno.Contains(dr["baleno"].retStr()) &&
+                                  !existingbale.Contains(dr["blautono"].retStr() + dr["blslno"].retStr())
                                   select new TBILTYR
                                   {
                                       BLAUTONO = dr["blautono"].retStr(),
@@ -534,7 +538,7 @@ namespace Improvar.Controllers
                 }
                 if (CommVar.ClientCode(UNQSNO) == "SNFP")
                 {
-                    VE.TBILTYR= VE.TBILTYR.OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                    VE.TBILTYR = VE.TBILTYR.OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                     var startno = VE.T_BALE_HDR.STARTNO;
                     if (startno == null) startno = 1;
                     int i = 0;
