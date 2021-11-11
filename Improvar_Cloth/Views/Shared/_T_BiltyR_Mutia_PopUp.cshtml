@@ -32,7 +32,8 @@
                     <table id="T_BiltyR_Mutia_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1000px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="sticky-cell" style="width: 27px;">Bale No</th>
+                                <th class="sticky-cell" style="width: 27px;">LR No</th>
                                 <th class="" style="width: 27px;">SL No.</th>
                                 <th class="" style="width:100px;">LR No</th>
                                 <th class="" style="width:100px;">LR Date</th>
@@ -49,7 +50,10 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYR_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i ,Onclick= "SelectMatchingCheckBoxes("+i+");" })
+                                            @Html.CheckBoxFor(model => model.TBILTYR_POPUP[i].Checked_BALENO, new { id = "Checked_BALENO_R_POPUP_" + i, Onclick = "SelectBaleMatchingCheckBoxes(" + i + ",'Checked_BALENO_R_POPUP_', 'BLAUTONO_R_POPUP_/BALENO_POPUP', 'T_BiltyR_Mutia_PopUp');" })
+                                        </td>
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.TBILTYR_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ");" })
                                             @Html.HiddenFor(model => model.TBILTYR_POPUP[i].BLAUTONO, new { id = "BLAUTONO_R_POPUP_" + i })
                                             @Html.HiddenFor(model => model.TBILTYR_POPUP[i].BALEYR, new { id = "BALEY_R_POPUP_" + i })
                                         </td>
@@ -82,7 +86,6 @@
                 </div>
             </div>
         }
-
     </div>
     <div class="row" style="padding:5px;text-align:center;">
         <div class="col-md-10">

@@ -4307,6 +4307,7 @@ function GetBaleData() {
                     RateUpdate(i, '#D_')
                 }
             }
+            $("#BALENO_HELP").focus();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();

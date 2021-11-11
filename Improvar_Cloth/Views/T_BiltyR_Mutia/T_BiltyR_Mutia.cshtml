@@ -228,6 +228,65 @@
             document.getElementById("chkid_R_POPUP_" + i).checked = false;
         }
     }
+    function SelectBaleMatchingCheckBoxes(index, checkboxid, matchingid, tableid) {
+        debugger;
+        var arrIndex = [];
+        var k = 0;
+        var arrmatchingfld = matchingid.split('/');
+        var chkbox = document.getElementById(checkboxid + index).checked;
+        if (chkbox == true) {
+            var Table_name = "#" + tableid + " > tbody > tr";
+            var lngth = $(Table_name).length;
+            for (var i = 0; i <= lngth - 1; i++) {
+                var flag = true;
+                var balenoflag = false;
+                for (var j = 0; j <= arrmatchingfld.length - 1; j++) {
+                    if ($("#" + arrmatchingfld[j] + index).val() != $("#" + arrmatchingfld[j] + i).val()) {
+                        flag = false;
+                        break;
+                    }
+                    if (arrmatchingfld[j] == "BALENO_POPUP") {
+                        balenoflag = true;
+                    }
+                }
+                if (flag == true) {
+                    document.getElementById(checkboxid + i).checked = true;
+                    if (balenoflag == true) {
+                        document.getElementById("chkid_R_POPUP_" + i).checked = true;
+                    }
+                    arrIndex[k] = i;
+                    k++;
+                }
+            }
+        }
+        else {
+            document.getElementById(checkboxid + index).checked = false;
+            document.getElementById("chkid_R_POPUP_" + index).checked = false;
+        }
+        //else {
+        //    var Table_name = "#" + tableid + " > tbody > tr";
+        //    var lngth = $(Table_name).length;
+        //    for (var i = 0; i <= lngth - 1; i++) {
+        //        var flag = true;
+        //        var lrnoflag = false;
+        //        for (var j = 0; j <= arrmatchingfld.length - 1; j++) {
+        //            if ($("#" + arrmatchingfld[j] + index).val() != $("#" + arrmatchingfld[j] + i).val()) {
+        //                flag = false;
+        //                break;
+        //            }
+        //            if (arrmatchingfld[j] == "LRNO_POPUP_") {
+        //                lrnoflag = true;
+        //            }
+        //        }
+        //        if (flag == true) {
+        //            document.getElementById(checkboxid + i).checked = false;
+        //            if (lrnoflag == true) {
+        //                document.getElementById("chkid_K_POPUP_" + i).checked = false;
+        //            }
+        //        }
+        //    }
+        //}
+    }
     function SelectPendingLRNO() {
         debugger;
         var mutslcd = "";

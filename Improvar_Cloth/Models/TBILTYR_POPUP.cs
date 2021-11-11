@@ -21,5 +21,6 @@ namespace Improvar.Models
         public string PREFDT { get; set; }
         public string BALEYR { get; set; }
         public string STATUS { get; set; }
+        public bool Checked_BALENO { get; set; }
     }
 }

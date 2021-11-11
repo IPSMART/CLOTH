@@ -336,14 +336,14 @@ namespace Improvar.Controllers
                 sql += " ) a,  " + Environment.NewLine;
 
                 sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
-                sql += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
+                sql += " b.itnm,b.styleno||' '||b.itnm itstyle,nvl(a.hsncode,b.hsncode) hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
                 sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
                 sql += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f " + Environment.NewLine;
                 sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) " + Environment.NewLine;
                 sql += " group by " + Environment.NewLine;
                 sql += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
-                sql += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
+                sql += "  b.itnm, nvl(a.hsncode,b.hsncode), b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
                 sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
                 sql += "select a.autono,";

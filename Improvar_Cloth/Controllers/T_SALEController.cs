@@ -3767,13 +3767,13 @@ namespace Improvar.Controllers
                                          NOS = dr["NOS"].retDbl(),
                                          RATE = dr["RATE"].retDbl(),
                                          DISCRATE = dr["DISCRATE"].retDbl(),
-                                         DISCTYPE = dr["DISCTYPE"].retStr(),
-                                         DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["DISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                         DISCTYPE = dr["DISCTYPE"].retStr() == "" ? "A" : dr["DISCTYPE"].retStr(),
+                                         DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : (dr["DISCTYPE"].retStr() == "A" || dr["DISCTYPE"].retStr() == "") ? "AftDsc%" : dr["DISCTYPE"].retStr() == "F" ? "Fixed" : "",
                                          TDDISCRATE = dr["TDDISCRATE"].retDbl(),
-                                         TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : dr["TDDISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                         TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
-                                         SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["SCMDISCTYPE"].retStr() == "F" ? "Fixed" : "",
-                                         SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
+                                         TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : (dr["TDDISCTYPE"].retStr() == "A" || dr["TDDISCTYPE"].retStr() == "") ? "AftDsc%" : dr["TDDISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                         TDDISCTYPE = dr["TDDISCTYPE"].retStr() == "" ? "A" : dr["TDDISCTYPE"].retStr(),
+                                         SCMDISCTYPE_DESC = (dr["SCMDISCTYPE"].retStr() == "P" || dr["SCMDISCTYPE"].retStr() == "") ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["SCMDISCTYPE"].retStr() == "F" ? "Fixed" : "",
+                                         SCMDISCTYPE = dr["SCMDISCTYPE"].retStr() == "" ? "P" : dr["SCMDISCTYPE"].retStr(),
                                          SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
                                          STKTYPE = dr["STKTYPE"].retStr(),
                                          STKNAME = dr["STKNAME"].retStr(),
@@ -3821,53 +3821,12 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL = TBATCHDTL;
                     }
-                    int j = 0;
+                    DataTable dt = ListToDatatable.LINQResultToDataTable(VE.TBATCHDTL);
+
                     string ITGRPCD = "", MTRLJOBCD = "", ITCD = "", DISCTYPE = "", TDDISCTYPE = "", SCMDISCTYPE = "", UOM = "",
                         STKTYPE = "", GLCD = "", FABITCD = "",
                         PDESIGN = "", HSNCODE = "", PRODGRPGSTPER = "", BLUOMCD = "", RECPROGSLNO = "", BALENO = "";
                     double RATE = 0, DISCRATE = 0, SCMDISCRATE = 0, TDDISCRATE = 0, GSTPER = 0;
-                    int TXNSLNO = 1, SLNO = 1;
-                    while (j <= VE.TBATCHDTL.Count - 1)
-                    {
-                        ITGRPCD = VE.TBATCHDTL[j].ITGRPCD.retStr();
-                        MTRLJOBCD = VE.TBATCHDTL[j].MTRLJOBCD.retStr();
-                        ITCD = VE.TBATCHDTL[j].ITCD.retStr();
-                        DISCTYPE = VE.TBATCHDTL[j].DISCTYPE.retStr();
-                        TDDISCTYPE = VE.TBATCHDTL[j].TDDISCTYPE.retStr();
-                        SCMDISCTYPE = VE.TBATCHDTL[j].SCMDISCTYPE.retStr();
-                        UOM = VE.TBATCHDTL[j].UOM.retStr();
-                        STKTYPE = VE.TBATCHDTL[j].STKTYPE.retStr();
-                        RATE = VE.TBATCHDTL[j].RATE.retDbl();
-                        DISCRATE = VE.TBATCHDTL[j].DISCRATE.retDbl();
-                        SCMDISCRATE = VE.TBATCHDTL[j].SCMDISCRATE.retDbl();
-                        TDDISCRATE = VE.TBATCHDTL[j].TDDISCRATE.retDbl();
-                        GSTPER = VE.TBATCHDTL[j].GSTPER.retDbl();
-                        HSNCODE = VE.TBATCHDTL[j].HSNCODE.retStr();
-                        PRODGRPGSTPER = VE.TBATCHDTL[j].PRODGRPGSTPER.retStr();
-                        GLCD = VE.TBATCHDTL[j].GLCD.retStr();
-                        FABITCD = VE.TBATCHDTL[j].FABITCD.retStr();
-                        PDESIGN = VE.TBATCHDTL[j].PDESIGN.retStr();
-                        BLUOMCD = VE.TBATCHDTL[j].BLUOMCD.retStr();
-                        RECPROGSLNO = VE.TBATCHDTL[j].RECPROGSLNO.retStr();
-                        BALENO = VE.TBATCHDTL[j].BALENO.retStr();
-
-                        while (ITGRPCD == VE.TBATCHDTL[j].ITGRPCD.retStr() && MTRLJOBCD == VE.TBATCHDTL[j].MTRLJOBCD.retStr()
-                            && ITCD == VE.TBATCHDTL[j].ITCD.retStr() &&
-                 DISCTYPE == VE.TBATCHDTL[j].DISCTYPE.retStr() && TDDISCTYPE == VE.TBATCHDTL[j].TDDISCTYPE.retStr() &&
-                  SCMDISCTYPE == VE.TBATCHDTL[j].SCMDISCTYPE.retStr() && UOM == VE.TBATCHDTL[j].UOM.retStr() && STKTYPE == VE.TBATCHDTL[j].STKTYPE.retStr() && RATE == VE.TBATCHDTL[j].RATE.retDbl() &&
-                 DISCRATE == VE.TBATCHDTL[j].DISCRATE.retDbl() && SCMDISCRATE == VE.TBATCHDTL[j].SCMDISCRATE.retDbl() && TDDISCRATE == VE.TBATCHDTL[j].TDDISCRATE.retDbl() && GSTPER == VE.TBATCHDTL[j].GSTPER.retDbl() &&
-                 HSNCODE == VE.TBATCHDTL[j].HSNCODE.retStr() && PRODGRPGSTPER == VE.TBATCHDTL[j].PRODGRPGSTPER.retStr() &&
-                 GLCD == VE.TBATCHDTL[j].GLCD.retStr() && FABITCD == VE.TBATCHDTL[j].FABITCD.retStr() && PDESIGN == VE.TBATCHDTL[j].PDESIGN.retStr()
-                 && BLUOMCD == VE.TBATCHDTL[j].BLUOMCD.retStr() && RECPROGSLNO == VE.TBATCHDTL[j].RECPROGSLNO.retStr() && BALENO == VE.TBATCHDTL[j].BALENO.retStr())
-                        {
-                            VE.TBATCHDTL[j].TXNSLNO = VE.MERGEINDTL == true ? TXNSLNO.retShort() : SLNO.retShort();
-                            VE.TBATCHDTL[j].SLNO = SLNO.retShort();
-                            SLNO++;
-                            j++;
-                            if (j >= VE.TBATCHDTL.Count - 1) break;
-                        }
-                        TXNSLNO++;
-                    }
                     //fill prodgrpgstper in t_batchdtl
                     DataTable allprodgrpgstper_data = new DataTable();
                     string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
@@ -3981,6 +3940,51 @@ namespace Improvar.Controllers
                     }
                     VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
                     VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
+                    int j = 0;
+
+                    int TXNSLNO = 1, SLNO = 1;
+                    while (j <= VE.TBATCHDTL.Count - 1)
+                    {
+                        ITGRPCD = VE.TBATCHDTL[j].ITGRPCD.retStr();
+                        MTRLJOBCD = VE.TBATCHDTL[j].MTRLJOBCD.retStr();
+                        ITCD = VE.TBATCHDTL[j].ITCD.retStr();
+                        DISCTYPE = VE.TBATCHDTL[j].DISCTYPE.retStr() == "" ? "A" : VE.TBATCHDTL[j].DISCTYPE.retStr();
+                        TDDISCTYPE = VE.TBATCHDTL[j].TDDISCTYPE.retStr() == "" ? "A" : VE.TBATCHDTL[j].TDDISCTYPE.retStr();
+                        SCMDISCTYPE = VE.TBATCHDTL[j].SCMDISCTYPE.retStr() == "" ? "P" : VE.TBATCHDTL[j].SCMDISCTYPE.retStr();
+                        UOM = VE.TBATCHDTL[j].UOM.retStr();
+                        STKTYPE = VE.TBATCHDTL[j].STKTYPE.retStr();
+                        RATE = VE.TBATCHDTL[j].RATE.retDbl();
+                        DISCRATE = VE.TBATCHDTL[j].DISCRATE.retDbl();
+                        SCMDISCRATE = VE.TBATCHDTL[j].SCMDISCRATE.retDbl();
+                        TDDISCRATE = VE.TBATCHDTL[j].TDDISCRATE.retDbl();
+                        GSTPER = VE.TBATCHDTL[j].GSTPER.retDbl();
+                        HSNCODE = VE.TBATCHDTL[j].HSNCODE.retStr();
+                        PRODGRPGSTPER = VE.TBATCHDTL[j].PRODGRPGSTPER.retStr();
+                        GLCD = VE.TBATCHDTL[j].GLCD.retStr();
+                        FABITCD = VE.TBATCHDTL[j].FABITCD.retStr();
+                        PDESIGN = VE.TBATCHDTL[j].PDESIGN.retStr();
+                        BLUOMCD = VE.TBATCHDTL[j].BLUOMCD.retStr();
+                        RECPROGSLNO = VE.TBATCHDTL[j].RECPROGSLNO.retStr();
+                        BALENO = VE.TBATCHDTL[j].BALENO.retStr();
+
+                        while (ITGRPCD == VE.TBATCHDTL[j].ITGRPCD.retStr() && MTRLJOBCD == VE.TBATCHDTL[j].MTRLJOBCD.retStr()
+                            && ITCD == VE.TBATCHDTL[j].ITCD.retStr() &&
+                 DISCTYPE == (VE.TBATCHDTL[j].DISCTYPE.retStr() == "" ? "A" : VE.TBATCHDTL[j].DISCTYPE.retStr()) && TDDISCTYPE == (VE.TBATCHDTL[j].TDDISCTYPE.retStr() == "" ? "A" : VE.TBATCHDTL[j].TDDISCTYPE.retStr()) &&
+                  SCMDISCTYPE == (VE.TBATCHDTL[j].SCMDISCTYPE.retStr() == "" ? "P" : VE.TBATCHDTL[j].SCMDISCTYPE.retStr()) && UOM == VE.TBATCHDTL[j].UOM.retStr() && STKTYPE == VE.TBATCHDTL[j].STKTYPE.retStr() && RATE == VE.TBATCHDTL[j].RATE.retDbl() &&
+                 DISCRATE == VE.TBATCHDTL[j].DISCRATE.retDbl() && SCMDISCRATE == VE.TBATCHDTL[j].SCMDISCRATE.retDbl() && TDDISCRATE == VE.TBATCHDTL[j].TDDISCRATE.retDbl() && GSTPER == VE.TBATCHDTL[j].GSTPER.retDbl() &&
+                 HSNCODE == VE.TBATCHDTL[j].HSNCODE.retStr() && PRODGRPGSTPER == VE.TBATCHDTL[j].PRODGRPGSTPER.retStr() &&
+                 GLCD == VE.TBATCHDTL[j].GLCD.retStr() && FABITCD == VE.TBATCHDTL[j].FABITCD.retStr() && PDESIGN == VE.TBATCHDTL[j].PDESIGN.retStr()
+                 && BLUOMCD == VE.TBATCHDTL[j].BLUOMCD.retStr() && RECPROGSLNO == VE.TBATCHDTL[j].RECPROGSLNO.retStr() && BALENO == VE.TBATCHDTL[j].BALENO.retStr())
+                        {
+                            VE.TBATCHDTL[j].TXNSLNO = VE.MERGEINDTL == true ? TXNSLNO.retShort() : SLNO.retShort();
+                            VE.TBATCHDTL[j].SLNO = SLNO.retShort();
+                            SLNO++;
+                            j++;
+                            if (j > VE.TBATCHDTL.Count - 1) break;
+                        }
+                        TXNSLNO++;
+                        if (j > VE.TBATCHDTL.Count - 1) break;
+                    }
                 }
                 VE.Database_Combo4 = (from n in DB.T_BATCHDTL
                                       select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();

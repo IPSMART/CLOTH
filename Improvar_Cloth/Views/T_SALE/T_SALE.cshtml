@@ -1673,7 +1673,7 @@
 
 
                                     }
-                                    if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "SBPOS") && Model.DefaultAction == "A")
+                                    if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "SBPOS") && Model.DefaultAction != "V")
                                     {
                                         <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
@@ -1688,7 +1688,7 @@
                                                 @Html.HiddenFor(model => model.LINKDOCNO, new { id = "LINKDOCNO" })
                                             </div>
                                         </div>
-                                        if (Model.DefaultAction == "A")
+                                        if (Model.DefaultAction != "V")
                                         {
                                             <div class="col-md-1" style="width:auto;">
                                                 <input tabindex="-1" type="button" class="btn-sm" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBale" value="Get Bale Data" title="Click to Get Bale Data" onclick="GetBaleData('LINKAUTONO', 'LINKDOCNO', 'BALENO_HELP') " />
