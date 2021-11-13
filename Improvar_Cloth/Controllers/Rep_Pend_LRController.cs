@@ -117,6 +117,11 @@ namespace Improvar.Controllers
                     i++;
                     if (i > maxR) break;
                 }
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["lrno"] = "Total";
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                IR.Rows[rNo]["baleno"] = (from DataRow dr in tbl1.Rows select dr["baleno"].retStr()).Distinct().Count().retDbl();
+               
                 string head = BltyPending == "R" ? "Receive from Mutia" : "Issue to Mutia";
                 string pghdr1 = "Pending " + head + " Register from " + fdt + " to " + tdt;
                 string repname = ("Pend " + head + " Reg").retRepname();
