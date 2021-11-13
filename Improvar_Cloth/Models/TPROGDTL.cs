@@ -40,7 +40,6 @@ namespace Improvar.Models
         
         [StringLength(1)]
         public string STKDRCR { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }

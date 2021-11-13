@@ -130,10 +130,10 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTISSPROCESS")','Size Details','Q_SIZECD_@i','Q_SIZECD_@i=SIZECD=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "Q_BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].BOMQNTY, new { htmlAttributes = new { id = "Q_BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "Q_EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { htmlAttributes = new { id = "Q_EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 } })
                                         </td>
                                         <td class="" style="padding-left:14px;">
                                             @Html.CheckBoxFor(model => model.TPROGBOM[i].Q_CheckedSample, new { id = "Q_CheckedSample_" + i })

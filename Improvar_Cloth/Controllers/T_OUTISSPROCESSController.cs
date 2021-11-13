@@ -402,8 +402,8 @@ namespace Improvar.Controllers
                         q.BarImagesCount = img.barimagecount.retStr();
                     }
                 }
-                VE.P_T_NOS = TOTAL_NOS.retInt();
-                VE.P_T_QNTY = TOTAL_QNTY.retInt();
+                VE.P_T_NOS = TOTAL_NOS.retDbl();
+                VE.P_T_QNTY = TOTAL_QNTY.retDbl();
 
 
                 string str2 = "";
@@ -460,9 +460,9 @@ namespace Improvar.Controllers
                     //    q.PROGSLNO = VE.TPROGDTL.Where(a => a.BARNO.retStr() == q.BARNO.retStr() && a.QNTY.retStr() == q.QQNTY.retStr()).Select(b => b.SLNO).SingleOrDefault();
                     //}
                 }
-                VE.T_QQNTY = TOTAL_QQNTY.retInt();
-                VE.T_BOMQNTY = TOTAL_BOMQNTY.retInt();
-                VE.T_EXTRAQNTY = TOTAL_EXTRAQNTY.retInt();
+                VE.T_QQNTY = TOTAL_QQNTY.retDbl();
+                VE.T_BOMQNTY = TOTAL_BOMQNTY.retDbl();
+                VE.T_EXTRAQNTY = TOTAL_EXTRAQNTY.retDbl();
 
                 #region batch and detail data
                 string str1 = "";

@@ -142,7 +142,9 @@ namespace Improvar.Models
         public string STKNAME { get; set; }
         public string ITREMARKS { get; set; }
         public bool Q_CheckedSample { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? BOMQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? EXTRAQNTY { get; set; }
         public short RSLNO { get; set; }
 

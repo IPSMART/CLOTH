@@ -19,7 +19,8 @@ namespace Improvar.Controllers
         // GET: Rep_Job_Ledger
         public ActionResult Rep_Job_Ledger()
         {
-            try {
+            try
+            {
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -34,7 +35,7 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     string jobnm = DB.M_JOBMST.Find(jobcd)?.JOBNM;
                     ViewBag.formname = jobnm + " Ledger (Item)";
-                    VE.FDT =  CommVar.FinStartDate(UNQSNO);
+                    VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.Checkbox1 = false; //show summary
                     VE.Checkbox2 = true; //Show Party
@@ -42,7 +43,7 @@ namespace Improvar.Controllers
                     VE.TEXTBOX2 = "P"; //Calc on Box/Pcs/Sets;
                     if (VE.MENU_PARA == "IR") VE.Checkbox3 = true;
                     string comcd = CommVar.Compcd(UNQSNO);
-                    string location =  CommVar.Loccd(UNQSNO);
+                    string location = CommVar.Loccd(UNQSNO);
 
                     jobcd = VE.MENU_PARA;
                     jobnm = DB.M_JOBMST.Find(jobcd)?.JOBNM;
@@ -65,7 +66,8 @@ namespace Improvar.Controllers
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
                     return View(VE);
-                } }
+                }
+            }
             catch (Exception ex)
             {
                 ReportViewinHtml VE = new ReportViewinHtml();
@@ -85,8 +87,8 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
-                string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string slcd = "", linecd="", itcd = "", itgrpcd = "", fdt, tdt = "";
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "";
                 string unselslcd = "", recslcd = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
@@ -159,10 +161,13 @@ namespace Improvar.Controllers
                 //sql += "docdt, docno, autono, styleno, itnm, itcd, partcd, brandnm, brandcd, itgrpnm, itgrpcd, itnm, itcd, print_seq, sizenm ";
 
                 sql = "";
-                sql += "select a.autono, a.slno, a.progautono, a.progslno, b.proguniqno, b.dia, b.batchno, b.jobcd, ";
+                //sql += "select a.autono, a.slno, a.progautono, a.progslno, b.proguniqno, b.dia, b.batchno, b.jobcd, ";
+                sql += "select a.autono, a.slno, a.progautono, a.progslno, b.proguniqno, b.dia, ''batchno, b.jobcd, ";
                 sql += "e.docdt, nvl(d.prefno,e.docno) docno, d.prefdt, a.doctag, a.slcd, k.slnm, d.linecd, d.linecd, m.linenm, ";
-                sql += "a.mtrljobcd, f.styleno, f.itnm, nvl(f.pcsperbox,0) pcsperbox, ";
-                sql += "f.mixsize, nvl(f.pcsperset,0) pcsperset, ";
+                //sql += "a.mtrljobcd, f.styleno, f.itnm, nvl(f.pcsperbox,0) pcsperbox, ";
+                sql += "a.mtrljobcd, f.styleno, f.itnm, 0 pcsperbox, ";
+                //sql += "f.mixsize, nvl(f.pcsperset,0) pcsperset, ";
+                sql += "'' mixsize, nvl(f.pcsperset,0) pcsperset, ";
                 sql += "a.slcd||nvl(d.linecd,'') repslcd, k.slnm||decode(m.linenm,null,'',' ['||m.linenm||']') repslnm, ";
                 sql += "b.itcd||nvl(g.partcd,'') repitcd, nvl(f.styleno,f.itnm)||decode(g.partnm,null,'',' ['||g.partnm||']') repitnm, ";
                 sql += "g.partnm, h.print_seq, h.sizenm, l.uomnm, nvl(l.decimals,0) decimals, ";
@@ -187,17 +192,19 @@ namespace Improvar.Controllers
                 }
                 sql += "nvl(c.shortqnty,0) shortqnty ";
                 sql += "from " + scm + ".t_progdtl a, " + scm + ".t_txndtl c, " + scm + ".t_txn d, " + scm + ".t_progmast e ";
-                sql += "where a.autono=c.recprogautono(+) and a.slno=c.recprogslno(+) and a.autono=d.autono(+) and a.progautono=e.autono(+) and a.progslno=e.slno(+)"; 
+                //sql += "where a.autono=c.recprogautono(+) and a.slno=c.recprogslno(+) and a.autono=d.autono(+) and a.progautono=e.autono(+) and a.progslno=e.slno(+)"; 
+                sql += "where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autono=d.autono(+) and a.progautono=e.autono(+) and a.progslno=e.slno(+)";
                 sql += "union all ";
                 sql += "select a.autono, a.slno, a.autono||a.slno autoslno, a.progautono, a.progslno, a.progautono||a.progslno progautoslno, 'C' stkdrcr, b.slcd, 'SE' doctag, ";
                 sql += "'' mtrljobcd, e.stktype, ";
                 sql += "0 qnty, nvl(a.short_allow,0) shortqnty ";
                 sql += "from " + scm + ".t_prog_close a, " + scm + ".t_prog_close_hdr b, " + scm + ".t_cntrl_hdr c, " + scm + ".t_progmast e ";
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and nvl(a.short_allow,0) <> 0 and a.progautono=e.autono(+) and a.progslno=e.slno(+) ";
-                sql += ") a, ";  
+                sql += ") a, ";
 
                 sql += scm + ".t_progmast b, " + scm + ".t_txn d, " + scm + ".t_cntrl_hdr e, ";
-                sql += scm + ".m_sitem f, " + scm + ".m_parts g, " + scm + ".m_size h, " + scm + ".m_group i, " + scm + ".m_brand j, ";
+                //sql += scm + ".m_sitem f, " + scm + ".m_parts g, " + scm + ".m_size h, " + scm + ".m_group i, " + scm + ".m_brand j, ";
+                sql += scm + ".m_sitem f, " + scm + ".m_parts g, " + scm + ".m_size h, " + scm + ".m_group i, ";
                 sql += scmf + ".m_subleg k, " + scmf + ".m_uom l, " + scm + ".m_linemast m, " + scm + ".t_txn o, " + scmf + ".m_subleg p, " + scm + ".m_linemast q, " + scm + ".t_cntrl_hdr r ";
                 sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and ";
                 sql += "a.autono=d.autono(+) and a.autono=e.autono(+) and a.slcd=k.slcd(+) and f.uomcd=l.uomcd(+) and d.linecd=m.linecd(+) and ";
@@ -210,7 +217,8 @@ namespace Improvar.Controllers
                 if (linecd != "") sql += "d.linecd in (" + linecd + ") and ";
                 if (itgrpcd != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
                 if (itcd != "") sql += "b.itcd in (" + itcd + ") and ";
-                sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) and b.sizecd=h.sizecd(+) and f.itgrpcd=i.itgrpcd(+) and i.brandcd=j.brandcd(+) ";
+                //sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) and b.sizecd=h.sizecd(+) and f.itgrpcd=i.itgrpcd(+) and i.brandcd=j.brandcd(+) ";
+                sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) and b.sizecd=h.sizecd(+) and f.itgrpcd=i.itgrpcd(+) ";
                 sql += "order by ";
                 if (showparty == true) sql += "repslnm, repslcd, ";
                 sql += "docdt, docno, autono, styleno, itnm, itcd, partcd, brandnm, brandcd, itgrpnm, itgrpcd, itnm, itcd, print_seq, sizenm ";
@@ -250,7 +258,7 @@ namespace Improvar.Controllers
                 }
                 if (showsumm == true) HC.GetPrintHeader(IR, "opqnty", "double", qtydsp, "Op.Qty");
                 HC.GetPrintHeader(IR, "issqnty", "double", qtydsp, "Iss.Qty");
-                if (showothrunit == true) HC.GetPrintHeader(IR, "issqnty1", "double", "n,13,2:##,##,##,##0", "Iss."+qty1hd);
+                if (showothrunit == true) HC.GetPrintHeader(IR, "issqnty1", "double", "n,13,2:##,##,##,##0", "Iss." + qty1hd);
                 HC.GetPrintHeader(IR, "recqnty", "double", qtydsp, "Rec.Qty");
                 if (showothrunit == true) HC.GetPrintHeader(IR, "recqnty1", "double", "n,13,2:##,##,##,##0", "Rec." + qty1hd);
                 HC.GetPrintHeader(IR, "shrqnty", "double", qtydsp, "Shortage");
@@ -263,7 +271,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "retqnty", "double", qtydsp, "Ret.Qty");
                 HC.GetPrintHeader(IR, "balqnty", "double", qtydsp, "Bal.Qty");
 
-                double gopqty = 0, gissqty = 0, grecqty = 0, gretqty = 0, gshrqty = 0, gexcqty=0, gbalqty = 0, glosqty = 0, grakqty = 0;
+                double gopqty = 0, gissqty = 0, grecqty = 0, gretqty = 0, gshrqty = 0, gexcqty = 0, gbalqty = 0, glosqty = 0, grakqty = 0;
                 double gissqty1 = 0, grecqty1 = 0, gretqty1 = 0, gshrqty1 = 0;
 
                 string chk1fld = "", chk1val = "", chk1nm = "", chk2fld = "", chk2val = "", chk2nm = "";
@@ -288,13 +296,13 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
 
-                    double popqty=0, pissqty = 0, precqty = 0, pretqty = 0, pshrqty = 0, pexcqty=0, pbalqty = 0, plosqty = 0, prakqty = 0;
+                    double popqty = 0, pissqty = 0, precqty = 0, pretqty = 0, pshrqty = 0, pexcqty = 0, pbalqty = 0, plosqty = 0, prakqty = 0;
                     double pissqty1 = 0, precqty1 = 0, pretqty1 = 0, pshrqty1 = 0;
                     while (tbl.Rows[i][chk1fld].ToString() == chk1val)
                     {
                         chk2val = tbl.Rows[i][chk2fld].ToString();
-                        double op = 0, op1 = 0, cl=0, cl1 = 0;
-                        double sopqty=0, sissqty = 0, srecqty = 0, sretqty = 0, sshrqty = 0, sexcqty=0, sbalqty = 0, slosqty = 0, srakqty = 0;
+                        double op = 0, op1 = 0, cl = 0, cl1 = 0;
+                        double sopqty = 0, sissqty = 0, srecqty = 0, sretqty = 0, sshrqty = 0, sexcqty = 0, sbalqty = 0, slosqty = 0, srakqty = 0;
                         double sissqty1 = 0, srecqty1 = 0, sretqty1 = 0, sshrqty1 = 0;
                         while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val)
                         {
@@ -319,15 +327,15 @@ namespace Improvar.Controllers
                                     }
                                     if (i > maxR) break;
                                 }
-                                if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i-1]["pcsperbox"]));
-                                else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i-1]["pcsperset"]));
+                                if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
                                 else cqty = cpcs;
                                 op = op + cpcs;
                                 op1 = op1 + cqty;
                                 cl = op; cl1 = op1;
                                 if (i > maxR) break;
                             }
-                            if (showsumm == false && op+op1 != 0)
+                            if (showsumm == false && op + op1 != 0)
                             {
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["docdt"] = fdt;
@@ -341,13 +349,13 @@ namespace Improvar.Controllers
                             }
 
                             //for the period
-                            double tissqty = 0, trecqty = 0, tretqty = 0, tshrqty = 0, texcqty=0, tlosqty = 0, trakqty = 0;
+                            double tissqty = 0, trecqty = 0, tretqty = 0, tshrqty = 0, texcqty = 0, tlosqty = 0, trakqty = 0;
                             double tissqty1 = 0, trecqty1 = 0, tretqty1 = 0, tshrqty1 = 0;
                             while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                             {
                                 string autono = tbl.Rows[i]["autono"].ToString();
                                 string dsc = "";
-                                double issqty = 0, recqty = 0, retqty = 0, shrqty = 0, excqty=0, losqty = 0, rakqty = 0;
+                                double issqty = 0, recqty = 0, retqty = 0, shrqty = 0, excqty = 0, losqty = 0, rakqty = 0;
                                 double issqty1 = 0, recqty1 = 0, retqty1 = 0, shrqty1 = 0;
                                 while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["autono"].ToString() == autono)
                                 {
@@ -376,14 +384,14 @@ namespace Improvar.Controllers
                                     if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                     else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
                                     else cqty = cpcs;
-                                    switch (tbl.Rows[i-1]["doctag"].ToString())
+                                    switch (tbl.Rows[i - 1]["doctag"].ToString())
                                     {
                                         case "JC":
-                                            issqty = issqty + cpcs + losqty + rakqty;  issqty1 = issqty1 + cqty + losqty + rakqty; losqty = 0; rakqty = 0; break;
+                                            issqty = issqty + cpcs + losqty + rakqty; issqty1 = issqty1 + cqty + losqty + rakqty; losqty = 0; rakqty = 0; break;
                                         case "JR":
                                             recqty = recqty + cpcs; recqty1 = recqty1 + cqty; break;
                                         case "JU":
-                                            retqty = retqty + cpcs+losqty+rakqty; retqty1 = retqty1 + cqty + losqty + rakqty;losqty = 0;rakqty = 0; break;
+                                            retqty = retqty + cpcs + losqty + rakqty; retqty1 = retqty1 + cqty + losqty + rakqty; losqty = 0; rakqty = 0; break;
                                     }
                                     if (i > maxR) break;
                                 }
@@ -417,7 +425,7 @@ namespace Improvar.Controllers
                                     if (showraka == true)
                                     {
                                         if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = issqty1;
-                                        if (showothrunit==true) IR.Rows[rNo]["recqnty1"] = recqty1;
+                                        if (showothrunit == true) IR.Rows[rNo]["recqnty1"] = recqty1;
                                         IR.Rows[rNo]["losqnty"] = losqty;
                                         IR.Rows[rNo]["rakqnty"] = rakqty;
                                     }
@@ -479,7 +487,7 @@ namespace Improvar.Controllers
                     {
                         noparty++;
                         IR.Rows[rNo]["docdt"] = noparty;
-                        if (groupondate == true )
+                        if (groupondate == true)
                         {
                             IR.Rows[rNo]["docno"] = chk1val.retDateStr();
                             IR.Rows[rNo]["dsc"] = tbl.Rows[i - 1][chk1nm].ToString().retDateStr();
@@ -526,7 +534,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["balqnty"] = gbalqty;
 
                 string pghdr1 = "", repname = CommFunc.retRepname("rep_partyleg");
-                pghdr1 = "Party Ledger (" + jobnm + ") " + (VE.Checkbox3==true?" (Combine) ":"") +"from " + fdt + " to " + tdt;
+                pghdr1 = "Party Ledger (" + jobnm + ") " + (VE.Checkbox3 == true ? " (Combine) " : "") + "from " + fdt + " to " + tdt;
 
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
                 return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
@@ -536,6 +544,6 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
-        }       
+        }
     }
 }
