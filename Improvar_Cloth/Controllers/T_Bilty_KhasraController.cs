@@ -267,10 +267,19 @@ namespace Improvar.Controllers
                                        PBLDT = dr["prefdt"].retDateStr(),
                                        BALEOPEN = dr["BALEOPEN"].retStr(),
                                    }).OrderBy(s => s.SLNO).ToList();
-                if (VE.MENU_PARA == "KHSR")
+                if (CommVar.ClientCode(UNQSNO) == "SNFP")
                 {
                     VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+
                 }
+                else
+                {
+                    if (VE.MENU_PARA == "KHSR")
+                    {
+                        VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+                    }
+                }
+
                 foreach (var v in VE.TBILTYKHASRA)
                 {
                     v.CheckedBALEOPEN = v.BALEOPEN.retStr() == "Y" ? true : false;
@@ -396,9 +405,15 @@ namespace Improvar.Controllers
                     var selectedbillbaleno = VE.TBILTYKHASRA.Select(e => e.BALENO).Distinct().ToList();
                     VE.TBILTYKHASRA_POPUP.Where(x => selectedbill.Contains(x.BLAUTONO) && selectedbillbaleno.Contains(x.BALENO)).ForEach(e => e.Checked = true);
                 }
-                if (VE.MENU_PARA == "KHSR")
+                if (CommVar.ClientCode(UNQSNO) == "SNFP")
                 {
                     VE.TBILTYKHASRA_POPUP = VE.TBILTYKHASRA_POPUP.OrderBy(a => a.BALENO).ToList();
+                }
+                else {
+                    if (VE.MENU_PARA == "KHSR")
+                    {
+                        VE.TBILTYKHASRA_POPUP = VE.TBILTYKHASRA_POPUP.OrderBy(a => a.BALENO).ToList();
+                    }
                 }
                 for (int p = 0; p <= VE.TBILTYKHASRA_POPUP.Count - 1; p++)
                 {
@@ -501,13 +516,20 @@ namespace Improvar.Controllers
                 {
                     VE.TBILTYKHASRA.AddRange(newdata);
                 }
-                if (VE.MENU_PARA == "KHSR")
+                if (CommVar.ClientCode(UNQSNO) == "SNFP")
                 {
                     VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+                   
                 }
-                else
-                {
-                    VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.SLNO).ToList();
+                else {
+                    if (VE.MENU_PARA == "KHSR")
+                    {
+                        VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
+                    }
+                    else
+                    {
+                        VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.SLNO).ToList();
+                    }
                 }
                 for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
                 {
