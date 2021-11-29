@@ -559,8 +559,10 @@ namespace Improvar.Controllers
                                     { mult = -1; }
                                     else if (tbl.Rows[i]["doctag"].retStr() == "PB" && tbl.Rows[i]["stkdrcr"].retStr() == "C")
                                     { mult = -1; }
-                                    bnos = bnos + tbl.Rows[i]["nos"].retDbl();
-                                    bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl();
+                                    else if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
+                                    { mult = -1; }
+                                    bnos = bnos + tbl.Rows[i]["nos"].retDbl() * mult;
+                                    bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl() * mult;
                                     if (SeparateAchead == true && tbl.Rows[i]["slno"].retInt() > 1000)
                                     {
                                         foreach (DataRow amtdr in amtDT.Rows)
@@ -578,7 +580,7 @@ namespace Improvar.Controllers
                                     }
 
                                     bdisc1 = bdisc1 + tbl.Rows[i]["scmdiscamt"].retDbl() * mult;
-                                    bdisc2 = bdisc2 + tbl.Rows[i]["tddiscamt"].retDbl() + tbl.Rows[i]["discamt"].retDbl() * mult;
+                                    bdisc2 = bdisc2 + (tbl.Rows[i]["tddiscamt"].retDbl() + tbl.Rows[i]["discamt"].retDbl()) * mult;
                                     btaxable = btaxable + tbl.Rows[i]["TXBLVAL"].retDbl() * mult;
                                     bigstamt = bigstamt + tbl.Rows[i]["igstamt"].retDbl() * mult;
                                     bcgstamt = bcgstamt + tbl.Rows[i]["cgstamt"].retDbl() * mult;
@@ -646,18 +648,21 @@ namespace Improvar.Controllers
                                 }
                                 if (tbl.Rows[i]["cancel"].ToString() != "Y")
                                 {
-                                    dr["tcsamt"] = tbl.Rows[i]["tcsamt"].retDbl();
-                                    dr["roamt"] = tbl.Rows[i]["roamt"].retDbl();
+                                    double mult = 1;
+                                    if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
+                                    { mult = -1; }
+                                    dr["tcsamt"] = tbl.Rows[i]["tcsamt"].retDbl() * mult;
+                                    dr["roamt"] = tbl.Rows[i]["roamt"].retDbl() * mult;
                                     var a = (from DataRow dr1 in paymentDt.Rows
                                              where auto1 == dr1["autono"].retStr()
                                              select new { payamt = dr1["payamt"].retDbl() }).ToList();
                                     if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = a.Sum(b => b.payamt).retDbl();
-                                    dr["blamt"] = tbl.Rows[i]["blamt"].retDbl();
+                                    dr["blamt"] = tbl.Rows[i]["blamt"].retDbl() * mult;
                                     dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
                                     dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
-                                    ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl();
-                                    troamt = troamt + tbl.Rows[i]["roamt"].retDbl();
-                                    tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl();
+                                    ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl() * mult;
+                                    troamt = troamt + tbl.Rows[i]["roamt"].retDbl() * mult;
+                                    tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl() * mult;
                                     if (VE.TEXTBOX1 == "Sales Cash Memo") tpayamt = tpayamt + a.Sum(b => b.payamt).retDbl();
                                     //tpayamt = tpayamt + tbl.Rows[i]["payamt"].retDbl();
                                 }
@@ -714,6 +719,9 @@ namespace Improvar.Controllers
                             int ino = 0;
                             while (auto1 == tbl.Rows[i]["autono"].ToString())
                             {
+                                double mult = 1;
+                                if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
+                                { mult = -1; }
                                 ino = ino + 1;
                                 DataRow dr = IR.NewRow();
                                 //dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
@@ -725,25 +733,25 @@ namespace Improvar.Controllers
                                 dr["uomcd"] = tbl.Rows[i]["uomcd"].ToString();
                                 if (cnt_blqnty.Count() > 0)
                                 {
-                                    dr["blqnty"] = tbl.Rows[i]["blqnty"].retDbl();
+                                    dr["blqnty"] = tbl.Rows[i]["blqnty"].retDbl() * mult;
                                 }
                                 if (tbl.Rows[i]["cancel"].ToString() != "Y")
                                 {
-                                    dr["nos"] = tbl.Rows[i]["nos"].retDbl();
-                                    dr["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                                    dr["nos"] = tbl.Rows[i]["nos"].retDbl() * mult;
+                                    dr["qnty"] = (tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["qnty"])) * mult;
                                     dr["rate"] = tbl.Rows[i]["rate"].retDbl();
-                                    dr["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["amt"]);
-                                    dr["disc1"] = tbl.Rows[i]["scmdiscamt"].retDbl();
-                                    dr["disc2"] = tbl.Rows[i]["discamt"].retDbl();
-                                    dsc1 = tbl.Rows[i]["tddiscamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["tddiscamt"]);
-                                    dsc2 = tbl.Rows[i]["discamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["discamt"]);
-                                    dr["taxableval"] = tbl.Rows[i]["TXBLVAL"].retDbl();      /*Convert.ToDouble(tbl.Rows[i]["amt"]) - dsc1 - dsc2;*/
+                                    dr["amt"] = (tbl.Rows[i]["amt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["amt"])) * mult;
+                                    dr["disc1"] = tbl.Rows[i]["scmdiscamt"].retDbl() * mult;
+                                    dr["disc2"] = (tbl.Rows[i]["tddiscamt"].retDbl() + tbl.Rows[i]["discamt"].retDbl()) * mult;
+                                    dsc1 = (tbl.Rows[i]["tddiscamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["tddiscamt"])) * mult;
+                                    dsc2 = (tbl.Rows[i]["discamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["discamt"])) * mult;
+                                    dr["taxableval"] = tbl.Rows[i]["TXBLVAL"].retDbl() * mult;      /*Convert.ToDouble(tbl.Rows[i]["amt"]) - dsc1 - dsc2;*/
                                     dr["igstper"] = tbl.Rows[i]["igstper"].retDbl();
-                                    dr["igstamt"] = tbl.Rows[i]["igstamt"].retDbl();
+                                    dr["igstamt"] = tbl.Rows[i]["igstamt"].retDbl() * mult;
                                     dr["cgstper"] = tbl.Rows[i]["cgstper"].retDbl();
-                                    dr["cgstamt"] = tbl.Rows[i]["cgstamt"].retDbl();
+                                    dr["cgstamt"] = tbl.Rows[i]["cgstamt"].retDbl() * mult;
                                     dr["sgstper"] = tbl.Rows[i]["sgstper"].retDbl();
-                                    dr["sgstamt"] = tbl.Rows[i]["sgstamt"].retDbl();
+                                    dr["sgstamt"] = tbl.Rows[i]["sgstamt"].retDbl() * mult;
                                     //dr["blamt"] = tbl.Rows[i]["NETAMT"].retDbl();
                                     if (MSYSCNFG.MNTNBALE == "Y") dr["baleno"] = tbl.Rows[i]["baleno"].retStr();
                                     dr["pagenoslno"] = (tbl.Rows[i]["pageno"].retInt() == 0 && tbl.Rows[i]["pageslno"].retInt() == 0) ? "" : tbl.Rows[i]["pageno"].retInt() + "/" + tbl.Rows[i]["pageslno"].retInt();
