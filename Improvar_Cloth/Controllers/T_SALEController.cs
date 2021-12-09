@@ -1722,6 +1722,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
                     if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "PI")
                     {
                         if (str.retCompValue("PRODGRPGSTPER").retStr() == "")
@@ -1729,7 +1730,6 @@ namespace Improvar.Controllers
                             return Content("Please link up Product Group with Tax Rate for this Item (" + str.retCompValue("STYLENO").retStr() + "" + str.retCompValue("ITNM").retStr() + ") !!");
                         }
                     }
-                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
                     string glcd = "";
                     glcd = str.retCompValue(MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr());
                     str += "^GLCD=^" + glcd + Cn.GCS();
