@@ -8,7 +8,7 @@ using System;
 
 namespace Improvar.ViewModels
 {
-    public class RepMiscQryUpdt :Permission
+    public class RepMiscQryUpdt : Permission
     {
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public string BALEYR2 { get; set; }
@@ -24,7 +24,7 @@ namespace Improvar.ViewModels
         public string LRNO3 { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? LRDT1 { get; set; }
-       
+
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? LRDT2 { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
@@ -70,5 +70,13 @@ namespace Improvar.ViewModels
         public string NEWPREFNO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? NEWPREFDT { get; set; }
+        public double NEWRATE { get; set; }
+        public double OLDRATE { get; set; }
+        public double QNTY { get; set; }
+        public string AUTONO { get; set; }
+        public string ITCD { get; set; }
+        public short SLNO { get; set; }
+        public string BARNO { get; set; }
+        public string STYLENO { get; set; }
     }
 }

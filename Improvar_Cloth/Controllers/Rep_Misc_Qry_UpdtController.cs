@@ -32,7 +32,8 @@ namespace Improvar.Controllers
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Style", text = "Change Style No in Bale" });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Pageno", text = "Change Pageno in Bale" });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change BaleNo", text = "Change Bale No." });
-                    CHNGSTYL.Add(new DropDown_list1 { value = "Change PREFNO && PREFDT", text = "Change PartyBill No. && PartyBill Dt." }); 
+                    CHNGSTYL.Add(new DropDown_list1 { value = "Change PREFNO && PREFDT", text = "Change PartyBill No. && PartyBill Dt." });
+                    CHNGSTYL.Add(new DropDown_list1 { value = "Change Opening Rate", text = "Change Opening Rate" });
                     VE.DropDown_list1 = CHNGSTYL;
                     VE.NEWPREFDT = Cn.getCurrentDate(VE.mindate);
                     VE.DefaultView = true;
@@ -172,6 +173,62 @@ namespace Improvar.Controllers
                 return Content(str);
             }
         }
+        public ActionResult GetOPDOCNO(string val, string code)
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO);
+                var COMPCD = CommVar.Compcd(UNQSNO);
+                var LOCCD = CommVar.Loccd(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string autono = "";
+                double slno = 0;
+                if (val.retStr() != "")
+                {
+                    autono = code.Split(Convert.ToChar(Cn.GCS()))[0];
+                    slno = code.Split(Convert.ToChar(Cn.GCS()))[1].retDbl();
+                }
+                string sql = "";
+                sql += "select b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.AUTONO,c.itcd,c.slno,d.styleno||' '||d.itnm itstyle,C.RATE   ";
+                sql += "from " + scm + ".T_TXN a," + scm + ".T_CNTRL_HDR b," + scm + ".T_TXNDTL c," + scm + ".M_SITEM d  ";
+                sql += " where a.AUTONO=b.AUTONO(+) and a.AUTONO=c.AUTONO(+) and c.itcd=d.itcd(+) and a.doctag in ('OP') and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' ";
+                if (valsrch.retStr() != "") sql += " and upper(b.DOCNO) = '" + valsrch + "' ";
+                if (autono.retStr() != "") sql += " and a.autono = '" + autono + "' ";
+                if (slno.retDbl() != 0) sql += " and c.slno = " + slno + " ";
+                sql += "  order by DOCNO,DOCDT,slno ";
+                DataTable tbl = MasterHelp.SQLquery(sql);
+                if (val.retStr() == "")
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["DOCNO"] + "</td><td>" + tbl.Rows[i]["DOCDT"].retDateStr() + "</td><td>" + tbl.Rows[i]["ITSTYLE"] + "</td><td>" + tbl.Rows[i]["RATE"] + "</td><td>" + tbl.Rows[i]["SLNO"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
+                    }
+                    var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Style" + Cn.GCS() + "Rate" + Cn.GCS() + "Slno" + Cn.GCS() + "Autono";
+                    return PartialView("_Help2", MasterHelp.Generate_help(hdr, SB.ToString(), "5"));
+                }
+                else
+                {
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = MasterHelp.ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Document No. ! Please Select / Enter a Valid Document No. !!";
+                    }
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message + " " + ex.InnerException);
+            }
+
+        }
         public ActionResult CheckBillNumber(RepMiscQryUpdt VE, string BILL_NO, string SUPPLIER, string AUTO_NO)
         {
             Cn.getQueryString(VE);
@@ -223,7 +280,8 @@ namespace Improvar.Controllers
                     autono = VE.BLAUTONO3;
                 }
                 else if (VE.TEXTBOX1 == "Change PREFNO && PREFDT")
-                { autono = VE.BLAUTONO4;
+                {
+                    autono = VE.BLAUTONO4;
                 }
                 else
                 {
@@ -238,7 +296,7 @@ namespace Improvar.Controllers
                     //}
                     //else
                     //{
-                        autono = autono.retSqlformat();
+                    autono = autono.retSqlformat();
                     //}
                 }
                 else
@@ -250,7 +308,7 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        autono = autono.retSqlformat();
+                        autono = autono.retStr().retSqlformat();
                     }
                 }
                 if (VE.TEXTBOX1 == "Change PREFNO && PREFDT")
@@ -271,7 +329,7 @@ namespace Improvar.Controllers
                     }
                 }
 
-             else if (VE.TEXTBOX1 == "Change Style")
+                else if (VE.TEXTBOX1 == "Change Style")
                 {
                     if (!string.IsNullOrEmpty(VE.ITCD2))
                     {
@@ -308,6 +366,27 @@ namespace Improvar.Controllers
 
                     sql = "update " + schnm + ". T_TXNDTL set BALENO='" + VE.NEWBALENO + "' "
                 + " where AUTONO in (" + autono + ") and BALENO='" + VE.OLDBALENO.retStr() + "' and BALEYR='" + VE.BALEYR3 + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                }
+                else if (VE.TEXTBOX1 == "Change Opening Rate")
+                {
+                    string barsql = "select distinct barno from " + schnm + ". T_BATCHDTL where AUTONO='" + VE.AUTONO + "' and TXNSLNO='"
+                        + VE.SLNO + "' and RATE=" + VE.OLDRATE + " ";
+
+                    sql = "update " + schnm + ". T_TXNDTL set RATE =" + VE.NEWRATE + ", AMT =ROUND(QNTY*" + VE.NEWRATE + ",2),TXBLVAL = ROUND(QNTY*" + VE.NEWRATE + ",2) "
+                   + " where AUTONO='" + VE.AUTONO + "' and ITCD='" + VE.ITCD.retStr() + "' and SLNO='" + VE.SLNO + "' and RATE=" + VE.OLDRATE + " ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_BATCHDTL set RATE =" + VE.NEWRATE + ",TXBLVAL = ROUND(QNTY*" + VE.NEWRATE + ",2) "
+                   + " where AUTONO='" + VE.AUTONO + "' and TXNSLNO='" + VE.SLNO + "' and RATE=" + VE.OLDRATE + " ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_BATCHMST set RATE =" + VE.NEWRATE + ", AMT =ROUND(QNTY*" + VE.NEWRATE + ",2) "
+                    + " where AUTONO='" + VE.AUTONO + "'  and RATE=" + VE.OLDRATE + " and BARNO in (" + barsql + ") ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ". T_BATCHMST_PRICE set RATE =" + VE.NEWRATE + " "
+                 + " where AUTONO='" + VE.AUTONO + "' and RATE=" + VE.OLDRATE + " and BARNO in (" + barsql + ") and PRCCD='CP' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                 }
                 else

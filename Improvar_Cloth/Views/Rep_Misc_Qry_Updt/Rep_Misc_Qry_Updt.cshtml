@@ -45,6 +45,15 @@
             if (!emptyFieldCheck("Select/Enter New Party Bill No.", "NEWPREFNO")) { return false; }
             if (!emptyFieldCheck("Select/Enter New Party Bill Date", "NEWPREFDT")) { return false; }
         }
+        else if (val == "Change Opening Rate") {
+            if (!emptyFieldCheck("Select/Enter Document No.", "DOCNO5")) { return false; }
+            //if (!emptyFieldCheck("Select/Enter New Rate", "NEWRATE")) { return false; }
+            if(retFloat($("#NEWRATE").val()) == 0){
+                msgInfo("Select/Enter New Rate !!");
+                message_value = "NEWRATE";
+                return false;
+            }
+        }
         else {
             if (!emptyFieldCheck("Select/Enter Bale No.", "BALENO2")) { return false; }
             if (!emptyFieldCheck("Select/Enter New Page No.", "NEWPAGENO")) { return false; }
@@ -77,16 +86,19 @@
         debugger;
         var val = ($("#TEXTBOX1").find(":selected").val());
         if (val == "Change Style") {
-            $("#1stdiv").show(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide();
+            $("#1stdiv").show(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").hide();
         }
         else if (val == "Change BaleNo") {
-            $("#2nddiv").hide(); $("#1stdiv").hide(); $("#3rddiv").show(); $("#4thdiv").hide();
+            $("#2nddiv").hide(); $("#1stdiv").hide(); $("#3rddiv").show(); $("#4thdiv").hide();$("#5thdiv").hide();
         }
         else if (val == "Change PREFNO && PREFDT") {
-            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").show();
+            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").show();$("#5thdiv").hide();
+        }
+        else if (val == "Change Opening Rate") {
+            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").show();
         }
         else {
-            $("#1stdiv").hide(); $("#3rddiv").hide(); $("#2nddiv").show(); $("#4thdiv").hide();
+            $("#1stdiv").hide(); $("#3rddiv").hide(); $("#2nddiv").show(); $("#4thdiv").hide();$("#5thdiv").hide();
         }
     }
 </script>
@@ -438,13 +450,13 @@
                             @Html.Label("", "Document No.")
                         </div>
                     </div>
-                        <div class="col-md-5">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetDOCNO", PageControllerName) + "','Document Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT')", onblur = "GetHelpBlur('" + @Url.Action("GetDOCNO", PageControllerName) + "','Document Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT');", @placeholder = "Code", maxlength = 30 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetDOCNO", PageControllerName)','Proforma Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT')" />
-                                
-                            </div>
+                    <div class="col-md-5">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetDOCNO", PageControllerName) + "','Document Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT')", onblur = "GetHelpBlur('" + @Url.Action("GetDOCNO", PageControllerName) + "','Document Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT');", @placeholder = "Code", maxlength = 30 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetDOCNO", PageControllerName)','Proforma Details','DOCNO','DOCNO=DOCNO=0/DOCDT=DOCDT=1/SLCD=SLCD=2/SLNM=SLNM=3/BLAUTONO4=AUTONO=4/OLDPREFNO=PREFNO/OLDPREFDT=PREFDT/NEWPREFNO=PREFNO/NEWPREFDT=PREFDT')" />
+
                         </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Document Date")
@@ -486,7 +498,7 @@
                     <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.OLDPREFNO, new { htmlAttributes = new { @class = "form-control", id = "OLDPREFNO", maxlength = 30, @placeholder = "Old Party Bill No", @TabIndex = -1, @readonly = "readonly" } })
-                         
+
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -497,7 +509,7 @@
                     <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.OLDPREFDT, new { htmlAttributes = new { @class = "form-control", id = "OLDPREFDT", maxlength = 30, @placeholder = "dd/mm/yyyy", @TabIndex = -1, @readonly = "readonly" } })
-                          
+
                         </div>
                     </div>
                 </div>
@@ -522,7 +534,77 @@
                     <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.NEWPREFDT, new { htmlAttributes = new { @class = "form-control", id = "NEWPREFDT", onchange = "DocdtChange(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                           
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="5thdiv">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO5", onkeydown = "GetHelpBlur('" + @Url.Action("GetOPDOCNO", PageControllerName) + "','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=5/SLNO5=SLNO=4/OLDRATE=RATE=3','AUTONO5/SLNO5')", onblur = "GetHelpBlur('" + @Url.Action("GetOPDOCNO", PageControllerName) + "','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=5/SLNO5=SLNO=4/OLDRATE=RATE=3','AUTONO5/SLNO5');", @placeholder = "Code", maxlength = 30 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOPDOCNO", PageControllerName)','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=5/SLNO5=SLNO=4/OLDRATE=RATE=3','AUTONO5/SLNO5')" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT5", maxlength = 10, @placeholder = "dd/mm/yyyy", @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Style No")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO5", maxlength = 30, @placeholder = "Old Style No", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.HiddenFor(model => model.ITCD, new { id = "ITCD5" })
+                                @*@Html.HiddenFor(model => model.BARNO, new { id = "BARNO5" })*@
+                                @Html.HiddenFor(model => model.AUTONO, new { id = "AUTONO5" })
+                                @Html.HiddenFor(model => model.SLNO, new { id = "SLNO5" })
+                                @*@Html.HiddenFor(model => model.QNTY, new { id = "QNTY5" })*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Old Rate")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.OLDRATE, new { htmlAttributes = new { @class = "form-control", id = "OLDRATE", maxlength = 30, @placeholder = "Old Rate", @TabIndex = -1, @readonly = "readonly" } })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "New Rate")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.NEWRATE, new { htmlAttributes = new { @class = "form-control", id = "NEWRATE", maxlength = 14, @placeholder = "New Rate", @onkeypress = "return numericOnly(this,3);" } })
                         </div>
                     </div>
                 </div>
