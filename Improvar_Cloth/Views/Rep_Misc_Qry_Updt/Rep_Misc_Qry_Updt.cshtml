@@ -549,8 +549,8 @@
                     </div>
                     <div class="col-md-5">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO5", onkeydown = "GetHelpBlur('" + @Url.Action("GetOPDOCNO", PageControllerName) + "','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=5/SLNO5=SLNO=4/OLDRATE=RATE=3','AUTONO5/SLNO5')", onblur = "GetHelpBlur('" + @Url.Action("GetOPDOCNO", PageControllerName) + "','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=5/SLNO5=SLNO=4/OLDRATE=RATE=3','AUTONO5/SLNO5');", @placeholder = "Code", maxlength = 30 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOPDOCNO", PageControllerName)','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=5/SLNO5=SLNO=4/OLDRATE=RATE=3','AUTONO5/SLNO5')" />
+                            @Html.EditorFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO5", onkeydown = "GetHelpBlur('" + @Url.Action("GetOPDOCNO", PageControllerName) + "','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=6/SLNO5=SLNO=5/OLDRATE=RATE=4/BALENO5=BALENO=3','AUTONO5/SLNO5')", onblur = "GetHelpBlur('" + @Url.Action("GetOPDOCNO", PageControllerName) + "','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=6/SLNO5=SLNO=5/OLDRATE=RATE=4/BALENO5=BALENO=3','AUTONO5/SLNO5');", @placeholder = "Code", maxlength = 30 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOPDOCNO", PageControllerName)','Document Details','DOCNO5','DOCNO5=DOCNO=0/DOCDT5=DOCDT=1/STYLENO5=ITSTYLE=2/ITCD5=ITCD/AUTONO5=AUTONO=6/SLNO5=SLNO=5/OLDRATE=RATE=4/BALENO5=BALENO=3','AUTONO5/SLNO5')" />
 
                         </div>
                     </div>
@@ -572,12 +572,22 @@
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO5", maxlength = 30, @placeholder = "Old Style No", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO5", maxlength = 30, @placeholder = "Style No", @TabIndex = -1, @readonly = "readonly" } })
                                 @Html.HiddenFor(model => model.ITCD, new { id = "ITCD5" })
                                 @*@Html.HiddenFor(model => model.BARNO, new { id = "BARNO5" })*@
                                 @Html.HiddenFor(model => model.AUTONO, new { id = "AUTONO5" })
                                 @Html.HiddenFor(model => model.SLNO, new { id = "SLNO5" })
                                 @*@Html.HiddenFor(model => model.QNTY, new { id = "QNTY5" })*@
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Bale No")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO5", maxlength = 30, @placeholder = "Bale No", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                     </div>

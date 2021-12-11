@@ -78,5 +78,6 @@ namespace Improvar.ViewModels
         public short SLNO { get; set; }
         public string BARNO { get; set; }
         public string STYLENO { get; set; }
+        public string BALENO { get; set; }
     }
 }

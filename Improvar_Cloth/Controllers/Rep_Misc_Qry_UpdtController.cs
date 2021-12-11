@@ -191,7 +191,7 @@ namespace Improvar.Controllers
                     slno = code.Split(Convert.ToChar(Cn.GCS()))[1].retDbl();
                 }
                 string sql = "";
-                sql += "select b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.AUTONO,c.itcd,c.slno,d.styleno||' '||d.itnm itstyle,C.RATE   ";
+                sql += "select b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.AUTONO,c.itcd,c.slno,d.styleno||' '||d.itnm itstyle,C.RATE,c.baleno   ";
                 sql += "from " + scm + ".T_TXN a," + scm + ".T_CNTRL_HDR b," + scm + ".T_TXNDTL c," + scm + ".M_SITEM d  ";
                 sql += " where a.AUTONO=b.AUTONO(+) and a.AUTONO=c.AUTONO(+) and c.itcd=d.itcd(+) and a.doctag in ('OP') and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' ";
                 if (valsrch.retStr() != "") sql += " and upper(b.DOCNO) = '" + valsrch + "' ";
@@ -204,10 +204,10 @@ namespace Improvar.Controllers
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + tbl.Rows[i]["DOCNO"] + "</td><td>" + tbl.Rows[i]["DOCDT"].retDateStr() + "</td><td>" + tbl.Rows[i]["ITSTYLE"] + "</td><td>" + tbl.Rows[i]["RATE"] + "</td><td>" + tbl.Rows[i]["SLNO"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
+                        SB.Append("<tr><td>" + tbl.Rows[i]["DOCNO"] + "</td><td>" + tbl.Rows[i]["DOCDT"].retDateStr() + "</td><td>" + tbl.Rows[i]["ITSTYLE"] + "</td><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["RATE"] + "</td><td>" + tbl.Rows[i]["SLNO"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
                     }
-                    var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Style" + Cn.GCS() + "Rate" + Cn.GCS() + "Slno" + Cn.GCS() + "Autono";
-                    return PartialView("_Help2", MasterHelp.Generate_help(hdr, SB.ToString(), "5"));
+                    var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Style" + Cn.GCS() + "Bale no." + Cn.GCS() + "Rate" + Cn.GCS() + "Slno" + Cn.GCS() + "Autono";
+                    return PartialView("_Help2", MasterHelp.Generate_help(hdr, SB.ToString(), "6"));
                 }
                 else
                 {
