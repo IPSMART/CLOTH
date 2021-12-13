@@ -36,6 +36,7 @@ namespace Improvar.Controllers
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Opening Rate", text = "Change Opening Rate" });
                     VE.DropDown_list1 = CHNGSTYL;
                     VE.NEWPREFDT = Cn.getCurrentDate(VE.mindate);
+                    VE.TEXTBOX1 = Session["LASTUPDATE"].retStr();
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -395,6 +396,7 @@ namespace Improvar.Controllers
                    + " where AUTONO='" + VE.BLAUTONO2 + "' and PAGENO='" + VE.OLDPAGENO.retStr() + "' and PAGESLNO='" + VE.OLDPAGESLNO.retStr() + "'  and BALENO='" + VE.BALENO2 + "' and BALEYR='" + VE.BALEYR2 + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                 }
+                Session["LASTUPDATE"] = VE.TEXTBOX1;
                 ModelState.Clear();
                 OraTrans.Commit();
                 OraTrans.Dispose();
