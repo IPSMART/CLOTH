@@ -4038,6 +4038,8 @@ namespace Improvar.Controllers
                     tsalePos_TBATCHDTL_RETURN.CGSTPER = row.CGSTPER.retDbl();
                     tsalePos_TBATCHDTL_RETURN.SGSTPER = row.SGSTPER.retDbl();
                     tsalePos_TBATCHDTL_RETURN.CESSPER = row.CESSPER.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.PRODGRPGSTPER = row.PRODGRPGSTPER.retStr();
+                    tsalePos_TBATCHDTL_RETURN.GLCD = row.GLCD.retStr();
                     //tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
                     if (VE.TsalePos_TBATCHDTL_RETURN == null) VE.TsalePos_TBATCHDTL_RETURN = new List<TsalePos_TBATCHDTL_RETURN>();
                     VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);
