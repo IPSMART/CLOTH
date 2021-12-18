@@ -2961,11 +2961,23 @@ namespace Improvar.Controllers
 
                                 //dbqty = dbqty - VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
                                 rdbqty = rdbqty + VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
-                                igst = igst - VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl();
-                                cgst = cgst - VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl();
-                                sgst = sgst - VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl();
-                                cess = cess - VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT.retDbl();
-                                duty = duty - VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT.retDbl();
+                                if (VE.MENU_PARA == "SBCMR")
+                                {
+                                    igst = igst + VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl();
+                                    cgst = cgst + VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl();
+                                    sgst = sgst + VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl();
+                                    cess = cess + VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT.retDbl();
+                                    duty = duty + VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT.retDbl();
+                                }
+                                else
+                                {
+                                    igst = igst - VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl();
+                                    cgst = cgst - VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl();
+                                    sgst = sgst - VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl();
+                                    cess = cess - VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT.retDbl();
+                                    duty = duty - VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT.retDbl();
+                                }
+
                             }
                         }
                     }
@@ -3180,7 +3192,7 @@ namespace Improvar.Controllers
                                             CLASS1CD = P.Key.CLASS1CD,
                                             UOM = P.Key.UOM,
                                             QNTY = P.Sum(A => A.QNTY),
-                                            TXBLVAL = (P.Sum(A => A.TXBLVAL)) * -1
+                                            TXBLVAL = (P.Sum(A => A.TXBLVAL)) * (VE.MENU_PARA == "SBCM" ? -1 : 1),
                                         }).Where(a => a.QNTY != 0).ToList();
                         }
                         MAINAMTGLCD.AddRange(RAMTGLCD);
@@ -3215,7 +3227,7 @@ namespace Improvar.Controllers
                                 isl = isl + 1;
                                 negamt = AMTGLCD[i].TXBLVAL.retDbl() < 0 ? "Y" : "N";
                                 proddrcr = negamt == "Y" ? dr : cr;
-                                if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
+                                //if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
 
                                 dbamt = AMTGLCD[i].TXBLVAL.retDbl() * (negamt == "Y" ? -1 : 1);
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, AMTGLCD[i].GLCD, sslcd,
@@ -3274,7 +3286,7 @@ namespace Improvar.Controllers
                                 isl = isl + 1;
                                 negamt = gstpostamt[gt] < 0 ? "Y" : "N";
                                 proddrcr = negamt == "Y" ? dr : cr;
-                                if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
+                                //if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
                                 dbamt = gstpostamt[gt].retDbl() * (negamt == "Y" ? -1 : 1);
 
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, gstpostcd[gt], sslcd,
@@ -3327,7 +3339,7 @@ namespace Improvar.Controllers
                         isl = 1;
                         negamt = VE.T_TXN.BLAMT.retDbl() < 0 ? "Y" : "N";
                         proddrcr = negamt == "Y" ? cr : dr;
-                        if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = dr;
+                        //if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = dr;
                         dbamt = VE.T_TXN.BLAMT.retDbl() * (negamt == "Y" ? -1 : 1);
 
                         dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr,
@@ -3375,7 +3387,7 @@ namespace Improvar.Controllers
 
                         string negamt = TTXN.BLAMT.retDbl() < 0 ? "Y" : "N";
                         string proddrcr = negamt == "Y" ? dr : cr;
-                        if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = dr;
+                        //if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = dr;
                         gblamt = gblamt.retDbl() * (negamt == "Y" ? -1 : 1);
 
                         if (VE.TsalePos_TBATCHDTL != null)
@@ -3685,7 +3697,8 @@ namespace Improvar.Controllers
                             {
                                 string pymtrem = "Cash";
                                 pslno++; adjslno++;
-
+                                double mult = 1;
+                                if (VE.MENU_PARA == "SBCMR") mult = -1;
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(pslno + 100), cr,
                                     parglcd, sslcd, VE.TTXNPYMT[i].AMT.retDbl(), pymtrem, VE.TTXNPYMT[i].GLCD);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
@@ -3703,7 +3716,7 @@ namespace Improvar.Controllers
                                     "", "", "", "", VE.T_TXNMEMO.RTDEBCD == null ? "" : VE.T_TXNMEMO.RTDEBCD);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(adjslno), TTXN.AUTONO, 1, dbamt.retDbl(), TTXN.AUTONO, Convert.ToSByte(pslno + 100), VE.TTXNPYMT[i].AMT.retDbl(), VE.TTXNPYMT[i].AMT.retDbl());
+                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(adjslno), TTXN.AUTONO, 1, dbamt.retDbl(), TTXN.AUTONO, Convert.ToSByte(pslno + 100), VE.TTXNPYMT[i].AMT.retDbl(), (VE.TTXNPYMT[i].AMT.retDbl() * mult));
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
 
@@ -3925,19 +3938,40 @@ namespace Improvar.Controllers
                 return Content("//.");
             }
         }
-        public ActionResult GetTTXNDTLDetails(TransactionSalePosEntry VE, string FDT, string TDT, string R_DOCNO, string R_BARNO, string R_DOCCD)
+        public ActionResult GetTTXNDTLDetails(TransactionSalePosEntry VE, string FDT, string TDT, string R_DOCNO, string R_BARNO, string R_DOCCD, string R_TAXGRPCD)
         {
             Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
-            string sql = "select a.autono,a.docno,a.docdt,b.itcd,e.itnm,e.styleno,e.itgrpcd,f.itgrpnm,b.qnty,e.uomcd,b.stktype, ";
-            sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER from  " + scm + ".T_TXN a, ";
-            sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f ";
-            sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) ";
-            sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doccd in('" + R_DOCCD + "')  ";
+            string sql = "select x.autono,x.docno,x.docdt,x.itcd,x.itnm,x.styleno,x.itgrpcd,x.itgrpnm,x.qnty,x.uomcd,x.stktype, ";
+            sql += "x.barno,x.TXBLVAL,x.IGSTPER,x.CGSTPER,x.SGSTPER,x.CESSPER,x.SALGLCD,y.prodgrpgstper from ";
+
+            sql += "(select a.autono,a.docno,a.docdt,b.itcd,e.itnm,e.styleno,e.prodgrpcd,e.itgrpcd,f.itgrpnm,b.qnty,e.uomcd,b.stktype, ";
+            sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER,f.SALGLCD from  " + scm + ".T_TXN a, ";
+            sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f," + scm + ".M_DOCTYPE g ";
+            sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) and a.doccd=g.doccd(+) ";
+            //sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doccd in('" + R_DOCCD + "')  ";
+            sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and g.doctype in('SBCM')  ";
             if (R_DOCNO.retStr() != "") sql += " and a.docno in('" + R_DOCNO + "') ";
             if (FDT.retDateStr() != "") sql += "and a.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') ";
             if (TDT.retDateStr() != "") sql += " and a.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
             if (R_BARNO.retStr() != "") sql += "and d.barno = '" + R_BARNO + "' ";
-            sql += "order by a.docdt, a.docno ";
+            sql += ")x, ";
+
+            sql += "(select a.prodgrpcd, ";
+            //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
+            sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
+            sql += "from ";
+            sql += "(select prodgrpcd, effdt from ";
+            sql += "(select a.prodgrpcd, a.effdt, ";
+            sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".m_prodtax a ";
+            if (TDT.retDateStr() != "") sql += "where a.effdt <= to_date('" + TDT + "','dd/mm/yyyy')  ";
+            sql += ")where rn=1 ) a, " + scm + ".m_prodtax b ";
+            sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + R_TAXGRPCD + "' ";
+            sql += "group by a.prodgrpcd ) y ";
+
+            sql += "where x.prodgrpcd=y.prodgrpcd(+) ";
+            sql += "order by x.docdt, x.docno ";
             DataTable dt = masterHelp.SQLquery(sql);
             DataTable PRODGRPDATA = new DataTable();
             if (dt != null && dt.Rows.Count > 0)
@@ -3960,8 +3994,9 @@ namespace Improvar.Controllers
                                        SGSTPER = dr["SGSTPER"].retDbl(),
                                        CESSPER = dr["CESSPER"].retDbl(),
                                        STKTYP = dr["stktype"].retStr(),
-                                       UOM = dr["uomcd"].retStr()
-
+                                       UOM = dr["uomcd"].retStr(),
+                                       PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
+                                       GLCD = dr["SALGLCD"].retStr()
                                    }).ToList();
                 int slno = 0;
                 for (int p = 0; p <= VE.TTXNDTLPOPUP.Count - 1; p++)
