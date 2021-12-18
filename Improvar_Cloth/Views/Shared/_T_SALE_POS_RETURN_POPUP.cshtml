@@ -65,6 +65,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].UOM, new { id = "P_UOM_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].PRODGRPGSTPER, new { id = "P_PRODGRPGSTPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].GLCD, new { id = "P_GLCD_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].HSNCODE, new { id = "P_HSNCODE_" + i })
                                         </td>
                                         <td class="sticky-cell">
                                             @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

@@ -36,5 +36,6 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? SCMDISCRATE { get; set; }
         public string GLCD { get; set; }
+        public string HSNCODE { get; set; }
     }
 }
