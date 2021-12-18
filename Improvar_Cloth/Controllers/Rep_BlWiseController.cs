@@ -245,15 +245,19 @@ namespace Improvar.Controllers
 
                 if (tbl.Rows.Count == 0) return Content("No Record Found");
 
-                if (FC["Sorting"].retStr() == "DOC")
+                if (FC["Sorting"].retStr() == "BILL")
+                {
+                    tbl.DefaultView.Sort = "glcd,slnm,slcd,bldt1,blno,docdt,docno";
+                    tbl = tbl.DefaultView.ToTable();
+                }
+                else if (FC["Sorting"].retStr() == "DOC")
                 {
                     tbl.DefaultView.Sort = "glcd,slnm,slcd,docdt,bldt1,docno";
                     tbl = tbl.DefaultView.ToTable();
                 }
-                else
+                else if (FC["Sorting"].retStr() == "DOCDT")
                 {
-                    //tbl.DefaultView.Sort = "glcd,slnm,slcd,bldt1,docdt,docno";
-                    tbl.DefaultView.Sort = "glcd,slnm,slcd,bldt1,blno,docdt,docno";
+                    tbl.DefaultView.Sort = "glcd,docdt,bldt1,docno";
                     tbl = tbl.DefaultView.ToTable();
                 }
                 if (Para2 != "")
@@ -326,6 +330,8 @@ namespace Improvar.Controllers
                 if (VE.Checkbox10 == true) recdamtcol = true;
                 string selslcdgrpcd = "";
 
+                string FcSorting = FC["Sorting"].ToString();
+
                 if (FC.AllKeys.Contains("slcdgrpcdvalue")) selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString());
                 if (reptypesel == "FORM2")
                 {
@@ -381,23 +387,32 @@ namespace Improvar.Controllers
                         agfld = ""; agheaddsp = ""; agstfld = "slcd"; showagentpara = ""; break;
                 }
                 if (selslcdgrpcd.retStr() != "") { agfld = "parentnm,parentcd"; agstfld = "parentcd"; showagentstate = "A"; }
+                if (FcSorting == "DOCDT")
+                {
+                    agfld = "docmonth"; agheaddsp = "Month - "; agstfld = "docmonth"; showagentpara = ""; showagentstate = "A"; 
+                }
 
                 if (showagentstate.retStr() != "")
                 {
-                    if (FC["Sorting"].retStr() == "DOC")
+                    if (FcSorting == "BILL")
+                    {
+                        tbl.DefaultView.Sort = (agfld == "" ? "" : agfld + ",") + "glcd,slnm,slcd,bldt1,docdt,docno";
+                        tbl = tbl.DefaultView.ToTable();
+                    }
+                    else if (FcSorting == "DOC")
                     {
                         tbl.DefaultView.Sort = (agfld == "" ? "" : agfld + ",") + "glcd,slnm,slcd,docdt,bldt1,docno";
                         tbl = tbl.DefaultView.ToTable();
                     }
-                    else
+                    else if (FcSorting == "DOCDT")
                     {
-                        tbl.DefaultView.Sort = (agfld == "" ? "" : agfld + ",") + "glcd,slnm,slcd,bldt1,docdt,docno";
+                        tbl.DefaultView.Sort = "glcd,docdt,bldt1,docno";
                         tbl = tbl.DefaultView.ToTable();
                     }
                 }
                 if (Para2 != "")
                 {
-                    tbl.DefaultView.Sort = (agfld == ""?"":agfld + ",") + "glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
+                    tbl.DefaultView.Sort = (agfld == "" && FcSorting != "DOCDT"?"":agfld + ",") + "glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
                     tbl = tbl.DefaultView.ToTable();
                 }
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -443,6 +458,8 @@ namespace Improvar.Controllers
                 HC.RepStart(IR, 3);
                 if (dtlsumm == "D")
                 {
+                    string duedaysdsp = "";
+                    if (ShowDuedaysfrom == "D") duedaysdsp = "Over ";
                     if (VE.Checkbox15 == true) HC.GetPrintHeader(IR, "agshortnm", "string", "c,10", "Agent Name");
                     if (VE.MENU_PARA.Split(',')[0].retStr() == "CR")
                     {
@@ -452,9 +469,13 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill Date");
                     HC.GetPrintHeader(IR, "blno", "string", "c,18", "Bill No.");
                     if (bltype == true) HC.GetPrintHeader(IR, "bltype", "string", "c,5", "Bill Type");
+                    if (FcSorting == "DOCDT")
+                    {
+                        HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
+                        HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party Name");
+                        HC.GetPrintHeader(IR, "slcity", "string", "c,20", "City");
+                    }
                     if (reptypesel == "FORM1") HC.GetPrintHeader(IR, "cdays", "double", "n,4,0", "Cr.Days");
-                    string duedaysdsp = "";
-                    if (ShowDuedaysfrom == "D") duedaysdsp = "Over ";
                     HC.GetPrintHeader(IR, "days", "double", "n,4,0", duedaysdsp + "Due Days");
                     if (itamtprint == true) HC.GetPrintHeader(IR, "itamt", "double", "n,17,2:####,##,##,##0.00", "Item Value");
                     if (blamtprint == true) HC.GetPrintHeader(IR, "blamt", "double", "n,17,2:####,##,##,##0.00", "Bill Amount");
@@ -535,9 +556,9 @@ namespace Improvar.Controllers
                         string agdsp = "";
                         if (showagentstate == "A" || showagentstate == "S")
                         {
-                            agdsp = "<span style='font-weight:100;font-size:11px;'>" + agheaddsp + agslcd1 + "  " + " </span>" + agslnm1;
-                            if (agslcity1 != "") agdsp += "<span style='font-weight:100;font-size:13px;'>" + " [" + agslcity1 + "]  " + " </span>";
-                            if (tbl.Rows[i]["agphno"].ToString() != "" && showagentstate == "A" ) agdsp += " Ph. " + " </span>" + tbl.Rows[i]["agphno"];
+                            agdsp = "<span style='font-weight:100;font-size:11px;'>" + agheaddsp + (FcSorting == "DOCDT"? tbl.Rows[i]["docmonth"].retStr():agslcd1) + "  " + " </span>" + (FcSorting == "DOCDT"?"":agslnm1);
+                            if (FcSorting != "DOCDT") if (showagentstate == "A" || showagentstate == "S") if (agslcity1 != "") agdsp += "<span style='font-weight:100;font-size:13px;'>" + " [" + agslcity1 + "]  " + " </span>";
+                            if (FcSorting != "DOCDT") if (showagentstate == "A" || showagentstate == "S") if (tbl.Rows[i]["agphno"].ToString() != "" && showagentstate == "A" ) agdsp += " Ph. " + " </span>" + tbl.Rows[i]["agphno"];
                         }
                         else
                         {
@@ -558,7 +579,7 @@ namespace Improvar.Controllers
                         slphno1 = (Para2 == "" ? tbl.Rows[i]["phno"].retStr() : tbl.Rows[i]["rtdebmobile"].retStr());
                         slcity1 = (Para2 == "" ? tbl.Rows[i]["slcity"].ToString() : tbl.Rows[i]["retdebarea"].ToString());
 
-                        if (dtlsumm == "D")
+                        if (dtlsumm == "D" && FcSorting != "DOCDT")
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             string sldsp = "";
@@ -658,8 +679,13 @@ namespace Improvar.Controllers
                                 else IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].ToString();
                                 if (tbl.Rows[i]["bldt"].ToString() == "") IR.Rows[rNo]["bldt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
                                 else IR.Rows[rNo]["bldt"] = tbl.Rows[i]["bldt"].ToString();
+                                if (FcSorting == "DOCDT")
+                                {
+                                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
+                                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
+                                    IR.Rows[rNo]["slcity"] = tbl.Rows[i]["slcity"].retStr();
+                                }
                                 if (reptypesel == "FORM1") IR.Rows[rNo]["cdays"] = cdays;
-
                                 if (reptypesel == "FORM1")
                                 {
                                     if (days > checkdays) IR.Rows[rNo]["dueamt"] = Convert.ToDouble(tbl.Rows[i]["bal_amt"]);
@@ -727,45 +753,48 @@ namespace Improvar.Controllers
                         adue5Amt = adue5Amt + pdue5Amt;
                         adue6Amt = adue6Amt + pdue6Amt;
 
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        if (dtlsumm == "D")
+                        if (FcSorting != "DOCDT")
                         {
-                            IR.Rows[rNo]["blno"] = "Total";
-                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;;border-top: 1px solid;";
-                        }
-                        else
-                        {
-                            slno1++;
-                            IR.Rows[rNo]["slno"] = slno1.ToString();
-                            IR.Rows[rNo]["blno"] = slcd1;
-                            IR.Rows[rNo]["slnm"] = slnm1;
-                            IR.Rows[rNo]["slcity"] = slcity1;
-                        }
-                        if (reptypesel == "FORM1")
-                        {
-                            IR.Rows[rNo]["dueamt"] = amt2;
-                            IR.Rows[rNo]["amt"] = namt2;
-                        }
-                        if (reptypesel == "FORM2" && showcrbalsep == true)
-                        {
-                            IR.Rows[rNo]["cramt"] = cramt2;
-                            if (dtlsumm == "D") IR.Rows[rNo]["class1cd"] = (balamt2 - cramt2).ToINRFormat();
-                            if (dtlsumm == "S") IR.Rows[rNo]["netos"] = balamt2 - cramt2;
-                        }
-                        IR.Rows[rNo]["balamt"] = balamt2;
-                        if (due1tDys != 0) IR.Rows[rNo]["due1amt"] = pdue1Amt;
-                        if (due2tDys != 0) IR.Rows[rNo]["due2amt"] = pdue2Amt;
-                        if (due3tDys != 0) IR.Rows[rNo]["due3amt"] = pdue3Amt;
-                        if (due4tDys != 0) IR.Rows[rNo]["due4amt"] = pdue4Amt;
-                        if (due5tDys != 0) IR.Rows[rNo]["due5amt"] = pdue5Amt;
-                        if (due6tDys != 0) IR.Rows[rNo]["due6amt"] = pdue6Amt;
-                        if (showOrder == true && dtlsumm != "D") IR.Rows[rNo]["ordno"] = ordno;
-                        if (dtlsumm == "D")
-                        {
-                            // Create Blank line
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["dammy"] = " ";
-                            IR.Rows[rNo]["flag"] = " height:12px; ";
+                            if (dtlsumm == "D")
+                            {
+                                IR.Rows[rNo]["blno"] = "Total";
+                                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;;border-top: 1px solid;";
+                            }
+                            else
+                            {
+                                slno1++;
+                                IR.Rows[rNo]["slno"] = slno1.ToString();
+                                IR.Rows[rNo]["blno"] = slcd1;
+                                IR.Rows[rNo]["slnm"] = slnm1;
+                                IR.Rows[rNo]["slcity"] = slcity1;
+                            }
+                            if (reptypesel == "FORM1")
+                            {
+                                IR.Rows[rNo]["dueamt"] = amt2;
+                                IR.Rows[rNo]["amt"] = namt2;
+                            }
+                            if (reptypesel == "FORM2" && showcrbalsep == true)
+                            {
+                                IR.Rows[rNo]["cramt"] = cramt2;
+                                if (dtlsumm == "D") IR.Rows[rNo]["class1cd"] = (balamt2 - cramt2).ToINRFormat();
+                                if (dtlsumm == "S") IR.Rows[rNo]["netos"] = balamt2 - cramt2;
+                            }
+                            IR.Rows[rNo]["balamt"] = balamt2;
+                            if (due1tDys != 0) IR.Rows[rNo]["due1amt"] = pdue1Amt;
+                            if (due2tDys != 0) IR.Rows[rNo]["due2amt"] = pdue2Amt;
+                            if (due3tDys != 0) IR.Rows[rNo]["due3amt"] = pdue3Amt;
+                            if (due4tDys != 0) IR.Rows[rNo]["due4amt"] = pdue4Amt;
+                            if (due5tDys != 0) IR.Rows[rNo]["due5amt"] = pdue5Amt;
+                            if (due6tDys != 0) IR.Rows[rNo]["due6amt"] = pdue6Amt;
+                            if (showOrder == true && dtlsumm != "D") IR.Rows[rNo]["ordno"] = ordno;
+                            if (dtlsumm == "D")
+                            {
+                                // Create Blank line
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["dammy"] = " ";
+                                IR.Rows[rNo]["flag"] = " height:12px; ";
+                            }
                         }
                         if (i > maxR) break;
                     }
@@ -882,6 +911,7 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("os");
 
+                string FcSorting = FC["Sorting"].retStr();
                 string showagentstate = VE.TEXTBOX1.retStr();
                 string agfld = "", agheaddsp = "", agstfld = "", showagentpara = "";
                 string agslcdfld1 = "", agslcdfld2 = "";
@@ -899,13 +929,17 @@ namespace Improvar.Controllers
 
                 if (showagentstate.retStr() != "")
                 {
-                    if (FC["Sorting"].retStr() == "DOC")
+                    if (FcSorting == "BILL")
+                    {
+                        tbl.DefaultView.Sort = agfld + ",glcd,slnm,slcd,bldt1,docdt,docno";
+                    }
+                    else if (FcSorting == "DOC")
                     {
                         tbl.DefaultView.Sort = agfld + ",glcd,slnm,slcd,docdt,bldt1,docno";
                     }
-                    else
+                    else if (FcSorting == "DOCDT")
                     {
-                        tbl.DefaultView.Sort = agfld + ",glcd,slnm,slcd,bldt1,docdt,docno";
+                        tbl.DefaultView.Sort = agfld + ",glcd,docdt,bldt1,docno";
                     }
                     tbl = tbl.DefaultView.ToTable();
                 }
@@ -968,6 +1002,8 @@ namespace Improvar.Controllers
 
                 i = 0; maxR = tbl.Rows.Count - 1;
                 double gdueamt = 0, adueamt = 0;
+                double gblamt = 0, ablamt = 0;
+                double gpayamt = 0, apayamt = 0;
                 while (i <= maxR)
                 {
                     glcd1 = tbl.Rows[i]["glcd"].ToString();
@@ -982,7 +1018,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["Dammy"] = sldsp;
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
-                    adueamt = 0;
+                    adueamt = 0; ablamt = 0; apayamt = 0;
                     while (tbl.Rows[i]["glcd"].ToString() == glcd1 && tbl.Rows[i][agslcdfld1].ToString() == chkagslcd)
                     {
                         slcd1 = (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString());
@@ -1001,9 +1037,10 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["Dammy"] = sldsp;
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                         }
-                        double tdays = 0, tdueamt = 0, tbills = 0;
+                        double tdays = 0, tdueamt = 0, tblamt=0, tpayamt=0, tbills = 0;
                         slno1++;
-                        while (tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                        //while (tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
+                        while ((showagentstate != "" ? tbl.Rows[i][agstfld].ToString() == chkagslcd : (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == chkagslcd) && tbl.Rows[i]["glcd"].ToString() == glcd1 && (Para2 == "" ? tbl.Rows[i]["slcd"].ToString() : tbl.Rows[i]["rtdebcd"].ToString()) == slcd1)
                         {
                             TimeSpan TSdys, TCdys;
                             //calculate credit days
@@ -1085,7 +1122,7 @@ namespace Improvar.Controllers
                                     if (VE.Checkbox9 == true && dtlsumm == "D") IR.Rows[rNo]["transnm"] = tbl.Rows[i]["transnm"];
                                 }
                                 days = 0;
-                                double dueamt = tbl.Rows[i]["amt"].ToString().retDbl();
+                                double dueamt = tbl.Rows[i]["amt"].ToString().retDbl(), blamt = tbl.Rows[i]["amt"].ToString().retDbl(), payamt = 0; ;
                                 #region //Check in txn Datatable
                                 if (rsTxn != null)
                                 {
@@ -1129,6 +1166,8 @@ namespace Improvar.Controllers
                                         }
                                         if (tbl.Rows[i]["amt"].ToString().retDbl() < 0) dueamt = dueamt + txdr.adjamt.ToString().retDbl();
                                         else dueamt = dueamt - txdr.adjamt.ToString().retDbl();
+
+                                        if (tbl.Rows[i]["amt"].ToString().retDbl() < 0) payamt = payamt - txdr.adjamt.ToString().retDbl(); else payamt = payamt + txdr.adjamt.ToString().retDbl();
                                         newrow = true;
                                     }
                                 }
@@ -1137,6 +1176,8 @@ namespace Improvar.Controllers
                                 tdays = tdays + days;
                                 tbills = tbills + 1;
                                 tdueamt = tdueamt + dueamt;
+                                tblamt = tblamt + blamt;
+                                tpayamt = tpayamt + payamt;
                             }
                             i++;
                             if (i > maxR) break;
@@ -1156,10 +1197,20 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["blno"] = tbl.Rows[i - 1]["slcd"].ToString();
                             IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].ToString();
                         }
+                        if (dtlsumm == "D")
+                        {
+                            IR.Rows[rNo]["blamt"] = tblamt;
+                            IR.Rows[rNo]["adjamt"] = tpayamt;
+                        }
                         IR.Rows[rNo]["dueamt"] = tdueamt;
                         if (PymtDaysprint == true) IR.Rows[rNo]["pdays"] = avdays;
                         adueamt = adueamt + tdueamt;
                         gdueamt = gdueamt + tdueamt;
+                        ablamt = ablamt + tblamt;
+                        apayamt = apayamt + tpayamt;
+                        gblamt = gblamt + tblamt;
+                        gpayamt = gpayamt + tpayamt;
+
                         if (i > maxR) break;
                     }
                     if (showagentstate != "")
@@ -1167,6 +1218,11 @@ namespace Improvar.Controllers
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["blno"] = agheaddsp + " ( " + tbl.Rows[i - 1][agslcdfld2].retStr() + " Totals";
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;border-top: 1px solid;";
+                        if (dtlsumm == "D")
+                        {
+                            IR.Rows[rNo]["blamt"] = ablamt;
+                            IR.Rows[rNo]["adjamt"] = apayamt;
+                        }
                         IR.Rows[rNo]["dueamt"] = adueamt;
                     }
                     if (i > maxR) break;
@@ -1174,6 +1230,11 @@ namespace Improvar.Controllers
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["blno"] = "Grand Totals";
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;";
+                if (dtlsumm == "D")
+                {
+                    IR.Rows[rNo]["blamt"] = gblamt;
+                    IR.Rows[rNo]["adjamt"] = gpayamt;
+                }
                 IR.Rows[rNo]["dueamt"] = gdueamt;
 
                 pghdr1 = "Bill Wise Outstanding (Pay Days) of " + glnm + " (" + glcd + ") " + (Para2 == "" ? "" : "[Retail Party] ") + "as on " + TD;
@@ -1187,7 +1248,7 @@ namespace Improvar.Controllers
                     exdt[0] = IR;
                     string[] sheetname = new string[1];
                     sheetname[0] = "Sheet1";
-                    MasterHelp.ExcelfromDataTables(exdt, sheetname, "Bill_Outstanding".retRepname(), false, pghdr1, true);
+                    MasterHelp.ExcelfromDataTables(exdt, sheetname, "Bill_Outstanding".retRepname(), false, pghdr1, false);
                     return Content("Downloaded");
                 }
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
