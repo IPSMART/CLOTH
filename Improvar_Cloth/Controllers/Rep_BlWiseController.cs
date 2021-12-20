@@ -948,7 +948,8 @@ namespace Improvar.Controllers
                 }
                 if (Para2 != "")
                 {
-                    tbl.DefaultView.Sort = "agslnm,agslcd,glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
+                    //tbl.DefaultView.Sort = "agslnm,agslcd,glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
+                    tbl.DefaultView.Sort = "glcd,slnm,slcd,rtdebnm,rtdebcd,docdt,docno";
                     tbl = tbl.DefaultView.ToTable();
                 }
 
