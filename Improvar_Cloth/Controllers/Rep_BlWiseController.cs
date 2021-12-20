@@ -926,7 +926,10 @@ namespace Improvar.Controllers
                     default:
                         agfld = ""; agheaddsp = ""; agstfld = "slcd"; agslcdfld1 = "slcd"; showagentpara = ""; break;
                 }
-
+                if (Para2 == "RTDEB")
+                {
+                    agslcdfld1 = "rtdebcd";
+                }
                 if (showagentstate.retStr() != "")
                 {
                     if (FcSorting == "BILL")
