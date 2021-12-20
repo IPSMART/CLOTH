@@ -1232,9 +1232,9 @@ namespace Improvar
         }
 
         public DataTable GenOSTbl(string selglcd = "", string selslcd = "", string billupto = "", string txnupto = "", string currautono = "",
-              string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
-              string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
-              string selslgrpcd = "", string showagent = "", string blno = "", string skipautono = "", string selrtdebcd = "", bool ShowPymtHoldRem = false, string selPymtHoldCtg = "", string showonlyunadj = "", bool pymttakenuptodt = false)
+             string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
+             string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
+             string selslgrpcd = "", string showagent = "", string blno = "", string skipautono = "", string selrtdebcd = "", bool ShowPymtHoldRem = false, string selPymtHoldCtg = "", string showonlyunadj = "", bool pymttakenuptodt = false)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "", sqlc = "";
@@ -1291,7 +1291,7 @@ namespace Improvar
                 sql = "";
                 sql += "select a.glslcd, a.glslagcd, a.glcd, a.slcd, a.slcdclass1cd, s.parentcd, s.parentnm, s.grpcdfull, a.glslagdrcr, ";
                 sql += "a.rtdebcd, l.rtdebnm, l.mobile rtdebmobile, nvl(l.area,l.city) retdebarea, m.docno tchdocno, ";
-                sql += "a.drcr, a.autono, a.autoslno, a.doccd, a.docno, a.docdt, a.slno, nvl(a.blamt,0)-nvl(a.amt,0) oprecdamt, a.amt, a.blamt, a.itamt, a.lrno, a.lrdt, a.transnm, ";
+                sql += "a.drcr, a.autono, a.autoslno, a.doccd, a.docno, a.docdt, to_char(a.docdt,'MON-YYYY') docmonth, a.slno, nvl(a.blamt,0)-nvl(a.amt,0) oprecdamt, a.amt, a.blamt, a.itamt, a.lrno, a.lrdt, a.transnm, ";
                 if (selslgrpcd.retStr() != "") sql += "s.parentcd agslcd, s.parentnm agslnm, '' agslcity, '' agphno, '' sagslcd, '' sagslnm, '' sagslcity, '' sagphno, ";
                 else sql += "a.agslcd, i.slnm agslnm, nvl(i.shortnm,i.slcd) agshortnm, i.district agslcity, nvl(i.regmobile,i.phno1) agphno, ";
                 sql += "a.sagslcd, n.slnm sagslnm, nvl(n.shortnm,n.slcd) sagshortnm,  n.district sagslcity, nvl(n.regmobile,n.phno1) sagphno, ";
@@ -1430,6 +1430,7 @@ namespace Improvar
                     tbl.Columns.Add("tchdocno", typeof(string));
                     tbl.Columns.Add("docno", typeof(string));
                     tbl.Columns.Add("docdt", typeof(DateTime));
+                    tbl.Columns.Add("docmonth", typeof(string));
                     tbl.Columns.Add("slno", typeof(double));
                     tbl.Columns.Add("amt", typeof(double));
                     tbl.Columns.Add("blamt", typeof(double));
@@ -1538,6 +1539,7 @@ namespace Improvar
                                 tbl.Rows[rNo]["tchdocno"] = tbldr.Rows[i]["tchdocno"].ToString();
                                 tbl.Rows[rNo]["docno"] = tbldr.Rows[i]["docno"].ToString();
                                 tbl.Rows[rNo]["docdt"] = Convert.ToDateTime(tbldr.Rows[i]["docdt"]);
+                                tbl.Rows[rNo]["docmonth"] = Convert.ToDateTime(tbldr.Rows[i]["docdt"]).ToString("MMM-yyyy");
                                 tbl.Rows[rNo]["slno"] = Convert.ToDouble(tbldr.Rows[i]["slno"] == DBNull.Value ? 0 : tbldr.Rows[i]["slno"]);
                                 tbl.Rows[rNo]["amt"] = Convert.ToDouble(tbldr.Rows[i]["amt"] == DBNull.Value ? 0 : tbldr.Rows[i]["amt"]);
                                 tbl.Rows[rNo]["blamt"] = Convert.ToDouble(tbldr.Rows[i]["blamt"] == DBNull.Value ? 0 : tbldr.Rows[i]["blamt"]);
