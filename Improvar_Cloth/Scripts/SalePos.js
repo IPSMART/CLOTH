@@ -1288,8 +1288,8 @@ function CalculateTotal(CallFrm) {
 
     }
     else {
-        blamt = retFloat((parseFloat(RETAMT) + parseFloat(T_NET_AMT)) * -1);
-
+        //blamt = retFloat((parseFloat(RETAMT) + parseFloat(T_NET_AMT)) * -1);
+        blamt = retFloat((parseFloat(RETAMT) + parseFloat(T_NET_AMT)));
     }
     if (ROUND_TAG == true) {
         debugger;
@@ -1354,7 +1354,14 @@ function CalculateTotal(CallFrm) {
         var blamt = parseFloat(BLAMT * PER_) / 100;
         $("#S_BLAMT_" + i).val(retFloat(blamt).toFixed(2));
 
-        var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
+        //var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
+        var itamt = 0;
+        if (MENU_PARA == "SBCM") {
+            itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
+        }
+        else {
+           itamt = parseFloat(Rtaxamt);
+        }
         if ($("#S_PER_" + i).val() != "") { $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2)); } else { $("#S_ITAMT_" + i).val(parseFloat(0).toFixed(2)); }
 
         t_blamt += retFloat($("#S_BLAMT_" + i).val());
@@ -1767,11 +1774,12 @@ function GetTTXNDTLDetails() {
     var R_DOCNO = $("#R_DOCNO").val();
     var R_BARNO = $("#R_BARNO").val();
     var R_DOCCD = $("#DOCCD").val();
+    var R_TAXGRPCD = $("#TAXGRPCD").val();
     $.ajax({
         type: 'POST',
         url: $("#UrlTTXNDTLDetails").val(),
         beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&R_DOCCD=" + R_DOCCD,
+        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&R_DOCCD=" + R_DOCCD + "&R_TAXGRPCD=" + R_TAXGRPCD,
         success: function (result) {
             $("#popup").animate({ marginTop: '-10px' }, 50);
             $("#popup").html(result);

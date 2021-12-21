@@ -91,7 +91,7 @@ namespace Improvar.Controllers
                 string MTRLJOBCD = data[0].retSqlformat();
                 string DOCDT = System.DateTime.Today.ToString().retDateStr();   /*data[2].retStr()*/
                 string TAXGRPCD = data[3].retStr() == "" ? "C001" : data[3].retStr();
-                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string GOCD = data[4].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr() == "" ? "WP" : data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
