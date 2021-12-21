@@ -546,7 +546,10 @@ namespace Improvar.Controllers
                 str += "select a.barno, a.effdt, a.rate, ";
                 str += "row_number() over(partition by a.barno, a.effdt order by a.effdt desc) as rn ";
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
-                str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
+                //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
+                str += "where a.prccd = 'WP' ";
+                if(CommVar.ClientCode(UNQSNO)== "DIWH") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans max effdt rate comes
+                str += ") where rn = 1 ) b, ";
                 str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
                 str += "where a.barno = b.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
                 if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "' ";
