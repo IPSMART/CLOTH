@@ -189,7 +189,7 @@ namespace Improvar.Controllers
                     sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
                     sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
                     //sql += "order by a.autono, f.prefno, a.baleno,a.slno ";
-                    if(CommVar.ClientCode(UNQSNO)== "SNFP" && VE.MENU_PARA == "TRFB")
+                    if (CommVar.ClientCode(UNQSNO) == "SNFP" && VE.MENU_PARA == "TRFB" && VE.MENU_PARA == "TRWB" && VE.MENU_PARA== "KHSR")
                     { sql += "order by a.autono,a.baleno,f.prefno,a.slno "; }
                     else { sql += "order by a.autono,a.slno,f.prefno, a.baleno "; }
 
@@ -507,78 +507,172 @@ namespace Improvar.Controllers
                 #endregion
                 #region EXCEL
                 else {
-                    if (VE.MENU_PARA == "KHSR")
+                    #region excel for common
+                    if (CommVar.ClientCode(UNQSNO) != "SNFP")
                     {
-                        tbl = restbl;
-                        filename = "Khasra_".retRepname();
-                    }
-                    else if (VE.MENU_PARA == "TRWB")
-                    { tbl = restbl; filename = "Stk Trnf with Waybill (Bale)_".retRepname(); }
-                    else if (VE.MENU_PARA == "TRFB")
-                    { tbl = restbl; filename = "Stk Trnf w/o Waybill (Bale)_".retRepname(); }
-                    else if (VE.MENU_PARA == "BLTR") { filename = "Receive from Mutia_".retRepname(); }
-                    if (tbl.Rows.Count == 0)
-                    {
-                        return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
-                    }
-                    string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
-                    Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo";
-                    var sheetName = "";
-                    //sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : "T_BiltyR_Mutia";
-                    sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill" : "T_BiltyR_Mutia";
-
-                    ExcelPackage ExcelPkg = new ExcelPackage();
-                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add(sheetName);
-                    wsSheet1.Column(1).Width = 11.57;
-                    wsSheet1.Column(2).Width = 7.86;
-                    wsSheet1.Column(3).Width = 21.43;
-                    wsSheet1.Column(4).Width = 4.43;
-                    wsSheet1.Column(5).Width = 3.57;
-                    wsSheet1.Column(6).Width = 7.43;
-                    wsSheet1.Column(6).Style.Font.Bold = true;
-                    wsSheet1.Column(7).Width = 3.29;
-                    wsSheet1.Column(8).Width = 5.57;
-                    wsSheet1.Column(8).Style.Font.Bold = true;
-                    wsSheet1.Column(8).Style.Numberformat.Format = "0.00";
-                    wsSheet1.Column(9).Width = 3.99;
-                    wsSheet1.Column(10).Width = 12.29;
-                    wsSheet1.Column(11).Width = 7.43;
-                    var modelTable = wsSheet1.Cells[1, 1];
-                    using (ExcelRange Rng = wsSheet1.Cells["A1:K3"])
-                    {
-                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
-                        Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
-                        wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
-                        wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
-                        //wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
-                        wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
-                    }
-                    using (ExcelRange Rng = wsSheet1.Cells["A4:K4"])
-                    {
-                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
-                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
-                        Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        string[] Header = Excel_Header.Split('|');
-                        for (int j = 0; j < Header.Length; j++)
+                        if (VE.MENU_PARA == "KHSR")
                         {
-                            wsSheet1.Cells[4, j + 1].Value = Header[j];
+                            tbl = restbl;
+                            filename = "Khasra_".retRepname();
                         }
-                    }
-                    int exlrowno = 5; var rslno = 0; var baleno = "";
-                    for (int i = 0; i < tbl.Rows.Count; i++)
-                    {
-                        var curslno = 0; var cbaleno = "";
-                        if (VE.MENU_PARA == "KHSR") { curslno = tbl.Rows[i]["slno"].retShort(); }
-                        //else if (VE.MENU_PARA == "TRWB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
-                        else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
-                        else if (VE.MENU_PARA == "BLTR") { curslno = tbl.Rows[i]["rslno"].retShort(); }
-                        if ((curslno != rslno || cbaleno != baleno) && i != 0)
+                        else if (VE.MENU_PARA == "TRWB")
+                        { tbl = restbl; filename = "Stk Trnf with Waybill (Bale)_".retRepname(); }
+                        else if (VE.MENU_PARA == "TRFB")
+                        { tbl = restbl; filename = "Stk Trnf w/o Waybill (Bale)_".retRepname(); }
+                        else if (VE.MENU_PARA == "BLTR") { filename = "Receive from Mutia_".retRepname(); }
+                        if (tbl.Rows.Count == 0)
                         {
+                            return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                        }
+                        string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
+                        Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo";
+                        var sheetName = "";
+                        //sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : "T_BiltyR_Mutia";
+                        sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill" : "T_BiltyR_Mutia";
+
+                        ExcelPackage ExcelPkg = new ExcelPackage();
+                        ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add(sheetName);
+                        wsSheet1.Column(1).Width = 11.57;
+                        wsSheet1.Column(2).Width = 7.86;
+                        wsSheet1.Column(3).Width = 21.43;
+                        wsSheet1.Column(4).Width = 4.43;
+                        wsSheet1.Column(5).Width = 3.57;
+                        wsSheet1.Column(6).Width = 7.43;
+                        wsSheet1.Column(6).Style.Font.Bold = true;
+                        wsSheet1.Column(7).Width = 3.29;
+                        wsSheet1.Column(8).Width = 5.57;
+                        wsSheet1.Column(8).Style.Font.Bold = true;
+                        wsSheet1.Column(8).Style.Numberformat.Format = "0.00";
+                        wsSheet1.Column(9).Width = 3.99;
+                        wsSheet1.Column(10).Width = 12.29;
+                        wsSheet1.Column(11).Width = 7.43;
+                        var modelTable = wsSheet1.Cells[1, 1];
+                        using (ExcelRange Rng = wsSheet1.Cells["A1:K3"])
+                        {
+                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                            Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
+                            wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
+                            wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
+                            //wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                            wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                        }
+                        using (ExcelRange Rng = wsSheet1.Cells["A4:K4"])
+                        {
+                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                            Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            string[] Header = Excel_Header.Split('|');
+                            for (int j = 0; j < Header.Length; j++)
+                            {
+                                wsSheet1.Cells[4, j + 1].Value = Header[j];
+                            }
+                        }
+                        int exlrowno = 5; var rslno = 0; var baleno = ""; var rslno1 = 0;
+                        for (int i = 0; i < tbl.Rows.Count; i++)
+                        {
+                            var curslno = 0; var cbaleno = "";
+                            if (VE.MENU_PARA == "KHSR") { curslno = tbl.Rows[i]["slno"].retShort(); }
+                            //else if (VE.MENU_PARA == "TRWB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                            else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                            else if (VE.MENU_PARA == "BLTR") { curslno = tbl.Rows[i]["rslno"].retShort(); }
+                            if ((curslno != rslno || cbaleno != baleno) && i != 0)
+                            {
+                                modelTable = wsSheet1.Cells[exlrowno, 1];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 2];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 3];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 4];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 5];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 6];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 7];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 8];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 9];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 10];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                                modelTable = wsSheet1.Cells[exlrowno, 11];
+                                modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                                modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                                wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+                                exlrowno++;
+                            }
+                            wsSheet1.Row(exlrowno).Style.Font.Size = 10;
+                            wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
+                            wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
+                            wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
+                            wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                            //if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB")
+                            //{
+                            //    if (cbaleno == tbl.Rows[i]["baleno"].retStr())
+                            //    { rslno1 = rslno1; }
+                            //    else { rslno1++; }
+                            //    wsSheet1.Cells[exlrowno, 5].Value = rslno1;
+                            //}
+                            wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                            //wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                            //wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                            wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
+                            wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
+                            wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl().toRound(2);
+                            wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["uomcd"].retStr();
+                            wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["lrno"].retStr();
+                            wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
+                            if (VE.MENU_PARA == "KHSR")
+                            { rslno = tbl.Rows[i]["slno"].retShort(); }
+                            else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                            //else if (VE.MENU_PARA == "TRWB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                            else if (VE.MENU_PARA == "BLTR") { rslno = tbl.Rows[i]["rslno"].retShort(); }
+                            exlrowno++;
+                        }
+
+                        #region Blank Row at the end
+                        
                             modelTable = wsSheet1.Cells[exlrowno, 1];
                             modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                             modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
@@ -638,104 +732,431 @@ namespace Improvar.Controllers
                             modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                             wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
                             exlrowno++;
-                        }
-                        wsSheet1.Row(exlrowno).Style.Font.Size = 10;
-                        wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
-                        wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
-                        wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
-                        wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? "" : tbl.Rows[i]["pcstype"].retStr();
-                        wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
-                        //wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? "" : tbl.Rows[i]["pcstype"].retStr();
-                        //wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
-                        wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
-                        wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
-                        wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl().toRound(2);
-                        wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["uomcd"].retStr();
-                        wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["lrno"].retStr();
-                        wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
-                        if (VE.MENU_PARA == "KHSR")
-                        { rslno = tbl.Rows[i]["slno"].retShort(); }
-                        else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
-                        //else if (VE.MENU_PARA == "TRWB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
-                        else if (VE.MENU_PARA == "BLTR") { rslno = tbl.Rows[i]["rslno"].retShort(); }
-                        exlrowno++;
-                    }
-                    #region Blank Row at the end
-                    {
-                        modelTable = wsSheet1.Cells[exlrowno, 1];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 2];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 3];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 4];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 5];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 6];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 7];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 8];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 9];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 10];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-
-                        modelTable = wsSheet1.Cells[exlrowno, 11];
-                        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                        wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
-                        exlrowno++;
+                        #endregion
+                        Response.Clear();
+                        Response.ClearContent();
+                        Response.Buffer = true;
+                        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+                        Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                        Response.Flush();
+                        Response.Close();
+                        Response.End();
+                       
                     }
                     #endregion
+                    else {
+                        # region excel for SNFC
+                        if (VE.MENU_PARA == "KHSR")
+                        {
+                            tbl = restbl;
+                            filename = "Khasra_".retRepname();
+                        }
+                        else if (VE.MENU_PARA == "TRWB")
+                        { tbl = restbl; filename = "Stk Trnf with Waybill (Bale)_".retRepname(); }
+                        else if (VE.MENU_PARA == "TRFB")
+                        { tbl = restbl; filename = "Stk Trnf w/o Waybill (Bale)_".retRepname(); }
+                        else if (VE.MENU_PARA == "BLTR") { filename = "Receive from Mutia_".retRepname(); }
+                        if (tbl.Rows.Count == 0)
+                        {
+                            return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                        }
+                        string Excel_Header = "Bill No." + "|" + "Date" + "|" + "Short No." + "|" + "Ctg" + "|" + "Slno" + "|" + " Bale" + "|" + "Nos" + "|" + "Qnty" + "|";
+                        Excel_Header = Excel_Header + "Uom" + "|" + "Lrno" + "|" + "PageNo";
+                        var sheetName = "";
+                        //sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : "T_BiltyR_Mutia";
+                        sheetName = VE.MENU_PARA == "KHSR" ? "T_Bilty_Khasra" : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill" : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill" : "T_BiltyR_Mutia";
 
-                    Response.Clear();
-                    Response.ClearContent();
-                    Response.Buffer = true;
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
-                    Response.BinaryWrite(ExcelPkg.GetAsByteArray());
-                    Response.Flush();
-                    Response.Close();
-                    Response.End();
+                        ExcelPackage ExcelPkg1 = new ExcelPackage();
+                        ExcelWorksheet wsSheet1 = ExcelPkg1.Workbook.Worksheets.Add(sheetName);
+                        wsSheet1.Column(1).Width = 11.57;
+                        wsSheet1.Column(2).Width = 7.86;
+                        wsSheet1.Column(3).Width = 21.43;
+                        wsSheet1.Column(4).Width = 4.43;
+                        wsSheet1.Column(5).Width = 3.57;
+                        wsSheet1.Column(6).Width = 7.43;
+                        wsSheet1.Column(6).Style.Font.Bold = true;
+                        wsSheet1.Column(7).Width = 3.29;
+                        wsSheet1.Column(8).Width = 5.57;
+                        wsSheet1.Column(8).Style.Font.Bold = true;
+                        wsSheet1.Column(8).Style.Numberformat.Format = "0.00";
+                        wsSheet1.Column(9).Width = 3.99;
+                        wsSheet1.Column(10).Width = 12.29;
+                        wsSheet1.Column(11).Width = 7.43;
+                        var modelTable = wsSheet1.Cells[1, 1];
+                        using (ExcelRange Rng = wsSheet1.Cells["A1:K3"])
+                        {
+                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                            Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
+                            wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
+                            wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
+                            //wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                            wsSheet1.Cells["A3:A3"].Value = VE.MENU_PARA == "KHSR" ? "Khasra Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRWB" ? "Stk Trnf with Waybill (Bale)Details as on " + fdate + " to " + tdate : VE.MENU_PARA == "TRFB" ? "Stk Trnf w/o Waybill (Bale)Details as on " + fdate + " to " + tdate : "Receive from Mutia Details as on " + fdate + " to " + tdate;
+                        }
+                        using (ExcelRange Rng = wsSheet1.Cells["A4:K4"])
+                        {
+                            Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            Rng.Style.Font.Bold = true; Rng.Style.Font.Size = 9;
+                            Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                            Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            string[] Header = Excel_Header.Split('|');
+                            for (int j = 0; j < Header.Length; j++)
+                            {
+                                wsSheet1.Cells[4, j + 1].Value = Header[j];
+                            }
+                        }
+                        int exlrowno = 5; var rslno = 0; var baleno = ""; var rslno1 = 0;
+                        Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                        i = 0; maxR = tbl.Rows.Count - 1;
+                        //for (int i = 0; i < tbl.Rows.Count; i++)
+                        //{
+                        //    var curslno = 0; var cbaleno = "";
+                        //    if (VE.MENU_PARA == "KHSR") { curslno = tbl.Rows[i]["slno"].retShort(); }
+                        //    //else if (VE.MENU_PARA == "TRWB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                        //    else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                        //    else if (VE.MENU_PARA == "BLTR") { curslno = tbl.Rows[i]["rslno"].retShort(); }
+                        //    if ((curslno != rslno || cbaleno != baleno) && i != 0)
+                        //    {
+                        //        modelTable = wsSheet1.Cells[exlrowno, 1];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 2];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 3];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 4];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 5];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 6];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 7];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 8];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 9];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 10];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                        //        modelTable = wsSheet1.Cells[exlrowno, 11];
+                        //        modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        //        modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        //        wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+                        //        exlrowno++;
+                        //    }
+                        //    wsSheet1.Row(exlrowno).Style.Font.Size = 10;
+                        //    wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
+                        //    wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
+                        //    wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
+                        //    wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                        //    //if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB")
+                        //    //{
+                        //    //    if (cbaleno == tbl.Rows[i]["baleno"].retStr())
+                        //    //    { rslno1 = rslno1; }
+                        //    //    else { rslno1++; }
+                        //    //    wsSheet1.Cells[exlrowno, 5].Value = rslno1;
+                        //    //}
+                        //    wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                        //    //wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                        //    //wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                        //    wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
+                        //    wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
+                        //    wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl().toRound(2);
+                        //    wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["uomcd"].retStr();
+                        //    wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["lrno"].retStr();
+                        //    wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
+                        //    if (VE.MENU_PARA == "KHSR")
+                        //    { rslno = tbl.Rows[i]["slno"].retShort(); }
+                        //    else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                        //    //else if (VE.MENU_PARA == "TRWB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                        //    else if (VE.MENU_PARA == "BLTR") { rslno = tbl.Rows[i]["rslno"].retShort(); }
+                        //    exlrowno++;
+                        //}
+
+                        //while loop
+                        while (i <= maxR)
+                        {
+                            rslno1++;
+                            var curslno = 0; var cbaleno = "";
+                            baleno = tbl.Rows[i]["baleno"].retStr();
+                            while (tbl.Rows[i]["baleno"].retStr() == baleno)
+                            {
+
+                                if (VE.MENU_PARA == "KHSR") { curslno = tbl.Rows[i]["slno"].retShort(); }
+                                //else if (VE.MENU_PARA == "TRWB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                                else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { cbaleno = tbl.Rows[i]["baleno"].retStr(); }
+                                else if (VE.MENU_PARA == "BLTR") { curslno = tbl.Rows[i]["rslno"].retShort(); }
+
+                                wsSheet1.Row(exlrowno).Style.Font.Size = 10;
+                                wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["prefno"].retStr();
+                                wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["prefdt"].retDateStr("yy", "dd/MM/yy");
+                                wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["itstyle"].retStr();
+                                wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                                if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB"|| VE.MENU_PARA == "KHSR")
+                                {
+                                    wsSheet1.Cells[exlrowno, 5].Value = rslno1;
+                                }
+                                else { wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["rslno"].retShort(); }
+                                //wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                                //wsSheet1.Cells[exlrowno, 4].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" ? "" : tbl.Rows[i]["pcstype"].retStr();
+                                //wsSheet1.Cells[exlrowno, 5].Value = VE.MENU_PARA == "KHSR" || VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRWB" ? tbl.Rows[i]["slno"].retShort() : tbl.Rows[i]["rslno"].retShort();
+                                wsSheet1.Cells[exlrowno, 6].Value = tbl.Rows[i]["baleno"].retStr();
+                                wsSheet1.Cells[exlrowno, 7].Value = tbl.Rows[i]["nos"].retDbl();
+                                wsSheet1.Cells[exlrowno, 8].Value = tbl.Rows[i]["qnty"].retDbl().toRound(2);
+                                wsSheet1.Cells[exlrowno, 9].Value = tbl.Rows[i]["uomcd"].retStr();
+                                wsSheet1.Cells[exlrowno, 10].Value = tbl.Rows[i]["lrno"].retStr();
+                                wsSheet1.Cells[exlrowno, 11].Value = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
+                                if (VE.MENU_PARA == "KHSR")
+                                { rslno = tbl.Rows[i]["slno"].retShort(); }
+                                else if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                                //else if (VE.MENU_PARA == "TRWB") { baleno = tbl.Rows[i]["baleno"].retStr(); }
+                                else if (VE.MENU_PARA == "BLTR") { rslno = tbl.Rows[i]["rslno"].retShort(); }
+                                exlrowno++;
+                                i = i + 1;
+                                if (i > maxR) break;
+                            }
+                            //if ((curslno != rslno || cbaleno != baleno) && i != 0)
+                            //{
+                            //    modelTable = wsSheet1.Cells[exlrowno, 1];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 2];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 3];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 4];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 5];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 6];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 7];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 8];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 9];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 10];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            //    modelTable = wsSheet1.Cells[exlrowno, 11];
+                            //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            //    wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+                            //    exlrowno++;
+                            //}
+
+                            #region Blank Row at the end
+                            modelTable = wsSheet1.Cells[exlrowno, 1];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 2];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 3];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 4];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 5];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 6];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 7];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 8];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 9];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 10];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                            modelTable = wsSheet1.Cells[exlrowno, 11];
+                            modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+                            exlrowno++;
+                            #endregion
+                        }
+                        Response.Clear();
+                        Response.ClearContent();
+                        Response.Buffer = true;
+                        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+                        Response.BinaryWrite(ExcelPkg1.GetAsByteArray());
+                        Response.Flush();
+                        Response.Close();
+                        Response.End();
+                    }
+                    #endregion
+                    //
+
+                    //#region Blank Row at the end
+                    //{
+                    //    modelTable = wsSheet1.Cells[exlrowno, 1];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 1].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 2];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 2].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 3];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 3].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 4];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 4].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 5];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 5].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 6];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 6].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 7];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 7].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 8];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 8].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 9];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 9].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 10];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 10].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+
+                    //    modelTable = wsSheet1.Cells[exlrowno, 11];
+                    //    modelTable.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    //    modelTable.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    //    wsSheet1.Cells[exlrowno, 11].Value = ""; wsSheet1.Row(exlrowno).Height = 20;
+                    //    exlrowno++;
+                    //}
+                    //#endregion
+
+
                 }
                 #endregion
-
 
             }
             catch (Exception ex)
