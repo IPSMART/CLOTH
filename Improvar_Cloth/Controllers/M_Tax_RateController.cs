@@ -255,9 +255,9 @@ namespace Improvar.Controllers
             string DBschm = CommVar.CurSchema(UNQSNO).ToString();
             string DFschm = CommVar.FinSchema(UNQSNO);
             string query = "";
-            query = query + " select a.taxgrpcd, b.taxgrpnm, a.igstper, a.cgstper, a.sgstper, a.cessper   ";
+            query = query + " select distinct a.taxgrpcd, b.taxgrpnm, 0 igstper, 0 cgstper, 0 sgstper, 0 cessper   ";
             query = query + " from " + DBschm + ".m_prodtax a, " + DFschm + ".m_taxgrp b   ";
-            query = query + " where a.taxgrpcd=b.taxgrpcd(+) and a.prodgrpcd='" + PRODGRPCD + "'   ";
+            query = query + " where a.taxgrpcd=b.taxgrpcd(+) and a.prodgrpcd='" + PRODGRPCD + "' and nvl(a.fromrt,0)=0  ";
             query = query + " union  ";
             query = query + " select b.taxgrpcd, b.taxgrpnm, 0 igstper, 0 cgstper, 0 sgstper, 0 cessper";
             query = query + " from " + DFschm + ".m_taxgrp b, " + DFschm + ".m_cntrl_hdr c       ";
