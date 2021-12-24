@@ -254,7 +254,7 @@
                         location.href = ViewLocation1;
                         jQuery("form").attr("target", "_blank");
                         jQuery("form").submit();
-                      //  window.print();
+                        //  window.print();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -266,6 +266,67 @@
         }
     }
 </script>
+@*<script>
+    function DocumentDateChng(fld) {
+        debugger;
+        DocumentDateCHK(fld);
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("DocumentDateChng", PageControllerName)",
+            data: "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                var MSG = res[0].indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#MNTNSIZE").val(returncolvalue(MSG, "MNTNSIZE"));
+                    $("#MNTNCOLOR").val(returncolvalue(MSG, "MNTNCOLOR"));
+                    $("#MNTNPART").val(returncolvalue(MSG, "MNTNPART"));
+                    $("#MNTNFLAGMTR").val(returncolvalue(MSG, "MNTNFLAGMTR"));
+                    $("#MNTNSHADE").val(returncolvalue(MSG, "MNTNSHADE"));
+                    $("#MNTNBARNO").val(returncolvalue(MSG, "MNTNBARNO"));
+                    $("#CMROFFTYPE").val(returncolvalue(MSG, "CMROFFTYPE"));
+                    $("#MNTNOURDESIGN").val(returncolvalue(MSG, "MNTNOURDESIGN"));
+
+
+                    $("#RTDEBCD").val(returncolvalue(MSG, "RTDEBCD"));
+                    $("#NM").val(returncolvalue(MSG, "RTDEBNM"));
+                    $("#MOBNO").val(returncolvalue(MSG, "MOBILE"));
+                    $("#RTDEBNM").val(returncolvalue(MSG, "RTDEBNM"));
+                    var addrs = returncolvalue(MSG, "ADD1") + " " + returncolvalue(MSG, "ADD2") + " " + returncolvalue(MSG, "ADD3");
+                    $("#ADDR").val(addrs + "/" + returncolvalue(MSG, "CITY"));
+                    $("#MOBILE").val(returncolvalue(MSG, "MOBILE"));
+                    $("#ADDR_").val(addrs);
+                    $("#CITY").val(returncolvalue(MSG, "CITY_"));
+                    if (returncolvalue(MSG, "INC_RATE") == "Y") {
+                        document.getElementById("INC_RATE").checked = true;
+                    }
+                    else {
+                        document.getElementById("INC_RATE").checked = false;
+                    }
+                    $("#INCLRATEASK").val(returncolvalue(MSG, "INC_RATE"));
+                    $("#RETDEBSLCD").val(returncolvalue(MSG, "RETDEBSLCD"));
+                    $("#TAXGRPCD").val(returncolvalue(MSG, "TAXGRPCD"));
+                    $("#PRCCD").val(returncolvalue(MSG, "PRCCD"));
+                    $("#PRCNM").val(returncolvalue(MSG, "PRCNM"));
+                    $("#EFFDT").val(returncolvalue(MSG, "EFFDT"));
+                    $("#partialdivBarCodeTab").html(res[1]);
+                    $("#partialdivReturn").html(res[2]);
+
+                }
+                else {
+                    msgInfo(MSG);
+                    message_value = "DOCDT";
+                    return false;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>*@
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -293,6 +354,7 @@
         <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="urlGetData" value="@Url.Action("GetData", PageControllerName)" />
+        <input type="hidden" id="UrlDocumentDateChng" value="@Url.Action("DocumentDateChng", PageControllerName)" />
         <input type="hidden" id="salesmanlinkcd" value="E,M" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -352,8 +414,9 @@
                         </div>
                         <div class="col-md-3">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                            </div>
+                                @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onchange = "DocumentDateChng(this);", onblur = "DocumentDateChng(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                @Html.HiddenFor(model => Model.Last_DOCDT, new { @class = "form-control", id = "Last_DOCDT" })
+                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="editor-label" style="margin-top: 6px;">

@@ -134,16 +134,16 @@ namespace Improvar.Controllers
                         //}
 
                         //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                        var MSYSCNFG = salesfunc.M_SYSCNFG();
-                        if (MSYSCNFG == null)
-                        {
+                        //var MSYSCNFG = salesfunc.M_SYSCNFG();
+                        //if (MSYSCNFG == null)
+                        //{
 
-                            VE.DefaultView = false;
-                            VE.DefaultDay = 0;
-                            ViewBag.ErrorMessage = "Data add in Configuaration Setup->Posting/Terms Setup";
-                            return View(VE);
-                        }
-                        VE.M_SYSCNFG = MSYSCNFG;
+                        //    VE.DefaultView = false;
+                        //    VE.DefaultDay = 0;
+                        //    ViewBag.ErrorMessage = "Data add in Configuaration Setup->Posting/Terms Setup";
+                        //    return View(VE);
+                        //}
+                        //VE.M_SYSCNFG = MSYSCNFG;
 
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                         VE.SrcFlagCaption = "Bale No.";
@@ -205,6 +205,16 @@ namespace Improvar.Controllers
                             {
                                 VE.T_TXNMEMO = TXNMEMO;
                             }
+                            var MSYSCNFG = salesfunc.M_SYSCNFG(VE.T_TXN.DOCDT.retDateStr());
+                            if (MSYSCNFG == null)
+                            {
+
+                                VE.DefaultView = false;
+                                VE.DefaultDay = 0;
+                                ViewBag.ErrorMessage = "Data add in Configuaration Setup->Posting/Terms Setup";
+                                return View(VE);
+                            }
+                            VE.M_SYSCNFG = MSYSCNFG;
                             if (loadOrder.retStr().Length > 1)
                             {
                                 if (VE.MENU_PARA != "SBDIR")
@@ -224,11 +234,27 @@ namespace Improvar.Controllers
                             {
                                 T_TXN TTXN = new T_TXN();
                                 T_TXNOTH TTXNOTH = new T_TXNOTH();
+                                if (VE.DocumentType.Count == 1)
+                                {
+                                    TTXN.DOCCD = VE.DocumentType[0].value;
+                                }
+                                Cn.getdocmaxmindate(TTXN.DOCCD, "", VE.DefaultAction, "", VE);
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                 {
                                     TTXN.PREFDT = Cn.getCurrentDate(VE.mindate);
                                 }
+                                var MSYSCNFG = salesfunc.M_SYSCNFG(TTXN.DOCDT.retDateStr());
+                                if (MSYSCNFG == null)
+                                {
+
+                                    VE.DefaultView = false;
+                                    VE.DefaultDay = 0;
+                                    ViewBag.ErrorMessage = "Data add in Configuaration Setup->Posting/Terms Setup";
+                                    return View(VE);
+                                }
+                                VE.M_SYSCNFG = MSYSCNFG;
+
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
@@ -459,6 +485,12 @@ namespace Improvar.Controllers
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
                     Cn.getdocmaxmindate(VE.T_TXN.DOCCD, docdt, VE.DefaultAction, VE.T_TXN.DOCNO, VE);
+                    if ((op.ToString() == "A" && loadOrder == "N" && parkID == "") || ((op == "E" || op == "D" || op == "V" )&& loadOrder.retStr().Length > 1))
+                    {
+                        VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                        VE.T_TXN.PREFDT = Cn.getCurrentDate(VE.mindate);
+                    }
+                    VE.Last_DOCDT = VE.T_TXN.DOCDT.retDateStr();
                     return View(VE);
                 }
             }
@@ -842,7 +874,7 @@ namespace Improvar.Controllers
                 }
 
                 //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                var MSYSCNFG = salesfunc.M_SYSCNFG();
+                var MSYSCNFG = salesfunc.M_SYSCNFG(TXN.DOCDT.retDateStr());
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
@@ -3845,7 +3877,7 @@ namespace Improvar.Controllers
                         allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                     }
                     //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                    var MSYSCNFG = salesfunc.M_SYSCNFG();
+                    var MSYSCNFG = salesfunc.M_SYSCNFG(VE.T_TXN.DOCDT.retDateStr());
                     foreach (var v in VE.TBATCHDTL)
                     {
                         PRODGRPGSTPER = "";
@@ -4319,7 +4351,7 @@ namespace Improvar.Controllers
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
                     if (VE.MENU_PARA == "PR") slcdpara = "PB";
                     //M_SYSCNFG MSYSCNFG = DB.M_SYSCNFG.FirstOrDefault();
-                    M_SYSCNFG MSYSCNFG = salesfunc.M_SYSCNFG();
+                    M_SYSCNFG MSYSCNFG = salesfunc.M_SYSCNFG(VE.T_TXN.DOCDT.retDateStr());
                     sql = "";
                     if (MSYSCNFG == null)
                     {
@@ -6274,7 +6306,7 @@ namespace Improvar.Controllers
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             string str = "";
             //var m_syscnfg = DB.M_SYSCNFG.Count();
-            var m_syscnfg = salesfunc.M_SYSCNFG();
+            var m_syscnfg = salesfunc.M_SYSCNFG(VE.T_TXN.DOCDT.retDateStr());
             if (m_syscnfg == null)
             {
                 str += Cn.GCS() + "Posting/Terms Setup in Sales module(M_SYSCNFG)";
@@ -6397,6 +6429,42 @@ namespace Improvar.Controllers
             {
                 Cn.SaveException(Ex, "");
                 return Content(Ex.Message + Ex.InnerException);
+            }
+        }
+        public ActionResult DocumentDateChng(TransactionSaleEntry VE, string docdt)
+        {
+            try
+            {
+                string str = "";
+                var dt = salesfunc.GetSyscnfgData(docdt);
+                if (dt.Rows.Count > 0)
+                {
+                    str = masterHelp.ToReturnFieldValues("", dt);
+                }
+                VE.M_SYSCNFG = salesfunc.M_SYSCNFG(docdt);
+                ModelState.Clear();
+                VE.DefaultView = true;
+                var GRID_DATA = RenderRazorViewToString(ControllerContext, "_T_SALE_BarTab", VE);
+                var DGRID_DATA = RenderRazorViewToString(ControllerContext, "_T_SALE_DETAIL", VE);
+                return Content(str + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + GRID_DATA + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + DGRID_DATA);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
             }
         }
     }

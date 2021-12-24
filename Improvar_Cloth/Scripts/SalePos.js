@@ -470,6 +470,9 @@ function AddMainRow(hlpstr) {
     if (INCLRATEASK == "Y") {
         CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
     }
+    else {
+        CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
+    }
     // CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
     if (INCLRATEASK != "Y") {
         $("#M_STYLENO").val('');
@@ -728,6 +731,9 @@ function AddReturnRow(hlpstr) {
     $("#_T_SALE_POS_RETURN_GRID tbody").append(tr);
     if (INCLRATEASK == "Y") {
         CalculateInclusiveRate(rowindex, '_T_SALE_POS_RETURN_GRID')
+    }
+    else {
+        CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
     }
     // CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
 
@@ -2130,6 +2136,82 @@ function ClearAllSalePose() {
 
 
 //}
+function DocumentDateChng(fld) {
+    debugger;
+    DocumentDateCHK(fld);
+    var value = docdtmodify_check();
+    if (value == "true") {
+        $.ajax({
+            type: 'post',
+            url: $("#UrlDocumentDateChng").val(),//"@Url.Action("DocumentDateChng", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                var MSG = res[0].indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#MNTNSIZE").val(returncolvalue(res[0], "MNTNSIZE"));
+                    $("#MNTNCOLOR").val(returncolvalue(res[0], "MNTNCOLOR"));
+                    $("#MNTNPART").val(returncolvalue(res[0], "MNTNPART"));
+                    $("#MNTNFLAGMTR").val(returncolvalue(res[0], "MNTNFLAGMTR"));
+                    $("#MNTNSHADE").val(returncolvalue(res[0], "MNTNSHADE"));
+                    $("#MNTNBARNO").val(returncolvalue(res[0], "MNTNBARNO"));
+                    $("#CMROFFTYPE").val(returncolvalue(res[0], "CMROFFTYPE"));
+                    $("#MNTNOURDESIGN").val(returncolvalue(res[0], "MNTNOURDESIGN"));
+
+
+                    $("#RTDEBCD").val(returncolvalue(res[0], "RTDEBCD"));
+                    $("#NM").val(returncolvalue(res[0], "RTDEBNM"));
+                    $("#MOBNO").val(returncolvalue(res[0], "MOBILE"));
+                    $("#RTDEBNM").val(returncolvalue(res[0], "RTDEBNM"));
+                    var addrs = returncolvalue(res[0], "ADD1") + " " + returncolvalue(res[0], "ADD2") + " " + returncolvalue(res[0], "ADD3");
+                    $("#ADDR").val(addrs + "/" + returncolvalue(res[0], "CITY"));
+                    $("#MOBILE").val(returncolvalue(res[0], "MOBILE"));
+                    $("#ADDR_").val(addrs);
+                    $("#CITY").val(returncolvalue(res[0], "CITY_"));
+                    if (returncolvalue(res[0], "INC_RATE") == "Y") {
+                        document.getElementById("INC_RATE").checked = true;
+                    }
+                    else {
+                        document.getElementById("INC_RATE").checked = false;
+                    }
+                    $("#INCLRATEASK").val(returncolvalue(res[0], "INC_RATE"));
+                    $("#RETDEBSLCD").val(returncolvalue(res[0], "RETDEBSLCD"));
+                    $("#TAXGRPCD").val(returncolvalue(res[0], "TAXGRPCD"));
+                    $("#PRCCD").val(returncolvalue(res[0], "PRCCD"));
+                    $("#PRCNM").val(returncolvalue(res[0], "PRCNM"));
+                    $("#EFFDT").val(returncolvalue(res[0], "EFFDT"));
+                    $("#partialdivBarCodeTab").html(res[1]);
+                    $("#partialdivReturn").html(res[2]);
+                    $("#WaitingMode").hide();
+                }
+                else {
+                    $("#WaitingMode").hide();
+                    msgInfo(res[0]);
+                    message_value = "DOCDT";
+                    return false;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+}
+function docdtmodify_check() {
+    debugger;
+    var DOCDT = $("#DOCDT").val();
+    var Last_DOCDT = $("#Last_DOCDT").val();
+    if (Last_DOCDT != DOCDT) {
+        $("#Last_DOCDT").val(DOCDT);
+        return "true";
+    }
+    else {
+        return "false";
+    }
+}
 
 
 

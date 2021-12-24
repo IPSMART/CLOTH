@@ -2668,12 +2668,28 @@ namespace Improvar
             }
             return rsStock;
         }
-        public M_SYSCNFG M_SYSCNFG()
+        public M_SYSCNFG M_SYSCNFG(string effdt = "")
         {
             try
             {
                 var dtconfig = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
-                M_SYSCNFG M_SYSCG = dtconfig.DataTableToListConvertion<M_SYSCNFG>().First();
+                if (effdt.retStr() != "")
+                {
+                    var dt = (from DataRow dr in dtconfig.Rows
+                              orderby dr["effdt"] descending
+                              where Convert.ToDateTime(dr["effdt"]) <= Convert.ToDateTime(effdt)
+                              select dr);
+                    if (dt != null && dt.Count() > 0)
+                    {
+                        dtconfig = dt.CopyToDataTable();
+                    }
+                    else
+                    {
+                        dtconfig = dtconfig.Clone();
+                    }
+                }
+
+                M_SYSCNFG M_SYSCG = dtconfig.DataTableToListConvertion<M_SYSCNFG>().OrderByDescending(a => a.EFFDT).First();
                 return M_SYSCG;
             }
             catch
@@ -2683,15 +2699,32 @@ namespace Improvar
         }
         public DataTable GetSyscnfgData(string EFFDT)
         {
-            string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
-            string sql = "";
-            sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
-            sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
-            sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('" + EFFDT + "','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
-            sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
+            //string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+            //string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            //string sql = "";
+            //sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode, ";
+            //sql += "a.COMPCD,a.SALDEBGLCD,a.PURDEBGLCD,a.CLASS1CD,a.DEALSIN,a.INSPOLDESC,a.BLTERMS,a.DUEDATECALCON,a.BANKSLNO,a.PRICEINCODECOST,a.DESIGNPATH,a.MNTNSIZE,a.MNTNPART,a.MNTNCOLOR, ";
+            //sql += "a.MNTNFLAGMTR,a.MNTNLISTPRICE,a.MNTNDISC1,a.MNTNDISC2,a.MNTNSHADE,a.MNTNWPRPPER,a.MNTNOURDESIGN,a.MNTNBALE,a.MNTNPCSTYPE,a.MNTNBARNO,a.COMMONUNIQBAR,a.CMROFFTYPE,a.SHORTAGE_GLCD, ";
+            //sql += "a.CMCASHRECDAUTO,a.MERGEINDTL ";
+            //sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
+            //sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('" + EFFDT + "','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
+            //sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
-            DataTable syscnfgdt = masterHelpFa.SQLquery(sql);
+            //DataTable syscnfgdt = masterHelpFa.SQLquery(sql);
+
+            var syscnfgdt = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
+            var dt = (from DataRow dr in syscnfgdt.Rows
+                      orderby dr["effdt"] descending
+                      where Convert.ToDateTime(dr["effdt"]) <= Convert.ToDateTime(EFFDT)
+                      select dr).Take(1);
+            if (dt != null && dt.Count() > 0)
+            {
+                syscnfgdt = dt.CopyToDataTable();
+            }
+            else
+            {
+                syscnfgdt = syscnfgdt.Clone();
+            }
             return syscnfgdt;
 
         }

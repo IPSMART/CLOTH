@@ -802,7 +802,7 @@ namespace Improvar.Controllers
                                 }
                             }
                         }
-
+                        var tblsyscnfg = Salesfunc.GetSyscnfgData(tbl.Rows[i]["docdt"].retStr().Remove(10));
                         while (tbl.Rows[i]["autono"].ToString() == auto1)
                         {
                             var dchrg = (from DataRow dr in tbl.Rows
@@ -1301,7 +1301,14 @@ namespace Improvar.Controllers
                                 dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
                                 var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
-                                dr1["incl_disc"] = (tbl.Rows[i]["inclrate"].retDbl() * dr1["qnty"].retDbl()) - dr1["netamt"].retDbl();
+                                if (tblsyscnfg.Rows[0]["INC_RATE"].retStr() == "Y")
+                                {
+                                    dr1["incl_disc"] = (tbl.Rows[i]["inclrate"].retDbl() * dr1["qnty"].retDbl()) - dr1["netamt"].retDbl();
+                                }
+                                else
+                                {
+                                    dr1["incl_disc"] = (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
+                                }
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
                                 dqnty = dqnty + (dr1["qnty"].ToString()).retDbl();

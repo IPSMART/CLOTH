@@ -172,8 +172,14 @@ namespace Improvar.Controllers
                             {
 
                                 T_TXN TTXN = new T_TXN();
+                                if (VE.DocumentType.Count == 1)
+                                {
+                                    TTXN.DOCCD = VE.DocumentType[0].value;
+                                }
+                                Cn.getdocmaxmindate(TTXN.DOCCD, "", VE.DefaultAction, "", VE);
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+
                                 TempData.Keep();
                                 if (TTXN.GOCD.retStr() == "")
                                 {
@@ -278,7 +284,7 @@ namespace Improvar.Controllers
                         if (parkID == "" && loadOrder == "N")
                         {
                             //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                            var MSYSCNFG = salesfunc.M_SYSCNFG();
+                            var MSYSCNFG = salesfunc.M_SYSCNFG(VE.T_TXN.DOCDT.retDateStr());
                             VE.M_SYSCNFG = MSYSCNFG;
                             FreightCharges(VE, VE.T_TXN?.AUTONO); VE.RETAMT = VE.RETAMT.retStr() == "" ? 0 : VE.RETAMT.retDbl().toRound(2);
                             //VE.RETAMT = VE.R_T_NET;
@@ -297,6 +303,12 @@ namespace Improvar.Controllers
                     string docdt = "";
                     if (VE.T_CNTRL_HDR != null) if (VE.T_CNTRL_HDR.DOCDT != null) docdt = VE.T_CNTRL_HDR.DOCDT.ToString().Remove(10);
                     Cn.getdocmaxmindate(VE.T_TXN?.DOCCD, docdt, VE.DefaultAction, VE.T_TXN?.DOCNO, VE);
+                    if ((op.ToString() == "A" && loadOrder == "N" && parkID == "") || ((op == "E" || op == "D" || op == "V") && loadOrder.retStr().Length > 1))
+                    {
+                        VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                        VE.T_TXN.PREFDT = Cn.getCurrentDate(VE.mindate);
+                    }
+                    VE.Last_DOCDT = VE.T_TXN.DOCDT.retDateStr();
                     return View(VE);
                 }
             }
@@ -1640,6 +1652,46 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
+            }
+        }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
+            }
+        }
+
+        public ActionResult DocumentDateChng(TransactionSalePosEntry VE, string docdt)
+        {
+            try
+            {
+                string str = "";
+                var dt = salesfunc.GetSyscnfgData(docdt);
+                if (dt.Rows.Count > 0)
+                {
+                    str = masterHelp.ToReturnFieldValues("", dt);
+                }
+                VE.M_SYSCNFG = salesfunc.M_SYSCNFG(docdt);
+                VE.INCLRATEASK = VE.M_SYSCNFG.INC_RATE.retStr();
+                ModelState.Clear();
+                VE.DefaultView = true;
+                VE.DISC_TYPE = masterHelp.DISC_TYPE();
+                VE.PCSActionList = masterHelp.PCSAction();
+                var GRID_DATA = RenderRazorViewToString(ControllerContext, "_T_SALE_POS_PRODUCT", VE);
+                var RGRID_DATA = RenderRazorViewToString(ControllerContext, "_T_SALE_POS_RETURN", VE);
+                return Content(str + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + GRID_DATA + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + RGRID_DATA);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult DeleteRowBarno(TransactionSalePosEntry VE)

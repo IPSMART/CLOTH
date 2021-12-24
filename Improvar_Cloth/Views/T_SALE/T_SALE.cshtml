@@ -640,6 +640,50 @@
         }
     </script>
 }
+@*<script>
+        function DocumentDateChng(fld) {
+            debugger;
+            DocumentDateCHK(fld);
+            $.ajax({
+                type: 'get',
+                url: "@Url.Action("DocumentDateChng", PageControllerName)",
+                data: "&DOCDT=" + $("#DOCDT").val(),
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    var MSG = res[0].indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#MNTNSIZE").val(returncolvalue(MSG, "MNTNSIZE"));
+                        $("#MNTNCOLOR").val(returncolvalue(MSG, "MNTNCOLOR"));
+                        $("#MNTNPART").val(returncolvalue(MSG, "MNTNPART"));
+                        $("#MNTNFLAGMTR").val(returncolvalue(MSG, "MNTNFLAGMTR"));
+                        $("#MNTNSHADE").val(returncolvalue(MSG, "MNTNSHADE"));
+                        $("#MNTNBARNO").val(returncolvalue(MSG, "MNTNBARNO"));
+                        $("#CMROFFTYPE").val(returncolvalue(MSG, "CMROFFTYPE"));
+                        $("#MNTNOURDESIGN").val(returncolvalue(MSG, "MNTNOURDESIGN"));
+                        $("#MNTNLISTPRICE").val(returncolvalue(MSG, "MNTNLISTPRICE"));
+                        $("#MNTNDISC1").val(returncolvalue(MSG, "MNTNDISC1"));
+                        $("#MNTNDISC2").val(returncolvalue(MSG, "MNTNDISC2"));
+                        $("#MNTNWPRPPER").val(returncolvalue(MSG, "MNTNWPRPPER"));
+                        $("#MNTNBALE").val(returncolvalue(MSG, "MNTNBALE"));
+                        $("#MNTNPCSTYPE").val(returncolvalue(MSG, "MNTNPCSTYPE"));
+                        $("#SYSCNFGCOMMONUNIQBAR").val(returncolvalue(MSG, "COMMONUNIQBAR"));
+                        $("#partialdivBarCodeTab").html(res[1]);
+                        $("#DetailTab").html(res[2]);
+                    }
+                    else {
+                        msgInfo(MSG);
+                        message_value = "DOCDT";
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    </script>*@
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -678,6 +722,7 @@
         <input type="hidden" id="UrlLastAgentTransport" value="@Url.Action("LastAgentTransport", PageControllerName)" />
         <input type="hidden" id="UrlUpdateWpRpRate" value="@Url.Action("Update_WpRpRate", PageControllerName)" />
         <input type="hidden" id="UrlChangeBltype" value="@Url.Action("ChangeBltype", PageControllerName)" />
+        <input type="hidden" id="UrlDocumentDateChng" value="@Url.Action("DocumentDateChng", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -749,7 +794,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onchange = "DocdtChange(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onchange = "DocumentDateChng(this);", onblur = "DocumentDateChng(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.HiddenFor(model => Model.Last_DOCDT, new { @class = "form-control", id = "Last_DOCDT" })
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -800,7 +846,7 @@
                     </div>
                     <div class="col-md-2 divbltype">
                         <div class="editor-field">
-                            @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" , @onchange = "ChangeBltype();" })
+                            @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE", @onchange = "ChangeBltype();" })
                         </div>
                     </div>
                     @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.DefaultAction == "V")
@@ -1345,16 +1391,16 @@
                             </div>
                             @if (Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PJIS" && Model.MENU_PARA != "PJRT")
                             {
-                            <div class="col-md-1" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Tax")
+                                <div class="col-md-1" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Total Tax")
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                                <div class="col-md-2">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                                    </div>
                                 </div>
-                            </div>
                             }
                             <div class="col-md-1" style="width:auto;">
                                 <div class="editor-label" style="margin-top: 6px;">

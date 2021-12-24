@@ -3147,7 +3147,7 @@ function HasChangeBarSale(BlslnoRegen, index) {
                     allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
                 }
                 else {
-                    allslno[j] = 1;
+                    allslno[j] = 0;
 
 
                 }
@@ -3175,9 +3175,16 @@ function HasChangeBarSale(BlslnoRegen, index) {
             }
             else {
                 //TXNSLNO = retInt(SLNO);
-
-                TXNSLNO = Math.max.apply(Math, allslno);
-
+                for (var i = 1; i <= allslno.length; i++) {
+                    var tyy = allslno.indexOf(i);
+                    if (tyy == -1) {
+                        TXNSLNO = i;
+                    }
+                }
+                if (TXNSLNO == 0) {
+                    TXNSLNO = Math.max.apply(Math, allslno);
+                    TXNSLNO++;
+                }
             }
         }
         $("#B_TXNSLNO_" + index).val(TXNSLNO);
@@ -4554,6 +4561,69 @@ function ChangeBltype() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+}
+function DocumentDateChng(fld) {
+    debugger;
+    DocumentDateCHK(fld);
+    var chk = DocumentDateCHK(fld);
+    if (chk == false) return true;
+    var value = docdtmodify_check();
+    if (value == "true") {
+        $.ajax({
+            type: 'post',
+            url: $("#UrlDocumentDateChng").val(),//"@Url.Action("DocumentDateChng", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                var MSG = res[0].indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#MNTNSIZE").val(returncolvalue(res[0], "MNTNSIZE"));
+                    $("#MNTNCOLOR").val(returncolvalue(res[0], "MNTNCOLOR"));
+                    $("#MNTNPART").val(returncolvalue(res[0], "MNTNPART"));
+                    $("#MNTNFLAGMTR").val(returncolvalue(res[0], "MNTNFLAGMTR"));
+                    $("#MNTNSHADE").val(returncolvalue(res[0], "MNTNSHADE"));
+                    $("#MNTNBARNO").val(returncolvalue(res[0], "MNTNBARNO"));
+                    $("#CMROFFTYPE").val(returncolvalue(res[0], "CMROFFTYPE"));
+                    $("#MNTNOURDESIGN").val(returncolvalue(res[0], "MNTNOURDESIGN"));
+                    $("#MNTNLISTPRICE").val(returncolvalue(res[0], "MNTNLISTPRICE"));
+                    $("#MNTNDISC1").val(returncolvalue(res[0], "MNTNDISC1"));
+                    $("#MNTNDISC2").val(returncolvalue(res[0], "MNTNDISC2"));
+                    $("#MNTNWPRPPER").val(returncolvalue(res[0], "MNTNWPRPPER"));
+                    $("#MNTNBALE").val(returncolvalue(res[0], "MNTNBALE"));
+                    $("#MNTNPCSTYPE").val(returncolvalue(res[0], "MNTNPCSTYPE"));
+                    $("#SYSCNFGCOMMONUNIQBAR").val(returncolvalue(res[0], "COMMONUNIQBAR"));
+                    $("#partialdivBarCodeTab").html(res[1]);
+                    $("#partialdivDetail").html(res[2]);
+                    $("#WaitingMode").hide();
+                }
+                else {
+                    $("#WaitingMode").hide();
+                    msgInfo(res[0]);
+                    message_value = "DOCDT";
+                    return false;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+  
+}
+function docdtmodify_check() {
+    debugger;
+    var DOCDT = $("#DOCDT").val();
+    var Last_DOCDT = $("#Last_DOCDT").val();
+    if (Last_DOCDT != DOCDT) {
+        $("#Last_DOCDT").val(DOCDT);
+        return "true";
+    }
+    else {
+        return "false";
+    }
 }
 
 

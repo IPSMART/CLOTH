@@ -365,10 +365,14 @@ namespace Improvar.Controllers
                     sql = "select listagg('a.'||a.column_name,', ') within group(order by a.COLUMN_ID) colnm from all_tab_cols a ";
                     sql += "where table_name = 'M_SYSCNFG' and owner = '" + DatabaseSchemaName + "'";
                     DataTable rstmp = masterHelp.SQLquery(sql);
-                    if (rstmp.Rows.Count > 0 && rstmp.Rows[0]["colnm"].retStr() != "" )
+                    if (rstmp.Rows.Count > 0 && rstmp.Rows[0]["colnm"].retStr() != "")
                     {
                         sql = "";
-                        sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
+                        //sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
+                        sql += " select " + rstmp.Rows[0]["colnm"] + ",a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
+                        sql += "  from  " + DatabaseSchemaName + ".M_SYSCNFG a, " + tbl.Rows[0]["fin_schema"].ToString() + ".M_RETDEB b, " + DatabaseSchemaName + ".M_SUBLEG_SDDTL c, " + DatabaseSchemaName + ".m_subleg_com d, " + tbl.Rows[0]["fin_schema"].ToString() + ".m_prclst e ";
+                        sql += " where a.RTDEBCD=b.RTDEBCD and a.retdebslcd=d.slcd(+) and ";
+                        sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + VE.COMPCD + "' and c.loccd='" + VE.LOCCD + "' and d.prccd=e.prccd(+) ";
                         rstmp = masterHelp.SQLquery(sql);
 
                         Session.Add("M_SYSCNFG", rstmp);

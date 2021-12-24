@@ -1820,12 +1820,12 @@ namespace Improvar
         }
         public string dateRangeForMonthlyDoc_Type(object ViewClass, string doccd, string docdt = "")
         {
+            MasterHelp masterHelp = new MasterHelp();
             var UNQSNO = getQueryStringUNQSNO();
             string DisableDate = "";
-            MasterHelpFa MH = new MasterHelpFa();
             string[] financialyeardate = CommVar.FinPeriod(UNQSNO).Split('-');
             financialyeardate[0] = financialyeardate[0].Trim(); financialyeardate[1] = financialyeardate[1].Trim();
-            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), CommVar.CurSchema(UNQSNO));
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string YRCD = CommVar.YearCode(UNQSNO);
             string scm = CommVar.CurSchema(UNQSNO);
@@ -1857,14 +1857,14 @@ namespace Improvar
                     }
                     else
                     {
-                        if (lockdate != null)
-                        {
-                            maxdate = DateTime.Now.Date.ToString("dd/MM/yyyy");
-                        }
-                        else
-                        {
-                            maxdate = financialyeardate[1];
-                        }
+                        //if (lockdate != null)
+                        //{
+                        maxdate = DateTime.Now.Date.ToString("dd/MM/yyyy");
+                        //}
+                        //else
+                        //{
+                        //    maxdate = financialyeardate[1];
+                        //}
                     }
                 }
                 else
@@ -1878,6 +1878,10 @@ namespace Improvar
                         maxdate = financialyeardate[1];
                     }
                 }
+                if (Convert.ToDateTime(maxdate) > Convert.ToDateTime(financialyeardate[1]))
+                {
+                    maxdate = financialyeardate[1];
+                }
                 var start = convstr2date(mindate);
                 var end = convstr2date(maxdate);
                 string str = "select max(docdt)docdt, to_char(max(docdt), 'mmyyyy') monthcode ";
@@ -1885,7 +1889,7 @@ namespace Improvar
                 str += "where doccd = '" + doccd + "' and compcd='" + COM + "' and loccd='" + LOC + "' and ";
                 str += "docdt >= to_date('" + mindate + "', 'dd/mm/yyyy') and docdt <= to_date('" + maxdate + "', 'dd/mm/yyyy') ";
                 str += "group by to_char(docdt, 'mmyyyy') order by docdt";
-                DataTable DT = MH.SQLquery(str);
+                DataTable DT = masterHelp.SQLquery(str);
                 var maxDate = (from i in DT.AsEnumerable()
                                select new
                                {
@@ -1911,8 +1915,9 @@ namespace Improvar
                             //}
                             //else
                             //{
-                            endDT = maxDT.AddDays(-1);
+                            //    endDT = maxDT.AddDays(-1);
                             //}
+                            endDT = maxDT.AddDays(-1);
                             var days = Enumerable.Range(0, Int32.MaxValue)
                                          .Select(a => startDT.AddDays(a))
                                          .TakeWhile(a => a <= endDT)
@@ -1941,7 +1946,7 @@ namespace Improvar
                 sql += "from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
                 sql += "where doccd = '" + doccd + "' and compcd='" + COM + "' and loccd='" + LOC + "' and ";
                 sql += "docdt =to_date('" + docdt + "', 'dd/mm/yyyy')) c ";
-                DataTable DT = MH.SQLquery(sql);
+                DataTable DT = masterHelp.SQLquery(sql);
 
                 if (Convert.ToInt32(DT.Rows[0]["total_entry"]) > 1)
                 {
@@ -2138,7 +2143,11 @@ namespace Improvar
                         {
                             //if (FDATE == "Y") cmaxdate = MTDATE; else if (FDATE == "Z") cmaxdate = cfutdate; else cmaxdate = ccurdate;
                             if (FDATE == "Y") cmaxdate = financialyeardate[1]; else if (FDATE == "Z") cmaxdate = cfutdate; else cmaxdate = ccurdate;
-                            if (backdateval == true) { cmindate = clockdateplus1; cmaxdate = System.DateTime.Now.ToString("dd/MM/yyyy"); }
+                            if (backdateval == true)
+                            {
+                                cmindate = clockdateplus1;
+                                //cmaxdate = System.DateTime.Now.ToString("dd/MM/yyyy");
+                            }
                         }
                         if (action == "E" && idocno == imaxdocno || action == "E" && backdateval == true)
                         {
@@ -2157,7 +2166,7 @@ namespace Improvar
                             if (FDATE == "Y") cmaxdate = financialyeardate[1]; else if (FDATE == "Z") cmaxdate = cfutdate; else cmaxdate = ccurdate;
                         }
                         if (backdateval == true) cmindate = clockdateplus1;
-                        if (FDATE != "Y" && FDATE != "Z") { cmaxdate = System.DateTime.Now.ToString("dd/MM/yyyy"); }
+                        //if (FDATE != "Y" && FDATE != "Z") { cmaxdate = System.DateTime.Now.ToString("dd/MM/yyyy"); }
                     }
                     if (DocumentNumType == "D")
                     {
@@ -2172,7 +2181,7 @@ namespace Improvar
                         cmindate = docdt; cmaxdate = docdt;
                     }
                     if (convstr2date(cmindate) < convstr2date(clockdateplus1)) cmindate = clockdateplus1;
-                    if (convstr2date(cmindate) > convstr2date(cmaxdate)) cmaxdate = cmindate;
+                    //if (convstr2date(cmindate) > convstr2date(cmaxdate)) cmaxdate = cmindate;
 
                     if (FDATE != "Z" && opening == false && convstr2date(cmindate) < convstr2date(financialyeardate[0].ToString())) cmindate = financialyeardate[0].ToString();
 
@@ -2239,7 +2248,6 @@ namespace Improvar
                 return "";
             }
         }
-
         //public String getdocmaxmindate(string doccd, string docdt, string action, string docno, object ViewClass, bool opening = false, string AUTONO = "")
         //{
         //    try
