@@ -1462,6 +1462,7 @@
     <Content Include="Views\Shared\_Rep_Reg_Column.cshtml" />
     <Content Include="Views\Rep_Rate_Query\Rep_Rate_Query.cshtml" />
     <Content Include="Views\Rep_Pend_LR\Rep_Pend_LR.cshtml" />
+    <Content Include="Views\Shared\_T_PhyStock_UpdatePrice.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

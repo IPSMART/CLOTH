@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: Rep_BarcodePrint
-        public ActionResult Rep_BarcodePrint(string autono, string docdt, string barno)
+        public ActionResult Rep_BarcodePrint(string autono, string docdt, string barno, string callfrm = "")
         {
             try
             {
@@ -53,7 +53,8 @@ namespace Improvar.Controllers
                         List<DropDown_list1> drplst = new List<DropDown_list1>();
                         VE.DropDown_list1 = drplst;
                     }
-                    DataTable ttxndtl = retBarPrn(docdt, autono, barno);
+                    //DataTable ttxndtl = retBarPrn(docdt, autono, barno);
+                    DataTable ttxndtl = retBarPrn(docdt, autono, barno, "WP", "RP", callfrm);
                     if (ttxndtl.Rows.Count == 0) return Content("No Records..");
                     VE.BarcodePrint = (from DataRow dr in ttxndtl.Rows
                                        select new BarcodePrint()
@@ -83,7 +84,7 @@ namespace Improvar.Controllers
                                            UOMCD = dr["uomcd"].retStr(),
                                            QNTY = dr["qnty"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
-                                       //}).Distinct().OrderBy(s => s.TAXSLNO).ToList();
+                                           //}).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                                        }).ToList();
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
@@ -98,30 +99,32 @@ namespace Improvar.Controllers
             }
         }
 
-        public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP")
+        public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP", string callfrm = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
             bool tblmst = false;
             if (barno.retStr() != "") tblmst = true;
+            bool tphystk = false;
+            if (callfrm.retStr() == "PHYSTK") tphystk = true;
             sql = "";
 
-            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , ";
-            sql += "a.pdesign, nvl(a.ourdesign,b.styleno) design, ";
-            sql += "nvl(m.rate,x.rate) cprate, nvl(n.rate,0) wprate, nvl(o.rate,0) rprate, ";
-            sql += "a.itrem, a.partcd, h.partnm, a.sizecd, a.colrcd, nvl(a.shade,g.colrnm) colrnm, ";
-            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, ";
-            sql += "a.fabitcd, e.itnm fabitnm from ";
+            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
+            sql += "a.pdesign, nvl(a.ourdesign,b.styleno) design, " + Environment.NewLine;
+            sql += "nvl(m.rate,x.rate) cprate, nvl(n.rate,0) wprate, nvl(o.rate,0) rprate, " + Environment.NewLine;
+            sql += "a.itrem, a.partcd, h.partnm, a.sizecd, a.colrcd, nvl(a.shade,g.colrnm) colrnm, " + Environment.NewLine;
+            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, " + Environment.NewLine;
+            sql += "a.fabitcd, e.itnm fabitnm from " + Environment.NewLine;
 
-            sql += "( select a.autono, to_number(" + (tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, ";
+            sql += "( select a.autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
             //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
-            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos ";
-            sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : ".t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
-            sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and ";
-            if (autono.retStr() != "") sql += "a.autono in ('" + autono + "') and ";
-            if (barno.retStr() != "") sql += "a.barno in ('" + barno + "') and ";
-            sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) x, ";
+            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos " + Environment.NewLine;
+            sql += "from " + scm + (tphystk == true ? ".t_phystk" : tblmst == false ? ".t_batchdtl" : ".t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d " + Environment.NewLine;
+            sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and " + Environment.NewLine;
+            if (autono.retStr() != "") sql += "a.autono in ('" + autono + "') and " + Environment.NewLine;
+            if (barno.retStr() != "") sql += "a.barno in ('" + barno + "') and " + Environment.NewLine;
+            sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) x, " + Environment.NewLine;
 
             for (int x = 0; x <= 2; x++)
             {
@@ -136,12 +139,12 @@ namespace Improvar.Controllers
                         prccd = rppricecd; sqlals = "o"; break;
                 }
                 //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
-                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
-                sql += "(select a.barno, a.prccd, a.effdt, ";
-                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
-                sql += ") a, " + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c ";
-                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' ";
+                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') " + Environment.NewLine;
+                sql += ") a, " + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c " + Environment.NewLine;
+                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' " + Environment.NewLine;
                 //sql += "union ";
                 //sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
                 //sql += "(select a.barno, a.prccd, a.effdt, ";
@@ -154,14 +157,14 @@ namespace Improvar.Controllers
                 sql += ") " + sqlals + ", ";
             }
 
-            sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, ";
-            sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, ";
-            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j ";
-            sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and ";
-            sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and ";
-            sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and ";
-            sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) and a.sizecd=j.sizecd(+) ";
-            sql += " order by x.txnslno";
+            sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
+            sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
+            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j " + Environment.NewLine;
+            sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
+            sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and " + Environment.NewLine;
+            sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and " + Environment.NewLine;
+            sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) and a.sizecd=j.sizecd(+) " + Environment.NewLine;
+            sql += " order by x.txnslno" + Environment.NewLine;
             DataTable tbl = masterHelp.SQLquery(sql);
 
             return tbl;

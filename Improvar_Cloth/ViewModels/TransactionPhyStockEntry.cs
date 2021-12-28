@@ -8,9 +8,9 @@ using System.Web;
 
 namespace Improvar.ViewModels
 {
-    public class TransactionPhyStockEntry :Permission
+    public class TransactionPhyStockEntry : Permission
     {
-        public T_PHYSTK_HDR T_PHYSTK_HDR { get; set; }  
+        public T_PHYSTK_HDR T_PHYSTK_HDR { get; set; }
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_PHYSTK T_PHYSTK { get; set; }
         public M_SYSCNFG M_SYSCNFG { get; set; }
@@ -53,5 +53,12 @@ namespace Improvar.ViewModels
         public double B_T_QNTY { get; set; }
         public string TAXGRPCD { get; set; }
         public short SLNO { get; set; }
+        public string Last_DOCDT { get; set; }
+        public string Last_BARCODE { get; set; }
+        public string Last_STYLENO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? EFFDT { get; set; }
+        public double RPPERMANUAL { get; set; }
+        public double WPPERMANUAL { get; set; }
     }
 }

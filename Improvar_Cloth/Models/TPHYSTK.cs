@@ -40,18 +40,18 @@ namespace Improvar.Models
 
         [StringLength(4)]
         public string PARTCD { get; set; }     
-        public decimal? NOS { get; set; }
+        public double? NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public decimal? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
 
-        public decimal? DIA { get; set; }
+        public double? DIA { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public decimal? CUTLENGTH { get; set; }
+        public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
         public string LOCABIN { get; set; }

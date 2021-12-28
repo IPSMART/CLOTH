@@ -67,7 +67,7 @@ namespace Improvar.Models
 
         [StringLength(8)]
         public string SLCD { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? DOCAMT { get; set; }
 
         [StringLength(1)]

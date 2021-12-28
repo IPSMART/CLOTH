@@ -295,5 +295,14 @@ namespace Improvar
 
             return number;
         }
+        public static string ReplaceHelpStr(this string str, string colname, string RepalceWith)
+        {
+            if (str == "" || colname == "") return "";
+            string GCS = ((char)181).ToString();
+            var OldStr = "^" + colname + "=^" + retCompValue(str, colname) + GCS;
+            RepalceWith = "^" + colname + "=^" + RepalceWith + GCS;
+            str = str.Replace(OldStr, RepalceWith);
+            return str;
+        }
     }
 }
