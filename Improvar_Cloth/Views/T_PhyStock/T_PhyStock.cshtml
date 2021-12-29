@@ -70,7 +70,7 @@
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
         }
-        $("#EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#POPUPEFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
 </script>
 <script>
@@ -662,17 +662,20 @@
         $('.PopUp_Backround').show();
         $("#popupPrice").show();
         $('#popupPrice input').attr("readonly", false);
-        $("#RPPERMANUAL").val($("#DOCAMT").val());
-        $("#WPPERMANUAL").val($("#DOCAMT").val())
+        $("#POPUPPRCCD_HELP").show();
+        $("#POPUPINCDECPER").val($("#DOCAMT").val());
+        //$("#RPPERMANUAL").val($("#DOCAMT").val());
+        //$("#WPPERMANUAL").val($("#DOCAMT").val());
     }
     function PriceClose() {
-        ClearAllTextBoxes("EFFDT,RPPERMANUAL,WPPERMANUAL");
+        ClearAllTextBoxes("POPUPPRCCD,POPUPPRCNM,POPUPEFFDT,POPUPINCDECPER");
         $("#popupPrice").hide();
         $('.PopUp_Backround').fadeOut();
     }
     function SavePrice() {
         debugger;
-        if (!emptyFieldCheck("Enter Effective Date", "EFFDT")) { return false; }
+        if (!emptyFieldCheck("Enter Effective Date", "POPUPEFFDT")) { return false; }
+        if (!emptyFieldCheck("Enter Price Code", "POPUPPRCCD")) { return false; }
         //if ($("#RPPERMANUAL").val() == "" && $("#WPPERMANUAL").val() == "") return true;
         $.ajax({
             type: 'post',

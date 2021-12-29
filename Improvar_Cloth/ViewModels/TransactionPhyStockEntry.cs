@@ -57,8 +57,11 @@ namespace Improvar.ViewModels
         public string Last_BARCODE { get; set; }
         public string Last_STYLENO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime? EFFDT { get; set; }
+        public DateTime? POPUPEFFDT { get; set; }
         public double RPPERMANUAL { get; set; }
         public double WPPERMANUAL { get; set; }
+        public double POPUPINCDECPER { get; set; }
+        public string POPUPPRCNM { get; set; }
+        public string POPUPPRCCD { get; set; }
     }
 }

@@ -834,7 +834,7 @@ namespace Improvar.Controllers
                 OraCmd.Transaction = OraTrans;
                 try
                 {
-                    DataTable M_SYSCNFG = salesfunc.GetSyscnfgData(VE.EFFDT.retDateStr());
+                    DataTable M_SYSCNFG = salesfunc.GetSyscnfgData(VE.POPUPEFFDT.retDateStr());
                     var TPHYSTK = (from a in VE.TPHYSTK
                                    select new
                                    {
@@ -845,73 +845,75 @@ namespace Improvar.Controllers
                     for (int i = 0; i <= TPHYSTK.Count - 1; i++)
                     {
                         double WPRATE = 0, RPRATE = 0;
+                        string PRCCD = VE.POPUPPRCCD;
+                        double RATE = TPHYSTK[i].RATE.retDbl();
+                        double WPRPRATE = 0;
 
                         #region wp_rprate calculation
-                        double WPPER = VE.WPPERMANUAL.retDbl();
-                        if (WPPER == 0)
+                        if (PRCCD == "WP")
                         {
-                            WPPER = M_SYSCNFG.Rows[0]["WPPER"].retDbl();
+                            double WPPER = VE.POPUPINCDECPER.retDbl();
+                            if (WPPER == 0)
+                            {
+                                WPPER = M_SYSCNFG.Rows[0]["WPPER"].retDbl();
+                            }
+                            string WPPRICEGEN = M_SYSCNFG.Rows[0]["WPPRICEGEN"].retStr();
+                            if (WPPER != 0)
+                            {
+                                var wprt = ((RATE.retDbl() * WPPER.retDbl()) / 100) + RATE.retDbl();
+                                var B_WPRATE = CommFunc.CharmPrice((WPPRICEGEN.retStr() == "" ? "" : WPPRICEGEN.retStr().Substring(0, 2)), wprt.retInt(), (WPPRICEGEN.retStr() == "" ? "" : WPPRICEGEN.retStr().Substring(2)));
+                                WPRATE = B_WPRATE.retDbl().toRound(2);
+                            }
+                            WPRPRATE = WPRATE.retDbl();
                         }
-                        double RPPER = VE.RPPERMANUAL.retDbl();
-                        if (RPPER == 0)
+                        else if (PRCCD == "RP")
                         {
-                            RPPER = M_SYSCNFG.Rows[0]["RPPER"].retDbl();
-                        }
-                        double RATE = TPHYSTK[i].RATE.retDbl();
-                        string WPPRICEGEN = M_SYSCNFG.Rows[0]["WPPRICEGEN"].retStr();
-                        string RPPRICEGEN = M_SYSCNFG.Rows[0]["RPPRICEGEN"].retStr();
-                        if (WPPER != 0)
-                        {
-                            var wprt = ((RATE.retDbl() * WPPER.retDbl()) / 100) + RATE.retDbl();
-                            var B_WPRATE = CommFunc.CharmPrice((WPPRICEGEN.retStr() == "" ? "" : WPPRICEGEN.retStr().Substring(0, 2)), wprt.retInt(), (WPPRICEGEN.retStr() == "" ? "" : WPPRICEGEN.retStr().Substring(2)));
-                            WPRATE = B_WPRATE.retDbl().toRound(2);
-                        }
-                        if (RPPER != 0)
-                        {
-                            var rprt = ((RATE.retDbl() * RPPER.retDbl()) / 100) + RATE.retDbl();
-                            var B_RPRATE = CommFunc.CharmPrice((RPPRICEGEN.retStr() == "" ? "" : RPPRICEGEN.retStr().Substring(0, 2)), rprt.retInt(), (RPPRICEGEN.retStr() == "" ? "" : RPPRICEGEN.retStr().Substring(2)));
-                            RPRATE = B_RPRATE.retDbl().toRound(2);
+                            double RPPER = VE.POPUPINCDECPER.retDbl();
+                            if (RPPER == 0)
+                            {
+                                RPPER = M_SYSCNFG.Rows[0]["RPPER"].retDbl();
+                            }
+                            string RPPRICEGEN = M_SYSCNFG.Rows[0]["RPPRICEGEN"].retStr();
+                            if (RPPER != 0)
+                            {
+                                var rprt = ((RATE.retDbl() * RPPER.retDbl()) / 100) + RATE.retDbl();
+                                var B_RPRATE = CommFunc.CharmPrice((RPPRICEGEN.retStr() == "" ? "" : RPPRICEGEN.retStr().Substring(0, 2)), rprt.retInt(), (RPPRICEGEN.retStr() == "" ? "" : RPPRICEGEN.retStr().Substring(2)));
+                                RPRATE = B_RPRATE.retDbl().toRound(2);
+                            }
+                            WPRPRATE = RPRATE.retDbl();
                         }
                         #endregion
 
-                        for (int j = 0; j <= 1; j++)
+                        if (WPRPRATE != 0)
                         {
-                            string PRCCD = j == 0 ? "WP" : "RP";
-                            double WPRPRATE = j == 0 ? WPRATE.retDbl() : RPRATE.retDbl();
+                            bool dataexist = false;
+                            string barno = TPHYSTK[i].BARNO;
+                            var chkdata = DB1.T_BATCHMST_PRICE.Where(a => a.BARNO == barno
+                            && a.EFFDT == VE.POPUPEFFDT && a.PRCCD == PRCCD && a.AUTONO != VE.T_PHYSTK_HDR.AUTONO).Select(a => a.BARNO).Distinct().ToList();
+                            if (chkdata.Count > 0) dataexist = true;
 
-                            if (WPRPRATE != 0)
+                            if (dataexist == false)
                             {
-                                bool dataexist = false;
-                                string barno = TPHYSTK[i].BARNO;
-                                var chkdata = DB1.T_BATCHMST_PRICE.Where(a => a.BARNO == barno
-                                && a.EFFDT == VE.EFFDT && a.PRCCD == PRCCD && a.AUTONO != VE.T_PHYSTK_HDR.AUTONO).Select(a => a.BARNO).Distinct().ToList();
-                                if (chkdata.Count > 0) dataexist = true;
-
-                                if (dataexist == false)
+                                var chk = DB1.T_BATCHMST_PRICE.Where(a => a.BARNO == barno
+                                && a.EFFDT == VE.POPUPEFFDT && a.PRCCD == PRCCD && a.AUTONO == VE.T_PHYSTK_HDR.AUTONO).Select(a => a.BARNO).Distinct().ToList();
+                                if (chk.Count > 0)
                                 {
-                                    var chk = DB1.T_BATCHMST_PRICE.Where(a => a.BARNO == barno
-                                    && a.EFFDT == VE.EFFDT && a.PRCCD == PRCCD && a.AUTONO == VE.T_PHYSTK_HDR.AUTONO).Select(a => a.BARNO).Distinct().ToList();
-                                    if (chk.Count > 0)
-                                    {
-                                        dbsql = Master_Help.TblUpdt("t_batchmst_price", VE.T_PHYSTK_HDR.AUTONO, "E", "", "barno='" + barno + "' and effdt =to_date('" + VE.EFFDT.retDateStr() + "','dd/mm/yyyy') and prccd='" + PRCCD + "' ");
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                                    }
-
-                                    T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
-                                    TBATCHMSTPRICE.EMD_NO = 0;
-                                    TBATCHMSTPRICE.CLCD = CommVar.ClientCode(UNQSNO);
-                                    TBATCHMSTPRICE.EFFDT = VE.EFFDT;
-                                    TBATCHMSTPRICE.BARNO = TPHYSTK[i].BARNO;
-                                    TBATCHMSTPRICE.PRCCD = PRCCD;
-                                    TBATCHMSTPRICE.RATE = WPRPRATE;
-                                    TBATCHMSTPRICE.AUTONO = VE.T_PHYSTK_HDR.AUTONO;
-                                    dbsql = Master_Help.RetModeltoSql(TBATCHMSTPRICE, "A");
-                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    dbsql = Master_Help.TblUpdt("t_batchmst_price", VE.T_PHYSTK_HDR.AUTONO, "E", "", "barno='" + barno + "' and effdt =to_date('" + VE.POPUPEFFDT.retDateStr() + "','dd/mm/yyyy') and prccd='" + PRCCD + "' ");
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                                 }
+
+                                T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                TBATCHMSTPRICE.EMD_NO = 0;
+                                TBATCHMSTPRICE.CLCD = CommVar.ClientCode(UNQSNO);
+                                TBATCHMSTPRICE.EFFDT = VE.POPUPEFFDT;
+                                TBATCHMSTPRICE.BARNO = TPHYSTK[i].BARNO;
+                                TBATCHMSTPRICE.PRCCD = PRCCD;
+                                TBATCHMSTPRICE.RATE = WPRPRATE;
+                                TBATCHMSTPRICE.AUTONO = VE.T_PHYSTK_HDR.AUTONO;
+                                dbsql = Master_Help.RetModeltoSql(TBATCHMSTPRICE, "A");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             }
                         }
-
-
                     }
 
                     ModelState.Clear();
@@ -929,5 +931,115 @@ namespace Improvar.Controllers
                 }
             }
         }
+        //public ActionResult UpdatePrice(TransactionPhyStockEntry VE)
+        //{
+        //    Cn.getQueryString(VE);
+        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+        //    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+        //    string dbsql = "";
+        //    string[] dbsql1;
+        //    OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+        //    OraCon.Open();
+        //    OracleCommand OraCmd = OraCon.CreateCommand();
+        //    using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+        //    {
+        //        OraCmd.Transaction = OraTrans;
+        //        try
+        //        {
+        //            DataTable M_SYSCNFG = salesfunc.GetSyscnfgData(VE.EFFDT.retDateStr());
+        //            var TPHYSTK = (from a in VE.TPHYSTK
+        //                           select new
+        //                           {
+        //                               BARNO = a.BARNO,
+        //                               RATE = a.RATE
+        //                           }).Distinct().ToList();
+        //            string ContentFlg = "";
+        //            for (int i = 0; i <= TPHYSTK.Count - 1; i++)
+        //            {
+        //                double WPRATE = 0, RPRATE = 0;
+
+        //                #region wp_rprate calculation
+        //                double WPPER = VE.WPPERMANUAL.retDbl();
+        //                if (WPPER == 0)
+        //                {
+        //                    WPPER = M_SYSCNFG.Rows[0]["WPPER"].retDbl();
+        //                }
+        //                double RPPER = VE.RPPERMANUAL.retDbl();
+        //                if (RPPER == 0)
+        //                {
+        //                    RPPER = M_SYSCNFG.Rows[0]["RPPER"].retDbl();
+        //                }
+        //                double RATE = TPHYSTK[i].RATE.retDbl();
+        //                string WPPRICEGEN = M_SYSCNFG.Rows[0]["WPPRICEGEN"].retStr();
+        //                string RPPRICEGEN = M_SYSCNFG.Rows[0]["RPPRICEGEN"].retStr();
+        //                if (WPPER != 0)
+        //                {
+        //                    var wprt = ((RATE.retDbl() * WPPER.retDbl()) / 100) + RATE.retDbl();
+        //                    var B_WPRATE = CommFunc.CharmPrice((WPPRICEGEN.retStr() == "" ? "" : WPPRICEGEN.retStr().Substring(0, 2)), wprt.retInt(), (WPPRICEGEN.retStr() == "" ? "" : WPPRICEGEN.retStr().Substring(2)));
+        //                    WPRATE = B_WPRATE.retDbl().toRound(2);
+        //                }
+        //                if (RPPER != 0)
+        //                {
+        //                    var rprt = ((RATE.retDbl() * RPPER.retDbl()) / 100) + RATE.retDbl();
+        //                    var B_RPRATE = CommFunc.CharmPrice((RPPRICEGEN.retStr() == "" ? "" : RPPRICEGEN.retStr().Substring(0, 2)), rprt.retInt(), (RPPRICEGEN.retStr() == "" ? "" : RPPRICEGEN.retStr().Substring(2)));
+        //                    RPRATE = B_RPRATE.retDbl().toRound(2);
+        //                }
+        //                #endregion
+
+        //                for (int j = 0; j <= 1; j++)
+        //                {
+        //                    string PRCCD = j == 0 ? "WP" : "RP";
+        //                    double WPRPRATE = j == 0 ? WPRATE.retDbl() : RPRATE.retDbl();
+
+        //                    if (WPRPRATE != 0)
+        //                    {
+        //                        bool dataexist = false;
+        //                        string barno = TPHYSTK[i].BARNO;
+        //                        var chkdata = DB1.T_BATCHMST_PRICE.Where(a => a.BARNO == barno
+        //                        && a.EFFDT == VE.EFFDT && a.PRCCD == PRCCD && a.AUTONO != VE.T_PHYSTK_HDR.AUTONO).Select(a => a.BARNO).Distinct().ToList();
+        //                        if (chkdata.Count > 0) dataexist = true;
+
+        //                        if (dataexist == false)
+        //                        {
+        //                            var chk = DB1.T_BATCHMST_PRICE.Where(a => a.BARNO == barno
+        //                            && a.EFFDT == VE.EFFDT && a.PRCCD == PRCCD && a.AUTONO == VE.T_PHYSTK_HDR.AUTONO).Select(a => a.BARNO).Distinct().ToList();
+        //                            if (chk.Count > 0)
+        //                            {
+        //                                dbsql = Master_Help.TblUpdt("t_batchmst_price", VE.T_PHYSTK_HDR.AUTONO, "E", "", "barno='" + barno + "' and effdt =to_date('" + VE.EFFDT.retDateStr() + "','dd/mm/yyyy') and prccd='" + PRCCD + "' ");
+        //                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+        //                            }
+
+        //                            T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+        //                            TBATCHMSTPRICE.EMD_NO = 0;
+        //                            TBATCHMSTPRICE.CLCD = CommVar.ClientCode(UNQSNO);
+        //                            TBATCHMSTPRICE.EFFDT = VE.EFFDT;
+        //                            TBATCHMSTPRICE.BARNO = TPHYSTK[i].BARNO;
+        //                            TBATCHMSTPRICE.PRCCD = PRCCD;
+        //                            TBATCHMSTPRICE.RATE = WPRPRATE;
+        //                            TBATCHMSTPRICE.AUTONO = VE.T_PHYSTK_HDR.AUTONO;
+        //                            dbsql = Master_Help.RetModeltoSql(TBATCHMSTPRICE, "A");
+        //                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+        //                        }
+        //                    }
+        //                }
+
+
+        //            }
+
+        //            ModelState.Clear();
+        //            OraTrans.Commit();
+        //            OraTrans.Dispose();
+        //            ContentFlg = "1";
+        //            return Content(ContentFlg);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            OraTrans.Rollback();
+        //            OraTrans.Dispose();
+        //            Cn.SaveException(ex, "");
+        //            return Content(ex.Message + ex.InnerException);
+        //        }
+        //    }
+        //}
     }
 }

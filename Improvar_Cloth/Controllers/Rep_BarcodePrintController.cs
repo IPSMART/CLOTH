@@ -160,7 +160,15 @@ namespace Improvar.Controllers
             sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
             sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j " + Environment.NewLine;
-            sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
+            //sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
+            if (tphystk == true)
+            {
+                sql += "where x.barno=a.barno(+) and a.autono=c.autono(+) and c.autono=d.autono(+)  and " + Environment.NewLine;
+            }
+            else
+            {
+                sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
+            }
             sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and " + Environment.NewLine;
             sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and " + Environment.NewLine;
             sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) and a.sizecd=j.sizecd(+) " + Environment.NewLine;
