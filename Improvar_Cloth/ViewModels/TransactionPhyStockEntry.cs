@@ -63,5 +63,6 @@ namespace Improvar.ViewModels
         public double POPUPINCDECPER { get; set; }
         public string POPUPPRCNM { get; set; }
         public string POPUPPRCCD { get; set; }
+        public bool AUTOADDROW { get; set; }
     }
 }

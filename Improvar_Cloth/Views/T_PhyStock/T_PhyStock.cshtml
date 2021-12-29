@@ -179,15 +179,18 @@
             $("#Last_STYLENO").val(returncolvalue(str, "STYLENO"));
             $("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
             $("#PARTCD").val(returncolvalue(str, "PARTCD"));
-            $("#QNTY").val(returncolvalue(str, "QNTY"));
-            $("#NOS").val(returncolvalue(str, "NOS"));
+            $("#QNTY").val(returncolvalue(str, "BALQNTY"));
+            $("#NOS").val(returncolvalue(str, "BALNOS"));
             $("#CUTLENGTH").val(returncolvalue(str, "CUTLENGTH"));
             var RATE = returncolvalue(str, "RATE");
             $("#RATE").val(RATE);
             $("#SHADE").val(returncolvalue(str, "SHADE"));
             $("#ITREM").val(returncolvalue(str, "ITREM"));
             $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
-
+            if (retStr(returncolvalue(str, "uomcd")) == "PCS") {
+                $("#QNTY").val(1.000);
+                $("#NOS").val(1);
+            }
         }
         else {
             var FieldidStarting = "";
@@ -609,9 +612,9 @@
                                 if (value1 == "true") {
                                     FillBarcodeArea_(result);
 
-                                    //if ((HelpFrom == "Bar") && ($("#QNTY").val() != "")) {
-                                    //    AddBarCodeGrid();
-                                    //}
+                                    if (document.getElementById("AUTOADDROW").checked == true) {
+                                        AddBarCodeGrid_();
+                                    }
                                 }
                                 else {
                                     $("#PRTBARCODE").val(returncolvalue(result, "PRTBARCODE"));
@@ -742,11 +745,11 @@
                         <div class="editor-field">
                             @if (Model.DefaultAction == "A")
                     {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
                             }
                         </div>
                     </div>
@@ -774,9 +777,9 @@
                     </div>
                     @if (Model.DefaultAction == "V")
                     {
-                        <div class="col-md-3">
-                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
-                        </div>
+                    <div class="col-md-3">
+                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                    </div>
                     }
                 </div>
                 <div class="row">
@@ -845,6 +848,19 @@
                     {
                         <div class="col-md-6">
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Edit_Price" value="Update Price in Master" title="Click to Update Price in Master" onclick="PriceOpen()" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-2" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Auto Row Add in Grid")
+                            </div>
+                        </div>
+                        <div class="col-md-1" style="margin-right: -41px;">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.AUTOADDROW, new { id = "AUTOADDROW" })
+                            </div>
                         </div>
                     }
                 </div>

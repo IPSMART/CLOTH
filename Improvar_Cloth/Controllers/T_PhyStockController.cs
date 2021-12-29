@@ -154,6 +154,7 @@ namespace Improvar.Controllers
                         return View(VE);
                     }
                     VE.M_SYSCNFG = MSYSCNFG;
+                    VE.AUTOADDROW = true;
                     return View(VE);
                 }
             }
@@ -298,11 +299,11 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
-                    if (str.retCompValue("UOMCD").retStr() == "PCS")
-                    {
-                        str = str.ReplaceHelpStr("BALQNTY", "1");
-                    }
+                    //if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
+                    //if (str.retCompValue("UOMCD").retStr() == "PCS")
+                    //{
+                    //    str = str.ReplaceHelpStr("BALQNTY", "1");
+                    //}
                     return Content(str);
                 }
             }
