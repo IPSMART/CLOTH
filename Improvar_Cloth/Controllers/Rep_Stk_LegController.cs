@@ -127,7 +127,7 @@ namespace Improvar.Controllers
                     selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
                 }
                 if (FC.AllKeys.Contains("loccdvalue")) LOCCD = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
-                if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retSqlformat());
+                if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
                 bool showbatch = true;
 
                 string sql = "";
