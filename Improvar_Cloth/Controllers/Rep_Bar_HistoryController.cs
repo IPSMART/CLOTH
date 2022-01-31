@@ -111,7 +111,7 @@ namespace Improvar.Controllers
                         sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barnoOrStyle.ToUpper() + "' ";
+                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barnoOrStyle.ToUpper() + "' ";
                         sql1 += "order by b.DOCDT,b.DOCNO ";
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
                         sql2 += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
@@ -149,7 +149,9 @@ namespace Improvar.Controllers
                                                  DISCPER = dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr(),
                                                  INQNTY = dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl(),
                                                  OUTQNTY = dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl(),
-                                             }).OrderBy(a => a.SLNO).Distinct().ToList();
+                                             }).Distinct().ToList();
+                        //}).OrderBy(a => a.SLNO).Distinct().ToList();
+
                         double TINQTY = 0, TOUTQTY = 0, TNOS = 0;
                         for (int p = 0; p <= VE.BARCODEHISTORY.Count - 1; p++)
                         {
