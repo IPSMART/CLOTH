@@ -2371,6 +2371,10 @@ function AddBarCodeGrid() {
     }
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
+        //tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
+    }
+    if (MENU_PARA != "PB" & MENU_PARA != "OP" && MENU_PARA != "OTH" && MENU_PARA != "PJRC" && MENU_PARA != "PR" && MNTNOURDESIGN != "Y")
+    {
         tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
     }
     tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
@@ -2472,6 +2476,12 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
     tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
     tr += '    </td>         ';
+    if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") && MNTNOURDESIGN == "Y")
+    {
+        tr += '    <td class="" title="' + PDESIGN + '">';
+        tr += '        <input class=" atextBoxFor " id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="text" value="' + PDESIGN + '">';
+        tr += '    </td>         ';
+    }
     if (ModuleCode.indexOf("SALESCLOTH") == -1) {
         tr += '    <td class="" title="' + FABITNM + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field FABITNM must be a string with a maximum length of 4." data-val-length-max="4" id="B_FABITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FABITNM" readonly="readonly" type="text" value="' + FABITNM + '">';

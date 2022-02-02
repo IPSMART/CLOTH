@@ -74,6 +74,10 @@
                                     }
                                     <th class="" style="width:71px;">Item Code</th>
                                     <th class="" style="width:160px;">Item Design</th>
+                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                    {
+                                        <th class="" style="width:160px;">Pdesign</th>
+                                    }
                                     @if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") == -1)
                                     {
                                         <th class="" style="width: 132px;">Fabric Item</th>
@@ -193,6 +197,10 @@
                                                 @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
                                                 {
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].OURDESIGN, new { id = "B_OURDESIGN_" + i })
+                                                    @*@Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })*@
+                                                }
+                                                @if (Model.MENU_PARA != "PB" & Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PR" && Model.M_SYSCNFG.MNTNOURDESIGN != "Y")
+                                                {
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
                                                 }
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
@@ -301,6 +309,12 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].ITNM, new { id = "B_ITNM_" + i })
                                             </td>
+                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                            {
+                                                <td class="">
+                                                    @Html.EditorFor(model => model.TBATCHDTL[i].PDESIGN, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_PDESIGN_", @placeholder = "pdesign", @title = "Pdesign" } })
+                                                </td>
+                                            }
                                             @if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") == -1)
                                             {
                                                 <td class="">
@@ -377,6 +391,7 @@
                                                 </td>
                                             }
 
+
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
@@ -450,7 +465,6 @@
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].RPPER, new { id = "B_RPPER_" + i })
                                                 </td>
                                             }
-
                                             @if (Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PJIS" && Model.MENU_PARA != "PJRT")
                                             {
                                                 <td class="">
@@ -470,6 +484,7 @@
                                                         @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                                         @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })
                                                     </td>
+
                                                     <td class="">
                                                         @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, onblur = "HasChangeBarSale();", onkeydown = "CopyLastDiscData(this.value,B_TDDISCTYPE_" + i + ".value,'B_TDDISCRATE_','B_TDDISCTYPE_','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_TDDISCRATE_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
                                                     </td>
@@ -604,6 +619,11 @@
                                         }
                                     }
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                    {
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*pdesign*@
+                                    }
+
                                     @if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") == -1)
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -613,6 +633,11 @@
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     }
+
+
+
+
+
                                     @if (Model.SHOWSTKTYPE == "Y")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -651,6 +676,7 @@
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     }
+
                                     @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
@@ -694,6 +720,7 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                     @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                     {
                                         if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
