@@ -67,11 +67,11 @@ namespace Improvar.Controllers
                 DataTable tbl1 = new DataTable();
                 if (BltyPending == "R" && ShowDocDate == true)
                 {
-                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno","docdt");
+                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno","docdt", "pageslno");
                 }
                 else
                 {
-                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno");
+                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno", "pageslno");
                 }
                 tbl1.DefaultView.Sort = "lrno";
                 tbl1 = tbl1.DefaultView.ToTable();
@@ -96,6 +96,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "Mtrs", "string", "c,10", "Mtrs");
                 HC.GetPrintHeader(IR, "prefdt", "string", "d,10", "Entry Date");
                 HC.GetPrintHeader(IR, "pageno", "string", "c,20", "Page No");
+                HC.GetPrintHeader(IR, "pageslno", "double", "n,8", "Page SlNo.");
                 Int32 rNo = 0;
                 // Report begins
                 i = 0; maxR = tbl1.Rows.Count - 1;
@@ -114,6 +115,7 @@ namespace Improvar.Controllers
                     if (tbl1.Rows[i]["qnty"].retDbl() != 0) IR.Rows[rNo]["qnty"] = tbl1.Rows[i]["qnty"].retDbl();
                     IR.Rows[rNo]["Mtrs"] = tbl1.Rows[i]["uomcd"].retStr();
                     IR.Rows[rNo]["pageno"] = tbl1.Rows[i]["pageno"].retStr();
+                    IR.Rows[rNo]["pageslno"] = tbl1.Rows[i]["pageslno"].retDbl();
                     i++;
                     if (i > maxR) break;
                 }
