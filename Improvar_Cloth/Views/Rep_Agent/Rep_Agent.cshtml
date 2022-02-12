@@ -30,6 +30,18 @@
         //        $('#subagnt').show(); $('#agnt').hide();
         //    }
         //});
+
+        $('input[name="reptype"]').on('click', function () {
+            if ($(this).val() == 'Sales with Payment') {
+                $('#showItdet').hide(); $('#shorton').hide();
+                $("#details").css("display", "block");
+            }
+            else {
+                $('#showItdet').show(); $('#shorton').show();
+                $("#details").css("display", "none");
+            }
+        });
+    
     });
 </script>
 <script></script>
@@ -77,6 +89,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Account Head Selection")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Glnm))
+                    </div>
+                </div>
+                <div class="row" id="agnt" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Party")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Slnm))
+                    </div>
+                </div>
                 <div class="row" id="agnt" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
@@ -94,14 +126,22 @@
                             @Html.Label("", "Rep Type")
                         </div>
                     </div>
-                    <div class="col-lg-4">
+                    @*<div class="col-lg-4">
                         <div class="editor-field">
                             @Html.DropDownListFor(model => model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1" })
                         </div>
+                    </div>*@
+                    <div class="col-md-10">
+                        <label class="radio-inline">
+                            <input type="radio" name="reptype" value="Sales" id="radio_Sales" style="margin-top: 2px;" checked />Sales
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="reptype" value="Sales with Payment" id="radio_SalesWithPay" style="margin-top: 2px;" />Sales with Payment
+                        </label>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3" style="width:auto">
+                    <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 4px;">
                             @Html.Label("", "Show Bill wise details")
                         </div>
@@ -113,7 +153,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3" style="width:auto">
+                    <div class="col-lg-2" style="width:auto">
                         <div class="editor-label" style="margin-top: 4px;">
                             @Html.Label("", "Output as Excel Dump")
                         </div>
@@ -124,8 +164,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-3" style="width:auto">
+                <div class="row" id="showItdet">
+                    <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 4px;">
                             @Html.Label("", "Show Item Details")
                         </div>
@@ -136,7 +176,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="shorton">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Sorting on")
@@ -146,6 +186,19 @@
                         <div class="editor-field">
                             <input type="radio" name="sorton" value="P" />Party
                             <input type="radio" name="sorton" value="B" checked />Bill Date
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="details" style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Details")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <div class="editor-field">
+                            <input type="radio" name="deatil" value="D" checked />Detail
+                            <input type="radio" name="deatil" value="S" />Summary
                         </div>
                     </div>
                 </div>
