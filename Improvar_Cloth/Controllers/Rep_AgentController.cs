@@ -451,7 +451,7 @@ namespace Improvar.Controllers
                     gcount++;
                     while (tbl.Rows[i]["agslcd"].ToString() == chkval1)
                     {
-                        int scount = 0;int PrintSkipCountSummary = 0;
+                        int scount = 0;
                         string chkval2fld = "";
                         chkval2fld = "slcd";
                         chkval2 = tbl.Rows[i][chkval2fld].ToString();
@@ -487,7 +487,6 @@ namespace Improvar.Controllers
                             if (((tbl.Rows[i - 1]["amt"].retDbl() == chkRetamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkDiscamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkTdsamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkPayamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkOthamt)) && (tbl.Rows[i - 1]["vchtype"].retStr() != "BL"))
                             {
                                 PrintSkip = true;
-                                if (detail == "S") PrintSkipCountSummary++;
 
                             }
                             if (PrintSkip == false && detail == "D")
