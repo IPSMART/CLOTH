@@ -443,7 +443,7 @@ namespace Improvar.Controllers
                 {
                     chkval1 = tbl.Rows[i]["agslcd"].ToString();
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + agdsp + " -" + " </span>" + tbl.Rows[i]["agslnm"].retStr() + "  " + tbl.Rows[i]["agslarea"].retStr() + "  " + tbl.Rows[i]["agslcd"].retStr();
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + agdsp + " -" + " </span>" + tbl.Rows[i]["agslnm"].retStr() + "  " + tbl.Rows[i]["agslarea"].retStr() + "  " +"[ "+ tbl.Rows[i]["agslcd"].retStr()+" ]";
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
                     double agamt1 = 0, agamt2 = 0, aiamt1 = 0, aRetamt = 0, aDiscamt = 0, aPayamt = 0, aOthamt = 0, aPaytxbl = 0, aTdsamt = 0;
@@ -478,13 +478,13 @@ namespace Improvar.Controllers
                                 { chkPayamt = chkPayamt + tbl.Rows[i]["adjamt"].retDbl(); }
                                 else { chkOthamt = chkOthamt + tbl.Rows[i]["adjamt"].retDbl(); }
                                 calcPaytxblamt = calcPaytxblamt + (((tbl.Rows[i]["itamt"].retDbl() / tbl.Rows[i]["amt"].retDbl()) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
-                                calcBalamt = calcBalamt + (tbl.Rows[i]["amt"].retDbl() - chkRetamt - chkDiscamt - chkOthamt - chkPayamt - chkTdsamt).retDbl();
+                               
 
 
                                 i++;
                                 if (i > maxR) break;
                             }
-
+                            calcBalamt = (tbl.Rows[i-1]["amt"].retDbl() - chkRetamt - chkDiscamt - chkOthamt - chkPayamt - chkTdsamt).retDbl();
                             if (((tbl.Rows[i - 1]["amt"].retDbl() == chkRetamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkDiscamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkTdsamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkPayamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkOthamt)) && (tbl.Rows[i - 1]["vchtype"].retStr() != "BL"))
                             {
                                 PrintSkip = true;
