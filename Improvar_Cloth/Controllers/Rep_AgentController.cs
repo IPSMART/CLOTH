@@ -442,9 +442,6 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     chkval1 = tbl.Rows[i]["agslcd"].ToString();
-                    if(chkval1=="")
-                    {
-                    }
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + agdsp + " -" + " </span>" + tbl.Rows[i]["agslnm"].retStr() + "  " +"[ "+ tbl.Rows[i]["agslarea"].retStr() +" ]"+ "  " + "[ " + tbl.Rows[i]["agslcd"].retStr() + " ]";
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
@@ -464,10 +461,7 @@ namespace Improvar.Controllers
                         double iamt1 = 0, iamt2 = 0, iqnty = 0;
                         PrintSkip = false;
                         while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i][chkval2fld].ToString() == chkval2)
-                        {if(chkval2== "DY00001")
-                            {
-
-                            }
+                        {
                             PrintSkip = false;
                             string itcd = "", autono = ""; double chkRetamt = 0, chkDiscamt = 0, chkOthamt = 0, chkTdsamt = 0, chkPayamt = 0, calcBalamt = 0, calcPaytxblamt = 0;
 
@@ -476,15 +470,24 @@ namespace Improvar.Controllers
                             while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i][chkval2fld].ToString() == chkval2 && tbl.Rows[i]["autono"].ToString() == autono)
                             {
                                 if (tbl.Rows[i]["adjtype"].retStr() == "CN" || tbl.Rows[i]["trcd"].retStr() == "SC")
-                                { chkRetamt = chkRetamt + tbl.Rows[i]["adjamt"].retDbl(); }
+                                {
+                                    chkRetamt = chkRetamt + tbl.Rows[i]["adjamt"].retDbl();
+                                }
                                 else if (tbl.Rows[i]["adjtype"].retStr() == "DSC")
-                                { chkDiscamt = chkDiscamt + tbl.Rows[i]["adjamt"].retDbl(); }
+                                {
+                                    chkDiscamt = chkDiscamt + tbl.Rows[i]["adjamt"].retDbl();
+                                }
                                 else if (tbl.Rows[i]["adjtype"].retStr() == "TDS")
-                                { chkTdsamt = chkTdsamt + tbl.Rows[i]["adjamt"].retDbl(); }
+                                {
+                                    chkTdsamt = chkTdsamt + tbl.Rows[i]["adjamt"].retDbl();
+                                }
                                 else if ((tbl.Rows[i]["trcd"].retStr() == "BV") && (tbl.Rows[i]["adjtype"].retStr() == ""))
-                                { chkPayamt = chkPayamt + tbl.Rows[i]["adjamt"].retDbl(); }
-                                else { chkOthamt = chkOthamt + tbl.Rows[i]["adjamt"].retDbl(); }
-                               
+                                {
+                                    chkPayamt = chkPayamt + tbl.Rows[i]["adjamt"].retDbl();
+                                }
+                                else {
+                                    chkOthamt = chkOthamt + tbl.Rows[i]["adjamt"].retDbl();
+                                }
                                 
                                 i++;
                                 if (i > maxR) break;
