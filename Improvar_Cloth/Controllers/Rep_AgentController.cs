@@ -528,9 +528,9 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
                                 IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
-                                IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
-                                IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
-                                IR.Rows[rNo]["amt"] = tbl.Rows[i - 1]["amt"].retDbl();
+                                if (detail == "D") IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
+                                if (detail == "D") IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
+                                if (detail == "D") IR.Rows[rNo]["amt"] = tbl.Rows[i - 1]["amt"].retDbl();
                                 IR.Rows[rNo]["itamt"] = tbl.Rows[i - 1]["itamt"].retDbl();
                                 IR.Rows[rNo]["paytxbl"] = calcPaytxblamt.retDbl();
                                 IR.Rows[rNo]["blncamt"] = calcBalamt.retDbl();
