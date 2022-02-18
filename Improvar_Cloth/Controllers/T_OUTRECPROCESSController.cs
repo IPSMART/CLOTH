@@ -1686,7 +1686,7 @@ namespace Improvar.Controllers
                 string progautoslno = VE.TBATCHDTL.Select(a => a.RECPROGAUTONO + a.RECPROGSLNO).Distinct().ToArray().retSqlfromStrarray();
                 string scm = CommVar.CurSchema(UNQSNO);
                 string sql = "";
-                sql += "select a.progautono, a.progslno, c.qnty, sum(a.qnty * a.rate) issamt ";
+                sql += "select a.progautono, a.progslno, c.qnty,nvl( sum(a.qnty * a.rate),0) issamt ";
                 sql += "  from " + scm + ".t_kardtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_progmast c ";
                 sql += "where a.autono = b.autono(+) and nvl(b.cancel, 'N')= 'N' and ";
                 sql += "a.progautono = c.autono(+) and a.progslno = c.slno(+) and ";
