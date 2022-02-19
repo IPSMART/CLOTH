@@ -358,19 +358,23 @@ namespace Improvar.Controllers
                 if (selglcd != "") sql += " and a.glcd in(" + selglcd + ") " + Environment.NewLine;
                 sql += ") a, " + Environment.NewLine;
                 sql += "(select a.autoslno, a.vchtype, a.trcd, sum(a.amt) amt from ( " + Environment.NewLine;
-                sql += "select a.i_autono || a.i_slno autoslno, c.vchtype, d.trcd, sum(case c.drcr when 'C' then nvl(a.adj_amt, 0)else nvl(a.adj_amt, 0) * -1 end) amt " + Environment.NewLine;
-                sql += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".t_vch_hdr d " + Environment.NewLine;
+                sql += "select a.i_autono || a.i_slno autoslno, c.vchtype, d.trcd, sum(case e.drcr when 'D' then nvl(a.adj_amt, 0)else nvl(a.adj_amt, 0) * -1 end) amt " + Environment.NewLine;
+                sql += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".t_vch_hdr d, " + scmf + ".t_vch_bl e " + Environment.NewLine;
                 sql += "where a.autono = b.autono and a.r_autono = c.autono(+) and a.r_slno = c.slno(+) and a.autono = d.autono(+) and " + Environment.NewLine;
+                sql += "a.i_autono = e.autono(+) and a.i_slno = e.slno(+) and " + Environment.NewLine;
                 sql += "nvl(b.cancel, 'N') = 'N' and " + Environment.NewLine;
                 sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
                 sql += "group by a.i_autono || a.i_slno, c.vchtype, d.trcd " + Environment.NewLine;
+
                 sql += "union all " + Environment.NewLine;
-                sql += "select a.r_autono || a.r_slno autoslno, c.vchtype, d.trcd, sum(case c.drcr when 'D' then nvl(a.adj_amt, 0)else nvl(a.adj_amt, 0) * -1 end) amt " + Environment.NewLine;
-                sql += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".t_vch_hdr d " + Environment.NewLine;
+
+                sql += "select a.r_autono || a.r_slno autoslno, c.vchtype, nvl(c.vchtype,d.trcd) trcd, sum(case e.drcr when 'C' then nvl(a.adj_amt, 0)else nvl(a.adj_amt, 0) * -1 end) amt " + Environment.NewLine;
+                sql += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".t_vch_hdr d, " + scmf + ".t_vch_bl e " + Environment.NewLine;
                 sql += "where a.autono = b.autono and a.i_autono = c.autono(+) and a.i_slno = c.slno(+) and a.autono = d.autono(+) and " + Environment.NewLine;
+                sql += "a.r_autono = e.autono(+) and a.r_slno = e.slno(+) and " + Environment.NewLine;
                 sql += "nvl(b.cancel, 'N') = 'N' and " + Environment.NewLine;
                 sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
-                sql += "group by a.r_autono || a.r_slno, c.vchtype, d.trcd ) a " + Environment.NewLine;
+                sql += "group by a.r_autono || a.r_slno, c.vchtype, nvl(c.vchtype,d.trcd) ) a " + Environment.NewLine;
                 sql += " group by a.autoslno, a.vchtype, a.trcd ) b, " + Environment.NewLine;
 
                 sql += "(select a.autoslno, sum(a.curadj) curadj, sum(a.discamt) discamt, sum(a.tdsamt) tdsamt from " + Environment.NewLine;
@@ -416,13 +420,11 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party cd");
                 HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party Name");
                 HC.GetPrintHeader(IR, "slarea", "string", "c,15", "Area");
-                HC.GetPrintHeader(IR, "opblamt", "double", "n,15,2", "Opening Balance");
                 if (detail == "D") HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Bill Date");
                 if (detail == "D") HC.GetPrintHeader(IR, "docno", "string", "c,20", "Bill No");
                 if (detail == "D") HC.GetPrintHeader(IR, "amt", "double", "n,15,2", "Bill Amt");
                 HC.GetPrintHeader(IR, "itamt", "double", "n,15,2", "Item Value");
                 HC.GetPrintHeader(IR, "retamt", "double", "n,15,2", "Return Amt");
-                HC.GetPrintHeader(IR, "rettxbl", "double", "n,15,2", "Return Taxable");
                 HC.GetPrintHeader(IR, "discamt", "double", "n,15,2", "Disc");
                 HC.GetPrintHeader(IR, "othamt", "double", "n,15,2", "Others");
                 HC.GetPrintHeader(IR, "othtxbl", "double", "n,15,2", "Other Taxable");
@@ -497,7 +499,12 @@ namespace Improvar.Controllers
                                 {
                                     chkPayamt = chkPayamt + ( tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
-                                else {
+                                else if ((tbl.Rows[i]["trcd"].retStr() == "") && (tbl.Rows[i]["adjtype"].retStr() == "ADV"))
+                                {
+                                    chkPayamt = chkPayamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
+                                }
+                                else
+                                {
                                     chkOthamt = chkOthamt + ( tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
                                 blslno = tbl.Rows[i]["slno"].retInt();
