@@ -89,7 +89,8 @@ namespace Improvar.Controllers
                 string sql = "";
                 sql = "";
                 sql += "select a.autono, d.docno, d.docdt, a.slno, a.slmslcd, e.slnm, a.per, c.txblval, b.blamt, a.mult, ";
-                sql += "c.uomcd, c.itgrpnm,c.itgrpcd, c.qnty,	";
+                //sql += "c.uomcd, c.itgrpnm,c.itgrpcd, c.qnty,	";
+                sql += "c.uomcd,c.qnty,	";
                 sql += "round((c.qnty*a.per)/100,3) shqnty, ";
                 sql += "round((c.txblval*a.per)/100,2)*a.mult shtxblval, round((b.blamt*a.per)/100,2)*a.mult shblamt from ";
                 sql += "											";
@@ -106,7 +107,8 @@ namespace Improvar.Controllers
                 sql += "c.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
                 sql += "group by a.autono, b.blamt ) b, ";
 
-                sql += "( select a.autono, b.uomcd, d.itgrpnm,d.itgrpcd, ";
+                //sql += "( select a.autono, b.uomcd, d.itgrpnm,d.itgrpcd, ";
+                sql += "( select a.autono, b.uomcd,";
                 sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 else 0 end) qnty, ";
                 sql += "sum(case a.stkdrcr when 'C' then a.txblval when 'D' then a.txblval*-1 else 0 end) txblval ";
                 sql += "from " + scm + ".t_txndtl a, " + scm + ".m_sitem b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_group d ";
@@ -114,15 +116,22 @@ namespace Improvar.Controllers
                 sql += "a.autono in (select autono from " + scm + ".t_txnslsmn) and ";
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and ";
                 sql += "c.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "group by a.autono, b.uomcd, d.itgrpnm,d.itgrpcd) c, ";
+                //sql += "group by a.autono, b.uomcd, d.itgrpnm,d.itgrpcd) c, ";
+                sql += "group by a.autono, b.uomcd) c, ";
                 sql += "" + scm + ".t_cntrl_hdr d, " + scmf + ".m_subleg e ";
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and a.slmslcd=e.slcd(+) ";
                 if (selagslcd != "") sql += "and a.slmslcd in (" + selagslcd + ") ";
                 sql += "order by slnm,autono											";
+                //if (reptype == "S")
+                //{
+                //    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd, a.mult, sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
+                //    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd, a.mult ";
+                //    sql += " order by slnm";
+                //}
                 if (reptype == "S")
                 {
-                    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.itgrpnm,a.itgrpcd, a.mult, sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
-                    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.itgrpnm,a.itgrpcd, a.mult ";
+                    sql = "select  a.slmslcd,a.slnm,a.uomcd, a.mult, sum(a.txblval) txblval,sum(a.blamt) blamt,sum(a.qnty) qnty,sum(a.shqnty) shqnty,sum(a.shtxblval) shtxblval,sum(a.shblamt) shblamt  from (" + sql + ") a ";
+                    sql += " group by a.slnm, a.slmslcd,a.uomcd, a.mult ";
                     sql += " order by slnm";
                 }
 
