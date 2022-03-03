@@ -212,7 +212,32 @@
         }
     }
 </script>
-<script></script>
+<script>
+    function Save() {
+        debugger;
+        requiredFieldValidator();
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#btnSave").val(),
+            data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            if (result == "1") {
+                msgSuccess1("Save Successfully !");
+            }
+            else {
+                msgInfo(result);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+</script>
 
 @using (Html.BeginForm(Model.ActionName, PageControllerName, FormMethod.Post))
 {
@@ -337,7 +362,9 @@
                         </div>
                     </div>*@
             </div>
-
+            <div class="col-md-5">
+                <input type="button" class="btn btn-info btn-sm" style="margin-top: 2px; padding: 2px 7px 1px 7px;" id="SaveMobile" value="Save" title="Save from Mobile" onclick="Save();" />
+            </div>
         </div>
                                         }
                                         <div class="container">
