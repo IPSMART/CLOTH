@@ -143,6 +143,24 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 4px;">
+                            @Html.Label("", "Show")
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <label class="radio-inline">
+                            <input type="radio" name="reptypeBil" value="All Bill" id="radio_Bill" style="margin-top: 2px;" checked />All Bill
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="reptypeBil" value="Clear Bill" id="radio_Clear" style="margin-top: 2px;" />Clear Bill
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="reptypeBil" value="Pending Balance" id="radio_Balance" style="margin-top: 2px;" />Pending Balance
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 4px;">
                             @Html.Label("", "Show Bill wise details")
                         </div>
                     </div>
