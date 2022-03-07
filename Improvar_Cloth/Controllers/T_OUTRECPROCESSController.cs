@@ -56,6 +56,10 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Return from Embroider w/o Job"; break;
                         case "JWU":
                             ViewBag.formname = "Return from Other w/o Job"; break;
+                        case "IR":
+                            ViewBag.formname = "Receive for Iron"; break;
+                        case "IRU":
+                            ViewBag.formname = "Return from Iron w/o Work"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     string LOC = CommVar.Loccd(UNQSNO);
