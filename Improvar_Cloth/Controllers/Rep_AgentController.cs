@@ -398,11 +398,12 @@ namespace Improvar.Controllers
                 sql += "where a.autoslno = b.autoslno(+) and a.autoslno = c.autoslno(+) and a.autono = d.autono(+) and " + Environment.NewLine;
                 sql += "a.autono = e.autono(+) and a.slno = e.slno(+) and "+ agslcd + " = g.slcd(+) and a.slcd = f.slcd(+) " + Environment.NewLine;
                 if (selagslcd != "") sql += " and " + agslcd + " in(" + selagslcd + ") " + Environment.NewLine;
-                sql += "order by linkcd, glcd, " + agslcd + ", slcd, autoslno " + Environment.NewLine;
+                sql += "order by linkcd, glcd,agslcd, slcd, autoslno " + Environment.NewLine;
 
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
-
+                tbl.DefaultView.Sort = "agslcd";
+                tbl = tbl.DefaultView.ToTable();
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "", gonm = "";
@@ -446,7 +447,7 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     chkval1 = tbl.Rows[i]["agslcd"].ToString();
-                    if(chkval1== "AB00003")
+                    if(chkval1== "AG00003")
                     {
 
                     }
@@ -529,15 +530,19 @@ namespace Improvar.Controllers
                             //}
                             PrintSkip = false;
                             if (balamt == 0 && tbl.Rows[i - 1]["vchtype"].retStr() != "BL") PrintSkip = true;
-                            if (balamt == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
+                            if (calcBalamt == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
                             else
-                            if (balamt != 0 && showbill == "Clear Bill") { ShowPrintRow = false; }
+                            if (calcBalamt != 0 && showbill == "Clear Bill") { ShowPrintRow = false; }
                             else { ShowPrintRow = true; }
                             if (PrintSkip == false && detail == "D")
                             {
                                 if (ShowPrintRow == true)
                                 {
-                                    
+                                    if(tbl.Rows[i - 1]["slcd"].retStr()== "DT00023")
+                                    {
+
+                                    }
+                                        
                                     scount++; acount++;
                                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                     IR.Rows[rNo]["retamt"] = chkRetamt.retDbl();
@@ -588,10 +593,18 @@ namespace Improvar.Controllers
                             if (i > maxR) break;
                         }
 
-                        if (detail == "S" && scount > 0)
+                        if (detail == "S")
                         {
+                            
+                            ShowPrintRow = true;
+                            if (pamt2 == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
+                            else
+                             if (pamt2 != 0 && showbill == "Clear Bill") { ShowPrintRow = false; }
+                            else { ShowPrintRow = true; }
+
                             if (ShowPrintRow == true)
                             {
+                               
                                 acount++;
 
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
