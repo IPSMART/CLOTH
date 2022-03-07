@@ -529,11 +529,11 @@ namespace Improvar.Controllers
                             //}
                             PrintSkip = false;
                             if (balamt == 0 && tbl.Rows[i - 1]["vchtype"].retStr() != "BL") PrintSkip = true;
-                            if (calcBalamt == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
+                            if (balamt == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
                             else
-                            if (calcBalamt != 0 && showbill == "Clear Bill") { ShowPrintRow = false; }
+                            if (balamt != 0 && showbill == "Clear Bill") { ShowPrintRow = false; }
                             else { ShowPrintRow = true; }
-                            if (PrintSkip == false)
+                            if (PrintSkip == false && detail == "D")
                             {
                                 if (ShowPrintRow == true)
                                 {
