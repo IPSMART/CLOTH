@@ -2519,26 +2519,24 @@ namespace Improvar
                 }
             }
         }
-        public void insT_TXNSTATUS(string Auto_Number, string ststype, string stsrem)
+        public void insT_TXNSTATUS(string Auto_Number, string ststype, string flag1, string stsrem)
         {
-
-            Connection Cn = new Connection();
             var UNQSNO = Cn.getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             Models.T_TXNSTATUS TCH = new Models.T_TXNSTATUS();
 
-            var data = (from p in DB.T_TXNSTATUS where (p.AUTONO == Auto_Number && p.STSTYPE == ststype) select new { p.EMD_NO, p.FLAG1 }).ToList();
-            double FLAG1 = 0; short MAXEMDNO = 0;
-            if (data.Count > 0)
-            {
-                MAXEMDNO = data.Select(a => a.EMD_NO).Max().retShort();
-                FLAG1 = data.Select(a => a.FLAG1.retDbl()).Max();
-            }
-
+            var MAXEMDNO = (from p in DB.T_TXNSTATUS where (p.AUTONO == Auto_Number && p.FLAG1 == flag1 && p.STSTYPE == ststype) select p.EMD_NO).Max();
             short emdno = 0;
-            if (MAXEMDNO == 0) emdno = 0; else emdno = Convert.ToByte(MAXEMDNO + 1);
-            string flag1 = FLAG1.retDbl() == 0 ? "1" : (FLAG1.retDbl() + 1).retStr();
+            if (MAXEMDNO == null) emdno = 0; else emdno = Convert.ToByte(MAXEMDNO + 1);
 
+            var TCHOLD = (from i in DB.T_TXNSTATUS
+                          where (i.AUTONO == Auto_Number && i.STSTYPE == ststype && i.FLAG1 == flag1)
+                          select i).ToList();
+            if (TCHOLD.Any())
+            {
+                DB.T_TXNSTATUS.Where(x => x.AUTONO == Auto_Number && x.FLAG1 == flag1 && x.STSTYPE == ststype).ToList().ForEach(x => { x.DTAG = "D"; });
+                DB.T_TXNSTATUS.RemoveRange(DB.T_TXNSTATUS.Where(x => x.AUTONO == Auto_Number && x.FLAG1 == flag1 && x.STSTYPE == ststype));
+            }
             TCH.AUTONO = Auto_Number;
             TCH.STSTYPE = ststype;
             TCH.FLAG1 = flag1;
@@ -2557,6 +2555,6 @@ namespace Improvar
             DB.SaveChanges();
             return;
         }
-      
+
     }
 }

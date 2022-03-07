@@ -3718,5 +3718,130 @@ namespace Improvar
                 return ex.Message;
             }
         }
+        public dynamic GetOsDate(string BoardCode, string compcd)
+        {
+            var UNQSNO = getQueryStringUNQSNO();
+            MasterHelp masterHelp = new MasterHelp();
+            string sql = "";
+            string DB = CommVar.CurSchema(UNQSNO);
+            string DBF = CommVar.FinSchema(UNQSNO);
+            EMAILSTATUSTBL EMAILSTATUSTBL = new EMAILSTATUSTBL();
+            if (BoardCode == "FABOARD4")
+            {
+                sql += "select usr_entdt, usr_id, autono from( ";
+                sql += Environment.NewLine + "select a.usr_entdt, a.usr_id, a.autono, ";
+                sql += Environment.NewLine + "row_number() over(partition by a.usr_entdt order by a.usr_entdt desc) as rn ";
+                sql += Environment.NewLine + "from " + DBF + ".t_txnstatus a ";
+                sql += Environment.NewLine + "where a.autono like '" + compcd + "%' and a.flag1='AOSRM') where rn = 1 ";
+
+                DataTable tbl = masterHelp.SQLquery(sql);
+
+                int maxr = tbl.Rows.Count;
+
+
+                if (tbl == null || tbl.Rows.Count == 0)
+                {
+                    EMAILSTATUSTBL.curdt = System.DateTime.Now.Date.retDateStr();
+                }
+                else
+                {
+                    for (int i = 0; i < maxr; i++)
+                    {
+                        //compcd+|current date (ddmmyy) | skip party check box | DBL | grace days | hh(24 format)|0001..
+                        var arrautono = tbl.Rows[i]["autono"].retStr().Split('|');
+
+                        EMAILSTATUSTBL.curdt = System.DateTime.Now.Date.retDateStr();
+                        EMAILSTATUSTBL.autoreminderofff = arrautono[2].retStr() == "Y" ? true : false;
+                        EMAILSTATUSTBL.caldt = arrautono[3];
+                        EMAILSTATUSTBL.graceday = arrautono[4];
+                        EMAILSTATUSTBL.luserid = tbl.Rows[i]["usr_id"].ToString();
+                        EMAILSTATUSTBL.luserentdt = "[" + tbl.Rows[i]["usr_entdt"].ToString() + "]";
+                    }
+                }
+
+            }
+            return EMAILSTATUSTBL;
+        }
+        public DataTable GetDashboardTable(string BoardCode, string compcd)
+        {
+            DataTable IR = new DataTable();
+            MasterHelp masterHelp = new MasterHelp();
+            string sql = "";
+            var UNQSNO = getQueryStringUNQSNO();
+            string DB = CommVar.CurSchema(UNQSNO);
+            string DBF = CommVar.FinSchema(UNQSNO);
+            //sql += " select distinct a.compcd||a.loccd
+            //sql += " from sd_hpc2021.m_usr_acs a, appl_menu b
+            //sql += " where a.menu_name=b.menu_id(+) and a.menu_index=b.menu_index(+) and a.user_id='IPSTEAM' and
+            //sql += " b.menu_progcall='DB_SALCASU_PND_SLIP'
+            sql = "";
+            if (BoardCode == "DB_SALCASU_PND_SLIP")
+            {
+                //  sql += " select a.autono, c.compcd, c.loccd, c.docno, c.docdt, a.slcd, d.slnm, nvl(d.slarea, d.district) slarea, nvl(b.qnty, 0) qnty from";
+                sql += " select c.docno, TO_CHAR(c.docdt,'dd/mm/yyyy') docdt ,  d.slnm, nvl(d.slarea, d.district) slarea,b.pcsperbox, nvl(b.qnty, 0) qntypcs, f.slnm trslnm from";
+                sql += Environment.NewLine + " (select a.autono, a.slcd";
+                sql += Environment.NewLine + " from " + DB + ".t_pslip a, " + DB + ".t_cntrl_hdr b, " + DB + ".t_txn_linkno c";
+                sql += Environment.NewLine + " where a.autono = b.autono and a.autono = c.linkautono(+) and c.autono is null";
+                sql += Environment.NewLine + " ";
+                sql += Environment.NewLine + " and b.compcd || b.loccd in (";
+                sql += Environment.NewLine + " select distinct a.compcd || a.loccd as comploccd";
+                sql += Environment.NewLine + " from " + DB + ".m_usr_acs a, appl_menu b";
+                sql += Environment.NewLine + " where a.menu_name = b.menu_id(+) and a.menu_index = b.menu_index(+) and a.user_id = '" + CommVar.UserID() + "' and";
+                sql += Environment.NewLine + " b.menu_progcall = 'DB_SALCASU_PND_SLIP'";
+                sql += Environment.NewLine + " ";
+                sql += Environment.NewLine + " ) ";
+                sql += Environment.NewLine + " ";
+                sql += Environment.NewLine + " and nvl(b.cancel, 'N')= 'N' ) a,";
+                sql += Environment.NewLine + " ";
+                sql += Environment.NewLine + " (select a.autono, max(nvl(c.trslcd,c.crslcd)) trslcd, max(a.ordautono) ordautono,b.pcsperbox, sum(a.qnty) qnty";
+                sql += Environment.NewLine + " from " + DB + ".t_pslipdtl a, " + DB + ".m_sitem b, " + DB + ".t_sord c";
+                sql += Environment.NewLine + " where a.itcd = b.itcd(+) and a.ordautono=c.autono(+)";
+                sql += Environment.NewLine + " group by a.autono,b.pcsperbox ) b,";
+                sql += Environment.NewLine + " ";
+                sql += Environment.NewLine + " " + DB + ".t_cntrl_hdr c, " + DBF + ".m_subleg d, " + DBF + ".m_subleg f";
+                sql += Environment.NewLine + " ";
+                sql += Environment.NewLine + " where a.autono = b.autono(+) and a.slcd = d.slcd(+) and a.autono = c.autono and ";
+                if (compcd != "") sql += " c.compcd='" + compcd + "' and ";
+                sql += Environment.NewLine + " b.trslcd=f.slcd(+)";
+                sql += Environment.NewLine + " order by compcd, docdt, docno";
+
+                IR.Columns.Add("Docno", typeof(string));
+                IR.Columns.Add("Docdt", typeof(string));
+                IR.Columns.Add("Slnm", typeof(string));
+                IR.Columns.Add("Slarea", typeof(string));
+                IR.Columns.Add("QntyBox", typeof(string));
+                IR.Columns.Add("Trslnm", typeof(string));
+
+                DataTable tbl = masterHelp.SQLquery(sql); string nextdocno = ""; double box = 0;
+                int maxr = tbl.Rows.Count;
+                for (int i = 0; i < maxr; i++)
+                {
+                    nextdocno = "";
+                    string docno = tbl.Rows[i]["docno"].ToString();
+                    string docdt = tbl.Rows[i]["docno"].ToString();
+                    double qntypcs = tbl.Rows[i]["qntypcs"].retDbl();
+                    double pcsperbox = tbl.Rows[i]["pcsperbox"].retDbl();
+                    double pcstoBox = 0;
+                    box += pcstoBox;
+                    if (i < maxr - 1) { nextdocno = tbl.Rows[i + 1]["docno"].ToString(); }
+                    if (nextdocno == docno)
+                    {
+                    }
+                    else
+                    {
+                        DataRow dr = IR.NewRow();
+                        dr["Docno"] = docno;
+                        dr["Docdt"] = docdt;
+                        dr["Slnm"] = tbl.Rows[i]["Slnm"].ToString();
+                        dr["Slarea"] = tbl.Rows[i]["Slarea"].ToString();
+                        dr["QntyBox"] = box.ToString();
+                        dr["trslnm"] = tbl.Rows[i]["trslnm"].ToString();
+                        IR.Rows.Add(dr);
+                        box = 0;
+                    }
+                }
+            }
+            return IR;
+        }
     }
 }

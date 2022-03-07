@@ -68,11 +68,6 @@
                 data: $('form').serialize(),
                 success: function (result) {
                     $("#partialdivUG").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
             });
         }
@@ -83,11 +78,6 @@
                 data: $('form').serialize(),
                 success: function (result) {
                     $("#partialdivUG").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
             });
         }

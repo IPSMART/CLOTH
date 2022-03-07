@@ -7,7 +7,7 @@ using System.Data;
 
 namespace Improvar.Models
 {
-    public class Menu 
+    public class Menu
     {
         public string ManuDetails { get; set; }
         public string FavoriteManuDetails { get; set; }
@@ -22,5 +22,19 @@ namespace Improvar.Models
         public string Caption { get; set; }
         public string RefreshedTime { get; set; }
         public DataTable DataTable { get; set; }
+        public EMAILSTATUSTBL EMAILSTATUSTBL { get; set; }
+    }
+    public class EMAILSTATUSTBL
+    {
+        public string curdt { get; set; }
+        public string autoreminderoff { get; set; }
+        public string caldt { get; set; }
+        public string graceday { get; set; }
+        public string luserid { get; set; }
+        public string luserentdt { get; set; }
+        public bool autoreminderofff { get; set; }
+        public string AGENT_NAME { get; set; }
+        public string AGENT_CODE { get; set; }
+        public string CCMAIL { get; set; }
     }
 }

@@ -86,7 +86,7 @@ namespace Improvar.Models
         [StringLength(35)]
         public string COUNTRY { get; set; }
 
-        [StringLength(15)]
+        [StringLength(30)]
         public string SHORTNM { get; set; }
 
         [StringLength(80)]
@@ -251,5 +251,6 @@ namespace Improvar.Models
         public string PAN_206AB_CCA { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PANDT { get; set; }
+        public string AUTOREMINDEROFF { get; set; }
     }
 }

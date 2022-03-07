@@ -38,5 +38,8 @@ namespace Improvar.ViewModels
         public bool IsAPIEnabled { get; set; }
         public List<DropDown_list2> DropDown_list2 { get; set; }
         public List<DropDown_list3> DropDown_list3 { get; set; }
+        public bool AUTOREMINDEROFF { get; set; }
+
+
     }
 }

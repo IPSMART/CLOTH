@@ -17,13 +17,13 @@ namespace Improvar.Controllers
             ViewBag.formname = "User Guide";
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             UserGuideImprovar VE = new UserGuideImprovar();
-            //if (Module.MODULE == "SALES")
-            //{
-            //  VE.COMPNM = DB.SD_COMPANY.Where(X => X.COMPCD == CommVar.Compcd(UNQSNO)).Select(x => new 
-            //    {
-            //        COMPNM = x.COMPNM
-            //    }).ToList().FirstOrDefault().COMPNM;
-            //}
+            if (Module.MODULE == "SALES")
+            {
+              VE.COMPNM = DB.SD_COMPANY.Where(X => X.COMPCD == CommVar.Compcd(UNQSNO)).Select(x => new 
+                {
+                    COMPNM = x.COMPNM
+                }).ToList().FirstOrDefault().COMPNM;
+            }
             //VE.USERGUIDE = (from g in DB.USER_GUIDE
             //                where g.MODULE_CODE == Module.Module_Code
             //                select new USERGUIDE()

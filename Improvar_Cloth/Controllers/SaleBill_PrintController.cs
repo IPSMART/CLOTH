@@ -3019,7 +3019,7 @@ namespace Improvar.Controllers
                                     {
                                         foreach (var autono in totalautono)
                                         {
-                                            masterHelp.insT_TXNSTATUS(autono, "E", VE.TEXTBOX5);
+                                            masterHelp.insT_TXNSTATUS(autono, "E","", VE.TEXTBOX5);
                                         }
                                     }
                                 }
@@ -3046,7 +3046,7 @@ namespace Improvar.Controllers
                                     sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
                                     if (VE.Checkbox10 == true)
                                     {
-                                        masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E", rsemailid[z].email.ToString());
+                                        masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E","", rsemailid[z].email.ToString());
                                     }
                                 }
                                 else
@@ -3115,7 +3115,7 @@ namespace Improvar.Controllers
                         {
                             foreach (var autono in totalautono)
                             {
-                                masterHelp.insT_TXNSTATUS(autono, "P", "");
+                                masterHelp.insT_TXNSTATUS(autono, "P", "","");
                             }
                         }
 
@@ -4534,7 +4534,7 @@ namespace Improvar.Controllers
                     if (msgretval[1].ToString().Substring(0, 1) == "0")
                     {
                         //insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "SALE", msgresult);
-                        MasterHelpFa.insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", msgresult);
+                        MasterHelpFa.insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "",msgresult);
                     }
                 }
             }

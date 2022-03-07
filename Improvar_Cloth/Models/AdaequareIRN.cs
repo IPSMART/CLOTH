@@ -27,7 +27,7 @@ namespace Improvar.Models
     public class TranDtls
     {
         public string TaxSch { get { return "GST"; } }
-        public string SupTyp { get { return "B2B"; } }
+        public string SupTyp { get; set; }
         public string RegRev { get; set; }
         public object EcmGstin { get; set; }
         public string IgstOndoublera { get { return "N"; } }
