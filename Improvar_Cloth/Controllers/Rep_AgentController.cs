@@ -592,20 +592,20 @@ namespace Improvar.Controllers
                         {
                             if (ShowPrintRow == true)
                             {
-                                //acount++;
+                                acount++;
 
-                                //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                //IR.Rows[rNo]["retamt"] = pRetamt.retDbl();
-                                //IR.Rows[rNo]["discamt"] = pDiscamt.retDbl();
-                                //IR.Rows[rNo]["tdsamt"] = pTdsamt.retDbl();
-                                //IR.Rows[rNo]["payamt"] = pPayamt.retDbl();
-                                //IR.Rows[rNo]["othamt"] = pOthamt.retDbl();
-                                //IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
-                                //IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
-                                //IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
-                                //IR.Rows[rNo]["itamt"] = iamt1.retDbl();
-                                //IR.Rows[rNo]["paytxbl"] = pPaytxbl.retDbl();
-                                //IR.Rows[rNo]["blncamt"] = pamt2;
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["retamt"] = pRetamt.retDbl();
+                                IR.Rows[rNo]["discamt"] = pDiscamt.retDbl();
+                                IR.Rows[rNo]["tdsamt"] = pTdsamt.retDbl();
+                                IR.Rows[rNo]["payamt"] = pPayamt.retDbl();
+                                IR.Rows[rNo]["othamt"] = pOthamt.retDbl();
+                                IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
+                                IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+                                IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
+                                IR.Rows[rNo]["itamt"] = iamt1.retDbl();
+                                IR.Rows[rNo]["paytxbl"] = pPaytxbl.retDbl();
+                                IR.Rows[rNo]["blncamt"] = pamt2;
                             }
                         }
                         if (detail == "S")
