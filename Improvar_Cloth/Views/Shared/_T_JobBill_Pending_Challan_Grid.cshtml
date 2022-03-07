@@ -43,6 +43,7 @@
                                 <th class="" style="width: 180px;">Doc. No.</th>
                                 <th class="" style="width: 90px;">Doc.Date</th>
                                 <th class="" style="width: 100px;">Total Quantity</th>
+                                <th class="" style="width: 100px;">Total Nos</th>
                                 <th class="" style="width: 120px;">Party Ref.No.</th>
                                 <th class="" style="width: 180px;">Iss.No.</th>
                                 <th class="" style="width: 90px;">Iss.Dt</th>
@@ -79,6 +80,9 @@
                                         <td class="" style="font-size:11px;text-align:right;">
                                             @Html.TextBoxFor(model => Model.Pending_SLIP[i].QNTY, new { id = "P_PACK_QNTY_" + i, @style = "font-weight:bold;text-align:right;", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
+                                        <td class="" style="font-size:11px;text-align:right;">
+                                            @Html.TextBoxFor(model => Model.Pending_SLIP[i].NOS, new { id = "P_PACK_NOS_" + i, @style = "font-weight:bold;text-align:right;", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
                                         <td class="" style="font-size:11px;">
                                             @Html.TextBoxFor(model => Model.Pending_SLIP[i].PREFNO, new { id = "P_PREFNO_" + i, @class = " atextBoxFor", @style = "font-weight:bold;", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
@@ -100,6 +104,9 @@
                                 <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.TOTAL_P_QNTY, new { htmlAttributes = new { id = "TOTAL_P_QNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTAL_P_NOS, new { htmlAttributes = new { id = "TOTAL_P_NOS", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

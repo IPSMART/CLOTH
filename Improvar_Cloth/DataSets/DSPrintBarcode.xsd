@@ -12,7 +12,7 @@
   <xs:element name="DSPrintBarcode" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DSPrintBarcode" msprop:Generator_UserDSName="DSPrintBarcode">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="DataTable1" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_TablePropName="DataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent">
+        <xs:element name="DataTable1" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_TablePropName="DataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowClassName="DataTable1Row">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="brcodeImage" msprop:Generator_ColumnVarNameInTable="columnbrcodeImage" msprop:Generator_ColumnPropNameInRow="brcodeImage" msprop:Generator_ColumnPropNameInTable="brcodeImageColumn" msprop:Generator_UserColumnName="brcodeImage" type="xs:base64Binary" minOccurs="0" />
@@ -54,6 +54,7 @@
               <xs:element name="compnm" msprop:Generator_ColumnVarNameInTable="columncompnm" msprop:Generator_ColumnPropNameInRow="compnm" msprop:Generator_ColumnPropNameInTable="compnmColumn" msprop:Generator_UserColumnName="compnm" type="xs:string" minOccurs="0" />
               <xs:element name="uom" msprop:Generator_ColumnVarNameInTable="columnuom" msprop:Generator_ColumnPropNameInRow="uom" msprop:Generator_ColumnPropNameInTable="uomColumn" msprop:Generator_UserColumnName="uom" type="xs:string" minOccurs="0" />
               <xs:element name="compcd" msprop:Generator_ColumnVarNameInTable="columncompcd" msprop:Generator_ColumnPropNameInRow="compcd" msprop:Generator_ColumnPropNameInTable="compcdColumn" msprop:Generator_UserColumnName="compcd" type="xs:string" minOccurs="0" />
+              <xs:element name="fulldocdt" msprop:Generator_ColumnVarNameInTable="columnfulldocdt" msprop:Generator_ColumnPropNameInRow="fulldocdt" msprop:Generator_ColumnPropNameInTable="fulldocdtColumn" msprop:Generator_UserColumnName="fulldocdt" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

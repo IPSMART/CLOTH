@@ -246,6 +246,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("compcd", typeof(string));
                 IR.Columns.Add("uom", typeof(string));
                 IR.Columns.Add("qnty", typeof(string));
+                IR.Columns.Add("fulldocdt", typeof(string));
                 string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -304,6 +305,7 @@ namespace Improvar.Controllers
                             dr["compcd"] = CommVar.Compcd(UNQSNO);
                             dr["qnty"] = VE.BarcodePrint[i].QNTY.retStr();
                             dr["uom"] = VE.BarcodePrint[i].UOMCD.retStr();
+                            dr["fulldocdt"] = VE.BarcodePrint[i].DOCDT.retDateStr();
                             IR.Rows.Add(dr);
                         }
                     }

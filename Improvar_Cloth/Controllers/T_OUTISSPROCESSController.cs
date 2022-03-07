@@ -47,6 +47,8 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Issue for Embroidery"; break;
                         case "JW":
                             ViewBag.formname = "Issue for Other Jobs"; break;
+                        case "IR":
+                            ViewBag.formname = "Issue for Iron"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     string LOC = CommVar.Loccd(UNQSNO);
