@@ -95,5 +95,8 @@ namespace Improvar.Models
         public DateTime? EFFDT { get; set; }
 
         public double? ADDLESSAMT { get; set; }
+        public double? NOS { get; set; }
+        [StringLength(100)]
+        public string ITREM { get; set; }
     }
 }
