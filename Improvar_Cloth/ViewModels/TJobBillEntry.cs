@@ -35,6 +35,7 @@ namespace Improvar.ViewModels
         public string TDSNM { get; set; }
         public string LOW_TDS_DESC { get; set; }
         public double TOTAL_P_QNTY { get; set; }
+        public double TOTAL_P_NOS { get; set; }
         public bool Roundoff_Item { get; set; }
         public double RoundoffAMT_Item { get; set; }
         public bool Roundoff_DCNote { get; set; }
@@ -96,6 +97,7 @@ namespace Improvar.ViewModels
         public string ITCD { get; set; }
         public string STYLENO { get; set; }
         public string ITNM { get; set; }
+        public string ITREM { get; set; }
         public List<DocumentType> QNTY_UNIT_PC { get; set; }
         public string qtncalcon { get; set; }       
         public double RECQNTY { get; set; }
@@ -127,6 +129,7 @@ namespace Improvar.ViewModels
         public bool Checked { get; set; }
         public string HSNSACCD { get; set; }
         public double addless { get; set; }
+        public double? NOS { get; set; }
     }
     public class PendingChallanDr_Cr_NoteDetails
     {
@@ -183,6 +186,7 @@ namespace Improvar.ViewModels
         public string PREFNO { get; set; }
         public string HSNSACCD { get; set; }
         public double RATE { get; set; }
+        public double? NOS { get; set; }
     }
     public static class Misc_Function
     {

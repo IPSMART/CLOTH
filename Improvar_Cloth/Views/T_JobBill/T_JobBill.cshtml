@@ -653,30 +653,38 @@
             }
         });
     }
-    function CalculateRowAmt(rateid, qtnid, amtid, discper, discamtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, index) {
+    function CalculateRowAmt(rateid, qtnid, amtid, discper, discamtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, index,nosid) {
         var round = false;
         var rate = $("#" + rateid).val(); rate = parseFloat((rate == "" ? 0 : rate)); $("#" + rateid).val(rate);
         var qtn = $("#" + qtnid).val(); qtn = parseFloat((qtn == "" ? 0 : qtn)); $("#" + qtnid).val(qtn);
         var uom = $("#qtncalcon_" + index).val();
-        if (uom == "D") {
-            var chk = parseFloat(qtn).toFixed(2).toString();
-            var sbefd = chk.substring(0, chk.length - 3);
-            var saftd = chk.substring(chk.length - 2);
-            var box = parseFloat(sbefd);
-            var lpcs = parseFloat(saftd);
-            //qtn = parseFloat(box * 12 + lpcs);
-        }
-        else if (uom == "B") {
-            var chk = parseFloat(qtn).toFixed(2).toString();
-            var sbefd = chk.substring(0, chk.length - 3);
-            var saftd = chk.substring(chk.length - 2);
-            var box = parseFloat(sbefd);
-            var lpcs = parseFloat(saftd);
-        }
+        var nos = $("#" + nosid).val(); nos = parseFloat((nos == "" ? 0 : nos)); $("#" + nosid).val(nos);
+        //if (uom == "D") {
+        //    var chk = parseFloat(qtn).toFixed(2).toString();
+        //    var sbefd = chk.substring(0, chk.length - 3);
+        //    var saftd = chk.substring(chk.length - 2);
+        //    var box = parseFloat(sbefd);
+        //    var lpcs = parseFloat(saftd);
+        //    //qtn = parseFloat(box * 12 + lpcs);
+        //}
+        //else if (uom == "B") {
+        //    var chk = parseFloat(qtn).toFixed(2).toString();
+        //    var sbefd = chk.substring(0, chk.length - 3);
+        //    var saftd = chk.substring(chk.length - 2);
+        //    var box = parseFloat(sbefd);
+        //    var lpcs = parseFloat(saftd);
+        //}
         var dper = $("#" + discper).val(); dper = parseFloat((dper == "" ? 0 : dper)); $("#" + discper).val(dper);
         var damt = $("#" + discamtid).val(); damt = parseFloat((damt == "" ? 0 : damt)); $("#" + discamtid).val(damt);
         var addless = $("#addless_" + index).val(); addless = parseFloat((addless == "" ? 0 : addless)); $("#addless_" + index).val(addless);
-        var amt = parseFloat(rate * qtn).toFixed(2);
+        //var amt = parseFloat(rate * qtn).toFixed(2);
+        var amt = 0;
+        if (uom == "N") {
+            amt = parseFloat(rate * nos).toFixed(2);
+        }
+        else {
+            amt = parseFloat(rate * qtn).toFixed(2);
+        }
         $("#" + amtid).val(amt);
         var taxableamt = 0;
         if (damt > 0) {

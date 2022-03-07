@@ -136,7 +136,7 @@ namespace Improvar.Controllers
                                 VE.T_JBILL = TJBILL;
                                 VE.T_CNTRL_HDR = TCH;
                                 VE.T_CNTRL_HDR_REM = SLR;
-                                ViewBag.formname = ViewBag.formname+" ["+ TCH .DOCNO+ "]";
+                                ViewBag.formname = ViewBag.formname + " [" + TCH.DOCNO + "]";
                             }
                         }
                         if (op.ToString() == "A")
@@ -249,9 +249,11 @@ namespace Improvar.Controllers
                         SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO), TJBILL.AUTONO);
                         VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO), TJBILL.AUTONO);
                         List<DocumentType> DDL = new List<DocumentType>(); //qntycalcon combo                   
-                        DocumentType DDL1 = new DocumentType(); DDL1.text = "Unit"; DDL1.value = "P"; DDL.Add(DDL1);
-                        DocumentType DDL2 = new DocumentType(); DDL2.text = "Dzn"; DDL2.value = "D"; DDL.Add(DDL2);
-                        DocumentType DDL3 = new DocumentType(); DDL3.text = "Box"; DDL3.value = "B"; DDL.Add(DDL3);
+                                                                           //DocumentType DDL1 = new DocumentType(); DDL1.text = "Unit"; DDL1.value = "P"; DDL.Add(DDL1);
+                                                                           //DocumentType DDL2 = new DocumentType(); DDL2.text = "Dzn"; DDL2.value = "D"; DDL.Add(DDL2);
+                                                                           //DocumentType DDL3 = new DocumentType(); DDL3.text = "Box"; DDL3.value = "B"; DDL.Add(DDL3);
+                        DocumentType DDL1 = new DocumentType(); DDL1.text = "Nos"; DDL1.value = "N"; DDL.Add(DDL1);
+                        DocumentType DDL2 = new DocumentType(); DDL2.text = "Qnty"; DDL2.value = "Q"; DDL.Add(DDL2);
                         List<PendingChallanItemDetails> JBD = new List<PendingChallanItemDetails>();
                         if (VE.MENU_PARA == "JB")
                         {
@@ -266,8 +268,10 @@ namespace Improvar.Controllers
                                                   ShortQNTY_DISPLAY = ((double)(i.DNCNQNTY == null ? 0 : i.DNCNQNTY)),
                                                   ITCD = i.ITCD,
                                                   ITNM = p.ITNM,
+                                                  ITREM = i.ITREM,
                                                   STYLENO = p.STYLENO,
                                                   PARTCD = i.PARTCD,
+                                                  NOS = i.NOS,
                                                   PASSQNTY = ((double)(i.PQNTY == null ? 0 : i.PQNTY)),
                                                   addless = ((double)(i.ADDLESSAMT == null ? 0 : i.ADDLESSAMT)),
                                                   RECQNTY = ((double)(i.RQNTY == null ? 0 : i.RQNTY)),
@@ -807,6 +811,7 @@ namespace Improvar.Controllers
                                          STYLENO = dr["styleno"] == DBNull.Value ? "" : dr["styleno"].ToString(),
                                          HSNSACCD = dr["hsncode"] == DBNull.Value ? "" : dr["hsncode"].ToString(),
                                          SHORTQNTY = dr["SHORTQNTY"] == DBNull.Value ? 0 : Convert.ToDouble(dr["SHORTQNTY"]),
+                                         NOS = dr["NOS"].retDbl(),
                                          SLCD = dr["slcd"] == DBNull.Value ? "" : dr["slcd"].ToString(),
                                          PARTCD = dr["PARTCD"] == DBNull.Value ? "" : dr["PARTCD"].ToString()
                                      }).OrderBy(a => a.AUTONO).ToList();
@@ -835,6 +840,7 @@ namespace Improvar.Controllers
                                            AUTONO = X.Key.AUTONO,
                                            SHORTQNTY = Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("SHORTQNTY") ?? 0)),
                                            QNTY = Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("qnty") ?? 0)),
+                                           NOS = Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("nos") ?? 0)),
                                            DOCNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { DOCNO = i.Field<string>("docno") }).FirstOrDefault(),
                                            DOCDT = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { DOCDT = i.Field<DateTime>("docdt") == null ? "" : i.Field<DateTime>("docdt").ToString().retDateStr() }).FirstOrDefault(),
                                            PREFNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { PREFNO = i.Field<string>("prefno") }).FirstOrDefault(),
@@ -863,6 +869,7 @@ namespace Improvar.Controllers
                                                ISSDOCDT = dr.ISSDOCDT.ISSDOCDT,
                                                Checked = false,
                                                QNTY = dr.QNTY,
+                                               NOS = dr.NOS,
                                                ITCD = "",
                                                ITNM = "",
                                                STYLENO = dr.STYLENO.STYLENO,
@@ -901,6 +908,7 @@ namespace Improvar.Controllers
 
                         var QTN = VE.Pending_SLIP.Sum(a => a.QNTY);
                         VE.TOTAL_P_QNTY = Convert.ToDouble(QTN);
+                        VE.TOTAL_P_NOS = VE.Pending_SLIP.Sum(a => a.NOS).retDbl();
                     }
                     VE.DefaultView = true;
                     ModelState.Clear();
@@ -941,9 +949,11 @@ namespace Improvar.Controllers
                     VE.BackupCESSTPER = 0;
                 }
                 List<DocumentType> DDL = new List<DocumentType>(); //qntycalcon combo                   
-                DocumentType DDL1 = new DocumentType(); DDL1.text = "Unit"; DDL1.value = "P"; DDL.Add(DDL1);
-                DocumentType DDL2 = new DocumentType(); DDL2.text = "Dzn"; DDL2.value = "D"; DDL.Add(DDL2);
-                DocumentType DDL3 = new DocumentType(); DDL3.text = "Box"; DDL3.value = "B"; DDL.Add(DDL3);
+                                                                   //DocumentType DDL1 = new DocumentType(); DDL1.text = "Unit"; DDL1.value = "P"; DDL.Add(DDL1);
+                                                                   //DocumentType DDL2 = new DocumentType(); DDL2.text = "Dzn"; DDL2.value = "D"; DDL.Add(DDL2);
+                                                                   //DocumentType DDL3 = new DocumentType(); DDL3.text = "Box"; DDL3.value = "B"; DDL.Add(DDL3);
+                DocumentType DDL1 = new DocumentType(); DDL1.text = "Nos"; DDL1.value = "N"; DDL.Add(DDL1);
+                DocumentType DDL2 = new DocumentType(); DDL2.text = "Qnty"; DDL2.value = "Q"; DDL.Add(DDL2);
                 List<PendingChallanItemDetails> PCID = new List<PendingChallanItemDetails>();
                 List<PendingChallan_SBill_Sortage> PCDCND = new List<PendingChallan_SBill_Sortage>();
                 Int16 SLNO = 0; Int16 SLNO1 = 0;
@@ -959,23 +969,35 @@ namespace Improvar.Controllers
                         selauto.Add(i.AUTONO);
                     }
                 }
+                //var itmdata = (from dr in helpMT
+                //               where (selauto.Contains(dr.AUTONO))
+                //               group dr by new
+                //               {
+                //                   ITCD = dr.ITCD,
+                //                   ITNM = dr.ITNM,
+                //                   STYLENO = dr.STYLENO,
+                //                   HSNSACCD = dr.HSNSACCD
+                //               } into X
+                //               select new
+                //               {
+                //                   ITCD = X.Key.ITCD,
+                //                   ITNM = X.Key.ITNM,
+                //                   SHORTQNTY = Convert.ToDouble(X.Sum(Z => Z.SHORTQNTY)),
+                //                   QNTY = Convert.ToDouble(X.Sum(Z => Z.QNTY)),
+                //                   STYLENO = X.Key.STYLENO,
+                //                   HSNSACCD = X.Key.HSNSACCD,
+                //               }).ToList();
                 var itmdata = (from dr in helpMT
                                where (selauto.Contains(dr.AUTONO))
-                               group dr by new
+                               select new
                                {
                                    ITCD = dr.ITCD,
                                    ITNM = dr.ITNM,
+                                   SHORTQNTY = dr.SHORTQNTY,
+                                   QNTY = dr.QNTY,
+                                   NOS = dr.NOS,
                                    STYLENO = dr.STYLENO,
-                                   HSNSACCD = dr.HSNSACCD
-                               } into X
-                               select new
-                               {
-                                   ITCD = X.Key.ITCD,
-                                   ITNM = X.Key.ITNM,
-                                   SHORTQNTY = Convert.ToDouble(X.Sum(Z => Z.SHORTQNTY)),
-                                   QNTY = Convert.ToDouble(X.Sum(Z => Z.QNTY)),
-                                   STYLENO = X.Key.STYLENO,
-                                   HSNSACCD = X.Key.HSNSACCD,
+                                   HSNSACCD = dr.HSNSACCD,
                                }).ToList();
                 foreach (var i in itmdata)
                 {
@@ -988,6 +1010,7 @@ namespace Improvar.Controllers
                         PC.qtncalcon = qtyCalcAs;
                         PC.AUTONO = "";
                         PC.BillQNTY = i.QNTY + i.SHORTQNTY;
+                        PC.NOS = i.NOS;
                         PC.ShortQNTY = i.SHORTQNTY;
                         PC.ShortQNTY_DISPLAY = i.SHORTQNTY;
                         PC.ITCD = i.ITCD;
@@ -1606,11 +1629,13 @@ namespace Improvar.Controllers
                                         TD.SLNO = i.SLNO;
                                         TD.DRCR = "C";
                                         TD.ITCD = i.ITCD;
+                                        TD.ITREM = i.ITREM;
                                         TD.PARTCD = i.PARTCD;
                                         TD.QNTYCALCON = i.qtncalcon;
                                         TD.DNCNQNTY = i.ShortQNTY;
                                         TD.PQNTY = i.PASSQNTY;
                                         TD.BQNTY = i.BillQNTY;
+                                        TD.NOS = i.NOS;
                                         TD.ADDLESSAMT = i.addless;
                                         //TD.PQNTY = i.PASSQNTY;
                                         //TD.BQNTY = i.BillQNTY;
@@ -2140,7 +2165,7 @@ namespace Improvar.Controllers
                                     {
                                         if (string.IsNullOrEmpty(tbl.Rows[0]["parglcd"].ToString()))
                                         {
-                                           
+
                                             dberrmsg = "tcsglcd Should not empty."; goto dbnotsave;
                                         }
                                         if (IsClassMandatoryInGlcd(expglcd) == "Y")
@@ -2190,7 +2215,7 @@ namespace Improvar.Controllers
                                                                                               tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), gstpostamt[gt], 0, strrem);
                                                     OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                                 }
-                                  
+
                                             }
                                         }
 
