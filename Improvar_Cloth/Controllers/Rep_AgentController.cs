@@ -342,10 +342,11 @@ namespace Improvar.Controllers
                 string sorton = FC["sorton"]; //Party,Date
                 if (repon == "S") agdsp = "Sub Agent";
                 if (showdocno == false) sorton = "P";
-
+                string showbill = FC["reptypeBil"].retStr();
+                string agslcd = repon=="A"? "e.agslcd" : "e.sagslcd";
                 string sql = "";
 
-                sql += "select a.autono, a.slno, e.glcd, d.docno, d.docdt, a.autoslno, e.agslcd,g.slnm agslnm,nvl(g.slarea,g.district) agslarea, a.slcd,f.slnm,nvl(f.slarea,f.district) slarea, a.vchtype, a.drcr, a.amt, a.linkcd, e.itamt, " + Environment.NewLine;
+                sql += "select a.autono, a.slno, e.glcd, d.docno, d.docdt, a.autoslno,"+agslcd+ " agslcd, g.slnm agslnm,nvl(g.slarea,g.district) agslarea, a.slcd,f.slnm,nvl(f.slarea,f.district) slarea, a.vchtype, a.drcr, a.amt, a.linkcd, e.itamt, " + Environment.NewLine;
                 sql += "b.vchtype adjtype, b.trcd, nvl(b.amt, 0) adjamt ";
                 sql += " from ";
 
@@ -395,9 +396,9 @@ namespace Improvar.Controllers
                 sql += "" + scmf + ".t_vch_bl e," + scmf + ".m_subleg f," + scmf + ".m_subleg g " + Environment.NewLine;
 
                 sql += "where a.autoslno = b.autoslno(+) and a.autoslno = c.autoslno(+) and a.autono = d.autono(+) and " + Environment.NewLine;
-                sql += "a.autono = e.autono(+) and a.slno = e.slno(+) and e.agslcd = g.slcd(+) and a.slcd = f.slcd(+) " + Environment.NewLine;
-                if (selagslcd != "") sql += " and e.agslcd in(" + selagslcd + ") " + Environment.NewLine;
-                sql += "order by linkcd, glcd, agslcd, slcd, autoslno " + Environment.NewLine;
+                sql += "a.autono = e.autono(+) and a.slno = e.slno(+) and "+ agslcd + " = g.slcd(+) and a.slcd = f.slcd(+) " + Environment.NewLine;
+                if (selagslcd != "") sql += " and " + agslcd + " in(" + selagslcd + ") " + Environment.NewLine;
+                sql += "order by linkcd, glcd, " + agslcd + ", slcd, autoslno " + Environment.NewLine;
 
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
@@ -437,7 +438,7 @@ namespace Improvar.Controllers
 
                 Int32 rNo = 0;
                 double gamt1 = 0, gamt2 = 0, giamt1 = 0, gRetamt = 0, gDiscamt = 0, gPayamt = 0, gOthamt = 0, gPaytxbl = 0, gTdsamt = 0;
-                bool PrintSkip = false;
+                bool PrintSkip = false; bool ShowPrintRow = true; bool SkipPendingBill = false;
                 // Report begins
                 i = 0; maxR = tbl.Rows.Count - 1;
                 int gcount = 0;
@@ -445,9 +446,13 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     chkval1 = tbl.Rows[i]["agslcd"].ToString();
-                    glcd = tbl.Rows[i]["glcd"].ToString();
+                    if(chkval1== "AB00003")
+                    {
+
+                    }
+                        glcd = tbl.Rows[i]["glcd"].ToString();
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + agdsp + " -" + " </span>" + tbl.Rows[i]["agslnm"].retStr() + "  " +"[ "+ tbl.Rows[i]["agslarea"].retStr() +" ]"+ "  " + "[ " + tbl.Rows[i]["agslcd"].retStr() + " ]";
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + agdsp + " -" + " </span>" + tbl.Rows[i]["agslnm"].retStr() + "  " + "[ " + tbl.Rows[i]["agslarea"].retStr() + " ]" + "  " + "[ " + tbl.Rows[i]["agslcd"].retStr() + " ]";
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
                     double agamt1 = 0, agamt2 = 0, aiamt1 = 0, aRetamt = 0, aDiscamt = 0, aPayamt = 0, aOthamt = 0, aPaytxbl = 0, aTdsamt = 0;
@@ -464,16 +469,17 @@ namespace Improvar.Controllers
                         chkval = tbl.Rows[i][chkval2fld].ToString();
                         double pamt1 = 0, pamt2 = 0, pqnty = 0, pRetamt = 0, pDiscamt = 0, pPayamt = 0, pOthamt = 0, pPaytxbl = 0, pTdsamt = 0;
                         double iamt1 = 0, iamt2 = 0, iqnty = 0;
-                        PrintSkip = false;
+                        PrintSkip = false; ShowPrintRow = true; SkipPendingBill = false;
                         while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i]["glcd"].ToString() == glcd && tbl.Rows[i][chkval2fld].ToString() == chkval2)
                         {
-                            PrintSkip = false;
+                            PrintSkip = false; ShowPrintRow = true; SkipPendingBill = false;
                             string itcd = "", autono = ""; double chkRetamt = 0, chkDiscamt = 0, chkOthamt = 0, chkTdsamt = 0, chkPayamt = 0, calcBalamt = 0, calcPaytxblamt = 0;
 
                             autono = tbl.Rows[i]["autono"].ToString();
                             double balamt = 0, itamt = 0, blamt = 0; // tbl.Rows[i]["drcr"].retStr() == checkdrcr ? tbl.Rows[i]["amt"].retDbl() : tbl.Rows[i]["amt"].retDbl() * -1;
                             int blslno = -1;
-                            while (tbl.Rows[i]["agslcd"].ToString() == chkval1 &&  tbl.Rows[i]["glcd"].ToString() == glcd && tbl.Rows[i][chkval2fld].ToString() == chkval2 && tbl.Rows[i]["autono"].ToString() == autono)
+
+                            while (tbl.Rows[i]["agslcd"].ToString() == chkval1 && tbl.Rows[i]["glcd"].ToString() == glcd && tbl.Rows[i][chkval2fld].ToString() == chkval2 && tbl.Rows[i]["autono"].ToString() == autono)
                             {
                                 int mult = tbl.Rows[i]["drcr"].retStr() == checkdrcr ? 1 : -1;
                                 if (tbl.Rows[i]["slno"].retInt() != blslno)
@@ -482,10 +488,10 @@ namespace Improvar.Controllers
                                     itamt = itamt + tbl.Rows[i]["itamt"].retDbl();
                                     blamt = blamt + tbl.Rows[i]["amt"].retDbl();
                                 }
-                                balamt = balamt + (tbl.Rows[i]["drcr"].retStr() == checkdrcr ? tbl.Rows[i]["adjamt"].retDbl() * -1: tbl.Rows[i]["adjamt"].retDbl());
+                                balamt = balamt + (tbl.Rows[i]["drcr"].retStr() == checkdrcr ? tbl.Rows[i]["adjamt"].retDbl() * -1 : tbl.Rows[i]["adjamt"].retDbl());
                                 if (tbl.Rows[i]["adjtype"].retStr() == "CN" || tbl.Rows[i]["trcd"].retStr() == "SC")
                                 {
-                                    chkRetamt = chkRetamt + (tbl.Rows[i]["adjamt"].retDbl()* mult);
+                                    chkRetamt = chkRetamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
                                 else if (tbl.Rows[i]["adjtype"].retStr() == "DSC")
                                 {
@@ -493,11 +499,11 @@ namespace Improvar.Controllers
                                 }
                                 else if (tbl.Rows[i]["adjtype"].retStr() == "TDS")
                                 {
-                                    chkTdsamt = chkTdsamt + ( tbl.Rows[i]["adjamt"].retDbl() * mult);
+                                    chkTdsamt = chkTdsamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
                                 else if ((tbl.Rows[i]["trcd"].retStr() == "BV") && (tbl.Rows[i]["adjtype"].retStr() == ""))
                                 {
-                                    chkPayamt = chkPayamt + ( tbl.Rows[i]["adjamt"].retDbl() * mult);
+                                    chkPayamt = chkPayamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
                                 else if ((tbl.Rows[i]["trcd"].retStr() == "") && (tbl.Rows[i]["adjtype"].retStr() == "ADV"))
                                 {
@@ -505,7 +511,7 @@ namespace Improvar.Controllers
                                 }
                                 else
                                 {
-                                    chkOthamt = chkOthamt + ( tbl.Rows[i]["adjamt"].retDbl() * mult);
+                                    chkOthamt = chkOthamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
                                 blslno = tbl.Rows[i]["slno"].retInt();
                                 i++;
@@ -522,68 +528,92 @@ namespace Improvar.Controllers
 
                             //}
                             PrintSkip = false;
-                            if (balamt == 0 && tbl.Rows[i-1]["vchtype"].retStr() != "BL") PrintSkip = true;
+                            if (balamt == 0 && tbl.Rows[i - 1]["vchtype"].retStr() != "BL") PrintSkip = true;
+                            if (calcBalamt == 0 && showbill == "Pending Balance") { ShowPrintRow = false; }
+                            else
+                            if (calcBalamt != 0 && showbill == "Clear Bill") { ShowPrintRow = false; }
+                            else { ShowPrintRow = true; }
                             if (PrintSkip == false)
                             {
-                                scount++; acount++;
-                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                IR.Rows[rNo]["retamt"] = chkRetamt.retDbl();
-                                IR.Rows[rNo]["discamt"] = chkDiscamt.retDbl();
-                                IR.Rows[rNo]["tdsamt"] = chkTdsamt.retDbl();
-                                IR.Rows[rNo]["payamt"] = chkPayamt.retDbl();
-                                IR.Rows[rNo]["othamt"] = chkOthamt.retDbl();
-                                IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
-                                IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
-                                IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
-                                if (detail == "D") IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
-                                if (detail == "D") IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
-                                if (detail == "D") IR.Rows[rNo]["amt"] = tbl.Rows[i - 1]["amt"].retDbl();
-                                IR.Rows[rNo]["itamt"] = tbl.Rows[i - 1]["itamt"].retDbl();
-                                IR.Rows[rNo]["paytxbl"] = calcPaytxblamt.retDbl();
-                                IR.Rows[rNo]["blncamt"] = calcBalamt.retDbl();
+                                if (ShowPrintRow == true)
+                                {
+                                    
+                                    scount++; acount++;
+                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    IR.Rows[rNo]["retamt"] = chkRetamt.retDbl();
+                                    IR.Rows[rNo]["discamt"] = chkDiscamt.retDbl();
+                                    IR.Rows[rNo]["tdsamt"] = chkTdsamt.retDbl();
+                                    IR.Rows[rNo]["payamt"] = chkPayamt.retDbl();
+                                    IR.Rows[rNo]["othamt"] = chkOthamt.retDbl();
+                                    IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
+                                    IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+                                    IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
+                                    if (detail == "D") IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
+                                    if (detail == "D") IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
+                                    if (detail == "D") IR.Rows[rNo]["amt"] = tbl.Rows[i - 1]["amt"].retDbl();
+                                    IR.Rows[rNo]["itamt"] = tbl.Rows[i - 1]["itamt"].retDbl();
+                                    IR.Rows[rNo]["paytxbl"] = calcPaytxblamt.retDbl();
+                                    IR.Rows[rNo]["blncamt"] = calcBalamt.retDbl();
+
+                                }
                             }
                             if (PrintSkip == false && detail == "S")
-                            { scount++; }
-                                if (PrintSkip == true && detail == "D")
                             {
-                                if (scount == 0)
+                                if (ShowPrintRow == true)
                                 {
+                                    {
+                                        scount++;
+                                    }
+                                }
+                                if (PrintSkip == true && detail == "D")
+                                {
+                                   
+                                        if (scount == 0)
+                                        {
 
-                                    IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                                            IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                                        }
+                                    
                                 }
                             }
                             if (PrintSkip == false)
                             {
-                                pamt1 = pamt1 + tbl.Rows[i - 1]["amt"].retDbl(); pamt2 = pamt2 + calcBalamt; pRetamt = pRetamt + chkRetamt;
-                                iamt1 = iamt1 + tbl.Rows[i - 1]["itamt"].retDbl(); pDiscamt = pDiscamt + chkDiscamt; pPayamt = pPayamt + chkPayamt; pOthamt = pOthamt + chkOthamt; pPaytxbl = pPaytxbl + calcPaytxblamt.retDbl();
-                                pTdsamt = pTdsamt + chkTdsamt;
+                                if (ShowPrintRow == true)
+                                {
+                                    pamt1 = pamt1 + tbl.Rows[i - 1]["amt"].retDbl(); pamt2 = pamt2 + calcBalamt; pRetamt = pRetamt + chkRetamt;
+                                    iamt1 = iamt1 + tbl.Rows[i - 1]["itamt"].retDbl(); pDiscamt = pDiscamt + chkDiscamt; pPayamt = pPayamt + chkPayamt; pOthamt = pOthamt + chkOthamt; pPaytxbl = pPaytxbl + calcPaytxblamt.retDbl();
+                                    pTdsamt = pTdsamt + chkTdsamt;
+                                }
                             }
                             if (i > maxR) break;
                         }
 
-                        if (detail == "S" && scount>0)
+                        if (detail == "S" && scount > 0)
                         {
-                            acount++;
-                           
-                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["retamt"] = pRetamt.retDbl();
-                            IR.Rows[rNo]["discamt"] = pDiscamt.retDbl();
-                            IR.Rows[rNo]["tdsamt"] = pTdsamt.retDbl();
-                            IR.Rows[rNo]["payamt"] = pPayamt.retDbl();
-                            IR.Rows[rNo]["othamt"] = pOthamt.retDbl();
-                            IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
-                            IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
-                            IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
-                            IR.Rows[rNo]["itamt"] = iamt1.retDbl();
-                            IR.Rows[rNo]["paytxbl"] = pPaytxbl.retDbl();
-                            IR.Rows[rNo]["blncamt"] = pamt2;
+                            if (ShowPrintRow == true)
+                            {
+                                acount++;
+
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["retamt"] = pRetamt.retDbl();
+                                IR.Rows[rNo]["discamt"] = pDiscamt.retDbl();
+                                IR.Rows[rNo]["tdsamt"] = pTdsamt.retDbl();
+                                IR.Rows[rNo]["payamt"] = pPayamt.retDbl();
+                                IR.Rows[rNo]["othamt"] = pOthamt.retDbl();
+                                IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
+                                IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+                                IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
+                                IR.Rows[rNo]["itamt"] = iamt1.retDbl();
+                                IR.Rows[rNo]["paytxbl"] = pPaytxbl.retDbl();
+                                IR.Rows[rNo]["blncamt"] = pamt2;
+                            }
                         }
                         if (detail == "S")
                         {
                             if (acount == 0)
                             {
 
-                                IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                                //if ((showbill == "Pending Balance" && ShowPrintRow == false) || (showbill == "Clear Bill" && ShowPrintRow == false) || PrintSkip == true) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
                             }
                         }
                         if (detail == "D" && scount > 0)
@@ -628,11 +658,13 @@ namespace Improvar.Controllers
 
 
                     }
-                  
+                    if ((showbill == "Pending Balance" && ShowPrintRow == false && acount == 0) || (showbill == "Clear Bill" && ShowPrintRow == false && acount == 0) || (PrintSkip ==true&& acount==0))
+                    { IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges(); }
+
                     //if (PrintSkip == false)
                     //{
-                        gamt1 = gamt1 + agamt1; gamt2 = gamt2 + agamt2; giamt1 = giamt1 + aiamt1; gRetamt = gRetamt + aRetamt; gDiscamt = gDiscamt + aDiscamt;
-                        gPayamt = gPayamt + aPayamt; gOthamt = gOthamt + aOthamt; gPaytxbl = gPaytxbl + aPaytxbl; gTdsamt = gTdsamt + aTdsamt;
+                    gamt1 = gamt1 + agamt1; gamt2 = gamt2 + agamt2; giamt1 = giamt1 + aiamt1; gRetamt = gRetamt + aRetamt; gDiscamt = gDiscamt + aDiscamt;
+                    gPayamt = gPayamt + aPayamt; gOthamt = gOthamt + aOthamt; gPaytxbl = gPaytxbl + aPaytxbl; gTdsamt = gTdsamt + aTdsamt;
                     //}
                     if (i > maxR) break;
                 }
@@ -650,7 +682,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["othamt"] = gOthamt;
                 IR.Rows[rNo]["paytxbl"] = gPaytxbl;
                 IR.Rows[rNo]["blncamt"] = gamt2;
-                string pghdr1 = agdsp + " Report " + (detail =="D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
+                string pghdr1 = agdsp + " Report " + (detail == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
                 string repname = agdsp + (detail == "D" ? "Detail" : "Summary");
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
