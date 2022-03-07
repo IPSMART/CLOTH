@@ -266,6 +266,7 @@ namespace Improvar.Controllers
                             UploadDOC1.Add(UPL);
                             VE.UploadDOC = UploadDOC1;
                             VE.TCSAPPL = true;
+                            VE.AUTOREMINDEROFF = true;
                         }
                         return View(VE);
                     }
@@ -320,6 +321,7 @@ namespace Improvar.Controllers
                     VE.Checked = false;
                 }
                 VE.TCSAPPL = sl.TCSAPPL == null ? true : sl.TCSAPPL == "Y" ? true : false;
+                VE.AUTOREMINDEROFF = sl.AUTOREMINDEROFF == "Y" ? true : false;
                 if (sl.PARTYCD.retStr() != "")
                 {
                     string PARTYCD = sl.PARTYCD;
@@ -588,26 +590,28 @@ namespace Improvar.Controllers
             try
             {
                 ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchemaPrevYr(UNQSNO));
-                if (CommVar.FinSchemaPrevYr(UNQSNO) == "")
+            if (CommVar.FinSchemaPrevYr(UNQSNO) == "")
+            {
+                VE.isPresentinLastYrSchema = "";
+            }
+            else
+            {
+                var SLCD = sl.SLCD;
+                VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_SUBLEG where (j.SLCD == SLCD) select j.SLCD).FirstOrDefault();
+                if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
                 {
-                    VE.isPresentinLastYrSchema = "";
+                    VE.isPresentinLastYrSchema = "ADD";
                 }
                 else
                 {
-                    var SLCD = sl.SLCD;
-                    VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_SUBLEG where (j.SLCD == SLCD) select j.SLCD).FirstOrDefault();
-                    if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
-                    {
-                        VE.isPresentinLastYrSchema = "ADD";
-                    }
-                    else
-                    {
-                        VE.isPresentinLastYrSchema = "EDIT";
-                    }
+                    VE.isPresentinLastYrSchema = "EDIT";
                 }
             }
+            }
             catch (Exception ex)
-            { }
+            {
+
+            }
             return VE;
         }
         public ActionResult SearchPannelData(string SRC_FLAG)
@@ -616,14 +620,14 @@ namespace Improvar.Controllers
             {
                 var UNQSNO = Cn.getQueryStringUNQSNO();
                 string scm = CommVar.FinSchema(UNQSNO);
-                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN from " + scm + ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
+                string sql = "select j.SLCD,j.SLNM,j.GSTNO,j.SLAREA,j.DISTRICT,j.PIN,j.STATE from " + scm + ".M_SUBLEG j ," + scm + ".M_CNTRL_HDR o where j.M_AUTONO=o.M_AUTONO   ";
                 if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(j.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
                 DataTable MDT = masterHelp.SQLquery(sql);
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "GST" + Cn.GCS() + "District" + Cn.GCS() + "Area" + Cn.GCS() + "PIN";
+                var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "GST" + Cn.GCS() + "District" + Cn.GCS() + "Area" + Cn.GCS() + "PIN" + Cn.GCS() + "State";
                 for (int j = 0; j <= MDT.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["GSTNO"].retStr() + "</td><td>" + MDT.Rows[j]["DISTRICT"].retStr() + " </td><td> " + MDT.Rows[j]["SLAREA"].retStr() + "</td><td> " + MDT.Rows[j]["PIN"].retStr() + "</td></tr>");
+                    SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["GSTNO"].retStr() + "</td><td>" + MDT.Rows[j]["DISTRICT"].retStr() + " </td><td> " + MDT.Rows[j]["SLAREA"].retStr() + "</td><td> " + MDT.Rows[j]["PIN"].retStr() + "</td><td> " + MDT.Rows[j]["STATE"].retStr() + "</td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0"));
             }
@@ -1576,9 +1580,10 @@ namespace Improvar.Controllers
                             MSUBLEG.ADD4 = VE.M_SUBLEG.EXTADDR;
                             MSUBLEG.ADD5 = VE.M_SUBLEG.LANDMARK;
                             MSUBLEG.ADD6 = (VE.M_SUBLEG.DISTRICT + " " + VE.M_SUBLEG.PIN).Trim();
-                            MSUBLEG.ADD7 = (VE.M_SUBLEG.SUBDISTRICT.retStr() != "" ? "DIST " + VE.M_SUBLEG.SUBDISTRICT.retStr() + " , " + VE.M_SUBLEG.STATE : VE.M_SUBLEG.STATE).Trim();
-                            MSUBLEG.PANDT = VE.M_SUBLEG.PANDT;
+                            MSUBLEG.ADD7 = (VE.M_SUBLEG.SUBDISTRICT.retStr() != ""?"DIST " + VE.M_SUBLEG.SUBDISTRICT.retStr() + " , "+VE.M_SUBLEG.STATE: VE.M_SUBLEG.STATE).Trim();
+                            MSUBLEG.PANDT= VE.M_SUBLEG.PANDT;
                             MSUBLEG.PAN_206AB_CCA = VE.M_SUBLEG.PAN_206AB_CCA;
+                            MSUBLEG.AUTOREMINDEROFF = VE.AUTOREMINDEROFF == true ? "Y" : "";
                             if (VE.DefaultAction == "E")
                             {
                                 MSUBLEG.SLCD = VE.M_SUBLEG.SLCD;
@@ -2041,7 +2046,7 @@ namespace Improvar.Controllers
             var tbl = new DataTable();
             foreach (var firstRowCell in ws.Cells[5, 1, 5, ws.Dimension.End.Column])
                 tbl.Columns.Add(firstRowCell.Text);
-            var startRow = 6;
+            var startRow =6;
             for (var rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
             {
                 var wsRow = ws.Cells[rowNum, 1, rowNum, ws.Dimension.End.Column];
@@ -2073,16 +2078,15 @@ namespace Improvar.Controllers
                     {
                         return Json("File Extention must be [.XLSX] ");
                     }
-                    using (var package = new ExcelPackage(file.InputStream))
-                    {
-                        var currentSheet = package.Workbook.Worksheets;
-                        var workSheet = currentSheet.First();
-                        IncomeTaxExceldt = ToDataTable(workSheet);
-                    }
+                        using (var package = new ExcelPackage(file.InputStream))
+                        {
+                            var currentSheet = package.Workbook.Worksheets;
+                            var workSheet = currentSheet.First();
+                            IncomeTaxExceldt = ToDataTable(workSheet);
+                        }
                     #endregion
                     for (int i = 0; i < IncomeTaxExceldt.Rows.Count; i++)
-                    {
-                        string sql = "";
+                    { string sql = "";
                         try
                         {
                             //	PAN	Name	PAN Allotment Date	PAN-Aadhaar Link Status	Specified Person u/s 206AB & 206CCA
@@ -2099,11 +2103,11 @@ namespace Improvar.Controllers
                             Cn.com = new OracleCommand(sql, Cn.con);
                             Cn.com.ExecuteNonQuery();
                         }
-                        catch (Exception ex)
+                        catch(Exception ex)
                         {
-                            Cn.SaveException(ex, "Subledger update Pan sql:" + sql + "\n excel row no:" + i + 6);
+                            Cn.SaveException(ex,"Subledger update Pan sql:"+ sql+"\n excel row no:"+i+6);
                         }
-
+                      
                     }
                 }
                 new1.Commit();

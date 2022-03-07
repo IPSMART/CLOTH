@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico" />
     <title>Data Lock</title>
+    <link rel="stylesheet" media="all" href="/Content/bootstrap.min.css" />
     <link rel="stylesheet" media="all" href="~/Content/treeview.css" />
     <link rel="stylesheet" media="all" href="~/Content/main_layout.css?v=105" />
     <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
@@ -423,6 +424,27 @@
                 }
             });
         }
+        function LockAllModule() {
+            var yearlockdt=$("#yearlockdt").val();
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("LockAllModule", "Datalock")",
+                data:{Lockdt: yearlockdt},
+            success: function (result) {
+                msgInfo(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+        }
+    </script>
+    <script>
+        $(function () {
+            $("#yearlockdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@DateTime.Now' });
+        });
     </script>
 </head>
 <body style="background: linear-gradient(-135deg,#c850c0,#4158d0); background-repeat: no-repeat;background-size: cover;">
@@ -464,7 +486,7 @@
     </div>
     @if (Model.Defaultview == true)
     {
-        <div id="mySidenav" class="div-tree1">
+        <div id="mySidenav" class="div-tree1" style="float: left; width: 400px;">
            
             <div id="_userTree" style="margin:10px;height:95%; overflow-y:auto;">
                
@@ -476,6 +498,17 @@
     {
         @ViewBag.ErrorMessage
     }
+    <div class="row">
+        <div class="col-lg-2">
+            <label>Year Lock Date</label>
+        </div>
+        <div class="col-lg-2">
+            <input type="text" value="" class="form-control" id="yearlockdt" maxlength="10" placeholder="dd/mm/yyyy" autocomplete="off" />
+        </div>
+        <div class="col-lg-4">
+            <input type="button" class="btn btn-sm" value="Lock All Menus" onclick="LockAllModule()" />
+        </div>
+    </div>
     <div style="width:100%;background-color:rgb(111, 163, 208);float:left;bottom:0;margin-bottom:0;position:fixed;right:0;left:0">
         <div class="abc sec1">
             @Session["CompanyName" + Model.UNQSNO]

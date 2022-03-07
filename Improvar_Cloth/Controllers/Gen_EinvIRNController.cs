@@ -22,7 +22,7 @@ namespace Improvar.Controllers
         string LOC = CommVar.Loccd(CommVar.getQueryStringUNQSNO()), COM = CommVar.Compcd(CommVar.getQueryStringUNQSNO()), scm1 = CommVar.CurSchema(CommVar.getQueryStringUNQSNO()), scmf = CommVar.FinSchema(CommVar.getQueryStringUNQSNO());
         // GET: Gen_EinvIRN
         public ActionResult Gen_EinvIRN(string reptype = "")
-        {  
+        {
             try
             {
                 if (Session["UR_ID"] == null)
@@ -246,7 +246,7 @@ namespace Improvar.Controllers
                 sql += " " + CommVar.FinSchema(UNQSNO) + ".t_cntrl_hdr d, " + CommVar.FinSchema(UNQSNO) + ".t_txnewb e ";
                 sql += " where a.autono = b.autono(+) and b.pcode = c.slcd(+) and a.autono = d.autono(+) and ";
                 sql += " b.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND b.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY')   ";
-                sql += " d.compcd = '" + CommVar.Compcd(UNQSNO) + "' and a.autono = e.autono(+) and d.loccd = '" + CommVar.Loccd(UNQSNO) + "' ";
+                sql += " and d.compcd = '" + CommVar.Compcd(UNQSNO) + "' and a.autono = e.autono(+) and d.loccd = '" + CommVar.Loccd(UNQSNO) + "' ";
                 sql += " group by b.docdt, c.slnm, e.lorryno, e.ewaybillno,a.ackdt, a.irnno, b.blno ";
                 sql += " order by b.docdt, b.blno ";
 
@@ -268,7 +268,7 @@ namespace Improvar.Controllers
                 + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f  "
                 + " where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.TRANSLCD=f.SLCD(+) and a.autono=e.autono(+) and ";
                 sql += " A.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND A.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY') AND  ";
-                sql += " b.regntype in ('R') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null ";
+                sql += " b.regntype in ('R') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N'  ";
                 sql += " and a.autono not in (select autono from " + scmf + ".t_txneinv) ";
                 sql += " and d.compcd='" + CommVar.Compcd(UNQSNO) + "' and b.gstno is not null ";
                 sql += " group by a.autono,c.doctype,d.loccd,d.docno,d.docdt,b.SLCD,b.SLNM,e.TRANSLCD,f.slnm,e.LORRYNO ";
@@ -354,7 +354,7 @@ namespace Improvar.Controllers
                         };
 
                         sql = "";
-                        sql += "select a.autono, a.slno, b.doccd, a.blno, a.bldt, a.pos,a.gstslnm posslnm,a.gstno posgstno,a.gstslpin pospin,a.gstsldist posdist ,a.gstsladd1 posadd1,a.gstsladd2 posadd2,";
+                        sql += "select a.autono, a.slno, b.doccd, a.blno, a.bldt,  a.invtypecd, a.pos,a.gstslnm posslnm,a.gstno posgstno,a.gstslpin pospin,a.gstsldist posdist ,a.gstsladd1 posadd1,a.gstsladd2 posadd2,";
                         sql += "a.SHIPDOCNO,a.SHIPDOCDT,a.PORTCD, a.basamt , a.discamt, a.GOOD_SERV,dncnsalpur, ";
                         sql += " translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,p.PROPNAME LegalNm, d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
 
@@ -399,6 +399,18 @@ namespace Improvar.Controllers
                             if (dt.Rows[i]["dncnsalpur"].retStr() == "SD") { docDtls.Typ = "DBN"; }
                             else if (dt.Rows[i]["dncnsalpur"].retStr() == "SC") { docDtls.Typ = "CRN"; }
                             else { docDtls.Typ = "INV"; }
+
+                            switch (dt.Rows[i]["invtypecd"].retStr())
+                            {
+                                case "02":
+                                    tranDtls.SupTyp = "SEZWP"; break;
+                                case "03":
+                                    tranDtls.SupTyp = "SEZWOP"; break;
+                                case "04":
+                                    tranDtls.SupTyp = "DEXP"; break;
+                                default:
+                                    tranDtls.SupTyp = "B2B"; break;
+                            }
                             docDtls.No = dt.Rows[i]["blno"].retStr();
                             docDtls.Dt = dt.Rows[i]["bldt"].retDateStr();
                             //BuyerDtls
@@ -484,8 +496,8 @@ namespace Improvar.Controllers
                             itemlst.FreeQty = 0;
                             itemlst.Unit = dt.Rows[i]["guomcd"].retStr();
                             itemlst.UnitPrice = dt.Rows[i]["rate"].retDbl().toRound(3);
-                            itemlst.TotAmt = dt.Rows[i]["basamt"].retDbl() + (dt.Rows[i]["discamt"].retDbl() < 0 ? dt.Rows[i]["discamt"].retDbl() * -1 : 0);
-                            itemlst.Discount = (dt.Rows[i]["discamt"].retDbl() < 0?0:dt.Rows[i]["discamt"].retDbl());
+                            itemlst.TotAmt = (dt.Rows[i]["basamt"].retDbl() + (dt.Rows[i]["discamt"].retDbl() < 0 ? dt.Rows[i]["discamt"].retDbl() * -1 : 0)).toRound();
+                            itemlst.Discount = (dt.Rows[i]["discamt"].retDbl() < 0?0:dt.Rows[i]["discamt"].retDbl()).toRound();
                             itemlst.PreTaxVal = dt.Rows[i]["txablamt"].retDbl() ;
                             itemlst.AssAmt = dt.Rows[i]["txablamt"].retDbl();
                             tottxablamt += dt.Rows[i]["txablamt"].retDbl();

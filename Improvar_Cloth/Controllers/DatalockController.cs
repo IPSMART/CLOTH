@@ -311,14 +311,14 @@ namespace Improvar.Controllers
             try
             {
                 List<DateLockRight> MR1 = new List<DateLockRight>();
-                string comcode =CommVar.Compcd(UNQSNO);
+                string comcode = CommVar.Compcd(UNQSNO);
                 string LOCCODE = CommVar.Loccd(UNQSNO);
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 MR1 = javaScriptSerializer.Deserialize<List<DateLockRight>>(serialize);
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));       
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Hashtable checkParent = new Hashtable();
                 long Autonumber = 0;
-                string Action = "";               
+                string Action = "";
                 using (var transaction = DB.Database.BeginTransaction())
                 {
                     if (DB.M_LOCKDATA.Any(x => x.COMPCD == comcode && x.LOCCD == LOCCODE))
@@ -372,307 +372,429 @@ namespace Improvar.Controllers
 
         public ActionResult DefaultPermission(string progcalid, string serial, string Flag, string DDT, string CHKALW)
         {
-            string UNQSNO = Cn.getQueryStringUNQSNO();
-            ArrayList ManuLine = null;
-            DataTable MenuTble;
-            dataLock Mnu = new dataLock();
-            bool ALWBAKDT = CHKALW == null ? false : true;
-            Hashtable checkParent = new Hashtable();
-            #region Menugenerate
-            string SCHEMA = Cn.Getschema;
-            CS = Cn.GetConnectionString();
-            Cn.con = new OracleConnection(CS);
-            if ((Cn.ds.Tables["fill_mainmenu"] == null) == false)
+            try
             {
-                Cn.ds.Tables["fill_mainmenu"].Clear();
-            }
-            if (Cn.con.State == ConnectionState.Closed)
-            {
-                Cn.con.Open();
-            }
-            Cn.com = new OracleCommand(SCHEMA + ".MENU_PERMI_USR", Cn.con);//checking for menu permission
-            Cn.com.CommandType = CommandType.StoredProcedure;
-            string sql = null;
-            System.Text.StringBuilder SB1 = new System.Text.StringBuilder();
-            string uid = Session["UR_ID"].ToString();
-            string modid = Session["ModuleCode"].ToString();
-            string COM = Session["CompanyCode"+UNQSNO].ToString();
-            string LOC = Session["CompanyLocationCode" + UNQSNO].ToString();
-            string schm = Cn.Getschema;
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-            List<DateLockRight> DLR = new List<DateLockRight>();
-            var javaScriptDeSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            DLR = javaScriptDeSerializer.Deserialize<List<DateLockRight>>(serial);
-            //DLR.AddRange(DLR1);
-            sql = "";
-            sql = sql + "Select m.MENU_ID,m.MENU_NAME,m.MENU_INDEX,m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL,m.MENU_ORDER_CODE,m.menu_type ";
-            sql = sql + "from " + schm + ".APPL_MENU m ";
-            sql = sql + "where m.module_code='" + modid + "' order by m.menu_order_code";
-            Cn.com.Parameters.Add("SQL_STRING", sql);
-            Cn.com.Parameters.Add("schema1", SCHEMA);
-            OracleParameter pm2 = new OracleParameter("prc", OracleDbType.RefCursor);
-            pm2.Direction = ParameterDirection.Output;
-            Cn.com.Parameters.Add(pm2);
-            Cn.da.SelectCommand = Cn.com;
-            bool bu1 = Convert.ToBoolean(Cn.da.Fill(Cn.ds, "fill_mainmenu"));
-            Cn.con.Close();
-            MenuTble = Cn.ds.Tables["fill_mainmenu"];
-            int root = 0, child = 0;
-            string menu = "";
-            ManuLine = new ArrayList();
-            if (bu1 == true)
-            {
-                string IDENTIFIER = Session["MotherMenuIdentifier"].ToString();
-                IEnumerable<DataRow> results = from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_TYPE") == "E" select row;
-                ManuLine = new ArrayList();
-                int childNode = 0;
-                foreach (DataRow menu_row in results)
+                string UNQSNO = Cn.getQueryStringUNQSNO();
+                ArrayList ManuLine = null;
+                DataTable MenuTble;
+                dataLock Mnu = new dataLock();
+                bool ALWBAKDT = CHKALW == null ? false : true;
+                Hashtable checkParent = new Hashtable();
+                #region Menugenerate
+                string SCHEMA = Cn.Getschema;
+                CS = Cn.GetConnectionString();
+                Cn.con = new OracleConnection(CS);
+                if ((Cn.ds.Tables["fill_mainmenu"] == null) == false)
                 {
-                    string parent = menu_row.ItemArray[3].ToString().Trim();
-                    string mname = menu_row.ItemArray[1].ToString().Trim();
-                    string[] menuid = parent.Split('!');
-                    string image = "";
-                    string displayDT = "";
-                    var parent_menu = (from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_PARENT_ID") == progcalid select row).ToList();
-                    foreach (var menu_row1 in parent_menu)
+                    Cn.ds.Tables["fill_mainmenu"].Clear();
+                }
+                if (Cn.con.State == ConnectionState.Closed)
+                {
+                    Cn.con.Open();
+                }
+                Cn.com = new OracleCommand(SCHEMA + ".MENU_PERMI_USR", Cn.con);//checking for menu permission
+                Cn.com.CommandType = CommandType.StoredProcedure;
+                string sql = null;
+                System.Text.StringBuilder SB1 = new System.Text.StringBuilder();
+                string uid = Session["UR_ID"].ToString();
+                string modid = Session["ModuleCode"].ToString();
+                string COM = Session["CompanyCode" + UNQSNO].ToString();
+                string LOC = Session["CompanyLocationCode" + UNQSNO].ToString();
+                string schm = Cn.Getschema;
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                List<DateLockRight> DLR = new List<DateLockRight>();
+                var javaScriptDeSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                DLR = javaScriptDeSerializer.Deserialize<List<DateLockRight>>(serial);
+                //DLR.AddRange(DLR1);
+                sql = "";
+                sql = sql + "Select m.MENU_ID,m.MENU_NAME,m.MENU_INDEX,m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL,m.MENU_ORDER_CODE,m.menu_type ";
+                sql = sql + "from " + schm + ".APPL_MENU m ";
+                sql = sql + "where m.module_code='" + modid + "' order by m.menu_order_code";
+                Cn.com.Parameters.Add("SQL_STRING", sql);
+                Cn.com.Parameters.Add("schema1", SCHEMA);
+                OracleParameter pm2 = new OracleParameter("prc", OracleDbType.RefCursor);
+                pm2.Direction = ParameterDirection.Output;
+                Cn.com.Parameters.Add(pm2);
+                Cn.da.SelectCommand = Cn.com;
+                bool bu1 = Convert.ToBoolean(Cn.da.Fill(Cn.ds, "fill_mainmenu"));
+                Cn.con.Close();
+                MenuTble = Cn.ds.Tables["fill_mainmenu"];
+                int root = 0, child = 0;
+                string menu = "";
+                ManuLine = new ArrayList();
+                if (bu1 == true)
+                {
+                    string IDENTIFIER = Session["MotherMenuIdentifier"].ToString();
+                    IEnumerable<DataRow> results = from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_TYPE") == "E" select row;
+                    ManuLine = new ArrayList();
+                    int childNode = 0;
+                    foreach (DataRow menu_row in results)
                     {
-                        string idstore = menu_row1.ItemArray[0].ToString() + "!" + menu_row1.ItemArray[2].ToString();
-                        if (idstore == menu_row.ItemArray[0].ToString() + "!" + menu_row.ItemArray[2].ToString())
+                        string parent = menu_row.ItemArray[3].ToString().Trim();
+                        string mname = menu_row.ItemArray[1].ToString().Trim();
+                        string[] menuid = parent.Split('!');
+                        string image = "";
+                        string displayDT = "";
+                        var parent_menu = (from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_PARENT_ID") == progcalid select row).ToList();
+                        foreach (var menu_row1 in parent_menu)
                         {
-                            childNode = 1;
-                            break;
-                        }
-                        else
-                        {
-                            string backidstore = idstore;
-                            Stack temp = new Stack();
-                            var parent_menu1 = (from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_PARENT_ID") == backidstore select row).ToList();
-                            foreach (var menu_row2 in parent_menu1)
+                            string idstore = menu_row1.ItemArray[0].ToString() + "!" + menu_row1.ItemArray[2].ToString();
+                            if (idstore == menu_row.ItemArray[0].ToString() + "!" + menu_row.ItemArray[2].ToString())
                             {
-                                string idstore1 = menu_row2.ItemArray[0].ToString() + "!" + menu_row2.ItemArray[2].ToString();
-                                if (idstore1 == menu_row.ItemArray[0].ToString() + "!" + menu_row.ItemArray[2].ToString())
+                                childNode = 1;
+                                break;
+                            }
+                            else
+                            {
+                                string backidstore = idstore;
+                                Stack temp = new Stack();
+                                var parent_menu1 = (from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_PARENT_ID") == backidstore select row).ToList();
+                                foreach (var menu_row2 in parent_menu1)
                                 {
-                                    childNode = 1;
-                                    break;
-                                }
-                                else
-                                {
-                                    while (true)
+                                    string idstore1 = menu_row2.ItemArray[0].ToString() + "!" + menu_row2.ItemArray[2].ToString();
+                                    if (idstore1 == menu_row.ItemArray[0].ToString() + "!" + menu_row.ItemArray[2].ToString())
                                     {
-                                        var parent_menu2 = (from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_PARENT_ID") == idstore1 select row).ToList();
-                                        foreach (var menu_row3 in parent_menu2)
-                                        {
-                                            string idstore2 = menu_row3.ItemArray[0].ToString() + "!" + menu_row3.ItemArray[2].ToString();
-                                            if (idstore2 == menu_row.ItemArray[0].ToString() + "!" + menu_row.ItemArray[2].ToString())
-                                            {
-                                                childNode = 1;
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                idstore1 = idstore2;
-                                                parent_menu2.Remove(menu_row3);
-                                                temp.Push(parent_menu2);
-                                                break;
-                                            }
-                                        }
-                                        if (childNode == 1)
-                                        {
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            if (temp.Count > 0)
-                                            {
-                                                var returnNode = temp.Pop();
-                                                //parent_menu2 = returnNode;
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (childNode == 1)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        if (childNode == 1)
-                        {
-                            break;
-                        }
-                    }
-                    if (DLR.Any(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])))
-                    {
-                        if (childNode == 1)
-                        {
-                            if (Flag == "1")
-                            {
-                                image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                                displayDT = "";
-                                DateLockRight getval = DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).SingleOrDefault();
-                                int indx = DLR.IndexOf(getval);
-                                getval.BackDate = false;
-                                getval.Lockdate = null;
-                                DLR.Remove(getval);
-                                childNode = 0;
-                            }
-                            else
-                            {
-                                image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                                displayDT = "(" + DDT + ")";
-                                DateLockRight getval = DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).SingleOrDefault();
-                                int indx = DLR.IndexOf(getval);
-                                getval.BackDate = ALWBAKDT;
-                                getval.Lockdate = DDT;
-                                DLR[indx] = getval;
-                                childNode = 0;
-                            }
-                        }
-                        else
-                        {
-                            image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                            displayDT = "(" + DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).Select(a => a.Lockdate).SingleOrDefault() + ")";
-                        }
-                    }
-                    else
-                    {
-                        if (childNode == 1)
-                        {
-                            if (Flag == "1")
-                            {
-                                image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                                displayDT = "";
-                                DateLockRight getval = new DateLockRight();
-                                getval.BackDate = false;
-                                getval.Lockdate = null;
-                                getval.Menu_ID = menu_row.ItemArray[0].ToString();
-                                getval.Menu_index = Convert.ToInt32(menu_row.ItemArray[2]);
-                                DLR.Remove(getval);
-                                childNode = 0;
-                            }
-                            else
-                            {
-                                image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                                displayDT = "(" + DDT + ")";
-                                DateLockRight getval = new DateLockRight();
-                                getval.BackDate = ALWBAKDT;
-                                getval.Lockdate = DDT;
-                                getval.Menu_ID = menu_row.ItemArray[0].ToString();
-                                getval.Menu_index = Convert.ToInt32(menu_row.ItemArray[2]);
-                                DLR.Add(getval);
-                                childNode = 0;
-                            }
-                        }
-                        else
-                        {
-                            image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                        }
-                    }
-                    string Omenu = " <li><span class='tree_label'>" + "<img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<span title='" + mname + "' onclick=return&nbsp;setpermission('" + menu_row.ItemArray[0].ToString().Trim() + "'," + menu_row.ItemArray[2] + ");>" + mname + image + "</span>&nbsp;<span style='color:#ececec' class='default_label_date'>" + displayDT + "</span>" + "</span></li>";
-                    while (true)
-                    {
-                        IEnumerable<DataRow> results1 =
-                        from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable()
-                        where row.Field<string>("MENU_ID") == menuid[0].ToString() && row.Field<Int16>("MENU_INDEX") == Convert.ToInt16(menuid[1])
-                        orderby row.Field<string>("MENU_ORDER_CODE")
-                        select row;
-                        DataTable boundTable = results1.CopyToDataTable<DataRow>();
-                        if (boundTable.Rows[0]["MENU_PARENT_ID"].ToString() == IDENTIFIER)
-                        {
-                            string parent2 = boundTable.Rows[0][3].ToString();
-                            string id = menuid[0] + "!" + menuid[1];
-                            if (checkParent.ContainsKey(menuid[0] + "!" + menuid[1]) == false)
-                            {
-                                string Menu = "<li>";
-                                Menu = Menu + "<input type='checkbox' checked='checked'  id='" + id + "'/>" + "<label class='tree_label' for='" + id + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + boundTable.Rows[0][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "',1);>&nbsp;(Reset)</span>";
-                                Menu = Menu + "<ul>";
-                                checkParent.Add(boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString(), Menu);
-                                if (root == 0)
-                                {
-                                    menu = Menu + menu;
-                                    root = 1;
-                                }
-                                else
-                                {
-                                    //menu = menu + "</ul> </li></ul> </li>";
-                                    menu = menu + "</ul></li>";
-                                    ManuLine.Add(menu);
-                                    menu = Menu + Omenu;
-                                    child = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (child == 0)
-                                {
-                                    menu = menu + Omenu;
-                                }
-                            }
-                            break;
-                        }
-                        else
-                        {
-                            string parent1 = boundTable.Rows[0][3].ToString();
-                            string id = menuid[0] + "!" + menuid[1];
-                            if (checkParent.ContainsKey(menuid[0] + "!" + menuid[1]) == false)
-                            {
-                                string SubMenu = "<li>";
-                                SubMenu = SubMenu + "<input type='checkbox' checked='checked'  id='" + id + "'/>" + "<label class='tree_label' for='" + id + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + boundTable.Rows[0][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "',1);>&nbsp;(Reset)</span>";
-                                SubMenu = SubMenu + "<ul>";
-                                checkParent.Add(boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString(), SubMenu);
-                                if (child == 0)
-                                {
-                                    menu = SubMenu + Omenu;
-                                    child = 1;
-                                }
-                                else
-                                {
-                                    if (checkParent.ContainsKey(parent1) == false)
-                                    {
-                                        menu = menu + "</ul></li>";
-                                        ManuLine.Add(menu);
-                                        root = 0;
-                                        menu = SubMenu + Omenu;
+                                        childNode = 1;
+                                        break;
                                     }
                                     else
                                     {
-                                        menu = menu + "</ul> </li>" + SubMenu + Omenu;
+                                        while (true)
+                                        {
+                                            var parent_menu2 = (from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable() where row.Field<string>("MENU_PARENT_ID") == idstore1 select row).ToList();
+                                            foreach (var menu_row3 in parent_menu2)
+                                            {
+                                                string idstore2 = menu_row3.ItemArray[0].ToString() + "!" + menu_row3.ItemArray[2].ToString();
+                                                if (idstore2 == menu_row.ItemArray[0].ToString() + "!" + menu_row.ItemArray[2].ToString())
+                                                {
+                                                    childNode = 1;
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    idstore1 = idstore2;
+                                                    parent_menu2.Remove(menu_row3);
+                                                    temp.Push(parent_menu2);
+                                                    break;
+                                                }
+                                            }
+                                            if (childNode == 1)
+                                            {
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                if (temp.Count > 0)
+                                                {
+                                                    var returnNode = temp.Pop();
+                                                    //parent_menu2 = returnNode;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
+                                    if (childNode == 1)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                            if (childNode == 1)
+                            {
+                                break;
+                            }
+                        }
+                        if (DLR.Any(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])))
+                        {
+                            if (childNode == 1)
+                            {
+                                if (Flag == "1")
+                                {
+                                    image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
+                                    displayDT = "";
+                                    DateLockRight getval = DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).SingleOrDefault();
+                                    int indx = DLR.IndexOf(getval);
+                                    getval.BackDate = false;
+                                    getval.Lockdate = null;
+                                    DLR.Remove(getval);
+                                    childNode = 0;
+                                }
+                                else
+                                {
+                                    image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
+                                    displayDT = "(" + DDT + ")";
+                                    DateLockRight getval = DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).SingleOrDefault();
+                                    int indx = DLR.IndexOf(getval);
+                                    getval.BackDate = ALWBAKDT;
+                                    getval.Lockdate = DDT;
+                                    DLR[indx] = getval;
+                                    childNode = 0;
                                 }
                             }
                             else
                             {
-                                menu = menu + Omenu;
+                                image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
+                                displayDT = "(" + DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).Select(a => a.Lockdate).SingleOrDefault() + ")";
+                            }
+                        }
+                        else
+                        {
+                            if (childNode == 1)
+                            {
+                                if (Flag == "1")
+                                {
+                                    image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
+                                    displayDT = "";
+                                    DateLockRight getval = new DateLockRight();
+                                    getval.BackDate = false;
+                                    getval.Lockdate = null;
+                                    getval.Menu_ID = menu_row.ItemArray[0].ToString();
+                                    getval.Menu_index = Convert.ToInt32(menu_row.ItemArray[2]);
+                                    DLR.Remove(getval);
+                                    childNode = 0;
+                                }
+                                else
+                                {
+                                    image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
+                                    displayDT = "(" + DDT + ")";
+                                    DateLockRight getval = new DateLockRight();
+                                    getval.BackDate = ALWBAKDT;
+                                    getval.Lockdate = DDT;
+                                    getval.Menu_ID = menu_row.ItemArray[0].ToString();
+                                    getval.Menu_index = Convert.ToInt32(menu_row.ItemArray[2]);
+                                    DLR.Add(getval);
+                                    childNode = 0;
+                                }
+                            }
+                            else
+                            {
+                                image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
+                            }
+                        }
+                        string Omenu = " <li><span class='tree_label'>" + "<img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<span title='" + mname + "' onclick=return&nbsp;setpermission('" + menu_row.ItemArray[0].ToString().Trim() + "'," + menu_row.ItemArray[2] + ");>" + mname + image + "</span>&nbsp;<span style='color:#ececec' class='default_label_date'>" + displayDT + "</span>" + "</span></li>";
+                        while (true)
+                        {
+                         var results1 =
+                            from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable()
+                            where row.Field<string>("MENU_ID") == menuid[0].ToString() && row.Field<Int16>("MENU_INDEX") == Convert.ToInt16(menuid[1])
+                            orderby row.Field<string>("MENU_ORDER_CODE")                          
+                            select row;
+                            try
+                            {
+                                if (!results1.Any())
+                                {
+                                    break;
+                                }
+                            }
+                            catch
+                            {
                                 break;
                             }
-                            menuid = parent1.Split('!');
+                            DataTable boundTable = results1.CopyToDataTable<DataRow>();
+                            if (boundTable.Rows[0]["MENU_PARENT_ID"].ToString() == IDENTIFIER)
+                            {
+                                string parent2 = boundTable.Rows[0][3].ToString();
+                                string id = menuid[0] + "!" + menuid[1];
+                                if (checkParent.ContainsKey(menuid[0] + "!" + menuid[1]) == false)
+                                {
+                                    string Menu = "<li>";
+                                    Menu = Menu + "<input type='checkbox' checked='checked'  id='" + id + "'/>" + "<label class='tree_label' for='" + id + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + boundTable.Rows[0][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "',1);>&nbsp;(Reset)</span>";
+                                    Menu = Menu + "<ul>";
+                                    checkParent.Add(boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString(), Menu);
+                                    if (root == 0)
+                                    {
+                                        menu = Menu + menu;
+                                        root = 1;
+                                    }
+                                    else
+                                    {
+                                        //menu = menu + "</ul> </li></ul> </li>";
+                                        menu = menu + "</ul></li>";
+                                        ManuLine.Add(menu);
+                                        menu = Menu + Omenu;
+                                        child = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    if (child == 0)
+                                    {
+                                        menu = menu + Omenu;
+                                    }
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                string parent1 = boundTable.Rows[0][3].ToString();
+                                string id = menuid[0] + "!" + menuid[1];
+                                if (checkParent.ContainsKey(menuid[0] + "!" + menuid[1]) == false)
+                                {
+                                    string SubMenu = "<li>";
+                                    SubMenu = SubMenu + "<input type='checkbox' checked='checked'  id='" + id + "'/>" + "<label class='tree_label' for='" + id + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + boundTable.Rows[0][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "',1);>&nbsp;(Reset)</span>";
+                                    SubMenu = SubMenu + "<ul>";
+                                    checkParent.Add(boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString(), SubMenu);
+                                    if (child == 0)
+                                    {
+                                        menu = SubMenu + Omenu;
+                                        child = 1;
+                                    }
+                                    else
+                                    {
+                                        if (checkParent.ContainsKey(parent1) == false)
+                                        {
+                                            menu = menu + "</ul></li>";
+                                            ManuLine.Add(menu);
+                                            root = 0;
+                                            menu = SubMenu + Omenu;
+                                        }
+                                        else
+                                        {
+                                            menu = menu + "</ul> </li>" + SubMenu + Omenu;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    menu = menu + Omenu;
+                                    break;
+                                }
+                                menuid = parent1.Split('!');
+                            }
                         }
                     }
                 }
-            }
-            ManuLine.Add(menu + "</ul> </li>");
-            #endregion
-            System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            if (ManuLine != null)
-            {
-                for (int i = 0; i <= ManuLine.Count - 1; i++)
+                ManuLine.Add(menu + "</ul> </li>");
+                #endregion
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                if (ManuLine != null)
                 {
-                    SB.Append(ManuLine[i].ToString());
+                    for (int i = 0; i <= ManuLine.Count - 1; i++)
+                    {
+                        SB.Append(ManuLine[i].ToString());
+                    }
                 }
+                Mnu.ManuDetails = SB.ToString();
+                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                Mnu.serializeString = javaScriptSerializer.Serialize(DLR);
+                return PartialView("_datalockTree", Mnu);
             }
-            Mnu.ManuDetails = SB.ToString();
-            var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-            Mnu.serializeString = javaScriptSerializer.Serialize(DLR);
-            return PartialView("_datalockTree", Mnu);
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.StackTrace);
+            }
         }
 
         public ActionResult DefaultDatePermission()
         {
             return PartialView("_datelockDefaultdate", null);
+        }
+        public ActionResult LockAllModule(string Lockdt)
+        {
+            string message = "";
+            try
+            {
+                string LOCCODE = CommVar.Loccd(UNQSNO);
+                string comcode = CommVar.Compcd(UNQSNO);
+                string yearcd = CommVar.YearCode(UNQSNO);
+                string clcd = CommVar.ClientCode(UNQSNO);
+                string module = "", compscm = "", sql = "";
+
+                sql = "select inventory_schema,Sales_schema,Pay_schema from fin_company where CLIENT_CODE='"
+                   + CommVar.ClientCode(UNQSNO) + "' and year_code='" + yearcd + "' ";
+                DataTable findata = masterHelp.SQLquery(sql);
+                using (OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString()))
+                {
+                    OraCon.Open();
+                    OracleCommand OraCmd = OraCon.CreateCommand();
+                    string dbsql = "";
+                    string[] dbsql1;
+                    OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
+                    OraCmd.Transaction = OraTrans;
+                    for (int mdloop = 0; mdloop < 4; mdloop++)
+                    {
+                        if (mdloop == 0)
+                        {
+                            compscm = "FIN_COMPANY"; //module = finMD;
+                        }
+                        if (mdloop == 1)
+                        {
+                            compscm = "INV_COMPANY"; //module = invMD;
+                            if (findata.Rows[0]["inventory_schema"].ToString() == "") continue;
+                        }
+                        if (mdloop == 2)
+                        {
+                            compscm = "SD_COMPANY"; //module = sdMD;
+                            if (findata.Rows[0]["Sales_schema"].ToString() == "") continue;
+                        }
+                        if (mdloop == 3)
+                        {
+                            compscm = "PAY_COMPANY"; //module = payMD;
+                            if (findata.Rows[0]["Pay_schema"].ToString() == "") continue;
+                        }
+
+                        sql = "select distinct compcd,loccd,module_code,schema_name,fin_schema from " + compscm + " where year_code= '" + yearcd + "' and client_code='" + clcd + "' ";
+                        DataTable comptbl = masterHelp.SQLquery(sql); long Autonumber = 0;
+                        foreach (DataRow dr in comptbl.Rows)
+                        {
+                            module = dr["module_code"].ToString();
+                            string finschema = dr["fin_schema"].ToString();
+                            comcode = dr["compcd"].ToString();
+                            LOCCODE = dr["loccd"].ToString();
+                            var scm = dr["schema_name"].ToString();
+                            sql = "select COMPCD from " + finschema + ".M_LOCA WHERE COMPCD = '" + comcode + "' AND LOCCD = '" + LOCCODE + "'";
+                            DataTable LOCADT = masterHelp.SQLquery(sql);
+                            if (LOCADT.Rows.Count == 0) continue;
+                            if (Autonumber == 0)
+                            {
+                                Autonumber = Cn.M_AUTONO(scm);
+                                M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_LOCKDATA", Autonumber, "A", scm);
+                                dbsql = masterHelp.RetModeltoSql(MCH, "A", scm);
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                            }
+
+                            sql = "";
+                            sql += "Select m.MENU_ID,m.MENU_NAME,m.MENU_INDEX,m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL,m.MENU_ORDER_CODE,m.menu_type ";
+                            sql += "from APPL_MENU m ";
+                            sql += "where m.menu_type='E' and m.module_code='" + module + "'  order by m.menu_order_code,m.MENU_PARENT_ID";
+
+                            DataTable menuTable = masterHelp.SQLquery(sql);
+
+                            dbsql = "delete from " + scm + ".M_LOCKDATA WHERE COMPCD='" + comcode + "' AND loccd='" + LOCCODE + "'";
+                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+                            for (int i = 0; i < menuTable.Rows.Count; i++)
+                            {
+                                M_LOCKDATA ML = new M_LOCKDATA();
+                                ML.CLCD =
+                                ML.COMPCD = comcode;
+                                ML.LOCCD = LOCCODE;
+                                ML.LOCKDT = DateTime.ParseExact(Lockdt, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                                ML.MENU_ID = menuTable.Rows[i]["MENU_ID"].ToString();
+                                ML.MENU_INDEX = Convert.ToByte(menuTable.Rows[i]["MENU_INDEX"]);
+                                ML.BACKDATE = "N";
+                                ML.SCHEMA_NAME = scm;
+                                ML.M_AUTONO = Autonumber;
+                                dbsql = masterHelp.RetModeltoSql(ML, "A", scm);
+                                message = dbsql;
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                            }//MENUTBL LOOP
+                        }//COMP LOOP
+                    }//MODULE LOOP
+                    OraTrans.Commit();
+                }//ORACLE CONNECTION
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, message);
+                return Content(message + " =><br>" + ex.StackTrace);
+            }
+            return Content("All module and company Locked successfully !");
         }
     }
 }
