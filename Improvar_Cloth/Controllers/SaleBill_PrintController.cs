@@ -3112,13 +3112,13 @@ namespace Improvar.Controllers
                         stream.Seek(0, SeekOrigin.Begin);
                         reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
 
-                        //if (VE.Checkbox10 == true)
-                        //{
-                        //    foreach (var autono in totalautono)
-                        //    {
-                        //        masterHelp.insT_TXNSTATUS(autono, "P", "", "");
-                        //    }
-                        //}
+                        if (VE.Checkbox10 == true)
+                        {
+                            foreach (var autono in totalautono)
+                            {
+                                masterHelp.insT_TXNSTATUS(autono, "P", "", "");
+                            }
+                        }
 
                         return new FileStreamResult(stream, "application/pdf");
                     }
