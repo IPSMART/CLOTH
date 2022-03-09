@@ -3109,15 +3109,16 @@ namespace Improvar.Controllers
                         Response.ClearContent();
                         Response.ClearHeaders();
                         Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-                        reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
                         stream.Seek(0, SeekOrigin.Begin);
-                        if (VE.Checkbox10 == true)
-                        {
-                            foreach (var autono in totalautono)
-                            {
-                                masterHelp.insT_TXNSTATUS(autono, "P", "","");
-                            }
-                        }
+                        reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+
+                        //if (VE.Checkbox10 == true)
+                        //{
+                        //    foreach (var autono in totalautono)
+                        //    {
+                        //        masterHelp.insT_TXNSTATUS(autono, "P", "", "");
+                        //    }
+                        //}
 
                         return new FileStreamResult(stream, "application/pdf");
                     }
