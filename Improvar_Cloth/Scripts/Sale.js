@@ -1678,12 +1678,13 @@ function UpdateTaxPer() {
             document.getElementById("ACESSPER_" + i).value = CESS_PER;
             document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
         }
-    }
+    } 
 
 
 }
 
 function ReverceCharges() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var GridRowMain = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
@@ -1730,9 +1731,9 @@ function ReverceCharges() {
             if (allgst != "") {
                 var str = allgst.split(',');
                 if (str.length > 0) {
-                    igstp = $(parseFloat(str[0]).toFixed(2)).val();
-                    cgstp = $(parseFloat(str[1]).toFixed(2)).val();
-                    sgstp = $(parseFloat(str[2]).toFixed(2)).val();
+                    igstp = parseFloat(str[0]).toFixed(2);
+                    cgstp = parseFloat(str[1]).toFixed(2);
+                    sgstp = parseFloat(str[2]).toFixed(2);
                 }
 
                 $("#D_IGSTPER_" + i).val(igstp);
@@ -1760,6 +1761,125 @@ function ReverceCharges() {
         }
         CalculateAmt_Details(i);
     }
+
+    var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+   // var REVCHRG = $("#REVCHRG").val();
+    for (var i = 0; i <= GridRowMain - 1; i++) {
+
+        if (REVCHRG == "N") {
+            $("#B_GSTPER_" + i).val(0);
+            $("#B_GSTPER_" + i).attr('readonly', 'readonly');
+            //var taxableamt = $("#D_TXBLVAL_" + i).val();
+            //var netamount = parseFloat(taxableamt).toFixed(2);
+            //$("#D_NETAMT_" + i).val(netamount);
+        }
+        else {
+            //var taxableamt = $("#D_TXBLVAL_" + i).val();
+            $("#B_GSTPER_" + i).removeAttr('readonly');
+         
+
+            var igstp = 0, cgstp = 0, sgstp = 0, cessper = 0;
+            prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
+            rate = $("#B_RATE_" + i).val();
+            if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
+            var allgst = retGstPerstr(prodgrpgstper, rate);
+            if (allgst != "") {
+                var str = allgst.split(',');
+                if (str.length > 0) {
+                    igstp = parseFloat(str[0]).toFixed(2);
+                    cgstp = parseFloat(str[1]).toFixed(2);
+                    sgstp = parseFloat(str[2]).toFixed(2);
+                }
+
+                $("#B_GSTPER_" + i).val(parseFloat(igstp) + parseFloat(cgstp) + parseFloat(sgstp));
+                //var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+                //$("#D_IGSTAMT_" + i).val(igstamount);
+
+
+                //$("#D_CGSTPER_" + i).val(cgstp);
+                //var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+                //$("#D_CGSTAMT_" + i).val(cgstamount);
+
+
+                //$("#D_SGSTPER_" + i).val(sgstp);
+                //var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+                //$("#D_SGSTAMT_" + i).val(sgstamount);
+
+                //cessper = $("#BackupCESSTPER").val();
+                //$("#D_CESSPER_" + i).val(cessper);
+                //var cessamount = parseFloat(taxableamt * cessper / 100).toFixed(2);
+                //$("#D_CESSAMT_" + i).val(cessamount);
+                //var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+                //netamount = parseFloat(netamount).toFixed(2);
+                //$("#D_NETAMT_" + i).val(netamount);
+            }
+        }
+        CalculateTotal_Barno();
+        HasChangeBarSale();
+    }
+
+    var GridRowMain = $("#AMOUNT_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRowMain - 1; i++) {
+
+        if (REVCHRG == "N") {
+            $("#AIGSTPER_" + i).val(0);
+            $("#AIGSTAMT_" + i).val(parseFloat(0).toFixed(2));
+            $("#ACGSTPER_" + i).val(0);
+            $("#ACGSTAMT_" + i).val(parseFloat(0).toFixed(2));
+            $("#ASGSTPER_" + i).val(0);
+            $("#ASGSTAMT_" + i).val(parseFloat(0).toFixed(2));
+            $("#ACESSPER_" + i).val(0);
+            $("#ACESSAMT_" + i).val(parseFloat(0).toFixed(2));
+            $("#AIGSTPER_" + i).attr('readonly', 'readonly');
+            $("#AIGSTAMT_" + i).attr('readonly', 'readonly');
+            $("#ACGSTPER_" + i).attr('readonly', 'readonly');
+            $("#ACGSTAMT_" + i).attr('readonly', 'readonly');
+            $("#ASGSTPER_" + i).attr('readonly', 'readonly');
+            $("#ASGSTAMT_" + i).attr('readonly', 'readonly');
+            $("#ACESSPER_" + i).attr('readonly', 'readonly');
+            $("#ACESSAMT_" + i).attr('readonly', 'readonly');
+            //var taxableamt = $("#D_TXBLVAL_" + i).val();
+            //var netamount = parseFloat(taxableamt).toFixed(2);
+            //$("#D_NETAMT_" + i).val(netamount);
+        }
+        else {
+            //var taxableamt = $("#D_TXBLVAL_" + i).val();
+            $("#AIGSTPER_" + i).removeAttr('readonly');
+            $("#AIGSTAMT_" + i).removeAttr('readonly');
+            $("#ACGSTPER_" + i).removeAttr('readonly');
+            $("#ACGSTAMT_" + i).removeAttr('readonly');
+            $("#ASGSTPER_" + i).removeAttr('readonly');
+            $("#ASGSTAMT_" + i).removeAttr('readonly');
+            $("#ACESSPER_" + i).removeAttr('readonly');
+            $("#ACESSAMT_" + i).removeAttr('readonly');
+            var AIGSTPER_ = $("#AIGSTPER_" + i).val();
+            var AIGSTPER_DESP_ = $("#AIGSTPER_DESP_" + i).val();
+            var AIGSTPER_int = parseInt(AIGSTPER_);
+            var AIGSTPER_DESP_int = parseInt(AIGSTPER_DESP_);
+            var ACGSTPER_ = $("#ACGSTPER_" + i).val();
+            var ACGSTPER_DESP_ = $("#ACGSTPER_DESP_" + i).val();
+            var ACGSTPER_int = parseInt(ACGSTPER_);
+            var ACGSTPER_DESP_int = parseInt(ACGSTPER_DESP_);
+            if ((AIGSTPER_int != AIGSTPER_DESP_int) || (ACGSTPER_int != ACGSTPER_DESP_int)) {
+                var ASGSTPER_DESP_ = $("#ASGSTPER_DESP_" + i).val();
+                var ACESSPER_DESP_ = $("#ACESSPER_DESP_" + i).val();
+                var AIGSTAMT_DESP_ = $("#AIGSTAMT_DESP_" + i).val();
+                var ACGSTAMT_DESP_ = $("#ACGSTAMT_DESP_" + i).val();
+                var ASGSTAMT_DESP_ = $("#ASGSTAMT_DESP_" + i).val();
+                var ACESSAMT_DESP_ = $("#ACESSAMT_DESP_" + i).val();
+                $("#AIGSTPER_" + i).val(AIGSTPER_DESP_);
+                $("#ACGSTPER_" + i).val(ACGSTPER_DESP_);
+                $("#ASGSTPER_" + i).val(ASGSTPER_DESP_);
+                $("#ACESSPER_" + i).val(ACESSPER_DESP_);
+                $("#AIGSTAMT_" + i).val(AIGSTAMT_DESP_);
+                $("#ACGSTAMT_" + i).val(ACGSTAMT_DESP_);
+                $("#ASGSTAMT_" + i).val(ASGSTAMT_DESP_);
+                $("#ACESSAMT_" + i).val(ACESSAMT_DESP_);
+            }
+        }
+        AmountCalculation(i);
+    } BillAmountCalculate();
+
     //BillAmountCalculate();
     //DRCRBillAmount();
     //SBILLBillAmount();

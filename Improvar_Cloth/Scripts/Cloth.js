@@ -27,6 +27,9 @@ function retGstPerstr(prodgrpgstper, rate, disctype, discrate) {
         if (rate >= fromrt && rate <= tort) { selrow = x; break; }
     }
     if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
+    var REVCHRG = $("#REVCHRG").val();
+    if (REVCHRG == "N")
+    { rtval = 0 + "," + 0 + "," + 0; }
     return rtval;
 }
 function retGstPer(prodgrpgstper, rate, disctype, discrate) {

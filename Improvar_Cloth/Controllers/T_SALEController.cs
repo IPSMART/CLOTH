@@ -901,6 +901,17 @@ namespace Improvar.Controllers
                                     v.ALL_GSTPER = ALL_GSTPER;
                                     v.GSTPER = GSTPER.retDbl();
                                 }
+                                if(TXN.REVCHRG=="N")
+                                {   var a = PRODGRPGSTPER.Split('~')[0];
+                                    var b = PRODGRPGSTPER.Split('~')[1];
+                                    var c = PRODGRPGSTPER.Split('~')[2];
+                                    var d = PRODGRPGSTPER.Split('~')[3];
+                                    var e = PRODGRPGSTPER.Split('~')[4];
+                                    var str = a + "~" + b + "~" + 0 + "~" + 0 + "~" + 0;
+                                    v.PRODGRPGSTPER = str;
+                                    v.ALL_GSTPER = 0 + "," + 0 + "," + 0;
+                                    v.GSTPER = 0;
+                                }
                                 if (tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
                                     string barimage = tax_data.Rows[0]["barimage"].retStr();
@@ -999,7 +1010,7 @@ namespace Improvar.Controllers
                     }
                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                     v.ALL_GSTPER = ALL_GSTPER;
-
+                    
                     double IGST = v.IGSTPER.retDbl();
                     double CGST = v.CGSTPER.retDbl();
                     double SGST = v.SGSTPER.retDbl();
@@ -2126,6 +2137,12 @@ namespace Improvar.Controllers
                             }
 
                         }
+                    }
+                    if(VE.T_TXN.REVCHRG == "N")
+                    {
+                        VE.TTXNDTL[p].IGSTPER = 0;
+                        VE.TTXNDTL[p].CGSTPER = 0;
+                        VE.TTXNDTL[p].SGSTPER = 0;
                     }
                 }
                 VE.DropDown_list1 = DISCTYPEINRATE();
@@ -5989,17 +6006,17 @@ namespace Improvar.Controllers
                             ContentFlg = "We can't add igst+cgst+sgst for the same party.";
                             goto dbnotsave;
                         }
-                        else if (igst + cgst + sgst == 0)
+                        else if (igst + cgst + sgst == 0  && VE.T_TXN.REVCHRG != "N")
                         {
-                            //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
-                            //{
-                            //    ContentFlg = "Please enter tax % in Amount tab";
-                            //}
-                            //else
-                            //{
-                            ContentFlg = "TAX amount not found. Please add tax with item.";
-                            //}
-                            goto dbnotsave;
+                                //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                                //{
+                                //    ContentFlg = "Please enter tax % in Amount tab";
+                                //}
+                                //else
+                                //{
+                                ContentFlg = "TAX amount not found. Please add tax with item.";
+                                //}
+                                goto dbnotsave;
                         }
                     }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
