@@ -158,7 +158,7 @@ namespace Improvar.Controllers
 
                         sqlc = "select a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where a.itgrpcd='" + itgrpcd + "' and b.doccd=c.doccd(+) and a.autono=b.autono(+) and ";
-                        sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('OPNG')) and ";
+                        sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
