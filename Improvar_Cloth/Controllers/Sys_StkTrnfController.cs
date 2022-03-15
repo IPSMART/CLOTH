@@ -185,7 +185,7 @@ namespace Improvar.Controllers
 
                         sql = "select a.itgrpcd, a.doccd ";
                         sql += "from " + oldschema + ".m_groupdoccd a, " + oldschema + ".m_doctype b ";
-                        sql += "where a.doccd = b.doccd and a.itgrpcd = '" + itgrpcd + "' and b.doctype = 'OPNG'";
+                        sql += "where a.doccd = b.doccd and a.itgrpcd = '" + itgrpcd + "' and b.doctype = 'FOSTK'";
                         tbltmp = masterHelp.SQLquery(sql);
                         if (tbltmp.Rows.Count > 0)
                         {
