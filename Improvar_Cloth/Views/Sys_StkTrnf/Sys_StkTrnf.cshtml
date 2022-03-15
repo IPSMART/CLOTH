@@ -19,47 +19,15 @@
             beforesend:$("#WaitingMode").show(),
             data: $('form').serialize(),
             success: function (result)
-            {               
+            {
+                msgInfo(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                $("#Msgdiv1").show();
-                $("#info").show();
-                $("#btnok").focus();
-                $("#msgbody_info").html(result);
-        }
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
     });
-    }
-</script>
-<script>
-    function SelectMtrlJobCode(id, MTRLJOBCD, MTRLJOBNM) {
-        if (id == "") {
-            $("#" + MTRLJOBCD).val("");
-            $("#" + MTRLJOBNM).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetMtrlJobDetails", PageControllerName)',
-                data: { val: id },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var findstr = $("#tempHDD").val();
-                        document.getElementById(MTRLJOBCD).value = returncolvalue(findstr, "MTRLJOBCD");
-                        document.getElementById(MTRLJOBNM).value = returncolvalue(findstr, "MTRLJOBNM");
-                    }
-                    else {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + MTRLJOBCD).val("");
-                        $("#" + MTRLJOBNM).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
-                        message_value = MTRLJOBCD;
-                    }
-                }
-            });
-        }
     }
 </script>
 @using (Html.BeginForm())
@@ -74,7 +42,7 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "JOB/Status Code")
+                            @Html.Label("", "Group Code")
                             <b style="color:Red;">*</b>
                         </div>
                     </div>
@@ -85,27 +53,8 @@
 
                 <div class="row">
                     <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Material Job Code")
-                        </div>
-                    </div>
-                    <div class="col-lg-2">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX3", maxlength = 2, onkeyup = "GetHelp('" + @Url.Action("GetMtrlJobDetails", PageControllerName) + "','TEXTBOX3/TEXTBOX6','1/0','Job Details','TEXTBOX3')", onblur = "SelectMtrlJobCode(this.value,'TEXTBOX3','TEXTBOX6');", @placeholder = "Code" } })
-                            <img src="~/Image/search.png" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetMtrlJobDetails", PageControllerName)','TEXTBOX3/TEXTBOX6','1/0','Job Details','TEXTBOX3')" />
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX6, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX6", maxlength = 15, @TabIndex = -1, @placeholder = "Material Job Name", @readonly = "readonly" } })
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-2">
                         <div class="editor-label">
-                            @Html.Label("", "Pending Order from Prev.Year")
+                            @Html.Label("", "Finish Stock from Prev.Year")
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -118,7 +67,7 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
-                            @Html.Label("", "Pending Job Challans from Prev.Year")
+                            @Html.Label("", "Cumulative Sales Transfer")
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -131,7 +80,7 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
-                            @Html.Label("", "Finish Stock from Prev.Year")
+                            @Html.Label("", "Pending Order (Sales) Transfer")
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -144,7 +93,7 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
-                            @Html.Label("", "Other Stock from Prev.Year")
+                            @Html.Label("", "Pending Job Transfer")
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -154,26 +103,28 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Pcs Rate Balance from Prev.Year")
+                @*<div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Pending Job Receive Transfer Not used")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox6)
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox6)
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </div>*@
 
-                <div class="row" style="margin-top:10PX">
+                @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
+                {  <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
                     <div class="col-LG-10">
                         <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
                     </div>
-                </div>
+                </div> }
+
             </div>
         </div>
     }

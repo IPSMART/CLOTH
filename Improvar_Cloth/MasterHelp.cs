@@ -3154,5 +3154,31 @@ namespace Improvar
             }
 
         }
+        public string GetItemITGrpCd(string itgrptype = "")
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+
+            if (itgrptype == "")
+            {
+                itgrptype = string.Join(",", (from a in DB.M_GROUP select a.ITGRPTYPE).Distinct().ToList());
+            }
+            string[] selgrpcd = itgrptype.Split(',');
+           var sllist = (from a in DB.M_GROUP
+                      where (selgrpcd.Contains(a.ITGRPTYPE))
+                      select new 
+                      {
+                          ITGRPNM = a.ITGRPNM,
+                          ITGRPCD = a.ITGRPCD
+                      }).OrderBy(A => A.ITGRPNM).ToList();
+            string GRPCD = "";
+            GRPCD = "";
+            for (int i = 0; i <= sllist.Count - 1; i++)
+            {
+                if (GRPCD != "") GRPCD = GRPCD + "','";
+                GRPCD = GRPCD + sllist[i].ITGRPCD.retStr();
+            }
+            return GRPCD;
+        }
+        
     }
 }
