@@ -460,5 +460,41 @@ namespace Improvar.Controllers
                 }
             }
         }
+        public ActionResult Update_PDesign(RepBarHistory VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+
+                    sql = "update " + schnm + ". T_BATCHMST set PDESIGN='" + VE.PDESIGN + "' "
+                                  + " where BARNO='" + VE.BARCODE + "'   ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
+        }
     }
 }

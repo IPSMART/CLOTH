@@ -93,6 +93,15 @@
                         document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
                         document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
                         document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
+                        document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
+                        if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
+                            $("#PDESIGN").prop('readonly', false);
+                            $("#divPDESIGN").show();
+                        }
+                        else {
+                            $("#PDESIGN").attr('readonly', 'readonly');
+                            $("#divPDESIGN").hide();
+                        }
                         var TINQTY = returncolvalue(res[0], "TOTALIN");
                         var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
                         if (TINQTY == "") { TINQTY = parseFloat(0); } else { TINQTY = parseFloat(TINQTY) }
@@ -268,6 +277,31 @@
         });
     }
 </script>
+<script>
+    function Update_PDesignData() {
+        debugger;
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("Update_PDesign", "Rep_Bar_History")",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Update Successfully !");
+                }
+                else {
+                    msgInfo(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -287,6 +321,7 @@
                 @Html.HiddenFor(model => model.DOCDT, new { id = "DOCDT" })
                 @Html.HiddenFor(model => model.PRCCD, new { id = "PRCCD" })
                 @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
+                @Html.HiddenFor(model => model.COMMONUNIQBAR, new { id = "COMMONUNIQBAR" })
             </div>
         </div>
         <div class="col-md-3">
@@ -427,6 +462,9 @@
             <div class="editor-field">
                 @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "PDESIGN", @readonly = "readonly", @TabIndex = -1 } })
             </div>
+        </div>
+        <div id="divPDESIGN" class="col-md-1" style="width:auto;display:none;">
+            <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" id="Update_Price" value="Update P/Design" title="Click to Update P/Design" onclick="Update_PDesignData()" />
         </div>
     </div>
     <div class="row">

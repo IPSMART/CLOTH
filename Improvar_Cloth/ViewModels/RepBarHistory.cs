@@ -70,6 +70,7 @@ namespace Improvar.ViewModels
         public string TAXGRPCD { get; set; }
         public string SHOWMTRLJOBCD { get; set; }
         public NEWBARDATA NEWBARDATA { get; set; }
+        public string COMMONUNIQBAR { get; set; }
     }
     public class NEWBARDATA
     {
