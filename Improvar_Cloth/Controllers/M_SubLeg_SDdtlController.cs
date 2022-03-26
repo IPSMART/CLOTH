@@ -163,7 +163,7 @@ namespace Improvar.Controllers
             sl1 = new M_SUBLEG_SDDTL(); sll = new M_CNTRL_HDR(); sl = new M_SUBLEG_COM();
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            string LOCCD = CommVar.Loccd(UNQSNO);
+            string LOCCD = CommVar.Loccd(UNQSNO); string COM = CommVar.Compcd(UNQSNO);
             var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
             if (VE.IndexKey.Count != 0)
             {
@@ -307,6 +307,24 @@ namespace Improvar.Controllers
                 UploadDOC1.Add(UPL);
                 VE.UploadDOC = UploadDOC1;
 
+            }
+            ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
+            if (CommVar.LastYearSchema(UNQSNO) == "")
+            {
+                VE.isPresentinLastYrSchema = "";
+            }
+            else
+            {
+                var SLCD = sl.SLCD;
+                VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_SUBLEG_COM where (j.SLCD == SLCD && j.COMPCD == COM) select j.SLCD).FirstOrDefault();
+                if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
+                {
+                    VE.isPresentinLastYrSchema = "ADD";
+                }
+                else
+                {
+                    VE.isPresentinLastYrSchema = "EDIT";
+                }
             }
             return VE;
         }
@@ -821,6 +839,105 @@ namespace Improvar.Controllers
 
             }
 
+        }
+        public ActionResult SavePreviousYrData(SubLedgerSDdtlMasterEntry VE, FormCollection FC)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            ImprovarDB DB_PREVYR = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
+            ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
+            using (var transaction = DB_PREVYR.Database.BeginTransaction())
+            {
+                try
+                {
+                    var COMPCD = CommVar.Compcd(UNQSNO);
+                    var PSL = (from j in DB_PREVYR_temp.M_SUBLEG_COM where (j.SLCD == VE.M_SUBLEG_COM.SLCD && j.COMPCD == COMPCD) select j).FirstOrDefault();
+                    var SL = (from j in DB.M_SUBLEG_COM where (j.SLCD == VE.M_SUBLEG_COM.SLCD && j.COMPCD == COMPCD) select j).FirstOrDefault();
+                    var SBUSNAT = (from j in DB.M_SUBLEG_BRAND where (j.SLCD == VE.M_SUBLEG_COM.SLCD && j.COMPCD == COMPCD) select j).ToList();
+                    var SGL = (from j in DB.M_SUBLEG_SDDTL where (j.SLCD == VE.M_SUBLEG_COM.SLCD && j.COMPCD == COMPCD) select j).ToList();
+                    var HDR_DOC = (from j in DB.M_CNTRL_HDR_DOC where (j.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO) select j).ToList();
+                    var HDR_DOC_DTL = (from j in DB.M_CNTRL_HDR_DOC_DTL where (j.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO) select j).ToList();
+
+                    if (PSL == null)
+                    {
+                        var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.FinSchemaPrevYr(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO));
+                        DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
+                        DB_PREVYR.SaveChanges();
+                        M_SUBLEG_COM MSUBLEG_PREVYR = new M_SUBLEG_COM();
+                        MSUBLEG_PREVYR = SL;
+                        MSUBLEG_PREVYR.M_AUTONO = AUTONO_PREVYR;
+                        DB_PREVYR.M_SUBLEG_COM.Add(MSUBLEG_PREVYR);
+                        DB_PREVYR.SaveChanges();
+                        if (SBUSNAT.Count != 0) { DB_PREVYR.M_SUBLEG_BRAND.AddRange(SBUSNAT); }
+                        if (SGL.Count != 0) { DB_PREVYR.M_SUBLEG_SDDTL.AddRange(SGL); }
+                        if (HDR_DOC.Count != 0)
+                        {
+                            foreach (var v in HDR_DOC)
+                            {
+                                v.M_AUTONO = AUTONO_PREVYR;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC.AddRange(HDR_DOC);
+                        }
+                        if (HDR_DOC_DTL.Count != 0)
+                        {
+                            foreach (var v in HDR_DOC_DTL)
+                            {
+                                v.M_AUTONO = AUTONO_PREVYR;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC_DTL.AddRange(HDR_DOC_DTL);
+                        }
+
+                        DB_PREVYR.SaveChanges();
+                        ModelState.Clear();
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", PSL.M_AUTONO, "E", CommVar.LastYearSchema(UNQSNO));
+                        DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
+                        M_SUBLEG_COM MSUBLEG_PREVYR = new M_SUBLEG_COM();
+                        MSUBLEG_PREVYR = SL; MSUBLEG_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                        DB_PREVYR.Entry(MSUBLEG_PREVYR).State = System.Data.Entity.EntityState.Modified;
+                        DB_PREVYR.M_SUBLEG_BRAND.RemoveRange(DB_PREVYR.M_SUBLEG_BRAND.Where(x => x.SLCD == VE.M_SUBLEG_COM.SLCD && x.COMPCD == COMPCD));
+                        DB_PREVYR.M_SUBLEG_SDDTL.RemoveRange(DB_PREVYR.M_SUBLEG_SDDTL.Where(x => x.SLCD == VE.M_SUBLEG_COM.SLCD && x.COMPCD == COMPCD));
+                        DB_PREVYR.M_CNTRL_HDR_DOC.RemoveRange(DB_PREVYR.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO));
+                        DB_PREVYR.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB_PREVYR.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO));
+                        DB_PREVYR.SaveChanges();
+
+                        if (SBUSNAT.Count != 0) { DB_PREVYR.M_SUBLEG_BRAND.AddRange(SBUSNAT); }
+                        if (SGL.Count != 0) { DB_PREVYR.M_SUBLEG_SDDTL.AddRange(SGL); }
+                        if (HDR_DOC.Count != 0)
+                        {
+                            foreach (var v in HDR_DOC)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC.AddRange(HDR_DOC);
+                        }
+                        if (HDR_DOC_DTL.Count != 0)
+                        {
+                            foreach (var v in HDR_DOC_DTL)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC_DTL.AddRange(HDR_DOC_DTL);
+                        }
+                        DB_PREVYR.SaveChanges();
+                        ModelState.Clear();
+                        transaction.Commit();
+                    }
+
+                    return Content("1");
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    ModelState.Clear();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + " " + ex.InnerException);
+                }
+            }
         }
         [HttpPost]
         public ActionResult M_SubLeg_SDdtl(FormCollection FC, SubLedgerSDdtlMasterEntry VE)
