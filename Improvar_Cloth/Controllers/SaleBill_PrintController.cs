@@ -1767,7 +1767,7 @@ namespace Improvar.Controllers
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.autono is null and " + Environment.NewLine;
                 sql += "b.doccd='" + doccd + "' ) r, " + Environment.NewLine;
 
-                sql += "( select distinct b.autono, e.expcd, e.salpur, decode(nvl(d.einvappl,'N'),'Y',(case when c.docdt > d.einvappldt then 'Y' else 'N' end),d.einvappl) einvappl " + Environment.NewLine;
+                sql += "( select distinct b.autono, e.expcd, e.salpur, decode(nvl(d.einvappl,'N'),'Y',(case when c.docdt >= d.einvappldt then 'Y' else 'N' end),d.einvappl) einvappl " + Environment.NewLine;
                 sql += "from " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scmf + ".m_comp d, " + Scmf + ".t_vch_gst e " + Environment.NewLine;
                 sql += "where b.autono = c.autono(+) and b.autono=e.autono(+) and " + Environment.NewLine;
                 sql += sqlc;

@@ -1343,6 +1343,14 @@
         });
     }
 </script>
+<script>
+    function Barcodeprinting() {
+        debugger;
+        var AUTONO = $("#AUTONO").val();
+        var DOCDT = $("#DOCDT").val();
+        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1425,6 +1433,12 @@
                                 @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
                             </div>
                         </div>
+                        @if (Model.DefaultAction == "V")
+                    {
+                            <div class="col-md-3">
+                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                            </div>
+                        }
                     </div>
                     <div class="row">
                         <div class="col-md-5">

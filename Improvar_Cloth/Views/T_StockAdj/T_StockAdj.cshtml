@@ -231,6 +231,19 @@
         document.getElementById("TOTAL_OUT_QNTY").value = parseFloat(TOTAL_OUT).toFixed(3);
     }
 </script>
+<script>
+    function Barcodeprinting() {
+        debugger;
+        var AUTONO = $("#AUTONO").val();
+        var DOCDT = $("#DOCDT").val();
+        var BARNO = "";
+        for (var i = 0; i <= $("#_T_StockAdj_IN_TAB_GRID > tbody > tr").length - 1; i++) {
+            BARNO +="'"+ $("#IN_BARNO_" + i).val()+"',";
+        }
+        BARNO = BARNO.substring(0, BARNO.length - 1);
+        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO, "_blank")
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -241,7 +254,7 @@
             <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
-            @Html.HiddenFor(a => a.T_TXN.AUTONO)
+            @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
             @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
             @Html.HiddenFor(m => m.MENU_PARA)
             @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
@@ -289,6 +302,12 @@
                                 @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 6, @placeholder = "Doc. No.", @readonly = "readonly" } })
                             </div>
                         </div>
+                        @if ((Model.MENU_PARA == "CNV") && Model.DefaultAction == "V")
+                    {
+                            <div class="col-md-3">
+                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                            </div>
+                        }
                     </div>
                     <div class="row">
                         <div class="col-md-7">
