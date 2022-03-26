@@ -42,5 +42,7 @@ namespace Improvar.ViewModels
         public bool NEGSTOCK { get; set; }
         public bool HASTRANSACTION { get; set; }
         public string CONVUOMNM { get; set; }
+        //public string M_SITEM_SIZE { get; set; }
+        public string isPresentinLastYrSchema { get; set; }
     }
 }
