@@ -859,7 +859,7 @@ namespace Improvar.Controllers
 
                     if (PSL == null)
                     {
-                        var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.FinSchemaPrevYr(UNQSNO));
+                        var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.LastYearSchema(UNQSNO));
                         M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO));
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
