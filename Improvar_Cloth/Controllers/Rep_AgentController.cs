@@ -346,7 +346,7 @@ namespace Improvar.Controllers
                 string agslcd = repon=="A"? "e.agslcd" : "e.sagslcd";
                 string sql = "";
 
-                sql += "select a.autono, a.slno, e.glcd, d.docno, d.docdt, a.autoslno,"+agslcd+ " agslcd, g.slnm agslnm,nvl(g.slarea,g.district) agslarea, a.slcd,f.slnm,nvl(f.slarea,f.district) slarea, a.vchtype, a.drcr, a.amt, a.linkcd, e.itamt, " + Environment.NewLine;
+                sql += "select a.autono, a.slno, e.glcd, d.docno, d.docdt, a.autoslno,"+agslcd+ " agslcd, g.slnm agslnm,nvl(g.slarea,g.district) agslarea, a.slcd,f.slnm,nvl(f.slarea,f.district) slarea, a.vchtype, e.bltype, a.drcr, a.amt, a.linkcd, e.itamt, " + Environment.NewLine;
                 sql += "b.vchtype adjtype, b.trcd, nvl(b.amt, 0) adjamt ";
                 sql += " from ";
 
@@ -423,6 +423,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party Name");
                 HC.GetPrintHeader(IR, "slarea", "string", "c,15", "Area");
                 if (detail == "D") HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Bill Date");
+                if (detail == "D") HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Type");
                 if (detail == "D") HC.GetPrintHeader(IR, "docno", "string", "c,20", "Bill No");
                 if (detail == "D") HC.GetPrintHeader(IR, "amt", "double", "n,15,2", "Bill Amt");
                 HC.GetPrintHeader(IR, "itamt", "double", "n,15,2", "Item Value");
@@ -554,6 +555,7 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
                                     IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].retStr();
                                     if (detail == "D") IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
+                                    if (detail == "D") IR.Rows[rNo]["bltype"] = tbl.Rows[i - 1]["bltype"].retStr();
                                     if (detail == "D") IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
                                     if (detail == "D") IR.Rows[rNo]["amt"] = tbl.Rows[i - 1]["amt"].retDbl();
                                     IR.Rows[rNo]["itamt"] = tbl.Rows[i - 1]["itamt"].retDbl();
