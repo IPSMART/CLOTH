@@ -2684,7 +2684,7 @@ namespace Improvar.Controllers
                                     TBATCHMSTPRICE.BARNO = barno;
                                     TBATCHMSTPRICE.PRCCD = "RP";
                                     TBATCHMSTPRICE.RATE = VE.TsalePos_TBATCHDTL[i].RATE;
-                                    TBATCHMSTPRICE.EFFDT = TTXN.DOCDT;
+                                    TBATCHMSTPRICE.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                     //end
 
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
@@ -2954,7 +2954,7 @@ namespace Improvar.Controllers
                                     TBATCHMSTPRICE.BARNO = barno;
                                     TBATCHMSTPRICE.PRCCD = "RP";
                                     TBATCHMSTPRICE.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
-                                    TBATCHMSTPRICE.EFFDT = TTXN.DOCDT;
+                                    TBATCHMSTPRICE.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                     //end
 
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
@@ -3926,7 +3926,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3941,7 +3941,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

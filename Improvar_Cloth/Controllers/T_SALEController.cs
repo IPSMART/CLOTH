@@ -901,8 +901,9 @@ namespace Improvar.Controllers
                                     v.ALL_GSTPER = ALL_GSTPER;
                                     v.GSTPER = GSTPER.retDbl();
                                 }
-                                if(TXN.REVCHRG=="N")
-                                {   var a = PRODGRPGSTPER.Split('~')[0];
+                                if (TXN.REVCHRG == "N")
+                                {
+                                    var a = PRODGRPGSTPER.Split('~')[0];
                                     var b = PRODGRPGSTPER.Split('~')[1];
                                     var c = PRODGRPGSTPER.Split('~')[2];
                                     var d = PRODGRPGSTPER.Split('~')[3];
@@ -1010,7 +1011,7 @@ namespace Improvar.Controllers
                     }
                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                     v.ALL_GSTPER = ALL_GSTPER;
-                    
+
                     double IGST = v.IGSTPER.retDbl();
                     double CGST = v.CGSTPER.retDbl();
                     double SGST = v.SGSTPER.retDbl();
@@ -2138,7 +2139,7 @@ namespace Improvar.Controllers
 
                         }
                     }
-                    if(VE.T_TXN.REVCHRG == "N")
+                    if (VE.T_TXN.REVCHRG == "N")
                     {
                         VE.TTXNDTL[p].IGSTPER = 0;
                         VE.TTXNDTL[p].CGSTPER = 0;
@@ -5214,7 +5215,7 @@ namespace Improvar.Controllers
                                     TBATCHMSTPRICE.TTAG = TTXN.TTAG;
                                     TBATCHMSTPRICE.BARNO = barno;
                                     TBATCHMSTPRICE.PRCCD = "CP";
-                                    TBATCHMSTPRICE.EFFDT = TTXN.DOCDT;
+                                    TBATCHMSTPRICE.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                     TBATCHMSTPRICE.AUTONO = TTXN.AUTONO;
                                     TBATCHMSTPRICE.RATE = VE.TBATCHDTL[i].RATE;
 
@@ -5231,7 +5232,7 @@ namespace Improvar.Controllers
                                         TBATCHMSTPRICE1.TTAG = TTXN.TTAG;
                                         TBATCHMSTPRICE1.BARNO = barno;
                                         TBATCHMSTPRICE1.PRCCD = "WP";
-                                        TBATCHMSTPRICE1.EFFDT = TTXN.DOCDT;
+                                        TBATCHMSTPRICE1.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                         TBATCHMSTPRICE1.AUTONO = TTXN.AUTONO;
                                         TBATCHMSTPRICE1.RATE = VE.TBATCHDTL[i].WPRATE;
 
@@ -5249,7 +5250,7 @@ namespace Improvar.Controllers
                                         TBATCHMSTPRICE2.TTAG = TTXN.TTAG;
                                         TBATCHMSTPRICE2.BARNO = barno;
                                         TBATCHMSTPRICE2.PRCCD = "RP";
-                                        TBATCHMSTPRICE2.EFFDT = TTXN.DOCDT;
+                                        TBATCHMSTPRICE2.EFFDT = Convert.ToDateTime(TTXN.DOCDT);
                                         TBATCHMSTPRICE2.AUTONO = TTXN.AUTONO;
                                         TBATCHMSTPRICE2.RATE = VE.TBATCHDTL[i].RPRATE;
 
@@ -6006,17 +6007,17 @@ namespace Improvar.Controllers
                             ContentFlg = "We can't add igst+cgst+sgst for the same party.";
                             goto dbnotsave;
                         }
-                        else if (igst + cgst + sgst == 0  && VE.T_TXN.REVCHRG != "N")
+                        else if (igst + cgst + sgst == 0 && VE.T_TXN.REVCHRG != "N")
                         {
-                                //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
-                                //{
-                                //    ContentFlg = "Please enter tax % in Amount tab";
-                                //}
-                                //else
-                                //{
-                                ContentFlg = "TAX amount not found. Please add tax with item.";
-                                //}
-                                goto dbnotsave;
+                            //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                            //{
+                            //    ContentFlg = "Please enter tax % in Amount tab";
+                            //}
+                            //else
+                            //{
+                            ContentFlg = "TAX amount not found. Please add tax with item.";
+                            //}
+                            goto dbnotsave;
                         }
                     }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))

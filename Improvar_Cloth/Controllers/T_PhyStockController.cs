@@ -722,12 +722,12 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                dbnotsave:;
+                    dbnotsave:;
                     transaction.Rollback();
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                dbok:;
+                    dbok:;
                 }
                 catch (Exception ex)
                 {
@@ -906,7 +906,7 @@ namespace Improvar.Controllers
                                 T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
                                 TBATCHMSTPRICE.EMD_NO = 0;
                                 TBATCHMSTPRICE.CLCD = CommVar.ClientCode(UNQSNO);
-                                TBATCHMSTPRICE.EFFDT = VE.POPUPEFFDT;
+                                TBATCHMSTPRICE.EFFDT = Convert.ToDateTime(VE.POPUPEFFDT);
                                 TBATCHMSTPRICE.BARNO = TPHYSTK[i].BARNO;
                                 TBATCHMSTPRICE.PRCCD = PRCCD;
                                 TBATCHMSTPRICE.RATE = WPRPRATE;

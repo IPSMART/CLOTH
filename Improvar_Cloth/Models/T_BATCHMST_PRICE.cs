@@ -31,7 +31,9 @@ namespace Improvar.Models
         [StringLength(4)]
         public string PRCCD { get; set; }
 
-        public DateTime? EFFDT { get; set; }
+        [Key]
+        [Column(Order = 2)]
+        public DateTime EFFDT { get; set; }
 
         [StringLength(30)]
         public string AUTONO { get; set; }
