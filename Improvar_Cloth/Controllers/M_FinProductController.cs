@@ -525,7 +525,24 @@ namespace Improvar.Controllers
                 ITEMSIZE.Add(MIS);
                 VE.MSITEMSLCD = ITEMSIZE;
             }
-
+            ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
+            if (CommVar.LastYearSchema(UNQSNO) == "")
+            {
+                VE.isPresentinLastYrSchema = "";
+            }
+            else
+            {
+                var ITCD = sl.ITCD;
+                VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_SITEM where (j.ITCD == ITCD) select j.ITCD).FirstOrDefault();
+                if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
+                {
+                    VE.isPresentinLastYrSchema = "ADD";
+                }
+                else
+                {
+                    VE.isPresentinLastYrSchema = "EDIT";
+                }
+            }
             return VE;
         }
 
@@ -548,7 +565,7 @@ namespace Improvar.Controllers
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
                 //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "where a.prccd = 'WP' ";
-                if(CommVar.ClientCode(UNQSNO)== "DIWH") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans max effdt rate comes
+                if (CommVar.ClientCode(UNQSNO) == "DIWH") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans max effdt rate comes
                 str += ") where rn = 1 ) b, ";
                 str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
                 str += "where a.barno = b.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
@@ -1428,6 +1445,136 @@ namespace Improvar.Controllers
             else
             {
                 return "";
+            }
+        }
+
+        public ActionResult SavePreviousYrData(ItemMasterEntry VE, FormCollection FC)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            ImprovarDB DB_PREVYR = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
+            ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
+            using (var transaction = DB_PREVYR.Database.BeginTransaction())
+            {
+                try
+                {
+                    DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
+                    string sbarno = getmasterbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
+
+                    var PSL = (from j in DB_PREVYR_temp.M_SITEM where (j.ITCD == VE.M_SITEM.ITCD) select j).FirstOrDefault();
+                    var SL = (from j in DB.M_SITEM where (j.ITCD == VE.M_SITEM.ITCD) select j).FirstOrDefault();
+
+                    var SBUSNAT = (from j in DB.T_BATCH_IMG_HDR_LINK where arrbarno.Contains(j.BARNO) select j).ToList();
+                    var SIFSC = (from j in DB.T_BATCHMST_PRICE where arrbarno.Contains(j.BARNO) select j).ToList();
+                    var SGL = (from j in DB.T_BATCHMST where arrbarno.Contains(j.BARNO) select j).ToList();
+                    var IMGHDR = (from j in DB.T_BATCH_IMG_HDR where (arrbarno.Contains(j.BARNO)) select j).ToList();
+                    var MDOCDTL = (from j in DB.M_CNTRL_HDR_DOC_DTL where (j.M_AUTONO == VE.M_SITEM.M_AUTONO) select j).ToList();
+                    var SCONT = (from j in DB.M_SITEM_SLCD where (j.ITCD == VE.M_SITEM.ITCD) select j).ToList();
+                    var SLINK = (from j in DB.M_SITEM_PARTS where (j.ITCD == VE.M_SITEM.ITCD) select j).ToList();
+                    var STAX = (from j in DB.M_SITEM_MEASURE where (j.ITCD == VE.M_SITEM.ITCD) select j).ToList();
+                    var MCNTRLHDRDOC = (from j in DB.M_CNTRL_HDR_DOC where (j.M_AUTONO == VE.M_SITEM.M_AUTONO) select j).ToList();
+                    if (PSL == null)
+                    {
+                        var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.LastYearSchema(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO));
+                        DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
+                        DB_PREVYR.SaveChanges();
+                        M_SITEM MSUBLEG_PREVYR = new M_SITEM();
+                        MSUBLEG_PREVYR = SL;
+                        MSUBLEG_PREVYR.M_AUTONO = AUTONO_PREVYR;
+                        DB_PREVYR.M_SITEM.Add(MSUBLEG_PREVYR);
+                        DB_PREVYR.SaveChanges();
+
+
+                        if (SBUSNAT.Count != 0) { DB_PREVYR.T_BATCH_IMG_HDR_LINK.AddRange(SBUSNAT); }
+                        if (SIFSC.Count != 0) { DB_PREVYR.T_BATCHMST_PRICE.AddRange(SIFSC); }
+                        if (IMGHDR.Count != 0) { DB_PREVYR.T_BATCH_IMG_HDR.AddRange(IMGHDR); }
+                        if (SGL.Count != 0) { DB_PREVYR.T_BATCHMST.AddRange(SGL); }
+                        if (MDOCDTL.Count != 0) { DB_PREVYR.M_CNTRL_HDR_DOC_DTL.AddRange(MDOCDTL); }
+                        if (MCNTRLHDRDOC.Count != 0) { DB_PREVYR.M_CNTRL_HDR_DOC.AddRange(MCNTRLHDRDOC); }
+
+                        if (SCONT.Count != 0) { DB_PREVYR.M_SITEM_SLCD.AddRange(SCONT); }
+                        if (SLINK.Count != 0)
+                        {
+                            DB_PREVYR.M_SITEM_PARTS.AddRange(SLINK);
+                        }
+
+                        if (STAX.Count != 0) { DB_PREVYR.M_SITEM_MEASURE.AddRange(STAX); }
+
+                        DB_PREVYR.SaveChanges();
+                        ModelState.Clear();
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO));
+                        DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
+                        DB_PREVYR.SaveChanges();
+
+                        M_SITEM MSUBLEG_PREVYR = new M_SITEM();
+                        MSUBLEG_PREVYR = SL; MSUBLEG_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                        DB_PREVYR.Entry(MSUBLEG_PREVYR).State = System.Data.Entity.EntityState.Modified;
+                        DB_PREVYR.SaveChanges();
+
+                        DB_PREVYR.T_BATCH_IMG_HDR_LINK.RemoveRange(DB_PREVYR.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.T_BATCHMST_PRICE.RemoveRange(DB_PREVYR.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.T_BATCHMST.RemoveRange(DB_PREVYR.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.T_BATCH_IMG_HDR.RemoveRange(DB_PREVYR.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB_PREVYR.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.M_CNTRL_HDR_DOC.RemoveRange(DB_PREVYR.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.M_SITEM_SLCD.RemoveRange(DB_PREVYR.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.M_SITEM_PARTS.RemoveRange(DB_PREVYR.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                        DB_PREVYR.SaveChanges();
+                        DB_PREVYR.M_SITEM_MEASURE.RemoveRange(DB_PREVYR.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                        DB_PREVYR.SaveChanges();
+
+
+                        if (SBUSNAT.Count != 0) { DB_PREVYR.T_BATCH_IMG_HDR_LINK.AddRange(SBUSNAT); }
+                        if (SGL.Count != 0) { DB_PREVYR.T_BATCHMST.AddRange(SGL); }
+                        if (SCONT.Count != 0) { DB_PREVYR.M_SITEM_SLCD.AddRange(SCONT); }
+                        if (IMGHDR.Count != 0) { DB_PREVYR.T_BATCH_IMG_HDR.AddRange(IMGHDR); }
+                        if (SIFSC.Count != 0) { DB_PREVYR.T_BATCHMST_PRICE.AddRange(SIFSC); }
+                        if (MCNTRLHDRDOC.Count != 0)
+                        {
+                            foreach (var v in MCNTRLHDRDOC)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC.AddRange(MCNTRLHDRDOC);
+                        }
+                        if (MDOCDTL.Count != 0)
+                        {
+                            foreach (var v in MDOCDTL)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC_DTL.AddRange(MDOCDTL);
+                        }
+                        if (SLINK.Count != 0) { DB_PREVYR.M_SITEM_PARTS.AddRange(SLINK); }
+                        if (STAX.Count != 0) { DB_PREVYR.M_SITEM_MEASURE.AddRange(STAX); }
+
+                        DB_PREVYR.SaveChanges();
+                        ModelState.Clear();
+                        transaction.Commit();
+                    }
+
+                    return Content("1");
+                }
+
+
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    ModelState.Clear();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + " " + ex.InnerException);
+                }
             }
         }
         public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
