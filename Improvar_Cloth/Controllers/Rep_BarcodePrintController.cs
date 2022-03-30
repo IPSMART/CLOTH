@@ -128,7 +128,7 @@ namespace Improvar.Controllers
             if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and " + Environment.NewLine;
             sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) a, " + Environment.NewLine;
             sql += "(select a.barno, nvl(m.rate, 0) cprate, nvl(n.rate, 0) wprate, nvl(o.rate, 0) rprate from " + Environment.NewLine;
-            sql += "" + scm + ".t_batchmst_price a, " + Environment.NewLine;
+            sql += "" + scm + ".t_batchmst a, " + Environment.NewLine;
             for (int x = 0; x <= 2; x++)
             {
                 string prccd = "", sqlals = "";
