@@ -150,20 +150,28 @@ namespace Improvar.Controllers
                 double qdeci = 4;
                 string qdsp = "n,16," + qdeci.ToString();
                 bool ignoreitems = VE.Checkbox2;
-
+                DataTable tbl = new DataTable();
+                if (VE.Checkbox6 == true)
+                {
+                    tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, false, "", false, "", "", "", "", "CP");
+                }
+                else
+                {
+                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
+                }
                 if (summary == "D")
                 {
-                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
+                    //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "S")
                 {
-                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
+                    //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems);
                 }
                 else if (summary == "G")
                 {
-                    DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
+                    //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Godownwise(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
                 }
                 else if (summary == "B")

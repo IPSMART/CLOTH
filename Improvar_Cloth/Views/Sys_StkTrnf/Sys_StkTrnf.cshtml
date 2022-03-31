@@ -30,6 +30,14 @@
     });
     }
 </script>
+<script>
+    function FinStockChecked(id, id1) {
+        var chk = document.getElementById(id).checked;
+        if (chk == true) {
+            document.getElementById(id1).checked = false;
+        }
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -42,12 +50,12 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Group Code")
+                            @Html.Label("", "Item Group")
                             <b style="color:Red;">*</b>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1), new { @class = " form-control" })
+                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1),"--Select--", new { @class = " form-control" })
                     </div>
                 </div>
 
@@ -59,11 +67,34 @@
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox2)
+                            @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "FinStockChecked(this.id,'Checkbox7');" })
                         </div>
                     </div>
                 </div>
-
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Finish Stock from Prev.Year (Fifo)")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox7, new { id = "Checkbox7", onclick = "FinStockChecked(this.id,'Checkbox2');" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Bale Stock Transfer")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox8)
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
