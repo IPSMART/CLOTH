@@ -101,12 +101,12 @@ namespace Improvar.Controllers
 
                     #region Stock Transfer
                     DataTable tbltmp = new DataTable();
-                   
+
                     bool batchwise = true;
                     if (VE.Checkbox2 == true || VE.Checkbox7 == true)
                     {
                         sql = "select distinct a.gocd from " + oldschema + ".t_txn a, " + oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txndtl c , " + oldschema + ".m_sitem d ";
-                        sql += "where a.autono = b.autono and a.autono=c.autono and c.itcd=d.itcd and b.compcd = '" + CommVar.Compcd(UNQSNO) + "' and b.loccd = '" + CommVar.Loccd(UNQSNO) + "' and d.itgrpcd = '" + itgrpcd + "' ";
+                        sql += "where a.autono = b.autono and a.autono=c.autono and c.itcd=d.itcd and b.compcd = '" + CommVar.Compcd(UNQSNO) + "' and b.loccd = '" + CommVar.Loccd(UNQSNO) + "'  ";
                         tbltmp = masterHelp.SQLquery(sql);
 
                         string[] selgocd = string.Join(",", (from DataRow dr in tbltmp.Rows select dr["gocd"].ToString()).Distinct()).Split(',');
@@ -114,11 +114,11 @@ namespace Improvar.Controllers
                         if (selgocd[0] == "") gocd = "";
                         if (VE.Checkbox7 == true)
                         {
-                            tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "'" + itgrpcd + "'", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
+                            tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
                         }
                         else
                         {
-                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "'" + itgrpcd + "'", "", "CP", "C001", "", "", true, false, scm1, scmf1);
+                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1);
                         }
 
                         DataView dv = tbl.DefaultView;
@@ -129,7 +129,7 @@ namespace Improvar.Controllers
                         maxR = tbl.Rows.Count - 1;
 
                         sqlc = "select a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , " + newschema + ".m_sitem e ";
-                        sqlc += "where e.itgrpcd='" + itgrpcd + "' and b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and ";
+                        sqlc += "where b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
                         sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and c.doctype in ('FOSTK')) and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
@@ -184,6 +184,9 @@ namespace Improvar.Controllers
                                          join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
                                          where (q.COMPCD == COM)
                                          select p).ToList();
+
+                        var vTBATCHMSTPRICE = (from p in DBOLD.T_BATCHMST_PRICE
+                                               select p).ToList();
 
                         i = 0; maxR = 0;
                         maxR = tbl.Rows.Count - 1;
@@ -348,37 +351,68 @@ namespace Improvar.Controllers
                                 //if (batchwise == false) basamt = tbl.Rows[i]["amt"].retDbl();
 
 
-                                //if (batchwise == true)
-                                //{
-                                //    bool recoexistbatch = false;
+                                if (batchwise == true)
+                                {
+                                    bool recoexistbatch = false;
 
-                                //    sql = "select barno from " + newschema + ".t_batchmst where barno='" + tbl.Rows[i]["barno"].ToString() + "'";
-                                //    OraCmd.CommandText = sql; var OraRecoBatch = OraCmd.ExecuteReader();
-                                //    if (OraRecoBatch.HasRows == false) recoexistbatch = false; else recoexistbatch = true; OraRecoBatch.Dispose();
+                                    sql = "select barno from " + newschema + ".t_batchmst where barno='" + tbl.Rows[i]["barno"].ToString() + "'";
+                                    OraCmd.CommandText = sql; var OraRecoBatch = OraCmd.ExecuteReader();
+                                    if (OraRecoBatch.HasRows == false) recoexistbatch = false; else recoexistbatch = true; OraRecoBatch.Dispose();
 
-                                //    T_BATCHMST BATCHMST = new T_BATCHMST();
-                                //    BATCHMST.CLCD = TTXN.CLCD;
-                                //    BATCHMST.EMD_NO = TTXN.EMD_NO;
-                                //    BATCHMST.DTAG = TTXN.DTAG;
-                                //    BATCHMST.AUTONO = TTXN.AUTONO;
-                                //    BATCHMST.SLNO = tbl.Rows[i]["slno"].retDbl() == 0 ? 1 : tbl.Rows[i]["slno"].retInt();
-                                //    BATCHMST.BARNO = tbl.Rows[i]["barno"].ToString();
-                                //    BATCHMST.ITCD = itcd;
-                                //    BATCHMST.RATE = tbl.Rows[i]["rate"].retDbl();//tbl.Rows[i]["rate"].retDbl();
-                                //    BATCHMST.SLCD = tbl.Rows[i]["slcd"].ToString();
+                                    T_BATCHMST BATCHMST = new T_BATCHMST();
+                                    BATCHMST.CLCD = TTXN.CLCD;
+                                    BATCHMST.EMD_NO = TTXN.EMD_NO;
+                                    BATCHMST.DTAG = TTXN.DTAG;
+                                    BATCHMST.AUTONO = TTXN.AUTONO;
+                                    BATCHMST.SLNO = tbl.Rows[i]["slno"].retDbl() == 0 ? 1 : tbl.Rows[i]["slno"].retInt();
+                                    BATCHMST.BARNO = tbl.Rows[i]["barno"].ToString();
+                                    BATCHMST.ITCD = itcd;
+                                    BATCHMST.RATE = tbl.Rows[i]["rate"].retDbl();//tbl.Rows[i]["rate"].retDbl();
+                                    BATCHMST.SLCD = tbl.Rows[i]["slcd"].ToString();
 
-                                //    if (recoexistbatch == false)
-                                //    {
-                                //        dbsql = MasterHelpFa.RetModeltoSql(BATCHMST);
-                                //        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                //    }
-                                //    else
-                                //    {
-                                //        dbsql = MasterHelpFa.RetModeltoSql(BATCHMST, "E");
-                                //        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                //    }
-                                //}
+                                    if (recoexistbatch == false)
+                                    {
+                                        dbsql = MasterHelpFa.RetModeltoSql(BATCHMST);
+                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    }
+                                    //else
+                                    //{
+                                    //    dbsql = MasterHelpFa.RetModeltoSql(BATCHMST, "E");
+                                    //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    //}
+                                }
+                                if (batchwise == true)
+                                {
+                                    barno = tbl.Rows[i]["barno"].ToString();
+                                    var TBATCHMSTPRICEOLD = vTBATCHMSTPRICE.Where(x => x.BARNO == barno).ToList();
+                                    if (TBATCHMSTPRICEOLD.Count > 0)
+                                    {
+                                        foreach (var v in TBATCHMSTPRICEOLD)
+                                        {
+                                            bool recoexistbatchprice = false;
 
+                                            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + tbl.Rows[i]["barno"].ToString() + "' and prccd = '" + v.PRCCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
+                                            OraCmd.CommandText = sql; var OraRecoBatchprice = OraCmd.ExecuteReader();
+                                            if (OraRecoBatchprice.HasRows == false) recoexistbatchprice = false; else recoexistbatchprice = true; OraRecoBatchprice.Dispose();
+
+                                            T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                            v.AUTONO = TCHOLD.AUTONO;
+                                            TBATCHMSTPRICE = v;
+
+                                            if (recoexistbatchprice == false)
+                                            {
+                                                dbsql = MasterHelpFa.RetModeltoSql(TBATCHMSTPRICE);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            }
+                                            //else
+                                            //{
+                                            //    dbsql = MasterHelpFa.RetModeltoSql(TBATCHMSTPRICE, "E");
+                                            //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            //}
+                                        }
+
+                                    }
+                                }
 
                                 //int rsl = 1;
                                 int rsl = (from DataRow dr in tbl.Rows where dr["autono"].ToString() == orgautono && dr["slno"].retDbl() == slno && dr["itcd"].retStr() == itcd && dr["barno"].retStr() == barno select dr["slno"].retDbl()).Max().retInt();
@@ -459,13 +493,13 @@ namespace Improvar.Controllers
                     if (VE.Checkbox8 == true)
                     {
                         sql = "select distinct a.gocd from " + oldschema + ".t_txn a, " + oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txndtl c , " + oldschema + ".m_sitem d ";
-                        sql += "where a.autono = b.autono and a.autono=c.autono and c.itcd=d.itcd and b.compcd = '" + CommVar.Compcd(UNQSNO) + "' and b.loccd = '" + CommVar.Loccd(UNQSNO) + "' and d.itgrpcd = '" + itgrpcd + "' ";
+                        sql += "where a.autono = b.autono and a.autono=c.autono and c.itcd=d.itcd and b.compcd = '" + CommVar.Compcd(UNQSNO) + "' and b.loccd = '" + CommVar.Loccd(UNQSNO) + "' ";
                         tbltmp = masterHelp.SQLquery(sql);
 
                         string[] selgocd = string.Join(",", (from DataRow dr in tbltmp.Rows select dr["gocd"].ToString()).Distinct()).Split(',');
                         string gocd = selgocd.retSqlfromStrarray();
                         if (selgocd[0] == "") gocd = "";
-                        tbl = Salesfunc.GetBaleStock(lastdayofprvyear, gocd, "", "", "", "", "'" + itgrpcd + "'", "", scm1, scmf1);
+                        tbl = Salesfunc.GetBaleStock(lastdayofprvyear, gocd, "", "", "", "", "", "", scm1, scmf1);
 
                         DataView dv = tbl.DefaultView;
                         dv.Sort = "blautono,blslno";
@@ -475,7 +509,7 @@ namespace Improvar.Controllers
                         maxR = tbl.Rows.Count - 1;
 
                         sqlc = "select distinct a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , " + newschema + ".m_sitem e, " + newschema + ".t_batchdtl f ";
-                        sqlc += "where e.itgrpcd='" + itgrpcd + "' and b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) and ";
+                        sqlc += "where  b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
                         sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK')) and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
@@ -552,8 +586,8 @@ namespace Improvar.Controllers
                                       where (q.COMPCD == COM)
                                       select p).ToList();
 
-                        //var vTBATCHMST = (from p in DBOLD.T_BATCHMST
-                        //                  select p).ToList();
+                        var vTBATCHMST = (from p in DBOLD.T_BATCHMST
+                                          select p).ToList();
 
                         var vTBATCHDTL = (from p in DBOLD.T_BATCHDTL
                                           join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
@@ -564,6 +598,9 @@ namespace Improvar.Controllers
                                         join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
                                         where (q.COMPCD == COM)
                                         select p).ToList();
+
+                        var vTBATCHMSTPRICE = (from p in DBOLD.T_BATCHMST_PRICE
+                                               select p).ToList();
 
                         i = 0; maxR = 0;
                         maxR = tbl.Rows.Count - 1;
@@ -713,32 +750,64 @@ namespace Improvar.Controllers
                                 sql += "select barno from " + oldschema + ".t_batchdtl where autono='" + tbl.Rows[i]["blautono"].ToString() + "' and txnslno = '" + tbl.Rows[i]["blslno"].ToString() + "') ";
                                 var bardata = masterHelp.SQLquery(sql);
                                 barno = bardata.Rows[0]["barno"].retStr();
-                                //if (batchwise == true)
-                                //{
-                                //    bool recoexistbatch = false;
-                                //    sql = "select distinct barno from " + newschema + ".t_batchmst where barno = '" + bardata.Rows[0]["barno"].retStr() + "' ";
+                                if (batchwise == true)
+                                {
+                                    bool recoexistbatch = false;
+                                    sql = "select distinct barno from " + newschema + ".t_batchmst where barno = '" + bardata.Rows[0]["barno"].retStr() + "' ";
 
-                                //    OraCmd.CommandText = sql; var OraRecoBatch = OraCmd.ExecuteReader();
-                                //    if (OraRecoBatch.HasRows == false) recoexistbatch = false; else recoexistbatch = true; OraRecoBatch.Dispose();
+                                    OraCmd.CommandText = sql; var OraRecoBatch = OraCmd.ExecuteReader();
+                                    if (OraRecoBatch.HasRows == false) recoexistbatch = false; else recoexistbatch = true; OraRecoBatch.Dispose();
 
 
 
-                                //    if (recoexistbatch == false)
-                                //    {
-                                //        T_BATCHMST TBATCHMST = new T_BATCHMST();
-                                //        var BATCHMST = vTBATCHMST.Where(x => x.BARNO == barno).ToList();
-                                //        if (BATCHMST.Count > 0)
-                                //        {
-                                //            BATCHMST[0].AUTONO = TTXN.AUTONO;
-                                //            BATCHMST[0].SLNO = tbl.Rows[i]["blslno"].retDbl() == 0 ? 1 : tbl.Rows[i]["blslno"].retInt();
-                                //            TBATCHMST = BATCHMST[0];
-                                //            dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST);
-                                //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    if (recoexistbatch == false)
+                                    {
+                                        T_BATCHMST TBATCHMST = new T_BATCHMST();
+                                        var BATCHMST = vTBATCHMST.Where(x => x.BARNO == barno).ToList();
+                                        if (BATCHMST.Count > 0)
+                                        {
+                                            BATCHMST[0].AUTONO = TTXN.AUTONO;
+                                            BATCHMST[0].SLNO = tbl.Rows[i]["blslno"].retDbl() == 0 ? 1 : tbl.Rows[i]["blslno"].retInt();
+                                            TBATCHMST = BATCHMST[0];
+                                            dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                //        }
-                                //    }
+                                        }
+                                    }
 
-                                //}
+                                }
+
+                                if (batchwise == true)
+                                {
+                                    var TBATCHMSTPRICEOLD = vTBATCHMSTPRICE.Where(x => x.BARNO == barno).ToList();
+                                    if (TBATCHMSTPRICEOLD.Count > 0)
+                                    {
+                                        foreach (var v in TBATCHMSTPRICEOLD)
+                                        {
+                                            bool recoexistbatchprice = false;
+
+                                            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + tbl.Rows[i]["barno"].ToString() + "' and prccd = '" + v.PRCCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
+                                            OraCmd.CommandText = sql; var OraRecoBatchprice = OraCmd.ExecuteReader();
+                                            if (OraRecoBatchprice.HasRows == false) recoexistbatchprice = false; else recoexistbatchprice = true; OraRecoBatchprice.Dispose();
+
+                                            T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                            v.AUTONO = TTXN.AUTONO;
+                                            TBATCHMSTPRICE = v;
+
+                                            if (recoexistbatchprice == false)
+                                            {
+                                                dbsql = MasterHelpFa.RetModeltoSql(TBATCHMSTPRICE);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            }
+                                            //else
+                                            //{
+                                            //    dbsql = MasterHelpFa.RetModeltoSql(TBATCHMSTPRICE, "E");
+                                            //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            //}
+                                        }
+
+                                    }
+                                }
                                 while (tbl.Rows[i]["blautono"].ToString() == blautono && tbl.Rows[i]["blslno"].retDbl() == blslno && tbl.Rows[i]["baleno"].retStr() == baleno && tbl.Rows[i]["baleyr"].retStr() == baleyr && tbl.Rows[i]["gocd"].ToString() == godown)
                                 {
                                     iqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
