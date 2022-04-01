@@ -188,6 +188,9 @@ namespace Improvar.Controllers
                         var vTBATCHMSTPRICE = (from p in DBOLD.T_BATCHMST_PRICE
                                                select p).ToList();
 
+                        var vTBATCHMST = (from p in DBOLD.T_BATCHMST
+                                          select p).ToList();
+
                         i = 0; maxR = 0;
                         maxR = tbl.Rows.Count - 1;
                         string orgdocdt = "", orgautono = "", godown = "";
@@ -359,22 +362,43 @@ namespace Improvar.Controllers
                                     OraCmd.CommandText = sql; var OraRecoBatch = OraCmd.ExecuteReader();
                                     if (OraRecoBatch.HasRows == false) recoexistbatch = false; else recoexistbatch = true; OraRecoBatch.Dispose();
 
-                                    T_BATCHMST BATCHMST = new T_BATCHMST();
-                                    BATCHMST.CLCD = TTXN.CLCD;
-                                    BATCHMST.EMD_NO = TTXN.EMD_NO;
-                                    BATCHMST.DTAG = TTXN.DTAG;
-                                    BATCHMST.AUTONO = TTXN.AUTONO;
-                                    BATCHMST.SLNO = tbl.Rows[i]["slno"].retDbl() == 0 ? 1 : tbl.Rows[i]["slno"].retInt();
-                                    BATCHMST.BARNO = tbl.Rows[i]["barno"].ToString();
-                                    BATCHMST.ITCD = itcd;
-                                    BATCHMST.RATE = tbl.Rows[i]["rate"].retDbl();//tbl.Rows[i]["rate"].retDbl();
-                                    BATCHMST.SLCD = tbl.Rows[i]["slcd"].ToString();
-
-                                    if (recoexistbatch == false)
+                                    T_BATCHMST TBATCHMST = new T_BATCHMST();
+                                    var BATCHMST = vTBATCHMST.Where(x => x.BARNO == barno).ToList();
+                                    if (BATCHMST.Count > 0)
                                     {
-                                        dbsql = MasterHelpFa.RetModeltoSql(BATCHMST);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        BATCHMST[0].AUTONO = TTXN.AUTONO;
+                                        BATCHMST[0].SLNO = tbl.Rows[i]["slno"].retDbl() == 0 ? 1 : tbl.Rows[i]["slno"].retInt();
+                                        TBATCHMST = BATCHMST[0];
+
+                                        if (recoexistbatch == false)
+                                        {
+                                            dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        }
+                                        //else
+                                        //{
+                                        //    dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST, "E");
+                                        //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        //}
+
                                     }
+
+                                    //T_BATCHMST BATCHMST = new T_BATCHMST();
+                                    //BATCHMST.CLCD = TTXN.CLCD;
+                                    //BATCHMST.EMD_NO = TTXN.EMD_NO;
+                                    //BATCHMST.DTAG = TTXN.DTAG;
+                                    //BATCHMST.AUTONO = TTXN.AUTONO;
+                                    //BATCHMST.SLNO = tbl.Rows[i]["slno"].retDbl() == 0 ? 1 : tbl.Rows[i]["slno"].retInt();
+                                    //BATCHMST.BARNO = tbl.Rows[i]["barno"].ToString();
+                                    //BATCHMST.ITCD = itcd;
+                                    //BATCHMST.RATE = tbl.Rows[i]["rate"].retDbl();//tbl.Rows[i]["rate"].retDbl();
+                                    //BATCHMST.SLCD = tbl.Rows[i]["slcd"].ToString();
+
+                                    //if (recoexistbatch == false)
+                                    //{
+                                    //    dbsql = MasterHelpFa.RetModeltoSql(BATCHMST);
+                                    //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    //}
                                     //else
                                     //{
                                     //    dbsql = MasterHelpFa.RetModeltoSql(BATCHMST, "E");
@@ -629,7 +653,7 @@ namespace Improvar.Controllers
                             //}
                             //else
                             //{
-                                TCHOLD = DBOLD.T_CNTRL_HDR.Where(a => a.AUTONO == chkval).FirstOrDefault();
+                            TCHOLD = DBOLD.T_CNTRL_HDR.Where(a => a.AUTONO == chkval).FirstOrDefault();
 
                             //}
 
