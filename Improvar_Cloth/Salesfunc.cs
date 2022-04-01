@@ -57,7 +57,23 @@ namespace Improvar
             sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
             if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
             if (bltype.retStr() != "") sql += "and e.bltype in (" + bltype + ") ";
-            sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper) where rn = 1 ) y, ";
+            sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper ";
+            if (CommVar.LastYearSchema(UNQSNO) != "")
+            {
+                sql += "union all ";
+                sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, listdiscper, ";
+                sql += "row_number() over(partition by b.slcd order by c.docdt desc) as rn ";
+                sql += "from " + CommVar.LastYearSchema(UNQSNO) + ".t_txndtl a, " + CommVar.LastYearSchema(UNQSNO) + ".t_txn b, " + CommVar.LastYearSchema(UNQSNO) + ".t_cntrl_hdr c, " + CommVar.FinSchemaPrevYr(UNQSNO) + ".m_subleg d, " + CommVar.LastYearSchema(UNQSNO) + ".t_txnoth e ";
+                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and listdiscper<>0 and b.autono=e.autono(+) and  ";
+                if (docdt != "") sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') and ";
+                //sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
+                sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
+                if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
+                if (bltype.retStr() != "") sql += "and e.bltype in (" + bltype + ") ";
+                sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper ";
+            }
+            sql += ") where rn = 1 ) y, ";
+
 
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc from ";
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc, ";
