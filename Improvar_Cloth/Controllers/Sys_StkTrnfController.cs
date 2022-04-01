@@ -617,21 +617,21 @@ namespace Improvar.Controllers
                             }
                             T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                             T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
-                            if (chkval == "")
-                            {
-                                mxdocno++;
-                                docno = Convert.ToString(mxdocno).PadLeft(6, '0');
-                                string DOCPATTERN = Cn.DocPattern(Convert.ToInt32(docno), defdoccd, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO), lastdayofprvyear);
-                                string auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), docno, defdoccd, lastdayofprvyear);
-                                string tautono = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
-                                string Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
-                                TCHOLD = Cn.T_CONTROL_HDR(defdoccd, Convert.ToDateTime(orgdocdt), docno, tautono, Month, DOCPATTERN, "A", CommVar.CurSchema(UNQSNO), null, null, 0, null);
-                            }
-                            else
-                            {
+                            //if (chkval == "")
+                            //{
+                            //    mxdocno++;
+                            //    docno = Convert.ToString(mxdocno).PadLeft(6, '0');
+                            //    string DOCPATTERN = Cn.DocPattern(Convert.ToInt32(docno), defdoccd, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO), lastdayofprvyear);
+                            //    string auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), docno, defdoccd, lastdayofprvyear);
+                            //    string tautono = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
+                            //    string Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
+                            //    TCHOLD = Cn.T_CONTROL_HDR(defdoccd, Convert.ToDateTime(orgdocdt), docno, tautono, Month, DOCPATTERN, "A", CommVar.CurSchema(UNQSNO), null, null, 0, null);
+                            //}
+                            //else
+                            //{
                                 TCHOLD = DBOLD.T_CNTRL_HDR.Where(a => a.AUTONO == chkval).FirstOrDefault();
 
-                            }
+                            //}
 
                             bool recoexist = false;
 
