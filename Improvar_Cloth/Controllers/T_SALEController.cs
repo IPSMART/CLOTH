@@ -4101,17 +4101,25 @@ namespace Improvar.Controllers
                 string str = "", caption = "";
                 string scm = CommVar.CurSchema(UNQSNO);
                 string scmf = CommVar.FinSchema(UNQSNO);
-                string sql = "";
+                string scm_prevyr = CommVar.LastYearSchema(UNQSNO);
+                string scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+                string sql = "", sql_prevyr = "";
                 if (Comesfrom == "A")
                 {
                     sql += "select * from ( select b.agslcd slcd,c.slnm from " + scm + ".t_txn a," + scm + ".t_txnoth b," + scmf + ".m_subleg c ";
                     sql += "where a.autono=b.autono(+) and b.agslcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.agslcd is not null order by a.autono desc ) where rownum=1 ";
+
+                    sql_prevyr += "select * from ( select b.agslcd slcd,c.slnm from " + scm_prevyr + ".t_txn a," + scm_prevyr + ".t_txnoth b," + scmf_prevyr + ".m_subleg c ";
+                    sql_prevyr += "where a.autono=b.autono(+) and b.agslcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.agslcd is not null order by a.autono desc ) where rownum=1 ";
                     caption = "Agent";
                 }
                 else if (Comesfrom == "T")
                 {
                     sql += "select * from ( select b.translcd slcd,c.slnm from " + scm + ".t_txn a," + scm + " .t_txntrans b," + scmf + ".m_subleg c ";
                     sql += "where a.autono=b.autono(+) and b.translcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.translcd is not null order by a.autono desc) where rownum=1 ";
+
+                    sql_prevyr += "select * from ( select b.translcd slcd,c.slnm from " + scm_prevyr + ".t_txn a," + scm_prevyr + " .t_txntrans b," + scmf_prevyr + ".m_subleg c ";
+                    sql_prevyr += "where a.autono=b.autono(+) and b.translcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.translcd is not null order by a.autono desc) where rownum=1 ";
                     caption = "Transporter";
                 }
                 var data = masterHelp.SQLquery(sql);
@@ -4121,7 +4129,16 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    str = caption + " not found respect of this party !!";
+                    //str = caption + " not found respect of this party !!";
+                    data = masterHelp.SQLquery(sql_prevyr);
+                    if (data != null && data.Rows.Count > 0)
+                    {
+                        str = masterHelp.ToReturnFieldValues("", data);
+                    }
+                    else
+                    {
+                        str = caption + " not found respect of this party !!";
+                    }
                 }
                 return Content(str);
             }
