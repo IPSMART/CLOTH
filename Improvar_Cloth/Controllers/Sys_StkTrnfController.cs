@@ -786,7 +786,7 @@ namespace Improvar.Controllers
                                         {
                                             bool recoexistbatchprice = false;
 
-                                            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + tbl.Rows[i]["barno"].ToString() + "' and prccd = '" + v.PRCCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
+                                            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + barno + "' and prccd = '" + v.PRCCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
                                             OraCmd.CommandText = sql; var OraRecoBatchprice = OraCmd.ExecuteReader();
                                             if (OraRecoBatchprice.HasRows == false) recoexistbatchprice = false; else recoexistbatchprice = true; OraRecoBatchprice.Dispose();
 
