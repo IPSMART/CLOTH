@@ -131,7 +131,7 @@ namespace Improvar.Controllers
                         sqlc = "select a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , " + newschema + ".m_sitem e ";
                         sqlc += "where b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
-                        sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and c.doctype in ('FOSTK')) and ";
+                        sqlc += "((b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and c.doctype in ('FOSTK'))or b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "') and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
@@ -535,7 +535,7 @@ namespace Improvar.Controllers
                         sqlc = "select distinct a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , " + newschema + ".m_sitem e, " + newschema + ".t_batchdtl f ";
                         sqlc += "where  b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
-                        sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK')) and ";
+                        sqlc += "(b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK')) and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
