@@ -3075,6 +3075,13 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
                 string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : VE.MENU_PARA.retStr() == "PJBR" ? "JB" : "PB";
 
+                sql += "select a.SLNO,a.TXNSLNO,a.ITGRPCD,a.ITGRPNM,a.BARGENTYPE,a.MTRLJOBCD,a.MTRLJOBNM,a.MTBARCODE,a.ITCD,a.ITNM,a.UOMCD,a.STYLENO,a.PARTCD,a.PARTNM, ";
+                sql += "a.PRTBARCODE,a.STKTYPE,a.STKNAME,a.BARNO,a.COLRCD,a.COLRNM,a.CLRBARCODE,a.SIZECD,a.SIZENM,a.SZBARCODE,a.SHADE,a.QNTY,a.NOS,a.RATE,a.DISCRATE, ";
+                sql += "a.DISCTYPE,a.TDDISCRATE,a.TDDISCTYPE,a.SCMDISCTYPE,a.SCMDISCRATE,a.HSNCODE,a.BALENO,a.PDESIGN,a.OURDESIGN,a.FLAGMTR,a.LOCABIN,a.BALEYR ";
+                sql += ",a.SALGLCD,a.PURGLCD,a.SALRETGLCD,a.PURRETGLCD,a.WPRATE,a.RPRATE,a.ITREM,a.RPPRICEGEN,a.DOCNO,a.DOCDT,a.WPPER,a.RPPER, ";
+                sql += "a.WPPRICEGEN,a.LISTPRICE,a.LISTDISCPER,a.CUTLENGTH,a.PAGENO,a.PAGESLNO,a.PCSTYPE,a.AUTONO,a.PREFNO,a.PREFDT,a.GLCD,a.GSTPER,a.prodgrpgstper,a.barimage,a.barimagecount,a.FABITCD,a.FABITNM,a.BLQNTY,a.CONVQTYPUNIT,a.BLUOMCD,a.NEGSTOCK from ( ";
+
+
                 sql += "select x.SLNO,x.TXNSLNO,x.ITGRPCD,x.ITGRPNM,x.BARGENTYPE,x.MTRLJOBCD,x.MTRLJOBNM,x.MTBARCODE,x.ITCD,x.ITNM,x.UOMCD,x.STYLENO,x.PARTCD,x.PARTNM, ";
                 sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
                 sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
@@ -3131,7 +3138,71 @@ namespace Improvar.Controllers
                 sql += "group by a.barno ) z ";
 
                 sql += "where x.prodgrpcd=y.prodgrpcd(+) and x.barno=z.barno(+) ";
-                sql += "order by x.docdt, x.docno,x.txnslno ";
+
+                #region lastyr data
+                if (CommVar.LastYearSchema(UNQSNO) != "")
+                {
+                    string scm_prevyr = CommVar.LastYearSchema(UNQSNO), scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+                    sql += "union all ";
+                    sql += "select x.SLNO,x.TXNSLNO,x.ITGRPCD,x.ITGRPNM,x.BARGENTYPE,x.MTRLJOBCD,x.MTRLJOBNM,x.MTBARCODE,x.ITCD,x.ITNM,x.UOMCD,x.STYLENO,x.PARTCD,x.PARTNM, ";
+                    sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
+                    sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
+                    sql += ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
+                    sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK from";
+
+                    sql += "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
+                    sql += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
+                    sql += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
+                    sql += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
+                    sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                    sql += ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
+                    //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                    sql += "from " + scm_prevyr + ".T_BATCHDTL i, " + scm_prevyr + ".T_BATCHMST j, " + scm_prevyr + ".M_SITEM k, " + scm_prevyr + ".M_SIZE l, " + scm_prevyr + ".M_COLOR m, ";
+                    sql += scm_prevyr + ".M_GROUP n," + scm_prevyr + ".M_MTRLJOBMST o," + scm_prevyr + ".M_PARTS p," + scm_prevyr + ".M_STKTYPE q," + scm_prevyr + ".T_CNTRL_HDR r ";
+                    sql += "," + scm_prevyr + ".T_TXNDTL s," + scm_prevyr + ".T_TXN t, " + scm_prevyr + ".M_SITEM u ";
+                    sql += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
+                    sql += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+) ";
+                    sql += "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+) ";
+                    sql += "and t.doctag in('" + doctag + "')  ";
+                    if (R_DOCNO.retStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
+                    //if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
+                    if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT >= to_date('" + TDT + "', 'dd/mm/yyyy') ");
+                    if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
+                    if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
+                    sql += ")x, ";
+
+                    sql += "(select a.prodgrpcd, ";
+                    //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+                    sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
+                    sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
+                    sql += "from ";
+                    sql += "(select prodgrpcd, effdt from ";
+                    sql += "(select a.prodgrpcd, a.effdt, ";
+                    sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
+                    sql += "from " + scm_prevyr + ".m_prodtax a ";
+                    if (TDT.retDateStr() != "") sql += "where a.effdt <= to_date('" + TDT + "','dd/mm/yyyy')  ";
+                    sql += ")where rn=1 ) a, " + scm_prevyr + ".m_prodtax b ";
+                    sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + TAXGRPCD + "' ";
+                    sql += "group by a.prodgrpcd ) y, ";
+
+                    sql += "(select a.barno, count(*) barimagecount,";
+                    sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
+                    sql += "within group (order by a.barno) as barimage from ";
+                    sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+                    sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+                    sql += "from " + scm_prevyr + ".t_batch_img_hdr a ";
+                    sql += "union ";
+                    sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+                    sql += "from " + scm_prevyr + ".t_batch_img_hdr_link a, " + scm_prevyr + ".t_batch_img_hdr b ";
+                    sql += "where a.mainbarno=b.barno(+) ) a, ";
+                    sql += "" + scm_prevyr + ".t_batch_img_hdr b ";
+                    sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
+                    sql += "group by a.barno ) z ";
+
+                    sql += "where x.prodgrpcd=y.prodgrpcd(+) and x.barno=z.barno(+) ";
+                }
+                #endregion
+                sql += ") a order by a.docdt, a.docno,a.txnslno ";
                 dt = masterHelp.SQLquery(sql);
 
                 TempData["TXNDTLDetails" + VE.MENU_PARA] = dt;

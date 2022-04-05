@@ -1727,7 +1727,10 @@ namespace Improvar
         public DataTable GetRateHistory(string slcd, string partycd, string doctype, string itcd, string fdt = "", string tdt = "")
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string scm_prevyr = CommVar.LastYearSchema(UNQSNO), scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
             string sql = "";
+            sql = "select a.slcd, a.autono, a.docno, a.docdt, a.qnty, a.rate, a.slnm, a.city, ";
+            sql += "a.scmdiscrate, a.scmdisctype,a.pcstype from (  ";
 
             sql += "select a.slcd, a.autono, d.docno, d.docdt, sum(nvl(f.qnty,0)) qnty, b.rate, e.slnm, e.district city, ";
             sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype  ";
@@ -1742,7 +1745,25 @@ namespace Improvar
             if (tdt != "") sql += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
             sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype ";
             //sql += "order by d.docdt,d.docno desc ";
-            sql += "order by (d.docdt)desc,(d.docno) desc ";
+
+            if (CommVar.LastYearSchema(UNQSNO) != "")
+            {
+                sql += "union all ";
+                sql += "select a.slcd, a.autono, d.docno, d.docdt, sum(nvl(f.qnty,0)) qnty, b.rate, e.slnm, e.district city, ";
+                sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, b.scmdisctype,f.pcstype  ";
+                sql += "from " + scm_prevyr + ".t_txn a," + scm_prevyr + ".t_txndtl b," + scm_prevyr + ".m_doctype c," + scm_prevyr + ".t_cntrl_hdr d ," + scmf_prevyr + ".m_subleg e," + scm_prevyr + ".T_BATCHDTL f," + scm_prevyr + ".M_SITEM g  ";
+                sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd and a.autono=f.autono  and b.itcd=g.itcd(+) and b.slno=f.txnslno and d.compcd='" + COM + "'  ";
+                if (itcd.retStr() != "") sql += " and b.itcd in(" + itcd + ") ";
+                if (slcd.retStr() != "") sql += " and (e.slcd in(" + slcd + ") ";
+                if (partycd.retStr() != "") sql += "or e.partycd=" + partycd + " ";
+                if (slcd.retStr() != "" || partycd.retStr() != "") sql += ") ";
+                sql += "  and c.doctype in (" + doctype + ") ";
+                if (fdt != "") sql += "and d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') ";
+                if (tdt != "") sql += "and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+                sql += "  group by a.slcd, a.autono, d.docno, d.docdt, b.rate, e.slnm, e.district,(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) , b.scmdisctype,f.pcstype ";
+
+            }
+            sql += " )a order by (a.docdt)desc,(a.docno) desc ";
             var dt = masterHelpFa.SQLquery(sql);
             return dt;
         }
