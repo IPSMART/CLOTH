@@ -2283,6 +2283,10 @@ namespace Improvar
                     ItemDet.BARNO = STYLEdt.BARNO;
                     return ItemDet;
                 }
+                if (CommVar.NextYearSchema(UNQSNO) != "")
+                {
+                    return ItemDet;
+                }
                 MGROUP = CreateGroup(grpnm, ITGRPTYPE, BARGENTYPE);
                 MSITEM.EMD_NO = 0;
                 MSITEM.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());

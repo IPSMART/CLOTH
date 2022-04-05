@@ -673,6 +673,12 @@ namespace Improvar.Controllers
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         TTXNDTL.UOM = "MTR";
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
+                        if (ItemDet.ITCD.retStr() == "")
+                        {
+                            dupgrid.MESSAGE = "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year . ";
+                            DUGridlist.Add(dupgrid);
+                            break;
+                        }
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = style;
                         TTXNDTL.MTRLJOBCD = "FS";
@@ -1576,6 +1582,12 @@ namespace Improvar.Controllers
                         string MRP = inrdr["MRP"].ToString();
                         TTXNDTL.UOM = "PCS";
                         ItemDet ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
+                        if (ItemDet.ITCD.retStr() == "")
+                        {
+                            dupgrid.MESSAGE = "Please add item:(" + itnm + ") at Item Master Manually because master transfer done in next year . ";
+                            DUGridlist.Add(dupgrid);
+                            break;
+                        }
                         TTXNDTL.ITCD = ItemDet.ITCD;
                         PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = pdesign;

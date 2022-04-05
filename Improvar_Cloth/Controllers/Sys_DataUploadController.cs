@@ -256,6 +256,10 @@ namespace Improvar.Controllers
                         if (FABITNM != "")
                         {
                             ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "C", BARGENTYPE, "");
+                            if(FABITDet.ITCD.retStr() == "")
+                            {
+                                return "Please add style:(" + FABITNM + ") at Fabric Item Manually because master transfer done in next year . " + msg;
+                            }
                             fabitcd = FABITDet.ITCD;
                         }
                         ItemDet ItemDet = new ItemDet();
