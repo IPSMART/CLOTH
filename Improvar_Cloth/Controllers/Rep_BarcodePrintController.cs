@@ -64,6 +64,7 @@ namespace Improvar.Controllers
                                            ITGRPNM = dr["ITGRPNM"].retStr(),
                                            FABITNM = dr["FABITNM"].retStr(),
                                            STYLENO = dr["itnm"].retStr(),
+                                           ITSTYLE = dr["styleno"].retStr(),
                                            NOS = (dr["barnos"].retInt() == 1 || dr["barnos"].retInt() == 0) ? (dr["uomcd"].retStr() == "MTR" ? "1" : dr["qnty"].retStr()) : dr["barnos"].retStr(),//if barno==0==1 then( uom==mtr then nos=1 otherwise nos=qnty)
                                            WPRATE = dr["wprate"].retDbl(),
                                            CPRATE = dr["cprate"].retDbl(),
@@ -111,12 +112,12 @@ namespace Improvar.Controllers
             if (callfrm.retStr() == "PHYSTK") tphystk = true;
             sql = "";
 
-            sql += "select a.autono, x.barno, a.txnslno, x.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
+            sql += "select a.autono, x.barno, a.txnslno, a.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
             sql += "x.pdesign, nvl(x.ourdesign,b.styleno) design, " + Environment.NewLine;
             sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, " + Environment.NewLine;
             sql += "x.itrem, x.partcd, h.partnm, x.sizecd, x.colrcd, nvl(x.shade,g.colrnm) colrnm, " + Environment.NewLine;
             sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, " + Environment.NewLine;
-            sql += "a.fabitcd, e.itnm fabitnm from " + Environment.NewLine;
+            sql += "a.fabitcd, e.itnm fabitnm,b.styleno from " + Environment.NewLine;
 
             sql += "( select a.autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
             //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";

@@ -14,6 +14,7 @@ namespace Improvar.Models
         public string ITGRPNM { get; set; }
         public string FABITNM { get; set; }
         public string STYLENO { get; set; }
+        public string ITSTYLE { get; set; }
         public string NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? WPRATE { get; set; }
