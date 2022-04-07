@@ -46,7 +46,8 @@ namespace Improvar.Models
         public string SIZECD { get; set; }
         public string UOMCD { get; set; }
         public string QNTY { get; set; }
-        
+        public string DOCPRFX { get; set; }
+
         public bool Checked { get; set; }
     }
 }

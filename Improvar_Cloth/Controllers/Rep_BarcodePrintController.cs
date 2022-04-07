@@ -84,6 +84,7 @@ namespace Improvar.Controllers
                                            PREFDT = dr["docdt"].retStr(),
                                            UOMCD = dr["uomcd"].retStr(),
                                            QNTY = dr["qnty"].retStr(),
+                                           DOCPRFX = dr["docprfx"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
                                            //}).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                                        }).ToList();
@@ -116,7 +117,7 @@ namespace Improvar.Controllers
             sql += "x.pdesign, nvl(x.ourdesign,b.styleno) design, " + Environment.NewLine;
             sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, " + Environment.NewLine;
             sql += "x.itrem, x.partcd, h.partnm, x.sizecd, x.colrcd, nvl(x.shade,g.colrnm) colrnm, " + Environment.NewLine;
-            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, " + Environment.NewLine;
+            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, k.docprfx, " + Environment.NewLine;
             sql += "a.fabitcd, e.itnm fabitnm,b.styleno from " + Environment.NewLine;
 
             sql += "( select a.autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
@@ -164,7 +165,7 @@ namespace Improvar.Controllers
             sql += "where a.barno = m.barno(+) and a.barno = n.barno(+) and a.barno = o.barno(+) ) m, " + Environment.NewLine;
             sql += "" + scm + ".t_batchmst x, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
-            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j " + Environment.NewLine;
+            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j, " + scm + ".m_doctype k " + Environment.NewLine;
             //sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
             if (tphystk == true)
             {
@@ -174,7 +175,7 @@ namespace Improvar.Controllers
             {
                 sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
             }
-            sql += "x.itcd=b.itcd(+) and x.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and " + Environment.NewLine;
+            sql += "x.itcd=b.itcd(+) and x.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine;
             sql += "a.barno=m.barno(+) and " + Environment.NewLine;
             sql += "x.colrcd=g.colrcd(+) and x.partcd=h.partcd(+) and c.slcd=i.slcd(+) and x.sizecd=j.sizecd(+) " + Environment.NewLine;
             sql += " order by a.txnslno" + Environment.NewLine;
@@ -234,6 +235,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("costcode", typeof(string));
 
                 IR.Columns.Add("docno", typeof(string));
+                IR.Columns.Add("docprfx", typeof(string));
 
                 IR.Columns.Add("docdt", typeof(string));
 
@@ -298,6 +300,7 @@ namespace Improvar.Controllers
                             dr["cost"] = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
                             dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
+                            dr["docprfx"] = VE.BarcodePrint[i].DOCPRFX.retStr();
                             dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                             dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                             dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
