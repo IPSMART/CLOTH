@@ -72,6 +72,10 @@ namespace Improvar.Controllers
                         string style = workSheet.Cells[row, 2].Value.ToString() + workSheet.Cells[row, 3].Value.ToString().Split('-')[0];
                         string HSNCODE = workSheet.Cells[row, 7].Value.ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE, "","", "F", "C","");
+                        if (ItemDet.ITCD.retStr() == "")
+                        {
+                            return "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year of  row:" + row;
+                        }
                         sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno ='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
                         var dt = masterHelp.SQLquery(sql);
                         if (dt.Rows.Count > 0) continue;

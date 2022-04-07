@@ -34,6 +34,7 @@
                                 <th class="grid_th" style="width:257px;">Group</th>
                                 <th class="grid_th" style="width:157px;">Fabric</th>
                                 <th class="grid_th" style="width:257px;">Item</th>
+                                <th class="grid_th" style="width:257px;">Item Design</th>
                                 <th class="grid_th" style="width:27px;">SL. No.</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">No. of Print.</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Wprate</th>
@@ -89,6 +90,10 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.BarcodePrint[i].STYLENO, new { id = "STYLENO_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.TextBoxFor(model => Model.BarcodePrint[i].ITSTYLE, new { id = "ITSTYLE_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
 
                                         </td>
                                         <td class="grid_td">

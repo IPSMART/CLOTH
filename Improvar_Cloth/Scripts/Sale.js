@@ -224,7 +224,7 @@ function FillBarcodeArea(str, Table, i) {
             $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
         }
         $("#ITCD").val(returncolvalue(str, "ITCD"));
-        $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
+        $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM") + "" + returncolvalue(str, "FABITNM"));
         $("#STYLENO").val(returncolvalue(str, "STYLENO"));
         $("#Last_STYLENO").val(returncolvalue(str, "STYLENO"));
         $("#FABITCD").val(returncolvalue(str, "FABITCD"));

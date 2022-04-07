@@ -2642,7 +2642,7 @@ namespace Improvar.Controllers
                                 else
                                 {
                                     lslno = 0;
-                                    delvchrg = true;
+                                    delvchrg = false; // true;
                                 }
                                 if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";

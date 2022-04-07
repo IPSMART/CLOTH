@@ -34,13 +34,15 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if (!emptyFieldCheck("Enter Design", "STYLENO")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
+        if ("@Model.MENU_PARA" != "C") {
+            if (!emptyFieldCheck("Enter Design", "STYLENO")) {
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:first-child").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                return false;
+            }
         }
 
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
@@ -257,7 +259,7 @@
                         $("#" + CLRBARCODE_.id).val("");
                         msgInfo("Invalid Color Code !!");
                         message_value = COLRCD_.id;
-                    } 
+                    }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -791,24 +793,24 @@
             type: 'post',
             url: "@Url.Action("SavePreviousYrData", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize(),
-        success: function (result) {
-            $("#WaitingMode").hide();
-            if (result == "1") {
-                msgSuccess1("Previous year data save sucessfully");
-                message_value = "btnPrvyr";
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Previous year data save sucessfully");
+                    message_value = "btnPrvyr";
+                }
+                else {
+                    msgWarning(result);
+                    message_value = "btnPrvyr";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
             }
-            else {
-                msgWarning(result);
-                message_value = "btnPrvyr";
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+        });
     }
 </script>
 
@@ -960,7 +962,9 @@
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Design No")
-                                    <b style="color:Red;">*</b>
+                                    @if (Model.MENU_PARA != "C")
+                                    {<b style="color:Red;">*</b>}
+
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -981,7 +985,7 @@
                                     }
                                 }
 
-                            </div>  
+                            </div>
                             @*<div class="row">*@
                             @if (Model.DefaultAction == "A")
                             {
@@ -998,11 +1002,11 @@
                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
                                     </div>
                                 </div>
-                                            <div class="col-md-8">
-                                                <div class="editor-field">
-                                                    <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
-                                                </div>
-                                            </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
+                                    </div>
+                                </div>
                             }
                             @*</div>*@
                         </div>
@@ -1366,7 +1370,7 @@
                                 @Html.HiddenFor(model => model.BarImages)
                                 <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
                                 <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
-                                            <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                                <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
                                             <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
                             }
                         </div>

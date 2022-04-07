@@ -131,7 +131,9 @@ namespace Improvar.Controllers
                         sqlc = "select a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , " + newschema + ".m_sitem e ";
                         sqlc += "where b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
-                        sqlc += "((b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and c.doctype in ('FOSTK'))or b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "') and ";
+                        //sqlc += "((b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and c.doctype in ('FOSTK'))or b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "') and ";
+                        sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and c.doctype in ('FOSTK')) and ";
+
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
@@ -532,14 +534,21 @@ namespace Improvar.Controllers
                         i = 0; maxR = 0;
                         maxR = tbl.Rows.Count - 1;
 
-                        sqlc = "select distinct a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , " + newschema + ".m_sitem e, " + newschema + ".t_batchdtl f ";
-                        sqlc += "where  b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) and ";
+                        sqlc = "select distinct a.autono,a.autono||d.slno autoslno from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , ";
+                        sqlc += newschema + ".m_sitem e, " + newschema + ".t_batchdtl f," + newschema + ".t_bale g ";
+                        sqlc += "where  b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) ";
+                        sqlc += "and a.autono=g.autono(+)  and d.slno = g.slno and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
-                        sqlc += "(b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK')) and ";
+                        sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK')) and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        sqlc += "and g.baleno || g.baleyr not in (select a.baleno || a.baleyr from " + newschema + ".t_bale a," + newschema + ".t_cntrl_hdr b where a.autono = b.autono and b.yr_cd = '" + CommVar.YearCode(UNQSNO) + "') ";
+
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
-                        query = "delete from " + newschema + ".t_batchdtl where autono in (" + sqlc + ") ";
+                        string sqlc1 = "select distinct autono from ("+sqlc+") ";
+                        string sqlc2 = "select distinct autoslno from (" + sqlc + ") ";
+
+                        query = "delete from " + newschema + ".t_batchdtl where autono in (" + sqlc1 + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         //query = "delete from " + newschema + ".t_batchmst where autono in (" + sqlc + ") ";
                         //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
@@ -551,22 +560,40 @@ namespace Improvar.Controllers
                         //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         //query = "delete from " + newschema + ".t_txn where autono in (" + sqlc + ") ";
                         //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
-                        {
-                            query = "delete from " + newschema + ".t_bale where  autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                            query = "delete from " + newschema + ".t_bale_hdr where  autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                            query = "delete from " + newschema + ".t_txndtl where  autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        ////for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
+                        ////{
+                        ////    errorAutono = tbldel.Rows[q]["autono"].retStr();
+                        ////    if (errorAutono == "2021SNFPKOLKSSSPBL2112000211")
+                        ////    {
+                        ////        var aa = "";
+                        ////    }
+                        ////    query = "delete from " + newschema + ".t_bale where  autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        ////    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        ////    query = "delete from " + newschema + ".t_bale_hdr where  autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        ////    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        ////    query = "delete from " + newschema + ".t_txndtl where  autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        ////    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
 
-                            query = "delete from " + newschema + ".T_TXNOTH where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                            query = "delete from " + newschema + ".T_TXNTRANS where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                            //query = "delete from " + newschema + ".t_cntrl_hdr where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
-                            //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        }
+                        ////    query = "delete from " + newschema + ".T_TXNOTH where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        ////    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        ////    query = "delete from " + newschema + ".T_TXNTRANS where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        ////    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        ////    //query = "delete from " + newschema + ".t_cntrl_hdr where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                        ////    //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        ////}
+
+                        query = "delete from " + newschema + ".t_bale where  autono||slno in (" + sqlc2 + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        query = "delete from " + newschema + ".t_bale_hdr where  autono in (" + sqlc1 + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        query = "delete from " + newschema + ".t_txndtl where  autono||slno in (" + sqlc2 + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+
+                        query = "delete from " + newschema + ".T_TXNOTH where autono in (" + sqlc1 + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        query = "delete from " + newschema + ".T_TXNTRANS where autono in (" + sqlc1 + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+
                         if (dberrmsg != "") goto dbnotsave;
 
                         string defdoccd = "", docno = ""; int mxdocno = 0;
