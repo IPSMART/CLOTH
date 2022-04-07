@@ -47,6 +47,7 @@ namespace Improvar.Models
         public string UOMCD { get; set; }
         public string QNTY { get; set; }
         public string DOCPRFX { get; set; }
+        public string DOCONLYNO { get; set; }
 
         public bool Checked { get; set; }
     }

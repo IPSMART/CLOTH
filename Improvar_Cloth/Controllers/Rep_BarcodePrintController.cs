@@ -85,6 +85,7 @@ namespace Improvar.Controllers
                                            UOMCD = dr["uomcd"].retStr(),
                                            QNTY = dr["qnty"].retStr(),
                                            DOCPRFX = dr["docprfx"].retStr(),
+                                           DOCONLYNO = dr["doconlyno"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
                                            //}).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                                        }).ToList();
@@ -254,6 +255,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("uom", typeof(string));
                 IR.Columns.Add("qnty", typeof(string));
                 IR.Columns.Add("fulldocdt", typeof(string));
+                IR.Columns.Add("doconlyno", typeof(string));
+
                 string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -300,6 +303,7 @@ namespace Improvar.Controllers
                             dr["cost"] = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
                             dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
+                            dr["doconlyno"] = VE.BarcodePrint[i].DOCONLYNO.retStr();
                             dr["docprfx"] = VE.BarcodePrint[i].DOCPRFX.retStr();
                             dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                             dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
