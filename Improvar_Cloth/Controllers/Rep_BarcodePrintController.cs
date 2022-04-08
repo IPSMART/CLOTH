@@ -53,10 +53,18 @@ namespace Improvar.Controllers
                         List<DropDown_list1> drplst = new List<DropDown_list1>();
                         VE.DropDown_list1 = drplst;
                     }
+                    var tembarno = ""; DataTable innerDt = new DataTable();
+                    if (callfrm == "T_StockAdj")
+                    { tembarno = barno; barno = null; }
                     //DataTable ttxndtl = retBarPrn(docdt, autono, barno);
                     DataTable ttxndtl = retBarPrn(docdt, autono, barno, "WP", "RP", callfrm);
-                    if (ttxndtl.Rows.Count == 0) return Content("No Records..");
-                    VE.BarcodePrint = (from DataRow dr in ttxndtl.Rows
+                    if (callfrm == "T_StockAdj")
+                    { innerDt = ttxndtl.Select("barno in(" + tembarno + ")").CopyToDataTable(); }
+                    else {
+                        if (ttxndtl.Rows.Count!=0) innerDt = ttxndtl.Select().CopyToDataTable();
+                    }
+                    if (innerDt.Rows.Count == 0) return Content("No Records..");
+                    VE.BarcodePrint = (from DataRow dr in innerDt.Rows
                                        select new BarcodePrint()
                                        {
                                            TAXSLNO = dr["txnslno"].retStr(),
