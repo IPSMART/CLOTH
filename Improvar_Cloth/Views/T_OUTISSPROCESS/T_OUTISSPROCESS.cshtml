@@ -810,7 +810,7 @@
             $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
             $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
             $("#ITCD").val(returncolvalue(str, "ITCD"));
-            $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
+            $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM") + "" + returncolvalue(str, "FABITNM"));
             $("#STYLENO").val(returncolvalue(str, "STYLENO"));
             //$("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
             $("#PARTCD").val(returncolvalue(str, "PARTCD"));
@@ -1862,15 +1862,15 @@
         debugger;
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
-        var ITSTYLE = "", STYLENO = "", ITNM = "";
+        var ITSTYLE = "", STYLENO = "", ITNM = ""; FABITNM = "";
         var BARNO = returncolvalue(hlpstr, "BARNO");
         var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
         var ITGRPCD = returncolvalue(hlpstr, "ITGRPCD");
         var ITCD = returncolvalue(hlpstr, "ITCD");
         ITSTYLE = returncolvalue(hlpstr, "ITSTYLE");
         if (ITSTYLE == "") {
-            STYLENO = returncolvalue(hlpstr, "STYLENO"); ITNM = returncolvalue(hlpstr, "ITNM");
-            ITSTYLE = STYLENO + "" + ITNM;
+            STYLENO = returncolvalue(hlpstr, "STYLENO"); ITNM = returncolvalue(hlpstr, "ITNM"); FABITNM = returncolvalue(hlpstr, "FABITNM");
+            ITSTYLE = STYLENO + "" + ITNM + "" + FABITNM;
         }
         var SIZECD = returncolvalue(hlpstr, "SIZECD");
         var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");

@@ -53,10 +53,18 @@ namespace Improvar.Controllers
                         List<DropDown_list1> drplst = new List<DropDown_list1>();
                         VE.DropDown_list1 = drplst;
                     }
+                    var tembarno = ""; DataTable innerDt = new DataTable();
+                    if (callfrm == "T_StockAdj")
+                    { tembarno = barno; barno = null; }
                     //DataTable ttxndtl = retBarPrn(docdt, autono, barno);
                     DataTable ttxndtl = retBarPrn(docdt, autono, barno, "WP", "RP", callfrm);
-                    if (ttxndtl.Rows.Count == 0) return Content("No Records..");
-                    VE.BarcodePrint = (from DataRow dr in ttxndtl.Rows
+                    if (callfrm == "T_StockAdj")
+                    { innerDt = ttxndtl.Select("barno in(" + tembarno + ")").CopyToDataTable(); }
+                    else {
+                        if (ttxndtl.Rows.Count!=0) innerDt = ttxndtl.Select().CopyToDataTable();
+                    }
+                    if (innerDt.Rows.Count == 0) return Content("No Records..");
+                    VE.BarcodePrint = (from DataRow dr in innerDt.Rows
                                        select new BarcodePrint()
                                        {
                                            TAXSLNO = dr["txnslno"].retStr(),
@@ -64,6 +72,7 @@ namespace Improvar.Controllers
                                            ITGRPNM = dr["ITGRPNM"].retStr(),
                                            FABITNM = dr["FABITNM"].retStr(),
                                            STYLENO = dr["itnm"].retStr(),
+                                           ITSTYLE = dr["styleno"].retStr(),
                                            NOS = (dr["barnos"].retInt() == 1 || dr["barnos"].retInt() == 0) ? (dr["uomcd"].retStr() == "MTR" ? "1" : dr["qnty"].retStr()) : dr["barnos"].retStr(),//if barno==0==1 then( uom==mtr then nos=1 otherwise nos=qnty)
                                            WPRATE = dr["wprate"].retDbl(),
                                            CPRATE = dr["cprate"].retDbl(),
@@ -83,6 +92,8 @@ namespace Improvar.Controllers
                                            PREFDT = dr["docdt"].retStr(),
                                            UOMCD = dr["uomcd"].retStr(),
                                            QNTY = dr["qnty"].retStr(),
+                                           DOCPRFX = dr["docprfx"].retStr(),
+                                           DOCONLYNO = dr["doconlyno"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
                                            //}).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                                        }).ToList();
@@ -111,12 +122,12 @@ namespace Improvar.Controllers
             if (callfrm.retStr() == "PHYSTK") tphystk = true;
             sql = "";
 
-            sql += "select a.autono, x.barno, a.txnslno, x.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
+            sql += "select a.autono, x.barno, a.txnslno, a.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
             sql += "x.pdesign, nvl(x.ourdesign,b.styleno) design, " + Environment.NewLine;
             sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, " + Environment.NewLine;
             sql += "x.itrem, x.partcd, h.partnm, x.sizecd, x.colrcd, nvl(x.shade,g.colrnm) colrnm, " + Environment.NewLine;
-            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, " + Environment.NewLine;
-            sql += "a.fabitcd, e.itnm fabitnm from " + Environment.NewLine;
+            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, k.docprfx, " + Environment.NewLine;
+            sql += "a.fabitcd, e.itnm fabitnm,b.styleno from " + Environment.NewLine;
 
             sql += "( select a.autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
             //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
@@ -163,7 +174,7 @@ namespace Improvar.Controllers
             sql += "where a.barno = m.barno(+) and a.barno = n.barno(+) and a.barno = o.barno(+) ) m, " + Environment.NewLine;
             sql += "" + scm + ".t_batchmst x, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
-            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j " + Environment.NewLine;
+            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j, " + scm + ".m_doctype k " + Environment.NewLine;
             //sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
             if (tphystk == true)
             {
@@ -173,7 +184,7 @@ namespace Improvar.Controllers
             {
                 sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
             }
-            sql += "x.itcd=b.itcd(+) and x.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and " + Environment.NewLine;
+            sql += "x.itcd=b.itcd(+) and x.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine;
             sql += "a.barno=m.barno(+) and " + Environment.NewLine;
             sql += "x.colrcd=g.colrcd(+) and x.partcd=h.partcd(+) and c.slcd=i.slcd(+) and x.sizecd=j.sizecd(+) " + Environment.NewLine;
             sql += " order by a.txnslno" + Environment.NewLine;
@@ -233,6 +244,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("costcode", typeof(string));
 
                 IR.Columns.Add("docno", typeof(string));
+                IR.Columns.Add("docprfx", typeof(string));
 
                 IR.Columns.Add("docdt", typeof(string));
 
@@ -251,6 +263,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("uom", typeof(string));
                 IR.Columns.Add("qnty", typeof(string));
                 IR.Columns.Add("fulldocdt", typeof(string));
+                IR.Columns.Add("doconlyno", typeof(string));
+
                 string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -297,6 +311,8 @@ namespace Improvar.Controllers
                             dr["cost"] = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
                             dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
+                            dr["doconlyno"] = VE.BarcodePrint[i].DOCONLYNO.retStr();
+                            dr["docprfx"] = VE.BarcodePrint[i].DOCPRFX.retStr();
                             dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                             dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                             dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");

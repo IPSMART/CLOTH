@@ -34,6 +34,7 @@
                                 <th class="grid_th" style="width:257px;">Group</th>
                                 <th class="grid_th" style="width:157px;">Fabric</th>
                                 <th class="grid_th" style="width:257px;">Item</th>
+                                <th class="grid_th" style="width:257px;">Item Design</th>
                                 <th class="grid_th" style="width:27px;">SL. No.</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">No. of Print.</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Wprate</th>
@@ -74,6 +75,8 @@
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].SIZECD, new { id = "SIZECD_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].UOMCD, new { id = "UOMCD_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].QNTY, new { id = "QNTY_" + i })
+                                            @Html.HiddenFor(model => Model.BarcodePrint[i].DOCONLYNO, new { id = "DOCONLYNO_" + i })
+                                            @Html.HiddenFor(model => Model.BarcodePrint[i].DOCPRFX, new { id = "docprfx_" + i })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.BarcodePrint[i].BARNO, new { id = "BARNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
@@ -88,6 +91,10 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.BarcodePrint[i].STYLENO, new { id = "STYLENO_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.TextBoxFor(model => Model.BarcodePrint[i].ITSTYLE, new { id = "ITSTYLE_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
 
                                         </td>
                                         <td class="grid_td">

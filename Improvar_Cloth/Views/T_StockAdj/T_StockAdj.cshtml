@@ -236,12 +236,12 @@
         debugger;
         var AUTONO = $("#AUTONO").val();
         var DOCDT = $("#DOCDT").val();
-        var BARNO = "";
+        var BARNO = ""; var callfrm = "T_StockAdj";
         for (var i = 0; i <= $("#_T_StockAdj_IN_TAB_GRID > tbody > tr").length - 1; i++) {
             BARNO +="'"+ $("#IN_BARNO_" + i).val()+"',";
         }
         BARNO = BARNO.substring(0, BARNO.length - 1);
-        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO, "_blank")
+        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO + "&callfrm=" + callfrm, "_blank")
     }
 </script>
 @using (Html.BeginForm())
