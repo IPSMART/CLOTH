@@ -522,7 +522,7 @@ namespace Improvar.Controllers
                                     BALEYR = dr["BALEYR"].retStr(),
                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
                                     //GLCD = VE.MENU_PARA == "SBPCK" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SB" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBDIR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SR" ? dr["SALRETGLCD"].retStr() : VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBEXP" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "PI" ? "" : VE.MENU_PARA == "PB" ? dr["PURGLCD"].retStr() : VE.MENU_PARA == "PR" ? dr["PURRETGLCD"].retStr() : "",
-                                    //WPRATE = VE.MENU_PARA == "PB" ? dr["WPRATE"].retDbl() : (double?)null,
+                                    WPRATE = dr["WPRATE"].retDbl(),
                                     //RPRATE = VE.MENU_PARA == "PB" ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
                                     ORDAUTONO = dr["ORDAUTONO"].retStr(),
@@ -1425,6 +1425,183 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetGridStyleDetails(string val, string Code)
+        {
+            try
+            {
+                var data = Code.Split(Convert.ToChar(Cn.GCS())); bool showonlycommonbar = true;
+                string cllfrm = data[0].retStr(); ;
+                string itgrpcd = data[1].retStr();
+                string docdt = data[2].retStr();
+                string GOCD = data[3].retStr();
+                string BARNO = data[4].retStr();
+                string MTRLJOBCD = data[5].retStr();
+                string PRCCD = data[6].retStr();
+                string TAXGRPCD = data[7].retStr();
+                //string MENU_PARA = data[8].retStr();
+                if (val.retStr() != "") { showonlycommonbar = false; }
+                //var str = masterHelp.ITCD_help(val, "", "");
+                var str = masterHelp.T_TXN_BARNO_help(val, "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar,"");
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
+                //else
+                {
+                    if (cllfrm == "ClfrmReceiv")
+                    {
+                        cllfrm = data[0].retStr(); ;
+                        itgrpcd = data[1].retStr();
+                        docdt = data[2].retStr();
+                        GOCD = data[3].retStr();
+                        BARNO = data[4].retStr();
+                        MTRLJOBCD = data[5].retStr();
+                        PRCCD = data[6].retStr();
+                        TAXGRPCD = data[7].retStr();
+                        //string MENU_PARA = data[8].retStr();
+
+                        string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "", BARIMAGE = "", wprate = "", jobprate = "";
+                        string glcd = ""; string scm = CommVar.CurSchema(UNQSNO); string scmf = CommVar.FinSchema(UNQSNO);
+                        DataTable tax_data = new DataTable();
+                        //tax_data = salesfunc.GetBarHelp(docdt.retStr(), GOCD.retStr(), BARNO.retStr(), val.retStr().retSqlformat(), MTRLJOBCD.retStr().retSqlformat(), "", itgrpcd.retStr().retSqlformat(), "", PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "PB");
+
+                        tax_data = retBarPrn(docdt, "", BARNO.retStr(), "WP", "RP", "JOBP");
+
+                   
+                        if (tax_data != null && tax_data.Rows.Count > 0)
+                        {
+                            BARNO = tax_data.Rows[0]["barno"].retStr();
+                            wprate = tax_data.Rows[0]["wprate"].retStr();
+                            jobprate = tax_data.Rows[0]["jobprate"].retStr();
+
+
+                            //PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                            //BARIMAGE = tax_data.Rows[0]["BARIMAGE"].retStr();
+                            //if (PRODGRPGSTPER != "")
+                            //{
+                            //    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
+                            //    if (ALL_GSTPER.retStr() != "")
+                            //    {
+                            //        var gst = ALL_GSTPER.Split(',').ToList();
+                            //        GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
+                            //    }
+                            //}
+
+                            //glcd = tax_data.Rows[0][MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr()].retStr();
+                            str += "^RATE=^" + jobprate + Cn.GCS();
+                            str += "^WPRATE=^" + wprate + Cn.GCS();
+                        }
+                        //str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                        //str += "^BARIMAGE=^" + BARIMAGE + Cn.GCS();
+                        //str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
+                        //str += "^GSTPER=^" + GSTPER + Cn.GCS();
+
+                    }
+
+                    return Content(str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP", string callfrm = "", String jobppricecd = "JOBP")
+        {
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            bool tblmst = false;
+            if (barno.retStr() != "" && barno.IndexOf("'") < 0) barno = "'" + barno + "'";
+            if (barno.retStr() != "") tblmst = true;
+            bool tphystk = false;
+            if (callfrm.retStr() == "PHYSTK") tphystk = true;
+            string tblnm = "";
+            tblnm = (tphystk == true ? ".t_phystk" : tblmst == false ? ".t_batchdtl" : ".t_batchmst");
+            sql = "";
+
+            sql += "select a.autono, x.barno, a.txnslno, a.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
+            sql += "x.pdesign, nvl(x.ourdesign,b.styleno) design, " + Environment.NewLine;
+            sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, nvl(m.jobprate,0) jobprate, " + Environment.NewLine;
+            sql += "x.itrem, x.partcd, h.partnm, x.sizecd, x.colrcd, nvl(x.shade,g.colrnm) colrnm, " + Environment.NewLine;
+            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, k.docprfx, " + Environment.NewLine;
+            sql += "a.fabitcd, e.itnm fabitnm,b.styleno from " + Environment.NewLine;
+
+            sql += "( select " + (tblnm == ".t_batchmst" ? "'xx'" : "a.autono") + " autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
+            //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
+            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos " + Environment.NewLine;
+            sql += "from " + scm + tblnm + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c " + (tblnm == ".t_batchmst" ? "" : ", " + scm + ".t_cntrl_hdr d ") + Environment.NewLine;
+            sql += "where a.barno=b.barno(+) and b.itcd=c.itcd(+)  " + Environment.NewLine;
+            if (autono.retStr() != "") sql += "and a.autono in ('" + autono + "')  " + Environment.NewLine;
+            if (barno.retStr() != "") sql += "and a.barno in (" + barno + ")  " + Environment.NewLine;
+            if (tblnm != ".t_batchmst")
+            {
+                sql += "and a.autono=d.autono(+) and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' " + Environment.NewLine;
+            }
+            sql += " ) a, " + Environment.NewLine;
+            sql += "(select a.barno, nvl(m.rate, 0) cprate, nvl(n.rate, 0) wprate, nvl(o.rate, 0) rprate, nvl(p.rate, 0) jobprate from " + Environment.NewLine;
+            sql += "" + scm + ".t_batchmst a, " + Environment.NewLine;
+            for (int x = 0; x <= 3; x++)
+            {
+                string prccd = "", sqlals = "";
+                switch (x)
+                {
+                    case 0:
+                        prccd = "CP"; sqlals = "m"; break;
+                    case 1:
+                        prccd = wppricecd; sqlals = "n"; break;
+                    case 2:
+                        prccd = rppricecd; sqlals = "o "; break;
+                    case 3:
+                        prccd = jobppricecd; sqlals = "P "; break;
+                }
+                //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
+                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') " + Environment.NewLine;
+                sql += ") a, " + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c " + Environment.NewLine;
+                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' " + Environment.NewLine;
+                //sql += "union ";
+                //sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+                //sql += "(select a.barno, a.prccd, a.effdt, ";
+                //sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                //sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ) ";
+                //sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".T_BATCHmst d ";
+                //sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.prccd='" + prccd + "' and ";
+                //sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
+                //sql += ") a where prccd='" + prccd + "' ";
+                sql += ") " + sqlals;
+                if (x != 3) sql += ", ";
+            }
+            sql += "where a.barno = m.barno(+) and a.barno = n.barno(+) and a.barno = o.barno(+) and a.barno = p.barno(+) ) m, " + Environment.NewLine;
+            sql += "" + scm + ".t_batchmst x, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
+            sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
+            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j, " + scm + ".m_doctype k " + Environment.NewLine;
+            //sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
+            if (tphystk == true)
+            {
+                sql += "where a.barno=x.barno(+) and x.autono=c.autono(+) and c.autono=d.autono(+)  and " + Environment.NewLine;
+            }
+            else
+            {
+                sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
+            }
+            sql += "x.itcd=b.itcd(+) and x.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine;
+            sql += "a.barno=m.barno(+) and " + Environment.NewLine;
+            sql += "x.colrcd=g.colrcd(+) and x.partcd=h.partcd(+) and c.slcd=i.slcd(+) and x.sizecd=j.sizecd(+) " + Environment.NewLine;
+            sql += " order by a.txnslno" + Environment.NewLine;
+            DataTable tbl = masterHelp.SQLquery(sql);
+
+            return tbl;
+
+        }
         public dynamic GetPendingProgramme(string docdt, string jobcd, string slcd, string autono, string flag = "")
         {
             try
@@ -2181,15 +2358,17 @@ namespace Improvar.Controllers
 
 
 
-                        var difList1 = rcvdata.Where(a => !prgrmdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY ))
-                         .Union(prgrmdata.Where(a => !rcvdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY ))).ToList();
+                        var difList1 = rcvdata.Where(a => !prgrmdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY))
+                         .Union(prgrmdata.Where(a => !rcvdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY))).ToList();
+
                         if (difList1 != null && difList1.Count > 0)
                         {
                             string diffitcd = difList1.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
                             //OraTrans.Rollback();
                             //OraCon.Dispose();
-                            dberrmsg = "Programme grid & Receive grid itcd [" + diffitcd + "] wise qnty+short qnty should match !!";
-                            goto dbnotsave;
+
+                            //dberrmsg = "Programme grid & Receive grid itcd [" + diffitcd + "] wise qnty+short qnty should match !!";
+                            //goto dbnotsave;
                         }
                     }
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
@@ -2728,6 +2907,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.NOS = VE.TBATCHDTL[i].NOS;
                                     TBATCHMST.QNTY = VE.TBATCHDTL[i].QNTY;
                                     TBATCHMST.RATE = VE.TBATCHDTL[i].RATE;
+                                    TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
                                     //TBATCHMST.AMT = VE.TBATCHDTL[i].AMT;
                                     TBATCHMST.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
                                     //TBATCHMST.MTRL_COST = VE.TBATCHDTL[i].MTRL_COST;

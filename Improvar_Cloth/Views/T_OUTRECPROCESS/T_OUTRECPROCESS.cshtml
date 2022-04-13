@@ -158,6 +158,73 @@
     });
 </script>
 <script>
+    function SelectItemDetails(id, B_ITCD_, B_UOM_, B_ITSTYLE_, B_ITGRPCD_, B_ITGRPNM_, B_RATE_, B_BARNO_, B_WPRATE_,CLFRM) {
+        debugger;
+        if (id == "") {
+            $("#" + B_ITCD_.id).val("");
+            $("#" + B_UOM_.id).val("");
+            $("#" + B_ITSTYLE_.id).val("");
+            $("#" + B_ITGRPCD_.id).val("");
+            $("#" + B_ITGRPNM_.id).val("");
+            //$("#" + B_RATE_.id).val("");
+            $("#" + B_BARNO_.id).val("");
+        }
+        else {
+            if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
+            //if (!emptyFieldCheck("Enter Supplier Code", "SLCD")) { return false; }
+            var ITGRPCD = $("#" + B_ITGRPCD_.id).val();
+            var DOCDT = document.getElementById("DOCDT").value;
+            var GOCD = document.getElementById("GOCD").value;
+            var BARNO = $("#" + B_BARNO_.id).val();
+            var MTRLJOBCD = document.getElementById("MTRLJOBCD").value;
+            var PRCCD = document.getElementById("PRCCD").value;
+            var TAXGRPCD = document.getElementById("TAXGRPCD").value;
+            var MENUPARA = "@Model.MENU_PARA";
+            var CLFRM = document.getElementById("clfrmR").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetGridStyleDetails", PageControllerName)",
+                data:
+                    {
+                        val: id,
+                        Code: CLFRM + String.fromCharCode(181) + ITGRPCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + BARNO + String.fromCharCode(181) + MTRLJOBCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + MENUPARA,
+                    },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        document.getElementById(B_ITCD_.id).value = returncolvalue(result, "ITCD");
+                        document.getElementById(B_UOM_.id).value = returncolvalue(result, "UOMCD");
+                        document.getElementById(B_ITSTYLE_.id).value = returncolvalue(result, "STYLENO");
+                        document.getElementById(B_ITGRPCD_.id).value = returncolvalue(result, "ITGRPCD");
+                        document.getElementById(B_ITGRPNM_.id).value = returncolvalue(result, "ITGRPNM");
+                        document.getElementById(B_RATE_.id).value = returncolvalue(result, "RATE");
+                        document.getElementById(B_WPRATE_.id).value = returncolvalue(result, "WPRATE");
+                        document.getElementById(B_BARNO_.id).value = returncolvalue(result, "BARNO");
+
+                    }
+                    else {
+                        $("#" + B_ITCD_.id).val("");
+                        $("#" + B_UOM_.id).val("");
+                        $("#" + B_ITSTYLE_.id).val("");
+                        $("#" + B_ITGRPCD_.id).val("");
+                        $("#" + B_ITGRPNM_.id).val("");
+                        //$("#" + B_RATE_.id).val("");
+                        $("#" + B_BARNO_.id).val("");
+                        msgInfo(result);
+                        message_value = B_ITSTYLE_.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+</script>
+<script>
     @*function GetPartyDetails(id) {
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
@@ -1366,6 +1433,8 @@
             <input type="hidden" id="trnsportlinkcd" value="T" />
             <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
             <input type="hidden" id="bardatachng" value="Y" />
+            <input type="hidden" id="clfrmP" value="ClfrmProgram" />
+            <input type="hidden" id="clfrmR" value="ClfrmReceiv" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
             @Html.HiddenFor(a => a.T_TXN.DOCNO)
@@ -1471,7 +1540,8 @@
                         <div class="col-md-4">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
-                                @Html.HiddenFor(model => Model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD" } })
+                                @*@Html.HiddenFor(model => Model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD1" } })*@
+                                @Html.HiddenFor(model => Model.T_TXNOTH.PRCCD, new { id = "PRCCD" })
 
 
                             </div>

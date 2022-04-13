@@ -131,14 +131,14 @@ namespace Improvar.Controllers
             sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, k.docprfx, " + Environment.NewLine;
             sql += "a.fabitcd, e.itnm fabitnm,b.styleno from " + Environment.NewLine;
 
-            sql += "( select " + (tblnm == "t_batchmst"?"'xx'":"a.autono") + " autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
+            sql += "( select " + (tblnm == ".t_batchmst"?"'xx'":"a.autono") + " autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
             //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
             sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos " + Environment.NewLine;
-            sql += "from " + scm + tblnm + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c " + (tblnm == "t_batchmst" ? "" : ", " + scm + ".t_cntrl_hdr d ") + Environment.NewLine;
-            sql += "where a.barno=b.barno(+) and b.itcd=c.itcd(+) and " + Environment.NewLine;
-            if (autono.retStr() != "") sql += "a.autono in ('" + autono + "') and " + Environment.NewLine;
-            if (barno.retStr() != "") sql += "a.barno in (" + barno + ") " + Environment.NewLine;
-            if (tblnm != "t_batchmst")
+            sql += "from " + scm + tblnm + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c " + (tblnm == ".t_batchmst" ? "" : ", " + scm + ".t_cntrl_hdr d ") + Environment.NewLine;
+            sql += "where a.barno=b.barno(+) and b.itcd=c.itcd(+)  " + Environment.NewLine;
+            if (autono.retStr() != "") sql += "and a.autono in ('" + autono + "')  " + Environment.NewLine;
+            if (barno.retStr() != "") sql += "and a.barno in (" + barno + ")  " + Environment.NewLine;
+            if (tblnm != ".t_batchmst")
             {
                 sql += "and a.autono=d.autono(+) and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' " + Environment.NewLine;
             }
@@ -176,7 +176,7 @@ namespace Improvar.Controllers
                 //sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
                 //sql += ") a where prccd='" + prccd + "' ";
                 sql += ") " + sqlals;
-                if (x != 2) sql += ", ";
+                if (x != 3) sql += ", ";
             }
             sql += "where a.barno = m.barno(+) and a.barno = n.barno(+) and a.barno = o.barno(+) and a.barno = p.barno(+) ) m, " + Environment.NewLine;
             sql += "" + scm + ".t_batchmst x, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
