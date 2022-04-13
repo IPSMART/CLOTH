@@ -120,24 +120,29 @@ namespace Improvar.Controllers
             if (barno.retStr() != "") tblmst = true;
             bool tphystk = false;
             if (callfrm.retStr() == "PHYSTK") tphystk = true;
+            string tblnm = "";
+            tblnm = (tphystk == true ? ".t_phystk" : tblmst == false ? ".t_batchdtl" : ".t_batchmst");
             sql = "";
 
             sql += "select a.autono, x.barno, a.txnslno, a.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
             sql += "x.pdesign, nvl(x.ourdesign,b.styleno) design, " + Environment.NewLine;
-            sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, " + Environment.NewLine;
+            sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, nvl(m.jobprate,0) jobprate, " + Environment.NewLine;
             sql += "x.itrem, x.partcd, h.partnm, x.sizecd, x.colrcd, nvl(x.shade,g.colrnm) colrnm, " + Environment.NewLine;
             sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno,d.doconlyno, c.slcd, nvl(i.shortnm,i.slnm) slnm, k.docprfx, " + Environment.NewLine;
             sql += "a.fabitcd, e.itnm fabitnm,b.styleno from " + Environment.NewLine;
 
-            sql += "( select a.autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
+            sql += "( select " + (tblnm == "t_batchmst"?"'xx'":"a.autono") + " autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
             //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
             sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos " + Environment.NewLine;
-            sql += "from " + scm + (tphystk == true ? ".t_phystk" : tblmst == false ? ".t_batchdtl" : ".t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d " + Environment.NewLine;
-            sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and " + Environment.NewLine;
+            sql += "from " + scm + tblnm + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c " + (tblnm == "t_batchmst" ? "" : ", " + scm + ".t_cntrl_hdr d ") + Environment.NewLine;
+            sql += "where a.barno=b.barno(+) and b.itcd=c.itcd(+) and " + Environment.NewLine;
             if (autono.retStr() != "") sql += "a.autono in ('" + autono + "') and " + Environment.NewLine;
-            //if (barno.retStr() != "") sql += "a.barno in ('" + barno + "') and " + Environment.NewLine;
-            if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and " + Environment.NewLine;
-            sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) a, " + Environment.NewLine;
+            if (barno.retStr() != "") sql += "a.barno in (" + barno + ") " + Environment.NewLine;
+            if (tblnm != "t_batchmst")
+            {
+                sql += "and a.autono=d.autono(+) and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' " + Environment.NewLine;
+            }
+            sql += " ) a, " + Environment.NewLine;
             sql += "(select a.barno, nvl(m.rate, 0) cprate, nvl(n.rate, 0) wprate, nvl(o.rate, 0) rprate, nvl(p.rate, 0) jobprate from " + Environment.NewLine;
             sql += "" + scm + ".t_batchmst a, " + Environment.NewLine;
             for (int x = 0; x <= 3; x++)
@@ -173,7 +178,7 @@ namespace Improvar.Controllers
                 sql += ") " + sqlals;
                 if (x != 2) sql += ", ";
             }
-            sql += "where a.barno = m.barno(+) and a.barno = n.barno(+) and a.barno = o.barno(+) ) m, " + Environment.NewLine;
+            sql += "where a.barno = m.barno(+) and a.barno = n.barno(+) and a.barno = o.barno(+) and a.barno = p.barno(+) ) m, " + Environment.NewLine;
             sql += "" + scm + ".t_batchmst x, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + Environment.NewLine;
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
             sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j, " + scm + ".m_doctype k " + Environment.NewLine;
