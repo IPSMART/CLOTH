@@ -56,6 +56,8 @@
                                 <th class="" style="width:50px;text-align:right;">Short Quantity</th>
                                 <th class="">Remarks</th>
                                 <th class="sticky-cell-opposite" style="text-align:center;width:27px;">Sample</th>
+                                <th class="" style="width:50px;">PROGAUTONO</th>
+                                <th class="" style="width:50px;">PROGSLNO</th>
                                 @*<th class="" style="width: 81px;">Material Job Code <b style="color:Red;">*</b></th>
                                     <th class="" style="width:100px;">Material Job Name</th>
                                     <th class="" style="width:100px;">Part</th>
@@ -74,8 +76,8 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
-                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTONO, new { id = "P_PROGAUTONO_" + i })
-                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGSLNO, new { id = "P_PROGSLNO_" + i })
+                                            @*@Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTONO, new { id = "P_PROGAUTONO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGSLNO, new { id = "P_PROGSLNO_" + i })*@
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTOSLNO, new { id = "P_PROGAUTOSLNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGUNIQNO, new { id = "P_PROGUNIQNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })
@@ -178,6 +180,12 @@
 
 
                                         </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].PROGAUTONO, new { id = "P_PROGAUTONO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].PROGSLNO, new { id = "P_PROGSLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
 
                                     </tr>
                                 }
@@ -210,6 +218,8 @@
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>
                         </tfoot>
                     </table>

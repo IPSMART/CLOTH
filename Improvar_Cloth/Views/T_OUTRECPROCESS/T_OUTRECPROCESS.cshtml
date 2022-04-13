@@ -158,15 +158,100 @@
     });
 </script>
 <script>
+    function RepeatAboveRow_TPROGBOM(i) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        i = parseInt(i);
+        if (event.key == "F9") {
+            var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
+            for (var J = 0; J <= GridRow - 1; J++) {
+                var slno = $("#P_SLNO_" + J).val();
+                if (parseInt(slno) == i) {
+                    $("#Q_BARNO_" + i).val($("#P_BARNO_" + J).val());
+                    $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
+                    $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
+                    $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
+                    $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
+                    $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
+                    $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
+                }
+            }
+        }
+        if (event.key == "F8" && i > 0) {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&RowIndex=" + i,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    //$("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivReceive").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+</script>
+<script>
+    function AddrowQTY(ID) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowQTY", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivReceive").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivReceive").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function DeleteRowQTY() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRowQTY", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivReceive").animate({ marginTop: '0px' }, 50);
+                $("#partialdivReceive").html(result);
+                CalculateTotalProgBomQnty();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
     function SelectItemDetails(id, B_ITCD_, B_UOM_, B_ITSTYLE_, B_ITGRPCD_, B_ITGRPNM_, B_RATE_, B_BARNO_, B_WPRATE_,CLFRM) {
         debugger;
+        if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
             $("#" + B_ITCD_.id).val("");
             $("#" + B_UOM_.id).val("");
             $("#" + B_ITSTYLE_.id).val("");
             $("#" + B_ITGRPCD_.id).val("");
             $("#" + B_ITGRPNM_.id).val("");
-            //$("#" + B_RATE_.id).val("");
+            $("#" + B_RATE_.id).val("");
+            $("#" + B_WPRATE_.id).val("");
             $("#" + B_BARNO_.id).val("");
         }
         else {
@@ -190,28 +275,54 @@
                         Code: CLFRM + String.fromCharCode(181) + ITGRPCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + BARNO + String.fromCharCode(181) + MTRLJOBCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + MENUPARA,
                     },
                 success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
+                    var MSG = result.indexOf('#helpDIV');
                     if (MSG >= 0) {
-                        document.getElementById(B_ITCD_.id).value = returncolvalue(result, "ITCD");
-                        document.getElementById(B_UOM_.id).value = returncolvalue(result, "UOMCD");
-                        document.getElementById(B_ITSTYLE_.id).value = returncolvalue(result, "STYLENO");
-                        document.getElementById(B_ITGRPCD_.id).value = returncolvalue(result, "ITGRPCD");
-                        document.getElementById(B_ITGRPNM_.id).value = returncolvalue(result, "ITGRPNM");
-                        document.getElementById(B_RATE_.id).value = returncolvalue(result, "RATE");
-                        document.getElementById(B_WPRATE_.id).value = returncolvalue(result, "WPRATE");
-                        document.getElementById(B_BARNO_.id).value = returncolvalue(result, "BARNO");
-
-                    }
-                    else {
+                        //ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
                         $("#" + B_ITCD_.id).val("");
                         $("#" + B_UOM_.id).val("");
                         $("#" + B_ITSTYLE_.id).val("");
                         $("#" + B_ITGRPCD_.id).val("");
                         $("#" + B_ITGRPNM_.id).val("");
-                        //$("#" + B_RATE_.id).val("");
+                        $("#" + B_RATE_.id).val("");
+                        $("#" + B_WPRATE_.id).val("");
                         $("#" + B_BARNO_.id).val("");
-                        msgInfo(result);
-                        message_value = B_ITSTYLE_.id;
+
+                        $('#SearchFldValue').val(B_ITSTYLE_.id);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(B_ITSTYLE_.id + "/" + B_ITGRPNM_.id + "/" + B_BARNO_.id);
+                        $('#ReferanceColumn').val("3/4/0");
+                        $('#helpDIV_Header').html("Item Details");
+                        //$('#SearchFldValue').val(document.getElementById(B_ITCD_.id).value);
+                        //$('#helpDIV').html(result);
+                        //$('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
+                        //$('#ReferanceColumn').val('0/2/5');
+                        //$('#helpDIV_Header').html('Barno Details');
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            document.getElementById(B_ITCD_.id).value = returncolvalue(result, "ITCD");
+                            document.getElementById(B_UOM_.id).value = returncolvalue(result, "UOMCD");
+                            document.getElementById(B_ITSTYLE_.id).value = returncolvalue(result, "STYLENO");
+                            document.getElementById(B_ITGRPCD_.id).value = returncolvalue(result, "ITGRPCD");
+                            document.getElementById(B_ITGRPNM_.id).value = returncolvalue(result, "ITGRPNM");
+                            document.getElementById(B_RATE_.id).value = returncolvalue(result, "JOBPRATE");
+                            document.getElementById(B_WPRATE_.id).value = returncolvalue(result, "WPRATE");
+                            document.getElementById(B_BARNO_.id).value = returncolvalue(result, "BARNO");
+
+                        }
+                        else {
+                            $("#" + B_ITCD_.id).val("");
+                            $("#" + B_UOM_.id).val("");
+                            $("#" + B_ITSTYLE_.id).val("");
+                            $("#" + B_ITGRPCD_.id).val("");
+                            $("#" + B_ITGRPNM_.id).val("");
+                            $("#" + B_RATE_.id).val("");
+                            $("#" + B_WPRATE_.id).val("");
+                            $("#" + B_BARNO_.id).val("");
+                            msgInfo(result);
+                            message_value = B_ITSTYLE_.id;
+                        }
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1435,6 +1546,7 @@
             <input type="hidden" id="bardatachng" value="Y" />
             <input type="hidden" id="clfrmP" value="ClfrmProgram" />
             <input type="hidden" id="clfrmR" value="ClfrmReceiv" />
+            <input type="hidden" id="onclik" value="onclick" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
             @Html.HiddenFor(a => a.T_TXN.DOCNO)
@@ -1856,6 +1968,16 @@
                                     <div id="partialdivReceive" style="margin-top:0px;">
                                         @Html.Partial("_T_OUTRECPROCESS_Receive")
                                     </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-info">
+                                <div class="panel-heading ui-icon-note">Rules</div>
+                                <div class="panel-body">
+                                    <p>
+                                        @*1. Press <b>F9</b> for Same as program item [in the RSL No./Barno/itcd/itgrpcd]<br />*@
+                                        1. Press <b>F8</b> for repeat above Row [in the BILL SLNo./ItmGrp/Item Code]
+                                    </p>
+
                                 </div>
                             </div>
                             @if (Model.DefaultAction != "V")

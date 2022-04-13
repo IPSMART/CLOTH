@@ -12,12 +12,14 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
+                <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
                 @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />*@
                 @*@if (Model.MENU_PARA != "SB")
                     {
                         <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteBarnoRow()" />
                     }*@
+                <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddrowQTY('AddRowsMain')" />
+                <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRowQTY()" />
                 <div class="col-md-8">
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_OUTRECPROCESS_Receive_Grid');" />
                     <img src="~/Image/search.png" title="Help" />
@@ -51,6 +53,8 @@
                                     <th class="" style="width:50px;text-align:right;">Disc Rate</th>*@
                                 <th class="" style="width:30px; text-align:center">Img</th>
                                 <th class="">Image Upload</th>
+                                <th class="" style="width:50px;">REC PROGAUTONO</th>
+                                <th class="" style="width:50px;">REC PROGSLNO</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,8 +66,8 @@
                                         <td class="sticky-cell">
                                             @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGAUTONO, new { id = "B_RECPROGAUTONO_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i })
+                                            @*@Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGAUTONO, new { id = "B_RECPROGAUTONO_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i })*@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].SAMPLE, new { id = "B_SAMPLE_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].COMMONUNIQBAR, new { id = "B_COMMONUNIQBAR_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
@@ -73,15 +77,15 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="sticky-cell" style="left:40px">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITGRPNM, new { id = "B_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITGRPNM, new { id = "B_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "')" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITGRPCD, new { id = "B_ITGRPCD_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
                                         @*<td class="">
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITSTYLE, new { id = "B_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -94,8 +98,8 @@
                                             @*@Html.TextBoxFor(model => Model.TBATCHDTL[i].ITSTYLE, new { id = "B_ITSTYLE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })*@
 
                                             @*@Html.EditorFor(model => model.TBATCHDTL[i].ITSTYLE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "B_ITSTYLE_", onkeydown = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTRECPROCESS") + "','Bar Code Details','" + "B_ITSTYLE_" + i + "','" + "B_ITSTYLE_" + i + "=STYLENO=3/" + "B_ITCD_" + i + "=ITCD/" + "B_UOM_" + i + "=UOMCD/" + "B_ITGRPCD_" + i + "=ITGRPCD/" + "B_ITGRPNM_" + i + "=ITGRPNM=4/B_BARNO_" + i + "=barno=0','clfrmR/B_ITGRPCD_" + i + "/DOCDT/GOCD/B_BARNO_" + i + "/MTRLJOBCD/PRCCD/TAXGRPCD');", onblur = "SelectItemDetails(this.value,B_ITCD_" + i + ",B_UOM_" + i + ",B_ITSTYLE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_RATE_" + i + ",B_BARNO_" + i + ", 'clfrmR');", @placeholder = "Design No/Item", maxlength = 25, @TabIndex = -1 } })*@
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITSTYLE, new { id = "B_ITSTYLE_" + i, maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetGridStyleDetails", "T_OUTRECPROCESS") + "','Bar Code Details','" + "B_ITSTYLE_" + i + "','" + "B_ITSTYLE_" + i + "=STYLENO=3/" + "B_ITCD_" + i + "=ITCD/" + "B_UOM_" + i + "=UOMCD/" + "B_ITGRPCD_" + i + "=ITGRPCD/" + "B_ITGRPNM_" + i + "=ITGRPNM=4/B_BARNO_" + i + "=barno=0','clfrmR/B_ITGRPCD_" + i + "/DOCDT/GOCD/B_BARNO_" + i + "/MTRLJOBCD/PRCCD/TAXGRPCD');", onblur = "SelectItemDetails(this.value,B_ITCD_" + i + ",B_UOM_" + i + ",B_ITSTYLE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_RATE_" + i + ",B_BARNO_" + i + ",B_WPRATE_" + i + ", 'clfrmR');", @placeholder = "Design No/Item", @class = "atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGridStyleDetails","T_OUTRECPROCESS")','Bar Code Details','B_ITSTYLE_@i','B_ITSTYLE_@i=STYLENO=3/B_ITCD_@i=ITCD/B_UOM_@i=UOMCD/B_ITGRPCD_@i=ITGRPCD/B_ITGRPNM_@i=ITGRPNM=4/B_BARNO_@i=BARNO=0','clfrmR/B_ITGRPCD_@i/DOCDT/GOCD/B_BARNO_@i/MTRLJOBCD/PRCCD/TAXGRPCD')" />
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITSTYLE, new { id = "B_ITSTYLE_" + i, maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetGridStyleDetails", "T_OUTRECPROCESS") + "','Bar Code Details','" + "B_ITSTYLE_" + i + "','" + "B_ITSTYLE_" + i + "=STYLENO=3/" + "B_ITCD_" + i + "=ITCD/" + "B_UOM_" + i + "=UOMCD/" + "B_ITGRPCD_" + i + "=ITGRPCD/" + "B_ITGRPNM_" + i + "=ITGRPNM=4/B_BARNO_" + i + "=barno=0','clfrmR/B_ITGRPCD_" + i + "/DOCDT/GOCD/B_BARNO_" + i + "/MTRLJOBCD/PRCCD/TAXGRPCD/onclik');", onblur = "SelectItemDetails(this.value,B_ITCD_" + i + ",B_UOM_" + i + ",B_ITSTYLE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_RATE_" + i + ",B_BARNO_" + i + ",B_WPRATE_" + i + ", 'clfrmR');", @placeholder = "Design No/Item", @class = "atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGridStyleDetails","T_OUTRECPROCESS")','Bar Code Details','B_ITSTYLE_@i','B_ITSTYLE_@i=STYLENO=3/B_ITCD_@i=ITCD/B_UOM_@i=UOMCD/B_ITGRPCD_@i=ITGRPCD/B_ITGRPNM_@i=ITGRPNM=4/B_BARNO_@i=BARNO=0','clfrmR/B_ITGRPCD_@i/DOCDT/GOCD/B_BARNO_@i/MTRLJOBCD/PRCCD/TAXGRPCD/onclik')" />
 
 
 
@@ -153,6 +157,12 @@
                                             }
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].RECPROGAUTONO, new { id = "B_RECPROGAUTONO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly"})
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly"})
+                                        </td>
                                     </tr>
                                 }
                             }
@@ -185,6 +195,8 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>

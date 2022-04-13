@@ -1306,7 +1306,7 @@ namespace Improvar
                 }
                 else
                 {
-                    sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
+                    sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%' or d.styleno||' '||d.itnm like '%" + stylelike.Replace("'", "") + "%') and ";
                 }
             }
 
