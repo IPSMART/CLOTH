@@ -2887,6 +2887,8 @@ namespace Improvar.Controllers
 
                         }
                     }
+                    if (VE.TPROGBOM != null)
+                    { 
                     for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
                     {
                         if (VE.TPROGBOM[i].SLNO != 0 && VE.TPROGBOM[i].RSLNO != 0 && VE.TPROGBOM[i].ITCD != null)
@@ -2914,6 +2916,7 @@ namespace Improvar.Controllers
 
                         }
                     }
+                }
                     //-------------------------Transport--------------------------//
                     TXNTRANS.AUTONO = TTXN.AUTONO;
                     TXNTRANS.EMD_NO = TTXN.EMD_NO;
