@@ -744,7 +744,7 @@ namespace Improvar.Controllers
                                 if (tbl.Rows[i]["blslno"].retDbl() != 0) blslno = Convert.ToDouble(tbl.Rows[i]["blslno"]);
 
                                 errorAutono = tbl.Rows[i]["blautono"].retStr();
-                                if (errorAutono == "2021SNFPKOLKSSSPBL2112000182")
+                                if (errorAutono == "2021BNBHKOLKSSSPBL0000000612")
                                 {
                                     var aa = "";
                                 }
@@ -821,7 +821,7 @@ namespace Improvar.Controllers
                                     basamt = (rate * iqty).toRound();
 
                                     errorAutono = tbl.Rows[i]["blautono"].retStr();
-                                    if (errorAutono == "2021SNFPKOLKSSSPBL2112000185")
+                                    if (errorAutono == "2021BNBHKOLKSSSPBL0000000612")
                                     {
                                         var aa = "";
                                     }
@@ -898,15 +898,15 @@ namespace Improvar.Controllers
                                             foreach (var v in TBATCHDTL)
                                             {
                                                 bool recoexisttbatchdtl = false;
-                                                //sql = "select distinct autono from " + newschema + ".T_BATCHDTL where autono = '" + v.AUTONO + "' and slno= " + v.SLNO + " and txnslno=" + v.TXNSLNO + " ";
-                                                sql = "select distinct autono from " + newschema + ".T_BATCHDTL where autono = '" + v.AUTONO + "' and slno= " + v.TXNSLNO + " and txnslno=" + v.TXNSLNO + " ";
+                                                sql = "select distinct autono from " + newschema + ".T_BATCHDTL where autono = '" + v.AUTONO + "' and slno= " + v.SLNO + " and txnslno=" + v.TXNSLNO + " ";
+                                                //sql = "select distinct autono from " + newschema + ".T_BATCHDTL where autono = '" + v.AUTONO + "' and slno= " + v.TXNSLNO + " and txnslno=" + v.TXNSLNO + " ";
 
                                                 OraCmd.CommandText = sql; var OraRecotbatchdtl = OraCmd.ExecuteReader();
                                                 if (OraRecotbatchdtl.HasRows == false) recoexisttbatchdtl = false; else recoexisttbatchdtl = true; OraRecotbatchdtl.Dispose();
 
                                                 T_BATCHDTL BATCHDTL = new T_BATCHDTL();
                                                 v.AUTONO = TTXN.AUTONO;
-                                                v.SLNO = TXNDTL.SLNO;
+                                                //v.SLNO = TXNDTL.SLNO;
                                                 v.TXNSLNO = TXNDTL.SLNO;
                                                 //TBATCHDTL[0].EMD_NO = TTXN.EMD_NO;
                                                 //TBATCHDTL[0].DTAG = TTXN.DTAG;
@@ -930,7 +930,7 @@ namespace Improvar.Controllers
                                                 }
                                                 else
                                                 {
-                                                    dbsql = MasterHelpFa.RetModeltoSql(BATCHDTL, "E", "", "autono = '" + v.AUTONO + "' and slno= " + v.TXNSLNO + " and txnslno=" + v.TXNSLNO + "");
+                                                    dbsql = MasterHelpFa.RetModeltoSql(BATCHDTL, "E", "", "autono = '" + v.AUTONO + "' and slno= " + v.SLNO + " and txnslno=" + v.TXNSLNO + "");
                                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                 }
                                             }
