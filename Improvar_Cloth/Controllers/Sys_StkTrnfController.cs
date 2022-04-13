@@ -493,11 +493,9 @@ namespace Improvar.Controllers
                         sqlc += newschema + ".m_sitem e, " + newschema + ".t_batchdtl f," + newschema + ".t_bale g ";
                         sqlc += "where  b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) ";
                         sqlc += "and a.autono=g.autono(+)  and d.slno = g.slno and ";
-                        //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
-                        sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and ";
-                        sqlc += "f.millnm in ('BALESTOCK') and ";
+                        sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK') and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
-                        sqlc += "and g.baleno || g.baleyr not in (select a.baleno || a.baleyr from " + newschema + ".t_bale a," + newschema + ".t_cntrl_hdr b where a.autono = b.autono and b.yr_cd = '" + CommVar.YearCode(UNQSNO) + "') ";
+                        sqlc += "and g.baleno||g.baleyr not in (select a.baleno || a.baleyr from " + newschema + ".t_bale a," + newschema + ".t_cntrl_hdr b where a.autono = b.autono and b.yr_cd = '" + CommVar.YearCode(UNQSNO) + "') ";
                         sqlc += "order by a.autono,d.slno ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
@@ -505,7 +503,6 @@ namespace Improvar.Controllers
                         query = "delete from " + newschema + ".t_batchdtl where autono in (" + sqlc1 + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
 
-                        //for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
                         i = 0; maxR = 0;
                         maxR = tbldel.Rows.Count - 1;
                         while (i <= maxR)
@@ -518,6 +515,9 @@ namespace Improvar.Controllers
                                 {
                                     var aa = "";
                                 }
+                                query = "delete from " + newschema + ".t_batchdtl where  autono='" + tbldel.Rows[i]["autono"].ToString() + "' and txnslno= " + tbldel.Rows[i]["slno"].ToString() + "  ";
+                                OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+
                                 query = "delete from " + newschema + ".t_bale where  autono='" + tbldel.Rows[i]["autono"].ToString() + "' and slno= " + tbldel.Rows[i]["slno"].ToString() + "  ";
                                 OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
 
@@ -532,13 +532,12 @@ namespace Improvar.Controllers
 
                             OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
 
-                            query = "delete from " + newschema + ".T_TXNOTH where autono='" + tbldel.Rows[i - 1]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                            query = "delete from " + newschema + ".T_TXNTRANS where autono='" + tbldel.Rows[i - 1]["autono"].ToString() + "' ";
-                            OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                            //query = "delete from " + newschema + ".T_TXNOTH where autono='" + tbldel.Rows[i - 1]["autono"].ToString() + "' ";
+                            //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                            //query = "delete from " + newschema + ".T_TXNTRANS where autono='" + tbldel.Rows[i - 1]["autono"].ToString() + "' ";
+                            //OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
 
                             if (i > maxR) break;
-
                         }
 
                         if (dberrmsg != "") goto dbnotsave;
@@ -575,9 +574,6 @@ namespace Improvar.Controllers
                                       where (q.COMPCD == COM && r.DOCTYPE != "SBILD")
                                       select p).ToList();
 
-                        //var vTBATCHMST = (from p in DBOLD.T_BATCHMST
-                        //                  select p).ToList();
-
                         var vTBATCHDTL = (from p in DBOLD.T_BATCHDTL
                                           join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
                                           join r in DBOLD.M_DOCTYPE on q.DOCCD equals (r.DOCCD)
@@ -602,6 +598,7 @@ namespace Improvar.Controllers
                             blautono = chkval;
                             godown = tbl.Rows[i]["gocd"].ToString();
                             errorAutono = tbl.Rows[i]["blautono"].retStr();
+
                             if (errorAutono == "2021SNFPKOLKSSSPBL2112000182")
                             {
                                 var aa = "";
@@ -612,7 +609,6 @@ namespace Improvar.Controllers
                             TCHOLD = DBOLD.T_CNTRL_HDR.Where(a => a.AUTONO == chkval).FirstOrDefault();
 
                             bool recoexist = false;
-
                             sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + chkval + "'";
                             OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
                             if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
@@ -622,14 +618,16 @@ namespace Improvar.Controllers
                                 dbsql = MasterHelpFa.RetModeltoSql(TCHOLD);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             }
-                            else
-                            {
-                                dbsql = MasterHelpFa.RetModeltoSql(TCHOLD, "E");
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                            }
+
                             T_TXN TTXN = new T_TXN();
                             bool insTxn = (blautono == "" ? true : false);
-                            if (blautono != "")
+
+                            recoexist = false;
+                            sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + chkval + "'";
+                            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                            if (recoexist == false)
                             {
                                 var TXNOLD = vTXN.Where(x => x.AUTONO == blautono).ToList();
                                 if (TXNOLD.Count > 0)
@@ -637,99 +635,63 @@ namespace Improvar.Controllers
                                     TXNOLD[0].AUTONO = TCHOLD.AUTONO;
                                     TXNOLD[0].GOCD = tbl.Rows[i]["gocd"].ToString();
                                     TTXN = TXNOLD[0];
-
-                                    if (recoexist == false)
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TTXN);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
-                                    else
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TTXN, "E");
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
+                                    dbsql = MasterHelpFa.RetModeltoSql(TTXN);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
-                            T_TXNOTH TTXNOTH = new T_TXNOTH();
 
-                            if (blautono != "")
+                            T_TXNOTH TTXNOTH = new T_TXNOTH();
+                            recoexist = false;
+                            sql = "select distinct autono from " + newschema + ".T_TXNOTH where autono = '" + chkval + "' ";
+                            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                            if (recoexist == false) 
                             {
                                 var TXNOTHOLD = vTXNOTH.Where(x => x.AUTONO == blautono).ToList();
-                                if (TXNOTHOLD.Count > 0)
+                                if (recoexist == false && TXNOTHOLD.Count > 0) ;
                                 {
-                                    bool recoexistoth = false;
-                                    sql = "select distinct autono from " + newschema + ".T_TXNOTH where autono = '" + TCHOLD.AUTONO + "' ";
-
-                                    OraCmd.CommandText = sql; var OraRecooth = OraCmd.ExecuteReader();
-                                    if (OraRecooth.HasRows == false) recoexistoth = false; else recoexistoth = true; OraRecooth.Dispose();
-
                                     TXNOTHOLD[0].AUTONO = TCHOLD.AUTONO;
                                     TTXNOTH = TXNOTHOLD[0];
-                                    if (recoexistoth == false)
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TTXNOTH);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
-                                    else
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TTXNOTH, "E");
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
+                                    dbsql = MasterHelpFa.RetModeltoSql(TTXNOTH);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
 
                             T_TXNTRANS TTXNTRANS = new T_TXNTRANS();
-                            if (blautono != "")
+                            sql = "select distinct autono from " + newschema + ".T_TXNTRANS where autono = '" + chkval + "' ";
+                            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                            if (recoexist == false)
                             {
                                 var TXNTRANSOLD = vTXNTRANS.Where(x => x.AUTONO == blautono).ToList();
                                 if (TXNTRANSOLD.Count > 0)
                                 {
-                                    bool recoexisttrans = false;
-                                    sql = "select distinct autono from " + newschema + ".T_TXNTRANS where autono = '" + TCHOLD.AUTONO + "' ";
-
-                                    OraCmd.CommandText = sql; var OraRecotrans = OraCmd.ExecuteReader();
-                                    if (OraRecotrans.HasRows == false) recoexisttrans = false; else recoexisttrans = true; OraRecotrans.Dispose();
-
                                     TXNTRANSOLD[0].AUTONO = TCHOLD.AUTONO;
                                     TTXNTRANS = TXNTRANSOLD[0];
-                                    if (recoexisttrans == false)
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TTXNTRANS);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
-                                    else
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TTXNTRANS, "E");
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
+
+                                    dbsql = MasterHelpFa.RetModeltoSql(TTXNTRANS);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
 
-
                             T_BALE_HDR TBALEHDR = new T_BALE_HDR();
-                            bool recoexistbale = false;
-                            sql = "select distinct autono from " + newschema + ".t_bale_hdr where autono = '" + TCHOLD.AUTONO + "' ";
 
-                            OraCmd.CommandText = sql; var OraRecoBale = OraCmd.ExecuteReader();
-                            if (OraRecoBale.HasRows == false) recoexistbale = false; else recoexistbale = true; OraRecoBale.Dispose();
-                            if (blautono != "")
+                            recoexist = false;
+                            sql = "select distinct autono from " + newschema + ".t_bale_hdr where autono = '" + chkval + "' ";
+                            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                            if (recoexist == false)
                             {
                                 var TBALEHDROLD = vTBALEHDR.Where(x => x.AUTONO == blautono).ToList();
                                 if (TBALEHDROLD.Count > 0)
                                 {
+
                                     TBALEHDROLD[0].AUTONO = TCHOLD.AUTONO;
                                     TBALEHDR = TBALEHDROLD[0];
-
-                                    if (recoexistbale == false)
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TBALEHDR);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
-                                    else
-                                    {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TBALEHDR, "E");
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
+                                    dbsql = MasterHelpFa.RetModeltoSql(TBALEHDR);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
 
@@ -739,211 +701,96 @@ namespace Improvar.Controllers
                                 chkval1 = tbl.Rows[i]["blautono"].ToString();
                                 string baleno = tbl.Rows[i]["baleno"].retStr();
                                 string baleyr = tbl.Rows[i]["baleyr"].retStr();
-                                double iqty = 0; int inos = 0; Int32 chki = i;
                                 double blslno = 0;
                                 if (tbl.Rows[i]["blslno"].retDbl() != 0) blslno = Convert.ToDouble(tbl.Rows[i]["blslno"]);
 
+                                double iqty = 0; int inos = 0; Int32 chki = i;
                                 errorAutono = tbl.Rows[i]["blautono"].retStr();
                                 if (errorAutono == "2021BNBHKOLKSSSPBL0000000612")
                                 {
                                     var aa = "";
                                 }
-                                double basamt = 0, rate = 0, othramt = 0, othrate = 0;
-                                string autonoslno = tbl.Rows[i]["blautono"].retStr() + tbl.Rows[i]["blslno"].retStr();
 
-                                //string barno = "";
-                                //sql = "select distinct barno from " + oldschema + ".t_batchmst where barno in (";
-                                //sql += "select barno from " + oldschema + ".t_batchdtl where autono='" + tbl.Rows[i]["blautono"].ToString() + "' and txnslno = '" + tbl.Rows[i]["blslno"].ToString() + "') ";
-                                //var bardata = masterHelp.SQLquery(sql);
-                                //barno = bardata.Rows[0]["barno"].retStr();
-                                //if (batchwise == true)
-                                //{
-                                //    bool recoexistbatch = false;
-                                //    sql = "select distinct barno from " + newschema + ".t_batchmst where barno = '" + bardata.Rows[0]["barno"].retStr() + "' ";
-
-                                //    OraCmd.CommandText = sql; var OraRecoBatch = OraCmd.ExecuteReader();
-                                //    if (OraRecoBatch.HasRows == false) recoexistbatch = false; else recoexistbatch = true; OraRecoBatch.Dispose();
-
-                                //    if (recoexistbatch == false)
-                                //    {
-                                //        T_BATCHMST TBATCHMST = new T_BATCHMST();
-                                //        var BATCHMST = vTBATCHMST.Where(x => x.BARNO == barno).ToList();
-                                //        if (BATCHMST.Count > 0)
-                                //        {
-                                //            BATCHMST[0].AUTONO = TTXN.AUTONO;
-                                //            BATCHMST[0].SLNO = tbl.Rows[i]["blslno"].retDbl() == 0 ? 1 : tbl.Rows[i]["blslno"].retInt();
-                                //            TBATCHMST = BATCHMST[0];
-                                //            dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST);
-                                //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                                //        }
-                                //    }
-
-                                //}
-
-                                //if (batchwise == true)
-                                //{
-                                //    var TBATCHMSTPRICEOLD = vTBATCHMSTPRICE.Where(x => x.BARNO == barno).ToList();
-                                //    if (TBATCHMSTPRICEOLD.Count > 0)
-                                //    {
-                                //        foreach (var v in TBATCHMSTPRICEOLD)
-                                //        {
-                                //            bool recoexistbatchprice = false;
-
-                                //            sql = "select barno from " + newschema + ".t_batchmst_price where barno='" + barno + "' and prccd = '" + v.PRCCD + "' and effdt =  to_date('" + v.EFFDT.retDateStr() + "','dd/mm/yyyy')";
-                                //            OraCmd.CommandText = sql; var OraRecoBatchprice = OraCmd.ExecuteReader();
-                                //            if (OraRecoBatchprice.HasRows == false) recoexistbatchprice = false; else recoexistbatchprice = true; OraRecoBatchprice.Dispose();
-
-                                //            T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
-                                //            v.AUTONO = TTXN.AUTONO;
-                                //            TBATCHMSTPRICE = v;
-
-                                //            if (recoexistbatchprice == false)
-                                //            {
-                                //                dbsql = MasterHelpFa.RetModeltoSql(TBATCHMSTPRICE);
-                                //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                //            }
-                                //            //else
-                                //            //{
-                                //            //    dbsql = MasterHelpFa.RetModeltoSql(TBATCHMSTPRICE, "E");
-                                //            //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                //            //}
-                                //        }
-
-                                //    }
-                                //}
-
-                                while (tbl.Rows[i]["blautono"].ToString() == blautono && tbl.Rows[i]["blslno"].retDbl() == blslno && tbl.Rows[i]["baleno"].retStr() == baleno && tbl.Rows[i]["baleyr"].retStr() == baleyr)
+                                recoexist = false;
+                                sql = "select distinct autono, slno from " + newschema + ".t_txndtl where autono = '" + blautono + "' and slno = " + blslno + " and baleyr='" + baleyr + "' and baleno='" + baleno + "' ";
+                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                if (recoexist == false)
                                 {
-                                    iqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
-                                    inos = tbl.Rows[i]["nos"].retInt();
-                                    rate = tbl.Rows[i]["rate"].retDbl();
-                                    basamt = (rate * iqty).toRound();
+                                    T_TXNDTL TTXNDTL = new T_TXNDTL();
+                                    var TTXNDTLOLD = vTTXNDTL.Where(x => x.AUTONO == blautono && x.SLNO == blslno && x.BALEYR == baleyr && x.BALENO == baleno).ToList();
 
-                                    errorAutono = tbl.Rows[i]["blautono"].retStr();
-                                    if (errorAutono == "2021BNBHKOLKSSSPBL0000000612")
+                                    if (TTXNDTLOLD.Count > 0)
                                     {
-                                        var aa = "";
-                                    }
-
-
-                                    T_TXNDTL TXNDTL = new T_TXNDTL();
-                                    var TTXNDTL = vTTXNDTL.Where(x => x.AUTONO == blautono && x.SLNO == blslno).ToList();
-                                    if (TTXNDTL.Count > 0)
-                                    {
-                                        bool recoexisttxndtl = false;
-                                        sql = "select distinct autono from " + newschema + ".T_TXNDTL where autono = '" + TTXNDTL[0].AUTONO + "' and slno= " + TTXNDTL[0].SLNO + " ";
-
-                                        OraCmd.CommandText = sql; var OraRecotxndtl = OraCmd.ExecuteReader();
-                                        if (OraRecotxndtl.HasRows == false) recoexisttxndtl = false; else recoexisttxndtl = true; OraRecotxndtl.Dispose();
-
-                                        TTXNDTL[0].AUTONO = TTXN.AUTONO;
-                                        TTXNDTL[0].SLNO = tbl.Rows[i]["blslno"].retDbl() == 0 ? 1.retShort() : tbl.Rows[i]["blslno"].retShort();
-                                        TTXNDTL[0].STKDRCR = (iqty < .0001 ? "C" : "D");
-                                        TTXNDTL[0].NOS = TTXNDTL[0].STKDRCR == "C" ? inos * -1 : inos * 1;
-                                        TTXNDTL[0].QNTY = TTXNDTL[0].STKDRCR == "C" ? iqty * -1 : iqty * 1;
-                                        TTXNDTL[0].SHORTQNTY = 0;
-                                        TTXNDTL[0].RATE = tbl.Rows[i]["rate"].retDbl();
-                                        TTXNDTL[0].AMT = basamt;
-                                        TTXNDTL[0].GOCD = tbl.Rows[i]["gocd"].retStr();
-                                        TXNDTL = TTXNDTL[0];
-
-                                        if (recoexisttxndtl == false)
+                                        for (int rc = 0; rc <= TTXNDTLOLD.Count - 1; rc++)
                                         {
-                                            dbsql = MasterHelpFa.RetModeltoSql(TXNDTL);
-                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                        }
-                                        else
-                                        {
-                                            dbsql = MasterHelpFa.RetModeltoSql(TXNDTL, "E", "", "autono = '" + TTXNDTL[0].AUTONO + "' and slno= " + TTXNDTL[0].SLNO + "");
+                                            TTXNDTLOLD[rc].AUTONO = blautono;
+                                            TTXNDTLOLD[rc].SLNO = blslno.retShort();
+                                            //TTXNDTLOLD[rc].STKDRCR = (iqty < .0001 ? "C" : "D");
+                                            TTXNDTLOLD[rc].GOCD = tbl.Rows[i]["gocd"].retStr();
+
+                                            dbsql = MasterHelpFa.RetModeltoSql(TTXNDTLOLD[rc]);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                         }
                                     }
+                                }
 
+                                recoexist = false;
+                                sql = "select distinct autono, slno from " + newschema + ".t_bale where autono = '" + blautono + "' and slno = " + blslno + " and baleyr='" + baleyr + "' and baleno='" + baleno + "' ";
+                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                if (recoexist == false)
+                                {
+                                    T_BALE TBALE = new T_BALE();
+                                    var TBALEOLD = vTBALE.Where(x => x.AUTONO == blautono && x.SLNO == blslno && x.BALEYR == baleyr && x.BALENO == baleno).ToList();
 
-
-                                    T_BALE BALE = new T_BALE();
-                                    var TBALE = vTBALE.Where(x => x.AUTONO == blautono && x.SLNO == blslno).ToList();
-                                    if (TBALE.Count > 0)
+                                    if (TBALEOLD.Count > 0)
                                     {
-                                        bool recoexisttbale = false;
-                                        sql = "select distinct autono from " + newschema + ".T_BALE where autono = '" + TBALE[0].AUTONO + "' and slno= " + TBALE[0].SLNO + " ";
-
-                                        OraCmd.CommandText = sql; var OraRecotable = OraCmd.ExecuteReader();
-                                        if (OraRecotable.HasRows == false) recoexisttbale = false; else recoexisttbale = true; OraRecotable.Dispose();
-
-                                        TBALE[0].AUTONO = TTXN.AUTONO;
-                                        TBALE[0].SLNO = tbl.Rows[i]["blslno"].retDbl() == 0 ? 1.retShort() : tbl.Rows[i]["blslno"].retShort();
-                                        TBALE[0].DRCR = (iqty < .0001 ? "C" : "D");
-                                        TBALE[0].GOCD = tbl.Rows[i]["gocd"].retStr();
-                                        BALE = TBALE[0];
-
-                                        if (recoexisttbale == false)
+                                        for (int rc = 0; rc <= TBALEOLD.Count - 1; rc++)
                                         {
-                                            dbsql = MasterHelpFa.RetModeltoSql(BALE);
-                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                        }
-                                        else
-                                        {
-                                            dbsql = MasterHelpFa.RetModeltoSql(BALE, "E", "", "autono = '" + TBALE[0].AUTONO + "' and slno= " + TBALE[0].SLNO + "");
+                                            TBALEOLD[rc].AUTONO = blautono;
+                                            TBALEOLD[rc].SLNO = blslno.retShort();
+                                            //TBALEOLD[rc].DRCR = (iqty < .0001 ? "C" : "D");
+                                            TBALEOLD[rc].GOCD = tbl.Rows[i]["gocd"].retStr();
+
+                                            dbsql = MasterHelpFa.RetModeltoSql(TBALEOLD[rc]);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                         }
                                     }
+                                }
 
-                                    if (batchwise == true)
+                                recoexist = false;
+                                sql = "select distinct autono, slno from " + newschema + ".t_batchdtl where autono = '" + blautono + "' and txnslno = " + blslno + " and baleyr='" + baleyr + "' and baleno='" + baleno + "' ";
+                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                if (recoexist == false)
+                                {
+                                    T_BATCHDTL TBATCHDTL = new T_BATCHDTL();
+                                    var TBATCHDTLOLD = vTBATCHDTL.Where(x => x.AUTONO == blautono && x.TXNSLNO == blslno && x.BALEYR == baleyr && x.BALENO == baleno).ToList();
+
+                                    if (TBATCHDTLOLD.Count > 0)
                                     {
-                                        var TBATCHDTL = vTBATCHDTL.Where(x => x.AUTONO == blautono && x.TXNSLNO == blslno).ToList();
-                                        if (TBATCHDTL.Count > 0)
+                                        for (int rc = 0; rc <= TBATCHDTLOLD.Count - 1; rc++)
                                         {
-                                            foreach (var v in TBATCHDTL)
-                                            {
-                                                bool recoexisttbatchdtl = false;
-                                                sql = "select distinct autono from " + newschema + ".T_BATCHDTL where autono = '" + v.AUTONO + "' and slno= " + v.SLNO + " and txnslno=" + v.TXNSLNO + " ";
-                                                //sql = "select distinct autono from " + newschema + ".T_BATCHDTL where autono = '" + v.AUTONO + "' and slno= " + v.TXNSLNO + " and txnslno=" + v.TXNSLNO + " ";
+                                            TBATCHDTLOLD[rc].AUTONO = blautono;
+                                            TBATCHDTLOLD[rc].MILLNM = "BALESTOCK";
+                                            //TBATCHDTLOLD[rc].STKDRCR = (iqty < .0001 ? "C" : "D");
+                                            TBATCHDTLOLD[rc].GOCD = tbl.Rows[i]["gocd"].retStr();
 
-                                                OraCmd.CommandText = sql; var OraRecotbatchdtl = OraCmd.ExecuteReader();
-                                                if (OraRecotbatchdtl.HasRows == false) recoexisttbatchdtl = false; else recoexisttbatchdtl = true; OraRecotbatchdtl.Dispose();
-
-                                                T_BATCHDTL BATCHDTL = new T_BATCHDTL();
-                                                v.AUTONO = TTXN.AUTONO;
-                                                //v.SLNO = TXNDTL.SLNO;
-                                                v.TXNSLNO = TXNDTL.SLNO;
-                                                //TBATCHDTL[0].EMD_NO = TTXN.EMD_NO;
-                                                //TBATCHDTL[0].DTAG = TTXN.DTAG;
-                                                //TBATCHDTL[0].CLCD = TTXN.CLCD;
-                                                v.NOS = TXNDTL.NOS;
-                                                v.QNTY = TXNDTL.QNTY;
-                                                v.RATE = TXNDTL.RATE;
-                                                v.OTHRAMT = 0;
-                                                v.GOCD = TTXN.GOCD;
-                                                v.BARNO = TBATCHDTL[0].BARNO;
-                                                v.MTRLJOBCD = TXNDTL.MTRLJOBCD;
-                                                v.STKTYPE = TXNDTL.STKTYPE;
-                                                v.STKDRCR = TXNDTL.STKDRCR;
-                                                v.MILLNM = "BALESTOCK";
-                                                BATCHDTL = v;
-
-                                                if (recoexisttbatchdtl == false)
-                                                {
-                                                    dbsql = MasterHelpFa.RetModeltoSql(BATCHDTL);
-                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                                }
-                                                else
-                                                {
-                                                    dbsql = MasterHelpFa.RetModeltoSql(BATCHDTL, "E", "", "autono = '" + v.AUTONO + "' and slno= " + v.SLNO + " and txnslno=" + v.TXNSLNO + "");
-                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                                }
-                                            }
+                                            dbsql = MasterHelpFa.RetModeltoSql(TBATCHDTLOLD[rc]);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                         }
-
                                     }
-                                    i += 1;
+                                }
+
+                                while (tbl.Rows[i]["blautono"].ToString() == blautono && tbl.Rows[i]["blslno"].retDbl() == blslno && tbl.Rows[i]["baleyr"].ToString() == baleyr && tbl.Rows[i]["baleno"].ToString() == baleno)
+                                {
+                                    i++;
                                     if (i > maxR) break;
                                 }
-                                sl = sl + 1;
                                 if (i > maxR) break;
-                                if (chkval == "") break;
                             }
+                            if (i > maxR) break;
                         }
                     }
                     #endregion
@@ -1494,146 +1341,6 @@ namespace Improvar.Controllers
                         }//PendingJobDT.Rows.Count
                     }//checkbox5
                     #endregion
-
-                    //#region job not used xxxx
-                    //if (VE.Checkbox6 == true)
-                    //{
-                    //    sql = "";
-
-
-                    //    sql += " select distinct a.* from sd_rec2020.t_txnproddtl a , sd_rec2020.t_cntrl_hdr b";
-                    //    sql += " where a.autono = b.autono and a.doccd = 'SOJR' and yr_cd = 2020";
-                    //    sql += " and jobautoslno in(";
-                    //    sql += " select distinct a.jobautoslno from sd_rec2021.t_txnproddtl a, sd_rec2021.t_cntrl_hdr b";
-                    //    sql += " where a.autono = b.autono and a.doccd = 'SOJI' and yr_cd = 2020";
-                    //    sql += " )";
-                    //    DataTable PendingJobDT = masterHelp.SQLquery(sql);
-                    //    Int32 rNo = 0;
-                    //    maxR = PendingJobDT.Rows.Count - 1;
-
-                    //    if (dberrmsg != "") goto dbnotsave;
-
-                    //    var vTXN = (from p in DBOLD.T_TXN
-                    //                join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                    //                where (q.COMPCD == COM)
-                    //                select p).ToList();
-
-                    //    var vTXNDTL = (from p in DBOLD.T_TXNDTL
-                    //                   join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                    //                   where (q.COMPCD == COM)
-                    //                   select p).ToList();
-
-                    //    var vTXNPRODDTL = (from p in DBOLD.T_TXNPRODDTL
-                    //                       join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                    //                       where (q.COMPCD == COM)
-                    //                       select p).ToList();
-
-                    //    var vTXNOTH = (from p in DBOLD.T_TXNOTH
-                    //                   join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                    //                   where (q.COMPCD == COM)
-                    //                   select p).ToList();
-
-                    //    var vTXNTRANS = (from p in DBOLD.T_TXNTRANS
-                    //                     join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                    //                     where (q.COMPCD == COM)
-                    //                     select p).ToList();
-
-
-                    //    sql = "";
-                    //    sql += " select a.autono,a.slno from sd_rec2020.t_txnproddtl a , sd_rec2020.t_cntrl_hdr b";
-                    //    sql += " where a.autono = b.autono and a.doccd = 'SOJR' and yr_cd = 2020";
-                    //    sql += " and jobautoslno in(";
-                    //    sql += " select distinct a.jobautoslno from sd_rec2021xx.t_txnproddtl a, sd_rec2021xx.t_cntrl_hdr b";
-                    //    sql += " where a.autono = b.autono and a.doccd = 'SOJI' and yr_cd = 2020 and b.compcd='" + COM + "'";
-                    //    sql += " )";
-                    //    sql += " union all ";
-                    //    sql += " select a.autono,a.slno from sd_rec2020.t_txndtl a , sd_rec2020.t_cntrl_hdr b";
-                    //    sql += " where a.autono = b.autono and a.doccd = 'SOJR' and yr_cd = 2020";
-                    //    sql += " and jobautoslno in(";
-                    //    sql += " select distinct a.jobautoslno from xx.t_txndtl a, sd_rec2021xx.t_cntrl_hdr b";
-                    //    sql += " where a.autono = b.autono and a.doccd = 'SOJI' and yr_cd = 2020  and b.compcd='" + COM + "'";
-                    //    sql += " )";
-                    //    PendingJobDT = masterHelp.SQLquery(sql);
-                    //    bool recoexist = false;
-                    //    i = 0; maxR = 0;
-                    //    maxR = PendingJobDT.Rows.Count - 1;
-                    //    while (i <= maxR)
-                    //    {
-                    //        autono = PendingJobDT.Rows[i]["autono"].ToString();
-                    //        int slno = PendingJobDT.Rows[i]["slno"].retInt();
-                    //        sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + autono + "'";
-                    //        OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                    //        if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                    //        if (recoexist == false)
-                    //        {
-                    //            T_CNTRL_HDR TTCH = DBOLD.T_CNTRL_HDR.Find(autono);
-                    //            dbsql = MasterHelpFa.RetModeltoSql(TTCH);
-                    //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    //            var TTxn = vTXN.Where(m => m.AUTONO == autono).First();
-                    //            dbsql = MasterHelpFa.RetModeltoSql(TTxn);
-                    //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    //        }
-
-                    //        sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + autono + "' and slno=" + slno + "";
-                    //        OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                    //        if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                    //        if (recoexist == false)
-                    //        {
-                    //            var TXNDTL = vTXNDTL.Where(m => m.AUTONO == autono && m.SLNO == slno).FirstOrDefault();
-                    //            if (TXNDTL != null)
-                    //            {
-                    //                TXNDTL.STKDRCR = "N";
-                    //                dbsql = MasterHelpFa.RetModeltoSql(TXNDTL);
-                    //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    //            }
-                    //        }
-
-                    //        sql = "select autono from " + newschema + ".T_TXNPRODDTL where autono='" + autono + "'  and slno=" + slno + "";
-                    //        OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                    //        if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                    //        if (recoexist == false)
-                    //        {
-
-                    //            var TXNPRODDTL = vTXNPRODDTL.Where(m => m.AUTONO == autono && m.SLNO == slno).FirstOrDefault();
-                    //            if (TXNPRODDTL != null)
-                    //            {
-                    //                dbsql = MasterHelpFa.RetModeltoSql(TXNPRODDTL);
-                    //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    //            }
-                    //        }
-
-                    //        sql = "select autono from " + newschema + ".T_TXNOTH where autono='" + autono + "'";
-                    //        OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                    //        if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                    //        if (recoexist == false)
-                    //        {
-
-                    //            var TXNOTH = vTXNOTH.Where(m => m.AUTONO == autono).FirstOrDefault();
-                    //            if (TXNOTH != null)
-                    //            {
-                    //                dbsql = MasterHelpFa.RetModeltoSql(TXNOTH);
-                    //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    //            }
-                    //        }
-                    //        sql = "select autono from " + newschema + ".T_TXNTRANS where autono='" + autono + "'";
-                    //        OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                    //        if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                    //        if (recoexist == false)
-                    //        {
-                    //            var TXNTRANS = vTXNTRANS.Where(m => m.AUTONO == autono).FirstOrDefault();
-                    //            if (TXNTRANS != null)
-                    //            {
-                    //                dbsql = MasterHelpFa.RetModeltoSql(TXNTRANS);
-                    //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    //            }
-                    //        }
-
-                    //        i++;
-                    //        if (i > maxR) break;
-                    //    } //while pending 
-                    //}//check box 6
-                    //#endregion
 
                     ModelState.Clear();
                     OraTrans.Commit();
