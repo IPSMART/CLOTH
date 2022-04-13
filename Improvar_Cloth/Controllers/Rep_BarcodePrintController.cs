@@ -110,7 +110,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP", string callfrm = "")
+        public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP", string callfrm = "", String jobppricecd="JOBP")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
@@ -138,9 +138,9 @@ namespace Improvar.Controllers
             //if (barno.retStr() != "") sql += "a.barno in ('" + barno + "') and " + Environment.NewLine;
             if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and " + Environment.NewLine;
             sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) a, " + Environment.NewLine;
-            sql += "(select a.barno, nvl(m.rate, 0) cprate, nvl(n.rate, 0) wprate, nvl(o.rate, 0) rprate from " + Environment.NewLine;
+            sql += "(select a.barno, nvl(m.rate, 0) cprate, nvl(n.rate, 0) wprate, nvl(o.rate, 0) rprate, nvl(p.rate, 0) jobprate from " + Environment.NewLine;
             sql += "" + scm + ".t_batchmst a, " + Environment.NewLine;
-            for (int x = 0; x <= 2; x++)
+            for (int x = 0; x <= 3; x++)
             {
                 string prccd = "", sqlals = "";
                 switch (x)
@@ -151,6 +151,8 @@ namespace Improvar.Controllers
                         prccd = wppricecd; sqlals = "n"; break;
                     case 2:
                         prccd = rppricecd; sqlals = "o "; break;
+                    case 3:
+                        prccd = jobppricecd; sqlals = "P "; break;
                 }
                 //sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
                 sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
