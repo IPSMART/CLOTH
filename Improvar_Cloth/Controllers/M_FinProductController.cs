@@ -296,15 +296,16 @@ namespace Improvar.Controllers
                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                 }
                 var itcd = aa[0];
-                if (VE.MENU_PARA == "C")
-                {
-                    sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "F" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
-                }
-                else if (VE.MENU_PARA == "F")
-                {
-                    sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
-                }
-                else { sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "F" && r.ITCD == itcd).FirstOrDefault(); }
+                //if (VE.MENU_PARA == "C")
+                //{
+                //    sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "F" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
+                //}
+                //else if (VE.MENU_PARA == "F")
+                //{
+                //    sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
+                //}
+                //else { sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "F" && r.ITCD == itcd).FirstOrDefault(); }
+                sl = DB.M_SITEM.Find(itcd);
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                 slll = DB.M_GROUP.Find(sl.ITGRPCD);
                 slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
@@ -312,6 +313,7 @@ namespace Improvar.Controllers
                 slc = DB.M_COLLECTION.Find(sl.COLLCD);
                 sluom = DBF.M_UOM.Find(sl.UOMCD);
                 sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
+
                 VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "", "") != "" ? true : false;
                 string fitcd = sl.FABITCD.retStr();
                 if (fitcd != "")
