@@ -2367,8 +2367,8 @@ namespace Improvar.Controllers
                             //OraTrans.Rollback();
                             //OraCon.Dispose();
 
-                            //dberrmsg = "Programme grid & Receive grid itcd [" + diffitcd + "] wise qnty+short qnty should match !!";
-                            //goto dbnotsave;
+                            dberrmsg = "Programme grid & Receive grid itcd [" + diffitcd + "] wise qnty+short qnty should match !!";
+                            goto dbnotsave;
                         }
                     }
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
