@@ -2256,7 +2256,7 @@ namespace Improvar
         {
             var MSYSCNFG = salesfunc.M_SYSCNFG(DOCDT);
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
-            string doctag = "";
+            string doctag = ""; string CPRATE = "", CAPTION = ""; var hdr = "";
             doctag = menupara.retStr() == "SR" ? "SB" : menupara.retStr() == "PR" ? "PB" : "JB";
             if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
             {
@@ -2268,7 +2268,8 @@ namespace Improvar
             //}
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag,SLCD);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag, SLCD);
+
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {
@@ -2276,9 +2277,11 @@ namespace Improvar
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
                     SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
-                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") +"<td>" + tbl.Rows[i]["gocd"] + "</td></tr>");
+                           + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") + "<td>" + tbl.Rows[i]["gocd"] + "</td><td>" + tbl.Rows[i]["fabitnm"] + "</td></tr>");
+                    
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "") + Cn.GCS() + "Godown";
+                hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "") + Cn.GCS() + "Godown" + Cn.GCS() + "Fabric Item";
+              
                 return Generate_help(hdr, SB.ToString());
             }
             else
@@ -3163,13 +3166,13 @@ namespace Improvar
                 itgrptype = string.Join(",", (from a in DB.M_GROUP select a.ITGRPTYPE).Distinct().ToList());
             }
             string[] selgrpcd = itgrptype.Split(',');
-           var sllist = (from a in DB.M_GROUP
-                      where (selgrpcd.Contains(a.ITGRPTYPE))
-                      select new 
-                      {
-                          ITGRPNM = a.ITGRPNM,
-                          ITGRPCD = a.ITGRPCD
-                      }).OrderBy(A => A.ITGRPNM).ToList();
+            var sllist = (from a in DB.M_GROUP
+                          where (selgrpcd.Contains(a.ITGRPTYPE))
+                          select new
+                          {
+                              ITGRPNM = a.ITGRPNM,
+                              ITGRPCD = a.ITGRPCD
+                          }).OrderBy(A => A.ITGRPNM).ToList();
             string GRPCD = "";
             GRPCD = "";
             for (int i = 0; i <= sllist.Count - 1; i++)
@@ -3179,6 +3182,6 @@ namespace Improvar
             }
             return GRPCD;
         }
-        
+
     }
 }
