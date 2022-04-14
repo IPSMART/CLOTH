@@ -3592,7 +3592,12 @@ namespace Improvar.Controllers
                         MBILLDET.SHORTQNTY = 0;
                         MBILLDET.RATE = 0;
                         MBILLDET.WPRATE = 0;
-                       
+
+                        MBILLDET.ITSTYLE = "";
+                        MBILLDET.ITCD = "";
+                        MBILLDET.BARGENTYPE = "";
+                        MBILLDET.ITGRPCD = "";
+                        MBILLDET.ITGRPNM = "";
                     }
 
                     copied = true;

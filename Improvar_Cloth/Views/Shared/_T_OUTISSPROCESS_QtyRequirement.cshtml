@@ -23,6 +23,12 @@
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
+                @if (Model.DefaultAction != "V")
+                {
+                    <div class="col-md-1" style="width:auto;">
+                        <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" name="FillMaterialIssue" value="Generate Material Issue" title="Click to Fill Data in Material Issue Tab" onclick="Fill_MaterialIssueData()" />
+                    </div>
+                }
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
                     <b>Genrate Qty Requirement</b>
                 </center>
