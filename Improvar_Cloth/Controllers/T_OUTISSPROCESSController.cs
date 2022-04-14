@@ -219,22 +219,22 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
 
-                                TTXN.JOBCD = TempData["LASTJOBCD" + VE.MENU_PARA].retStr();
-                                TempData.Keep();
-                                if (TTXN.JOBCD.retStr() == "")
-                                {
-                                    if (VE.DocumentType.Count() > 0)
-                                    {
-                                        string doccd = VE.DocumentType.FirstOrDefault().value;
-                                        TTXN.JOBCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.JOBCD).FirstOrDefault();
-                                    }
-                                }
-                                string jobcd1 = TTXN.JOBCD.retStr();
+                                //TTXN.JOBCD = TempData["LASTJOBCD" + VE.MENU_PARA].retStr();
+                                //TempData.Keep();
+                                //if (TTXN.JOBCD.retStr() == "")
+                                //{
+                                //    if (VE.DocumentType.Count() > 0)
+                                //    {
+                                //        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                //        TTXN.JOBCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.JOBCD).FirstOrDefault();
+                                //    }
+                                //}
+                                //string jobcd1 = TTXN.JOBCD.retStr();
 
-                                if (jobcd1 != "")
-                                {
-                                    VE.JOBNM = DB.M_JOBMST.Where(a => a.JOBCD == jobcd1).Select(b => b.JOBNM).FirstOrDefault();
-                                }
+                                //if (jobcd1 != "")
+                                //{
+                                //    VE.JOBNM = DB.M_JOBMST.Where(a => a.JOBCD == jobcd1).Select(b => b.JOBNM).FirstOrDefault();
+                                //}
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
