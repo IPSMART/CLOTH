@@ -86,7 +86,7 @@
             var mtrlcdblank = false;
             if (GridRow != 0) {
                 for (var i = 0; i <= GridRow - 1; i++) {
-                    if ($("#B_MTRLJOBCD_" + i).val() == "") {
+                    if ($("#B_ITCD_" + i).val() != "" && $("#B_MTRLJOBCD_" + i).val() == "") {
                         mtrlcdblank = true;
                         break;
                     }
@@ -434,8 +434,9 @@
         if (event.key == "F9") {
             var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
             for (var J = 0; J <= GridRow - 1; J++) {
-                var slno = $("#P_SLNO_" + J).val();
-                if (parseInt(slno) == i) {
+                var pslno = $("#P_SLNO_" + J).val();
+                var qslno = $("#Q_SLNO_" + i).val();
+                if (parseInt(pslno) == parseInt(qslno)) {
                     $("#Q_BARNO_" + i).val($("#P_BARNO_" + J).val());
                     $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
                     $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
@@ -443,6 +444,14 @@
                     $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
                     $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
                     $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
+                    $("#Q_BOMQNTY_" + i).val($("#P_QNTY_" + J).val());
+                    if ("@Model.MENU_PARA" == "DY")
+                    {
+                        $("#Q_MTRLJOBCD_" + i).val("PL");
+                    }
+                    else {
+                        $("#Q_MTRLJOBCD_" + i).val("DY");
+                    }
                 }
             }
         }
@@ -2194,6 +2203,73 @@
 
     }
 
+</script>
+<script>
+    function Fill_MaterialIssueData() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillMaterialIssueData", PageControllerName)",
+            data: $('form').serialize(),
+        success: function (result) {
+            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivBarCodeTab").html(result);
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                CalculateBargridQnty('_T_SALE_PRODUCT_GRID',i);
+            }
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+</script>
+<script>
+    function ChangeDoctype() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("changeDocumentType", PageControllerName)',
+            data: $('form').serialize() + "&AllowBDATE=" + '@Model.AllowBackDate',
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    debugger;
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    var maxdocdt = returncolvalue(result, "docmaxmindate");
+                    var dt = maxdocdt.split('~');
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    $("#DOCDT").datepicker("option", "minDate", dt[0]);
+                    $("#DOCDT").datepicker("option", "maxDate", dt[1]);
+
+                    $("#JOBCD").val(returncolvalue(result, "JOBCD"));
+                    $("#JOBNM").val(returncolvalue(result, "JOBNM"));
+                    $("#GOCD").val(returncolvalue(result, "GOCD"));
+                    $("#GONM").val(returncolvalue(result, "GONM"));
+
+                }
+                else {
+                    msgInfo("" + result + " !");
+                    message_value = "DOCCD";
+                }
+                $("#WaitingMode").hide();
+                return false;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
 </script>
 @using (Html.BeginForm())
 {
