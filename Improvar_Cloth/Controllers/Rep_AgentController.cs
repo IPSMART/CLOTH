@@ -332,6 +332,9 @@ namespace Improvar.Controllers
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
                 bool showitems = VE.Checkbox3;
 
+                string fbldt = "", tbldt = "";
+                fbldt = VE.TEXTBOX6.retDateStr(); tbldt = VE.TEXTBOX7.retDateStr();
+
                 string selagslcd = "", selslcd = "", selglcd = "";
                 if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
@@ -398,9 +401,10 @@ namespace Improvar.Controllers
                 sql += "where a.autoslno = b.autoslno(+) and a.autoslno = c.autoslno(+) and a.autono = d.autono(+) and " + Environment.NewLine;
                 sql += "a.autono = e.autono(+) and a.slno = e.slno(+) and "+ agslcd + " = g.slcd(+) and a.slcd = f.slcd(+) " + Environment.NewLine;
                 if (selagslcd != "") sql += " and " + agslcd + " in(" + selagslcd + ") " + Environment.NewLine;
+                if (fbldt != "") sql += "and d.docdt >= to_date('" + fbldt + "','dd/mm/yyyy') " + Environment.NewLine;
+                if (tbldt != "") sql += "and d.docdt <= to_date('" + tbldt + "','dd/mm/yyyy') " + Environment.NewLine;
                 sql += "order by linkcd, glcd,agslcd, slcd, autoslno " + Environment.NewLine;
-
-
+                
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 tbl.DefaultView.Sort = "agslcd";
                 tbl = tbl.DefaultView.ToTable();

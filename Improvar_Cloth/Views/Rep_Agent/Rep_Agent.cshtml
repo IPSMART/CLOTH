@@ -36,15 +36,15 @@
                 $('#showItdet').hide(); $('#shorton').hide();
                 $("#details").css("display", "block");
                 $("#showbil").css("display", "block");
-                
+                $("#showbildate").css("display", "block");
             }
             else {
                 $('#showItdet').show(); $('#shorton').show();
                 $("#details").css("display", "none");
                 $("#showbil").css("display", "none");
+                $("#showbildate").css("display", "none");
             }
         });
-    
     });
 </script>
 <script></script>
@@ -159,6 +159,30 @@
                         <label class="radio-inline">
                             <input type="radio" name="reptypeBil" value="Pending Balance" id="radio_Balance" style="margin-top: 2px;" />Pending Balance
                         </label>
+                    </div>
+                </div>
+                <div class="row" id="showbildate" style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 4px;">
+                            @Html.Label("", "From Bill Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX6, new { htmlAttributes = new { @class = "form-control", id = "FBLDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 4px;">
+                            @Html.Label("", "To Bill Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX7, new { htmlAttributes = new { @class = "form-control", id = "TBLDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                        </div>
                     </div>
                 </div>
                 <div class="row">
