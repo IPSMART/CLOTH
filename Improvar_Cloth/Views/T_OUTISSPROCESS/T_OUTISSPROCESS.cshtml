@@ -2232,6 +2232,45 @@
     });
     }
 </script>
+<script>
+    function ChangeDoctype() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("changeDocumentType", PageControllerName)',
+            data: $('form').serialize() + "&AllowBDATE=" + '@Model.AllowBackDate',
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    debugger;
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    var maxdocdt = returncolvalue(result, "docmaxmindate");
+                    var dt = maxdocdt.split('~');
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    $("#DOCDT").datepicker("option", "minDate", dt[0]);
+                    $("#DOCDT").datepicker("option", "maxDate", dt[1]);
+
+                    $("#JOBCD").val(returncolvalue(result, "JOBCD"));
+                    $("#JOBNM").val(returncolvalue(result, "JOBNM"));
+                    $("#GOCD").val(returncolvalue(result, "GOCD"));
+                    $("#GONM").val(returncolvalue(result, "GONM"));
+
+                }
+                else {
+                    msgInfo("" + result + " !");
+                    message_value = "DOCCD";
+                }
+                $("#WaitingMode").hide();
+                return false;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)

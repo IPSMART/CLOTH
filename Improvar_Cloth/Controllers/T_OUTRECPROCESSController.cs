@@ -208,6 +208,23 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
 
+                                TTXN.JOBCD = TempData["LASTJOBCD" + VE.MENU_PARA].retStr();
+                                TempData.Keep();
+                                if (TTXN.JOBCD.retStr() == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        TTXN.JOBCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.JOBCD).FirstOrDefault();
+                                    }
+                                }
+                                string jobcd1 = TTXN.JOBCD.retStr();
+
+                                if (jobcd1 != "")
+                                {
+                                    VE.JOBNM = DB.M_JOBMST.Where(a => a.JOBCD == jobcd1).Select(b => b.JOBNM).FirstOrDefault();
+                                }
+
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
@@ -1439,11 +1456,11 @@ namespace Improvar.Controllers
                 string PRCCD = data[6].retStr();
                 string TAXGRPCD = data[7].retStr();
                 string onclik = data[8].retStr();
-                if(onclik=="onclick")
+                if (onclik == "onclick")
                 { BARNO = ""; }
                 if (val.retStr() != "") { showonlycommonbar = false; }
                 //var str = masterHelp.ITCD_help(val, "", "");
-                var str = masterHelp.T_TXN_BARNO_help(val, "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar,"");
+                var str = masterHelp.T_TXN_BARNO_help(val, "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1470,7 +1487,7 @@ namespace Improvar.Controllers
 
                         tax_data = retBarPrn(docdt, "", BARNO.retStr(), "WP", "RP", "JOBP");
 
-                   
+
                         if (tax_data != null && tax_data.Rows.Count > 0)
                         {
                             BARNO = tax_data.Rows[0]["barno"].retStr();
@@ -1698,7 +1715,7 @@ namespace Improvar.Controllers
                     for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                     {
                         SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"].retStr().Remove(10) + " </td><td>" + tbl.Rows[i]["proguniqno"] + " </td><td>"
-                            + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " [" + tbl.Rows[i]["itgrpcd"] + "]" + " </td><td>" + tbl.Rows[i]["itnm"] + " [" + tbl.Rows[i]["itcd"] + "]" + " </td><td>"
+                            + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " [" + tbl.Rows[i]["itgrpcd"] + "]" + " </td><td>" + tbl.Rows[i]["STYLENO"] + " " + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["itcd"] + "]" + " </td><td>"
                             + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["balnos"] + " </td><td>" + tbl.Rows[i]["balqnty"] + " </td><td>"
                             + tbl.Rows[i]["progautoslno"] + " </td><td>" + tbl.Rows[i]["itremark"] + " </td></tr>");
                     }
@@ -2345,32 +2362,32 @@ namespace Improvar.Controllers
                     if (VE.TBATCHDTL != null && VE.TPROGDTL != null)
                     {
                         var prgrmdata = (from x in VE.TPROGDTL
-                                         group x by new { x.ITCD } into P
+                                         group x by new { x.PROGAUTONO , x.PROGSLNO } into P
                                          select new
                                          {
-                                             ITCD = P.Key.ITCD,
-                                             QTY = P.Sum(A => A.QNTY + A.SHORTQNTY).retDbl().toRound(3),
+                                             PROGAUTOSLNO = P.Key.PROGAUTONO+""+ P.Key.PROGSLNO,
+                                             QTY = P.Sum(A => A.QNTY.retDbl() + A.SHORTQNTY.retDbl()).retDbl().toRound(3),
                                          }).Where(a => a.QTY != 0).ToList();
                         var rcvdata = (from x in VE.TBATCHDTL
-                                       group x by new { x.ITCD } into P
+                                       group x by new { x.RECPROGAUTONO , x.RECPROGSLNO } into P
                                        select new
                                        {
-                                           ITCD = P.Key.ITCD,
-                                           QTY = P.Sum(A => A.QNTY + A.SHORTQNTY).retDbl().toRound(3),
+                                           PROGAUTOSLNO = P.Key.RECPROGAUTONO + "" + P.Key.RECPROGSLNO,
+                                           QTY = P.Sum(A => A.QNTY.retDbl() + A.SHORTQNTY.retDbl()).retDbl().toRound(3),
                                        }).Where(a => a.QTY != 0).ToList();
 
 
 
-                        var difList1 = rcvdata.Where(a => !prgrmdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY))
-                         .Union(prgrmdata.Where(a => !rcvdata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY))).ToList();
+                        var difList1 = rcvdata.Where(a => !prgrmdata.Any(a1 => a1.PROGAUTOSLNO == a.PROGAUTOSLNO && a1.QTY == a.QTY))
+                         .Union(prgrmdata.Where(a => !rcvdata.Any(a1 => a1.PROGAUTOSLNO == a.PROGAUTOSLNO && a1.QTY == a.QTY))).ToList();
 
                         if (difList1 != null && difList1.Count > 0)
                         {
-                            string diffitcd = difList1.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
+                            string diffitcd = difList1.Select(a => a.PROGAUTOSLNO).Distinct().ToArray().retSqlfromStrarray();
                             //OraTrans.Rollback();
                             //OraCon.Dispose();
 
-                            dberrmsg = "Programme grid & Receive grid itcd [" + diffitcd + "] wise qnty+short qnty should match !!";
+                            dberrmsg = "Programme grid & Receive grid progautoslno [" + diffitcd + "] wise qnty+short qnty should match !!";
                             goto dbnotsave;
                         }
                     }
@@ -2517,6 +2534,7 @@ namespace Improvar.Controllers
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
+                        TempData["LASTJOBCD" + VE.MENU_PARA] = VE.T_TXN.JOBCD;
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
@@ -3520,11 +3538,11 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
-            dbok:;
+                dbok:;
             }
             catch (Exception ex)
             {

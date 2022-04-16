@@ -712,7 +712,7 @@ namespace Improvar.Controllers
                 }
 
                 netpur = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
-                purval = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["txblval"].retDbl() + tbl1.Rows[i]["othramt"].retDbl() : 0;
+                purval = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["txblval"].retDbl() : 0;
 
                 karqty = (tbl1.Rows[i]["doctag"].retStr() == "KR") || (tbl1.Rows[i]["doctag"].retStr() == "KI") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
                 karval = (tbl1.Rows[i]["doctag"].retStr() == "KR") || (tbl1.Rows[i]["doctag"].retStr() == "KI") ? tbl1.Rows[i]["txblval"].retDbl() : 0;
