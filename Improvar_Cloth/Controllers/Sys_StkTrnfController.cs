@@ -623,7 +623,7 @@ namespace Improvar.Controllers
                             bool insTxn = (blautono == "" ? true : false);
 
                             recoexist = false;
-                            sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + chkval + "'";
+                            sql = "select autono from " + newschema + ".t_txn where autono='" + chkval + "'";
                             OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
                             if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
