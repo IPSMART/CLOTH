@@ -2454,7 +2454,20 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", " DOC Remarks")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM", @class = "form-control", @style = "width:270px;height:30px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
+                        </div>
+                    </div>                    
+                </div>
+
+                </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Programme_LI" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
