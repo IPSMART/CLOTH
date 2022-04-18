@@ -152,7 +152,7 @@ namespace Improvar
             sql += "select a.autono, b.itcd, b.partcd, f.itgrpcd, i.itgrpnm, f.styleno, f.itnm, f.hsncode, f.uomcd, j.uomnm, j.decimals, g.partnm, c.slcd, e.slnm, ";
             if (shortallowadj == false) sql += "b.qnty, nvl(b.shortqnty,0) shortqnty, nvl(y.short_allow,0) short_allow, ";
             else sql += "b.qnty+nvl(y.short_allow,0) qnty, nvl(b.shortqnty,0)-nvl(y.short_allow,0) shortqnty, nvl(y.short_allow,0) short_allow, ";
-            sql += "d.docno, d.docdt, c.prefno, c.prefdt, b.progautono, b.progautono issautono, h.docno issdocno, h.docdt issdocdt,b.nos from ";
+            sql += "d.docno, d.docdt, c.prefno, c.prefdt, b.progautono, b.progautono issautono, h.docno issdocno, h.docdt issdocdt,b.nos,b.rate from ";
 
             sql += "(select a.autono ";
             sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b ";
@@ -163,10 +163,10 @@ namespace Improvar
             if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
             sql += "nvl(b.cancel,'N')='N' ) a, ";
 
-            sql += "(select a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,'') progitcd, sum(b.nos) nos, sum(b.qnty) qnty, sum(b.shortqnty) shortqnty ";
+            sql += "(select a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,'') progitcd, sum(b.nos) nos, sum(b.qnty) qnty, sum(b.shortqnty) shortqnty,b.rate ";
             sql += "from " + scm1 + ".t_progdtl a, " + scm1 + ".t_batchdtl b, " + scm1 + ".t_progmast c, " + scm1 + ".t_batchmst d ";
             sql += "where a.autono=b.autono(+) and a.progautono=b.recprogautono(+) and a.progslno=b.recprogslno(+) and a.progautono||a.progslno=c.autono||c.slno and b.barno=d.barno(+) and nvl(c.sample,'N') <> 'Y' ";
-            sql += "group by a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,'') ) b, ";
+            sql += "group by a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,''),b.rate ) b, ";
 
             sql += "(select a.recautono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') progitcd, sum(a.short_allow) short_allow ";
             sql += "from " + scm1 + ".t_prog_close a, " + scm1 + ".t_progmast b where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.recautono is not null ";
