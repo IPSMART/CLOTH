@@ -600,6 +600,7 @@
         }
     }
     function GetItems() {
+        debugger;
         var GridRowMain = $("#tblPendingJobBill > tbody > tr").length;
         var COUNT = 0;
         var chkid = "";
@@ -641,6 +642,27 @@
                     $(".tab-content div").removeClass("active");
                     $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                     $("#Items_LI").addClass("active");
+
+                    var GridRowMain1 = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+                    for (var i = 0; i <= GridRowMain1 - 1; i++) {
+                        var RATE = "RATE_" + i;
+                        var BillQNTY = "BillQNTY_" + i;
+                        var AMOUNT = "AMOUNT_" + i; var DISCPER = "DISCPER_" + i;
+                        var DISCAMT = "DISCAMT_" + i; var TAXABLE = "TAXABLE_" + i;
+                        var igstper = "igstper_" + i;
+                        var igstamt = "igstamt_" + i;
+                        var cgstper = "cgstper_" + i;
+                        var cgstamt = "cgstamt_" + i;
+                        var sgstper = "sgstper_" + i;
+                        var sgstamt = "sgstamt_" + i;
+                        var cessper = "cessper_" + i;
+                        var cessamt = "cessamt_" + i;
+                        var NETAMOUNT = "NETAMOUNT_" + i;
+                        var NOS = "NOS_" + i;
+                        CalculateRowAmt(RATE, BillQNTY, AMOUNT, DISCPER, DISCAMT, TAXABLE, igstper, igstamt, cgstper, cgstamt, sgstper,sgstamt, cessper, cessamt, NETAMOUNT, i, NOS);
+                        //CalculateRowAmt("RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ",'" + "NOS_" + i)
+                        //CalculateRowAmt(rateid, qtnid, amtid, discper, discamtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, index, nosid)
+                    }
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

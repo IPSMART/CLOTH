@@ -813,7 +813,8 @@ namespace Improvar.Controllers
                                          SHORTQNTY = dr["SHORTQNTY"] == DBNull.Value ? 0 : Convert.ToDouble(dr["SHORTQNTY"]),
                                          NOS = dr["NOS"].retDbl(),
                                          SLCD = dr["slcd"] == DBNull.Value ? "" : dr["slcd"].ToString(),
-                                         PARTCD = dr["PARTCD"] == DBNull.Value ? "" : dr["PARTCD"].ToString()
+                                         PARTCD = dr["PARTCD"] == DBNull.Value ? "" : dr["PARTCD"].ToString(),
+                                         RATE = dr["rate"] == DBNull.Value ? 0 : dr["rate"].retDbl()
                                      }).OrderBy(a => a.AUTONO).ToList();
                     if (VE.BackupTable != null)
                     {
@@ -998,6 +999,7 @@ namespace Improvar.Controllers
                                    NOS = dr.NOS,
                                    STYLENO = dr.STYLENO,
                                    HSNSACCD = dr.HSNSACCD,
+                                   RATE=dr.RATE
                                }).ToList();
                 foreach (var i in itmdata)
                 {
@@ -1022,6 +1024,7 @@ namespace Improvar.Controllers
                         PC.RECQNTY_DISPLAY = i.QNTY;
                         PC.SLNO = SLNO;
                         PC.HSNSACCD = i.HSNSACCD;
+                        PC.RATE = i.RATE;
                         if (Dt != null && Dt.Rows.Count > 0)
                         {
                             PC.EFFDT = Cn.convstr2date(Dt.Rows[0]["effdt"].ToString());
@@ -1053,6 +1056,7 @@ namespace Improvar.Controllers
                             PCND.QNTY_UNIT_DNCN = DDL;
                             PCND.SLNO = SLNO1;
                             PCND.QUAN = i.SHORTQNTY;
+                            PCND.RATE = i.RATE;
                             PCDCND.Add(PCND);
                         }
                     }

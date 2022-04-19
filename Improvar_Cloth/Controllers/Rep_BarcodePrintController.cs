@@ -191,7 +191,7 @@ namespace Improvar.Controllers
             {
                 sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
             }
-            sql += "x.itcd=b.itcd(+) and x.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine;
+            sql += "x.itcd=b.itcd(+) and b.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine; //x.fabitcd=e.itcd(+)
             sql += "a.barno=m.barno(+) and " + Environment.NewLine;
             sql += "x.colrcd=g.colrcd(+) and x.partcd=h.partcd(+) and c.slcd=i.slcd(+) and x.sizecd=j.sizecd(+) " + Environment.NewLine;
             sql += " order by a.txnslno" + Environment.NewLine;
@@ -314,7 +314,7 @@ namespace Improvar.Controllers
                             dr["wprate_code"] = RateEncode(VE.BarcodePrint[i].WPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["rprate_code"] = RateEncode(VE.BarcodePrint[i].RPRATE.retDbl().retInt(), PRICEINCODE);
                             var recdtrate = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                            dr["recdt_code"] = RateEncode(recdtrate.retInt(), PRICEINCODE); ;
+                            dr["recdt_code"] = RateEncode(recdtrate.retInt(), PRICEINCODE);
                             dr["cost"] = VE.BarcodePrint[i].CPRATE.retDbl().retStr();
                             dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retDbl().retInt(), PRICEINCODE);
                             dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();

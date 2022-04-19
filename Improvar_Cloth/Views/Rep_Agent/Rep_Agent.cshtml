@@ -37,12 +37,16 @@
                 $("#details").css("display", "block");
                 $("#showbil").css("display", "block");
                 $("#showbildate").css("display", "block");
+                $("#shortingon").css("display", "block");
+                $("#showpartytotal").css("display", "block");
             }
             else {
                 $('#showItdet').show(); $('#shorton').show();
                 $("#details").css("display", "none");
                 $("#showbil").css("display", "none");
                 $("#showbildate").css("display", "none");
+                $("#shortingon").css("display", "none");
+                $("#showpartytotal").css("display", "none");
             }
         });
     });
@@ -231,6 +235,36 @@
                         <div class="editor-field">
                             <input type="radio" name="sorton" value="P" />Party
                             <input type="radio" name="sorton" value="B" checked />Bill Date
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="shortingon" style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Sorting on")
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="border: 2px groove;">
+                        <label class="checkbox-inline">
+                            @Html.CheckBoxFor(model => model.Checkbox5)  @Html.Label("Bill Wise")
+                        </label>
+                    </div>
+                   
+                    @*<div class="col-lg-10">
+                        <div class="editor-field">
+                            <input type="radio" name="sortingon" value="B" checked />Bill Date
+                        </div>
+                    </div>*@
+                </div>
+                <div class="row" id="showpartytotal"style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 4px;">
+                            @Html.Label("", "Show Party Wise Total")
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div class="editor-field">
+                            @Html.CheckBoxFor(model => model.Checkbox4)
                         </div>
                     </div>
                 </div>

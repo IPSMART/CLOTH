@@ -1717,11 +1717,11 @@ namespace Improvar.Controllers
                         SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"].retStr().Remove(10) + " </td><td>" + tbl.Rows[i]["proguniqno"] + " </td><td>"
                             + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " [" + tbl.Rows[i]["itgrpcd"] + "]" + " </td><td>" + tbl.Rows[i]["STYLENO"] + " " + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["itcd"] + "]" + " </td><td>"
                             + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["balnos"] + " </td><td>" + tbl.Rows[i]["balqnty"] + " </td><td>"
-                            + tbl.Rows[i]["progautoslno"] + " </td><td>" + tbl.Rows[i]["itremark"] + " </td></tr>");
+                            + tbl.Rows[i]["progautoslno"] + " </td><td>" + tbl.Rows[i]["itremark"] + " </td><td>" + tbl.Rows[i]["fabitnm"] + " </td></tr>"); 
                     }
                     var hdr = "Doc No." + Cn.GCS() + "Doc Dt." + Cn.GCS() + "Uniq. No." + Cn.GCS() + "Bar Code No" + Cn.GCS()
                         + "Item Group" + Cn.GCS() + "Item" + Cn.GCS() + "Style No" + Cn.GCS() + "bal. Nos." + Cn.GCS() + "bal. Qnty."
-                        + Cn.GCS() + "progautoslno" + Cn.GCS() + "Item Remarks";
+                        + Cn.GCS() + "progautoslno" + Cn.GCS() + "Item Remarks" + Cn.GCS() + "Fabric Item";
                     string str = masterHelp.Generate_help(hdr, SB.ToString(), "9");
                     return PartialView("_Help2", str);
                 }

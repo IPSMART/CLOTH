@@ -106,10 +106,10 @@ namespace Improvar.Controllers
                     else {
                         string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
                         sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE, ";
-                        sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM ";
+                        sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm ";
                         sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
-                        sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
-                        sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
+                        sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i ";
+                        sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+)and ";
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
                         sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barnoOrStyle.ToUpper() + "' ";
                         sql1 += "order by b.DOCDT,b.DOCNO ";
@@ -139,7 +139,7 @@ namespace Improvar.Controllers
                                                  DOCDT = dr["DOCDT"].retDateStr(),
                                                  DOCNO = dr["DOCNO"].retStr(),
                                                  PREFNO = dr["PREFNO"].retStr(),
-                                                 SLNM = dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
+                                                 SLNM = dr["doccd"].retStr()=="SCM" ? dr["RTDEBCD"].retStr() == "" ?"": dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
                                                  LOCNM = dr["LOCANM"].retStr(),
                                                  NOS = dr["NOS"].retDbl(),
                                                  RATE = dr["RATE"].retDbl(),
@@ -172,6 +172,7 @@ namespace Improvar.Controllers
                         string tinqty = TINQTY.retStr(); string toutqty = TOUTQTY.retStr();
                         str += "^TOTALIN=^" + tinqty + Cn.GCS();
                         str += "^TOTALOUT=^" + toutqty + Cn.GCS();
+
                         VE.BARCODEPRICE = (from DataRow dr in itempricedtl.Rows
                                            select new BARCODEPRICE
                                            {

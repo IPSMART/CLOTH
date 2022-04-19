@@ -1078,7 +1078,7 @@ namespace Improvar
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, " + Environment.NewLine;
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, " + scm + ".m_sitem n, " + scm + ".m_cntrl_hdr o, " + scm + ".t_txn p " + Environment.NewLine;
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
-            sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and c.fabitcd=n.itcd(+) and " + Environment.NewLine;
+            sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and d.fabitcd=n.itcd(+) and " + Environment.NewLine; //c.fabitcd=n.itcd(+) 
             sql += "a.barno=x.barno(+) and " + Environment.NewLine;
             if (stylelike.retStr() != "")
             {
@@ -1315,8 +1315,8 @@ namespace Improvar
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             if (partcd.retStr() != "") sql += "a.partcd='" + partcd + "' and ";
-            sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and c.fabitcd=n.itcd(+) and ";
-            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+)  ";
+            sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and "; //c.fabitcd=n.itcd(+) and 
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+) and d.fabitcd=n.itcd(+)  ";
             if (showonlycommonbar == true) sql += "and c.commonuniqbar <> 'E' ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;

@@ -56,7 +56,7 @@ namespace Improvar.Controllers
                     RT2.text = "Sales with Payment";
                     RT.Add(RT2);
                     VE.DropDown_list1 = RT;
-
+                    VE.Checkbox4 = true;
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -108,7 +108,7 @@ namespace Improvar.Controllers
                 string sorton = FC["sorton"]; //Party,Date
                 if (repon == "S") agdsp = "Sub Agent";
                 if (showdocno == false) sorton = "P";
-
+               
                 string sql = "";
                 sql = "";
                 sql += "select a.autono, a.slcd, d.docno, d.docdt, b.slnm, nvl(b.slarea,b.district) slarea, ";
@@ -345,6 +345,7 @@ namespace Improvar.Controllers
                 string sorton = FC["sorton"]; //Party,Date
                 if (repon == "S") agdsp = "Sub Agent";
                 if (showdocno == false) sorton = "P";
+                bool sortingonBillwise = VE.Checkbox5;
                 string showbill = FC["reptypeBil"].retStr();
                 string agslcd = repon=="A"? "e.agslcd" : "e.sagslcd";
                 string sql = "";
@@ -403,7 +404,10 @@ namespace Improvar.Controllers
                 if (selagslcd != "") sql += " and " + agslcd + " in(" + selagslcd + ") " + Environment.NewLine;
                 if (fbldt != "") sql += "and d.docdt >= to_date('" + fbldt + "','dd/mm/yyyy') " + Environment.NewLine;
                 if (tbldt != "") sql += "and d.docdt <= to_date('" + tbldt + "','dd/mm/yyyy') " + Environment.NewLine;
-                sql += "order by linkcd, glcd,agslcd, slcd, autoslno " + Environment.NewLine;
+                sql += "order by ";
+                if (detail == "D" && sortingonBillwise == true)
+                { sql += "docdt,docno " + Environment.NewLine; }
+                else { sql += " linkcd, glcd,agslcd, slcd, autoslno " + Environment.NewLine; }
                 
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 tbl.DefaultView.Sort = "agslcd";
@@ -635,7 +639,7 @@ namespace Improvar.Controllers
                                 //if ((showbill == "Pending Balance" && ShowPrintRow == false) || (showbill == "Clear Bill" && ShowPrintRow == false) || PrintSkip == true) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
                             }
                         }
-                        if (detail == "D" && scount > 0)
+                        if (detail == "D" && scount > 0 && VE.Checkbox4==true)
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["dammy"] = "";
