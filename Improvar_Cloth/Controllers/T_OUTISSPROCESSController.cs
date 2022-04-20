@@ -867,11 +867,12 @@ namespace Improvar.Controllers
                         string barno = str.retCompValue("BARNO").retSqlformat();
                         string mtrljob = str.retCompValue("MTRLJOBCD").retStr() == "" ? "" : str.retCompValue("MTRLJOBCD").retSqlformat();
                         string oldrate = str.retCompValue("RATE");
-                        var ratedata = salesfunc.GenStocktblwithVal("FIFO", "", barno, mtrljob, "", "", GOCD);
+                        //var ratedata = salesfunc.GenStocktblwithVal("FIFO", "", barno, mtrljob, "", "", GOCD);
+                        var ratedata = salesfunc.GenStocktblwithVal("FIFO", "", barno, mtrljob, "","", GOCD);
                         if (ratedata != null && ratedata.Rows.Count > 0)
                         {
                             double amt = ratedata.AsEnumerable().Select(a => a.Field<double>("amt")).Sum();
-                            double qnty = ratedata.AsEnumerable().Select(a => a.Field<double>("qnty")).Sum();
+                            double qnty = ratedata.AsEnumerable().Select(a => a.Field<double>("balqnty")).Sum();
                             if (qnty.retDbl() != 0)
                             {
                                 double rate = (amt.retDbl() / qnty.retDbl()).toRound(2);

@@ -2434,7 +2434,7 @@ namespace Improvar
             if (schema.retStr() != "") scm = schema;
 
             sql = "";
-            sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm ";
+            sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm ";
             sql += "from " + scm + ".m_sitem a, " + scm + ".m_group c, " + scmf + ".m_uom d, " + scm + ".m_sitem q, ";
             sql += scm + ".t_batchdtl y, " + scm + ".t_batchmst z, " + scm + ".m_mtrljobmst e ";
             sql += "where z.itcd=a.itcd(+) and z.barno=y.barno(+) and a.itgrpcd=c.itgrpcd(+) and z.fabitcd=q.itcd(+) and ";
@@ -2470,20 +2470,24 @@ namespace Improvar
             sqlc += "h.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
 
             sql = "";
-            sql += "select a.autono, a.slno, a.autono||a.slno autoslno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, ";
-            sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate, nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, ";
+            sql += "select  a.autono, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, "; //a.slno, a.autono||a.slno autoslno
+            sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate,  "; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
             sql += sqld;
-            sql += "a.qnty, a.nos ";
+            sql += "sum(nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0)) netamt, ";
+            sql += "sum(a.qnty) qnty, sum(a.nos)nos ";//"a.qnty, a.nos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, ";
             sql += scm + ".m_sitem d, " + scm + ".m_group e ";
             sql += sqlc;
             if (skipStkTrnf == true) sql += "c.doctag not in ('SI','SO') and ";
-            sql += "c.doctag in ('PB','OP','PD','JR','SI') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') ";
-            sql += "order by itcd, docdt, autono, slno ";
+            sql += "c.doctag in ('PB','OP','PD','JR','SI','KH','TR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') ";
+            sql += " group by a.autono, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, ";
+            sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate ";
+            if (gocd.retStr() != "") sql += ",a.gocd ";
+            sql += "order by itcd, docdt, autono "; //slno
             if (calctype == "LIFO") sql += "desc ";
 
             string str = "";
-            str = "select autono, slno, autoslno, doctag, conslcd, doctag, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, ";
+            str = "select  autono, doctag, conslcd, doctag, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, ";//slno, autoslno
             str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (";
             str += sql + ") ";
             if (barno.retStr() != "") str += "where barno in (" + barno + ") ";
@@ -2492,12 +2496,12 @@ namespace Improvar
             sql = "";
             sql += "select a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno itbarno, ";
             sql += sqld;
-            sql += "sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, ";
-            sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty ";
+            sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, ";
+            sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, ";
             sql += scm + ".m_sitem d, " + scm + ".m_group e ";
             sql += sqlc;
-            if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI') and ";
+            if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI','KH','TR') and ";
             sql += "a.stkdrcr in ('D','C') ";
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno ";
             sql += sqldgrp;
@@ -2518,39 +2522,40 @@ namespace Improvar
 
             #region //Create Datatable rsstock
             DataTable rsStock = new DataTable("stock");
-            rsStock.Columns.Add("mtrljobcd", typeof(string), "");
-            rsStock.Columns.Add("mtrljobnm", typeof(string), "");
-            rsStock.Columns.Add("doctag", typeof(string), "");
-            rsStock.Columns.Add("conslcd", typeof(string), "");
-            rsStock.Columns.Add("autono", typeof(string), "");
-            rsStock.Columns.Add("slno", typeof(string), "");
-            rsStock.Columns.Add("autoslno", typeof(string), "");
-            rsStock.Columns.Add("doccd", typeof(string), "");
+            //rsStock.Columns.Add("mtrljobcd", typeof(string), "");
+            //rsStock.Columns.Add("mtrljobnm", typeof(string), "");
+            //rsStock.Columns.Add("doctag", typeof(string), "");
+            //rsStock.Columns.Add("conslcd", typeof(string), "");
+            //rsStock.Columns.Add("autono", typeof(string), "");
+            //rsStock.Columns.Add("slno", typeof(string), "");
+            //rsStock.Columns.Add("autoslno", typeof(string), "");
+            //rsStock.Columns.Add("doccd", typeof(string), "");
             rsStock.Columns.Add("docno", typeof(string), "");
             rsStock.Columns.Add("docdt", typeof(string), "");
-            rsStock.Columns.Add("prefno", typeof(string), "");
-            rsStock.Columns.Add("prefdt", typeof(string), "");
+            //rsStock.Columns.Add("prefno", typeof(string), "");
+            //rsStock.Columns.Add("prefdt", typeof(string), "");
             rsStock.Columns.Add("slcd", typeof(string), "");
             rsStock.Columns.Add("slnm", typeof(string), "");
             rsStock.Columns.Add("itcd", typeof(string), "");
-            rsStock.Columns.Add("itnm", typeof(string), "");
-            rsStock.Columns.Add("barno", typeof(string), "");
-            rsStock.Columns.Add("styleno", typeof(string), "");
-            rsStock.Columns.Add("pdesign", typeof(string), "");
-            rsStock.Columns.Add("nos", typeof(double), "");
-            rsStock.Columns.Add("qnty", typeof(double), "");
-            rsStock.Columns.Add("basrate", typeof(double), "");
+            //rsStock.Columns.Add("itnm", typeof(string), "");
+            //rsStock.Columns.Add("barno", typeof(string), "");
+            //rsStock.Columns.Add("styleno", typeof(string), "");
+            //rsStock.Columns.Add("pdesign", typeof(string), "");
+            //rsStock.Columns.Add("nos", typeof(double), "");
+            rsStock.Columns.Add("balqnty", typeof(double), "");
+            //rsStock.Columns.Add("basrate", typeof(double), "");
             rsStock.Columns.Add("rate", typeof(double), "");
-            rsStock.Columns.Add("amt", typeof(double), "");
+            //rsStock.Columns.Add("amt", typeof(double), "");
             rsStock.Columns.Add("itgrpcd", typeof(string), "");
             rsStock.Columns.Add("itgrpnm", typeof(string), "");
-            rsStock.Columns.Add("fabitcd", typeof(string), "");
-            rsStock.Columns.Add("fabitnm", typeof(string), "");
+            //rsStock.Columns.Add("fabitcd", typeof(string), "");
+            //rsStock.Columns.Add("fabitnm", typeof(string), "");
             rsStock.Columns.Add("uomcd", typeof(string), "");
             rsStock.Columns.Add("uomnm", typeof(string), "");
-            rsStock.Columns.Add("decimals", typeof(double), "");
+            //rsStock.Columns.Add("decimals", typeof(double), "");
             rsStock.Columns.Add("gocd", typeof(string), "");
             rsStock.Columns.Add("gonm", typeof(string), "");
+            rsStock.Columns.Add("itstyle", typeof(string), "");
             #endregion
 
             double balqty = 0, outqty = 0, avrate = 0, stkamt = 0;
@@ -2616,39 +2621,40 @@ namespace Improvar
                                 if (summary == false)
                                 {
                                     rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                                    rsStock.Rows[rNo]["autono"] = tbl1.Rows[i]["autono"];
-                                    rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
-                                    rsStock.Rows[rNo]["autoslno"] = tbl1.Rows[i]["autoslno"];
-                                    rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
+                                    //rsStock.Rows[rNo]["autono"] = tbl1.Rows[i]["autono"];
+                                    //rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
+                                    //rsStock.Rows[rNo]["autoslno"] = tbl1.Rows[i]["autoslno"];
+                                    //rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
                                     rsStock.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"];
                                     rsStock.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"];
-                                    rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
-                                    rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
-                                    rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
-                                    rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
+                                    //rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
+                                    //rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
+                                    //rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
+                                    //rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
                                     rsStock.Rows[rNo]["slcd"] = tbl1.Rows[i]["slcd"];
                                     rsStock.Rows[rNo]["slnm"] = tbl1.Rows[i]["slnm"];
-                                    rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
-                                    rsStock.Rows[rNo]["qnty"] = chkqty;
+                                    //rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
+                                    rsStock.Rows[rNo]["balqnty"] = chkqty;
                                     rsStock.Rows[rNo]["rate"] = avrate;
-                                    rsStock.Rows[rNo]["amt"] = stkamt;
+                                    //rsStock.Rows[rNo]["amt"] = stkamt;
                                     rsStock.Rows[rNo]["itcd"] = stritcd;
-                                    rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
+                                    //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
                                     rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                                     rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                                     rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
-                                    rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
-                                    rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
+                                    //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
+                                    //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
                                     rsStock.Rows[rNo]["gocd"] = strgocd;
                                     rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                                    rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                                    rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
-                                    rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
-                                    rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
-                                    rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
-                                    rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
-                                    rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+                                    //rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+                                    //rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+                                    //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+                                    //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
+                                    rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+                                    //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
+                                    //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
+                                    //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                                 }
                             }
                             i++;
@@ -2659,53 +2665,55 @@ namespace Improvar
                             if (summary == false)
                             {
                                 rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                                rsStock.Rows[rNo]["slno"] = 1;
+                                //rsStock.Rows[rNo]["slno"] = 1;
                                 rsStock.Rows[rNo]["itcd"] = stritcd;
-                                rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
-                                rsStock.Rows[rNo]["qnty"] = balqty * -1;
+                                //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
+                                rsStock.Rows[rNo]["balqnty"] = balqty * -1;
                                 rsStock.Rows[rNo]["rate"] = 0;
-                                rsStock.Rows[rNo]["amt"] = 0;
+                                //rsStock.Rows[rNo]["amt"] = 0;
                                 rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                                 rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                                 rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
-                                rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
-                                rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
+                                //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
+                                //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
                                 rsStock.Rows[rNo]["gocd"] = strgocd;
                                 rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                                rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                                rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
-                                rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
-                                rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
-                                rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
-                                rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
-                                rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+                                //rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+                                //rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+                                //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+                                //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
+                                rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+                                //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
+                                //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
+                                //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                             }
                         }
                         if (summary == true)
                         {
                             rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                            rsStock.Rows[rNo]["slno"] = 1;
+                            //rsStock.Rows[rNo]["slno"] = 1;
                             rsStock.Rows[rNo]["itcd"] = stritcd;
-                            rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
-                            rsStock.Rows[rNo]["qnty"] = isqty;
+                            //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
+                            rsStock.Rows[rNo]["balqnty"] = isqty;
                             rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
-                            rsStock.Rows[rNo]["amt"] = isamt;
+                            //rsStock.Rows[rNo]["amt"] = isamt;
                             rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                             rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                             rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
-                            rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
-                            rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
+                            //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
+                            //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
                             rsStock.Rows[rNo]["gocd"] = strgocd;
                             rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                            rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                            rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
-                            rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
-                            rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
-                            rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
-                            rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
-                            rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+                            //rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+                            //rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+                            //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+                            //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
+                            rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+                            //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
+                            //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
+                            //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                         }
                     }
                     ig++;
@@ -2714,6 +2722,7 @@ namespace Improvar
             }
             return rsStock;
         }
+        
         public M_SYSCNFG M_SYSCNFG(string effdt = "")
         {
             try

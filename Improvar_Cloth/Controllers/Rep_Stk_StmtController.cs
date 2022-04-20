@@ -134,7 +134,8 @@ namespace Improvar.Controllers
                 if (summary == "B") prccd = VE.PRCCD;
 
 
-
+                Boolean summdtl = (summary == "D" ? false : true);
+                //if (ageingperiod != 0) summdtl = false;
 
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
@@ -153,7 +154,8 @@ namespace Improvar.Controllers
                 DataTable tbl = new DataTable();
                 if (VE.Checkbox6 == true)
                 {
-                    tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, false, "", false, "", "", "", "", "CP");
+                    //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
+                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "","", selitgrpcd,selitcd,selgocd,true, "", summdtl, "", "", "");
                 }
                 else
                 {
@@ -209,7 +211,7 @@ namespace Improvar.Controllers
             maxR = tbl.Rows.Count - 1;
 
             string strbrgrpcd = "", stritcd = "";
-            double gamt = 0;
+            double gamt = 0, gqnty=0;
             i = 0;
             while (i <= maxR)
             {
@@ -219,7 +221,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
-                double bamt = 0;
+                double bamt = 0, tqnty=0;
                 while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
                 {
                     stritcd = tbl.Rows[i]["itcd"].ToString();
@@ -250,19 +252,23 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
 
                     bamt = bamt + iamt;
+                    tqnty = tqnty + iqnty;
                     if (i > maxR) break;
                 }
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
                 IR.Rows[rNo]["amt"] = bamt;
+                //IR.Rows[rNo]["qnty"] = tqnty;
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
                 gamt = gamt + bamt;
+                gqnty = gqnty + tqnty;
                 //i++;
                 if (i > maxR) break;
             }
             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
             IR.Rows[rNo]["slnm"] = "Grand Total";
             IR.Rows[rNo]["amt"] = gamt;
+            IR.Rows[rNo]["qnty"] = gqnty;
             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
 
             string pghdr1 = "";
@@ -472,6 +478,7 @@ namespace Improvar.Controllers
             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
             IR.Rows[rNo]["itnm"] = "Grand Total";
             IR.Rows[rNo]["amt"] = gamt;
+            IR.Rows[rNo]["qnty"] = gqnty;
             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
             if (ageingperiod > 0)
             {
