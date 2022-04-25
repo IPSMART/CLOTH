@@ -971,7 +971,7 @@ namespace Improvar
 
 
             sql += "select a.gocd,m.gonm, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
-            sql += "c.slcd, g.slnm, h.docdt, h.docno,h.autono,p.doctag, b.prccd, b.effdt, b.rate, e.bargentype, " + Environment.NewLine;
+            sql += "c.slcd, g.slnm, h.docdt, h.docno,h.autono,p.doctag, b.prccd, b.effdt, b.rate,q.rate rprate, e.bargentype, " + Environment.NewLine;
             sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
             sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
             sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen,x.scmdiscrate,x.scmdisctype,c.commonuniqbar " + Environment.NewLine;
@@ -1029,16 +1029,28 @@ namespace Improvar
             sql += "where a.barno=b.barno(+) " + Environment.NewLine;
             if (shownilstock == false) sql += "and nvl(b.balqnty,0) <> 0 " + Environment.NewLine;
             sql += ") a, " + Environment.NewLine;
-
-            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
-            sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
-            sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
-            sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
-            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
-            sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
-            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
-            sql += ") a where prccd='" + prccd + "') b, " + Environment.NewLine;
-
+            for (int x = 0; x <= 1; x++)
+            {
+                string sqlals = "";
+                switch (x)
+                {
+                    case 0:
+                       sqlals = "b"; break;
+                    case 1:
+                        prccd = "RP"; sqlals = "q"; break;
+                   
+                }
+                sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
+                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
+                sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
+                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
+                sql += ") " + sqlals;
+                if (x != 2) sql += ", ";
+            }
             sql += "(select a.barno, count(*) barimagecount," + Environment.NewLine;
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) " + Environment.NewLine;
             sql += "within group (order by a.barno) as barimage from " + Environment.NewLine;
@@ -1077,7 +1089,7 @@ namespace Improvar
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, " + Environment.NewLine;
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, " + Environment.NewLine;
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, " + scm + ".m_sitem n, " + scm + ".m_cntrl_hdr o, " + scm + ".t_txn p " + Environment.NewLine;
-            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
+            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and a.barno=q.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and d.fabitcd=n.itcd(+) and " + Environment.NewLine; //c.fabitcd=n.itcd(+) 
             sql += "a.barno=x.barno(+) and " + Environment.NewLine;
             if (stylelike.retStr() != "")
