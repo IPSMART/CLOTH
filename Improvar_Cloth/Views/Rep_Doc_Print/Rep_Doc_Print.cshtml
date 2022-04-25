@@ -271,6 +271,21 @@
                     </div>
                 </div>
                 <div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX1, "Full")  @Html.Label("Full")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX1, "Half", new { @checked = "checked" })  @Html.Label("Half")
+                        </label>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
 
                     <div align="center" class="col-md-3">
                         <input type="submit" value="SHOW" name="COMMAND" class="btn " style="background-color:#5e8fcc;font-weight:bold" formtarget="_blank" />
