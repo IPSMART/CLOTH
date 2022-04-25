@@ -511,7 +511,7 @@ namespace Improvar.Controllers
                                 {
                                     chkTdsamt = chkTdsamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
-                                else if ((tbl.Rows[i]["trcd"].retStr() == "BV") && (tbl.Rows[i]["adjtype"].retStr() == ""))
+                                else if ((tbl.Rows[i]["trcd"].retStr() == "BV" || tbl.Rows[i]["trcd"].retStr() == "C") && (tbl.Rows[i]["adjtype"].retStr() == ""))
                                 {
                                     chkPayamt = chkPayamt + (tbl.Rows[i]["adjamt"].retDbl() * mult);
                                 }
