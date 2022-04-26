@@ -3501,7 +3501,7 @@ namespace Improvar.Controllers
                     var tvchbl_data = DB1.T_VCH_BL.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.AUTONO).ToList();
                     if (tvchbl_data != null && tvchbl_data.Count > 0)
                     {
-                        sql = "update " + fschnm + ". T_VCH_BL set LRNO ='" + VE.T_TXNTRANS.LRNO + "',LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                        sql = "update " + fschnm + ". T_VCH_BL set LRNO ='" + VE.T_TXNTRANS.LRNO + "',LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy'), ";
                         sql += " TRANSNM ='" + VE.TRANSLNM + "' ";
                         sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
