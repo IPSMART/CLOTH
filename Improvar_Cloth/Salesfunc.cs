@@ -2482,7 +2482,7 @@ namespace Improvar
             sqlc += "h.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) " + Environment.NewLine;
 
             sql = "";
-            sql += "select  a.autono,A.TXNSLNO, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, " + Environment.NewLine; //a.slno, a.autono||a.slno autoslno
+            sql += "select  a.autono,A.TXNSLNO,a.slno, c.doctag,a.stktype, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, " + Environment.NewLine; //a.slno, a.autono||a.slno autoslno
             sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate,  " + Environment.NewLine; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
             sql += sqld;
             sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
@@ -2493,14 +2493,15 @@ namespace Improvar
             if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
             sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
-            sql += "group by a.autono, A.TXNSLNO, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
+            sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
             if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
+            sql += ",a.stktype " + Environment.NewLine; 
             sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
             if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
 
             string str = "";
-            str = "select  autono||TXNSLNO AUTONO, doctag, conslcd, doctag, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, " + Environment.NewLine;//slno, autoslno
+            str = "select  autono||TXNSLNO AUTONO,slno,doctag,stktype, conslcd, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, " + Environment.NewLine;//slno, autoslno
             str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (" + Environment.NewLine;
             str += sql + ") " + Environment.NewLine;
             if (barno.retStr() != "") str += "where barno in (" + barno + ") " + Environment.NewLine;
@@ -2520,7 +2521,7 @@ namespace Improvar
             sql += sqldgrp;
             sql += "order by itcd " + Environment.NewLine;
 
-            str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty from (" + Environment.NewLine;
+            str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;
             str += sql + " )";
             DataTable rsOut = SQLquery(str);
 
@@ -2535,27 +2536,28 @@ namespace Improvar
 
             #region //Create Datatable rsstock
             DataTable rsStock = new DataTable("stock");
-            //rsStock.Columns.Add("mtrljobcd", typeof(string), "");
+            rsStock.Columns.Add("mtrljobcd", typeof(string), "");
             //rsStock.Columns.Add("mtrljobnm", typeof(string), "");
-            //rsStock.Columns.Add("doctag", typeof(string), "");
-            //rsStock.Columns.Add("conslcd", typeof(string), "");
+            rsStock.Columns.Add("doctag", typeof(string), "");
+            rsStock.Columns.Add("conslcd", typeof(string), "");
             rsStock.Columns.Add("autono", typeof(string), "");
-            //rsStock.Columns.Add("slno", typeof(string), "");
+            rsStock.Columns.Add("slno", typeof(string), "");
             //rsStock.Columns.Add("autoslno", typeof(string), "");
             //rsStock.Columns.Add("doccd", typeof(string), "");
             rsStock.Columns.Add("docno", typeof(string), "");
             rsStock.Columns.Add("docdt", typeof(string), "");
-            //rsStock.Columns.Add("prefno", typeof(string), "");
-            //rsStock.Columns.Add("prefdt", typeof(string), "");
+            rsStock.Columns.Add("prefno", typeof(string), "");
+            rsStock.Columns.Add("prefdt", typeof(string), "");
             rsStock.Columns.Add("slcd", typeof(string), "");
             rsStock.Columns.Add("slnm", typeof(string), "");
             rsStock.Columns.Add("itcd", typeof(string), "");
             //rsStock.Columns.Add("itnm", typeof(string), "");
-            //rsStock.Columns.Add("barno", typeof(string), "");
+            rsStock.Columns.Add("barno", typeof(string), "");
             //rsStock.Columns.Add("styleno", typeof(string), "");
             //rsStock.Columns.Add("pdesign", typeof(string), "");
             //rsStock.Columns.Add("nos", typeof(double), "");
             rsStock.Columns.Add("balqnty", typeof(double), "");
+            rsStock.Columns.Add("balnos", typeof(double), "");
             //rsStock.Columns.Add("basrate", typeof(double), "");
             rsStock.Columns.Add("rate", typeof(double), "");
             //rsStock.Columns.Add("amt", typeof(double), "");
@@ -2569,9 +2571,11 @@ namespace Improvar
             rsStock.Columns.Add("gocd", typeof(string), "");
             rsStock.Columns.Add("gonm", typeof(string), "");
             rsStock.Columns.Add("itstyle", typeof(string), "");
+            rsStock.Columns.Add("stktype", typeof(string), "");
+            
             #endregion
 
-            double balqty = 0, outqty = 0, avrate = 0, stkamt = 0;
+            double balqty = 0, outqty = 0, avrate = 0, stkamt = 0, outnos=0,balnos=0;
             string strmtrljobcd = "", strbarno = "", stritcd = "", strgocd = "";
             Int32 i = 0, rNo = 0, it = 0, ig = 0;
             int maxR = rsitem.Rows.Count - 1;
@@ -2581,14 +2585,14 @@ namespace Improvar
                 stritcd = rsitem.Rows[it]["itcd"].ToString();
                 strmtrljobcd = rsitem.Rows[it]["mtrljobcd"].ToString();
                 ig = 0;
-                double isqty = 0, isamt = 0, israte = 0;
+                double isqty = 0, isamt = 0, israte = 0, isnos=0;
                 while (ig <= varGodown.Count - 1)
                 {
                     strgocd = varGodown[ig].GOCD;
                     string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'";
                     var var1 = rsIn.Select(data);
                     bool itrecofound = false;
-                    isqty = 0; isamt = 0; israte = 0;
+                    isqty = 0; isamt = 0; israte = 0; isnos=0;
                     DataTable tbl1 = new DataTable();
                     if (var1 != null && var1.Count() > 0)
                     {
@@ -2596,24 +2600,26 @@ namespace Improvar
                         itrecofound = true;
                     }
 
-                    outqty = 0;
-                    var tbl2 = rsOut.Select(data);
+                    outqty = 0; outnos = 0;
+                     var tbl2 = rsOut.Select(data);
                     if (tbl2 != null)
                     {
-                        if (tbl2.Count() != 0) outqty = Convert.ToDouble(tbl2[0]["qnty"]);
+                        if (tbl2.Count() != 0) { outqty = Convert.ToDouble(tbl2[0]["qnty"]); outnos = Convert.ToDouble(tbl2[0]["nos"]); }
                     }
                     if (outqty != 0) itrecofound = true;
 
                     if (itrecofound == true)
                     {
-                        balqty = outqty;
+                        balqty = outqty; balnos = outqty;
                         bool recoins = true;
                         maxR = tbl1.Rows.Count - 1;
                         i = 0;
                         while (i <= maxR)
                         {
                             double chkqty = Math.Round(Convert.ToDouble(tbl1.Rows[i]["qnty"]), 6);
+                            double chknos = Math.Round(Convert.ToDouble(tbl1.Rows[i]["nos"]),6);
                             balqty = Math.Round(balqty, 6);
+                            balnos = Math.Round(balnos, 6);
                             if (chkqty > balqty)
                             {
                                 chkqty = chkqty - balqty;
@@ -2624,9 +2630,19 @@ namespace Improvar
                             {
                                 balqty = balqty - chkqty; recoins = false;
                             }
+                            if (chknos > balnos)
+                            {
+                                chknos = chknos - balnos;
+                                balnos = 0;
+                            }
+                            else
+                            {
+                                balnos = balnos - chknos; 
+                            }
                             if (recoins == true)
                             {
                                 isqty = isqty + chkqty;
+                                isnos = isnos + chknos;
                                 double amtcal = Convert.ToDouble(tbl1.Rows[i]["netamt"]);
                                 avrate = (amtcal / Convert.ToDouble(tbl1.Rows[i]["qnty"])).toRound(6);
                                 stkamt = (chkqty * avrate).toRound();
@@ -2635,19 +2651,21 @@ namespace Improvar
                                 {
                                     rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
                                     rsStock.Rows[rNo]["autono"] = tbl1.Rows[i]["autono"];
-                                    //rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
+                                    rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
                                     //rsStock.Rows[rNo]["autoslno"] = tbl1.Rows[i]["autoslno"];
                                     //rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
                                     rsStock.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"];
                                     rsStock.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"];
-                                    //rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
-                                    //rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
-                                    //rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
-                                    //rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
+                                    rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
+                                    rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
+                                    rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
+                                    rsStock.Rows[rNo]["stktype"] = tbl1.Rows[i]["stktype"];
+                                    rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
                                     rsStock.Rows[rNo]["slcd"] = tbl1.Rows[i]["slcd"];
                                     rsStock.Rows[rNo]["slnm"] = tbl1.Rows[i]["slnm"];
                                     //rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
                                     rsStock.Rows[rNo]["balqnty"] = chkqty;
+                                    rsStock.Rows[rNo]["balnos"] = chknos;
                                     rsStock.Rows[rNo]["rate"] = avrate;
                                     //rsStock.Rows[rNo]["amt"] = stkamt;
                                     rsStock.Rows[rNo]["itcd"] = stritcd;
@@ -2660,8 +2678,8 @@ namespace Improvar
                                     rsStock.Rows[rNo]["gocd"] = strgocd;
                                     rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                                    //rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                                    //rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+                                    rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+                                    rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
                                     //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                                     //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                                     rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
@@ -2675,13 +2693,15 @@ namespace Improvar
                         if (balqty != 0)
                         {
                             isqty = isqty - balqty;
+                            isnos = isnos - balnos;
                             if (summary == false)
                             {
                                 rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                                //rsStock.Rows[rNo]["slno"] = 1;
+                                rsStock.Rows[rNo]["slno"] = 1;
                                 rsStock.Rows[rNo]["itcd"] = stritcd;
                                 //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
                                 rsStock.Rows[rNo]["balqnty"] = balqty * -1;
+                                rsStock.Rows[rNo]["balnos"] = balnos * -1;
                                 rsStock.Rows[rNo]["rate"] = 0;
                                 //rsStock.Rows[rNo]["amt"] = 0;
                                 rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
@@ -2692,8 +2712,8 @@ namespace Improvar
                                 rsStock.Rows[rNo]["gocd"] = strgocd;
                                 rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                                //rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                                //rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+                                rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+                                rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
                                 //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                                 //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                                 rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
@@ -2705,10 +2725,11 @@ namespace Improvar
                         if (summary == true)
                         {
                             rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                            //rsStock.Rows[rNo]["slno"] = 1;
+                            rsStock.Rows[rNo]["slno"] = 1;
                             rsStock.Rows[rNo]["itcd"] = stritcd;
                             //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
                             rsStock.Rows[rNo]["balqnty"] = isqty;
+                            rsStock.Rows[rNo]["balnos"] = isnos;
                             rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
                             //rsStock.Rows[rNo]["amt"] = isamt;
                             rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
@@ -2719,8 +2740,8 @@ namespace Improvar
                             rsStock.Rows[rNo]["gocd"] = strgocd;
                             rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                            //rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                            //rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+                            rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+                            rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
                             //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                             //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                             rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
