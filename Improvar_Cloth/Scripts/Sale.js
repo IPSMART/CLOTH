@@ -4756,6 +4756,45 @@ function docdtmodify_check() {
     }
 }
 
+function Edit_Agent() {
+    debugger;
+    $('.Agentdiv input').attr("readonly", false);
+    $(".help_Agent").show();
+    $("li").removeClass("active").addClass("");
+    $(".nav-tabs li:first-child").addClass('active');
+    $(".tab-content div").removeClass("active");
+    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+    $("#AGSLCD").focus();
+    $("#edit_Agent").hide();
+    $("#update_Agent").show();
+    $("#cancel_Agent").show();
+    $("#update_Agent").prop("disabled", false);
+}
+
+function Cancel_Agent() {
+    location.reload();
+}
+function Update_Agent() {
+    debugger;
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlUpdateAgent").val(),//"@Url.Action("Update_Agent", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            if (result == "1") {
+                msgSuccess1("Update Successfully !");
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+
 
 
 

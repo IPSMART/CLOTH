@@ -3497,6 +3497,63 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }
 
+                    //update to T_VCH_BL//
+                    var tvchbl_data = DB1.T_VCH_BL.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.AUTONO).ToList();
+                    if (tvchbl_data != null && tvchbl_data.Count > 0)
+                    {
+                        sql = "update " + fschnm + ". T_VCH_BL set LRNO ='" + VE.T_TXNTRANS.LRNO + "',LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                        sql += " TRANSNM ='" + VE.TRANSLNM + "' ";
+                        sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
+        }
+        public ActionResult Update_Agent(TransactionSaleEntry VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var fschnm = CommVar.FinSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    //update to T_TXNOTH//
+                    sql = "update " + schnm + ". T_TXNOTH set AGSLCD='" + VE.T_TXNOTH.AGSLCD + "', SAGSLCD='" + VE.T_TXNOTH.SAGSLCD + "' ";
+                    sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    //update to T_VCH_BL//
+                    var tvchbl_data = DBF.T_VCH_BL.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.AUTONO).ToList();
+                    if (tvchbl_data != null && tvchbl_data.Count > 0)
+                    {
+                        sql = "update " + fschnm + ". T_VCH_BL set AGSLCD ='" + VE.T_TXNOTH.AGSLCD + "', SAGSLCD='" + VE.T_TXNOTH.SAGSLCD + "' ";
+                        sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
                     ModelState.Clear();
                     OraTrans.Commit();
                     OraTrans.Dispose();
@@ -5744,7 +5801,8 @@ namespace Improvar.Controllers
                            tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(Partyisl),
                            VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                            TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
-                           VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "",
+                           //VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "",
+                           VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TRANSLNM, "", "",
                            VE.T_TXNOTH.BLTYPE, blrem, VE.T_TXNOTH.SAGSLCD);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
@@ -5796,7 +5854,8 @@ namespace Improvar.Controllers
                                     tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd1, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToInt16(2),
                                     dbamt, strblno, strbldt, strrefno, strduedt, "TD", TTXN.DUEDAYS.Value, 0, TTXN.PREFNO,
                                     TTXN.PREFDT == null ? "" : TTXN.PREFDT.ToString().retDateStr(), 0,
-                                    VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName);
+                                    //VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName);
+                                    VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TRANSLNM);
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                             string blno = DOCPATTERN, bldt = TTXN.DOCDT.ToString().retDateStr(); double tdson = VE.T_TDSTXN.TDSON.retDbl();

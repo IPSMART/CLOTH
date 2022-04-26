@@ -723,6 +723,7 @@
         <input type="hidden" id="UrlUpdateWpRpRate" value="@Url.Action("Update_WpRpRate", PageControllerName)" />
         <input type="hidden" id="UrlChangeBltype" value="@Url.Action("ChangeBltype", PageControllerName)" />
         <input type="hidden" id="UrlDocumentDateChng" value="@Url.Action("DocumentDateChng", PageControllerName)" />
+        <input type="hidden" id="UrlUpdateAgent" value="@Url.Action("Update_Agent", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -855,12 +856,21 @@
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                         </div>
                     }
-                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR")
+                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR" && (Model.T_TXNTRANS.EWAYBILLNO.retStr() == "" || Model.T_TXNTRANS.LRNO.retStr() == ""))
                     {
                         <div class="col-md-1" style="width:auto;">
                             <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Transport" id="edit_Transport" value="Update Transport" title="Click to Update Transport button for edit Transport Tab" onclick="Edit_Transport()" />
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Transport" value="Update" title="Click to Update Transport Tab" disabled onclick="Update_Transport()" />
                             <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Transport" value="Cancel" title="Click to Cancel" onclick="Cancel_Transport()" />
+                        </div>
+
+                    }
+                    @if (Model.DefaultAction == "V" && (Model.T_TXNOTH.AGSLCD.retStr() == "" || Model.T_TXNOTH.SAGSLCD.retStr() == ""))
+                    {
+                        <div class="col-md-1" style="width:auto;">
+                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Agent" id="edit_Agent" value="Update Agent" title="Click to Update Agent button for edit Agent Tab" onclick="Edit_Agent()" />
+                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Agent" value="Update" title="Click to Update Agent Tab" disabled onclick="Update_Agent()" />
+                            <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Agent" value="Cancel" title="Click to Cancel" onclick="Cancel_Agent()" />
                         </div>
 
                     }
@@ -1159,10 +1169,10 @@
                                     @Html.Label("", "Agent")
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="Agentdiv col-md-4">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeydown = "LastAgentTransport('A','AGSLCD','AGSLNM');", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd')" />
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="help_Agent Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd')" />
                                     @*@Html.HiddenFor(model => model.AGSLNM, new { id = "AGSLNM" })*@
                                 </div>
                             </div>
@@ -1176,10 +1186,10 @@
                                     @Html.Label("", "Sub Agent")
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="Agentdiv col-md-4">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.SAGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SAGSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')" />
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="help_Agent Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')" />
                                     @*@Html.HiddenFor(model => model.SAGSLNM, new { id = "SAGSLNM" })*@
                                 </div>
                             </div>
@@ -1188,6 +1198,7 @@
                                     @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Sub Agent Name", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
+                          
                         </div>
                         <div class="row">
                             <div class="col-md-5">
