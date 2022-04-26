@@ -114,7 +114,8 @@ namespace Improvar.Controllers
                         if (selgocd[0] == "") gocd = "";
                         if (VE.Checkbox7 == true)
                         {
-                            tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
+                            //tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
+                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, true, "", false, "", "", "");
                         }
                         else
                         {
@@ -646,7 +647,7 @@ namespace Improvar.Controllers
                             OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
                             if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
-                            if (recoexist == false) 
+                            if (recoexist == false)
                             {
                                 var TXNOTHOLD = vTXNOTH.Where(x => x.AUTONO == blautono).ToList();
                                 if (recoexist == false && TXNOTHOLD.Count > 0) ;
