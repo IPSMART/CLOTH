@@ -2487,12 +2487,13 @@ namespace Improvar
             sql += sqld;
             sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
             sql += "sum(a.qnty) qnty, sum(a.nos)nos " + Environment.NewLine;//"a.qnty, a.nos ";
-            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, ";
-            sql += scm + ".m_sitem d, " + scm + ".m_group e,"+ scm + ".T_TXNDTL F  ";
+            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
+            sql += scm + ".m_sitem d, " + scm + ".m_group e,"+ scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
             sql += sqlc ;
-            if (skipStkTrnf == true) sql += "c.doctag not in ('SI','SO') and " + Environment.NewLine;
-            sql += "and A.AUTONO = F.AUTONO(+) AND A.TXNSLNO = F.SLNO(+) AND c.doctag in ('PB','OP','PD','JR','SI','KH','TR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
-            sql += " group by a.autono, A.TXNSLNO, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
+            if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
+            sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
+            sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
+            sql += "group by a.autono, A.TXNSLNO, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
             if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
             sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
@@ -2510,9 +2511,9 @@ namespace Improvar
             sql += sqld;
             sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, " + Environment.NewLine;
             sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty " + Environment.NewLine;
-            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + Environment.NewLine;
+            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
-            sql += sqlc + " and ";
+            sql += sqlc + " and a.autono=autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
             if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI','KH','TR') and " + Environment.NewLine;
             sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
