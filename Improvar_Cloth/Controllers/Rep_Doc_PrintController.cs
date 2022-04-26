@@ -541,6 +541,7 @@ namespace Improvar.Controllers
             DSP.Merge(IR);
             reportdocument.SetDataSource(DSP);
             reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
+            reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
             reportdocument.SetParameterValue("compadd", compaddress.retCompValue("compadd"));
             reportdocument.SetParameterValue("compstat", compaddress.retCompValue("compstat"));
             reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
