@@ -165,7 +165,7 @@ namespace Improvar
 
             sql += "(select a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,'') progitcd, sum(b.nos) nos, sum(b.qnty) qnty, sum(b.shortqnty) shortqnty,b.rate ";
             sql += "from " + scm1 + ".t_progdtl a, " + scm1 + ".t_batchdtl b, " + scm1 + ".t_progmast c, " + scm1 + ".t_batchmst d ";
-            sql += "where a.autono=b.autono(+) and a.progautono=b.recprogautono(+) and a.progslno=b.recprogslno(+) and a.progautono||a.progslno=c.autono||c.slno and b.barno=d.barno(+) and nvl(c.sample,'N') <> 'Y' ";
+            sql += "where a.autono=b.autono(+) and a.slno=b.slno(+) and a.progautono=b.recprogautono(+) and a.progslno=b.recprogslno(+) and a.progautono||a.progslno=c.autono||c.slno and b.barno=d.barno(+) and nvl(c.sample,'N') <> 'Y' ";
             sql += "group by a.autono, a.progautono, d.itcd, b.partcd, a.progautono||c.itcd||nvl(b.partcd,''),b.rate ) b, ";
 
             sql += "(select a.recautono, a.progautono, b.itcd, b.partcd, a.progautono||b.itcd||nvl(b.partcd,'') progitcd, sum(a.short_allow) short_allow ";
@@ -2437,16 +2437,17 @@ namespace Improvar
                 return ex.Message;
             }
         }
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string schema = "", string LOCCD = "")
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string sql = "", sqlc = "";
-            if (schema.retStr() != "") scm = schema;
+            if (curschema.retStr() != "") scm = curschema;
+            if (finschema.retStr() != "") scmf = finschema;
 
             sql = "";
-            sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm " + Environment.NewLine;
+            sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype " + Environment.NewLine;
             sql += "from " + scm + ".m_sitem a, " + scm + ".m_group c, " + scmf + ".m_uom d, " + scm + ".m_sitem q, " + Environment.NewLine;
             sql += scm + ".t_batchdtl y, " + scm + ".t_batchmst z, " + scm + ".m_mtrljobmst e " + Environment.NewLine;
             sql += "where z.itcd=a.itcd(+) and z.barno=y.barno(+) and a.itgrpcd=c.itgrpcd(+) and z.fabitcd=q.itcd(+) and " + Environment.NewLine;
@@ -2584,12 +2585,16 @@ namespace Improvar
                 strbarno = rsitem.Rows[it]["barno"].ToString();
                 stritcd = rsitem.Rows[it]["itcd"].ToString();
                 strmtrljobcd = rsitem.Rows[it]["mtrljobcd"].ToString();
+              
                 ig = 0;
                 double isqty = 0, isamt = 0, israte = 0, isnos=0;
                 while (ig <= varGodown.Count - 1)
                 {
                     strgocd = varGodown[ig].GOCD;
                     string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'";
+                    if (stritcd == "F10001769" && strmtrljobcd=="FS"&& strbarno== "10001769" && strgocd== "38G")
+                    {
+                    }
                     var var1 = rsIn.Select(data);
                     bool itrecofound = false;
                     isqty = 0; isamt = 0; israte = 0; isnos=0;
@@ -2604,7 +2609,8 @@ namespace Improvar
                      var tbl2 = rsOut.Select(data);
                     if (tbl2 != null)
                     {
-                        if (tbl2.Count() != 0) { outqty = Convert.ToDouble(tbl2[0]["qnty"]); outnos = Convert.ToDouble(tbl2[0]["nos"]); }
+                        if (tbl2.Count() != 0)
+                        { outqty = Convert.ToDouble(tbl2[0]["qnty"]); outnos = Convert.ToDouble(tbl2[0]["nos"]); }
                     }
                     if (outqty != 0) itrecofound = true;
 
@@ -2717,6 +2723,7 @@ namespace Improvar
                                 //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                                 //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                                 rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+                                rsStock.Rows[rNo]["stktype"] = rsitem.Rows[i]["stktype"];
                                 //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                                 //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                 //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
@@ -2745,6 +2752,7 @@ namespace Improvar
                             //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                             //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                             rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+                            rsStock.Rows[rNo]["stktype"] = rsitem.Rows[i]["stktype"];
                             //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                             //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                             //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
