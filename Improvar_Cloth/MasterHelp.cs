@@ -2276,11 +2276,22 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
-                           + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") + "<td>" + tbl.Rows[i]["gocd"] + "</td><td>" + tbl.Rows[i]["fabitnm"] + "</td><td>" + tbl.Rows[i]["rprate"] + "</td></tr>");
+                    if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
+                             + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") + "<td>" + tbl.Rows[i]["gocd"] + "</td><td>" + tbl.Rows[i]["fabitnm"] + "</td></tr>");
+                    }
+                    else {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
+                          + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td><td>" + tbl.Rows[i]["rate"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") + "<td>" + tbl.Rows[i]["gocd"] + "</td><td>" + tbl.Rows[i]["fabitnm"] + "</td><td>" + tbl.Rows[i]["rprate"] + "</td></tr>");
+                    }
+                       
                     
                 }
-                hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "") + Cn.GCS() + "Godown" + Cn.GCS() + "Fabric Item" + Cn.GCS() + "RP rate";
+                if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
+                { hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "") + Cn.GCS() + "Godown" + Cn.GCS() + "Fabric Item"; }
+                else { hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + Cn.GCS() + "Rate" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "") + Cn.GCS() + "Godown" + Cn.GCS() + "Fabric Item" + Cn.GCS() + "RP rate"; }
+                   
               
                 return Generate_help(hdr, SB.ToString());
             }
