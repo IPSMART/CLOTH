@@ -115,7 +115,7 @@ namespace Improvar.Controllers
                         if (VE.Checkbox7 == true)
                         {
                             //tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
-                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false,"", false,"", scm1,"", scmf1);
+                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false,"",false,"", scm1,"", scmf1);
                         }
                         else
                         {

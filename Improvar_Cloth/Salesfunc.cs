@@ -2487,7 +2487,7 @@ namespace Improvar
             sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate,  " + Environment.NewLine; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
             sql += sqld;
             sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
-            sql += "sum(a.qnty) qnty, sum(a.nos)nos " + Environment.NewLine;//"a.qnty, a.nos ";
+            sql += "sum(a.qnty) qnty, sum(a.nos)nos,a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e,"+ scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
             sql += sqlc ;
@@ -2497,7 +2497,7 @@ namespace Improvar
             sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
             if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
-            sql += ",a.stktype " + Environment.NewLine; 
+            sql += ",a.stktype,a.stkdrcr " + Environment.NewLine; 
             sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
             if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
 
@@ -2512,7 +2512,7 @@ namespace Improvar
             sql += "select a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno itbarno, " + Environment.NewLine;
             sql += sqld;
             sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, " + Environment.NewLine;
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty " + Environment.NewLine;
+            sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty,a.stkdrcr " + Environment.NewLine;
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
@@ -2520,9 +2520,10 @@ namespace Improvar
             sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
+            sql += ",a.stkdrcr ";  
             sql += "order by itcd " + Environment.NewLine;
 
-            str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;
+            str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos,stkdrcr from (" + Environment.NewLine;
             str += sql + " )";
             DataTable rsOut = SQLquery(str);
 
@@ -2703,7 +2704,7 @@ namespace Improvar
                             if (summary == false)
                             {
                                 rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                                rsStock.Rows[rNo]["slno"] = 1;
+                                //rsStock.Rows[rNo]["slno"] = 1;
                                 rsStock.Rows[rNo]["itcd"] = stritcd;
                                 //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
                                 rsStock.Rows[rNo]["balqnty"] = balqty * -1;
@@ -2732,7 +2733,7 @@ namespace Improvar
                         if (summary == true)
                         {
                             rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                            rsStock.Rows[rNo]["slno"] = 1;
+                            //rsStock.Rows[rNo]["slno"] = 1;
                             rsStock.Rows[rNo]["itcd"] = stritcd;
                             //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
                             rsStock.Rows[rNo]["balqnty"] = isqty;
