@@ -1781,8 +1781,12 @@ namespace Improvar.Controllers
                                                   balnos = dr["balnos"].retDbl(),
                                                   balqnty = dr["balqnty"].retDbl(),
                                               }).FirstOrDefault();
-                            VE.TPROGDTL[p].BALNOS = balnosqnty.balnos.retDbl();
-                            VE.TPROGDTL[p].BALQNTY = balnosqnty.balqnty.retDbl();
+                            if(balnosqnty!=null)
+                            {
+                                VE.TPROGDTL[p].BALNOS = balnosqnty.balnos.retDbl();
+                                VE.TPROGDTL[p].BALQNTY = balnosqnty.balqnty.retDbl();
+                            }
+                           
                             slno++;
 
 

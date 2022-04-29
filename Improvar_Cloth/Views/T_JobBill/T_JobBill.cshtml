@@ -107,15 +107,15 @@
             else {
                 for (var i = 0; i <= GridRowMain - 1; i++) {
                     var Rate = document.getElementById("RATE_" + i).value;
-                    if (Rate == "0") {
-                        msgInfo("Rate Can't be 0 in Item Grid Row No " + (i + 1) + " !!");
-                        $("li").removeClass("active").addClass("");
-                        $(".tab-content div").removeClass("active");
-                        $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                        $("#Items_LI").addClass("active");
-                        message_value = "RATE_" + i;
-                        return false;
-                    }
+                    //if (Rate == "0") {
+                    //    msgInfo("Rate Can't be 0 in Item Grid Row No " + (i + 1) + " !!");
+                    //    $("li").removeClass("active").addClass("");
+                    //    $(".tab-content div").removeClass("active");
+                    //    $("#Items").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    //    $("#Items_LI").addClass("active");
+                    //    message_value = "RATE_" + i;
+                    //    return false;
+                    //}
                 }
             }
             GridRowMain = $("#_T_PND_ITEM_GRID_SBILL > tbody > tr").length;

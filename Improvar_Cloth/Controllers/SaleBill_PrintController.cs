@@ -1536,7 +1536,7 @@ namespace Improvar.Controllers
                             DataTable comptbl = masterHelp.SQLquery(sql);
                             string compMobile = comptbl.Rows[0]["phno1"].ToString();
                             string compEmail = comptbl.Rows[0]["regemailid"].ToString();
-
+                            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                             reportdocument.SetDataSource(rsemailid1);
                             reportdocument.SetParameterValue("billheading", blhead);
                             reportdocument.SetParameterValue("complogo", masterHelp.retCompLogo());
@@ -1548,7 +1548,7 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                             reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                             reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                            reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                            reportdocument.SetParameterValue("legalname", legalname);
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                             System.Web.HttpContext.Current.Response.Buffer = false;
@@ -1601,7 +1601,7 @@ namespace Improvar.Controllers
                 {
                     if (doctype == "CINV") reportdocument.Load(Server.MapPath("~/Report/CommSaleBill.rpt"));
                     else reportdocument.Load(System.Web.HttpContext.Current.Server.MapPath(rptname));
-
+                    string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                     reportdocument.SetDataSource(IR);
                     reportdocument.SetParameterValue("billheading", blhead);
                     reportdocument.SetParameterValue("complogo", masterHelp.retCompLogo());
@@ -1613,7 +1613,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                     reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                     reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                    reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                    reportdocument.SetParameterValue("legalname", legalname);
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
@@ -2950,7 +2950,7 @@ namespace Improvar.Controllers
                             string uid = CommVar.UserID();
                             string MOBILE = DB1.USER_APPL.Find(uid).MOBILE;
                             string ldt = rsemailid1.Rows[rsemailid1.Rows.Count - 1]["docdt"].ToString();
-
+                            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "("+compaddress.retCompValue("legalname")+")";
                             reportdocument.SetDataSource(rsemailid1);
                             reportdocument.SetParameterValue("billheading", blhead);
 
@@ -2963,7 +2963,7 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                             reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                             reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                            reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                            reportdocument.SetParameterValue("legalname", legalname);
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                             reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
@@ -3066,7 +3066,7 @@ namespace Improvar.Controllers
                 {
                     if (doctype == "CINV") reportdocument.Load(Server.MapPath("~/Report/CommSaleBill.rpt"));
                     else reportdocument.Load(Server.MapPath(rptname));
-
+                    string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                     reportdocument.SetDataSource(IR);
                     reportdocument.SetParameterValue("billheading", blhead);
                     reportdocument.SetParameterValue("complogo", masterHelp.retCompLogo());
@@ -3078,7 +3078,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                     reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                     reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                    reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                    reportdocument.SetParameterValue("legalname", legalname);
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
@@ -4313,7 +4313,7 @@ namespace Improvar.Controllers
                             string uid = CommVar.UserID();
                             string MOBILE = DB1.USER_APPL.Find(uid).MOBILE;
                             string ldt = rsemailid1.Rows[rsemailid1.Rows.Count - 1]["docdt"].ToString();
-
+                            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                             reportdocument.SetDataSource(rsemailid1);
                             reportdocument.SetParameterValue("billheading", blhead);
 
@@ -4326,7 +4326,7 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                             reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                             reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                            reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                            reportdocument.SetParameterValue("legalname", legalname);
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                             Response.Buffer = false;
@@ -4379,7 +4379,7 @@ namespace Improvar.Controllers
                 {
                     if (doctype == "CINV") reportdocument.Load(Server.MapPath("~/Report/CommSaleBill.rpt"));
                     else reportdocument.Load(Server.MapPath(rptname));
-
+                    string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                     reportdocument.SetDataSource(IR);
                     reportdocument.SetParameterValue("billheading", blhead);
                     reportdocument.SetParameterValue("complogo", masterHelp.retCompLogo());
@@ -4391,7 +4391,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                     reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                     reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                    reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                    reportdocument.SetParameterValue("legalname", legalname);
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());

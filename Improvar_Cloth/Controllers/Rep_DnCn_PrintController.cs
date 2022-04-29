@@ -371,7 +371,7 @@ namespace Improvar.Controllers
                 string repname = VE.TEXTBOX6 == null ? repnm1 : VE.TEXTBOX6;
                 repname = "~/Report/" + repname;
                 string compaddress = masterHelp.retCompAddress(); //.Split(Convert.ToChar(Cn.GCS()));
-
+                string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                 ReportDocument reportdocument = new ReportDocument();
                 reportdocument.Load(Server.MapPath(repname));
                 reportdocument.SetDataSource(FREC);
@@ -385,7 +385,7 @@ namespace Improvar.Controllers
                 reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
                 reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
                 reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-                reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+                reportdocument.SetParameterValue("legalname", legalname);
                 reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                 reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                 //new

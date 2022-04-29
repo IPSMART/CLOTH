@@ -534,14 +534,14 @@ namespace Improvar.Controllers
 
             string compaddress = masterHelp.retCompAddress(VE.OtherPara.Split(',')[1].retStr());
             string rptname = "~/Report/" + repname;
-
+            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
             ReportDocument reportdocument = new ReportDocument();
             reportdocument.Load(Server.MapPath(rptname));
             DSPrintJobissue DSP = new DSPrintJobissue();
             DSP.Merge(IR);
             reportdocument.SetDataSource(DSP);
             reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
-            reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
+            reportdocument.SetParameterValue("legalname", legalname);
             reportdocument.SetParameterValue("compadd", compaddress.retCompValue("compadd"));
             reportdocument.SetParameterValue("compstat", compaddress.retCompValue("compstat"));
             reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));

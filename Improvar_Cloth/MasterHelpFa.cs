@@ -2318,7 +2318,7 @@ namespace Improvar
 
             if (goadd.retStr() != "") locaadd = "Godown : " + goadd;
             if (comptbl.Rows[0]["regdoffsame"].ToString() == "Y" && goadd.retStr() == "") { compstat += " " + locastat; locastat = ""; }
-            if (comptbl.Rows[0]["propname"].ToString().retStr() != "") legalname = "Prop. " + comptbl.Rows[0]["propname"].ToString();
+            if (comptbl.Rows[0]["propname"].ToString().retStr() != "") legalname =CommVar.ClientCode(UNQSNO)== "DIWH" ? comptbl.Rows[0]["propname"].ToString() : "Prop. " + comptbl.Rows[0]["propname"].ToString();
 
             str = "";
             str += "^COMPNM=^" + comptbl.Rows[0]["compnm"].ToString() + Cn.GCS();
