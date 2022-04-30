@@ -705,8 +705,10 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["othamt"] = gOthamt;
                 IR.Rows[rNo]["paytxbl"] = gPaytxbl;
                 IR.Rows[rNo]["blncamt"] = gamt2;
-                string pghdr1 = agdsp + " Report " + (detail == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
-                string repname = agdsp + (detail == "D" ? "Detail" : "Summary");
+                string cap = "";
+                cap = showbill == "All Bill" ? " (All Bill)" : showbill == "Clear Bill" ? " (Clear Bill)" : " (Pending Balance)";
+                string pghdr1 = agdsp + " Report"+ cap + (detail == "D" ? "[Detail]" : "[Summary]") + "from " + fdt + " to " + tdt;
+                string repname = agdsp + cap+(detail == "D" ? "Detail" : "Summary");
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;

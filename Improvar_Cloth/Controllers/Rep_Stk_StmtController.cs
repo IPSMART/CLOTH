@@ -277,7 +277,7 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-            pghdr1 = summary == "F" ? "Stock Valuation(FIFO)(Detail) as on " + ASDT : "Stock Valuation(Detail) as on " + ASDT;
+            pghdr1 = summary == "F" ? "Stock Valuation(FIFO)[Detail] as on " + ASDT : "Stock Valuation[Detail] as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
@@ -493,7 +493,7 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-            pghdr1 = summary=="F"? "Stock Valuation(FIFO)(Summary) as on " + ASDT : "Stock Valuation(Summary) as on " + ASDT;
+            pghdr1 = summary=="F"? "Stock Valuation(FIFO)[Summary] as on " + ASDT : "Stock Valuation[Summary] as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
