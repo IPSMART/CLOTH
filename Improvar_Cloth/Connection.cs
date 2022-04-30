@@ -652,6 +652,34 @@ namespace Improvar
             return DOC_TYPE;
 
         }
+        //public List<DocumentType> DOCTYPE1(string MENU_DOCCODE)
+        //{
+        //    MasterHelp masterHelp = new MasterHelp();
+        //    var UNQSNO = getQueryStringUNQSNO();
+        //    string Scm1 = CommVar.CurSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), USR = CommVar.UserID();
+        //    string DOCCD = MENU_DOCCODE.retSqlformat();
+        //    string QUERY = "";
+        //    QUERY = QUERY + "select b.doccd, b.docnm  ";
+        //    QUERY = QUERY + "from " + Scm1 + ".m_usr_acs_doccd a, " + Scm1 + ".m_doctype b," + Scm1 + ".m_cntrl_hdr c ";
+        //    QUERY = QUERY + "where a.user_id='" + USR + "' and a.compcd='" + COM + "' and a.loccd='" + LOC + "' and  ";
+        //    QUERY = QUERY + "a.doccd=b.doccd(+) and b.doctype in(" + DOCCD + ")and b.m_autono=c.m_autono(+) and nvl(c.inactive_tag,'N') = 'N' ";
+        //    QUERY = QUERY + "union ";
+        //    QUERY = QUERY + "select a.doccd, a.docnm  ";
+        //    QUERY = QUERY + "from " + Scm1 + ".m_doctype a," + Scm1 + ".m_cntrl_hdr c  ";
+        //    QUERY = QUERY + "where  a.m_autono=c.m_autono(+)and nvl(c.inactive_tag,'N') = 'N'and  a.doctype in(" + DOCCD + ") and a.doctype not in ( ";
+        //    QUERY = QUERY + "select b.doctype  ";
+        //    QUERY = QUERY + "from " + Scm1 + ".m_usr_acs_doccd a, " + Scm1 + ".m_doctype b ";
+        //    QUERY = QUERY + "where a.user_id='" + USR + "' and a.compcd='" + COM + "' and a.loccd='" + LOC + "' and ";
+        //    QUERY = QUERY + "b.doctype in(" + DOCCD + ")) ";
+        //    DataTable rsTmp = masterHelp.SQLquery(QUERY);
+        //    List<DocumentType> DOC_TYPE = (from DataRow dr in rsTmp.Rows
+        //                                   select new DocumentType
+        //                                   {
+        //                                       value = dr["doccd"].ToString(),
+        //                                       text = dr["docnm"].ToString(),
+        //                                   }).ToList();
+        //    return DOC_TYPE;
+        //}
         public List<DocumentType> DOCTYPE1(string MENU_DOCCODE)
         {
             MasterHelp masterHelp = new MasterHelp();
@@ -1520,21 +1548,22 @@ namespace Improvar
             Content = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Content.ToLower());
             return Content;
         }
-        public DateTime getCurrentDate(string mindate, bool checkwithfinyr = true)
+        public DateTime? getCurrentDate(string mindate, bool checkwithfinyr = true)
         {
-            var UNQSNO = getQueryStringUNQSNO();
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
             DateTime dmindate = System.DateTime.Now.Date;
             if (mindate != "") dmindate = Convert.ToDateTime(mindate);
 
-            DateTime curdate = System.DateTime.Now.Date;
+            DateTime? curdate = System.DateTime.Now.Date;
             string[] financialyeardate = CommVar.FinPeriod(UNQSNO).Split('-');
             DateTime F_TODate = DateTime.ParseExact(financialyeardate[1].Trim().ToString(), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
             if (mindate != "")
             {
                 if (curdate < dmindate) curdate = dmindate;
+                if (checkwithfinyr == true && Convert.ToDateTime(mindate) > F_TODate) curdate = (DateTime?)null;
             }
             if (checkwithfinyr == true && curdate > F_TODate) curdate = F_TODate;
-            curdate = Convert.ToDateTime(curdate.ToString().Remove(10));
+            if (curdate != null) curdate = Convert.ToDateTime(curdate.ToString().Remove(10));
             return curdate;
         }
 
