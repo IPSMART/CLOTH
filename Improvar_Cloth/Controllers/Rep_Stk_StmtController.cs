@@ -69,6 +69,10 @@ namespace Improvar.Controllers
                     dropobj4.value = "B";
                     dropobj4.text = " Summary(Barcode)";
                     drplst.Add(dropobj4);
+                    DropDown_list2 dropobj5 = new DropDown_list2();
+                    dropobj5.value = "F";
+                    dropobj5.text = "Stock Statement(FIFO)";
+                    drplst.Add(dropobj5);
                     VE.DropDown_list2 = drplst;
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.PRCCD = "CP"; VE.PRCNM = "CP";
@@ -119,7 +123,7 @@ namespace Improvar.Controllers
 
                 string selgocd = "", selbrgrpcd = "", selitcd = "", unselitcd, selitgrpcd = "", prccd = "";
                 string summary = VE.TEXTBOX3; // == true?"S":"D";
-
+                string repon = FC["repon"].ToString();
                 if (FC.AllKeys.Contains("itcdvalue")) selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
                 if (FC.AllKeys.Contains("itcdunselvalue")) unselitcd = CommFunc.retSqlformat(FC["itcdunselvalue"].ToString());
 
@@ -134,7 +138,7 @@ namespace Improvar.Controllers
                 if (summary == "B") prccd = VE.PRCCD;
 
 
-                Boolean summdtl = (summary == "D" ? false : true);
+                Boolean summdtl = (repon == "D" ? false : true);
                 //if (ageingperiod != 0) summdtl = false;
 
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -152,7 +156,7 @@ namespace Improvar.Controllers
                 string qdsp = "n,16," + qdeci.ToString();
                 bool ignoreitems = VE.Checkbox2;
                 DataTable tbl = new DataTable();
-                if (VE.Checkbox6 == true)
+                if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
                     tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "","", selitgrpcd,selitcd,selgocd,true, "", summdtl, "", "", "");
@@ -161,15 +165,15 @@ namespace Improvar.Controllers
                 {
                     tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                 }
-                if (summary == "D")
+                if (summary == "D" || repon=="D")
                 {
                     //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
-                    return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp);
+                    return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, summary);
                 }
-                else if (summary == "S")
+                else if (summary == "S" || repon == "S")
                 {
                     //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
-                    return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems);
+                    return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems, summary);
                 }
                 else if (summary == "G")
                 {
@@ -192,7 +196,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-        public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP)
+        public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP,string summary)
         {
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
@@ -273,15 +277,14 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-
-            pghdr1 = "Stock Valuation(Detail) as on " + ASDT;
+            pghdr1 = summary == "F" ? "Stock Valuation(FIFO)(Detail) as on " + ASDT : "Stock Valuation(Detail) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;
             TempData[repname + "xxx"] = IR;
             return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
         }
-        public ActionResult Summary(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, bool ignoreitems)
+        public ActionResult Summary(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, bool ignoreitems, string summary)
         {
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
@@ -490,7 +493,7 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-            pghdr1 = "Stock Valuation(Summary) as on " + ASDT;
+            pghdr1 = summary=="F"? "Stock Valuation(FIFO)(Summary) as on " + ASDT : "Stock Valuation(Summary) as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;

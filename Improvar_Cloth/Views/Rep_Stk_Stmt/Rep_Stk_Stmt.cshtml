@@ -51,6 +51,7 @@
 <script>
     function SummaryBarcodeChange() {
         debugger;
+
         var val = ($("#TEXTBOX3").find(":selected").val());
         if (val == "B") {
             $("#summeryBarcode").show();
@@ -59,6 +60,11 @@
         else {
             $("#summeryBarcode").hide();
             $(".summeryBarcode1").hide();
+        }
+        if (val == "F") {
+            $("#repdet").show();
+        } else {
+            $("#repdet").hide();
         }
     }
 </script>
@@ -177,41 +183,41 @@
                                 </div>
                             </div>
                             @*<div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Print Design No")
+                                    <div class="col-lg-2">
+                                        <div class="editor-field" style="margin-top: 6px;">
+                                            @Html.Label("", "Print Design No")
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <div class="editor-field">
-                                        @Html.CheckBoxFor(model => model.Checkbox3)
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.CheckBoxFor(model => model.Checkbox3)
+                                        </div>
                                     </div>
-                                </div>
-                            </div>*@
+                                </div>*@
                             @*<div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Print Barcode No")
+                                    <div class="col-lg-2">
+                                        <div class="editor-field" style="margin-top: 6px;">
+                                            @Html.Label("", "Print Barcode No")
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <div class="editor-field">
-                                        @Html.CheckBoxFor(model => model.Checkbox4)
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.CheckBoxFor(model => model.Checkbox4)
+                                        </div>
                                     </div>
-                                </div>
-                            </div>*@
+                                </div>*@
                             @*<div class="row">
-                                <div class="col-lg-2">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Show Only Balance")
+                                    <div class="col-lg-2">
+                                        <div class="editor-field" style="margin-top: 6px;">
+                                            @Html.Label("", "Show Only Balance")
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <div class="editor-field">
-                                        @Html.CheckBoxFor(model => model.Checkbox5)
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.CheckBoxFor(model => model.Checkbox5)
+                                        </div>
                                     </div>
-                                </div>
-                            </div>*@
+                                </div>*@
                         </div>
                         <div class="row">
                             <div class="col-lg-2">
@@ -262,27 +268,38 @@
                             </div>
                         </div>
                         @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Ignore Items in Summary")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.CheckBoxFor(model => model.Checkbox2)
+                                    </div>
+                                </div>
+                            </div>*@
+                        @*<div class="row">
+                                <div class="col-lg-2">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Show Report In FIFO")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.CheckBoxFor(model => model.Checkbox6)
+                                    </div>
+                                </div>
+                            </div>*@
+                        <div class="row" style="margin-top:10PX" id="repdet">
                             <div class="col-lg-2">
-                                <div class="editor-field" style="margin-top: 6px;">
-                                    @Html.Label("", "Ignore Items in Summary")
-                                </div>
+                                @*<div class="editor-field" style="margin-top: 4px;">
+                                        @Html.Label("", "Stock Calculate on")
+                                    </div>*@
                             </div>
-                            <div class="col-md-1">
-                                <div class="editor-field">
-                                    @Html.CheckBoxFor(model => model.Checkbox2)
-                                </div>
-                            </div>
-                        </div>*@
-                        <div class="row">
-                            <div class="col-lg-2">
-                                <div class="editor-field" style="margin-top: 6px;">
-                                    @Html.Label("", "Show Report In FIFO")
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="editor-field">
-                                    @Html.CheckBoxFor(model => model.Checkbox6)
-                                </div>
+                            <div class="col-lg-10">
+                                <input type="radio" name="repon" value="S" checked />Summary
+                                <input type="radio" name="repon" value="D" />Detail
                             </div>
                         </div>
                         <div class="row" style="margin-top:10PX">
@@ -311,7 +328,7 @@
                             <tr class="summeryBarcode1">
                                 <td style="border:1px groove;">Show Only Balance</td>
                                 <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5, new { Style = "width:18px;height:18px;" })</td>
-                            </tr>                           
+                            </tr>
                         </table>
                     </div>
                 </div>
