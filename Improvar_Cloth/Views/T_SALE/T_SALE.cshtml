@@ -865,7 +865,7 @@
                         </div>
 
                     }
-                    @if (Model.DefaultAction == "V" && (Model.T_TXNOTH.AGSLCD.retStr() == "" || Model.T_TXNOTH.SAGSLCD.retStr() == ""))
+                    @if (Model.DefaultAction == "V")
                     {
                         <div class="col-md-1" style="width:auto;">
                             <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Agent" id="edit_Agent" value="Update Agent" title="Click to Update Agent button for edit Agent Tab" onclick="Edit_Agent()" />
