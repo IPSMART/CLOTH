@@ -41,8 +41,7 @@ namespace Improvar.Controllers
                     string YR1 = CommVar.YearCode(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-
+                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE,VE.DefaultAction);
                     VE.BL_TYPE = dropDownHelp.DropDownBLTYPE();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
