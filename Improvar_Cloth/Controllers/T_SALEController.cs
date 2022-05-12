@@ -41,7 +41,9 @@ namespace Improvar.Controllers
                     string YR1 = CommVar.YearCode(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE,VE.DefaultAction);
+                    //VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
+                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE, VE.DefaultAction);
+
                     VE.BL_TYPE = dropDownHelp.DropDownBLTYPE();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
@@ -2034,6 +2036,7 @@ namespace Improvar.Controllers
                                   x.HSNCODE,
                                   x.PRODGRPGSTPER,
                                   x.BALENO,
+                                  x.BALEYR,
                                   x.GLCD,
                                   x.ITREM,
                                   x.AGDOCNO,
@@ -2089,6 +2092,7 @@ namespace Improvar.Controllers
                                   HSNCODE = P.Key.HSNCODE,
                                   PRODGRPGSTPER = P.Key.PRODGRPGSTPER,
                                   BALENO = P.Key.BALENO,
+                                  BALEYR = P.Key.BALEYR,
                                   GLCD = P.Key.GLCD,
                                   ITREM = P.Key.ITREM,
                                   AGDOCNO = P.Key.AGDOCNO,
@@ -3338,9 +3342,9 @@ namespace Improvar.Controllers
                 string str = "";
                 string AGSLCD = (from DataRow dr in dt.Rows where selectedautoslno.Contains(dr["autono"].retStr() + dr["barno"].retStr()) select dr["agslcd"].retStr()).FirstOrDefault();
                 string SAGSLCD = (from DataRow dr in dt.Rows where selectedautoslno.Contains(dr["autono"].retStr() + dr["barno"].retStr()) select dr["sagslcd"].retStr()).FirstOrDefault();
-                string AGSLNM =AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == AGSLCD).Select(b => b.SLNM).FirstOrDefault();
+                string AGSLNM = AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                 string SAGSLNM = SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
-               
+
                 str += "^AGSLCD=^" + AGSLCD + Cn.GCS();
                 str += "^SAGSLCD=^" + SAGSLCD + Cn.GCS();
                 str += "^AGSLNM=^" + AGSLNM + Cn.GCS();
@@ -3921,7 +3925,7 @@ namespace Improvar.Controllers
                 str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t, " + Scm + ".T_BALE u ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) ";
-                str1 += "and i.autono=s.autono and i.txnslno=s.slno and i.autono=u.autono(+) and i.slno=u.slno(+) and i.baleno=u.baleno(+) ";
+                str1 += "and i.autono=s.autono and i.txnslno=s.slno and i.autono=u.autono(+) and i.txnslno=u.slno(+) and i.baleno=u.baleno(+) ";
                 str1 += "and i.AUTONO in (" + AUTONO + ") and i.BALENO='" + VE.BALENO_HELP + "' and i.GOCD='" + VE.T_TXN.GOCD + "' ";
                 str1 += "and i.SLNO <= 1000 ";
                 str1 += "group by i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
@@ -5027,7 +5031,8 @@ namespace Improvar.Controllers
                                 TTXNDTL.PCSREM = VE.TTXNDTL[i].PCSREM;
                                 TTXNDTL.FREESTK = VE.TTXNDTL[i].FREESTK;
                                 TTXNDTL.BATCHNO = VE.TTXNDTL[i].BATCHNO;
-                                TTXNDTL.BALEYR = VE.TTXNDTL[i].BALENO.retStr() == "" ? "" : VE.BALEYR;// VE.TTXNDTL[i].BALEYR;
+                                //TTXNDTL.BALEYR = VE.TTXNDTL[i].BALENO.retStr() == "" ? "" : VE.BALEYR;// VE.TTXNDTL[i].BALEYR;
+                                TTXNDTL.BALEYR = VE.TTXNDTL[i].BALENO.retStr() == "" ? "" : VE.TTXNDTL[i].BALEYR.retStr() == "" ? VE.BALEYR : VE.TTXNDTL[i].BALEYR;
                                 TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
                                 TTXNDTL.GOCD = VE.T_TXN.GOCD;
                                 TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
@@ -5456,7 +5461,8 @@ namespace Improvar.Controllers
                                 TBATCHDTL.SHADE = VE.TBATCHDTL[i].SHADE;
                                 TBATCHDTL.MILLNM = VE.TBATCHDTL[i].MILLNM;
                                 TBATCHDTL.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
-                                TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.BALEYR;// VE.TBATCHDTL[i].BALEYR;
+                                //TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.BALEYR;// VE.TBATCHDTL[i].BALEYR;
+                                TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.TBATCHDTL[i].BALEYR.retStr() == "" ? VE.BALEYR : VE.TBATCHDTL[i].BALEYR.retStr();
                                 TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
                                 if (VE.MENU_PARA == "SBPCK")
                                 {

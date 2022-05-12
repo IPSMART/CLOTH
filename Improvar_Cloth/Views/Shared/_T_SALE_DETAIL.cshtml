@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.TransactionSaleEntry
 <script type="text/javascript">
-    $(document).ready(function () { 
+    $(document).ready(function () {
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_DETAIL_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
         if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
@@ -183,6 +183,7 @@
                                                 {  @Html.HiddenFor(model => model.TTXNDTL[i].BALENO, new { id = "D_BALENO_" + i })
 
                                                 }
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].BALEYR, new { id = "D_BALEYR_" + i })
                                                 @if (Model.SHOWSTKTYPE != "Y")
                                                 {  @Html.HiddenFor(model => model.TTXNDTL[i].STKTYPE, new { id = "D_STKTYPE_" + i })
 
@@ -244,7 +245,14 @@
                                             @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                             {
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                                    @if (Model.MENU_PARA == "SBDIR")
+                                                    {
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");", @TabIndex = -1, @readonly = "readonly" } })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                                    }
                                                 </td>
                                             }
                                             @if (Model.SHOWSTKTYPE == "Y")
@@ -293,7 +301,7 @@
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
                                                 </td>
                                             }
-                                            else if ((Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR" )&& Model.TTXNDTL[i].FREESTK == "Y")
+                                            else if ((Model.MENU_PARA == "PJBL" || Model.MENU_PARA == "PJBR") && Model.TTXNDTL[i].FREESTK == "Y")
                                             {
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @readonly = "readonly", @onchange = "RateUpdate(" + i + ",'#D_');" } })

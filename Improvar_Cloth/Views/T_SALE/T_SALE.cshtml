@@ -2142,7 +2142,14 @@
                                                 <div class="col-md-7">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
-                                                            @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
+                                                            @if (Model.MENU_PARA == "SBDIR")
+                                                            {
+                                                                @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO", @readonly = "readonly", @TabIndex = -1 } })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
+                                                            }
                                                             <label for="BALENO" style="font-size: 87%;color: darkgreen;">BALENO</label>
                                                         </span>
                                                     </div>

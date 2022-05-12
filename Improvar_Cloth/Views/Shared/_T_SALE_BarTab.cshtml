@@ -194,6 +194,7 @@
                                                 {
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
                                                 }
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].BALEYR, new { id = "B_BALEYR_" + i })
                                                 @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
                                                 {
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].OURDESIGN, new { id = "B_OURDESIGN_" + i })
@@ -326,8 +327,15 @@
                                             @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                             {
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();" } })
-                                                </td>
+@if (Model.MENU_PARA == "SBDIR")
+{
+    @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();", @TabIndex = -1, @readonly = "readonly" } })
+}
+else
+{
+    @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();" } })
+}
+                                                 </td>
                                             }
                                             @if (Model.SHOWSTKTYPE == "Y")
                                             {
