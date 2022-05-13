@@ -843,7 +843,7 @@ namespace Improvar.Controllers
                                 SLMSLNM = string.Join(",", (from DataRow dr in dtslm.Rows where dr["autono"].retStr() == auto1 select dr["slnm"].retStr()).Distinct());
                             }
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -2327,7 +2327,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -2642,7 +2642,7 @@ namespace Improvar.Controllers
                                 else
                                 {
                                     lslno = 0;
-                                    delvchrg = false; // true;
+                                    delvchrg = true;
                                 }
                                 if (tbl.Rows[i]["itrem"].ToString() != "") itdsc = tbl.Rows[i]["itrem"].ToString();
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
@@ -2950,7 +2950,7 @@ namespace Improvar.Controllers
                             string uid = CommVar.UserID();
                             string MOBILE = DB1.USER_APPL.Find(uid).MOBILE;
                             string ldt = rsemailid1.Rows[rsemailid1.Rows.Count - 1]["docdt"].ToString();
-                            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "("+compaddress.retCompValue("legalname")+")";
+                            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                             reportdocument.SetDataSource(rsemailid1);
                             reportdocument.SetParameterValue("billheading", blhead);
 
@@ -3019,7 +3019,7 @@ namespace Improvar.Controllers
                                     {
                                         foreach (var autono in totalautono)
                                         {
-                                            masterHelp.insT_TXNSTATUS(autono, "E","", VE.TEXTBOX5);
+                                            masterHelp.insT_TXNSTATUS(autono, "E", "", VE.TEXTBOX5);
                                         }
                                     }
                                 }
@@ -3741,7 +3741,7 @@ namespace Improvar.Controllers
                             else { negamt = "N"; }
 
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -4535,7 +4535,7 @@ namespace Improvar.Controllers
                     if (msgretval[1].ToString().Substring(0, 1) == "0")
                     {
                         //insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "SALE", msgresult);
-                        MasterHelpFa.insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "",msgresult);
+                        MasterHelpFa.insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "", msgresult);
                     }
                 }
             }
