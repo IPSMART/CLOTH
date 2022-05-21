@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Mvc;                                                  
+using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
 using System.Data;
@@ -81,7 +81,7 @@ namespace Improvar.Controllers
                 string com = CommVar.Compcd(UNQSNO);
                 string loc = CommVar.Loccd(UNQSNO);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string slcd = "",linkcd="", sql = "";
+                string slcd = "", linkcd = "", sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
 
                 if (FC.AllKeys.Contains("slcdvalue"))
@@ -99,7 +99,7 @@ namespace Improvar.Controllers
                     query = query + "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID from " + dbname + ".m_subleg a," + dbname + ".m_subleg_link b where a.slcd=b.slcd(+) ";
                     if (linkcd != "") query += " and b.linkcd in(" + linkcd + ") ";
                     query += " order by a.slnm ";
-                     tbl = MasterHelp.SQLquery(query);
+                    tbl = MasterHelp.SQLquery(query);
                     if (tbl.Rows.Count != 0)
                     {
                         DataTable IR = new DataTable("mstrep");
@@ -161,9 +161,9 @@ namespace Improvar.Controllers
                     {
                         sql += " and a.slcd in (" + slcd + ") ";
                     }
-                    if(linkcd!="") sql += " and b.linkcd in (" + linkcd + ") ";
+                    if (linkcd != "") sql += " and b.linkcd in (" + linkcd + ") ";
                     sql += " order by slnm";
-                     tbl = MasterHelp.SQLquery(sql);
+                    tbl = MasterHelp.SQLquery(sql);
                     if (tbl.Rows.Count == 0) return Content("No Records..");
                     if (tblComp.Rows.Count == 0) return Content("No Data Gathers for company Records..");
 
@@ -221,7 +221,13 @@ namespace Improvar.Controllers
                         i++;
                     }
 
-                    string rptfile = reptype == "Envelope" ? "ENVELOPE" : "CORRES";
+                    //string rptfile = reptype == "Envelope" ? "ENVELOPE" : "CORRES";
+                    string rptfile = (reptype == "Envelope" ? "ENVELOPE_" : "CORRES_") + CommVar.ClientCode(UNQSNO);
+                    string path = Server.MapPath("~/Report/" + rptfile + ".rpt");
+                    if (!System.IO.File.Exists(path))
+                    {
+                        rptfile = reptype == "Envelope" ? "ENVELOPE" : "CORRES";
+                    }
                     string rptname = "~/Report/" + rptfile + ".rpt";
                     string complogo = Salesfunc.retCompLogo();
 
@@ -229,7 +235,7 @@ namespace Improvar.Controllers
                     reportdocument.Load(Server.MapPath(rptname));
 
                     reportdocument.SetDataSource(IR);
-                    if (reptype =="Excel")
+                    if (reptype == "Excel")
                     {
                         string path_Save = @"C:\Ipsmart\SublegExcel.xls";
                         if (System.IO.File.Exists(path_Save))
@@ -241,7 +247,7 @@ namespace Improvar.Controllers
                         Response.ClearContent();
                         Response.Buffer = true;
                         Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                        Response.AddHeader("Content-Disposition", "attachment; filename=SublegExcel.xls" );
+                        Response.AddHeader("Content-Disposition", "attachment; filename=SublegExcel.xls");
                         Response.BinaryWrite(buffer);
                         reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
                         Response.Flush();

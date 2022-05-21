@@ -2318,9 +2318,11 @@ namespace Improvar.Controllers
                                 case 2:
                                     copymode = "TRIPLICATE FOR SUPPLIER"; break;
                                 case 3:
-                                    copymode = "EXTRA COPY"; break;
+                                    //copymode = "EXTRA COPY"; break;
+                                    copymode = "AGENT COPY"; break;
                                 case 4:
-                                    copymode = "EXTRA COPY"; break;
+                                    //copymode = "EXTRA COPY"; break;
+                                    copymode = "ADDRESS COPY"; break;
                                 case 5:
                                     copymode = "EXTRA COPY"; break;
                                 default: copymode = ""; break;
