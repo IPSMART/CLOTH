@@ -678,6 +678,12 @@
       <DependentUpon>CashMemo_Tres.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\CORRES_DIWH.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CORRES_DIWH.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\ENVELOPE.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1591,6 +1597,10 @@
     <Content Include="Report\JobIssue_DIWH.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>JobIssue_DIWH.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\CORRES_DIWH.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CORRES_DIWH.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
