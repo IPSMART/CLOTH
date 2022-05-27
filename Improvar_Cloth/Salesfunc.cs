@@ -994,7 +994,7 @@ namespace Improvar
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, " + Environment.NewLine;
             sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 end) balqnty, " + Environment.NewLine;
             sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 end) balnos " + Environment.NewLine;
-            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c " + Environment.NewLine;
+            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + scm + ".t_bale g " + Environment.NewLine;
             sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and " + Environment.NewLine;
             if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and " + Environment.NewLine;
@@ -1003,7 +1003,7 @@ namespace Improvar
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and " + Environment.NewLine;
             if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and " + Environment.NewLine;
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
-            sql += "and a.baleno||a.baleyr not in (select a.baleno||a.baleyr from " + scm + ".t_bale a) ";
+            sql += "and a.autono=g.autono(+) and a.txnslno = g.slno(+) " + Environment.NewLine;
             sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia " + Environment.NewLine;
             if (pendpslipconsider == true)
             {
@@ -1011,7 +1011,7 @@ namespace Improvar
                 sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, " + Environment.NewLine;
                 sql += "sum(a.qnty*-1) balqnty, sum(a.nos*-1) balnos " + Environment.NewLine;
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + Environment.NewLine;
-                sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e " + Environment.NewLine;
+                sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e, "  + scm + ".t_bale g " + Environment.NewLine;
                 sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                 sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and " + Environment.NewLine;
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and " + Environment.NewLine;
@@ -1021,7 +1021,7 @@ namespace Improvar
                 if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and " + Environment.NewLine;
                 if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and " + Environment.NewLine;
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
-                sql += "and a.baleno||a.baleyr not in (select a.baleno||a.baleyr from " + scm + ".t_bale a) ";
+                sql += "and a.autono=g.autono(+) and a.txnslno = g.slno(+) " + Environment.NewLine;
                 sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia " + Environment.NewLine;
             }
             sql += ") group by gocd, mtrljobcd, stktype, barno, partcd " + Environment.NewLine;
@@ -2512,7 +2512,7 @@ namespace Improvar
             sql += "select a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno itbarno, " + Environment.NewLine;
             sql += sqld;
             sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, " + Environment.NewLine;
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty,a.stkdrcr " + Environment.NewLine;
+            sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty " + Environment.NewLine;
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
@@ -2520,10 +2520,9 @@ namespace Improvar
             sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
-            sql += ",a.stkdrcr ";  
             sql += "order by itcd " + Environment.NewLine;
 
-            str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos,stkdrcr from (" + Environment.NewLine;
+            str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;
             str += sql + " )";
             DataTable rsOut = SQLquery(str);
 
@@ -2724,7 +2723,7 @@ namespace Improvar
                                 //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                                 //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                                 rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
-                                rsStock.Rows[rNo]["stktype"] = rsitem.Rows[i]["stktype"];
+                                rsStock.Rows[rNo]["stktype"] = rsitem.Rows[it]["stktype"];
                                 //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                                 //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                 //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
@@ -2753,7 +2752,7 @@ namespace Improvar
                             //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                             //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                             rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
-                            rsStock.Rows[rNo]["stktype"] = rsitem.Rows[i]["stktype"];
+                            rsStock.Rows[rNo]["stktype"] = rsitem.Rows[it]["stktype"];
                             //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                             //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                             //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();

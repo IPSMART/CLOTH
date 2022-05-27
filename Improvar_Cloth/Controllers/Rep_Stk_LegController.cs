@@ -131,51 +131,52 @@ namespace Improvar.Controllers
                 bool showbatch = true;
 
                 string sql = "";
-                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
-                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate,a.pageslno, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from ";
-                sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate,a.pageslno, ";
-                sql += "sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, ";
-                sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c," + scm1 + ".m_doctype d, ";
-                sql += scmf + ".m_subleg i ";
-                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and b.slcd=i.slcd(+) and ";
-                sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "'   ";
-                if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  ";
+                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, " +Environment.NewLine;
+                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate,a.pageslno, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from " + Environment.NewLine;
+                sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate,a.pageslno, " + Environment.NewLine;
+                sql += "sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, " + Environment.NewLine;
+                sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c," + scm1 + ".m_doctype d, " + Environment.NewLine;
+                sql += scmf + ".m_subleg i, " + scm1 + ".t_bale j " + Environment.NewLine;
+                sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and b.slcd=i.slcd(+) and " + Environment.NewLine;
+                sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "' " + Environment.NewLine;
+                sql += "and a.autono = j.autono(+) and a.slno=j.slno(+) and j.autono is null " + Environment.NewLine;
+                if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  " + Environment.NewLine;
                 if (LOCCD != "") { sql += "and c.loccd in(" + LOCCD + ")  "; } else { sql += "and c.loccd='" + LOC + "' "; }
                 if (plist.retStr() != "")
                 {
                     //sql += "and k.itmprccd in (" + plist + ")  ";
                 }
-                if (selgocd.retStr() != "") sql += "and a.gocd in (" + selgocd + ") ";
+                if (selgocd.retStr() != "") sql += "and a.gocd in (" + selgocd + ") " + Environment.NewLine;
                 //if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
-                if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval,a.pageslno ) a, ";
+                if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval,a.pageslno ) a, " + Environment.NewLine;
 
-                sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos ";
-                sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, ";
+                sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, " + Environment.NewLine;
 
-                sql += "(select listagg(gonm, ',') within group (order by gonm) tgonm,autono ";
-                sql += "from (select distinct a.gocd, a.autono, c.gonm ";
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) and a.stkdrcr = 'D' ";
-                sql += "group by a.gocd, a.autono, c.gonm) ";
-                sql += "group by autono)e, ";
+                sql += "(select listagg(gonm, ',') within group (order by gonm) tgonm,autono " + Environment.NewLine;
+                sql += "from (select distinct a.gocd, a.autono, c.gonm " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) and a.stkdrcr = 'D' " + Environment.NewLine;
+                sql += "group by a.gocd, a.autono, c.gonm) " + Environment.NewLine;
+                sql += "group by autono) e, " + Environment.NewLine;
 
-                sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono ";
-                sql += "from (select distinct b.gocd, b.autono, c.gonm ";
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and b.gocd = c.gocd(+) and a.stkdrcr = 'C' ";
-                sql += "group by b.gocd, b.autono, c.gonm) ";
-                sql += "group by autono)f, ";
+                sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono " + Environment.NewLine;
+                sql += "from (select distinct b.gocd, b.autono, c.gonm " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and b.gocd = c.gocd(+) and a.stkdrcr = 'C' " + Environment.NewLine;
+                sql += "group by b.gocd, b.autono, c.gonm) " + Environment.NewLine;
+                sql += "group by autono) f, " + Environment.NewLine;
 
-                sql += "(select listagg(baleno, ',') within group (order by baleno) baleno,autono ";
-                sql += "from (select distinct a.baleno, b.autono ";
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b where a.autono = b.autono(+) ";
-                sql += "group by a.baleno, b.autono) ";
-                sql += "group by autono)g, ";
+                sql += "(select listagg(baleno, ',') within group (order by baleno) baleno,autono " + Environment.NewLine;
+                sql += "from (select distinct a.baleno, b.autono " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b where a.autono = b.autono(+) " + Environment.NewLine;
+                sql += "group by a.baleno, b.autono) " + Environment.NewLine;
+                sql += "group by autono) g, " + Environment.NewLine;
 
 
-                sql += scm1 + ".m_sitem c, " + scmf + ".m_uom d ";
-                sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and a.autono=g.autono(+) ";
-                if (itgrpcd.retStr() != "") sql += "and c.itgrpcd in(" + itgrpcd + ") ";
+                sql += scm1 + ".m_sitem c, " + scmf + ".m_uom d " + Environment.NewLine;
+                sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and a.autono=g.autono(+) " + Environment.NewLine;
+                if (itgrpcd.retStr() != "") sql += "and c.itgrpcd in(" + itgrpcd + ") " + Environment.NewLine;
 
                 sql += "order by itnm, itcd, docdt, stkdrcr desc, autono ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
