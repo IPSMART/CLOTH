@@ -138,7 +138,7 @@ namespace Improvar.Controllers
                 if (summary == "B") prccd = VE.PRCCD;
 
 
-                Boolean summdtl = (repon == "D" ? false : true);
+                Boolean summdtl = ((summary == "F" && repon == "D") ? false : true);
                 //if (ageingperiod != 0) summdtl = false;
 
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -159,18 +159,19 @@ namespace Improvar.Controllers
                 if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
-                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "","", selitgrpcd,selitcd,selgocd,true, "", summdtl, "", "", "");
+                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "");
                 }
                 else
                 {
-                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
+                    //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
+                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", VE.Checkbox7);
                 }
-                if (summary == "D" || repon=="D")
+                if (summary == "D" || (summary == "F" && repon == "D"))
                 {
                     //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, summary);
                 }
-                else if (summary == "S" || repon == "S")
+                else if (summary == "S" || (summary == "F" && repon == "S"))
                 {
                     //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
                     return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems, summary);
@@ -196,7 +197,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-        public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP,string summary)
+        public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, string summary)
         {
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
@@ -215,7 +216,7 @@ namespace Improvar.Controllers
             maxR = tbl.Rows.Count - 1;
 
             string strbrgrpcd = "", stritcd = "";
-            double gamt = 0, gqnty=0;
+            double gamt = 0, gqnty = 0;
             i = 0;
             while (i <= maxR)
             {
@@ -225,7 +226,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
-                double bamt = 0, tqnty=0;
+                double bamt = 0, tqnty = 0;
                 while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
                 {
                     stritcd = tbl.Rows[i]["itcd"].ToString();
@@ -493,7 +494,7 @@ namespace Improvar.Controllers
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
-            pghdr1 = summary=="F"? "Stock Valuation(FIFO)[Summary] as on " + ASDT : "Stock Valuation[Summary] as on " + ASDT;
+            pghdr1 = summary == "F" ? "Stock Valuation(FIFO)[Summary] as on " + ASDT : "Stock Valuation[Summary] as on " + ASDT;
             PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
 
             TempData[repname] = PV;

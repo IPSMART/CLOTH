@@ -131,7 +131,7 @@ namespace Improvar.Controllers
                 bool showbatch = true;
 
                 string sql = "";
-                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, " +Environment.NewLine;
+                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, " + Environment.NewLine;
                 sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate,a.pageslno, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from " + Environment.NewLine;
                 sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate,a.pageslno, " + Environment.NewLine;
                 sql += "sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, " + Environment.NewLine;
@@ -140,7 +140,8 @@ namespace Improvar.Controllers
                 sql += scmf + ".m_subleg i, " + scm1 + ".t_bale j " + Environment.NewLine;
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and b.slcd=i.slcd(+) and " + Environment.NewLine;
                 sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "' " + Environment.NewLine;
-                sql += "and a.autono = j.autono(+) and a.slno=j.slno(+) and j.autono is null " + Environment.NewLine;
+                sql += "and a.autono = j.autono(+) and a.slno=j.slno(+) " + Environment.NewLine;
+                if (VE.Checkbox2 == false) sql += "and j.autono is null " + Environment.NewLine;
                 if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  " + Environment.NewLine;
                 if (LOCCD != "") { sql += "and c.loccd in(" + LOCCD + ")  "; } else { sql += "and c.loccd='" + LOC + "' "; }
                 if (plist.retStr() != "")

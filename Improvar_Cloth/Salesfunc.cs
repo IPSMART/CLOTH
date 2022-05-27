@@ -890,7 +890,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "")
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1004,6 +1004,7 @@ namespace Improvar
             if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and " + Environment.NewLine;
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
             sql += "and a.autono=g.autono(+) and a.txnslno = g.slno(+) " + Environment.NewLine;
+            if (IncludeBaleStock == false) sql += "and g.autono is null " + Environment.NewLine;
             sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia " + Environment.NewLine;
             if (pendpslipconsider == true)
             {
@@ -1011,7 +1012,7 @@ namespace Improvar
                 sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, " + Environment.NewLine;
                 sql += "sum(a.qnty*-1) balqnty, sum(a.nos*-1) balnos " + Environment.NewLine;
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + Environment.NewLine;
-                sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e, "  + scm + ".t_bale g " + Environment.NewLine;
+                sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scm + ".t_bale g " + Environment.NewLine;
                 sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                 sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and " + Environment.NewLine;
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and " + Environment.NewLine;
@@ -1022,6 +1023,7 @@ namespace Improvar
                 if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and " + Environment.NewLine;
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                 sql += "and a.autono=g.autono(+) and a.txnslno = g.slno(+) " + Environment.NewLine;
+                if (IncludeBaleStock == false) sql += "and g.autono is null " + Environment.NewLine;
                 sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia " + Environment.NewLine;
             }
             sql += ") group by gocd, mtrljobcd, stktype, barno, partcd " + Environment.NewLine;
@@ -1035,10 +1037,10 @@ namespace Improvar
                 switch (x)
                 {
                     case 0:
-                       sqlals = "b"; break;
+                        sqlals = "b"; break;
                     case 1:
                         prccd = "RP"; sqlals = "q"; break;
-                   
+
                 }
                 sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
                 sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
@@ -2489,15 +2491,15 @@ namespace Improvar
             sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
             sql += "sum(a.qnty) qnty, sum(a.nos)nos,a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
-            sql += scm + ".m_sitem d, " + scm + ".m_group e,"+ scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
-            sql += sqlc ;
+            sql += scm + ".m_sitem d, " + scm + ".m_group e," + scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
+            sql += sqlc;
             if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
             sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
             sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
             if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
-            sql += ",a.stktype,a.stkdrcr " + Environment.NewLine; 
+            sql += ",a.stktype,a.stkdrcr " + Environment.NewLine;
             sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
             if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
 
@@ -2573,10 +2575,10 @@ namespace Improvar
             rsStock.Columns.Add("gonm", typeof(string), "");
             rsStock.Columns.Add("itstyle", typeof(string), "");
             rsStock.Columns.Add("stktype", typeof(string), "");
-            
+
             #endregion
 
-            double balqty = 0, outqty = 0, avrate = 0, stkamt = 0, outnos=0,balnos=0;
+            double balqty = 0, outqty = 0, avrate = 0, stkamt = 0, outnos = 0, balnos = 0;
             string strmtrljobcd = "", strbarno = "", stritcd = "", strgocd = "";
             Int32 i = 0, rNo = 0, it = 0, ig = 0;
             int maxR = rsitem.Rows.Count - 1;
@@ -2585,19 +2587,19 @@ namespace Improvar
                 strbarno = rsitem.Rows[it]["barno"].ToString();
                 stritcd = rsitem.Rows[it]["itcd"].ToString();
                 strmtrljobcd = rsitem.Rows[it]["mtrljobcd"].ToString();
-              
+
                 ig = 0;
-                double isqty = 0, isamt = 0, israte = 0, isnos=0;
+                double isqty = 0, isamt = 0, israte = 0, isnos = 0;
                 while (ig <= varGodown.Count - 1)
                 {
                     strgocd = varGodown[ig].GOCD;
                     string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'";
-                    if (stritcd == "F10001769" && strmtrljobcd=="FS"&& strbarno== "10001769" && strgocd== "38G")
+                    if (stritcd == "F10001769" && strmtrljobcd == "FS" && strbarno == "10001769" && strgocd == "38G")
                     {
                     }
                     var var1 = rsIn.Select(data);
                     bool itrecofound = false;
-                    isqty = 0; isamt = 0; israte = 0; isnos=0;
+                    isqty = 0; isamt = 0; israte = 0; isnos = 0;
                     DataTable tbl1 = new DataTable();
                     if (var1 != null && var1.Count() > 0)
                     {
@@ -2606,7 +2608,7 @@ namespace Improvar
                     }
 
                     outqty = 0; outnos = 0;
-                     var tbl2 = rsOut.Select(data);
+                    var tbl2 = rsOut.Select(data);
                     if (tbl2 != null)
                     {
                         if (tbl2.Count() != 0)
@@ -2623,7 +2625,7 @@ namespace Improvar
                         while (i <= maxR)
                         {
                             double chkqty = Math.Round(Convert.ToDouble(tbl1.Rows[i]["qnty"]), 6);
-                            double chknos = Math.Round(Convert.ToDouble(tbl1.Rows[i]["nos"]),6);
+                            double chknos = Math.Round(Convert.ToDouble(tbl1.Rows[i]["nos"]), 6);
                             balqty = Math.Round(balqty, 6);
                             balnos = Math.Round(balnos, 6);
                             if (chkqty > balqty)
@@ -2643,7 +2645,7 @@ namespace Improvar
                             }
                             else
                             {
-                                balnos = balnos - chknos; 
+                                balnos = balnos - chknos;
                             }
                             if (recoins == true)
                             {
@@ -2764,7 +2766,7 @@ namespace Improvar
             }
             return rsStock;
         }
-        
+
         public M_SYSCNFG M_SYSCNFG(string effdt = "")
         {
             try
