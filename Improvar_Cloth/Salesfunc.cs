@@ -2489,7 +2489,7 @@ namespace Improvar
             sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate,  " + Environment.NewLine; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
             sql += sqld;
             sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
-            sql += "sum(a.qnty) qnty, sum(a.nos)nos,a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
+            sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty, sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e," + scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
             sql += sqlc;

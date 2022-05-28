@@ -422,10 +422,10 @@ namespace Improvar.Controllers
                                     TTXNDTL.SHORTQNTY = 0;
                                     TTXNDTL.RATE = tbl.Rows[i]["rate"].retDbl();
                                     TTXNDTL.AMT = basamt;
+                                    TTXNDTL.TXBLVAL = basamt;
                                     TTXNDTL.MTRLJOBCD = tbl.Rows[i]["MTRLJOBCD"].retStr();
                                     TTXNDTL.STKTYPE = tbl.Rows[i]["stktype"].retStr();
                                     TTXNDTL.GOCD = TTXN.GOCD;
-
                                     dbsql = MasterHelpFa.RetModeltoSql(TTXNDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     if (batchwise == true)
@@ -440,6 +440,7 @@ namespace Improvar.Controllers
                                         BATCHDTL.NOS = TTXNDTL.NOS;// Convert.ToInt32(tbl.Rows[i]["nos"]);
                                         BATCHDTL.QNTY = TTXNDTL.QNTY;// tbl.Rows[i]["qnty"].retDbl();
                                         BATCHDTL.RATE = TTXNDTL.RATE;
+                                        BATCHDTL.TXBLVAL = TTXNDTL.TXBLVAL;
                                         BATCHDTL.OTHRAMT = 0;
                                         BATCHDTL.GOCD = TTXN.GOCD;
                                         BATCHDTL.BARNO = tbl.Rows[i]["barno"].ToString();
