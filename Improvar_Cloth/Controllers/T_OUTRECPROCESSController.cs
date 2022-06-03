@@ -1457,7 +1457,7 @@ namespace Improvar.Controllers
                 string TAXGRPCD = data[7].retStr();
                 string onclik = data[8].retStr();
                 if (onclik == "onclick")
-                { BARNO = ""; }
+                { BARNO = ""; val = ""; }
                 if (val.retStr() != "") { showonlycommonbar = false; }
                 //var str = masterHelp.ITCD_help(val, "", "");
                 var str = masterHelp.T_TXN_BARNO_help(val, "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "");
