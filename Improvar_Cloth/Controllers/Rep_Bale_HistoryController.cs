@@ -92,8 +92,10 @@ namespace Improvar.Controllers
                 string sql = "";
                 if (rep_type == "BH")
                 {
-                    sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
-                    sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
+                    //sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
+                    //sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
+                    sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, nvl(a.gocd,k.gocd)gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, nvl(a.itcd,k.itcd)itcd, b.shade, nvl(a.nos,k.nos)nos, nvl(a.qnty,k.qnty)qnty, c.usr_entdt, ";
+                    sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, nvl(g.gonm,k.gonm)gonm, nvl(f.styleno,k.styleno)styleno, nvl(f.itnm,k.itnm)itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
                     sql += "b.pageno, b.pageslno, b.lrno from ";
 
                     sql += "( select '' baleopen, e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd slcd, ";
@@ -114,7 +116,8 @@ namespace Improvar.Controllers
                     if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                     sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
                     sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
-                    sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
+                    //sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
+                    sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and e.autono = d.autono(+) ";
                     sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ";
                     sql += "union all ";
                     sql += "select e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, nvl(h.gocd,a.gocd) gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, ";
@@ -135,11 +138,19 @@ namespace Improvar.Controllers
                     sql += "group by a.autono, a.slno, b.slcd, a.autono||a.slno, b.prefno, c.lrno, a.pageno, a.pageslno ";
                     sql += ") b, ";
 
+                    //receive from mutia item detail
+                    sql += "(select a.autono||a.txnslno autoslno,a.baleno,a.baleyr,sum(a.nos) nos, sum(a.qnty) qnty,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm ";
+                    sql += " from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d," + scm + ".m_sitem e," + scmf + ".m_godown f," + scm + ".m_doctype g ";
+                    sql += "where a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and b.itcd = e.itcd(+) and a.gocd = f.gocd(+) and d.doccd=g.doccd(+) ";
+                    sql += "group by a.autono||a.txnslno,a.baleno,a.baleyr,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm ";
+                    sql += ") k, ";
+
                     sql += "" + scm + ".t_cntrl_hdr c, " + scm + ".t_txn d, " + scm + ".m_doctype e, ";
                     sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g, " + scmf + ".m_subleg h, " + scm + ".t_txn i, " + scm + ".t_txntrans j ";
                     sql += "where a.autoslno = b.autoslno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
                     sql += "a.blautono=i.autono(+) and a.blautono=j.autono(+) and ";
                     sql += "c.doccd = e.doccd(+) and a.itcd = f.itcd(+) and a.gocd = g.gocd(+) and a.slcd = h.slcd(+) ";
+                    sql += "and a.autoslno=k.autoslno(+) and a.baleno = k.baleno(+) and a.baleyr = k.baleyr(+) ";
                     if (selbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr in (" + selbalenoyr + ") ";
                     if (unselbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr not in (" + unselbalenoyr + ") ";
                     if (selitcd.retStr() != "") sql += "and a.itcd in(" + selitcd + ") ";
