@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         string tdt = "";
         string LOC = "", COM = "";
         string MENU_PARA = "";
-        string slcd = "", itgrpcd = "", loccd = "";
+        string slcd = "", itgrpcd = "", loccd = "",autono="";
         string reptype = "";
 
         // GET: Rep_Supplier
@@ -57,6 +57,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
                     VE.Itgrpnm = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
 
+                    VE.DropDown_list_TXN  = DropDownHelp.GetTxnforSelection("","t_batchmst");
+                    VE.DOCNO = MasterHelp.ComboFill("autono", VE.DropDown_list_TXN, 0, 1);
+
                     VE.DropDown_list3 = (from i in DBF.M_LOCA
                                          where i.COMPCD == com
                                          select new DropDown_list3() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
@@ -85,6 +88,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) loccd = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
+                if (FC.AllKeys.Contains("autonovalue")) autono = CommFunc.retSqlformat(FC["autonovalue"].ToString());
                 reptype = VE.TEXTBOX1.retStr();
                 DataTable tbl = new DataTable();
                 DataTable LOCDT = new DataTable("loccd");
@@ -95,28 +99,28 @@ namespace Improvar.Controllers
                 else if (reptype == "ClosingStockBarcode") { return ClosingStockBarcodeWise(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
                 //if (reptype != "PurchasebillwiseStock")
                 //{
-                string sql = "select e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
+                string sql = "select a.autono,e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                 sql += Environment.NewLine + "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
                 sql += Environment.NewLine + "nvl(rp.rate, 0) rprate, ";
-                sql += Environment.NewLine + "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
+                sql += Environment.NewLine + "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,l.docno,l.docdt  from ";
                 sql += Environment.NewLine + " ";
-                sql += Environment.NewLine + "(select d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                sql += Environment.NewLine + "(select b.autono,d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
                 sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
                 sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
                 sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
                 sql += Environment.NewLine + "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
-                sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, 'OP' ";
+                sql += Environment.NewLine + "group by b.autono,d.compcd, d.loccd, a.barno, 'OP' ";
                 sql += Environment.NewLine + "union all ";
-                sql += Environment.NewLine + "select d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                sql += Environment.NewLine + "select b.autono,d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
                 sql += Environment.NewLine + "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
                 sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
                 sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
                 sql += Environment.NewLine + "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
-                sql += Environment.NewLine + "group by d.compcd, d.loccd, a.barno, c.doctag ) a, ";
+                sql += Environment.NewLine + "group by b.autono,d.compcd, d.loccd, a.barno, c.doctag ) a, ";
                 sql += Environment.NewLine + " ";
                 sql += Environment.NewLine + "(select barno, effdt, prccd, rate from ( ";
                 sql += Environment.NewLine + "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
@@ -131,13 +135,14 @@ namespace Improvar.Controllers
                 sql += Environment.NewLine + " from " + scm + ".t_batchmst_price a where a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and a.prccd = 'RP' ) where rn = 1) rp, ";
                 sql += Environment.NewLine + " ";
                 sql += Environment.NewLine + "" + scm + ".t_batchmst e, " + scm + ".m_sitem f, " + scm + ".m_sitem g, " + scm + ".m_group h, " + scmf + ".m_uom i, ";
-                sql += Environment.NewLine + "" + scmf + ".m_subleg j, " + scmf + ".m_loca k ";
+                sql += Environment.NewLine + "" + scmf + ".m_subleg j, " + scmf + ".m_loca k," + scm + ".t_cntrl_hdr l ";
                 sql += Environment.NewLine + "where a.barno = e.barno(+) and e.itcd = f.itcd(+) and e.fabitcd = g.fabitcd(+) and ";
                 sql += Environment.NewLine + "a.barno = b.barno(+) and a.barno = cp.barno(+)and a.barno = rp.barno(+)  and e.slcd = j.slcd(+) and a.compcd || a.loccd = k.compcd || k.loccd and ";
-                sql += Environment.NewLine + "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) " + Environment.NewLine;
+                sql += Environment.NewLine + "f.itgrpcd = h.itgrpcd(+) and f.uomcd = i.uomcd(+) and a.autono=l.autono(+) " + Environment.NewLine;
                 if (slcd.retStr() != "") sql += "and e.slcd in (" + slcd + ") ";
                 if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
                 if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
+                if (autono.retStr() != "") sql += "and a.autono in (" + autono + ") ";
                 sql += Environment.NewLine + "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
                 tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
@@ -156,6 +161,8 @@ namespace Improvar.Controllers
                 HC.RepStart(IR, 2);
                 if (reptype == "N") HC.GetPrintHeader(IR, "slno", "long", "n,4", "Slno");
                 if (reptype == "S") HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party");
+                if (reptype == "S") HC.GetPrintHeader(IR, "docno", "string", "c,40", "Bill No.");
+                if (reptype == "S") HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Bill Date");
                 if (reptype == "S") HC.GetPrintHeader(IR, "itgrpnm", "string", "c,40", "Group");
                 HC.GetPrintHeader(IR, "styleno", "string", "c,40", "Styleno");
                 HC.GetPrintHeader(IR, "pdesign", "string", "c,20", "Party Design");
@@ -242,6 +249,8 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
                                     if (reptype == "S") IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
                                     if (reptype == "S") IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i]["itgrpnm"].retStr();
+                                    if (reptype == "S") IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
+                                    if (reptype == "S") IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
                                     if (tbl.Rows[i]["doctag"].retStr() == "OP")
                                     {
                                         IR.Rows[rNo]["openingqnty"] = IR.Rows[rNo]["openingqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();

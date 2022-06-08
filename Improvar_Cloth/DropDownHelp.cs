@@ -187,10 +187,11 @@ namespace Improvar
             if (doctype.IndexOf("'") <= 0) doctype = "'" + doctype + "'";
 
             sql = "";
-            sql += "select a.autono, a.docno, a.docdt, b.slcd, c.slnm, nvl(c.slarea,c.district) slarea, to_char(a.docdt,'dd/mm/yyyy') docdt ";
+            sql += "select  a.autono, a.docno, a.docdt, b.slcd, c.slnm, nvl(c.slarea,c.district) slarea, to_char(a.docdt,'dd/mm/yyyy') docdt ";
             sql += "from " + scm + ".t_cntrl_hdr a, " + scm + "." + hdrtbl + " b, " + scmf + ".m_subleg c, " + scm + ".m_doctype d ";
             sql += "where a.autono=b.autono and b.slcd=c.slcd(+) and a.compcd='" + COM + "' and a.loccd = '" + LOC + "' and ";
-            sql += "nvl(a.cancel,'N')='N' and a.doccd=d.doccd(+) and d.doctype in (" + doctype + ") ";
+            sql += "nvl(a.cancel,'N')='N' and a.doccd=d.doccd(+) ";
+            if(doctype!= "''") sql += "and d.doctype in (" + doctype + ") ";
             DataTable tbl = MasterHelp.SQLquery(sql);
 
             List<DropDown_list_TXN> sllist = new List<DropDown_list_TXN>();
@@ -202,7 +203,7 @@ namespace Improvar
                           slcd = a["slcd"].ToString(),
                           slnm = a["slnm"].ToString(),
                           slarea = a["slarea"].ToString(),
-                          docdt = a["docdt"].ToString()
+                          docdt = a["docdt"].retDateStr()
                       }).OrderBy(A => A.text).ToList();
             return sllist;
         }

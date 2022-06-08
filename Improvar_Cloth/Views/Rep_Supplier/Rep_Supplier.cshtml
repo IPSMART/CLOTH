@@ -77,6 +77,16 @@
                 </div>
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Doc No.")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.DOCNO))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:6px">
                             @Html.Label("", "Location")
                         </div>
