@@ -2918,21 +2918,24 @@ namespace Improvar.Controllers
                     DB.SaveChanges();
                     transaction.Commit();
                 }
-                using (var transaction = DB.Database.BeginTransaction())
+                if (VE.MENU_PARA != "PI")
                 {
-                    DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
-                    T_CNTRL_HDR TCH1 = new T_CNTRL_HDR();
-                    if (par1 == "*#*")
+                    using (var transaction = DB.Database.BeginTransaction())
                     {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.FinSchema(UNQSNO));
+                        DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
+                        T_CNTRL_HDR TCH1 = new T_CNTRL_HDR();
+                        if (par1 == "*#*")
+                        {
+                            TCH1 = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.FinSchema(UNQSNO));
+                        }
+                        else
+                        {
+                            TCH1 = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.FinSchema(UNQSNO), par1);
+                        }
+                        DBF.Entry(TCH1).State = System.Data.Entity.EntityState.Modified;
+                        DBF.SaveChanges();
+                        transaction.Commit();
                     }
-                    else
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.FinSchema(UNQSNO), par1);
-                    }
-                    DBF.Entry(TCH1).State = System.Data.Entity.EntityState.Modified;
-                    DBF.SaveChanges();
-                    transaction.Commit();
                 }
                 return Content("1");
             }
@@ -5169,7 +5172,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -6348,7 +6351,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -6356,7 +6359,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
