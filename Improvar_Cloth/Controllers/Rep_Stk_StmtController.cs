@@ -627,7 +627,7 @@ namespace Improvar.Controllers
 
             string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
             query += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(c.rate, 0) clrate, ";
-            query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm  from ";
+            query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode   from ";
 
             query += "(select a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
             query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
@@ -787,7 +787,7 @@ namespace Improvar.Controllers
                     summarybarcode.Rows[rNo]["barno"] = tbl1.Rows[i]["barno"].retStr();
                     summarybarcode.Rows[rNo]["uomcd"] = tbl1.Rows[i]["uomcd"].retStr();
                     summarybarcode.Rows[rNo]["uomnm"] = tbl1.Rows[i]["uomnm"].retStr();
-                    summarybarcode.Rows[rNo]["itfabitcd"] = tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr();
+                    summarybarcode.Rows[rNo]["itfabitcd"] = VE.Checkbox8==true? tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr()+ tbl1.Rows[i]["hsncode"].retStr(): tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr();
                     summarybarcode.Rows[rNo]["qnty"] = tbl1.Rows[i]["qnty"].retDbl();
                     summarybarcode.Rows[rNo]["txblval"] = tbl1.Rows[i]["txblval"].retDbl();
 
@@ -892,7 +892,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["itgrpcd"] = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
                             IR.Rows[rNo]["slno"] = islno;
                             if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
-                            IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
+                            IR.Rows[rNo]["itnm"] = VE.Checkbox8 == true ? tbl1.Rows[i - 1]["fabitnm"].ToString()+"[ "+ tbl1.Rows[i]["hsncode"].retStr()+" ]": tbl1.Rows[i - 1]["fabitnm"].ToString();
                             if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
                             IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
                             IR.Rows[rNo]["opqty"] = opqty;
