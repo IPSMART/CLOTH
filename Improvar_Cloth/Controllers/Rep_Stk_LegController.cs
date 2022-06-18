@@ -129,7 +129,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("loccdvalue")) LOCCD = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
                 bool showbatch = true;
-
+                var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
                 string sql = "";
                 sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, " + Environment.NewLine;
                 sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate,a.pageslno, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from " + Environment.NewLine;
@@ -139,7 +139,11 @@ namespace Improvar.Controllers
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c," + scm1 + ".m_doctype d, " + Environment.NewLine;
                 sql += scmf + ".m_subleg i, " + scm1 + ".t_bale j " + Environment.NewLine;
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and b.slcd=i.slcd(+) and " + Environment.NewLine;
-                sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "' " + Environment.NewLine;
+                if (MSYSCNFG.STKINCLPINV == "Y")
+                { sql += "a.stkdrcr in ('D','C','0') "; }
+                else { sql += "a.stkdrcr in ('D','C') "; }
+
+                sql += "and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "' " + Environment.NewLine;
                 sql += "and a.autono = j.autono(+) and a.slno=j.slno(+) " + Environment.NewLine;
                 if (VE.Checkbox2 == false) sql += "and j.autono is null " + Environment.NewLine;
                 if (selitcd.retStr() != "") sql += "and a.itcd in (" + selitcd + ")  " + Environment.NewLine;
@@ -164,7 +168,17 @@ namespace Improvar.Controllers
 
                 sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono " + Environment.NewLine;
                 sql += "from (select distinct b.gocd, b.autono, c.gonm " + Environment.NewLine;
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and b.gocd = c.gocd(+) and a.stkdrcr = 'C' " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and b.gocd = c.gocd(+) " + Environment.NewLine;
+                if (MSYSCNFG.STKINCLPINV == "Y")
+                {
+                    sql += " and a.stkdrcr in('C','0')" + Environment.NewLine;
+
+                }
+                else
+                {
+                    sql += " and a.stkdrcr = 'C' " + Environment.NewLine;
+                }
+                sql += " and a.stkdrcr = 'C' " + Environment.NewLine;
                 sql += "group by b.gocd, b.autono, c.gonm) " + Environment.NewLine;
                 sql += "group by autono) f, " + Environment.NewLine;
 
