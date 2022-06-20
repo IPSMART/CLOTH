@@ -830,7 +830,15 @@ namespace Improvar.Controllers
                         {
                             TBHDR.EMD_NO = 0;
                             DOCCD = VE.T_CNTRL_HDR.DOCCD;
-                            DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
+                            //DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
+                            if (VE.M_SLIP_NO.retStr().Trim(' ') != "")
+                            {
+                                DOCNO = Convert.ToString(VE.M_SLIP_NO).PadLeft(6, '0');
+                            }
+                            else
+                            {
+                                DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
+                            }
                             DOCPATTERN = Cn.DocPattern(Convert.ToInt32(DOCNO), DOCCD, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO), Ddate);
                             auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
                             TBHDR.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
