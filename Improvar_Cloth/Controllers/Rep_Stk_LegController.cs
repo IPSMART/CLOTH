@@ -63,6 +63,7 @@ namespace Improvar.Controllers
                     VE.DefaultView = true;
                     VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
+                    VE.Checkbox2 = true;
                     return View(VE);
                 }
             }
