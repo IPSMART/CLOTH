@@ -114,5 +114,7 @@ namespace Improvar.Models
         public string CMCASHRECDAUTO { get; set; }
         [StringLength(1)]
         public string MERGEINDTL { get; set; }
+        [StringLength(1)]
+        public string STKINCLPINV { get; set; }
     }
 }
