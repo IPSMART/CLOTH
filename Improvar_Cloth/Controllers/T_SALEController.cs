@@ -1174,7 +1174,7 @@ namespace Improvar.Controllers
                 VE.SHOWBLTYPE = dropDownHelp.DropDownBLTYPE().Count > 0 ? "Y" : "N";
                 string sql = "";
 
-                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype ";
+                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,nvl(b.cancel,'N')cancel ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d, " + scm + ".t_txnoth e ";
                 sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono and a.autono=e.autono(+) and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -1193,7 +1193,8 @@ namespace Improvar.Controllers
                         + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
-                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>"
+                        string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
+                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>"
                             + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>"
                             + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
                             + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
@@ -1207,7 +1208,8 @@ namespace Improvar.Controllers
                         + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
-                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"]
+                        string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
+                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + " </td><td>" + tbl.Rows[j]["docdt"]
                             + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>"
                             + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
                             + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
@@ -5172,7 +5174,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -6351,7 +6353,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -6359,7 +6361,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

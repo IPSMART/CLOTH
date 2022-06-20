@@ -227,7 +227,7 @@ namespace Improvar
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
             if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
             if (jobcd.retStr() != "") sql += "b.jobcd in (" + jobcd + ") and ";
-            if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
+            if (txnupto.retStr() != "") sql += "a.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
             sql += "group by a.progautono, a.progslno, a.progautono||a.progslno ) a, ";
 

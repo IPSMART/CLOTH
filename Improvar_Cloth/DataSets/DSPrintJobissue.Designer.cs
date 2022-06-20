@@ -28,6 +28,8 @@ namespace Improvar.DataSets {
         
         private DTProgrammeDataTable tableDTProgramme;
         
+        private DTStockDataTable tableDTStock;
+        
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -61,6 +63,9 @@ namespace Improvar.DataSets {
                 }
                 if ((ds.Tables["DTProgramme"] != null)) {
                     base.Tables.Add(new DTProgrammeDataTable(ds.Tables["DTProgramme"]));
+                }
+                if ((ds.Tables["DTStock"] != null)) {
+                    base.Tables.Add(new DTStockDataTable(ds.Tables["DTStock"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -97,6 +102,16 @@ namespace Improvar.DataSets {
         public DTProgrammeDataTable DTProgramme {
             get {
                 return this.tableDTProgramme;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public DTStockDataTable DTStock {
+            get {
+                return this.tableDTStock;
             }
         }
         
@@ -173,6 +188,9 @@ namespace Improvar.DataSets {
                 if ((ds.Tables["DTProgramme"] != null)) {
                     base.Tables.Add(new DTProgrammeDataTable(ds.Tables["DTProgramme"]));
                 }
+                if ((ds.Tables["DTStock"] != null)) {
+                    base.Tables.Add(new DTStockDataTable(ds.Tables["DTStock"]));
+                }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
                 this.Namespace = ds.Namespace;
@@ -218,6 +236,12 @@ namespace Improvar.DataSets {
                     this.tableDTProgramme.InitVars();
                 }
             }
+            this.tableDTStock = ((DTStockDataTable)(base.Tables["DTStock"]));
+            if ((initTable == true)) {
+                if ((this.tableDTStock != null)) {
+                    this.tableDTStock.InitVars();
+                }
+            }
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -232,6 +256,8 @@ namespace Improvar.DataSets {
             base.Tables.Add(this.tableDTIssue);
             this.tableDTProgramme = new DTProgrammeDataTable();
             base.Tables.Add(this.tableDTProgramme);
+            this.tableDTStock = new DTStockDataTable();
+            base.Tables.Add(this.tableDTStock);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -243,6 +269,12 @@ namespace Improvar.DataSets {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private bool ShouldSerializeDTProgramme() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private bool ShouldSerializeDTStock() {
             return false;
         }
         
@@ -306,6 +338,9 @@ namespace Improvar.DataSets {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public delegate void DTProgrammeRowChangeEventHandler(object sender, DTProgrammeRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public delegate void DTStockRowChangeEventHandler(object sender, DTStockRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -825,6 +860,8 @@ namespace Improvar.DataSets {
             
             private global::System.Data.DataColumn columnblremarks;
             
+            private global::System.Data.DataColumn columnstkdata;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public DTProgrammeDataTable() {
@@ -1188,6 +1225,14 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stkdataColumn {
+                get {
+                    return this.columnstkdata;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1264,7 +1309,8 @@ namespace Improvar.DataSets {
                         double totvalue, 
                         double Gstper, 
                         string hsncode, 
-                        string blremarks) {
+                        string blremarks, 
+                        string stkdata) {
                 DTProgrammeRow rowDTProgrammeRow = ((DTProgrammeRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         autono,
@@ -1307,7 +1353,8 @@ namespace Improvar.DataSets {
                         totvalue,
                         Gstper,
                         hsncode,
-                        blremarks};
+                        blremarks,
+                        stkdata};
                 rowDTProgrammeRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDTProgrammeRow);
                 return rowDTProgrammeRow;
@@ -1371,6 +1418,7 @@ namespace Improvar.DataSets {
                 this.columnGstper = base.Columns["Gstper"];
                 this.columnhsncode = base.Columns["hsncode"];
                 this.columnblremarks = base.Columns["blremarks"];
+                this.columnstkdata = base.Columns["stkdata"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1458,6 +1506,8 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columnhsncode);
                 this.columnblremarks = new global::System.Data.DataColumn("blremarks", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnblremarks);
+                this.columnstkdata = new global::System.Data.DataColumn("stkdata", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstkdata);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1544,6 +1594,337 @@ namespace Improvar.DataSets {
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
                 attribute2.FixedValue = "DTProgrammeDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class DTStockDataTable : global::System.Data.TypedTableBase<DTStockRow> {
+            
+            private global::System.Data.DataColumn columnautono;
+            
+            private global::System.Data.DataColumn columnstk_itgrpnm;
+            
+            private global::System.Data.DataColumn columnstk_itdescn;
+            
+            private global::System.Data.DataColumn columnstk_uomnm;
+            
+            private global::System.Data.DataColumn columnstk_qnty;
+            
+            private global::System.Data.DataColumn columnstk_docdt;
+            
+            private global::System.Data.DataColumn columnstk_slno;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public DTStockDataTable() {
+                this.TableName = "DTStock";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal DTStockDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected DTStockDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn autonoColumn {
+                get {
+                    return this.columnautono;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stk_itgrpnmColumn {
+                get {
+                    return this.columnstk_itgrpnm;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stk_itdescnColumn {
+                get {
+                    return this.columnstk_itdescn;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stk_uomnmColumn {
+                get {
+                    return this.columnstk_uomnm;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stk_qntyColumn {
+                get {
+                    return this.columnstk_qnty;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stk_docdtColumn {
+                get {
+                    return this.columnstk_docdt;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn stk_slnoColumn {
+                get {
+                    return this.columnstk_slno;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public DTStockRow this[int index] {
+                get {
+                    return ((DTStockRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event DTStockRowChangeEventHandler DTStockRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event DTStockRowChangeEventHandler DTStockRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event DTStockRowChangeEventHandler DTStockRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event DTStockRowChangeEventHandler DTStockRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void AddDTStockRow(DTStockRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public DTStockRow AddDTStockRow(string autono, string stk_itgrpnm, string stk_itdescn, string stk_uomnm, double stk_qnty, string stk_docdt, string stk_slno) {
+                DTStockRow rowDTStockRow = ((DTStockRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        autono,
+                        stk_itgrpnm,
+                        stk_itdescn,
+                        stk_uomnm,
+                        stk_qnty,
+                        stk_docdt,
+                        stk_slno};
+                rowDTStockRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowDTStockRow);
+                return rowDTStockRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                DTStockDataTable cln = ((DTStockDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new DTStockDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal void InitVars() {
+                this.columnautono = base.Columns["autono"];
+                this.columnstk_itgrpnm = base.Columns["stk_itgrpnm"];
+                this.columnstk_itdescn = base.Columns["stk_itdescn"];
+                this.columnstk_uomnm = base.Columns["stk_uomnm"];
+                this.columnstk_qnty = base.Columns["stk_qnty"];
+                this.columnstk_docdt = base.Columns["stk_docdt"];
+                this.columnstk_slno = base.Columns["stk_slno"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            private void InitClass() {
+                this.columnautono = new global::System.Data.DataColumn("autono", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnautono);
+                this.columnstk_itgrpnm = new global::System.Data.DataColumn("stk_itgrpnm", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstk_itgrpnm);
+                this.columnstk_itdescn = new global::System.Data.DataColumn("stk_itdescn", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstk_itdescn);
+                this.columnstk_uomnm = new global::System.Data.DataColumn("stk_uomnm", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstk_uomnm);
+                this.columnstk_qnty = new global::System.Data.DataColumn("stk_qnty", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstk_qnty);
+                this.columnstk_docdt = new global::System.Data.DataColumn("stk_docdt", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstk_docdt);
+                this.columnstk_slno = new global::System.Data.DataColumn("stk_slno", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnstk_slno);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public DTStockRow NewDTStockRow() {
+                return ((DTStockRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new DTStockRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(DTStockRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.DTStockRowChanged != null)) {
+                    this.DTStockRowChanged(this, new DTStockRowChangeEvent(((DTStockRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.DTStockRowChanging != null)) {
+                    this.DTStockRowChanging(this, new DTStockRowChangeEvent(((DTStockRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.DTStockRowDeleted != null)) {
+                    this.DTStockRowDeleted(this, new DTStockRowChangeEvent(((DTStockRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.DTStockRowDeleting != null)) {
+                    this.DTStockRowDeleting(this, new DTStockRowChangeEvent(((DTStockRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void RemoveDTStockRow(DTStockRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                DSPrintJobissue ds = new DSPrintJobissue();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "DTStockDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -2663,6 +3044,22 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string stkdata {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTProgramme.stkdataColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stkdata\' in table \'DTProgramme\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTProgramme.stkdataColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IsautonoNull() {
                 return this.IsNull(this.tableDTProgramme.autonoColumn);
             }
@@ -3152,6 +3549,229 @@ namespace Improvar.DataSets {
             public void SetblremarksNull() {
                 this[this.tableDTProgramme.blremarksColumn] = global::System.Convert.DBNull;
             }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsstkdataNull() {
+                return this.IsNull(this.tableDTProgramme.stkdataColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetstkdataNull() {
+                this[this.tableDTProgramme.stkdataColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class DTStockRow : global::System.Data.DataRow {
+            
+            private DTStockDataTable tableDTStock;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal DTStockRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableDTStock = ((DTStockDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string autono {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTStock.autonoColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'autono\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.autonoColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string stk_itgrpnm {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTStock.stk_itgrpnmColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stk_itgrpnm\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.stk_itgrpnmColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string stk_itdescn {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTStock.stk_itdescnColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stk_itdescn\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.stk_itdescnColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string stk_uomnm {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTStock.stk_uomnmColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stk_uomnm\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.stk_uomnmColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public double stk_qnty {
+                get {
+                    try {
+                        return ((double)(this[this.tableDTStock.stk_qntyColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stk_qnty\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.stk_qntyColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string stk_docdt {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTStock.stk_docdtColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stk_docdt\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.stk_docdtColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string stk_slno {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTStock.stk_slnoColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'stk_slno\' in table \'DTStock\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTStock.stk_slnoColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsautonoNull() {
+                return this.IsNull(this.tableDTStock.autonoColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetautonoNull() {
+                this[this.tableDTStock.autonoColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isstk_itgrpnmNull() {
+                return this.IsNull(this.tableDTStock.stk_itgrpnmColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setstk_itgrpnmNull() {
+                this[this.tableDTStock.stk_itgrpnmColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isstk_itdescnNull() {
+                return this.IsNull(this.tableDTStock.stk_itdescnColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setstk_itdescnNull() {
+                this[this.tableDTStock.stk_itdescnColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isstk_uomnmNull() {
+                return this.IsNull(this.tableDTStock.stk_uomnmColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setstk_uomnmNull() {
+                this[this.tableDTStock.stk_uomnmColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isstk_qntyNull() {
+                return this.IsNull(this.tableDTStock.stk_qntyColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setstk_qntyNull() {
+                this[this.tableDTStock.stk_qntyColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isstk_docdtNull() {
+                return this.IsNull(this.tableDTStock.stk_docdtColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setstk_docdtNull() {
+                this[this.tableDTStock.stk_docdtColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isstk_slnoNull() {
+                return this.IsNull(this.tableDTStock.stk_slnoColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setstk_slnoNull() {
+                this[this.tableDTStock.stk_slnoColumn] = global::System.Convert.DBNull;
+            }
         }
         
         /// <summary>
@@ -3208,6 +3828,40 @@ namespace Improvar.DataSets {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public DTProgrammeRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public class DTStockRowChangeEvent : global::System.EventArgs {
+            
+            private DTStockRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public DTStockRowChangeEvent(DTStockRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public DTStockRow Row {
                 get {
                     return this.eventRow;
                 }

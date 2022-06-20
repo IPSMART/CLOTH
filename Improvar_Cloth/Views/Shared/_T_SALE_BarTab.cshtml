@@ -539,8 +539,14 @@ else
                                                 </td>
                                             }
                                             <td class="PJBLDiv">
+                                                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
+                                                {
+                                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onblur = "HasChangeBarSale('Y'," + i + ");" })
+                                                }
+                                                else {
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @style = "cursor:pointer", onblur = "HasChangeBarSale('Y'," + i + ");" })
-                                            </td>
+                                                }
+                                             </td>
                                             <td class="">
                                                 @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && (Model.T_TXN.BARGENTYPE == "E" || Model.TBATCHDTL[i].BARGENTYPE == "E"))
                                                 {

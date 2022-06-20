@@ -2224,6 +2224,7 @@ function AddBarCodeGrid() {
     var Delete = $("#Delete").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
+    var ClientCode = $("#ClientCode").val();
     var MNTNPART = $("#MNTNPART").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
     var MNTNSIZE = $("#MNTNSIZE").val();
@@ -2792,8 +2793,14 @@ function AddBarCodeGrid() {
         tr += '    </td>';
     }
     tr += '    <td class="">';
-    tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" onclick="OpenZoomTextBoxModal(this.id)" style="cursor:pointer" type="text" value="">';
-    //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
+    if (ClientCode == "DIWH")
+     {
+         tr += '<input class=" atextBoxFor " data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" type="text" value=""> ';
+    }
+    else{
+        tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" onclick="OpenZoomTextBoxModal(this.id)" style="cursor:pointer" type="text" value="">';
+    }
+         //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
 
 

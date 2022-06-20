@@ -12,7 +12,7 @@
   <xs:element name="DSPrintJobissue" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DSPrintJobissue" msprop:Generator_UserDSName="DSPrintJobissue">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="DTIssue" msprop:Generator_TableClassName="DTIssueDataTable" msprop:Generator_TableVarName="tableDTIssue" msprop:Generator_RowChangedName="DTIssueRowChanged" msprop:Generator_TablePropName="DTIssue" msprop:Generator_RowDeletingName="DTIssueRowDeleting" msprop:Generator_RowChangingName="DTIssueRowChanging" msprop:Generator_RowEvHandlerName="DTIssueRowChangeEventHandler" msprop:Generator_RowDeletedName="DTIssueRowDeleted" msprop:Generator_RowClassName="DTIssueRow" msprop:Generator_UserTableName="DTIssue" msprop:Generator_RowEvArgName="DTIssueRowChangeEvent">
+        <xs:element name="DTIssue" msprop:Generator_TableClassName="DTIssueDataTable" msprop:Generator_TableVarName="tableDTIssue" msprop:Generator_TablePropName="DTIssue" msprop:Generator_RowDeletingName="DTIssueRowDeleting" msprop:Generator_RowChangingName="DTIssueRowChanging" msprop:Generator_RowEvHandlerName="DTIssueRowChangeEventHandler" msprop:Generator_RowDeletedName="DTIssueRowDeleted" msprop:Generator_UserTableName="DTIssue" msprop:Generator_RowChangedName="DTIssueRowChanged" msprop:Generator_RowEvArgName="DTIssueRowChangeEvent" msprop:Generator_RowClassName="DTIssueRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="autono" msprop:Generator_ColumnVarNameInTable="columnautono" msprop:Generator_ColumnPropNameInRow="autono" msprop:Generator_ColumnPropNameInTable="autonoColumn" msprop:Generator_UserColumnName="autono" type="xs:string" minOccurs="0" />
@@ -32,7 +32,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="DTProgramme" msprop:Generator_TableClassName="DTProgrammeDataTable" msprop:Generator_TableVarName="tableDTProgramme" msprop:Generator_RowChangedName="DTProgrammeRowChanged" msprop:Generator_TablePropName="DTProgramme" msprop:Generator_RowDeletingName="DTProgrammeRowDeleting" msprop:Generator_RowChangingName="DTProgrammeRowChanging" msprop:Generator_RowEvHandlerName="DTProgrammeRowChangeEventHandler" msprop:Generator_RowDeletedName="DTProgrammeRowDeleted" msprop:Generator_RowClassName="DTProgrammeRow" msprop:Generator_UserTableName="DTProgramme" msprop:Generator_RowEvArgName="DTProgrammeRowChangeEvent">
+        <xs:element name="DTProgramme" msprop:Generator_TableClassName="DTProgrammeDataTable" msprop:Generator_TableVarName="tableDTProgramme" msprop:Generator_TablePropName="DTProgramme" msprop:Generator_RowDeletingName="DTProgrammeRowDeleting" msprop:Generator_RowChangingName="DTProgrammeRowChanging" msprop:Generator_RowEvHandlerName="DTProgrammeRowChangeEventHandler" msprop:Generator_RowDeletedName="DTProgrammeRowDeleted" msprop:Generator_UserTableName="DTProgramme" msprop:Generator_RowChangedName="DTProgrammeRowChanged" msprop:Generator_RowEvArgName="DTProgrammeRowChangeEvent" msprop:Generator_RowClassName="DTProgrammeRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="autono" msprop:Generator_ColumnVarNameInTable="columnautono" msprop:Generator_ColumnPropNameInRow="autono" msprop:Generator_ColumnPropNameInTable="autonoColumn" msprop:Generator_UserColumnName="autono" type="xs:string" minOccurs="0" />
@@ -76,6 +76,20 @@
               <xs:element name="Gstper" msprop:Generator_ColumnVarNameInTable="columnGstper" msprop:Generator_ColumnPropNameInRow="Gstper" msprop:Generator_ColumnPropNameInTable="GstperColumn" msprop:Generator_UserColumnName="Gstper" type="xs:double" minOccurs="0" />
               <xs:element name="hsncode" msprop:Generator_ColumnVarNameInTable="columnhsncode" msprop:Generator_ColumnPropNameInRow="hsncode" msprop:Generator_ColumnPropNameInTable="hsncodeColumn" msprop:Generator_UserColumnName="hsncode" type="xs:string" minOccurs="0" />
               <xs:element name="blremarks" msprop:Generator_ColumnVarNameInTable="columnblremarks" msprop:Generator_ColumnPropNameInRow="blremarks" msprop:Generator_ColumnPropNameInTable="blremarksColumn" msprop:Generator_UserColumnName="blremarks" type="xs:string" minOccurs="0" />
+              <xs:element name="stkdata" msprop:Generator_ColumnVarNameInTable="columnstkdata" msprop:Generator_ColumnPropNameInRow="stkdata" msprop:Generator_ColumnPropNameInTable="stkdataColumn" msprop:Generator_UserColumnName="stkdata" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DTStock" msprop:Generator_TableClassName="DTStockDataTable" msprop:Generator_TableVarName="tableDTStock" msprop:Generator_TablePropName="DTStock" msprop:Generator_RowDeletingName="DTStockRowDeleting" msprop:Generator_RowChangingName="DTStockRowChanging" msprop:Generator_RowEvHandlerName="DTStockRowChangeEventHandler" msprop:Generator_RowDeletedName="DTStockRowDeleted" msprop:Generator_UserTableName="DTStock" msprop:Generator_RowChangedName="DTStockRowChanged" msprop:Generator_RowEvArgName="DTStockRowChangeEvent" msprop:Generator_RowClassName="DTStockRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="autono" msprop:Generator_ColumnVarNameInTable="columnautono" msprop:Generator_ColumnPropNameInRow="autono" msprop:Generator_ColumnPropNameInTable="autonoColumn" msprop:Generator_UserColumnName="autono" type="xs:string" minOccurs="0" />
+              <xs:element name="stk_itgrpnm" msprop:Generator_ColumnVarNameInTable="columnstk_itgrpnm" msprop:Generator_ColumnPropNameInRow="stk_itgrpnm" msprop:Generator_ColumnPropNameInTable="stk_itgrpnmColumn" msprop:Generator_UserColumnName="stk_itgrpnm" type="xs:string" minOccurs="0" />
+              <xs:element name="stk_itdescn" msprop:Generator_ColumnVarNameInTable="columnstk_itdescn" msprop:Generator_ColumnPropNameInRow="stk_itdescn" msprop:Generator_ColumnPropNameInTable="stk_itdescnColumn" msprop:Generator_UserColumnName="stk_itdescn" type="xs:string" minOccurs="0" />
+              <xs:element name="stk_uomnm" msprop:Generator_ColumnVarNameInTable="columnstk_uomnm" msprop:Generator_ColumnPropNameInRow="stk_uomnm" msprop:Generator_ColumnPropNameInTable="stk_uomnmColumn" msprop:Generator_UserColumnName="stk_uomnm" type="xs:string" minOccurs="0" />
+              <xs:element name="stk_qnty" msprop:Generator_ColumnVarNameInTable="columnstk_qnty" msprop:Generator_ColumnPropNameInRow="stk_qnty" msprop:Generator_ColumnPropNameInTable="stk_qntyColumn" msprop:Generator_UserColumnName="stk_qnty" type="xs:double" minOccurs="0" />
+              <xs:element name="stk_docdt" msprop:Generator_ColumnVarNameInTable="columnstk_docdt" msprop:Generator_ColumnPropNameInRow="stk_docdt" msprop:Generator_ColumnPropNameInTable="stk_docdtColumn" msprop:Generator_UserColumnName="stk_docdt" type="xs:string" minOccurs="0" />
+              <xs:element name="stk_slno" msprop:Generator_ColumnVarNameInTable="columnstk_slno" msprop:Generator_ColumnPropNameInRow="stk_slno" msprop:Generator_ColumnPropNameInTable="stk_slnoColumn" msprop:Generator_UserColumnName="stk_slno" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

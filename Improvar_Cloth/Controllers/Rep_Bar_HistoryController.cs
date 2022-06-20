@@ -139,7 +139,7 @@ namespace Improvar.Controllers
                                                  DOCDT = dr["DOCDT"].retDateStr(),
                                                  DOCNO = dr["DOCNO"].retStr(),
                                                  PREFNO = dr["PREFNO"].retStr(),
-                                                 SLNM = dr["doccd"].retStr()=="SCM" ? dr["RTDEBCD"].retStr() == "" ?"": dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
+                                                 SLNM = dr["doccd"].retStr() == "SCM" ? dr["RTDEBCD"].retStr() == "" ? "" : dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
                                                  LOCNM = dr["LOCANM"].retStr(),
                                                  NOS = dr["NOS"].retDbl(),
                                                  RATE = dr["RATE"].retDbl(),
@@ -244,7 +244,7 @@ namespace Improvar.Controllers
                 sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
                 sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
                 sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BARCODE + "' ";
+                sql1 += "a.AUTONO = f.AUTONO(+) and f.compcd = g.compcd(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BARCODE + "' ";
                 sql1 += "order by b.DOCDT,b.DOCNO ";
                 DataTable barcdhistory = masterHelp.SQLquery(sql1);
 
@@ -258,19 +258,21 @@ namespace Improvar.Controllers
                     wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
                     wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
                     wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
-                    var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    if (inqty != null)
-                    {
-                        InQty = inqty.QNTY.retDbl();
-                    }
-                    else { InQty = 0; }
+                    //var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                    //var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                    InQty = barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0;
+                    OutQty = barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0;
+                    //if (inqty != null)
+                    //{
+                    //    InQty = inqty.QNTY.retDbl();
+                    //}
+                    //else { InQty = 0; }
                     wsSheet1.Cells[i + 2, 8].Value = InQty;
-                    if (outqty != null)
-                    {
-                        OutQty = outqty.QNTY.retDbl();
-                    }
-                    else { OutQty = 0; }
+                    //if (outqty != null)
+                    //{
+                    //    OutQty = outqty.QNTY.retDbl();
+                    //}
+                    //else { OutQty = 0; }
                     wsSheet1.Cells[i + 2, 9].Value = OutQty;
                     wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["NOS"].retDbl();
                     wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["RATE"].retDbl();

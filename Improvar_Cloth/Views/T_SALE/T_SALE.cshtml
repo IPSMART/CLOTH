@@ -738,6 +738,7 @@
         <input type="hidden" id="UpDateTransporter" value="N" />
         <input type="hidden" id="withoutamtdatasave" value="" />
         <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
+        <input type="hidden" id="ClientCode" value="@CommVar.ClientCode(Model.UNQSNO)" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(a => a.Delete, new { id = "Delete" })
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
@@ -850,7 +851,7 @@
                             @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE", @onchange = "ChangeBltype();" })
                         </div>
                     </div>
-                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "SR") && Model.DefaultAction == "V")
+                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "PI") && Model.DefaultAction == "V")
                     {
                         <div class="col-md-3">
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />

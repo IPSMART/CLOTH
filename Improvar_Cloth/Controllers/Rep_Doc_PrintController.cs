@@ -285,6 +285,9 @@ namespace Improvar.Controllers
             str1 += "order by i.SLNO ";
             DataTable tbliss = masterHelp.SQLquery(str1);
 
+            string jobcd = mp;
+            DataTable tblstk = Salesfunc.getPendProg(VE.TDT, "", "", "", "'" + jobcd + "'", "", "", "");
+
             //programme
             DataTable IR_PROG = new DataTable("DTProgramme");
             IR_PROG.Columns.Add("autono", typeof(string), "");
@@ -328,7 +331,8 @@ namespace Improvar.Controllers
             if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totnos", typeof(double), "");
             if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("totvalue", typeof(double), "");
             if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("blremarks", typeof(string), "");
-            
+            IR_PROG.Columns.Add("stkdata", typeof(string), "");
+
             DataTable IR_ISSUE = new DataTable("DTIssue");
             if (repname != "JobIssue_DIWH.rpt")
             {
@@ -351,6 +355,16 @@ namespace Improvar.Controllers
                 IR_ISSUE.Columns.Add("iss_totalnos", typeof(double), "");
 
             }
+
+            DataTable IR_STOCK = new DataTable("DTStock");
+            IR_STOCK.Columns.Add("autono", typeof(string), "");
+
+            IR_STOCK.Columns.Add("stk_itgrpnm", typeof(string), "");
+            IR_STOCK.Columns.Add("stk_itdescn", typeof(string), "");
+            IR_STOCK.Columns.Add("stk_uomnm", typeof(string), "");
+            IR_STOCK.Columns.Add("stk_qnty", typeof(double), "");
+            IR_STOCK.Columns.Add("stk_docdt", typeof(string), "");
+            IR_STOCK.Columns.Add("stk_slno", typeof(string), "");
             Int32 maxR = 0, i = 0;
             Int32 x = 0, maxX = tblhdr.Rows.Count - 1;
             Int32 rNo = 0, sln = 0; string blrem = "";
@@ -390,6 +404,18 @@ namespace Improvar.Controllers
 
                 double t_qnty = 0, t_nos = 0, t_issnos = 0, t_issqnty = 0, t_value = 0;
                 string autono = tblhdr.Rows[x]["autono"].ToString();
+
+                string slcd = tblhdr.Rows[x]["slcd"].ToString();
+                var STOCK_DATA = (from DataRow DR in tblstk.Rows
+                                  where DR["slcd"].ToString() == slcd
+                                  group DR by new { itgrpnm = DR["itgrpnm"].ToString(), itnm = DR["itnm"].ToString(), uomnm = DR["uomcd"].ToString() } into X
+                                  select new
+                                  {
+                                      itgrpnm = X.Key.itgrpnm,
+                                      itnm = X.Key.itnm,
+                                      uomnm = X.Key.uomnm,
+                                      qnty = X.Sum(Z => Z.Field<decimal>("balqnty")),
+                                  }).OrderBy(A => A.itgrpnm).ThenBy(A => A.itnm).ToList();
 
                 #region Programme Printing
 
@@ -437,7 +463,7 @@ namespace Improvar.Controllers
                         rfld = "sladd" + Convert.ToString(coutadd);
                         IR_PROG.Rows[rNo][rfld] = address[g].ToString();
                     }
-                    
+                    IR_PROG.Rows[rNo]["stkdata"] = STOCK_DATA.Count() == 0 ? "N" : "Y";
                     if (repname == "JobIssue_DIWH.rpt")
                     {
                         IR_PROG.Rows[rNo]["blremarks"] = blrem;
@@ -524,6 +550,23 @@ namespace Improvar.Controllers
                 }
                 //eof 
 
+                #region Stock printing
+                maxR = STOCK_DATA.Count() - 1; i = 0; sln = 0;
+                while (i <= maxR)
+                {
+                    sln++;
+                    IR_STOCK.Rows.Add(""); rNo = IR_STOCK.Rows.Count - 1;
+                    IR_STOCK.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
+                    IR_STOCK.Rows[rNo]["stk_itgrpnm"] = STOCK_DATA[i].itgrpnm;
+                    IR_STOCK.Rows[rNo]["stk_itdescn"] = STOCK_DATA[i].itnm;
+                    IR_STOCK.Rows[rNo]["stk_uomnm"] = STOCK_DATA[i].uomnm;
+                    IR_STOCK.Rows[rNo]["stk_qnty"] = STOCK_DATA[i].qnty;
+                    IR_STOCK.Rows[rNo]["stk_docdt"] = tblhdr.Rows[x]["docdt"].ToString().Remove(10);
+                    IR_STOCK.Rows[rNo]["stk_slno"] = sln;
+                    i++;
+                    if (i > maxR) break;
+                }
+                #endregion
                 x++;
             }
 
@@ -531,6 +574,7 @@ namespace Improvar.Controllers
             IR.Tables.Add(IR_PROG);
             if (repname != "JobIssue_DIWH.rpt")
             { IR.Tables.Add(IR_ISSUE); }
+            IR.Tables.Add(IR_STOCK);
 
             string compaddress = masterHelp.retCompAddress(VE.OtherPara.Split(',')[1].retStr());
             string rptname = "~/Report/" + repname;
@@ -798,7 +842,7 @@ namespace Improvar.Controllers
                 while (tbl.Rows[i]["autono"].ToString() == autono)
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                prnloop:
+                    prnloop:
                     IR.Rows[rNo]["cloth_used"] = tbl.Rows[i]["cloth_used"];
                     IR.Rows[rNo]["cloth_was"] = tbl.Rows[i]["cloth_was"];
                     IR.Rows[rNo]["recotype"] = "2";
@@ -914,7 +958,7 @@ namespace Improvar.Controllers
                 while (tbl.Rows[i]["autono"].ToString() == autono)
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                progloop:
+                    progloop:
 
                     IR.Rows[rNo]["recotype"] = "12";
                     IR.Rows[rNo]["autono"] = tbl.Rows[i]["autono"];

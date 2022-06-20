@@ -419,8 +419,15 @@
                                             </td>
 
                                             <td class="PJBLDiv">
+                                                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
+                                                {
+                                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" })
+                                                }
+                                                else
+                                                {
                                                 @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" })
-                                            </td>
+                                                }
+                                             </td>
                                         </tr>
                                     }
                                 }

@@ -4560,7 +4560,7 @@ namespace Improvar.Controllers
 
                 string docnos = VE.TEXTBOX8.retStr();
 
-                DataTable tbl;
+                DataTable tblinv;
                 string query = "";
                 #region
                 string sqlc = "";
@@ -4689,10 +4689,13 @@ namespace Improvar.Controllers
                     sql += " where a.autono = b.autono(+) and a.ststype='P' and b.doccd = '" + doccd + "' )   " + Environment.NewLine;
                 }
                 sql += " order by docno,autono,slno  ";
-                tbl = new DataTable();
-                tbl = masterHelp.SQLquery(sql);
-                if (tbl.Rows.Count == 0) return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
+                tblinv = new DataTable();
+                tblinv = masterHelp.SQLquery(sql);
+                if (tblinv.Rows.Count == 0) return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
                 #endregion
+                DataView dv = new DataView(tblinv);
+                string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO" };
+                DataTable tbl = dv.ToTable(true, COL);
 
                 sql = "select a.compcd, a.compnm, b.add1, b.add2,  b.add3, b.add4, b.add5, b.add6, b.add7, ";
                 sql += "b.phno1std, b.phno1, b.regmobile, b.regemailid,b.gstno ";
@@ -4734,23 +4737,23 @@ namespace Improvar.Controllers
                 IR.Columns.Add("compemail", typeof(string));
                 IR.Columns.Add("compgstno", typeof(string));
 
-                Int32 i = 0, rNo = 0; maxR = 0;
+                Int32 i = 0, rNo = 0; maxR = tbl.Rows.Count - 1;
                 while (i <= maxR)
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["slcd"] = tbl.Rows[0]["slcd"];
+                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"];
                     //IR.Rows[rNo]["othnm"] = VE.TEXTBOX2;
-                    IR.Rows[rNo]["slnm"] = tbl.Rows[0]["slnm"];
-                    IR.Rows[rNo]["sladd1"] = tbl.Rows[0]["sladd1"];
-                    IR.Rows[rNo]["sladd2"] = tbl.Rows[0]["sladd2"];
-                    IR.Rows[rNo]["sladd3"] = tbl.Rows[0]["sladd3"];
-                    IR.Rows[rNo]["sladd4"] = tbl.Rows[0]["sladd4"];
-                    IR.Rows[rNo]["sladd5"] = tbl.Rows[0]["sladd5"];
-                    IR.Rows[rNo]["sladd6"] = tbl.Rows[0]["sladd6"];
-                    IR.Rows[rNo]["sladd7"] = tbl.Rows[0]["sladd7"];
-                    IR.Rows[rNo]["slphno"] = tbl.Rows[0]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
-                    IR.Rows[rNo]["slemail"] = tbl.Rows[0]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
-                    IR.Rows[rNo]["slgstno"] = tbl.Rows[0]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[0]["gstno"];
+                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"];
+                    IR.Rows[rNo]["sladd1"] = tbl.Rows[i]["sladd1"];
+                    IR.Rows[rNo]["sladd2"] = tbl.Rows[i]["sladd2"];
+                    IR.Rows[rNo]["sladd3"] = tbl.Rows[i]["sladd3"];
+                    IR.Rows[rNo]["sladd4"] = tbl.Rows[i]["sladd4"];
+                    IR.Rows[rNo]["sladd5"] = tbl.Rows[i]["sladd5"];
+                    IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["sladd6"];
+                    IR.Rows[rNo]["sladd7"] = tbl.Rows[i]["sladd7"];
+                    IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
+                    IR.Rows[rNo]["slemail"] = tbl.Rows[i]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
+                    IR.Rows[rNo]["slgstno"] = tbl.Rows[i]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[i]["gstno"];
                     IR.Rows[rNo]["compnm"] = tblComp.Rows[0]["compnm"];
                     IR.Rows[rNo]["compadd1"] = tblComp.Rows[0]["add1"];
                     IR.Rows[rNo]["compadd2"] = tblComp.Rows[0]["add2"];
