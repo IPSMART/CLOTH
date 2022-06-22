@@ -68,20 +68,29 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "ntwt", "double", "n,12,4", "Weight");
                 HC.GetPrintHeader(IR, "parcel", "double", "n,10,2", "Parcel");
                 HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party");
-                HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", "Bill Amt.");
+                HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Amt.");
 
 
                 string sql = "";
-                sql += " select a.autono,c.docno,c.docdt,b.translcd,d.slnm translnm,b.lrno,b.lrdt,b.trwt,a.slcd,e.slnm,a.blamt,b.ntwt ";
-                sql += "from " + scm1 + ".t_txn a," + scm1 + ".t_txntrans b, " + scm1 + ".t_cntrl_hdr c," + scmf + ".m_subleg d," + scmf + ".m_subleg e ";
-                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.translcd = d.slcd(+) and a.slcd = e.slcd(+)  ";
+                sql += " select a.autono,a.docno,a.docdt,a.translcd,a.translnm,a.lrno,a.lrdt,a.trwt,a.slcd,a.slnm,a.blamt,a.ntwt,b.tranamt from ";
+
+                sql += "(select a.autono,c.docno,c.docdt,b.translcd,d.slnm translnm,b.lrno,b.lrdt,b.trwt,a.slcd,e.slnm,a.blamt,b.ntwt ";
+                sql += "from " + scm1 + ".t_txn a," + scm1 + ".t_txntrans b, " + scm1 + ".t_cntrl_hdr c," + scmf + ".m_subleg d," + scmf + ".m_subleg e," + scmf + ".m_doctype f ";
+                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.translcd = d.slcd(+) and a.slcd = e.slcd(+) and c.doccd=f.doccd and f.doctype in ('SBILD','SPRM')  ";
                 sql += "and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "'  ";
                 if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy')  ";
                 if (SLCD != "") { sql += "and a.slcd in(" + SLCD + ")  "; }
                 if (TRANSLCD != "") { sql += "and b.translcd in(" + TRANSLCD + ") "; }
-                sql += "and b.translcd is not null  ";
-                sql += "order by docdt,autono ";
+                sql += "and b.translcd is not null )a, ";
+
+                sql += "(select a.autono,a.amtcd,sum(nvl(a.amt,0)+nvl(a.igstamt,0)+nvl(a.cgstamt,0)+nvl(a.sgstamt,0)+nvl(a.cessamt,0)+nvl(a.dutyamt,0))tranamt ";
+                sql += "from " + scm1 + ".t_txnamt a," + scm1 + ".M_AMTTYPE b ";
+                sql += "where a.amtcd=b.amtcd and b.TAXCODE='TC' ";
+                sql += "group by  a.autono,a.amtcd )b ";
+
+                sql += "where a.autono=b.autono  ";
+                sql += "order by a.docdt,a.autono ";
 
                 DataTable tbl = masterHelp.SQLquery(sql);
 
@@ -101,7 +110,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["ntwt"] = tbl.Rows[i]["ntwt"];
                     }                    
                     IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + " [" + tbl.Rows[i]["slcd"].ToString() + "]";
-                    IR.Rows[rNo]["blamt"] = tbl.Rows[i]["blamt"];
+                    IR.Rows[rNo]["amt"] = tbl.Rows[i]["tranamt"];
 
                     i++;
                     if (i > maxR) break;
