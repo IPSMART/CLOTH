@@ -311,6 +311,7 @@
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\Rep_SupplierController.cs" />
+    <Compile Include="Controllers\Rep_TranRegController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\Sys_DataUploadController.cs" />
     <Compile Include="Controllers\Sys_PriceList_UploadController.cs" />
@@ -1481,6 +1482,7 @@
     <Content Include="Views\Rep_Rate_Query\Rep_Rate_Query.cshtml" />
     <Content Include="Views\Rep_Pend_LR\Rep_Pend_LR.cshtml" />
     <Content Include="Views\Shared\_T_PhyStock_UpdatePrice.cshtml" />
+    <Content Include="Views\Rep_TranReg\Rep_TranReg.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
