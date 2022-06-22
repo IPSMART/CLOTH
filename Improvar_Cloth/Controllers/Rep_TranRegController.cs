@@ -84,7 +84,7 @@ namespace Improvar.Controllers
                 if (TRANSLCD != "") { sql += "and b.translcd in(" + TRANSLCD + ") "; }
                 sql += "and b.translcd is not null )a, ";
 
-                sql += "(select a.autono,a.amtcd,sum(nvl(a.amt,0)+nvl(a.igstamt,0)+nvl(a.cgstamt,0)+nvl(a.sgstamt,0)+nvl(a.cessamt,0)+nvl(a.dutyamt,0))tranamt ";
+                sql += "(select a.autono,a.amtcd,sum(nvl(a.amt,0))tranamt ";
                 sql += "from " + scm1 + ".t_txnamt a," + scm1 + ".M_AMTTYPE b ";
                 sql += "where a.amtcd=b.amtcd and b.TAXCODE='TC' ";
                 sql += "group by  a.autono,a.amtcd )b ";
