@@ -2210,7 +2210,7 @@ namespace Improvar
 
             sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr BaleNoBaleYrcd, e.lrno,to_char(e.lrdt,'dd/mm/yyyy') lrdt,  " + Environment.NewLine;
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, " + Environment.NewLine;
-            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, " + Environment.NewLine;
+            sql += "g.nos, a.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, " + Environment.NewLine;
             sql += "g.pageno, g.pageslno, g.rate, g.txblval, g.othramt, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno pagenoslno " + Environment.NewLine;
             sql += "from  ( " + Environment.NewLine;
             sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, " + Environment.NewLine;
@@ -2234,9 +2234,9 @@ namespace Improvar
             if (gocd != "") sql += "a.gocd in (" + gocd + ") and " + Environment.NewLine;
             if (pagenoslno.retStr() != "") sql += "g.pageno||'/'||g.pageslno in (" + pagenoslno + ") and " + Environment.NewLine;
             sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) " + Environment.NewLine;
-            if (balStockOnly == true) sql += "and nvl(a.qnty, 0) > 0 " + Environment.NewLine;
+            if (balStockOnly == true) sql += "and nvl(a.qnty, 0) <> 0 " + Environment.NewLine;
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, " + Environment.NewLine;
-            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, g.txblval, g.othramt, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno " + Environment.NewLine;
+            sql += "g.nos, a.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, g.txblval, g.othramt, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno " + Environment.NewLine;
             sql += "order by baleyr, baleno, styleno " + Environment.NewLine;
             DataTable tbl = masterHelpFa.SQLquery(sql);
             return tbl;
