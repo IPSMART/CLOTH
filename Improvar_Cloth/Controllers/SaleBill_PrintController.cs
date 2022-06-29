@@ -839,7 +839,8 @@ namespace Improvar.Controllers
                                 default: copymode = ""; break;
                             }
 
-                            string negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            //string negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            string negamt = "N";
 
                             string SLMSLNM = "";
                             if (dtslm != null && dtslm.Rows.Count > 0)
