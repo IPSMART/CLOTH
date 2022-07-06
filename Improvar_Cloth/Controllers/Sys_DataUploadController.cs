@@ -235,7 +235,12 @@ namespace Improvar.Controllers
                     sql += " where   a.autono=b.autono and b.docdt=to_date('" + Ddate + "','dd/mm/yyyy') and a.slcd='" + TTXN.SLCD + "' and nvl(a.PREFNO,' ')='" + tepb + "' ";//  and a.LRNO='" + TTXN.LRNO + "' ";
                     sql += " and nvl(a.GOCD,' ')='" + teGO + "' ";
                     var dt = masterHelp.SQLquery(sql);
-                    if (dt.Rows.Count > 0) continue;
+                    if (dt.Rows.Count > 0)
+                    {
+                        errmsg += "same data already exist " + msg + ",";
+                        strerrline += excelrow + ",";
+                        continue;
+                    }
                     string PURGLCD = "";
                     DataTable innerDt = dbfdt.Select("docdt = '" + Ddate + "' and slcd = '" + TTXN.SLCD + "' and PBLNO = '" + TTXN.PREFNO + "' and GOCD = '" + TTXN.GOCD + "'").CopyToDataTable();
 
@@ -338,6 +343,8 @@ namespace Improvar.Controllers
                         TTXNDTL.TXBLVAL = TTXNDTL.AMT.retDbl(); txable += TTXNDTL.TXBLVAL.retDbl();
                         if (TTXNDTL.TXBLVAL == 0)
                         {
+                            errmsg += "amt 0 " + msg + ",";
+                            strerrline += excelrow + ",";
                             continue;
                             //return "TXBLVAL/RATE/QNTY should not Zeor(0) at " + msg;
                         }
@@ -435,6 +442,8 @@ namespace Improvar.Controllers
                     double blqnty = TTXNDTLlist.Sum(m => m.QNTY).retDbl();
                     if (blqnty == 0)
                     {
+                        errmsg += "blqnty 0 " + msg + ",";
+                        strerrline += excelrow + ",";
                         continue;
                     }
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "OpStock");
