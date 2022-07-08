@@ -32,5 +32,6 @@ namespace Improvar.ViewModels
         public string SLNM { get; set; }
         public string DOCNM { get; set; }
         public string TEXTBOX6 { get; set; }
+        public string JOBCD { get; set; }
     }
 }

@@ -97,6 +97,8 @@ namespace Improvar.ViewModels
         public List<ColumnName> ColumnName { get; set; }
         public string BARNO { get; set; }
         public string Translnm { get; set; }
+        public string JOBNM { get; set; }
+        
 
     }
 }

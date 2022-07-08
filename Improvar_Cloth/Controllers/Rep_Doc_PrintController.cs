@@ -285,7 +285,7 @@ namespace Improvar.Controllers
             str1 += "order by i.SLNO ";
             DataTable tbliss = masterHelp.SQLquery(str1);
 
-            string jobcd = mp;
+            string jobcd = VE.JOBCD;
             DataTable tblstk = Salesfunc.getPendProg(VE.TDT, "", "", "", "'" + jobcd + "'", "", "", "");
 
             //programme

@@ -2737,6 +2737,7 @@ namespace Improvar.Controllers
                 repDoc.ActionName = "Rep_IssueChallan_Print";
                 repDoc.RepType = reptype;
                 repDoc.OtherPara = VE.MENU_PARA + "," + VE.T_TXN.GOCD;
+                repDoc.JOBCD = VE.T_TXN.JOBCD;
                 if (TempData["printparameter"] != null)
                 {
                     TempData.Remove("printparameter");

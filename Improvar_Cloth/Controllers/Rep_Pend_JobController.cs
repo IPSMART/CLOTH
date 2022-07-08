@@ -19,7 +19,8 @@ namespace Improvar.Controllers
         // GET: Rep_Pend_Job
         public ActionResult Rep_Pend_Job()
         {
-            try {
+            try
+            {
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -31,17 +32,18 @@ namespace Improvar.Controllers
                     jobcd = VE.MENU_PARA;
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                    VE.FDT =  CommVar.FinStartDate(UNQSNO);
+                    VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.Checkbox1 = false; //show summary
                     VE.Checkbox2 = true; //Show Party
                     VE.Checkbox4 = false; //Show Barch No
                     VE.TEXTBOX2 = "P"; //Calc on Box/Pcs/Sets;
                     string comcd = CommVar.Compcd(UNQSNO);
-                    string location =  CommVar.Loccd(UNQSNO);
+                    string location = CommVar.Loccd(UNQSNO);
                     //jobcd = VE.MENU_PARA;
                     jobnm = DB.M_JOBMST.Find(jobcd)?.JOBNM;
-
+                    VE.JOBCD = jobcd;
+                    VE.JOBNM = jobnm;
                     //if (jobcd == "DY" || jobcd == "BL") VE.Checkbox4 = true;
                     ViewBag.formname = "Pending with " + jobnm;
 
@@ -62,7 +64,7 @@ namespace Improvar.Controllers
 
                     VE.DropDown_list_StkType = Salesfunc.GetforStkTypeSelection();
 
-                    string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO), linkcode = "J";
+                    string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), linkcode = "J";
                     VE.TEXTBOX4 = MasterHelp.ComboFill("recslcd", VE.DropDown_list_SLCD, 0, 1);
 
                     //VE.DropDown_list4 = (from a in DBF.M_SUBLEG
@@ -96,11 +98,32 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+        public ActionResult GetJobDetails(string val)
+        {
+            try
+            {
+                var str = MasterHelp.JOBCD_JOBMST_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
         [HttpPost]
         public ActionResult Rep_Pend_Job(ReportViewinHtml VE, FormCollection FC)
         {
             string repon = FC["Show_exl"];
-            if (VE.Checkbox5 ==true)
+            if (VE.Checkbox5 == true)
             {
                 return Rep_Pend_Job_Item(VE, FC, repon);
             }
@@ -118,12 +141,12 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "", stktype = "", brandcd = "", unselslcd="", recslcd = "";
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "", stktype = "", brandcd = "", unselslcd = "", recslcd = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
-                jobcd = VE.MENU_PARA;
-                jobnm = DB.M_JOBMST.Find(jobcd).JOBNM;
+                jobcd = VE.JOBCD;// VE.MENU_PARA;
+                jobnm = VE.JOBNM;// DB.M_JOBMST.Find(jobcd).JOBNM;
                 bool showitem = false, showsumm = VE.Checkbox1, showparty = VE.Checkbox2;
                 if (VE.MENU_PARA == "IR")
                 {
@@ -154,9 +177,11 @@ namespace Improvar.Controllers
                     stktype = FC["STKTYPE"].ToString().retSqlformat();
                 }
 
-                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'"+jobcd+"'","", "", linecd);
-                if (VE.Checkbox4 == true) tbl.DefaultView.Sort = "slnm, slcd, linenm, linecd, docdt, docno, batchno, styleno, itnm, itcd, partnm, partcd, print_seq, sizenm";
-                else tbl.DefaultView.Sort = "slnm, slcd, linenm, linecd, docdt, docno, styleno, itnm, itcd, partnm, partcd, print_seq, sizenm";
+                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd);
+                //if (VE.Checkbox4 == true) tbl.DefaultView.Sort = "slnm, slcd, linenm, linecd, docdt, docno, batchno, styleno, itnm, itcd, partnm, partcd, print_seq, sizenm";
+                //else tbl.DefaultView.Sort = "slnm, slcd, linenm, linecd, docdt, docno, styleno, itnm, itcd, partnm, partcd, print_seq, sizenm";
+                if (VE.Checkbox4 == true) tbl.DefaultView.Sort = "slnm, slcd, docdt, docno, batchno, styleno, itnm, itcd, print_seq, sizenm";
+                else tbl.DefaultView.Sort = "slnm, slcd, docdt, docno, styleno, itnm, itcd, print_seq, sizenm";
                 tbl = tbl.DefaultView.ToTable();
                 if (tbl.Rows.Count == 0)
                 {
@@ -170,7 +195,7 @@ namespace Improvar.Controllers
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
 
-                string qtydsp = "n,13,0:##,##,##,##0", qtydspo= "n,13,2:###,##,##0.00";
+                string qtydsp = "n,13,0:##,##,##,##0", qtydspo = "n,13,2:###,##,##0.00";
                 string stkcalcon = VE.TEXTBOX2, qty1hd = "Box";
                 if (stkcalcon == "S") qty1hd = "Sets";
                 bool groupondate = false, showothrunit = true, showraka = true;
@@ -195,9 +220,9 @@ namespace Improvar.Controllers
                 }
                 if (VE.Checkbox4 == true) HC.GetPrintHeader(IR, "batchno", "string", "c,15", "Batch No");
                 if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "recdocno", "string", "c,16", "Recd Ref");
-                if (VE.Checkbox3 == true) HC.GetPrintHeader(IR,"recslnm", "string", "c,20", "Recd from");
+                if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "recslnm", "string", "c,20", "Recd from");
                 HC.GetPrintHeader(IR, "issqnty", "double", qtydsp, "Bal.Qty");
-                if (showothrunit == true) HC.GetPrintHeader(IR, "issqnty1", "double", qtydspo, "Iss."+qty1hd);
+                if (showothrunit == true) HC.GetPrintHeader(IR, "issqnty1", "double", qtydspo, "Iss." + qty1hd);
                 if (showraka == true)
                 {
                     HC.GetPrintHeader(IR, "losqnty", "double", qtydsp, "Loose");
@@ -228,12 +253,13 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["Dammy"] = "[ " + chk1val + "] " + tbl.Rows[i][chk1nm];
                         if (showparty == true)
                         {
-                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " [ " + tbl.Rows[i]["propname"].ToString() + (tbl.Rows[i]["regmobile"]==DBNull.Value?"":"  Mob." + tbl.Rows[i]["regmobile"].ToString()) + " ]";
+                            //IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " [ " + tbl.Rows[i]["propname"].ToString() + (tbl.Rows[i]["regmobile"] == DBNull.Value ? "" : "  Mob." + tbl.Rows[i]["regmobile"].ToString()) + " ]";
+                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " [ " +tbl.Rows[i]["slnm"].retStr() + " ]";
                         }
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
 
-                    double popqty=0, pissqty = 0, precqty = 0, pretqty = 0, pshrqty = 0, pbalqty = 0, plosqty = 0, prakqty = 0;
+                    double popqty = 0, pissqty = 0, precqty = 0, pretqty = 0, pshrqty = 0, pbalqty = 0, plosqty = 0, prakqty = 0;
                     double pissqty1 = 0, precqty1 = 0, pretqty1 = 0, pshrqty1 = 0;
                     while (tbl.Rows[i][chk1fld].ToString() == chk1val)
                     {
@@ -244,8 +270,8 @@ namespace Improvar.Controllers
                         //    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + "" + chk2val + " </span>" + tbl.Rows[i][chk2nm];
                         //    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                         //}
-                        double op = 0, op1 = 0, cl=0, cl1 = 0;
-                        double sopqty=0, sissqty = 0, srecqty = 0, sretqty = 0, sshrqty = 0, sbalqty = 0, slosqty = 0, srakqty = 0;
+                        double op = 0, op1 = 0, cl = 0, cl1 = 0;
+                        double sopqty = 0, sissqty = 0, srecqty = 0, sretqty = 0, sshrqty = 0, sbalqty = 0, slosqty = 0, srakqty = 0;
                         double sissqty1 = 0, srecqty1 = 0, sretqty1 = 0, sshrqty1 = 0;
                         while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val)
                         {
@@ -254,19 +280,19 @@ namespace Improvar.Controllers
                             double tissqty1 = 0, trecqty1 = 0, tretqty1 = 0, tshrqty1 = 0;
                             while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                             {
-                                string autono = tbl.Rows[i]["autono"].ToString();
+                                string autono = tbl.Rows[i]["progautono"].ToString();
                                 string dsc = "";
                                 double issqty = 0, recqty = 0, retqty = 0, shrqty = 0, losqty = 0, rakqty = 0;
                                 double issqty1 = 0, recqty1 = 0, retqty1 = 0, shrqty1 = 0;
-                                string oldbatchno = tbl.Rows[i]["batchno"].ToString();
-                                while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["autono"].ToString() == autono)
+                                string oldbatchno = VE.Checkbox4 == true ?tbl.Rows[i]["batchno"].ToString():"";
+                                while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono)
                                 {
                                     string chk1 = tbl.Rows[i]["itcd"].ToString();
                                     double cpcs = 0, cbox = 0, chkqty = 0, chkpcs = 0, cqty = 0;
                                     if (tbl.Rows[i]["styleno"].ToString() == "") dsc += tbl.Rows[i]["itnm"].ToString() + ",";
                                     else dsc += tbl.Rows[i]["styleno"].ToString() + " " + tbl.Rows[i]["partcd"] + ",";
-                                    oldbatchno = tbl.Rows[i]["batchno"].ToString();
-                                    while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["autono"].ToString() == autono && tbl.Rows[i]["itcd"].ToString() == chk1)
+                                    oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString():"";
+                                    while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono && tbl.Rows[i]["itcd"].ToString() == chk1)
                                     {
                                         chkqty = Convert.ToDouble(tbl.Rows[i]["balqnty"]);
 
@@ -278,7 +304,7 @@ namespace Improvar.Controllers
                                         i++;
                                         if (i > maxR) break;
                                         if (VE.Checkbox4 == true && tbl.Rows[i]["batchno"].ToString() != oldbatchno) break;
-                                        oldbatchno = tbl.Rows[i]["batchno"].ToString();
+                                        oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString():"";
                                     }
                                     if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                     else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
@@ -351,7 +377,7 @@ namespace Improvar.Controllers
                     {
                         noparty++;
                         IR.Rows[rNo]["docdt"] = noparty;
-                        if (groupondate == true )
+                        if (groupondate == true)
                         {
                             if (showparty == false)
                             {
@@ -412,12 +438,12 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
-                string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string brandcd = "", itgrpcd = "", itcd = "", tdt = "", gocd = "", stktype = "", slcd = "", linecd = "", recslcd = "";
                 bool stockval = VE.Checkbox1;
                 bool showitem = VE.Checkbox2;
-                jobcd = VE.MENU_PARA;
-                jobnm = DB.M_JOBMST.Find(jobcd).JOBNM;
+                jobcd = VE.JOBCD;// VE.MENU_PARA;
+                jobnm = VE.JOBNM;// DB.M_JOBMST.Find(jobcd).JOBNM;
 
                 tdt = VE.TDT;
                 if (VE.MENU_PARA == "IR")
@@ -455,7 +481,7 @@ namespace Improvar.Controllers
                 string mtrljobcd = "'FS'";
                 if (VE.TEXTBOX3 != null) mtrljobcd = "'" + VE.TEXTBOX3 + "'";
 
-                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "",linecd);
+                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd);
                 tbl.DefaultView.Sort = "brandnm, brandcd, itgrpnm, itgrpcd, styleno, itcd, partcd, print_seq, sizecdgrp, sizenm";
                 //var data = from d in tbl.AsEnumerable()
                 //           orderby d.Field<string>("brandnm") + d.Field<string>("brandcd") + d.Field<string>("itgrpnm") + d.Field<string>("itgrpcd") +

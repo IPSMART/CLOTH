@@ -45,8 +45,8 @@ namespace Improvar.Controllers
                     string comcd = CommVar.Compcd(UNQSNO);
                     string location = CommVar.Loccd(UNQSNO);
 
-                    jobcd = VE.MENU_PARA;
-                    jobnm = DB.M_JOBMST.Find(jobcd)?.JOBNM;
+                    VE.JOBCD = VE.MENU_PARA;
+                    VE.JOBNM = DB.M_JOBMST.Find(jobcd)?.JOBNM;
 
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
@@ -78,6 +78,27 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+        public ActionResult GetJobDetails(string val)
+        {
+            try
+            {
+                var str = MasterHelp.JOBCD_JOBMST_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
 
         [HttpPost]
         public ActionResult Rep_Job_Ledger(ReportViewinHtml VE, FormCollection FC)
@@ -92,8 +113,8 @@ namespace Improvar.Controllers
                 string unselslcd = "", recslcd = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
-                jobcd = VE.MENU_PARA;
-                jobnm = DB.M_JOBMST.Find(jobcd).JOBNM;
+                jobcd = VE.JOBCD;// VE.MENU_PARA;
+                jobnm = VE.JOBNM;// DB.M_JOBMST.Find(jobcd).JOBNM;
                 bool showitem = false, showsumm = VE.Checkbox1, showparty = VE.Checkbox2;
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString().retSqlformat();
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = FC["slcdunselvalue"].ToString().retSqlformat();
