@@ -3917,7 +3917,7 @@ namespace Improvar.Controllers
                             if (tbl.Rows[i]["docrem"].ToString() != "") blrem = blrem + tbl.Rows[i]["docrem"].ToString() + "  ";
                             dr1["docth"] = tbl.Rows[i]["docth"];
                             //dr1["nopkgs"] = tbl.Rows[i]["nopkgs"];
-                            dr1["blremarks"] = blrem;
+                            //dr1["blremarks"] = blrem;
 
                             //dr1["precarr"] = tbl.Rows[i]["precarr"];
                             //dr1["precarrrecpt"] = tbl.Rows[i]["precarrrecpt"];
@@ -4016,7 +4016,7 @@ namespace Improvar.Controllers
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") dr1["batchdtl"] = "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
 
                                 dr1["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
-
+                                dr1["blremarks"] = tbl.Rows[i]["docrem"].ToString();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
                                 dr1["qnty"] = negamt == "Y" ? tbl.Rows[i]["qnty"].retDbl() * -1 : tbl.Rows[i]["qnty"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
