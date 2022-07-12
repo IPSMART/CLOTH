@@ -46,7 +46,7 @@ namespace Improvar.Controllers
 
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
-
+                    VE.JOBCD = VE.MENU_PARA;
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -153,7 +153,8 @@ namespace Improvar.Controllers
 
                 HC.GetPrintHeader(IR, "balqnty", "double", "n,15,3", "Bal Qnty.");
                 if (showValue == true) HC.GetPrintHeader(IR, "balamt", "double", "n,15,3", "Bal Value");
-
+                IR.Columns.Add("slcd", typeof(string), "");
+                string[] arrcolnm = { "Nos", "cutlength", "qnty", "issamt", "recnos", "recqnty", "balqnty", "balamt" };
                 Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
                 i = 0; maxR = tbl.Rows.Count - 1;
                 string lastslcd = "";
@@ -163,7 +164,7 @@ namespace Improvar.Controllers
                     if (RepFormat == "JOBBERWISE")
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["Dammy"] = "" + tbl.Rows[i]["slnm"].retStr() + " [" + tbl.Rows[i]["slcd"].retStr() + "]" + (tbl.Rows[i]["regmobile"].retStr()==""?"":"Mob : " +tbl.Rows[i]["regmobile"].retStr());
+                        IR.Rows[rNo]["Dammy"] = "" + tbl.Rows[i]["slnm"].retStr() + " [" + tbl.Rows[i]["slcd"].retStr() + "]" + (tbl.Rows[i]["regmobile"].retStr() == "" ? "" : "Mob : " + tbl.Rows[i]["regmobile"].retStr());
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                         lastslcd = slcd;
                     }
@@ -181,6 +182,7 @@ namespace Improvar.Controllers
                                 if (frstslnoreco == true || ReportType == "DETAIL")
                                 {
                                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
                                 }
                                 if (RepFormat == "STANDARD")
                                 {
@@ -201,7 +203,7 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"].retDbl();
                                     IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                                     if (showValue == true) IR.Rows[rNo]["issamt"] = tbl.Rows[i]["issamt"].retDbl();
-                                    IR.Rows[rNo]["itremarks"] = tbl.Rows[i]["itremark"].retStr();
+                                    IR.Rows[rNo]["itremarks"] = tbl.Rows[i]["itremark"].retStr();                                    
                                 }
                                 //Receive
                                 if (ReportType != "SUMMARY")
@@ -232,14 +234,50 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["balqnty"] = tbl.Rows[i - 1]["balqnty"].retDbl();
                             double avrate = (tbl.Rows[i - 1]["qnty"].retDbl() == 0 ? 0 : (tbl.Rows[i - 1]["issamt"].retDbl() / tbl.Rows[i - 1]["qnty"].retDbl()).toRound(2));
                             double balamt = (avrate * tbl.Rows[i - 1]["balqnty"].retDbl()).toRound(0);
-                            if (showValue == true) IR.Rows[rNo]["balamt"] = balamt; 
+                            if (showValue == true) IR.Rows[rNo]["balamt"] = balamt;
                             if (i > maxR) break;
                         }
                         if (i > maxR) break;
                     }
+                    if (RepFormat == "JOBBERWISE")
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["slnm"].ToString();
+
+                        for (int a = 9; a < IR.Columns.Count - 1; a++)
+                        {
+                            string colnm = IR.Columns[a].ColumnName;
+                            if (arrcolnm.Contains(colnm))
+                            {
+                                var purewisegrptotal = (from DataRow dr in IR.Rows where dr["slcd"].retStr() == slcd select dr[colnm].retDbl()).Sum();
+                                if (purewisegrptotal.retDbl() != 0)
+                                {
+                                    IR.Rows[rNo][IR.Columns[a].ColumnName] = purewisegrptotal;
+                                }
+                            }
+                        }
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;border-top: 1px solid;";
+                    }
                     if (i > maxR) break;
                 }
 
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["itnm"] = "Grand Total";
+                for (int a = 9; a < IR.Columns.Count - 1; a++)
+                {
+                    string colnm = IR.Columns[a].ColumnName;
+                    if (arrcolnm.Contains(colnm))
+                    {
+                        var purewisegrptotal = (from DataRow dr in IR.Rows where dr["slcd"].retStr() != "" select dr[colnm].retDbl()).Sum();
+                        if (purewisegrptotal.retDbl() != 0)
+                        {
+                            IR.Rows[rNo][IR.Columns[a].ColumnName] = purewisegrptotal;
+                        }
+                    }
+                }
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 1px solid;border-top: 1px solid;";
+
+                IR.Columns.Remove("slcd");
                 string repname = "Job Register".retRepname();
                 pghdr1 = (ShowPending == "PENDING" ? "Pending " : " ") + "Job Work register " + (ReportType == "SUMARRY" ? "Sumarry " : "Details ") + (recdt != "" ? " Received date: " + recdt + "" : " ") + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
