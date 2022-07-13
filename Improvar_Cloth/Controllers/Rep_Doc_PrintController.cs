@@ -593,6 +593,7 @@ namespace Improvar.Controllers
             reportdocument.SetParameterValue("billheading", hddsp);
             reportdocument.SetParameterValue("chlntype", "");
             reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
+            if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
             Response.Buffer = false;
             Response.ClearContent();
             Response.ClearHeaders();
@@ -1079,6 +1080,7 @@ namespace Improvar.Controllers
             reportdocument.SetParameterValue("locastat", compaddress[4]);
             reportdocument.SetParameterValue("billheading", hddsp);
             reportdocument.SetParameterValue("chlntype", chlntype);
+            if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
 
             Response.Buffer = false;
             Response.ClearContent();

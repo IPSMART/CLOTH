@@ -2555,6 +2555,15 @@ namespace Improvar
             DB.SaveChanges();
             return;
         }
+        public string retCompStamp()
+        {
+            string compStamp = "C:\\IpSmart\\Stamp\\" + CommVar.Compcd(UNQSNO) + ".png";
+            if (!System.IO.File.Exists(compStamp)) compStamp = "c:\\IpSmart\\Stamp\\" + CommVar.Compcd(UNQSNO) + ".jpg"; else { return compStamp; }
+            if (!System.IO.File.Exists(compStamp)) compStamp = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png"; else { return compStamp; }
+            if (!System.IO.File.Exists(compStamp)) compStamp = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg"; else { return compStamp; }
+            if (!System.IO.File.Exists(compStamp)) compStamp = "";
+            return compStamp;
+        }
 
     }
 }
