@@ -292,5 +292,6 @@ namespace Improvar.ViewModels
         public double TOTBALENO { get; set; }
         public bool STOCKHOLD { get; set; }
         public string Last_DOCDT { get; set; }
+        public string PARGLNM { get; set; }
     }
 }

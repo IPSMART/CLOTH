@@ -236,15 +236,14 @@
                 return false;
             }
         }
-        if ("@Model.MENU_PARA" == "SCN" || "@Model.MENU_PARA" == "SDN" || "@Model.MENU_PARA" == "PCN" || "@Model.MENU_PARA" == "PDN") {
-            if (!emptyFieldCheck("Please Enter Exp. Gen.Ledger", "EXPGLCD")) {
+      
+        if (!emptyFieldCheck("Please Enter Party Gen.Leder", "PARGLCD")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
-        }
         var GridRow_bar = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         var GridRow_detail = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         @*if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP" || "@Model.MENU_PARA" == "OTH") {*@
@@ -737,6 +736,8 @@
         <input type="hidden" id="Barnohelpopen" value="Y" />
         <input type="hidden" id="UpDateTransporter" value="N" />
         <input type="hidden" id="withoutamtdatasave" value="" />
+        <input type="hidden" id="partygenleglinkcd" value="D,C" />
+        <input type="hidden" id="partygenlegcap" value="Party Gen.Leder" />
         <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         <input type="hidden" id="ClientCode" value="@CommVar.ClientCode(Model.UNQSNO)" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
@@ -1124,6 +1125,25 @@
                             </div>
                                 }
                             }
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Party Gen.Leder ")
+                                        <b style="color:red"><sup>*</sup></b>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.PARGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','Party Gen.Leder Details','PARGLCD','PARGLCD=GLCD=1/PARGLNM=GLNM=0','partygenleglinkcd/partygenlegcap')", onblur = "GetHelpBlur('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','Party Gen.Leder Details','PARGLCD','PARGLCD=GLCD=1/PARGLNM=GLNM=0','partygenleglinkcd/partygenlegcap');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','Party Gen.Leder Details','PARGLCD','PARGLCD=GLCD=1/PARGLNM=GLNM=0','partygenleglinkcd/partygenlegcap')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PARGLNM, new { htmlAttributes = new { @class = "form-control", id = "PARGLNM", @TabIndex = -1, @placeholder = "Party Gen.Leder Name", maxlength = 45, @readonly = "readonly" } })
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-5">

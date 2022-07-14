@@ -255,8 +255,15 @@ namespace Improvar.Controllers
                                     return View(VE);
                                 }
                                 VE.M_SYSCNFG = MSYSCNFG;
+                                string doccd1 = VE.DocumentType.FirstOrDefault().value;
+                                var T_TXN = (from a in DB.T_TXN
+                                             join b in DB.T_CNTRL_HDR on a.AUTONO equals b.AUTONO
+                                             where a.DOCCD == doccd1 && b.LOCCD == LOC && b.COMPCD == COM
+                                             orderby a.AUTONO descending
+                                             select a).FirstOrDefault();
 
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                TTXN.PARGLCD = TempData["LASTPARGLCD" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
                                 string STKDRCR = TempData["LASTSTKDRCR" + VE.MENU_PARA].retStr();
@@ -310,6 +317,22 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 VE.STOCKHOLD = STKDRCR == "C" ? true : false;
+
+                                if (T_TXN != null)
+                                {
+                                    if (TTXN.PARGLCD.retStr() == "")
+                                    {
+                                        TTXN.PARGLCD = T_TXN.PARGLCD;
+
+                                    }
+                                }
+                                string PARGLCD = TTXN.PARGLCD.retStr();
+                                if (PARGLCD != "")
+                                {
+                                    VE.PARGLNM = DBF.M_GENLEG.Where(a => a.GLCD == PARGLCD).Select(b => b.GLNM).FirstOrDefault();
+                                }
+
+
                                 if (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR")
                                 {
                                     string doccd = "";
@@ -615,6 +638,7 @@ namespace Improvar.Controllers
 
                 VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
                 VE.MUTSLNM = TXNOTH.MUTSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.MUTSLCD).Select(b => b.SLNM).FirstOrDefault();
+                VE.PARGLNM = TXN.PARGLCD.retStr() == "" ? "" : DBF.M_GENLEG.Where(a => a.GLCD == TXN.PARGLCD).Select(b => b.GLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
 
@@ -1929,26 +1953,26 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetGeneralLedgerDetails(string val)
-        {
-            try
-            {
-                if (val == null)
-                {
-                    return PartialView("_Help2", masterHelp.GENERALLEDGER(val));
-                }
-                else
-                {
-                    string str = masterHelp.GENERALLEDGER(val);
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
+        //public ActionResult GetGeneralLedgerDetails(string val)
+        //{
+        //    try
+        //    {
+        //        if (val == null)
+        //        {
+        //            return PartialView("_Help2", masterHelp.GENERALLEDGER(val));
+        //        }
+        //        else
+        //        {
+        //            string str = masterHelp.GENERALLEDGER(val);
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
         public ActionResult GetJobDetails(string val)
         {
             try
@@ -4564,7 +4588,9 @@ namespace Improvar.Controllers
                     sql += "'" + prodglcd.retStr() + "' prodglcd, ";
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     else sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
-                    if (slcdpara == "PB" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
+                    //if (slcdpara == "PB" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
+                    sql += "" + VE.T_TXN.PARGLCD.retStr() + " parglcd, ";
+
                     sql += "igst_rvi, cgst_rvi, sgst_rvi, cess_rvi, igst_rvo, cgst_rvo, sgst_rvo, cess_rvo ";
                     sql += "from " + scm1 + ".m_syscnfg a, " + scmf + ".m_post b, " + scm1 + ".m_subleg_com c ";
                     sql += "where c.slcd in('" + VE.T_TXN.SLCD + "',null) and ";
@@ -4638,6 +4664,8 @@ namespace Improvar.Controllers
                         TempData["LASTMERGEINDTL" + VE.MENU_PARA] = VE.MERGEINDTL == true ? "Y" : "N";
                         TempData["LASTSTKDRCR" + VE.MENU_PARA] = stkdrcr;
                         TempData["LASTBLTYPE" + VE.MENU_PARA] = VE.T_TXNOTH.BLTYPE;
+                        TempData["LASTPARGLCD" + VE.MENU_PARA] = VE.T_TXN.PARGLCD;
+
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
@@ -6672,5 +6700,40 @@ namespace Improvar.Controllers
                 return stringWriter.GetStringBuilder().ToString();
             }
         }
+        public ActionResult GetGeneralLedgerDetails(string val, string Code)
+        {
+            try
+            {
+                TransactionSaleEntry VE = new TransactionSaleEntry();
+                Cn.getQueryString(VE);
+                string caption = "General Ledger", linkcd = "C,D";
+                var code_data = Code.Split(Convert.ToChar(Cn.GCS()));
+                if (code_data.Count() > 1)
+                {
+                    linkcd = code_data[0];
+                    caption = code_data[1];
+                    if ((VE.MENU_PARA == "STI" || VE.MENU_PARA == "STR") && caption == "Party Gen.Leder")
+                    {
+                        linkcd += ",O";
+                    }
+                }
+
+                var str = masterHelp.GLCD_help(val, linkcd);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
     }
 }
