@@ -255,7 +255,7 @@ namespace Improvar.Controllers
                                     return View(VE);
                                 }
                                 VE.M_SYSCNFG = MSYSCNFG;
-                                string doccd1 = VE.DocumentType.FirstOrDefault().value;
+                                string doccd1 = VE.DocumentType.Count() == 0 ? "" : VE.DocumentType.FirstOrDefault().value;
                                 var T_TXN = (from a in DB.T_TXN
                                              join b in DB.T_CNTRL_HDR on a.AUTONO equals b.AUTONO
                                              where a.DOCCD == doccd1 && b.LOCCD == LOC && b.COMPCD == COM
