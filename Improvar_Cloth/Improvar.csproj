@@ -793,6 +793,12 @@
       <DependentUpon>SaleBill_BHURA.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\SaleBill_BHURA_SIGN.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SaleBill_BHURA_SIGN.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\SaleBill_Cloth.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1623,6 +1629,10 @@
     <EmbeddedResource Include="Report\Proforma_BHURA.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Proforma_BHURA.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\SaleBill_BHURA_SIGN.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SaleBill_BHURA_SIGN.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\SaleBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
