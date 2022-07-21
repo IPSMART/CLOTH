@@ -1630,10 +1630,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Proforma_BHURA.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Report\SaleBill_BHURA_SIGN.rpt">
+    <Content Include="Report\SaleBill_BHURA_SIGN.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_BHURA_SIGN.cs</LastGenOutput>
-    </EmbeddedResource>
+    </Content>
     <EmbeddedResource Include="Report\SaleBill_Sachi.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Sachi.cs</LastGenOutput>
