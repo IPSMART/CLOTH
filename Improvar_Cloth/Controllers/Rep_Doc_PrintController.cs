@@ -223,384 +223,392 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_IssueChallan_Print(Rep_Doc_Print VE)
         {
-            string repname = "JobIssue.rpt";
-            //string repname = "JobIssue_DIWH";
-            if (VE.TEXTBOX6 != null) repname = VE.TEXTBOX6;
-            string hddsp = "";
-            string mp = VE.OtherPara.Split(',')[0];
-            switch (mp)
+            try
             {
-                case "DY":
-                    hddsp = "Issue for Dyer"; break;
-                case "PR":
-                    hddsp = "Issue for Printing"; break;
-                case "ST":
-                    hddsp = "Issue for Stiching"; break;
-                case "EM":
-                    hddsp = "Issue for Embroidery"; break;
-                case "JW":
-                    hddsp = "Issue for Other Jobs"; break;
-                default: hddsp = ""; break;
-            }
-
-            string str = "";
-            str += "select a.autono,a.slcd,b.cancel, b.docno, b.docdt, b.usr_id, d.recvperson, d.lorryno, ";
-            str += "c.slnm, c.add1, c.add2, c.add3, c.add4, c.add5, c.add6, c.add7, c.statecd, c.panno, c.gstno, c.regmobile,e.docrem ";
-            str += "from " + scm1 + ".T_TXN a," + scm1 + ".T_CNTRL_HDR b ," + scmf + ".m_subleg c, " + scm1 + ".t_txntrans d," + scm1 + ".t_txnoth e ";
-            str += " where a.autono=b.autono and a.slcd=c.slcd(+) and a.autono=d.autono(+)and a.autono=e.autono(+) ";
-            str += " and b.doccd = '" + VE.DOCCD + "' and ";
-            str += "b.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.TDT + "','dd/mm/yyyy') and ";
-            str += "b.doconlyno >= '" + VE.FDOCNO + "' and b.doconlyno <= '" + VE.TDOCNO + "' and ";
-            str += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' ";
-            str += "order by a.autono ";
-            DataTable tblhdr = masterHelp.SQLquery(str);
-
-            str = "";
-            str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-            str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm,a.proguniqno,b.progslno,s.hsncode from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
-            str += scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
-            str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r," + scm1 + ".t_txndtl s ";
-            str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
-            str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
-            str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+)and a.autono=s.autono(+)and a.slno=s.slno(+)  ";
-            str += " and q.doccd = '" + VE.DOCCD + "' and ";
-            str += "q.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and q.docdt <= to_date('" + VE.TDT + "','dd/mm/yyyy') and ";
-            str += "q.doconlyno >= '" + VE.FDOCNO + "' and q.doconlyno <= '" + VE.TDOCNO + "' and ";
-            str += "q.compcd = '" + COM + "' and q.loccd = '" + LOC + "' ";
-            str += "order by a.slno ";
-            DataTable tblprgrm = masterHelp.SQLquery(str);
-
-            string str1 = "";
-            str1 += "select i.autono,i.SLNO,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
-            str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
-            str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,s.itnm fabitnm,i.cutlength,t.TXBLVAL,t.CGSTPER,t.SGSTPER,t.IGSTPER ";
-            str1 += "from " + scm1 + ".T_BATCHDTL i, " + scm1 + ".T_BATCHMST j, " + scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
-            str1 += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".M_STKTYPE q," + scm1 + ".T_CNTRL_HDR r," + scm1 + ".M_SITEM s," + scm1 + ".t_txndtl t  ";
-            str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-            str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+)  and i.autono=r.autono(+)  and k.fabitcd=s.itcd(+)and i.autono=t.autono(+)and i.slno=t.slno(+) ";
-            str1 += " and r.doccd = '" + VE.DOCCD + "' and ";
-            str1 += "r.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and r.docdt <= to_date('" + VE.TDT + "','dd/mm/yyyy') and ";
-            str1 += "r.doconlyno >= '" + VE.FDOCNO + "' and r.doconlyno <= '" + VE.TDOCNO + "' and ";
-            str1 += "r.compcd = '" + COM + "' and r.loccd = '" + LOC + "' ";
-            str1 += "order by i.SLNO ";
-            DataTable tbliss = masterHelp.SQLquery(str1);
-
-            string jobcd = VE.JOBCD;
-            DataTable tblstk = Salesfunc.getPendProg(VE.TDT, "", "", "", "'" + jobcd + "'", "", "", "");
-
-            //programme
-            DataTable IR_PROG = new DataTable("DTProgramme");
-            IR_PROG.Columns.Add("autono", typeof(string), "");
-            IR_PROG.Columns.Add("slcd", typeof(string), "");
-            IR_PROG.Columns.Add("slnm", typeof(string), "");
-            IR_PROG.Columns.Add("sladd1", typeof(string), "");
-            IR_PROG.Columns.Add("sladd2", typeof(string), "");
-            IR_PROG.Columns.Add("sladd3", typeof(string), "");
-            IR_PROG.Columns.Add("sladd4", typeof(string), "");
-            IR_PROG.Columns.Add("sladd5", typeof(string), "");
-            IR_PROG.Columns.Add("sladd6", typeof(string), "");
-            IR_PROG.Columns.Add("sladd7", typeof(string), "");
-            IR_PROG.Columns.Add("sladd8", typeof(string), "");
-            IR_PROG.Columns.Add("docno", typeof(string), "");
-            IR_PROG.Columns.Add("docdt", typeof(string), "");
-            IR_PROG.Columns.Add("vechlno", typeof(string), "");
-            IR_PROG.Columns.Add("recvperson", typeof(string), "");
-            IR_PROG.Columns.Add("user_nm", typeof(string), "");
-            IR_PROG.Columns.Add("slno", typeof(string), "");
-            IR_PROG.Columns.Add("itdescn", typeof(string), "");
-            IR_PROG.Columns.Add("partnm", typeof(string), "");
-            IR_PROG.Columns.Add("styleno", typeof(string), "");
-            IR_PROG.Columns.Add("colrnm", typeof(string), "");
-            IR_PROG.Columns.Add("sizenm", typeof(string), "");
-            IR_PROG.Columns.Add("uomnm", typeof(string), "");
-            IR_PROG.Columns.Add("nos", typeof(double), "");
-            IR_PROG.Columns.Add("cutlength", typeof(double), "");
-            IR_PROG.Columns.Add("qnty", typeof(double), "");
-            IR_PROG.Columns.Add("progunqbarimg", typeof(byte[]), "");
-            IR_PROG.Columns.Add("itremark", typeof(string), "");
-            IR_PROG.Columns.Add("totalqnty", typeof(double), "");
-            IR_PROG.Columns.Add("totalnos", typeof(double), "");
-            IR_PROG.Columns.Add("hsncode", typeof(string), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_uomnm", typeof(string), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_nos", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_cutlength", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_qnty", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("value", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("gstper", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totqnty", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totnos", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("totvalue", typeof(double), "");
-            if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("blremarks", typeof(string), "");
-            IR_PROG.Columns.Add("stkdata", typeof(string), "");
-
-            DataTable IR_ISSUE = new DataTable("DTIssue");
-            if (repname != "JobIssue_DIWH.rpt")
-            {
-
-                //issue
-
-                IR_ISSUE.Columns.Add("autono", typeof(string), "");
-                IR_ISSUE.Columns.Add("progslno", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_slno", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_itdescn", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_styleno", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_colrnm", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_sizenm", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_hsncode", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_uomnm", typeof(string), "");
-                IR_ISSUE.Columns.Add("iss_nos", typeof(double), "");
-                IR_ISSUE.Columns.Add("iss_cutlength", typeof(double), "");
-                IR_ISSUE.Columns.Add("iss_qnty", typeof(double), "");
-                IR_ISSUE.Columns.Add("iss_totalqnty", typeof(double), "");
-                IR_ISSUE.Columns.Add("iss_totalnos", typeof(double), "");
-
-            }
-
-            DataTable IR_STOCK = new DataTable("DTStock");
-            IR_STOCK.Columns.Add("autono", typeof(string), "");
-
-            IR_STOCK.Columns.Add("stk_itgrpnm", typeof(string), "");
-            IR_STOCK.Columns.Add("stk_itdescn", typeof(string), "");
-            IR_STOCK.Columns.Add("stk_uomnm", typeof(string), "");
-            IR_STOCK.Columns.Add("stk_qnty", typeof(double), "");
-            IR_STOCK.Columns.Add("stk_docdt", typeof(string), "");
-            IR_STOCK.Columns.Add("stk_slno", typeof(string), "");
-            Int32 maxR = 0, i = 0;
-            Int32 x = 0, maxX = tblhdr.Rows.Count - 1;
-            Int32 rNo = 0, sln = 0; string blrem = "";
-            while (x <= maxX)
-            {
-                if (tblhdr.Rows[i]["docrem"].ToString() != "") blrem = blrem + tblhdr.Rows[i]["docrem"].ToString() + "  ";
-                //address
-                string add = ""; string[] address;
-                string cfld = "", rfld = ""; int rf = 0;
-                for (int f = 1; f <= 7; f++)
+                string repname = "JobIssue.rpt";
+                //string repname = "JobIssue_DIWH";
+                if (VE.TEXTBOX6 != null) repname = VE.TEXTBOX6;
+                string hddsp = "";
+                string mp = VE.OtherPara.Split(',')[0];
+                switch (mp)
                 {
-                    cfld = "add" + Convert.ToString(f).ToString();
-                    if (tblhdr.Rows[x][cfld].ToString() != "")
-                    {
-                        rf = rf + 1;
-                        if (add == "")
-                        {
-                            add = add + tblhdr.Rows[x][cfld].ToString();
-                        }
-                        else
-                        {
-                            add = add + Cn.GCS() + tblhdr.Rows[x][cfld].ToString();
-                        }
-                    }
-                }
-                if (tblhdr.Rows[x]["gstno"].ToString() != "")
-                {
-                    rf = rf + 1;
-                    add = add + Cn.GCS() + "GST # " + tblhdr.Rows[x]["gstno"].ToString();
-                }
-                if (tblhdr.Rows[x]["panno"].ToString() != "")
-                {
-                    rf = rf + 1;
-                    add = add + Cn.GCS() + "PAN # " + tblhdr.Rows[x]["panno"].ToString();
-                }
-                address = add.Split(Convert.ToChar(Cn.GCS()));
-
-                double t_qnty = 0, t_nos = 0, t_issnos = 0, t_issqnty = 0, t_value = 0;
-                string autono = tblhdr.Rows[x]["autono"].ToString();
-
-                string slcd = tblhdr.Rows[x]["slcd"].ToString();
-                var STOCK_DATA = (from DataRow DR in tblstk.Rows
-                                  where DR["slcd"].ToString() == slcd
-                                  group DR by new { itgrpnm = DR["itgrpnm"].ToString(), itnm = DR["itnm"].ToString(), uomnm = DR["uomcd"].ToString() } into X
-                                  select new
-                                  {
-                                      itgrpnm = X.Key.itgrpnm,
-                                      itnm = X.Key.itnm,
-                                      uomnm = X.Key.uomnm,
-                                      qnty = X.Sum(Z => Z.Field<decimal>("balqnty")),
-                                  }).OrderBy(A => A.itgrpnm).ThenBy(A => A.itnm).ToList();
-
-                #region Programme Printing
-
-                DataTable tbl = new DataTable(); DataTable tbleiss;
-                var rowsx = tblprgrm.AsEnumerable()
-                    .Where(t => ((string)t["autono"]) == autono);
-                if (rowsx.Any()) tbl = rowsx.CopyToDataTable();
-
-                maxR = tbl.Rows.Count - 1; i = 0; sln = 0;
-                t_nos = 0; t_qnty = 0; t_issnos = 0; t_issqnty = 0; t_value = 0; int progslno = 0;
-                while (i <= maxR)
-                {
-                    t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
-                    t_nos = t_nos + (tbl.Rows[i]["nos"]).retDbl();
-                    IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
-
-                    IR_PROG.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
-                    IR_PROG.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"].ToString();
-                    IR_PROG.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"].retStr().Remove(10);
-                    IR_PROG.Rows[rNo]["slnm"] = tblhdr.Rows[x]["slnm"].ToString();
-                    IR_PROG.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
-                    IR_PROG.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
-                    IR_PROG.Rows[rNo]["user_nm"] = tblhdr.Rows[x]["usr_id"].ToString();
-                    IR_PROG.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].ToString();
-                    IR_PROG.Rows[rNo]["itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
-                    IR_PROG.Rows[rNo]["partnm"] = tbl.Rows[i]["partnm"].ToString();
-                    IR_PROG.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"];
-                    IR_PROG.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
-                    IR_PROG.Rows[rNo]["sizenm"] = tbl.Rows[i]["sizenm"];
-                    IR_PROG.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"];
-                    if (tbl.Rows[i]["nos"].retDbl() != 0) IR_PROG.Rows[rNo]["nos"] = tbl.Rows[i]["nos"];
-                    if (tbl.Rows[i]["cutlength"].retDbl() != 0) IR_PROG.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"];
-                    IR_PROG.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"];
-                    byte[] brcodeImage = (byte[])Cn.GenerateBarcode(tbl.Rows[i]["proguniqno"].retStr(), "byte", true);
-                    IR_PROG.Rows[rNo]["progunqbarimg"] = brcodeImage;
-                    IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
-                    IR_PROG.Rows[rNo]["hsncode"] = tbl.Rows[i]["hsncode"];
-                    if (t_qnty != 0) IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
-                    if (t_nos != 0) IR_PROG.Rows[rNo]["totalnos"] = t_nos;
-                    IR_PROG.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].ToString();
-                    int coutadd = 0;
-                    for (int g = 0; g <= address.Count() - 1; g++)
-                    {
-                        coutadd++;
-                        rfld = "sladd" + Convert.ToString(coutadd);
-                        IR_PROG.Rows[rNo][rfld] = address[g].ToString();
-                    }
-                    IR_PROG.Rows[rNo]["stkdata"] = STOCK_DATA.Count() == 0 ? "N" : "Y";
-                    if (repname == "JobIssue_DIWH.rpt")
-                    {
-                        IR_PROG.Rows[rNo]["blremarks"] = blrem;
-                        progslno = tbl.Rows[i]["progslno"].retInt();
-                        tbleiss = (from DataRow dr in tbliss.Rows where dr["autono"].ToString() == autono && dr["RECPROGSLNO"].retInt() == progslno select dr).ToList().CopyToDataTable();
-
-                        if (tbleiss.Rows.Count > 0)
-                        {
-
-                            IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
-                            for (int j = 0; j <= tbleiss.Rows.Count - 1; j++)
-                            {
-                                IR_PROG.Rows[rNo]["blremarks"] = blrem;
-                                IR_PROG.Rows[rNo]["autono"] = tbleiss.Rows[j]["autono"].ToString();
-                                IR_PROG.Rows[rNo]["itdescn"] = tbleiss.Rows[j]["itgrpnm"].ToString() + " " + tbl.Rows[j]["fabitnm"].ToString() + " " + tbl.Rows[j]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
-                                IR_PROG.Rows[rNo]["styleno"] = tbleiss.Rows[j]["styleno"];
-                                IR_PROG.Rows[rNo]["hsncode"] = tbleiss.Rows[j]["HSNCODE"];
-                                IR_PROG.Rows[rNo]["issu_qnty"] = tbleiss.Rows[j]["qnty"];
-                                IR_PROG.Rows[rNo]["issu_uomnm"] = tbleiss.Rows[j]["uomcd"];
-                                if (tbleiss.Rows[j]["nos"].retDbl() != 0)
-                                { IR_PROG.Rows[rNo]["issu_nos"] = tbleiss.Rows[j]["nos"]; }
-                                if (tbleiss.Rows[j]["cutlength"].retDbl() != 0)
-                                { IR_PROG.Rows[rNo]["issu_cutlength"] = tbleiss.Rows[j]["cutlength"].retDbl(); }
-                                if (tbleiss.Rows[j]["TXBLVAL"].retDbl() != 0)
-                                { IR_PROG.Rows[rNo]["value"] = tbleiss.Rows[j]["TXBLVAL"].retDbl(); }
-                                IR_PROG.Rows[rNo]["gstper"] = (tbleiss.Rows[j]["CGSTPER"].retDbl() + tbleiss.Rows[j]["SGSTPER"].retDbl() + tbleiss.Rows[j]["IGSTPER"].retDbl());//s.CGSTPER,s.SGSTPER,s.IGSTPER
-                                t_issqnty = t_issqnty + (tbleiss.Rows[j]["qnty"]).retDbl();
-                                t_issnos = t_issnos + (tbleiss.Rows[j]["nos"]).retDbl();
-                                t_value = t_value + (tbleiss.Rows[j]["TXBLVAL"]).retDbl();
-                            }
-                        }
-                        if (t_issqnty != 0) IR_PROG.Rows[rNo]["issu_totqnty"] = t_issqnty;
-                        if (t_issnos != 0) IR_PROG.Rows[rNo]["issu_totnos"] = t_issnos;
-                        if (t_value != 0) IR_PROG.Rows[rNo]["totvalue"] = t_value;
-                    }
-
-                    i++;
-                    if (i > maxR) break;
+                    case "DY":
+                        hddsp = "Issue for Dyer"; break;
+                    case "PR":
+                        hddsp = "Issue for Printing"; break;
+                    case "ST":
+                        hddsp = "Issue for Stiching"; break;
+                    case "EM":
+                        hddsp = "Issue for Embroidery"; break;
+                    case "JW":
+                        hddsp = "Issue for Other Jobs"; break;
+                    default: hddsp = ""; break;
                 }
 
-                #endregion
+                string str = "";
+                str += "select a.autono,a.slcd,b.cancel, b.docno, b.docdt, b.usr_id, d.recvperson, d.lorryno, ";
+                str += "c.slnm, c.add1, c.add2, c.add3, c.add4, c.add5, c.add6, c.add7, c.statecd, c.panno, c.gstno, c.regmobile,e.docrem ";
+                str += "from " + scm1 + ".T_TXN a," + scm1 + ".T_CNTRL_HDR b ," + scmf + ".m_subleg c, " + scm1 + ".t_txntrans d," + scm1 + ".t_txnoth e ";
+                str += " where a.autono=b.autono and a.slcd=c.slcd(+) and a.autono=d.autono(+)and a.autono=e.autono(+) ";
+                str += " and b.doccd = '" + VE.DOCCD + "' and ";
+                str += "b.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.TDT + "','dd/mm/yyyy') and ";
+                str += "b.doconlyno >= '" + VE.FDOCNO + "' and b.doconlyno <= '" + VE.TDOCNO + "' and ";
+                str += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' ";
+                str += "order by a.autono ";
+                DataTable tblhdr = masterHelp.SQLquery(str);
+
+                str = "";
+                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm,a.proguniqno,b.progslno,s.hsncode from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
+                str += scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
+                str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r," + scm1 + ".t_txndtl s ";
+                str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
+                str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+)and a.autono=s.autono(+)and a.slno=s.slno(+)  ";
+                str += " and q.doccd = '" + VE.DOCCD + "' and ";
+                str += "q.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and q.docdt <= to_date('" + VE.TDT + "','dd/mm/yyyy') and ";
+                str += "q.doconlyno >= '" + VE.FDOCNO + "' and q.doconlyno <= '" + VE.TDOCNO + "' and ";
+                str += "q.compcd = '" + COM + "' and q.loccd = '" + LOC + "' ";
+                str += "order by a.slno ";
+                DataTable tblprgrm = masterHelp.SQLquery(str);
+
+                string str1 = "";
+                str1 += "select i.autono,i.SLNO,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
+                str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
+                str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,s.itnm fabitnm,i.cutlength,t.TXBLVAL,t.CGSTPER,t.SGSTPER,t.IGSTPER ";
+                str1 += "from " + scm1 + ".T_BATCHDTL i, " + scm1 + ".T_BATCHMST j, " + scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
+                str1 += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".M_STKTYPE q," + scm1 + ".T_CNTRL_HDR r," + scm1 + ".M_SITEM s," + scm1 + ".t_txndtl t  ";
+                str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
+                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+)  and i.autono=r.autono(+)  and k.fabitcd=s.itcd(+)and i.autono=t.autono(+)and i.slno=t.slno(+) ";
+                str1 += " and r.doccd = '" + VE.DOCCD + "' and ";
+                str1 += "r.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and r.docdt <= to_date('" + VE.TDT + "','dd/mm/yyyy') and ";
+                str1 += "r.doconlyno >= '" + VE.FDOCNO + "' and r.doconlyno <= '" + VE.TDOCNO + "' and ";
+                str1 += "r.compcd = '" + COM + "' and r.loccd = '" + LOC + "' ";
+                str1 += "order by i.SLNO ";
+                DataTable tbliss = masterHelp.SQLquery(str1);
+
+                string jobcd = VE.JOBCD;
+                DataTable tblstk = Salesfunc.getPendProg(VE.TDT, "", "", "", "'" + jobcd + "'", "", "", "");
+
+                //programme
+                DataTable IR_PROG = new DataTable("DTProgramme");
+                IR_PROG.Columns.Add("autono", typeof(string), "");
+                IR_PROG.Columns.Add("slcd", typeof(string), "");
+                IR_PROG.Columns.Add("slnm", typeof(string), "");
+                IR_PROG.Columns.Add("sladd1", typeof(string), "");
+                IR_PROG.Columns.Add("sladd2", typeof(string), "");
+                IR_PROG.Columns.Add("sladd3", typeof(string), "");
+                IR_PROG.Columns.Add("sladd4", typeof(string), "");
+                IR_PROG.Columns.Add("sladd5", typeof(string), "");
+                IR_PROG.Columns.Add("sladd6", typeof(string), "");
+                IR_PROG.Columns.Add("sladd7", typeof(string), "");
+                IR_PROG.Columns.Add("sladd8", typeof(string), "");
+                IR_PROG.Columns.Add("docno", typeof(string), "");
+                IR_PROG.Columns.Add("docdt", typeof(string), "");
+                IR_PROG.Columns.Add("vechlno", typeof(string), "");
+                IR_PROG.Columns.Add("recvperson", typeof(string), "");
+                IR_PROG.Columns.Add("user_nm", typeof(string), "");
+                IR_PROG.Columns.Add("slno", typeof(string), "");
+                IR_PROG.Columns.Add("itdescn", typeof(string), "");
+                IR_PROG.Columns.Add("partnm", typeof(string), "");
+                IR_PROG.Columns.Add("styleno", typeof(string), "");
+                IR_PROG.Columns.Add("colrnm", typeof(string), "");
+                IR_PROG.Columns.Add("sizenm", typeof(string), "");
+                IR_PROG.Columns.Add("uomnm", typeof(string), "");
+                IR_PROG.Columns.Add("nos", typeof(double), "");
+                IR_PROG.Columns.Add("cutlength", typeof(double), "");
+                IR_PROG.Columns.Add("qnty", typeof(double), "");
+                IR_PROG.Columns.Add("progunqbarimg", typeof(byte[]), "");
+                IR_PROG.Columns.Add("itremark", typeof(string), "");
+                IR_PROG.Columns.Add("totalqnty", typeof(double), "");
+                IR_PROG.Columns.Add("totalnos", typeof(double), "");
+                IR_PROG.Columns.Add("hsncode", typeof(string), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_uomnm", typeof(string), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_nos", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_cutlength", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_qnty", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("value", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("gstper", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totqnty", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("issu_totnos", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("totvalue", typeof(double), "");
+                if (repname == "JobIssue_DIWH.rpt") IR_PROG.Columns.Add("blremarks", typeof(string), "");
+                IR_PROG.Columns.Add("stkdata", typeof(string), "");
+
+                DataTable IR_ISSUE = new DataTable("DTIssue");
                 if (repname != "JobIssue_DIWH.rpt")
                 {
-                    #region Issue Material Printing
-                    string sel1 = "autono='" + autono + "'";
 
-                    tbl = new DataTable();
+                    //issue
 
-                    string actof = "";
-                    tbl = new DataTable();
-                    rowsx = tbliss.AsEnumerable()
+                    IR_ISSUE.Columns.Add("autono", typeof(string), "");
+                    IR_ISSUE.Columns.Add("progslno", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_slno", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_itdescn", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_styleno", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_colrnm", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_sizenm", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_hsncode", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_uomnm", typeof(string), "");
+                    IR_ISSUE.Columns.Add("iss_nos", typeof(double), "");
+                    IR_ISSUE.Columns.Add("iss_cutlength", typeof(double), "");
+                    IR_ISSUE.Columns.Add("iss_qnty", typeof(double), "");
+                    IR_ISSUE.Columns.Add("iss_totalqnty", typeof(double), "");
+                    IR_ISSUE.Columns.Add("iss_totalnos", typeof(double), "");
+
+                }
+
+                DataTable IR_STOCK = new DataTable("DTStock");
+                IR_STOCK.Columns.Add("autono", typeof(string), "");
+
+                IR_STOCK.Columns.Add("stk_itgrpnm", typeof(string), "");
+                IR_STOCK.Columns.Add("stk_itdescn", typeof(string), "");
+                IR_STOCK.Columns.Add("stk_uomnm", typeof(string), "");
+                IR_STOCK.Columns.Add("stk_qnty", typeof(double), "");
+                IR_STOCK.Columns.Add("stk_docdt", typeof(string), "");
+                IR_STOCK.Columns.Add("stk_slno", typeof(string), "");
+                Int32 maxR = 0, i = 0;
+                Int32 x = 0, maxX = tblhdr.Rows.Count - 1;
+                Int32 rNo = 0, sln = 0; string blrem = "";
+                while (x <= maxX)
+                {
+                    if (tblhdr.Rows[i]["docrem"].ToString() != "") blrem = blrem + tblhdr.Rows[i]["docrem"].ToString() + "  ";
+                    //address
+                    string add = ""; string[] address;
+                    string cfld = "", rfld = ""; int rf = 0;
+                    for (int f = 1; f <= 7; f++)
+                    {
+                        cfld = "add" + Convert.ToString(f).ToString();
+                        if (tblhdr.Rows[x][cfld].ToString() != "")
+                        {
+                            rf = rf + 1;
+                            if (add == "")
+                            {
+                                add = add + tblhdr.Rows[x][cfld].ToString();
+                            }
+                            else
+                            {
+                                add = add + Cn.GCS() + tblhdr.Rows[x][cfld].ToString();
+                            }
+                        }
+                    }
+                    if (tblhdr.Rows[x]["gstno"].ToString() != "")
+                    {
+                        rf = rf + 1;
+                        add = add + Cn.GCS() + "GST # " + tblhdr.Rows[x]["gstno"].ToString();
+                    }
+                    if (tblhdr.Rows[x]["panno"].ToString() != "")
+                    {
+                        rf = rf + 1;
+                        add = add + Cn.GCS() + "PAN # " + tblhdr.Rows[x]["panno"].ToString();
+                    }
+                    address = add.Split(Convert.ToChar(Cn.GCS()));
+
+                    double t_qnty = 0, t_nos = 0, t_issnos = 0, t_issqnty = 0, t_value = 0;
+                    string autono = tblhdr.Rows[x]["autono"].ToString();
+
+                    string slcd = tblhdr.Rows[x]["slcd"].ToString();
+                    var STOCK_DATA = (from DataRow DR in tblstk.Rows
+                                      where DR["slcd"].ToString() == slcd
+                                      group DR by new { itgrpnm = DR["itgrpnm"].ToString(), itnm = DR["fabitnm"].ToString() + " " + DR["itnm"].ToString(), uomnm = DR["uomcd"].ToString() } into X
+                                      select new
+                                      {
+                                          itgrpnm = X.Key.itgrpnm,
+                                          itnm = X.Key.itnm,
+                                          uomnm = X.Key.uomnm,
+                                          qnty = X.Sum(Z => Z.Field<decimal>("balqnty")),
+                                      }).OrderBy(A => A.itgrpnm).ThenBy(A => A.itnm).ToList();
+
+                    #region Programme Printing
+
+                    DataTable tbl = new DataTable(); DataTable tbleiss;
+                    var rowsx = tblprgrm.AsEnumerable()
                         .Where(t => ((string)t["autono"]) == autono);
                     if (rowsx.Any()) tbl = rowsx.CopyToDataTable();
 
-
-                    maxR = tbl.Rows.Count - 1; i = 0; sln = 0; t_qnty = 0; t_nos = 0;
+                    maxR = tbl.Rows.Count - 1; i = 0; sln = 0;
+                    t_nos = 0; t_qnty = 0; t_issnos = 0; t_issqnty = 0; t_value = 0; int progslno = 0;
                     while (i <= maxR)
                     {
-
                         t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
                         t_nos = t_nos + (tbl.Rows[i]["nos"]).retDbl();
-                        sln++;
-                        IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
-                        IR_ISSUE.Rows[rNo]["autono"] = tbl.Rows[i]["autono"].ToString();
-                        IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["RECPROGSLNO"].ToString();
-                        IR_ISSUE.Rows[rNo]["iss_slno"] = tbl.Rows[i]["slno"].ToString();
-                        IR_ISSUE.Rows[rNo]["iss_itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
-                        IR_ISSUE.Rows[rNo]["iss_styleno"] = tbl.Rows[i]["styleno"];
-                        IR_ISSUE.Rows[rNo]["iss_colrnm"] = tbl.Rows[i]["colrnm"];
-                        IR_ISSUE.Rows[rNo]["iss_sizenm"] = tbl.Rows[i]["sizenm"];
-                        IR_ISSUE.Rows[rNo]["iss_hsncode"] = tbl.Rows[i]["hsncode"];
-                        IR_ISSUE.Rows[rNo]["iss_uomnm"] = tbl.Rows[i]["uomcd"];
-                        IR_ISSUE.Rows[rNo]["iss_nos"] = tbl.Rows[i]["nos"];
-                        IR_ISSUE.Rows[rNo]["iss_cutlength"] = tbl.Rows[i]["cutlength"];
-                        IR_ISSUE.Rows[rNo]["iss_qnty"] = tbl.Rows[i]["qnty"];
-                        IR_ISSUE.Rows[rNo]["iss_totalqnty"] = t_qnty;
-                        IR_ISSUE.Rows[rNo]["iss_totalnos"] = t_nos;
+                        IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
 
+                        IR_PROG.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
+                        IR_PROG.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"].ToString();
+                        IR_PROG.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"].retStr().Remove(10);
+                        IR_PROG.Rows[rNo]["slnm"] = tblhdr.Rows[x]["slnm"].ToString();
+                        IR_PROG.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
+                        IR_PROG.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
+                        IR_PROG.Rows[rNo]["user_nm"] = tblhdr.Rows[x]["usr_id"].ToString();
+                        IR_PROG.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].ToString();
+                        IR_PROG.Rows[rNo]["itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
+                        IR_PROG.Rows[rNo]["partnm"] = tbl.Rows[i]["partnm"].ToString();
+                        IR_PROG.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"];
+                        IR_PROG.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
+                        IR_PROG.Rows[rNo]["sizenm"] = tbl.Rows[i]["sizenm"];
+                        IR_PROG.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"];
+                        if (tbl.Rows[i]["nos"].retDbl() != 0) IR_PROG.Rows[rNo]["nos"] = tbl.Rows[i]["nos"];
+                        if (tbl.Rows[i]["cutlength"].retDbl() != 0) IR_PROG.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"];
+                        IR_PROG.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"];
+                        byte[] brcodeImage = (byte[])Cn.GenerateBarcode(tbl.Rows[i]["proguniqno"].retStr(), "byte", true);
+                        IR_PROG.Rows[rNo]["progunqbarimg"] = brcodeImage;
+                        IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
+                        IR_PROG.Rows[rNo]["hsncode"] = tbl.Rows[i]["hsncode"];
+                        if (t_qnty != 0) IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
+                        if (t_nos != 0) IR_PROG.Rows[rNo]["totalnos"] = t_nos;
+                        IR_PROG.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].ToString();
+                        int coutadd = 0;
+                        for (int g = 0; g <= address.Count() - 1; g++)
+                        {
+                            coutadd++;
+                            rfld = "sladd" + Convert.ToString(coutadd);
+                            IR_PROG.Rows[rNo][rfld] = address[g].ToString();
+                        }
+                        IR_PROG.Rows[rNo]["stkdata"] = STOCK_DATA.Count() == 0 ? "N" : "Y";
+                        if (repname == "JobIssue_DIWH.rpt")
+                        {
+                            IR_PROG.Rows[rNo]["blremarks"] = blrem;
+                            progslno = tbl.Rows[i]["progslno"].retInt();
+                            tbleiss = (from DataRow dr in tbliss.Rows where dr["autono"].ToString() == autono && dr["RECPROGSLNO"].retInt() == progslno select dr).ToList().CopyToDataTable();
+
+                            if (tbleiss.Rows.Count > 0)
+                            {
+
+                                IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
+                                for (int j = 0; j <= tbleiss.Rows.Count - 1; j++)
+                                {
+                                    IR_PROG.Rows[rNo]["blremarks"] = blrem;
+                                    IR_PROG.Rows[rNo]["autono"] = tbleiss.Rows[j]["autono"].ToString();
+                                    IR_PROG.Rows[rNo]["itdescn"] = tbleiss.Rows[j]["itgrpnm"].ToString() + " " + tbl.Rows[j]["fabitnm"].ToString() + " " + tbl.Rows[j]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
+                                    IR_PROG.Rows[rNo]["styleno"] = tbleiss.Rows[j]["styleno"];
+                                    IR_PROG.Rows[rNo]["hsncode"] = tbleiss.Rows[j]["HSNCODE"];
+                                    IR_PROG.Rows[rNo]["issu_qnty"] = tbleiss.Rows[j]["qnty"];
+                                    IR_PROG.Rows[rNo]["issu_uomnm"] = tbleiss.Rows[j]["uomcd"];
+                                    if (tbleiss.Rows[j]["nos"].retDbl() != 0)
+                                    { IR_PROG.Rows[rNo]["issu_nos"] = tbleiss.Rows[j]["nos"]; }
+                                    if (tbleiss.Rows[j]["cutlength"].retDbl() != 0)
+                                    { IR_PROG.Rows[rNo]["issu_cutlength"] = tbleiss.Rows[j]["cutlength"].retDbl(); }
+                                    if (tbleiss.Rows[j]["TXBLVAL"].retDbl() != 0)
+                                    { IR_PROG.Rows[rNo]["value"] = tbleiss.Rows[j]["TXBLVAL"].retDbl(); }
+                                    IR_PROG.Rows[rNo]["gstper"] = (tbleiss.Rows[j]["CGSTPER"].retDbl() + tbleiss.Rows[j]["SGSTPER"].retDbl() + tbleiss.Rows[j]["IGSTPER"].retDbl());//s.CGSTPER,s.SGSTPER,s.IGSTPER
+                                    t_issqnty = t_issqnty + (tbleiss.Rows[j]["qnty"]).retDbl();
+                                    t_issnos = t_issnos + (tbleiss.Rows[j]["nos"]).retDbl();
+                                    t_value = t_value + (tbleiss.Rows[j]["TXBLVAL"]).retDbl();
+                                }
+                            }
+                            if (t_issqnty != 0) IR_PROG.Rows[rNo]["issu_totqnty"] = t_issqnty;
+                            if (t_issnos != 0) IR_PROG.Rows[rNo]["issu_totnos"] = t_issnos;
+                            if (t_value != 0) IR_PROG.Rows[rNo]["totvalue"] = t_value;
+                        }
 
                         i++;
                         if (i > maxR) break;
                     }
+
                     #endregion
-                }
-                //eof 
+                    if (repname != "JobIssue_DIWH.rpt")
+                    {
+                        #region Issue Material Printing
+                        string sel1 = "autono='" + autono + "'";
 
-                #region Stock printing
-                maxR = STOCK_DATA.Count() - 1; i = 0; sln = 0;
-                while (i <= maxR)
-                {
-                    sln++;
-                    IR_STOCK.Rows.Add(""); rNo = IR_STOCK.Rows.Count - 1;
-                    IR_STOCK.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
-                    IR_STOCK.Rows[rNo]["stk_itgrpnm"] = STOCK_DATA[i].itgrpnm;
-                    IR_STOCK.Rows[rNo]["stk_itdescn"] = STOCK_DATA[i].itnm;
-                    IR_STOCK.Rows[rNo]["stk_uomnm"] = STOCK_DATA[i].uomnm;
-                    IR_STOCK.Rows[rNo]["stk_qnty"] = STOCK_DATA[i].qnty;
-                    IR_STOCK.Rows[rNo]["stk_docdt"] = tblhdr.Rows[x]["docdt"].ToString().Remove(10);
-                    IR_STOCK.Rows[rNo]["stk_slno"] = sln;
-                    i++;
-                    if (i > maxR) break;
+                        tbl = new DataTable();
+
+                        string actof = "";
+                        tbl = new DataTable();
+                        rowsx = tbliss.AsEnumerable()
+                            .Where(t => ((string)t["autono"]) == autono);
+                        if (rowsx.Any()) tbl = rowsx.CopyToDataTable();
+
+
+                        maxR = tbl.Rows.Count - 1; i = 0; sln = 0; t_qnty = 0; t_nos = 0;
+                        while (i <= maxR)
+                        {
+
+                            t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
+                            t_nos = t_nos + (tbl.Rows[i]["nos"]).retDbl();
+                            sln++;
+                            IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
+                            IR_ISSUE.Rows[rNo]["autono"] = tbl.Rows[i]["autono"].ToString();
+                            IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["RECPROGSLNO"].ToString();
+                            IR_ISSUE.Rows[rNo]["iss_slno"] = tbl.Rows[i]["slno"].ToString();
+                            IR_ISSUE.Rows[rNo]["iss_itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
+                            IR_ISSUE.Rows[rNo]["iss_styleno"] = tbl.Rows[i]["styleno"];
+                            IR_ISSUE.Rows[rNo]["iss_colrnm"] = tbl.Rows[i]["colrnm"];
+                            IR_ISSUE.Rows[rNo]["iss_sizenm"] = tbl.Rows[i]["sizenm"];
+                            IR_ISSUE.Rows[rNo]["iss_hsncode"] = tbl.Rows[i]["hsncode"];
+                            IR_ISSUE.Rows[rNo]["iss_uomnm"] = tbl.Rows[i]["uomcd"];
+                            IR_ISSUE.Rows[rNo]["iss_nos"] = tbl.Rows[i]["nos"];
+                            IR_ISSUE.Rows[rNo]["iss_cutlength"] = tbl.Rows[i]["cutlength"];
+                            IR_ISSUE.Rows[rNo]["iss_qnty"] = tbl.Rows[i]["qnty"];
+                            IR_ISSUE.Rows[rNo]["iss_totalqnty"] = t_qnty;
+                            IR_ISSUE.Rows[rNo]["iss_totalnos"] = t_nos;
+
+
+                            i++;
+                            if (i > maxR) break;
+                        }
+                        #endregion
+                    }
+                    //eof 
+
+                    #region Stock printing
+                    maxR = STOCK_DATA.Count() - 1; int k = 0; sln = 0;
+                    while (k <= maxR)
+                    {
+                        sln++;
+                        IR_STOCK.Rows.Add(""); rNo = IR_STOCK.Rows.Count - 1;
+                        IR_STOCK.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
+                        IR_STOCK.Rows[rNo]["stk_itgrpnm"] = STOCK_DATA[k].itgrpnm;
+                        IR_STOCK.Rows[rNo]["stk_itdescn"] = STOCK_DATA[k].itnm;
+                        IR_STOCK.Rows[rNo]["stk_uomnm"] = STOCK_DATA[k].uomnm;
+                        IR_STOCK.Rows[rNo]["stk_qnty"] = STOCK_DATA[k].qnty;
+                        IR_STOCK.Rows[rNo]["stk_docdt"] = tblhdr.Rows[x]["docdt"].ToString().Remove(10);
+                        IR_STOCK.Rows[rNo]["stk_slno"] = sln;
+                        k++;
+                        if (k > maxR) break;
+                    }
+                    #endregion
+                    x++;
                 }
-                #endregion
-                x++;
+
+                DataSet IR = new DataSet();
+                IR.Tables.Add(IR_PROG);
+                if (repname != "JobIssue_DIWH.rpt")
+                { IR.Tables.Add(IR_ISSUE); }
+                IR.Tables.Add(IR_STOCK);
+
+                string compaddress = masterHelp.retCompAddress(VE.OtherPara.Split(',')[1].retStr());
+                string rptname = "~/Report/" + repname;
+                string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
+                ReportDocument reportdocument = new ReportDocument();
+                reportdocument.Load(Server.MapPath(rptname));
+                DSPrintJobissue DSP = new DSPrintJobissue();
+                DSP.Merge(IR);
+                reportdocument.SetDataSource(DSP);
+                reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
+                reportdocument.SetParameterValue("legalname", legalname);
+                reportdocument.SetParameterValue("compadd", compaddress.retCompValue("compadd"));
+                reportdocument.SetParameterValue("compstat", compaddress.retCompValue("compstat"));
+                reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
+                reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
+                reportdocument.SetParameterValue("billheading", hddsp);
+                reportdocument.SetParameterValue("chlntype", "");
+                reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
+                if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                Response.Buffer = false;
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                stream.Seek(0, SeekOrigin.Begin);
+                reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                return new FileStreamResult(stream, "application/pdf");
             }
-
-            DataSet IR = new DataSet();
-            IR.Tables.Add(IR_PROG);
-            if (repname != "JobIssue_DIWH.rpt")
-            { IR.Tables.Add(IR_ISSUE); }
-            IR.Tables.Add(IR_STOCK);
-
-            string compaddress = masterHelp.retCompAddress(VE.OtherPara.Split(',')[1].retStr());
-            string rptname = "~/Report/" + repname;
-            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
-            ReportDocument reportdocument = new ReportDocument();
-            reportdocument.Load(Server.MapPath(rptname));
-            DSPrintJobissue DSP = new DSPrintJobissue();
-            DSP.Merge(IR);
-            reportdocument.SetDataSource(DSP);
-            reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
-            reportdocument.SetParameterValue("legalname", legalname);
-            reportdocument.SetParameterValue("compadd", compaddress.retCompValue("compadd"));
-            reportdocument.SetParameterValue("compstat", compaddress.retCompValue("compstat"));
-            reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
-            reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
-            reportdocument.SetParameterValue("billheading", hddsp);
-            reportdocument.SetParameterValue("chlntype", "");
-            reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
-            if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
-            Response.Buffer = false;
-            Response.ClearContent();
-            Response.ClearHeaders();
-            Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-            stream.Seek(0, SeekOrigin.Begin);
-            reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
-            return new FileStreamResult(stream, "application/pdf");
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         [HttpPost]
         public ActionResult Rep_RecChallan_Print(Rep_Doc_Print VE)
