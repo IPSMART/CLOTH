@@ -4466,6 +4466,7 @@ function SelectGeneralLedgerCode(id, GLCD, GLNM) {
 }
 function GetBaleData() {
     if (!emptyFieldCheck("Please Select / Enter Bale No.", "BALENO_HELP")) { return false; }
+    if ($("#LINKAUTONO").val() == "") { return false; }
     $.ajax({
         type: 'post',
         url: $("#UrlGetBaleData").val(), //"@Url.Action("GetBaleData", PageControllerName)",
