@@ -85,6 +85,32 @@ namespace Improvar.Controllers
                         }
                     }
                     VE.SHOWMTRLJOBCD = VE.DropDown_list_MTRLJOBCD.Count() > 1 ? "Y" : "N";
+                    //=========For Registraion Type===========//
+                    List<RegistrationType> RT = new List<RegistrationType>();
+                    RegistrationType RT1 = new RegistrationType();
+                    RT1.Value = "R";
+                    RT1.Text = "Registered";
+                    RT.Add(RT1);
+                    RegistrationType RT2 = new RegistrationType();
+                    RT2.Value = "U";
+                    RT2.Text = "Unregisterd";
+                    RT.Add(RT2);
+                    RegistrationType RT3 = new RegistrationType();
+                    RT3.Value = "C";
+                    RT3.Text = "Composite";
+                    RT.Add(RT3);
+                    RegistrationType RT4 = new RegistrationType();
+                    RT4.Value = "N";
+                    RT4.Text = "UAN";
+                    RT.Add(RT4);
+                    VE.RegistrationType = RT;
+                    //=========End Registraion Type===========//
+                    string sql = "select NVL(GSPCLIENTAPP,GSPAPPID) GSPCLIENTAPP from ms_ipsmart";
+                    DataTable dt = masterHelp.SQLquery(sql);
+                    if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["GSPCLIENTAPP"].ToString() != "")
+                    {
+                        VE.IsAPIEnabled = true;
+                    }
                     //VE.PRCNM
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
@@ -352,7 +378,7 @@ namespace Improvar.Controllers
                 VE.T_TXNOTH = DB.T_TXNOTH.Find(VE.T_TXN.AUTONO);
                 VE.T_TXNMEMO = DB.T_TXNMEMO.Find(VE.T_TXN.AUTONO);
                 VE.T_TXNEINV = DBF.T_TXNEINV.Find(VE.T_TXN.AUTONO);
-
+                VE.T_VCH_GST = DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).FirstOrDefault();
                 //var MGP = DB.M_GROUP.Find(   VE.T_TXN.ITGRPCD);
 
                 VE.T_TXN_LINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == VE.T_TXN.AUTONO select a).FirstOrDefault();
@@ -387,11 +413,11 @@ namespace Improvar.Controllers
                 VE.GONM = VE.T_TXN.GOCD.retStr() == "" ? "" : DBF.M_GODOWN.Where(a => a.GOCD == VE.T_TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
                 //VE.GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD;
                 VE.PRCNM = VE.T_TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == VE.T_TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
-                VE.GSTNO = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTNO).FirstOrDefault();
-                VE.GSTSLNM = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLNM).FirstOrDefault();
-                VE.GSTSLADD1 = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLADD1).FirstOrDefault();
-                VE.GSTSLDIST = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLDIST).FirstOrDefault();
-                VE.GSTSLPIN = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLPIN).FirstOrDefault();
+                //VE.GSTNO = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTNO).FirstOrDefault();
+                //VE.GSTSLNM = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLNM).FirstOrDefault();
+                //VE.GSTSLADD1 = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLADD1).FirstOrDefault();
+                //VE.GSTSLDIST = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLDIST).FirstOrDefault();
+                //VE.GSTSLPIN = VE.T_TXN.AUTONO.retStr() == "" ? "" : DBF.T_VCH_GST.Where(a => a.AUTONO == VE.T_TXN.AUTONO).Select(b => b.GSTSLPIN).FirstOrDefault();
 
                 VE.T_CNTRL_HDR_REM = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), VE.T_TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), VE.T_TXN.AUTONO);
@@ -3489,8 +3515,8 @@ namespace Improvar.Controllers
                                     TVCHGST.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
                                     TVCHGST.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
-                                    TVCHGST.GSTSLNM = VE.GSTSLNM;
-                                    TVCHGST.GSTNO = VE.GSTNO;
+                                    TVCHGST.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
+                                    TVCHGST.GSTNO = VE.T_VCH_GST.GSTNO;
                                     TVCHGST.POS = VE.POS;
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
@@ -3511,9 +3537,11 @@ namespace Improvar.Controllers
                                     TVCHGST.DISCAMT = VE.TsalePos_TBATCHDTL[i].DISCAMT;
                                     TVCHGST.RATE = VE.TsalePos_TBATCHDTL[i].RATE;
 
-                                    TVCHGST.GSTSLADD1 = VE.GSTSLADD1;
-                                    TVCHGST.GSTSLDIST = VE.GSTSLDIST;
-                                    TVCHGST.GSTSLPIN = VE.GSTSLPIN;
+                                    TVCHGST.GSTSLADD1 = VE.T_VCH_GST.GSTSLADD1;                                    
+                                    TVCHGST.GSTSLDIST = VE.T_VCH_GST.GSTSLDIST;
+                                    TVCHGST.GSTSLPIN = VE.T_VCH_GST.GSTSLPIN;
+                                    TVCHGST.GSTSLADD2 = VE.T_VCH_GST.GSTSLADD2;
+                                    TVCHGST.GSTREGNTYPE = VE.T_VCH_GST.GSTREGNTYPE;
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     gblamt = 0; groamt = 0;
@@ -3587,8 +3615,8 @@ namespace Improvar.Controllers
                                     TVCHGST.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
                                     TVCHGST.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
-                                    TVCHGST.GSTSLNM = VE.GSTSLNM;
-                                    TVCHGST.GSTNO = VE.GSTNO;
+                                    TVCHGST.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
+                                    TVCHGST.GSTNO = VE.T_VCH_GST.GSTNO;
                                     TVCHGST.POS = VE.POS;
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
@@ -3608,9 +3636,11 @@ namespace Improvar.Controllers
                                     TVCHGST.BASAMT = VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT;
                                     TVCHGST.DISCAMT = VE.TsalePos_TBATCHDTL_RETURN[i].DISCAMT;
                                     TVCHGST.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
-                                    TVCHGST.GSTSLADD1 = VE.GSTSLADD1;
-                                    TVCHGST.GSTSLDIST = VE.GSTSLDIST;
-                                    TVCHGST.GSTSLPIN = VE.GSTSLPIN;
+                                    TVCHGST.GSTSLADD1 = VE.T_VCH_GST.GSTSLADD1;
+                                    TVCHGST.GSTSLDIST = VE.T_VCH_GST.GSTSLDIST;
+                                    TVCHGST.GSTSLPIN = VE.T_VCH_GST.GSTSLPIN;
+                                    TVCHGST.GSTSLADD2 = VE.T_VCH_GST.GSTSLADD2;
+                                    TVCHGST.GSTREGNTYPE = VE.T_VCH_GST.GSTREGNTYPE;
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     gblamt = 0; groamt = 0;
@@ -3707,8 +3737,8 @@ namespace Improvar.Controllers
                                     TVCHGST1.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
                                     TVCHGST1.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST1.EXPCD = VE.T_VCH_GST.EXPCD;
-                                    TVCHGST1.GSTSLNM = VE.GSTSLNM;
-                                    TVCHGST1.GSTNO = VE.GSTNO;
+                                    TVCHGST1.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
+                                    TVCHGST1.GSTNO = VE.T_VCH_GST.GSTNO;
                                     TVCHGST1.POS = VE.POS;
                                     TVCHGST1.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST1.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
@@ -3729,9 +3759,11 @@ namespace Improvar.Controllers
                                     TVCHGST1.TCSPER = TTXN.TCSPER;
                                     TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT;
                                     TVCHGST1.RATE = VE.TTXNAMT[i].AMTRATE;
-                                    TVCHGST1.GSTSLADD1 = VE.GSTSLADD1;
-                                    TVCHGST1.GSTSLDIST = VE.GSTSLDIST;
-                                    TVCHGST1.GSTSLPIN = VE.GSTSLPIN;
+                                    TVCHGST1.GSTSLADD1 = VE.T_VCH_GST.GSTSLADD1;
+                                    TVCHGST1.GSTSLDIST = VE.T_VCH_GST.GSTSLDIST;
+                                    TVCHGST1.GSTSLPIN = VE.T_VCH_GST.GSTSLPIN;
+                                    TVCHGST1.GSTSLADD2 = VE.T_VCH_GST.GSTSLADD2;
+                                    TVCHGST1.GSTREGNTYPE = VE.T_VCH_GST.GSTREGNTYPE;
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST1, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     gblamt = 0; groamt = 0;
@@ -4190,5 +4222,77 @@ namespace Improvar.Controllers
             //}
 
         }
+        public JsonResult GetGstInfo(string GSTNO)
+        {
+            try
+            {
+                AdaequareGSP adaequareGSP = new AdaequareGSP();
+                ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                Dictionary<string, string> dic = new Dictionary<string, string>();
+                //var AdqrRespGstInfo = adaequareGSP.AdqrGstInfo(GSTNO);
+                var AdqrRespGstInfo = adaequareGSP.AdqrGstInfoTestMode(GSTNO);
+
+                if (AdqrRespGstInfo.success == true && AdqrRespGstInfo.result != null)
+                {
+                    dic.Add("message", "ok");
+                    dic.Add("Gstin", AdqrRespGstInfo.result.Gstin);
+                    string StateCd = AdqrRespGstInfo.result.Gstin.Substring(0, 2);
+                    string StateNm = DB1.MS_STATE.Find(StateCd)?.STATENM;
+                    string panno = AdqrRespGstInfo.result.Gstin.Substring(2, 10);
+                    string comtype = panno.Substring(3, 1);
+                    dic.Add("StateCd", StateCd);
+                    dic.Add("StateNm", StateNm);
+                    dic.Add("Panno", panno);
+                    dic.Add("Comptype", Getcomptype(comtype));
+                    dic.Add("TradeName", AdqrRespGstInfo.result.TradeName);
+                    if (AdqrRespGstInfo.result.TradeName == AdqrRespGstInfo.result.LegalName)
+                    {
+                        dic.Add("LegalName", "");
+                    }
+                    else
+                    {
+                        dic.Add("LegalName", AdqrRespGstInfo.result.LegalName);
+                    }
+                    dic.Add("AddrBnm", AdqrRespGstInfo.result.AddrBnm);
+                    dic.Add("AddrBno", AdqrRespGstInfo.result.AddrBno);
+                    dic.Add("AddrFlno", AdqrRespGstInfo.result.AddrFlno);
+                    dic.Add("AddrSt", AdqrRespGstInfo.result.AddrSt.retStr());
+                    dic.Add("AddrLoc", AdqrRespGstInfo.result.AddrLoc);
+                    dic.Add("AddrPncd", AdqrRespGstInfo.result.AddrPncd.retStr());
+                    dic.Add("TxpType", AdqrRespGstInfo.result.TxpType);
+                }
+                else
+                {
+                    dic.Add("message", AdqrRespGstInfo.message);
+                }
+                ModelState.Clear();
+                return Json(dic, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Json(ex.Message + ex.InnerException, JsonRequestBehavior.AllowGet);
+            }
+        }
+        private string Getcomptype(string comtype)
+        {
+            string VARR = "";
+            switch (comtype)//01
+            {
+                case "C":
+                    VARR = "02"; break;
+                case "P":
+                    VARR = "05"; break;
+                case "F":
+                    VARR = "03"; break;
+                case "H":
+                    VARR = "08"; break;
+                case "T":
+                    VARR = "10"; break;
+                default: VARR = ""; break;
+            }
+            return VARR;
+        }
+
     }
 }

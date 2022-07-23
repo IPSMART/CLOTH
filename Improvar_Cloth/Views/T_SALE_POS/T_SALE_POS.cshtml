@@ -327,6 +327,82 @@
         });
     }
 </script>*@
+<script>
+    function validateGSTNO() {
+        var gstinVal = $("#GSTNO").val();
+        var statecode = $("#GSTNO").val().substring(0, 2);
+        var pancarno = $("#GSTNO").val().substring(2, 12);
+        var entityNumber = $("#GSTNO").val().substring(12, 13);
+        var defaultZvalue = $("#GSTNO").val().substring(13, 14);
+        var checksumdigit = $("#GSTNO").val().substring(14, 15);
+        if (gstinVal.length == 0) {
+            return false;
+        }
+        if (gstinVal.length != 15) {
+            msgInfo('GST Number length is invalid');
+            //$("#GSTNO").val("");
+            message_value = "GSTNO";
+            return false;
+        }
+        if (pancarno.length != 10) {
+            msgInfo('Pan Card length Number is invalid in GST no');
+            //$("#GSTNO").val("");
+            message_value = "GSTNO";
+            return false;
+        }
+        if (defaultZvalue !== 'Z') {
+            msgInfo('GST Number is invalid Z not in Entered GST Number');
+            //$("#GSTNO").val("");
+            message_value = "GSTNO";
+            return false;
+        }
+        var reggst = /^([0-9]){2}([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}([0-9]){1}([a-zA-Z]){1}[0-9A-Z]{1}?$/;
+        if (!reggst.test(gstinVal) && gstinVal != '') {
+            msgInfo('GST Identification Number is not valid. It should be in this "11AAAAA1111A1ZA" format');
+            //$("#GSTNO").val("");
+            message_value = "GSTNO";
+            return false;
+        }
+        return true;
+    }
+    function GetGstInfo() {
+        if (validateGSTNO() == false) return false;
+        var gstno = $("#GSTNO").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("GetGstInfo", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+        data: { GSTNO: gstno },
+        success: function (result) {
+            debugger;
+            $("#WaitingMode").hide();
+            if (result.message == "ok") {
+                var add1 = "";
+                if (retStr(result.AddrBno) != "") { add1 = result.AddrBno + " "; };
+                if (retStr(result.AddrFlno) != "") { add1 = add1 + result.AddrFlno + " "; };
+                if (retStr(result.AddrBnm) != "") { add1 = add1 + result.AddrBnm + " "; };
+                add1 = add1.trim();
+
+                document.getElementById("GSTNO").value = result.Gstin;
+                document.getElementById("GSTSLNM").value = result.TradeName;
+                document.getElementById("NM").value = result.TradeName;
+                document.getElementById("GSTSLADD1").value = add1;
+                document.getElementById("GSTSLADD2").value = result.AddrSt;
+                document.getElementById("GSTSLPIN").value = result.AddrPncd;
+                //document.getElementById("GSTSLDIST").value = result.AddrLoc;
+                document.getElementById("GSTREGNTYPE").value = "R"; //result.TxpType;
+            } else {
+                msgInfo(result.message);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1056,43 +1132,55 @@
                                 @Html.Label("", "Party GST No.")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-7">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Party GST No.", maxlength = 15, @placeholder = "Party GST No." } })
+                                @Html.EditorFor(model => model.T_VCH_GST.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Party GST No.", maxlength = 15, @placeholder = "Party GST No." } })
                             </div>
                         </div>
+                        <div class="col-sm-1">
+                            @if (Model.DefaultAction != "V" && Model.IsAPIEnabled == true)
+                            {
+                                <button type="button" style="margin-top:5px;padding-right:1px" name="button" class="btn-info" onclick="GetGstInfo();">Get Gst Info</button>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Party GST Name")
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-11">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST Name", maxlength = 50, @placeholder = "Party GST Name" } })
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST Address")
-                            </div>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address", maxlength = 60, @placeholder = "Party GST Address" } })
+                                @Html.EditorFor(model => model.T_VCH_GST.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST Name", maxlength = 50, @placeholder = "Party GST Name" } })
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST District")
+                                @Html.Label("", "Party GST Address1")
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-10">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
+                                @Html.EditorFor(model => model.T_VCH_GST.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address1", maxlength = 60, @placeholder = "Party GST Address1" } })
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST Address2")
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_VCH_GST.GSTSLADD2, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD2", @title = "Party GST Address2", maxlength = 60, @placeholder = "Party GST Address2" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Party GST PinCode")
@@ -1100,7 +1188,28 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
+                                @Html.EditorFor(model => model.T_VCH_GST.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST District")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_VCH_GST.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
+                            </div>
+                        </div>
+                       
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST Registration Type")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.T_VCH_GST.GSTREGNTYPE, new SelectList(Model.RegistrationType, "Value", "Text"), "---Select---", new { @class = "form-control", @id = "GSTREGNTYPE" })
                             </div>
                         </div>
                     </div>

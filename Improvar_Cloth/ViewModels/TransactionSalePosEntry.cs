@@ -61,11 +61,7 @@ namespace Improvar.ViewModels
         public string PSLCD { get; set; }
         public string SLNM { get; set; }
         public string SLAREA { get; set; }
-        public string GSTNO { get; set; }
-        public string GSTSLNM { get; set; }
-        public string GSTSLADD1 { get; set; }
-        public string GSTSLDIST { get; set; }
-        public string GSTSLPIN { get; set; }
+      
         public string CONSLNM { get; set; }
         public string AGSLNM { get; set; }
         public string SAGSLNM { get; set; }
@@ -289,5 +285,7 @@ namespace Improvar.ViewModels
         public double? R_T_FLAGMTR { get; set; }
         public bool MergeItem { get; set; }
         public string Last_DOCDT { get; set; }
+        public List<RegistrationType> RegistrationType { get; set; }
+        public bool IsAPIEnabled { get; set; }
     }
 }
