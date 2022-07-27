@@ -4589,7 +4589,14 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     else sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
                     //if (slcdpara == "PB" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
-                    sql += "" + VE.T_TXN.PARGLCD.retStr() + " parglcd, ";
+                    if (othr_para.retStr() != "")
+                    {
+                        if (slcdpara == "PB" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
+                    }
+                    else
+                    {
+                        sql += "" + VE.T_TXN.PARGLCD.retStr() + " parglcd, ";
+                    }
 
                     sql += "igst_rvi, cgst_rvi, sgst_rvi, cess_rvi, igst_rvo, cgst_rvo, sgst_rvo, cess_rvo ";
                     sql += "from " + scm1 + ".m_syscnfg a, " + scmf + ".m_post b, " + scm1 + ".m_subleg_com c ";
