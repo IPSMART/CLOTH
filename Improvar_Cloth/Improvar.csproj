@@ -667,6 +667,11 @@
       <DependentUpon>AltBill_Sachi.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\CashMemo_DIWH.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CashMemo_DIWH.rpt</DependentUpon>
+    </Compile>
     <Compile Include="Report\CashMemo_Sachi.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1609,6 +1614,10 @@
     <Content Include="Report\CORRES_DIWH.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CORRES_DIWH.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\CashMemo_DIWH.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CashMemo_DIWH.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
