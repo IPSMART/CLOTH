@@ -3537,7 +3537,7 @@ namespace Improvar.Controllers
                                     TVCHGST.DISCAMT = VE.TsalePos_TBATCHDTL[i].DISCAMT;
                                     TVCHGST.RATE = VE.TsalePos_TBATCHDTL[i].RATE;
 
-                                    TVCHGST.GSTSLADD1 = VE.T_VCH_GST.GSTSLADD1;                                    
+                                    TVCHGST.GSTSLADD1 = VE.T_VCH_GST.GSTSLADD1;
                                     TVCHGST.GSTSLDIST = VE.T_VCH_GST.GSTSLDIST;
                                     TVCHGST.GSTSLPIN = VE.T_VCH_GST.GSTSLPIN;
                                     TVCHGST.GSTSLADD2 = VE.T_VCH_GST.GSTSLADD2;
@@ -3959,7 +3959,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3974,7 +3974,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
@@ -4292,6 +4292,121 @@ namespace Improvar.Controllers
                 default: VARR = ""; break;
             }
             return VARR;
+        }
+        public ActionResult Update_Mobile(TransactionSalePosEntry VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "";
+            string dbsql = "";
+            string[] dbsql1;
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var fschnm = CommVar.FinSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    var EMD_NO = DB.T_CNTRL_HDR.Select(a => a.EMD_NO).Max() + 1;
+
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "E", "S", VE.T_CNTRL_HDR.MNTHCD, VE.T_TXN.DOCCD, VE.T_CNTRL_HDR.DOCNO, VE.T_TXN.DOCDT.retStr(), EMD_NO.retShort(), VE.T_TXN.DOCNO, Convert.ToDouble(VE.T_TXN.DOCNO), null, null, null, VE.T_TXN.SLCD);
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    //update to T_TXNMEMO//
+                    sql = "update " + schnm + ". T_TXNMEMO set MOBILE='" + VE.T_TXNMEMO.MOBILE + "',EMD_NO='" + EMD_NO + "'  ";
+                    sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
+        }
+        public ActionResult Update_SlnmDet(TransactionSalePosEntry VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "";
+            string dbsql = "";
+            string[] dbsql1;
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var schnmF = CommVar.FinSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    if (VE.TTXNSLSMN != null && VE.TTXNSLSMN.Count > 0)
+                    {
+                        
+                        var EMD_NO = DB.T_CNTRL_HDR.Select(a => a.EMD_NO).Max()+1;
+                        dbsql = masterHelp.TblUpdt("t_txnslsmn", VE.T_TXN.AUTONO, "E");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                      
+
+                       
+
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "E", "S", VE.T_CNTRL_HDR.MNTHCD, VE.T_TXN.DOCCD, VE.T_CNTRL_HDR.DOCNO, VE.T_TXN.DOCDT.retStr(),EMD_NO.retShort(), VE.T_TXN.DOCNO, Convert.ToDouble(VE.T_TXN.DOCNO), null, null, null, VE.T_TXN.SLCD);
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+
+
+                        for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
+                        {
+                            sql = "insert into " + scm1 + ".T_TXNSLSMN (clcd, autono, EMD_NO, DTAG, slno, SLMSLCD, PER, ITAMT, BLAMT) values ('"+CommVar.ClientCode(UNQSNO)+"','" + VE.T_TXN.AUTONO + "','" + EMD_NO + "','E','" + VE.TTXNSLSMN[i].SLNO + "','" + VE.TTXNSLSMN[i].SLMSLCD + "','" + VE.TTXNSLSMN[i].PER + "','" + VE.TTXNSLSMN[i].ITAMT + "','" + VE.TTXNSLSMN[i].BLAMT + "')";
+                            
+                            OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                        }
+
+                        sql = "update " + schnmF + ". t_vch_bl set AGSLCD='" + VE.TTXNSLSMN[0].SLMSLCD + "' "
+                               + " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
         }
 
     }
