@@ -3517,7 +3517,10 @@ namespace Improvar.Controllers
                                     TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
                                     TVCHGST.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
                                     TVCHGST.GSTNO = VE.T_VCH_GST.GSTNO;
-                                    TVCHGST.POS = VE.POS;
+                                    //TVCHGST.POS = VE.POS;
+                                    if(VE.T_VCH_GST.GSTNO!=null)
+                                    { TVCHGST.POS = VE.T_VCH_GST.GSTNO.Substring(0, 2); }
+                                    else { TVCHGST.POS = null; }
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST.PORTCD = VE.T_VCH_GST.PORTCD;
@@ -3617,7 +3620,11 @@ namespace Improvar.Controllers
                                     TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
                                     TVCHGST.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
                                     TVCHGST.GSTNO = VE.T_VCH_GST.GSTNO;
-                                    TVCHGST.POS = VE.POS;
+                                    //TVCHGST.POS = VE.POS;
+                                    if (VE.T_VCH_GST.GSTNO != null)
+                                    { TVCHGST.POS = VE.T_VCH_GST.GSTNO.Substring(0, 2); }
+                                    else { TVCHGST.POS = null; }
+                                       
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST.PORTCD = VE.T_VCH_GST.PORTCD;
@@ -3739,7 +3746,11 @@ namespace Improvar.Controllers
                                     TVCHGST1.EXPCD = VE.T_VCH_GST.EXPCD;
                                     TVCHGST1.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
                                     TVCHGST1.GSTNO = VE.T_VCH_GST.GSTNO;
-                                    TVCHGST1.POS = VE.POS;
+                                    //TVCHGST1.POS = VE.POS;
+                                    if (VE.T_VCH_GST.GSTNO != null)
+                                    { TVCHGST1.POS = VE.T_VCH_GST.GSTNO.Substring(0, 2); }
+                                    else { TVCHGST1.POS = null; }
+                                       
                                     TVCHGST1.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST1.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST1.PORTCD = VE.T_VCH_GST.PORTCD;
