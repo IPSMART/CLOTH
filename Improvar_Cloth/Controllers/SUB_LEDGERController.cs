@@ -1997,8 +1997,8 @@ namespace Improvar.Controllers
                 AdaequareGSP adaequareGSP = new AdaequareGSP();
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 Dictionary<string, string> dic = new Dictionary<string, string>();
-                var AdqrRespGstInfo = adaequareGSP.AdqrGstInfoTestMode(GSTNO);
-                //var AdqrRespGstInfo = adaequareGSP.AdqrGstInfo(GSTNO);
+                //var AdqrRespGstInfo = adaequareGSP.AdqrGstInfoTestMode(GSTNO);
+                var AdqrRespGstInfo = adaequareGSP.AdqrGstInfo(GSTNO);
 
                 if (AdqrRespGstInfo.success == true && AdqrRespGstInfo.result != null)
                 {
