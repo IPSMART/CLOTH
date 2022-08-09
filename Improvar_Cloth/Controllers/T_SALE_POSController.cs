@@ -3518,7 +3518,7 @@ namespace Improvar.Controllers
                                     TVCHGST.GSTSLNM = VE.T_VCH_GST.GSTSLNM;
                                     TVCHGST.GSTNO = VE.T_VCH_GST.GSTNO;
                                     //TVCHGST.POS = VE.POS;
-                                    if(VE.T_VCH_GST.GSTNO!=null)
+                                    if (VE.T_VCH_GST.GSTNO != null)
                                     { TVCHGST.POS = VE.T_VCH_GST.GSTNO.Substring(0, 2); }
                                     else { TVCHGST.POS = null; }
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
@@ -3624,7 +3624,7 @@ namespace Improvar.Controllers
                                     if (VE.T_VCH_GST.GSTNO != null)
                                     { TVCHGST.POS = VE.T_VCH_GST.GSTNO.Substring(0, 2); }
                                     else { TVCHGST.POS = null; }
-                                       
+
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST.PORTCD = VE.T_VCH_GST.PORTCD;
@@ -3750,7 +3750,7 @@ namespace Improvar.Controllers
                                     if (VE.T_VCH_GST.GSTNO != null)
                                     { TVCHGST1.POS = VE.T_VCH_GST.GSTNO.Substring(0, 2); }
                                     else { TVCHGST1.POS = null; }
-                                       
+
                                     TVCHGST1.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST1.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST1.PORTCD = VE.T_VCH_GST.PORTCD;
@@ -4352,6 +4352,53 @@ namespace Improvar.Controllers
                 }
             }
         }
+        public ActionResult RowBind(TransactionSalePosEntry VE)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            if (VE.TTXNSLSMN == null)
+            {
+                if (VE.TTXNSLSMN == null || VE.TTXNSLSMN.Count == 0)
+                {
+                    List<TTXNSLSMN> TTXNSLSMN = new List<TTXNSLSMN>();
+                    for (int i = 0; i <= 2; i++)
+                    {
+                        TTXNSLSMN TTXNSLM = new TTXNSLSMN();
+                        TTXNSLM.SLNO = Convert.ToInt16(i + 1);
+                        if (i == 0) TTXNSLM.PER = 100;
+                        TTXNSLSMN.Add(TTXNSLM);
+                        VE.TTXNSLSMN = TTXNSLSMN;
+                    }
+                    VE.TTXNSLSMN = TTXNSLSMN;
+                }
+            }
+            else if (VE.TTXNSLSMN != null && VE.TTXNSLSMN.Count > 0)
+            {
+                int COUNT = 0;
+                List<TTXNSLSMN> TPROGDTL = new List<TTXNSLSMN>();
+                for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
+                {
+                    TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                    MBILLDET = VE.TTXNSLSMN[i];
+                    TPROGDTL.Add(MBILLDET);
+                    COUNT++;
+                }
+                TTXNSLSMN MBILLDET1 = new TTXNSLSMN();
+
+                int SERIAL = Convert.ToInt32(VE.TTXNSLSMN.Max(a => Convert.ToInt32(a.SLNO)));
+                for (int j = COUNT; j <= 2; j++)
+                {
+                    SERIAL = SERIAL + 1;
+                    TTXNSLSMN OPENING_BL = new TTXNSLSMN();
+                    OPENING_BL.SLNO = SERIAL.retShort();
+                    TPROGDTL.Add(OPENING_BL);
+                }
+
+                VE.TTXNSLSMN = TPROGDTL;
+            }
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_POS_SALESMAN", VE);
+        }
         public ActionResult Update_SlnmDet(TransactionSalePosEntry VE)
         {
             Cn.getQueryString(VE);
@@ -4376,26 +4423,28 @@ namespace Improvar.Controllers
 
                     if (VE.TTXNSLSMN != null && VE.TTXNSLSMN.Count > 0)
                     {
-                        
-                        var EMD_NO = DB.T_CNTRL_HDR.Select(a => a.EMD_NO).Max()+1;
+
+                        var EMD_NO = DB.T_CNTRL_HDR.Select(a => a.EMD_NO).Max() + 1;
                         dbsql = masterHelp.TblUpdt("t_txnslsmn", VE.T_TXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                      
 
-                       
 
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "E", "S", VE.T_CNTRL_HDR.MNTHCD, VE.T_TXN.DOCCD, VE.T_CNTRL_HDR.DOCNO, VE.T_TXN.DOCDT.retStr(),EMD_NO.retShort(), VE.T_TXN.DOCNO, Convert.ToDouble(VE.T_TXN.DOCNO), null, null, null, VE.T_TXN.SLCD);
+
+
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "E", "S", VE.T_CNTRL_HDR.MNTHCD, VE.T_TXN.DOCCD, VE.T_CNTRL_HDR.DOCNO, VE.T_TXN.DOCDT.retStr(), EMD_NO.retShort(), VE.T_TXN.DOCNO, Convert.ToDouble(VE.T_TXN.DOCNO), null, null, null, VE.T_TXN.SLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
 
 
                         for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
                         {
-                            sql = "insert into " + scm1 + ".T_TXNSLSMN (clcd, autono, EMD_NO, DTAG, slno, SLMSLCD, PER, ITAMT, BLAMT) values ('"+CommVar.ClientCode(UNQSNO)+"','" + VE.T_TXN.AUTONO + "','" + EMD_NO + "','E','" + VE.TTXNSLSMN[i].SLNO + "','" + VE.TTXNSLSMN[i].SLMSLCD + "','" + VE.TTXNSLSMN[i].PER + "','" + VE.TTXNSLSMN[i].ITAMT + "','" + VE.TTXNSLSMN[i].BLAMT + "')";
-                            
-                            OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null)
+                            {
+                                sql = "insert into " + scm1 + ".T_TXNSLSMN (clcd, autono, EMD_NO, DTAG, slno, SLMSLCD, PER, ITAMT, BLAMT) values ('" + CommVar.ClientCode(UNQSNO) + "','" + VE.T_TXN.AUTONO + "','" + EMD_NO + "','E','" + VE.TTXNSLSMN[i].SLNO + "','" + VE.TTXNSLSMN[i].SLMSLCD + "','" + VE.TTXNSLSMN[i].PER + "','" + VE.TTXNSLSMN[i].ITAMT + "','" + VE.TTXNSLSMN[i].BLAMT + "')";
 
+                                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                            }
                         }
 
                         sql = "update " + schnmF + ". t_vch_bl set AGSLCD='" + VE.TTXNSLSMN[0].SLMSLCD + "' "

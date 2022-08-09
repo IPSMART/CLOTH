@@ -27,12 +27,12 @@
         @if (Model.DefaultView == true)
         {
             @Html.ValidationSummary(true)
-            @*<div class="grid_title">
-                    @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
+            <div class="grid_title">
+                    @if (Model.DefaultAction == "V" || Model.DefaultAction == "E")
                     {
-                        <input type="text" id="AddRowsMain1" name="AddRowsMain1" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
-                        <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="Addrow('AddRowsMain1')" />
-                        <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
+                        @*<input type="text" id="AddRowsMain1" name="AddRowsMain1" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
+                        @*<img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="Addrow('AddRowsMain1')" />*@
+                        @*<img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />*@
                     }
                     <div class="col-md-8">
                         <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_POS_SALESMAN_GRID');" />
@@ -41,7 +41,7 @@
                     <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
                         <b> Entry SalesMan Details</b>
                     </center>
-                </div>*@
+                </div>
             <div class="sticky-table sticky-ltr-cells">
                 @Html.HiddenFor(model => model.T_PER, new { id = "S_T_PER" })
                 @Html.HiddenFor(model => model.T_ITAMT, new { id = "S_T_ITAMT" })

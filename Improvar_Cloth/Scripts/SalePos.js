@@ -1174,7 +1174,7 @@ function CalculateRowAmt(GridId, i) {
 function CalculateTotal(CallFrm) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
-    if (DefaultAction == "V") return true;
+    //if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
 
     //POS MAIN GRID TOTAL
@@ -1633,7 +1633,8 @@ function CalculateInclusiveRate(i, GridId) {
 function SalesmanPerChk() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
-    if (DefaultAction == "V") return true;
+    //if (DefaultAction == "V") return true;
+   
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
     var T_PER = 0;
     for (var j = 0; j <= GridRow - 1; j++) {

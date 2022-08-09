@@ -267,66 +267,66 @@
     }
 </script>
 @*<script>
-    function DocumentDateChng(fld) {
-        debugger;
-        DocumentDateCHK(fld);
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("DocumentDateChng", PageControllerName)",
-            data: "&DOCDT=" + $("#DOCDT").val(),
-            success: function (result) {
-                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-                var MSG = res[0].indexOf(String.fromCharCode(181));
-                if (MSG >= 0) {
-                    $("#MNTNSIZE").val(returncolvalue(MSG, "MNTNSIZE"));
-                    $("#MNTNCOLOR").val(returncolvalue(MSG, "MNTNCOLOR"));
-                    $("#MNTNPART").val(returncolvalue(MSG, "MNTNPART"));
-                    $("#MNTNFLAGMTR").val(returncolvalue(MSG, "MNTNFLAGMTR"));
-                    $("#MNTNSHADE").val(returncolvalue(MSG, "MNTNSHADE"));
-                    $("#MNTNBARNO").val(returncolvalue(MSG, "MNTNBARNO"));
-                    $("#CMROFFTYPE").val(returncolvalue(MSG, "CMROFFTYPE"));
-                    $("#MNTNOURDESIGN").val(returncolvalue(MSG, "MNTNOURDESIGN"));
+        function DocumentDateChng(fld) {
+            debugger;
+            DocumentDateCHK(fld);
+            $.ajax({
+                type: 'get',
+                url: "@Url.Action("DocumentDateChng", PageControllerName)",
+                data: "&DOCDT=" + $("#DOCDT").val(),
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    var MSG = res[0].indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#MNTNSIZE").val(returncolvalue(MSG, "MNTNSIZE"));
+                        $("#MNTNCOLOR").val(returncolvalue(MSG, "MNTNCOLOR"));
+                        $("#MNTNPART").val(returncolvalue(MSG, "MNTNPART"));
+                        $("#MNTNFLAGMTR").val(returncolvalue(MSG, "MNTNFLAGMTR"));
+                        $("#MNTNSHADE").val(returncolvalue(MSG, "MNTNSHADE"));
+                        $("#MNTNBARNO").val(returncolvalue(MSG, "MNTNBARNO"));
+                        $("#CMROFFTYPE").val(returncolvalue(MSG, "CMROFFTYPE"));
+                        $("#MNTNOURDESIGN").val(returncolvalue(MSG, "MNTNOURDESIGN"));
 
 
-                    $("#RTDEBCD").val(returncolvalue(MSG, "RTDEBCD"));
-                    $("#NM").val(returncolvalue(MSG, "RTDEBNM"));
-                    $("#MOBNO").val(returncolvalue(MSG, "MOBILE"));
-                    $("#RTDEBNM").val(returncolvalue(MSG, "RTDEBNM"));
-                    var addrs = returncolvalue(MSG, "ADD1") + " " + returncolvalue(MSG, "ADD2") + " " + returncolvalue(MSG, "ADD3");
-                    $("#ADDR").val(addrs + "/" + returncolvalue(MSG, "CITY"));
-                    $("#MOBILE").val(returncolvalue(MSG, "MOBILE"));
-                    $("#ADDR_").val(addrs);
-                    $("#CITY").val(returncolvalue(MSG, "CITY_"));
-                    if (returncolvalue(MSG, "INC_RATE") == "Y") {
-                        document.getElementById("INC_RATE").checked = true;
+                        $("#RTDEBCD").val(returncolvalue(MSG, "RTDEBCD"));
+                        $("#NM").val(returncolvalue(MSG, "RTDEBNM"));
+                        $("#MOBNO").val(returncolvalue(MSG, "MOBILE"));
+                        $("#RTDEBNM").val(returncolvalue(MSG, "RTDEBNM"));
+                        var addrs = returncolvalue(MSG, "ADD1") + " " + returncolvalue(MSG, "ADD2") + " " + returncolvalue(MSG, "ADD3");
+                        $("#ADDR").val(addrs + "/" + returncolvalue(MSG, "CITY"));
+                        $("#MOBILE").val(returncolvalue(MSG, "MOBILE"));
+                        $("#ADDR_").val(addrs);
+                        $("#CITY").val(returncolvalue(MSG, "CITY_"));
+                        if (returncolvalue(MSG, "INC_RATE") == "Y") {
+                            document.getElementById("INC_RATE").checked = true;
+                        }
+                        else {
+                            document.getElementById("INC_RATE").checked = false;
+                        }
+                        $("#INCLRATEASK").val(returncolvalue(MSG, "INC_RATE"));
+                        $("#RETDEBSLCD").val(returncolvalue(MSG, "RETDEBSLCD"));
+                        $("#TAXGRPCD").val(returncolvalue(MSG, "TAXGRPCD"));
+                        $("#PRCCD").val(returncolvalue(MSG, "PRCCD"));
+                        $("#PRCNM").val(returncolvalue(MSG, "PRCNM"));
+                        $("#EFFDT").val(returncolvalue(MSG, "EFFDT"));
+                        $("#partialdivBarCodeTab").html(res[1]);
+                        $("#partialdivReturn").html(res[2]);
+
                     }
                     else {
-                        document.getElementById("INC_RATE").checked = false;
+                        msgInfo(MSG);
+                        message_value = "DOCDT";
+                        return false;
                     }
-                    $("#INCLRATEASK").val(returncolvalue(MSG, "INC_RATE"));
-                    $("#RETDEBSLCD").val(returncolvalue(MSG, "RETDEBSLCD"));
-                    $("#TAXGRPCD").val(returncolvalue(MSG, "TAXGRPCD"));
-                    $("#PRCCD").val(returncolvalue(MSG, "PRCCD"));
-                    $("#PRCNM").val(returncolvalue(MSG, "PRCNM"));
-                    $("#EFFDT").val(returncolvalue(MSG, "EFFDT"));
-                    $("#partialdivBarCodeTab").html(res[1]);
-                    $("#partialdivReturn").html(res[2]);
-
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
-                else {
-                    msgInfo(MSG);
-                    message_value = "DOCDT";
-                    return false;
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>*@
+            });
+        }
+    </script>*@
 <script>
     function validateGSTNO() {
         var gstinVal = $("#GSTNO").val();
@@ -372,55 +372,88 @@
             type: 'get',
             url: "@Url.Action("GetGstInfo", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
-        data: { GSTNO: gstno },
-        success: function (result) {
-            debugger;
-            $("#WaitingMode").hide();
-            if (result.message == "ok") {
-                var add1 = "";
-                if (retStr(result.AddrBno) != "") { add1 = result.AddrBno + " "; };
-                if (retStr(result.AddrFlno) != "") { add1 = add1 + result.AddrFlno + " "; };
-                if (retStr(result.AddrBnm) != "") { add1 = add1 + result.AddrBnm + " "; };
-                add1 = add1.trim();
+            data: { GSTNO: gstno },
+            success: function (result) {
+                debugger;
+                $("#WaitingMode").hide();
+                if (result.message == "ok") {
+                    var add1 = "";
+                    if (retStr(result.AddrBno) != "") { add1 = result.AddrBno + " "; };
+                    if (retStr(result.AddrFlno) != "") { add1 = add1 + result.AddrFlno + " "; };
+                    if (retStr(result.AddrBnm) != "") { add1 = add1 + result.AddrBnm + " "; };
+                    add1 = add1.trim();
 
-                document.getElementById("GSTNO").value = result.Gstin;
-                document.getElementById("GSTSLNM").value = result.TradeName;
-                document.getElementById("NM").value = result.TradeName;
-                document.getElementById("GSTSLADD1").value = add1;
-                document.getElementById("GSTSLADD2").value = result.AddrSt;
-                document.getElementById("GSTSLPIN").value = result.AddrPncd;
-                //document.getElementById("GSTSLDIST").value = result.AddrLoc;
-                document.getElementById("GSTREGNTYPE").value = "R"; //result.TxpType;
-            } else {
-                msgInfo(result.message);
+                    document.getElementById("GSTNO").value = result.Gstin;
+                    document.getElementById("GSTSLNM").value = result.TradeName;
+                    document.getElementById("NM").value = result.TradeName;
+                    document.getElementById("GSTSLADD1").value = add1;
+                    document.getElementById("GSTSLADD2").value = result.AddrSt;
+                    document.getElementById("GSTSLPIN").value = result.AddrPncd;
+                    //document.getElementById("GSTSLDIST").value = result.AddrLoc;
+                    document.getElementById("GSTREGNTYPE").value = "R"; //result.TxpType;
+                } else {
+                    msgInfo(result.message);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
             }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+        });
     }
 </script>
 <script>
     function Edit_SalesManDet() {
         debugger;
-        var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
-        if (GridRow != 0) {
-            for (var i = 0; i <= GridRow - 1; i++) {
-                $("#SLMSLCD_" + i).attr("readonly", false);
-                $(".help_slnm").show();
-                $("#S_PER_" + i).attr("readonly", false);
-                $("#S_ITAMT_" + i).attr("readonly", false);
-                $("#S_BLAMT_" + i).attr("readonly", false);
-                if (i == 0) $("#SLMSLCD_" + i).focus();
-            }
-        }
+        //var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+        //if (GridRow != 0) {
+        //    for (var i = 0; i <= GridRow - 1; i++) {
+        //        $("#SLMSLCD_" + i).attr("readonly", false);
+        //        $(".help_slnm").show();
+        //        $("#S_PER_" + i).attr("readonly", false);
+        //        $("#S_ITAMT_" + i).attr("readonly", false);
+        //        $("#S_BLAMT_" + i).attr("readonly", false);
+        //        if (i == 0) $("#SLMSLCD_" + i).focus();
+        //    }
+        // } else {
+
         $("#edit_slnm_det").hide();
         $("#update_slnm_det").show();
         $("#cancel_slnm_det").show();
         $("#update_slnm_det").prop("disabled", false);
+            var DefaultAction = $("#DefaultAction").val();
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("RowBind", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialdivSalesman").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivSalesman").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+            var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    $("#SLMSLCD_" + i).attr("readonly", false);
+                    $(".help_slnm").show();
+                    $("#S_PER_" + i).attr("readonly", false);
+                    $("#S_ITAMT_" + i).attr("readonly", false);
+                    $("#S_BLAMT_" + i).attr("readonly", false);
+                    if (i == 0) $("#SLMSLCD_" + i).focus();
+                }
+            }
+
+
+       // }
+       
     }
     function Cancel_SalesManDet() {
         location.reload();
@@ -570,7 +603,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onchange = "DocumentDateChng(this);", onblur = "DocumentDateChng(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                 @Html.HiddenFor(model => Model.Last_DOCDT, new { @class = "form-control", id = "Last_DOCDT" })
-                             </div>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -920,20 +953,20 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
-                    <div></div>
-                        <div class="col-lg-2" style="margin-top:12px">
-                            @if (Model.DefaultAction == "V")
-                    {<div class="row">
-                            <div class="col-md-1" style="width:auto;">
-                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update Sales Man Details" id="edit_slnm_det" value="update Sales Man Details(Alt+G)" title="Click to update Sales Man Details button for edit Sales Man Details fields" onclick="Edit_SalesManDet()" />
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_slnm_det" value="Update(Alt+I)" accesskey="I" title="Click to Update Sales Man Details" disabled onclick="Update_SalesManDet()" />
-                                <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_slnm_det" value="Cancel" title="Click to Cancel for unchaneg Sales Man Details" onclick="Cancel_SalesManDet()" />
-                            </div>
-                        </div>
-                            }
-                        </div>
                     </div>
+                    <div></div>
+                    <div class="col-lg-2" style="margin-top:12px">
+                        @if (Model.DefaultAction == "V")
+                    {<div class="row">
+                                <div class="col-md-1" style="width:auto;">
+                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update Sales Man Details" id="edit_slnm_det" value="update Sales Man Details(Alt+G)" accesskey="G" title="Click to update Sales Man Details button for edit Sales Man Details fields" onclick="Edit_SalesManDet()" />
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_slnm_det" value="Update(Alt+I)" accesskey="I" title="Click to Update Sales Man Details" disabled onclick="Update_SalesManDet()" />
+                                    <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_slnm_det" value="Cancel" title="Click to Cancel for unchaneg Sales Man Details" onclick="Cancel_SalesManDet()" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
 
                 <div class="col-lg-1" id="divmtrljobcd">
                     <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
@@ -1302,7 +1335,7 @@
                                 @Html.EditorFor(model => model.T_VCH_GST.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
                             </div>
                         </div>
-                       
+
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Party GST Registration Type")
