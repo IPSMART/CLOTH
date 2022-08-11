@@ -3049,6 +3049,7 @@ function GetPartyDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
+    var ClientCode = $("#ClientCode").val();
     if (id == "") {
         ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
     }
@@ -3109,6 +3110,10 @@ function GetPartyDetails(id) {
                         $("#AMT").val(returncolvalue(result, "AMT"));
                         $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
                         $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
+                        if (ClientCode == "DIWH" && MENU_PARA == "SBDIR") {
+                            $("#PARGLCD").val(returncolvalue(result, "PARGLCD"));
+                            $("#PARGLNM").val(returncolvalue(result, "PARGLNM"));
+                        }
                         if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
                             if (retStr(returncolvalue(result, "TCSAPPL")) == "Y") {
                                 document.getElementById("TCSAUTOCAL").checked = true;

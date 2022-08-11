@@ -357,7 +357,7 @@ namespace Improvar.Controllers
 
                     top = top + iop;
                     tdr = tdr + idr; tdramt = tdramt + idramt;
-                    tcr = tcr + icr; tdramt = tcramt + icramt;
+                    tcr = tcr + icr; tcramt = tcramt + icramt;
                     tcls = tcls + icls;
                 }
 
@@ -365,6 +365,23 @@ namespace Improvar.Controllers
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["dammy"] = " ";
                 IR.Rows[rNo]["flag"] = " height:14px; ";
+
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["dammy"] = "";
+                IR.Rows[rNo]["slnm"] = "Grand Totals";
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                IR.Rows[rNo]["qntyin"] = tdr;
+                if (VE.Checkbox1 == true)
+                {
+                    IR.Rows[rNo]["amtin"] = tdramt;
+                }
+                IR.Rows[rNo]["qntyout"] = tcr;
+                if (VE.Checkbox1 == true)
+                {
+                    IR.Rows[rNo]["amtout"] = tcramt;
+                }
+                IR.Rows[rNo]["balqnty"] = tdr - tcr;
+
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string jobnm = DB.M_JOBMST.Find(VE.MENU_PARA)?.JOBNM;
                 string pghdr1 = "";

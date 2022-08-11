@@ -120,11 +120,23 @@ namespace Improvar.Controllers
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
 
-                        VE.IndexKey = (from p in DB.T_TXN
-                                       join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                       orderby p.DOCDT, p.DOCNO
-                                       where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
-                                       select new IndexKey() { Navikey = p.AUTONO }).ToList();
+                        if (CommVar.ClientCode(UNQSNO) == "DIWH")
+                        {
+                            VE.IndexKey = (from p in DB.T_TXN
+                                           join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                           orderby p.DOCCD, p.DOCNO, p.DOCDT
+                                           where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
+                                           select new IndexKey() { Navikey = p.AUTONO }).ToList();
+                        }
+                        else
+                        {
+                            VE.IndexKey = (from p in DB.T_TXN
+                                           join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                           orderby p.DOCDT, p.DOCNO
+                                           where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
+                                           select new IndexKey() { Navikey = p.AUTONO }).ToList();
+                        }
+
                         //if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && op != "A" && searchValue != "")
                         //{
                         //    var chk_autono = VE.IndexKey.Where(a => a.Navikey == searchValue).ToList();
@@ -1198,7 +1210,7 @@ namespace Improvar.Controllers
                 VE.SHOWBLTYPE = dropDownHelp.DropDownBLTYPE().Count > 0 ? "Y" : "N";
                 string sql = "";
 
-                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,nvl(b.cancel,'N')cancel ";
+                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,nvl(b.cancel,'N')cancel,b.doconlyno,b.docdt dt ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d, " + scm + ".t_txnoth e ";
                 sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono and a.autono=e.autono(+) and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -1207,7 +1219,7 @@ namespace Improvar.Controllers
                 if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
                 if (SRC_FLAG.retStr() != "") sql += "(upper(d.baleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%') and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-                sql += "order by docdt, docno ";
+                if (CommVar.ClientCode(UNQSNO) == "DIWH") sql += "order by b.doccd,b.doconlyno,b.docdt "; else sql += "order by docdt, docno ";//diwans heritage wants docno wise nav
                 DataTable tbl = masterHelp.SQLquery(sql);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -1303,7 +1315,7 @@ namespace Improvar.Controllers
             DataTable dt = masterHelp.SQLquery(sql);
             return dt;
         }
-        public ActionResult GetSubLedgerDetails(string val, string Code, string Autono, string linktdscode, string bltype)
+        public ActionResult GetSubLedgerDetails(string val, string Code, string Autono, string linktdscode, string bltype, string doccd)
         {
             try
             {
@@ -1391,6 +1403,18 @@ namespace Improvar.Controllers
                                 {
                                     str = str.ReplaceHelpStr("PRCCD", "CP");
                                     str = str.ReplaceHelpStr("PRCNM", "CP");
+                                }
+                                if (CommVar.ClientCode(UNQSNO) == "DIWH" && VE.MENU_PARA == "SBDIR")
+                                {
+                                    string sql = "select a.PARGLCD,c.glnm PARGLNM from " + CommVar.CurSchema(UNQSNO) + ".t_txn a," + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b," + CommVar.FinSchema(UNQSNO) + ".m_genleg c ";
+                                    sql += "where a.autono=b.autono and a.PARGLCD=c.glcd and  a.DOCCD = " + doccd + " and b.LOCCD = " + CommVar.Loccd(UNQSNO) + " and b.COMPCD = " + CommVar.Loccd(UNQSNO) + " ";
+                                    sql += "orderby a.AUTONO desc ";
+                                    DataTable dt = masterHelp.SQLquery(sql);
+                                    if (dt != null && dt.Rows.Count > 0)
+                                    {
+                                        str += "^" + "PARGLCD" + "=^" + dt.Rows[0]["PARGLCD"].retStr() + Cn.GCS();
+                                        str += "^" + "PARGLNM" + "=^" + dt.Rows[0]["PARGLNM"].retStr() + Cn.GCS();
+                                    }
                                 }
                                 return Content(str);
                             }

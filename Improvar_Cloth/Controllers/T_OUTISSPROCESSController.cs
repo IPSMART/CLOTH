@@ -56,7 +56,7 @@ namespace Improvar.Controllers
                     string YR1 = CommVar.YearCode(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
+                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE,VE.DefaultAction);
                     //return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
                     VE.Database_Combo1 = (from n in DB.T_TXNOTH
                                           select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
