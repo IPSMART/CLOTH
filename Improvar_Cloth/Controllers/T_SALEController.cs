@@ -1407,8 +1407,8 @@ namespace Improvar.Controllers
                                 if (CommVar.ClientCode(UNQSNO) == "DIWH" && VE.MENU_PARA == "SBDIR")
                                 {
                                     string sql = "select a.PARGLCD,c.glnm PARGLNM from " + CommVar.CurSchema(UNQSNO) + ".t_txn a," + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b," + CommVar.FinSchema(UNQSNO) + ".m_genleg c ";
-                                    sql += "where a.autono=b.autono and a.PARGLCD=c.glcd and  a.DOCCD = " + doccd + " and b.LOCCD = " + CommVar.Loccd(UNQSNO) + " and b.COMPCD = " + CommVar.Loccd(UNQSNO) + " ";
-                                    sql += "orderby a.AUTONO desc ";
+                                    sql += "where a.autono=b.autono and a.PARGLCD=c.glcd and  a.DOCCD = '" + doccd + "' and b.LOCCD = '" + CommVar.Loccd(UNQSNO) + "' and b.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and a.slcd ='" + val + "' ";
+                                    sql += "order by a.AUTONO desc ";
                                     DataTable dt = masterHelp.SQLquery(sql);
                                     if (dt != null && dt.Rows.Count > 0)
                                     {

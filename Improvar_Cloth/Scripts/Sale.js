@@ -3058,6 +3058,7 @@ function GetPartyDetails(id) {
         var AUTONO = $("#AUTONO").val();
         var TCSCODE = $("#TCSCODE").val();
         var bltype = $("#BLTYPE").val();
+        var DOCCD = $("#DOCCD").val();
         var Partycaption = "";
         if (MENU_PARA == "PB" || MENU_PARA == "PR") {
             Partycaption = "Supplier";
@@ -3072,7 +3073,7 @@ function GetPartyDetails(id) {
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
             url: $("#UrlSubLedgerDetails").val(),//"@Url.Action("GetSubLedgerDetails", PageControllerName)",
-            data: "&val=" + id + "&Code=" + code + "&Autono=" + AUTONO + "&linktdscode=" + TCSCODE + "&bltype=" + bltype,
+            data: "&val=" + id + "&Code=" + code + "&Autono=" + AUTONO + "&linktdscode=" + TCSCODE + "&bltype=" + bltype + "&doccd=" + DOCCD,
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
@@ -3110,7 +3111,9 @@ function GetPartyDetails(id) {
                         $("#AMT").val(returncolvalue(result, "AMT"));
                         $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
                         $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
+                        debugger;
                         if (ClientCode == "DIWH" && MENU_PARA == "SBDIR") {
+                            debugger;
                             $("#PARGLCD").val(returncolvalue(result, "PARGLCD"));
                             $("#PARGLNM").val(returncolvalue(result, "PARGLNM"));
                         }
