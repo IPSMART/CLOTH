@@ -1503,7 +1503,7 @@
         });
     }
 </script>
-<script>
+@*<script>
     function pageprinting() {
         var ty = $("#DOCCD").val();
         $.ajax({
@@ -1517,6 +1517,18 @@
                 $("#WaitingMode").hide();
                 msgError(XMLHttpRequest.responseText);
                 $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>*@
+<script>
+    function pageprinting() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_Doc_Print", "Rep_Doc_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             }
         });
     }

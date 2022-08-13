@@ -862,6 +862,8 @@ namespace Improvar.DataSets {
             
             private global::System.Data.DataColumn columnstkdata;
             
+            private global::System.Data.DataColumn columncopymode;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public DTProgrammeDataTable() {
@@ -1233,6 +1235,14 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn copymodeColumn {
+                get {
+                    return this.columncopymode;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1310,7 +1320,8 @@ namespace Improvar.DataSets {
                         double Gstper, 
                         string hsncode, 
                         string blremarks, 
-                        string stkdata) {
+                        string stkdata, 
+                        string copymode) {
                 DTProgrammeRow rowDTProgrammeRow = ((DTProgrammeRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         autono,
@@ -1354,7 +1365,8 @@ namespace Improvar.DataSets {
                         Gstper,
                         hsncode,
                         blremarks,
-                        stkdata};
+                        stkdata,
+                        copymode};
                 rowDTProgrammeRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDTProgrammeRow);
                 return rowDTProgrammeRow;
@@ -1419,6 +1431,7 @@ namespace Improvar.DataSets {
                 this.columnhsncode = base.Columns["hsncode"];
                 this.columnblremarks = base.Columns["blremarks"];
                 this.columnstkdata = base.Columns["stkdata"];
+                this.columncopymode = base.Columns["copymode"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1508,6 +1521,8 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columnblremarks);
                 this.columnstkdata = new global::System.Data.DataColumn("stkdata", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnstkdata);
+                this.columncopymode = new global::System.Data.DataColumn("copymode", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncopymode);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3060,6 +3075,22 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string copymode {
+                get {
+                    try {
+                        return ((string)(this[this.tableDTProgramme.copymodeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'copymode\' in table \'DTProgramme\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTProgramme.copymodeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IsautonoNull() {
                 return this.IsNull(this.tableDTProgramme.autonoColumn);
             }
@@ -3560,6 +3591,18 @@ namespace Improvar.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SetstkdataNull() {
                 this[this.tableDTProgramme.stkdataColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IscopymodeNull() {
+                return this.IsNull(this.tableDTProgramme.copymodeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetcopymodeNull() {
+                this[this.tableDTProgramme.copymodeColumn] = global::System.Convert.DBNull;
             }
         }
         
