@@ -400,9 +400,9 @@ namespace Improvar.Controllers
                         switch (ic)
                         {
                             case 0:
-                                copymode = "ORIGINAL FOR RECIPIENT"; break;
+                                copymode = "ORIGINAL FOR KARIGAR"; break;
                             case 1:
-                                copymode = "DUPLICATE FOR KARIGAR"; break;
+                                copymode = "DUPLICATE FOR SUPPLIER"; break;
                             case 2:
                                 copymode = "EXTRA COPY"; break;
                             case 3:
