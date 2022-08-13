@@ -80,7 +80,7 @@ namespace Improvar.Controllers
                 sql += "select a.autono, c.slcd, a.slno, c.nos, c.qnty, c.cutlength, i.itnm, i.styleno,h.ourdesign, h.pdesign, i.itgrpcd, j.itgrpnm,k.uomnm, ";
                 sql += "c.itremark, c.sample, g.slnm, g.regmobile, ptch.docno , ptch.docdt, y.issamt, ";
                 sql += "b.autono recautono, rtch.docno recdocno, rtch.docdt recdocdt, b.prefno, b.prefdt, b.doctag,b.nos recnos, b.qnty recqnty, ";
-                sql += "c.nos, c.qnty, c.nos-nvl(z.nos,0) balnos, c.qnty-nvl(z.qnty,0) balqnty,h.itcd from ";
+                sql += "c.nos, c.qnty, c.nos-nvl(z.nos,0) balnos, c.qnty-nvl(z.qnty,0) balqnty,h.itcd,i.fabitcd,l.itnm fabitnm from ";
 
                 sql += "(select a.autono, a.slno, a.autono || a.slno autoslno ";
                 sql += "from " + scm + ".t_progmast a, " + scm + ".t_cntrl_hdr b ";
@@ -114,9 +114,9 @@ namespace Improvar.Controllers
                 sql += "group by a.progautono||a.progslno ) z, ";
 
                 sql += scm + ".t_progmast c, " + scm + ".t_cntrl_hdr ptch, " + scm + ".t_cntrl_hdr rtch, ";
-                sql += scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k ";
+                sql += scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + scm + ".m_sitem i, " + scm + ".m_group j, " + scmf + ".m_uom k, " + scm + ".m_sitem l ";
                 sql += "where a.autono=c.autono(+) and a.slno=c.slno(+) and a.autoslno = b.progautoslno(+) and a.autoslno = y.progautoslno(+) and a.autoslno = z.progautoslno(+) and ";
-                sql += "a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and ";
+                sql += "a.autono = ptch.autono(+) and b.autono = rtch.autono(+) and C.JOBCD='" + JOBCD + "' and i.fabitcd=l.itcd(+) and ";
                 if (ShowPending == "PENDING") sql += "c.qnty-nvl(z.qnty,0) <> 0 and ";
                 sql += "c.slcd = g.slcd(+) and c.barno = h.barno(+) and h.itcd = i.itcd(+) and i.itgrpcd = j.itgrpcd(+) and i.uomcd = k.uomcd(+) ";
                 sql += "order by slnm, slcd, docdt, docno, autono, slno, recdocdt, recdocno ";
@@ -285,8 +285,8 @@ namespace Improvar.Controllers
                 {
                     HC.RepStart(IR, 2);
                     HC.GetPrintHeader(IR, "itgrpnm", "string", "c,12", "Group");
-                    HC.GetPrintHeader(IR, "itstyle", "string", "c,10", "Item Description");
-                    HC.GetPrintHeader(IR, "uom", "string", "c,16", "Uom");
+                    HC.GetPrintHeader(IR, "itnm", "string", "c,20", "Item Description");
+                    HC.GetPrintHeader(IR, "uom", "string", "c,10", "Uom");
                     HC.GetPrintHeader(IR, "balqnty", "double", "n,15,3", "Bal Qnty.");
                     if (showValue == true) HC.GetPrintHeader(IR, "balamt", "double", "n,15,3", "Bal Value");
                     IR.Columns.Add("slcd", typeof(string), "");
@@ -331,7 +331,7 @@ namespace Improvar.Controllers
                             }
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
-                            IR.Rows[rNo]["itstyle"] = tbl.Rows[i - 1]["itnm"].retStr() + " " + tbl.Rows[i - 1]["styleno"].retStr();
+                            IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["fabitnm"].retStr() + " " + tbl.Rows[i - 1]["itnm"].retStr();
                             IR.Rows[rNo]["uom"] = tbl.Rows[i - 1]["uomnm"].retStr();
                             IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
                             IR.Rows[rNo]["balqnty"] = balqnty;
