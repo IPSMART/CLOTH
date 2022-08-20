@@ -671,6 +671,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CashMemo_DIWH.rpt</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\CashMemo_Sachi.cs">
       <AutoGen>True</AutoGen>
@@ -706,6 +707,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>JobIssue_DIWH.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\JobRec.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobRec.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\Khasra_BaleTrnf.cs">
@@ -1619,6 +1626,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CashMemo_DIWH.cs</LastGenOutput>
     </Content>
+    <EmbeddedResource Include="Report\JobRec.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>JobRec.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode_Tres_3X2_Old.cs</LastGenOutput>
