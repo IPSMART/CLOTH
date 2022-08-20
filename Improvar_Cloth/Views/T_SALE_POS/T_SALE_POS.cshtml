@@ -366,6 +366,7 @@
         return true;
     }
     function GetGstInfo() {
+        debugger;
         if (validateGSTNO() == false) return false;
         var gstno = $("#GSTNO").val();
         $.ajax({
@@ -377,17 +378,18 @@
                 debugger;
                 $("#WaitingMode").hide();
                 if (result.message == "ok") {
-                    var add1 = "";
+                    var add1 = ""; var locnm = "";
                     if (retStr(result.AddrBno) != "") { add1 = result.AddrBno + " "; };
                     if (retStr(result.AddrFlno) != "") { add1 = add1 + result.AddrFlno + " "; };
                     if (retStr(result.AddrBnm) != "") { add1 = add1 + result.AddrBnm + " "; };
+                    if (retStr(result.AddrLoc) != "") { locnm = locnm + " "+ result.AddrLoc ; };
                     add1 = add1.trim();
 
                     document.getElementById("GSTNO").value = result.Gstin;
                     document.getElementById("GSTSLNM").value = result.TradeName;
                     document.getElementById("NM").value = result.TradeName;
                     document.getElementById("GSTSLADD1").value = add1;
-                    document.getElementById("GSTSLADD2").value = result.AddrSt;
+                    document.getElementById("GSTSLADD2").value = result.AddrSt + locnm;
                     document.getElementById("GSTSLPIN").value = result.AddrPncd;
                     //document.getElementById("GSTSLDIST").value = result.AddrLoc;
                     document.getElementById("GSTREGNTYPE").value = "R"; //result.TxpType;
