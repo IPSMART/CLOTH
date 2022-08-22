@@ -264,15 +264,16 @@ namespace Improvar.Controllers
 
                 sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO);
-                sql = "select distinct a.autono,c.doctype,d.loccd,d.docno,d.docdt,b.SLCD,b.SLNM,sum(a.BLAMT ) BLAMT,e.TRANSLCD,f.slnm TRANSLNM,e.LORRYNO from " + scmf + ".t_vch_gst a, "
-                + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f  "
-                + " where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.TRANSLCD=f.SLCD(+) and a.autono=e.autono(+) and ";
-                sql += " A.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND A.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY') AND  ";
-                sql += " b.regntype in ('R','C') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N'  ";
-                sql += " and a.autono not in (select autono from " + scmf + ".t_txneinv) ";
-                sql += " and d.compcd='" + CommVar.Compcd(UNQSNO) + "' and b.gstno is not null ";
-                sql += " group by a.autono,c.doctype,d.loccd,d.docno,d.docdt,b.SLCD,b.SLNM,e.TRANSLCD,f.slnm,e.LORRYNO ";
-                sql += " order by docdt,autono ";
+                sql = "select distinct a.autono, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm) slnm, sum(a.blamt) blamt, e.translcd, f.slnm translnm, e.lorryno ";
+                sql += "from " + scmf + ".t_vch_gst a, " + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f ";
+                sql += "where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.translcd=f.slcd(+) and a.autono=e.autono(+) and ";
+                sql += "a.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and a.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
+                sql += "nvl(a.gstregntype,b.regntype) in ('R','C') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N' and ";
+                sql += "a.autono not in (select autono from " + scmf + ".t_txneinv) and d.modcd='" + Module.MODCD + "' and ";
+                sql += "a.autono not in (select distinct autono from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_doc_pass) and ";
+                sql += "d.compcd='" + CommVar.Compcd(UNQSNO) + "' and b.gstno is not null ";
+                sql += "group by a.autono, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm), e.translcd, f.slnm, e.lorryno ";
+                sql += "order by docdt,autono ";
                 DataTable txn = masterHelp.SQLquery(sql);
                 VE.GenEinvIRNGrid = (from DataRow dr in txn.Rows
                                      select new GenEinvIRNGrid
@@ -358,8 +359,8 @@ namespace Improvar.Controllers
                         sql += "a.SHIPDOCNO,a.SHIPDOCDT,a.PORTCD, a.basamt , a.discamt, a.GOOD_SERV,dncnsalpur, ";
                         sql += " translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,p.PROPNAME LegalNm, d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
 
-                        sql += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno,p.PROPNAME bLegalNm, p.add1||' '||p.add2 badd1, ";
-                        sql += "p.add3||' '||p.add4 badd2, p.district bdistrict, p.pin bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, p.regemailid bregemailid,nvl(p.phno1std||p.phno1,p.regmobile) bregph, ";
+                        sql += "translate(nvl(a.gstslnm,nvl(p.fullname,p.slnm)),'+[#./()]^',' ') bslnm, nvl(a.gstno,p.gstno) bgstno, p.PROPNAME bLegalNm, decode(a.gstsladd1,null,p.add1||' '||p.add2,a.gstsladd1||' '||a.gstsladd2) badd1, ";
+                        sql += "p.add3||' '||p.add4 badd2, nvl(a.gstsldist,p.district) bdistrict, nvl(a.gstslpin,p.pin) bpin, nvl(a.pos,p.statecd) bstatecd, upper(q.statenm) bstatenm, p.regemailid bregemailid,nvl(p.phno1std||p.phno1,p.regmobile) bregph, ";
                         sql += " p.OTHADD1 bOTHADD1, p.othadd2 bothadd2, p.othadd4 bothadd4, p.OTHADDPIN bOTHADDPIN, p.OTHADDEMAIL bOTHADDEMAIL, ";
                         sql += "e.slnm trslnm, e.gstno trgst, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt,a.rate, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
                         sql += "translate(a.itnm,'+[#/()]^',' ') itnm, ";
@@ -375,7 +376,7 @@ namespace Improvar.Controllers
                         sql += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, " + fdbnm + ".m_uom j, improvar.ms_state k, improvar.ms_gstuom l, ";
                         sql += fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
                         sql += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and c.translcd=e.slcd(+) and ";
-                        sql += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and c.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
+                        sql += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and c.gocd=o.gocd(+) and a.pcode=p.slcd(+) and nvl(a.pos,p.statecd)=q.statecd and ";
                         sql += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and ";
                         sql += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd  and a.autono = '" + autono + "'";
                         sql += "order by blno, bldt, autono, slno ";
