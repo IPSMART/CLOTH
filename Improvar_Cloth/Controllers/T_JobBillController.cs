@@ -293,6 +293,7 @@ namespace Improvar.Controllers
                                                   igstamt = ((double)(i.IGSTAMT == null ? 0 : i.IGSTAMT)),
                                                   sgstamt = ((double)(i.SGSTAMT == null ? 0 : i.SGSTAMT)),
                                                   PRODGRPCD = i.PRODGRPCD,
+                                                  NETAMOUNT = (((double)(i.TAXABLEVAL == null ? 0 : i.TAXABLEVAL)) + ((double)(i.IGSTAMT == null ? 0 : i.IGSTAMT)) + ((double)(i.CGSTAMT == null ? 0 : i.CGSTAMT)) + ((double)(i.SGSTAMT == null ? 0 : i.SGSTAMT)) + ((double)(i.CESSAMT == null ? 0 : i.CESSAMT)))
                                               }).ToList();
                             VE.PRODGRPCD = VE.ItemDetails[0].PRODGRPCD;
                         }
@@ -999,7 +1000,7 @@ namespace Improvar.Controllers
                                    NOS = dr.NOS,
                                    STYLENO = dr.STYLENO,
                                    HSNSACCD = dr.HSNSACCD,
-                                   RATE=dr.RATE
+                                   RATE = dr.RATE
                                }).ToList();
                 foreach (var i in itmdata)
                 {

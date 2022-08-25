@@ -55,10 +55,12 @@
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#btnChallan").hide();
+            ReverceCharges('Y');
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#DOCDT").attr("readonly", "readonly");
             ChangeDoctype();
+            ReverceCharges('Y');
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -987,64 +989,67 @@
         TDSAMTCAL();
     }
 
-    function ReverceCharges() {
+    function ReverceCharges(Tag) {
+        debugger;
         var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
         var REVCHG = $("#REVCHG").val();
-        for (var i = 0; i <= GridRowMain - 1; i++) {
+        if (Tag != "Y") {
+            for (var i = 0; i <= GridRowMain - 1; i++) {
 
-            if (REVCHG == "N") {
-                $("#igstper_" + i).val(0);
-                $("#igstamt_" + i).val(parseFloat(0).toFixed(2));
-                $("#cgstper_" + i).val(0);
-                $("#cgstamt_" + i).val(parseFloat(0).toFixed(2));
-                $("#sgstper_" + i).val(0);
-                $("#sgstamt_" + i).val(parseFloat(0).toFixed(2));
-                $("#cessper_" + i).val(0);
-                $("#cessamt_" + i).val(parseFloat(0).toFixed(2));
-                $("#igstper_" + i).attr('readonly', 'readonly');
-                $("#igstamt_" + i).attr('readonly', 'readonly');
-                $("#cgstper_" + i).attr('readonly', 'readonly');
-                $("#cgstamt_" + i).attr('readonly', 'readonly');
-                $("#sgstper_" + i).attr('readonly', 'readonly');
-                $("#sgstamt_" + i).attr('readonly', 'readonly');
-                $("#cessper_" + i).attr('readonly', 'readonly');
-                $("#cessamt_" + i).attr('readonly', 'readonly');
-                var taxableamt = $("#TAXABLE_" + i).val();
-                var netamount = parseFloat(taxableamt).toFixed(2);
-                $("#NETAMOUNT_" + i).val(netamount);
-            }
-            else {
-                var taxableamt = $("#TAXABLE_" + i).val();
-                $("#igstper_" + i).removeAttr('readonly');
-                $("#igstamt_" + i).removeAttr('readonly');
-                $("#cgstper_" + i).removeAttr('readonly');
-                $("#cgstamt_" + i).removeAttr('readonly');
-                $("#sgstper_" + i).removeAttr('readonly');
-                $("#sgstamt_" + i).removeAttr('readonly');
-                $("#cessper_" + i).removeAttr('readonly');
-                $("#cessamt_" + i).removeAttr('readonly');
-                var igstp = $("#BackupIGSTPER").val();
-                $("#igstper_" + i).val(igstp);
-                var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
-                $("#igstamt_" + i).val(igstamount);
+                if (REVCHG == "N") {
+                    $("#igstper_" + i).val(0);
+                    $("#igstamt_" + i).val(parseFloat(0).toFixed(2));
+                    $("#cgstper_" + i).val(0);
+                    $("#cgstamt_" + i).val(parseFloat(0).toFixed(2));
+                    $("#sgstper_" + i).val(0);
+                    $("#sgstamt_" + i).val(parseFloat(0).toFixed(2));
+                    $("#cessper_" + i).val(0);
+                    $("#cessamt_" + i).val(parseFloat(0).toFixed(2));
+                    $("#igstper_" + i).attr('readonly', 'readonly');
+                    $("#igstamt_" + i).attr('readonly', 'readonly');
+                    $("#cgstper_" + i).attr('readonly', 'readonly');
+                    $("#cgstamt_" + i).attr('readonly', 'readonly');
+                    $("#sgstper_" + i).attr('readonly', 'readonly');
+                    $("#sgstamt_" + i).attr('readonly', 'readonly');
+                    $("#cessper_" + i).attr('readonly', 'readonly');
+                    $("#cessamt_" + i).attr('readonly', 'readonly');
+                    var taxableamt = $("#TAXABLE_" + i).val();
+                    var netamount = parseFloat(taxableamt).toFixed(2);
+                    $("#NETAMOUNT_" + i).val(netamount);
+                }
+                else {
+                    var taxableamt = $("#TAXABLE_" + i).val();
+                    $("#igstper_" + i).removeAttr('readonly');
+                    //$("#igstamt_" + i).removeAttr('readonly');
+                    $("#cgstper_" + i).removeAttr('readonly');
+                    //$("#cgstamt_" + i).removeAttr('readonly');
+                    $("#sgstper_" + i).removeAttr('readonly');
+                    //$("#sgstamt_" + i).removeAttr('readonly');
+                    $("#cessper_" + i).removeAttr('readonly');
+                    //$("#cessamt_" + i).removeAttr('readonly');
+                    var igstp = $("#BackupIGSTPER").val();
+                    $("#igstper_" + i).val(igstp);
+                    var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+                    $("#igstamt_" + i).val(igstamount);
 
-                var cgstp = $("#BackupCGSTPER").val();
-                $("#cgstper_" + i).val(cgstp);
-                var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
-                $("#cgstamt_" + i).val(cgstamount);
+                    var cgstp = $("#BackupCGSTPER").val();
+                    $("#cgstper_" + i).val(cgstp);
+                    var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+                    $("#cgstamt_" + i).val(cgstamount);
 
-                var sgstp = $("#BackupSGSTPER").val();
-                $("#sgstper_" + i).val(sgstp);
-                var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
-                $("#sgstamt_" + i).val(sgstamount);
+                    var sgstp = $("#BackupSGSTPER").val();
+                    $("#sgstper_" + i).val(sgstp);
+                    var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+                    $("#sgstamt_" + i).val(sgstamount);
 
-                var cessper = $("#BackupCESSTPER").val();
-                $("#cessper_" + i).val(cessper);
-                var cessamount = parseFloat(taxableamt * cessper / 100).toFixed(2);
-                $("#cessamt_" + i).val(cessamount);
-                var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
-                netamount = parseFloat(netamount).toFixed(2);
-                $("#NETAMOUNT_" + i).val(netamount);
+                    var cessper = $("#BackupCESSTPER").val();
+                    $("#cessper_" + i).val(cessper);
+                    var cessamount = parseFloat(taxableamt * cessper / 100).toFixed(2);
+                    $("#cessamt_" + i).val(cessamount);
+                    var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+                    netamount = parseFloat(netamount).toFixed(2);
+                    $("#NETAMOUNT_" + i).val(netamount);
+                }
             }
         }
         BillAmount();
@@ -1846,7 +1851,7 @@
                         <div class="row" style="margin-top: 11px;">
                             <div id="partialdivDRCRNOTE" style="margin-top:0px;">
                                 @Html.Partial("_T_JobBill_Dr_Cr_Note")
-                                <script>ReverceCharges();</script>
+                                @*<script>ReverceCharges();</script>*@
                             </div>
                         </div>
                     </div>
