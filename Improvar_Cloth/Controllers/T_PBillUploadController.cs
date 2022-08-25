@@ -1581,10 +1581,18 @@ namespace Improvar.Controllers
                         string HSNCODE = inrdr["HSN"].ToString();
                         string MRP = inrdr["MRP"].ToString();
                         TTXNDTL.UOM = "PCS";
-                        ItemDet ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm);
+                        double GSTPER = inrdr["TAXPER"].retDbl();
+                        string TAXGRPCD = igstappl == true ? "I001" : "C001";
+                        ItemDet ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm, TTXN.DOCDT.retDateStr(), TAXGRPCD, GSTPER);
                         if (ItemDet.ITCD.retStr() == "")
                         {
                             dupgrid.MESSAGE = "Please add item:(" + itnm + ") at Item Master Manually because master transfer done in next year . ";
+                            DUGridlist.Add(dupgrid);
+                            break;
+                        }
+                        else if (ItemDet.ErrMsg.retStr() != "")
+                        {
+                            dupgrid.MESSAGE = ItemDet.ErrMsg;
                             DUGridlist.Add(dupgrid);
                             break;
                         }

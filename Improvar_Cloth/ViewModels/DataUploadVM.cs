@@ -23,6 +23,7 @@ namespace Improvar.ViewModels
         public string ITCD { get; set; }
         public string BARNO { get; set; }
         public string PURGLCD { get; set; }
+        public string ErrMsg { get; set; }
     }
     public class DUpGrid
     {
