@@ -1557,6 +1557,7 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("legalname", legalname);
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                            if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
                             System.Web.HttpContext.Current.Response.Buffer = false;
                             System.Web.HttpContext.Current.Response.ClearContent();
                             System.Web.HttpContext.Current.Response.ClearHeaders();
@@ -1623,6 +1624,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
+                    if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
 
                     if (printemail == "Excel")
                     {
