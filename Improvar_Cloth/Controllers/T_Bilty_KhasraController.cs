@@ -382,7 +382,8 @@ namespace Improvar.Controllers
                 }
                 else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
                 {
-                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
+                    //dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
+                    dt = salesfunc.GetBaleStock("", VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr(), "", "", "", "", false, "", "", true, VE.T_CNTRL_HDR.DOCDT.retDateStr());
                     DataView dv = new DataView(dt);
                     string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
                     dt = dv.ToTable(true, COL);
@@ -519,7 +520,7 @@ namespace Improvar.Controllers
                 if (CommVar.ClientCode(UNQSNO) == "SNFP")
                 {
                     VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
-                   
+
                 }
                 else {
                     if (VE.MENU_PARA == "KHSR")
@@ -1267,11 +1268,11 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                dbnotsave:;
+                    dbnotsave:;
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                dbok:;
+                    dbok:;
                 }
                 catch (Exception ex)
                 {
