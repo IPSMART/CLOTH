@@ -119,7 +119,7 @@ namespace Improvar.Controllers
 
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR" || VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT")
                     {
-                        VE.TEXTBOX10 = CommVar.ClientCode(UNQSNO) == "SNFP" ? "1" : "2";
+                        VE.TEXTBOX10 = CommVar.ClientCode(UNQSNO) == "SNFP"|| CommVar.ClientCode(UNQSNO) == "DIWH" ? "1" : "2";
                     }
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
@@ -128,6 +128,7 @@ namespace Improvar.Controllers
                     if (CommVar.ClientCode(UNQSNO) == "DIWH")
                     {
                         VE.Checkbox3 = true;
+             
                     }
                     //VE.Checkbox10 = true;
                     //VE.Checkbox11 = true;

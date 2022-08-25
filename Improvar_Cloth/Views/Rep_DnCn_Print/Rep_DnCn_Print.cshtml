@@ -245,6 +245,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX7, "With Item", new { @checked = "checked" })  @Html.Label("With Item")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX7, "Without Item")  @Html.Label("Without Item")
+                        </label>
+                    </div>
+                </div>
 
                 <div class="row" style="margin-top:10px;">
                     <div class="col-lg-2"></div>
