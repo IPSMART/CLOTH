@@ -2678,7 +2678,7 @@ namespace Improvar.Controllers
                 string complogosrc = complogo;
                 string compfixlogosrc = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "fix.jpg";
                 string sendemailids = "";
-                string rptfile = "JobRec.rpt";
+                string rptfile = "Rep_JobBillWithItem.rpt";
                 //if (VE.MENU_PARA == "PJBL") rptfile = "SaleBill_Job.rpt";
                 if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";

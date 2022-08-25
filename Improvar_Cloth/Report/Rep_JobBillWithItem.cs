@@ -16,14 +16,14 @@ namespace Improvar.Report {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class JobRec : ReportClass {
+    public class Rep_JobBillWithItem : ReportClass {
         
-        public JobRec() {
+        public Rep_JobBillWithItem() {
         }
         
         public override string ResourceName {
             get {
-                return "JobRec.rpt";
+                return "Rep_JobBillWithItem.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace Improvar.Report {
         
         public override string FullResourceName {
             get {
-                return "Improvar.Report.JobRec.rpt";
+                return "Improvar.Report.Rep_JobBillWithItem.rpt";
             }
             set {
                 // Do nothing
@@ -450,9 +450,9 @@ namespace Improvar.Report {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedJobRec : Component, ICachedReport {
+    public class CachedRep_JobBillWithItem : Component, ICachedReport {
         
-        public CachedJobRec() {
+        public CachedRep_JobBillWithItem() {
         }
         
         [Browsable(false)]
@@ -489,7 +489,7 @@ namespace Improvar.Report {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            JobRec rpt = new JobRec();
+            Rep_JobBillWithItem rpt = new Rep_JobBillWithItem();
             rpt.Site = this.Site;
             return rpt;
         }
