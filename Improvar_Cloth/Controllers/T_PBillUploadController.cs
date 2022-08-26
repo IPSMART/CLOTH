@@ -1584,7 +1584,7 @@ namespace Improvar.Controllers
                         double GSTPER = inrdr["TAXPER"].retDbl();
                         string TAXGRPCD = igstappl == true ? "I001" : "C001";
                         ItemDet ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, ITGRPNM, HSNCODE, "", "", "F", "C", itnm, TTXN.DOCDT.retDateStr(), TAXGRPCD, GSTPER);
-                        if (ItemDet.ITCD.retStr() == "")
+                        if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
                             dupgrid.MESSAGE = "Please add item:(" + itnm + ") at Item Master Manually because master transfer done in next year . ";
                             DUGridlist.Add(dupgrid);
@@ -1811,18 +1811,21 @@ namespace Improvar.Controllers
                    .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
                     TMPVE.MERGEINDTL = duplicateslno.retStr() != "" ? true : false;
 
-                    string tslCont = "";
-                    if (duplicates.retStr() == "")
+                    if (dupgrid.MESSAGE.retStr() == "")
                     {
-                        tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
+                        string tslCont = "";
+                        if (duplicates.retStr() == "")
+                        {
+                            tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
 
-                        tslCont = tslCont.retStr().Split('~')[0];
-                        if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
-                        else dupgrid.MESSAGE = tslCont;
-                    }
-                    else
-                    {
-                        dupgrid.MESSAGE = "Same barno " + duplicates + "should not repeat !!";
+                            tslCont = tslCont.retStr().Split('~')[0];
+                            if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
+                            else dupgrid.MESSAGE = tslCont;
+                        }
+                        else
+                        {
+                            dupgrid.MESSAGE = "Same barno " + duplicates + "should not repeat !!";
+                        }
                     }
                     DUGridlist.Add(dupgrid);
 

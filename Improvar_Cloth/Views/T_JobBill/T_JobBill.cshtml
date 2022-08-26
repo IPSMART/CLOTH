@@ -540,8 +540,8 @@
         var TD = $("#TDSAMT").val();
         var DNCN = $("#DNCNAMT").val();
         var shortage = $("#DNCNAMT1").val();
-        var netpay = parseFloat(Bl) - (parseFloat(AD) + parseFloat(TD) + parseFloat(DNCN) + parseFloat(shortage));
-        $("#NETPAYAMT").val(parseFloat(netpay).toFixed(2));
+        var netpay = retFloat(Bl) - (retFloat(AD) + retFloat(TD) + retFloat(DNCN) + retFloat(shortage));
+        $("#NETPAYAMT").val(retFloat(netpay).toFixed(2));
     }
 </script>
 <script>

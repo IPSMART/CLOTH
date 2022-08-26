@@ -2263,6 +2263,10 @@ namespace Improvar
                 {
                     return tMGROU;
                 }
+                else
+                {
+                    return null;
+                }
                 MGROUP.CLCD = CommVar.ClientCode(UNQSNO);
                 MGROUP.EMD_NO = 0;
                 MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
@@ -2354,6 +2358,12 @@ namespace Improvar
                     return ItemDet;
                 }
                 MGROUP = CreateGroup(grpnm, ITGRPTYPE, BARGENTYPE);
+                if (MGROUP == null)
+                {
+                    ItemDet.ErrMsg = "Please Create Group (" + grpnm + ") ";
+                    OraCon.Dispose();
+                    return ItemDet;
+                }
                 MSITEM.EMD_NO = 0;
                 MSITEM.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
                 string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "%') ";
@@ -2383,7 +2393,7 @@ namespace Improvar
                 MSITEM.NEGSTOCK = MGROUP.NEGSTOCK;
                 //var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
                 //MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
-                var MPRODGRP = GetProdgrpcd(DOCDT, TAXGRPCD, GSTPER);
+                var MPRODGRP = GetProdgrpcd(MGROUP.ITGRPCD);
                 if (MPRODGRP.retStr() != "")
                 {
                     MSITEM.PRODGRPCD = MPRODGRP;
@@ -2916,29 +2926,40 @@ namespace Improvar
             }
         }
 
-        public string GetProdgrpcd(string docdt, string taxgrpcd, double gstper)
+        public string GetProdgrpcd(string itgrpcd)
         {
-            string Prodgrpcd = "";
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            DataTable tbl = new DataTable();
-            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-            string sql = "";
-            sql += "select a.prodgrpcd, a.effdt, b.fromrt, b.tort, ";
-            sql += "b.igstper, b.cgstper, b.sgstper, ";
-            sql += "nvl(b.igstper, 0) + nvl(b.cgstper, 0) + nvl(b.sgstper, 0) gstper from ";
-            sql += "(select prodgrpcd, effdt from ";
-            sql += "(select a.prodgrpcd, a.effdt, ";
-            sql += "row_number() over(partition by a.prodgrpcd order by a.effdt desc) as rn ";
-            sql += "from " + scm + ".m_prodtax a where a.effdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and  a.prodgrpcd not like 'J%') ";
-            sql += "where rn = 1 ) a, " + scm + ".m_prodtax b ";
-            sql += "where a.prodgrpcd = b.prodgrpcd(+) and a.effdt = b.effdt(+) and b.taxgrpcd = '" + taxgrpcd + "' ";
-            sql += "and nvl(b.igstper, 0) + nvl(b.cgstper, 0) + nvl(b.sgstper, 0) = '" + gstper + "' ";
-            tbl = SQLquery(sql);
-            if (tbl != null && tbl.Rows.Count > 0)
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var Prodgrpcd = DB.M_SITEM.Where(m => m.ITGRPCD == itgrpcd).Select(a => a.PRODGRPCD).FirstOrDefault();
+            if (Prodgrpcd.retStr() == "")
             {
-                Prodgrpcd = tbl.Rows[0]["prodgrpcd"].retStr();
+                Prodgrpcd = DB.M_GROUP.Where(m => m.ITGRPCD == itgrpcd).Select(a => a.PRODGRPCD).FirstOrDefault();
             }
             return Prodgrpcd;
+
+            //string Prodgrpcd = "";
+            //string UNQSNO = CommVar.getQueryStringUNQSNO();
+            //DataTable tbl = new DataTable();
+            //string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            //string sql = "";
+            //sql += "select a.prodgrpcd, a.effdt, b.fromrt, b.tort, ";
+            //sql += "b.igstper, b.cgstper, b.sgstper, ";
+            //sql += "nvl(b.igstper, 0) + nvl(b.cgstper, 0) + nvl(b.sgstper, 0) gstper from ";
+            //sql += "(select prodgrpcd, effdt from ";
+            //sql += "(select a.prodgrpcd, a.effdt, ";
+            //sql += "row_number() over(partition by a.prodgrpcd order by a.effdt desc) as rn ";
+            //sql += "from " + scm + ".m_prodtax a where a.effdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and  a.prodgrpcd not like 'J%') ";
+            //sql += "where rn = 1 ) a, " + scm + ".m_prodtax b ";
+            //sql += "where a.prodgrpcd = b.prodgrpcd(+) and a.effdt = b.effdt(+) and b.taxgrpcd = '" + taxgrpcd + "' ";
+            //sql += "and nvl(b.igstper, 0) + nvl(b.cgstper, 0) + nvl(b.sgstper, 0) = '" + gstper + "' ";
+            //tbl = SQLquery(sql);
+            //if (tbl != null && tbl.Rows.Count > 0)
+            //{
+            //    Prodgrpcd = tbl.Rows[0]["prodgrpcd"].retStr();
+            //}
+            //return Prodgrpcd;
+
+
+
         }
     }
 }

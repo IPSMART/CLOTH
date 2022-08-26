@@ -1029,10 +1029,10 @@ namespace Improvar.Controllers
                         if (Dt != null && Dt.Rows.Count > 0)
                         {
                             PC.EFFDT = Cn.convstr2date(Dt.Rows[0]["effdt"].ToString());
-                            PC.igstper = 0;
-                            PC.cgstper = 0;
-                            PC.sgstper = 0;
-                            PC.cessper = 0;
+                            PC.igstper = Convert.ToDouble(Dt.Rows[0]["igstper"]);
+                            PC.cgstper = Convert.ToDouble(Dt.Rows[0]["cgstper"]);
+                            PC.sgstper = Convert.ToDouble(Dt.Rows[0]["sgstper"]);
+                            PC.cessper = Convert.ToDouble(Dt.Rows[0]["cessper"]);
                         }
                         PCID.Add(PC);
                         PendingChallan_SBill_Sortage PCND = new PendingChallan_SBill_Sortage();
