@@ -5233,7 +5233,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5973,6 +5973,23 @@ namespace Improvar.Controllers
 
                         #region TVCHGST Table update    
 
+                        #region if amount tab Amount is negative 
+                        //double? AmountTab_Txbl = 0; double CalcPropAmt = 0;
+
+                        //if (VE.TTXNAMT != null)
+                        //{
+
+                        //    for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
+                        //    {
+                        //        if (VE.TTXNAMT[i].HSNCODE == null && VE.TTXNAMT[i].ADDLESS == "L")
+                        //        {
+                        //            AmountTab_Txbl = AmountTab_Txbl + VE.TTXNAMT[i].AMT.retDbl();
+
+                        //        }
+                        //    }
+                        //}
+                        #endregion
+
                         int gs = 0;
                         string dncntag = ""; string exemptype = "";
                         if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "SRPOS" || VE.MENU_PARA == "SCN") dncntag = "SC";
@@ -6018,6 +6035,11 @@ namespace Improvar.Controllers
                                     }
                                     TVCHGST.HSNCODE = VE.TTXNDTL[i].HSNCODE;
                                     TVCHGST.ITNM = VE.TTXNDTL[i].ITSTYLE;
+
+                                    #region if amount tab Amount is negative
+                                    //CalcPropAmt = CalcPropAmt + (VE.T_GROSS_AMT.retDbl() - ((VE.TTXNDTL[i].TXBLVAL.retDbl() / VE.T_GROSS_AMT.retDbl()) * AmountTab_Txbl)).retDbl().toRound(2);
+                                    //TVCHGST.AMT = (VE.T_GROSS_AMT.retDbl() - ((VE.TTXNDTL[i].TXBLVAL.retDbl() / VE.T_GROSS_AMT.retDbl()) * AmountTab_Txbl)).retDbl().toRound(2);
+                                    #endregion
                                     TVCHGST.AMT = VE.TTXNDTL[i].TXBLVAL.retDbl();
                                     TVCHGST.CGSTPER = VE.TTXNDTL[i].CGSTPER.retDbl();
                                     TVCHGST.SGSTPER = VE.TTXNDTL[i].SGSTPER.retDbl();
@@ -6131,6 +6153,118 @@ namespace Improvar.Controllers
                                 string good_serv = "G";
                                 if (VE.TTXNAMT[i].SLNO != 0 && VE.TTXNAMT[i].AMTCD != null && VE.TTXNAMT[i].AMT != 0)
                                 {
+                                    #region //if amount tab Amount is negative then amount tab value should be skip .
+                                    //if (VE.TTXNAMT[i].HSNCODE == null && VE.TTXNAMT[i].ADDLESS == "L")
+                                    //{
+
+                                    //}
+                                    //else
+                                    //{
+                                    //    if (VE.TTXNAMT[i].HSNCODE.retStr().Length > 0)
+                                    //    {
+                                    //        good_serv = "S";
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        string HSNforAmount = "";
+                                    //        HSNforAmount = (from a in VE.TTXNDTL
+                                    //                        group a by new
+                                    //                        {
+                                    //                            HSNSACCD = a.HSNCODE
+                                    //                        } into X
+                                    //                        select new
+                                    //                        {
+                                    //                            HSNSACCD = X.Key.HSNSACCD,
+                                    //                            AMOUNT = X.Sum(Z => Z.AMT).retDbl(),
+                                    //                        }).OrderByDescending(a => a.AMOUNT).FirstOrDefault()?.HSNSACCD;
+                                    //        VE.TTXNAMT[i].HSNCODE = HSNforAmount;
+                                    //    }
+                                    //    if ((VE.TTXNAMT[i].IGSTPER.retDbl() + VE.TTXNAMT[i].CGSTPER.retDbl() + VE.TTXNAMT[i].SGSTPER.retDbl()) == 0)
+                                    //    {
+                                    //        exemptype = "N";
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        exemptype = "";
+                                    //    }
+                                    //    int gmult = 1;
+                                    //    if (VE.TTXNAMT[i].ADDLESS == "L") gmult = -1;
+                                    //    gs = gs + 1;
+                                    //    T_VCH_GST TVCHGST1 = new T_VCH_GST();
+                                    //    TVCHGST1.EMD_NO = TTXN.EMD_NO;
+                                    //    TVCHGST1.CLCD = TTXN.CLCD;
+                                    //    TVCHGST1.DTAG = TTXN.DTAG;
+                                    //    TVCHGST1.AUTONO = TTXN.AUTONO;
+                                    //    TVCHGST1.DOCCD = TTXN.DOCCD;
+                                    //    TVCHGST1.DOCNO = TTXN.DOCNO;
+                                    //    TVCHGST1.DOCDT = TTXN.DOCDT;
+                                    //    TVCHGST1.DSLNO = isl.retShort();
+                                    //    TVCHGST1.SLNO = gs.retShort();
+                                    //    TVCHGST1.PCODE = TTXN.SLCD;
+                                    //    TVCHGST1.BLNO = strblno;
+                                    //    if (strbldt.retStr() != "")
+                                    //    {
+                                    //        TVCHGST1.BLDT = Convert.ToDateTime(strbldt);
+                                    //    }
+
+                                    //    TVCHGST1.HSNCODE = VE.TTXNAMT[i].HSNCODE;
+                                    //    TVCHGST1.ITNM = VE.TTXNAMT[i].AMTNM;
+                                    //    TVCHGST1.AMT = VE.TTXNAMT[i].AMT.retDbl() * gmult;
+                                    //    TVCHGST1.CGSTPER = VE.TTXNAMT[i].CGSTPER.retDbl();
+                                    //    TVCHGST1.SGSTPER = VE.TTXNAMT[i].SGSTPER.retDbl();
+                                    //    TVCHGST1.IGSTPER = VE.TTXNAMT[i].IGSTPER.retDbl();
+                                    //    TVCHGST1.CGSTAMT = VE.TTXNAMT[i].CGSTAMT.retDbl() * gmult;
+                                    //    TVCHGST1.SGSTAMT = VE.TTXNAMT[i].SGSTAMT.retDbl() * gmult;
+                                    //    TVCHGST1.IGSTAMT = VE.TTXNAMT[i].IGSTAMT.retDbl() * gmult;
+                                    //    TVCHGST1.CESSPER = VE.TTXNAMT[i].CESSPER.retDbl();
+                                    //    TVCHGST1.CESSAMT = VE.TTXNAMT[i].CESSAMT.retDbl() * gmult;
+                                    //    TVCHGST1.DRCR = cr;
+                                    //    TVCHGST1.QNTY = 0;
+                                    //    TVCHGST1.UOM = "OTH";
+                                    //    TVCHGST1.AGSTDOCNO = AGDOCNO;
+                                    //    if (VE.TTXNDTL != null)
+                                    //    {
+                                    //        TVCHGST1.AGSTDOCDT = VE.TTXNDTL[0].AGDOCDT;
+                                    //    }
+                                    //    TVCHGST1.SALPUR = salpur;
+                                    //    TVCHGST1.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
+                                    //    TVCHGST1.DNCNCD = TTXNOTH.DNCNCD;
+                                    //    TVCHGST1.EXPCD = VE.T_VCH_GST.EXPCD;
+                                    //    TVCHGST1.GSTSLNM = VE.GSTSLNM;
+                                    //    TVCHGST1.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
+                                    //    TVCHGST1.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
+                                    //    TVCHGST1.PORTCD = VE.T_VCH_GST.PORTCD;
+                                    //    TVCHGST1.OTHRAMT = 0;
+                                    //    TVCHGST1.ROAMT = groamt;
+                                    //    TVCHGST1.BLAMT = gblamt;
+                                    //    TVCHGST1.DNCNSALPUR = dncntag;
+                                    //    TVCHGST1.CONSLCD = TTXN.CONSLCD;
+                                    //    TVCHGST1.APPLTAXRATE = 0;
+                                    //    TVCHGST1.EXEMPTEDTYPE = exemptype;
+                                    //    TVCHGST1.GOOD_SERV = (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR") ? "S" : good_serv;
+                                    //    //TVCHGST1.EXPGLCD = ((VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") && (VE.TBATCHDTL == null && VE.TTXNDTL == null)) ? VE.TTXNAMT[0].GLCD : expglcd;
+                                    //    TVCHGST1.EXPGLCD = (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") ? VE.EXPGLCD : expglcd;
+                                    //    TVCHGST1.INPTCLAIM = "Y";
+                                    //    TVCHGST1.LUTNO = VE.T_VCH_GST.LUTNO;
+                                    //    TVCHGST1.LUTDT = VE.T_VCH_GST.LUTDT;
+                                    //    TVCHGST1.TCSPER = TTXN.TCSPER.retDbl();
+                                    //    TVCHGST1.TCSAMT = gtcsamt.retDbl();
+                                    //    TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT.retDbl() * gmult;
+                                    //    TVCHGST1.RATE = VE.TTXNAMT[i].AMTRATE.retDbl();
+                                    //    TVCHGST1.PINV = pinv;
+                                    //    if (VE.MENU_PARA == "PR")
+                                    //    {
+                                    //        TVCHGST1.PREFDT = VE.T_TXN.PREFDT;
+                                    //        TVCHGST1.PREFNO = VE.T_TXN.PREFNO;
+                                    //    }
+                                    //    dbsql = masterHelp.RetModeltoSql(TVCHGST1, "A", CommVar.FinSchema(UNQSNO));
+                                    //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    //    gblamt = 0; groamt = 0;
+                                    //}
+
+                                    #endregion
+
+
                                     if (VE.TTXNAMT[i].HSNCODE.retStr().Length > 0)
                                     {
                                         good_serv = "S";
@@ -6412,7 +6546,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -6420,7 +6554,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
