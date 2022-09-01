@@ -88,6 +88,7 @@ namespace Improvar.ViewModels
         public double T_cessamt { get; set; }
         public double T_NETAMOUNT { get; set; }
         public double T_igstamt { get; set; }
+        public string M_SLIP_NO { get; set; }
     }
     public class PendingChallanItemDetails
     {

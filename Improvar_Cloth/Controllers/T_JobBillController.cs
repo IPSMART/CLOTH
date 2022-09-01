@@ -1288,7 +1288,7 @@ namespace Improvar.Controllers
                 }
             }
         }
-        private T_JBILL FillJB(TJobBillEntry VE, out string Ddate1, string DOCCD, out string DOCPATTERN1, out string auto_no1, out string Month1, string recotype)
+        private T_JBILL FillJB(TJobBillEntry VE, out string Ddate1, string DOCCD, out string DOCPATTERN1, out string auto_no1, out string Month1, string recotype, string M_SLIP_NO = "")
         {
             //ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
@@ -1304,7 +1304,15 @@ namespace Improvar.Controllers
                 {
                     TJBILL.EMD_NO = 0;
                     TJBILL.DOCCD = DOCCD;
-                    TJBILL.DOCNO = Cn.MaxDocNumber(TJBILL.DOCCD, Ddate);
+                    //TJBILL.DOCNO = Cn.MaxDocNumber(TJBILL.DOCCD, Ddate);
+                    if (VE.M_SLIP_NO.retStr().Trim(' ') != "")
+                    {
+                        TJBILL.DOCNO = Convert.ToString(VE.M_SLIP_NO).PadLeft(6, '0');
+                    }
+                    else
+                    {
+                        TJBILL.DOCNO = Cn.MaxDocNumber(TJBILL.DOCCD, Ddate);
+                    }
                     DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TJBILL.DOCNO), TJBILL.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                     auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TJBILL.DOCNO, TJBILL.DOCCD, Ddate);
                     TJBILL.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
@@ -1556,7 +1564,7 @@ namespace Improvar.Controllers
                                         if (VE.T_JBILL.CRDAYS != null) ddys = Convert.ToDouble(VE.T_JBILL.CRDAYS);
                                         if (VE.T_JBILL.DUEDT == null) VE.T_JBILL.DUEDT = VE.T_JBILL.DUECALCON == "P" ? Convert.ToDateTime(VE.T_JBILL.PBLDT).AddDays(ddys) : Convert.ToDateTime(VE.T_JBILL.DOCDT).AddDays(ddys);
                                     }
-                                    TJBILL = FillJB(VE, out Ddate, VE.T_JBILL.DOCCD, out DOCPATTERN, out auto_no, out Month, "J");
+                                    TJBILL = FillJB(VE, out Ddate, VE.T_JBILL.DOCCD, out DOCPATTERN, out auto_no, out Month, "J",VE.M_SLIP_NO);
                                     if (VE.DefaultAction == "E")
                                     {
                                         if (VE.MENU_PARA == "JB")
@@ -2563,7 +2571,7 @@ namespace Improvar.Controllers
                             {
                                 return Content(ContentFlg);
                             }
-                            dbnotsave:;
+                        dbnotsave:;
                             transaction.Rollback();
                             OraTrans.Rollback();
                             OraCon.Dispose();
