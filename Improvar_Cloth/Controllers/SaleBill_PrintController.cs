@@ -839,11 +839,18 @@ namespace Improvar.Controllers
                                     copymode = "EXTRA COPY"; break;
                                 default: copymode = ""; break;
                             }
+                            string negamt = "";
+                            if(CommVar.ClientCode(UNQSNO)=="TRES")
+                            {
+                                negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            }
+                            else
+                            {  negamt = "N";
+                            }
 
-                            //string negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
-                            string negamt = "N";
 
-                            string SLMSLNM = "";
+
+                                string SLMSLNM = "";
                             if (dtslm != null && dtslm.Rows.Count > 0)
                             {
                                 SLMSLNM = string.Join(",", (from DataRow dr in dtslm.Rows where dr["autono"].retStr() == auto1 select dr["slnm"].retStr()).Distinct());
