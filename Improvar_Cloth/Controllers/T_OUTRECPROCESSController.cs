@@ -300,6 +300,7 @@ namespace Improvar.Controllers
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
                     Cn.getdocmaxmindate(VE.T_TXN.DOCCD, docdt, VE.DefaultAction, VE.T_TXN.DOCNO, VE);
+                    TempData["PENDPROGRAMME" + VE.MENU_PARA] = null;
                     return View(VE);
                 }
             }
