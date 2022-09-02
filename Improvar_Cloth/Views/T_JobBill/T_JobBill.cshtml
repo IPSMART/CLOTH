@@ -64,7 +64,7 @@
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
-            if ("@Model.DocumentType.Count" > 0) {
+            if ("@DOCOUNT" > 0) {
                 ChangeDoctype();
             }
         }
@@ -1403,7 +1403,7 @@
                         @Html.EditorFor(model => model.T_JBILL.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 10, @placeholder = "dd/mm/yyyy", autocomplete = "off", onblur = "DocumentDateCHK(this),DueDateCalculation()" } })
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Document No.")
                     </div>
@@ -1413,21 +1413,34 @@
                         @Html.EditorFor(model => model.T_JBILL.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 6, @placeholder = "Doc. No.", @readonly = "readonly" } })
                     </div>
                 </div>
+                @if (Model.DefaultAction == "A")
+                {
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Manual Bill No")
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SLIP_NO, new { htmlAttributes = new { @class = "form-control", id = "M_SLIP_NO", maxlength = 6, @onkeypress = "return numericOnly(this);", @placeholder = "Slip No." } })
+                    </div>
+                </div>
+                }
                 <div class="col-md-1">
                     <div class="editor-field" style="margin-top: 4px;">
                         @Html.Label("", "Job Code")
                         <b style="color:Red;">*</b>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="editor-field">
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-left:0px">
                         @Html.EditorFor(model => model.T_JBILL.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", @placeholder = "Code", autocomplete = "off", maxlength = 2, onkeyup = "GetHelp('" + @Url.Action("GetJobCode", PageControllerName) + "','JOBCD/JOBNM','1/0','Job Details','JOBCD');", onblur = "SelectJobCode(this.value,JOBCD,JOBNM,HSNCODE,PRODGRPCD,UOMCD,UOMNM,EXPGLCD,EXPGLNM,CREGLCD,CREGLNM);" } })
                         <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetJobCode", PageControllerName)','JOBCD/JOBNM','1/0','Job Details')" />
                         @Html.HiddenFor(a => a.PRODGRPCD)
                     </div>
                 </div>
 
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control ", id = "JOBNM", @placeholder = "Name", maxlength = 15, @readonly = "readonly" } })
                     </div>
