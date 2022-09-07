@@ -819,7 +819,8 @@
                     document.getElementById("ROADNAME").value = result.AddrSt;
                     document.getElementById("DISTRICT").value = result.AddrLoc;
                     document.getElementById("PIN").value = result.AddrPncd;
-                    document.getElementById("REGNTYPE").value = "R"; //result.TxpType;
+                    var a = result.TxpType;
+                    document.getElementById("REGNTYPE").value = a == "COM" ? "C" : "R"; //result.TxpType;
                     document.getElementById("COUNTRY").value = "INDIA"; //result.TxpType;
                 } else {
                     msgInfo(result.message);
