@@ -115,7 +115,7 @@ namespace Improvar.Controllers
                 tdt = VE.TDT;
                 jobcd = VE.JOBCD;// VE.MENU_PARA;
                 jobnm = VE.JOBNM;// DB.M_JOBMST.Find(jobcd).JOBNM;
-                bool showitem = false, showsumm = VE.Checkbox1, showparty = VE.Checkbox2;
+                bool showitem = VE.Checkbox4, showsumm = VE.Checkbox1, showparty = VE.Checkbox2;
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString().retSqlformat();
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = FC["slcdunselvalue"].ToString().retSqlformat();
                 if (FC.AllKeys.Contains("recslcdvalue")) recslcd = FC["recslcdvalue"].ToString().retSqlformat();
@@ -194,7 +194,7 @@ namespace Improvar.Controllers
                 sql += "g.partnm, h.print_seq, h.sizenm, l.uomnm, nvl(l.decimals,0) decimals, ";
                 sql += "nvl(o.prefno,r.docno) recdocno, r.docdt recdocdt, ";
                 sql += "o.slcd||nvl(o.linecd,'') recslcd, p.slnm||decode(q.linenm,null,'',' ['||q.linenm||']') recslnm, ";
-                if (showitem == true) sql += "f.itgrpcd, i.itgrpnm, i.brandcd, j.brandnm, ";
+                if (showitem == true) sql += "f.itgrpcd, i.itgrpnm, '' brandcd, '' brandnm, ";
                 else sql += "'' itgrpcd, '' itgrpnm, '' brandcd, '' brandnm, ";
                 sql += "b.slcd issslcd, b.itcd, b.partcd, b.sizecd, a.stktype, a.stkdrcr, decode(a.stkdrcr,'D',1,-1) mult, ";
                 sql += "a.mtrljobcd, a.stktype, ";
@@ -209,7 +209,9 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    sql += "nvl(nvl(c.qnty,a.qnty),0) qnty, ";
+                    //sql += "nvl(nvl(c.qnty,a.qnty),0) qnty, ";
+                    sql += "decode(d.doctag,'JR',nvl(a.qnty,0),nvl(e.qnty,0)) qnty, ";
+
                 }
                 sql += "nvl(c.shortqnty,0) shortqnty ";
                 sql += "from " + scm + ".t_progdtl a, " + scm + ".t_txndtl c, " + scm + ".t_txn d, " + scm + ".t_progmast e ";
@@ -242,6 +244,7 @@ namespace Improvar.Controllers
                 sql += "b.itcd=f.itcd(+) and b.partcd=g.partcd(+) and b.sizecd=h.sizecd(+) and f.itgrpcd=i.itgrpcd(+) ";
                 sql += "order by ";
                 if (showparty == true) sql += "repslnm, repslcd, ";
+                if (showitem == true) sql += "repitnm, repitcd, ";
                 sql += "docdt, docno, autono, styleno, itnm, itcd, partcd, brandnm, brandcd, itgrpnm, itgrpcd, itnm, itcd, print_seq, sizenm ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0)
@@ -267,7 +270,14 @@ namespace Improvar.Controllers
                 {
                     HC.GetPrintHeader(IR, "docdt", "string", "n,3", "Sl");
                     HC.GetPrintHeader(IR, "docno", "string", "c,10", "Code");
-                    HC.GetPrintHeader(IR, "dsc", "string", "c,40", "Party Name");
+                    if (showitem == true)
+                    {
+                        HC.GetPrintHeader(IR, "dsc", "string", "c,40", "Item Name");
+                    }
+                    else
+                    {
+                        HC.GetPrintHeader(IR, "dsc", "string", "c,40", "Party Name");
+                    }
                 }
                 else
                 {
@@ -306,6 +316,15 @@ namespace Improvar.Controllers
                 {
                     chk1fld = "repslcd"; chk1nm = "repslnm"; chk2fld = "repslcd"; chk2nm = "repslnm";
                 }
+
+                if (showitem == true && showparty == true)
+                {
+                    chk1fld = "repslcd"; chk1nm = "repslnm"; chk2fld = "repitcd"; chk2nm = "repitnm";
+                }
+                else if (showitem == true && showparty == false)
+                {
+                    chk1fld = "repitcd"; chk1nm = "repitnm"; chk2fld = "repitcd"; chk2nm = "repitnm";
+                }
                 Int32 noparty = 0;
                 while (i <= maxR)
                 {
@@ -316,7 +335,12 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["Dammy"] = "[" + chk1val + "] " + tbl.Rows[i][chk1nm];
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
-
+                    else if (showsumm == true && (showparty == true && showitem == true))
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["Dammy"] = "[" + chk1val + "] " + tbl.Rows[i][chk1nm];
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    }
                     double popqty = 0, pissqty = 0, precqty = 0, pretqty = 0, pshrqty = 0, pexcqty = 0, pbalqty = 0, plosqty = 0, prakqty = 0;
                     double pissqty1 = 0, precqty1 = 0, pretqty1 = 0, pshrqty1 = 0;
                     while (tbl.Rows[i][chk1fld].ToString() == chk1val)
@@ -454,6 +478,30 @@ namespace Improvar.Controllers
                                 }
                                 if (i > maxR) break;
                             }
+                            if (showsumm == true && showparty == true && showitem == true)
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                noparty++;
+                                IR.Rows[rNo]["docdt"] = noparty;
+
+                                IR.Rows[rNo]["docno"] = chk2val;
+                                IR.Rows[rNo]["dsc"] = tbl.Rows[i - 1][chk2nm];
+
+
+                                IR.Rows[rNo]["issqnty"] = tissqty;
+                                IR.Rows[rNo]["recqnty"] = trecqty;
+                                IR.Rows[rNo]["retqnty"] = tretqty;
+                                IR.Rows[rNo]["shrqnty"] = tshrqty;
+                                IR.Rows[rNo]["excqnty"] = texcqty;
+                                if (showraka == true)
+                                {
+                                    IR.Rows[rNo]["losqnty"] = tlosqty;
+                                    IR.Rows[rNo]["rakqnty"] = trakqty;
+                                    if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = tissqty1;
+                                    if (showothrunit == true) IR.Rows[rNo]["recqnty1"] = trecqty1;
+                                }
+                                IR.Rows[rNo]["balqnty"] = cl;
+                            }
                             //
                             sissqty = sissqty + tissqty;
                             srecqty = srecqty + trecqty;
@@ -504,6 +552,11 @@ namespace Improvar.Controllers
                         }
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
                     }
+                    else if (showsumm == true && showparty == true && showitem == true)
+                    {
+                        IR.Rows[rNo]["dsc"] = "Total of [" + tbl.Rows[i - 1][chk1nm] + " ]";
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                    }
                     else
                     {
                         noparty++;
@@ -515,8 +568,12 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            IR.Rows[rNo]["docno"] = chk1val;
-                            IR.Rows[rNo]["dsc"] = tbl.Rows[i - 1][chk1nm];
+                            if (showitem == false || showparty == false)
+                            {
+                                IR.Rows[rNo]["docno"] = chk1val;
+                                IR.Rows[rNo]["dsc"] = tbl.Rows[i - 1][chk1nm];
+                            }
+
                         }
                         IR.Rows[rNo]["opqnty"] = popqty;
                     }

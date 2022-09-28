@@ -87,7 +87,7 @@ namespace Improvar.Controllers
                 sql += "where a.autono = b.autono(+) and ";
                 sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N') = 'N' and ";
                 if (jobslcd != "") sql += "a.slcd in(" + jobslcd + ") and ";
-                if (itcd != "") sql += "a.slcd in(" + itcd + ") and ";
+                if (itcd != "") sql += "a.itcd in(" + itcd + ") and ";
                 if (fdt != "") sql += "b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                 sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) a, ";
 
@@ -323,10 +323,16 @@ namespace Improvar.Controllers
                             double balqnty = 0, balamt = 0;
                             while (tbl.Rows[i][fld1].retStr() == val1 && tbl.Rows[i]["itcd"].retStr() == itcd1)
                             {
-                                balqnty += tbl.Rows[i]["balqnty"].retDbl();
-                                double avrate = (tbl.Rows[i]["qnty"].retDbl() == 0 ? 0 : (tbl.Rows[i]["issamt"].retDbl() / tbl.Rows[i]["qnty"].retDbl()).toRound(2));
-                                balamt += (avrate * tbl.Rows[i]["balqnty"].retDbl()).toRound(0);
-                                i++;
+                                string autoslno = tbl.Rows[i]["autono"].retStr() + tbl.Rows[i]["slno"].retStr();
+                                while (tbl.Rows[i][fld1].retStr() == val1 && tbl.Rows[i]["itcd"].retStr() == itcd1 && tbl.Rows[i]["autono"].retStr()+ tbl.Rows[i]["slno"].retStr() == autoslno)
+                                {
+                                    i++;
+                                    if (i > maxR) break;
+                                }
+                                balqnty += tbl.Rows[i - 1]["balqnty"].retDbl();
+                                double avrate = (tbl.Rows[i-1]["qnty"].retDbl() == 0 ? 0 : (tbl.Rows[i-1]["issamt"].retDbl() / tbl.Rows[i-1]["qnty"].retDbl()).toRound(2));
+                                balamt += (avrate * tbl.Rows[i-1]["balqnty"].retDbl()).toRound(0);
+                                //i++;
                                 if (i > maxR) break;
                             }
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
