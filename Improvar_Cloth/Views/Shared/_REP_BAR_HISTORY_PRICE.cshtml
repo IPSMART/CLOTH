@@ -25,9 +25,9 @@
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
                     <b> BarCode Price Details</b>
-                 </center>
-               
-               
+                </center>
+
+
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;max-height:100px;width:309px">
@@ -48,15 +48,18 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         @*<td>
-                                            @Html.CheckBoxFor(model => model.BARCODEPRICE[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
-                                        </td>*@
+                                                @Html.CheckBoxFor(model => model.BARCODEPRICE[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
+                                            </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.BARCODEPRICE[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
-                                          
+
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.BARCODEPRICE[i].EFFDT, new { id = "P_EFFDT_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-
+                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].EFFDT, new { htmlAttributes = new { @class = "atextBoxFor", autocomplete = "off", id = "P_EFFDT_" + i, onblur = "DocumentDateCHK(this);" } })
+                                            @Html.HiddenFor(model => Model.BARCODEPRICE[i].OLDEFFDT, new { id = "P_OLDEFFDT_" + i })
+                                            <script>
+                                                    $(function () {$("#" + "P_EFFDT_" + @i).datepicker({dateFormat: "dd/mm/yy",changeMonth: true,changeYear: true});});
+                                            </script>
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.BARCODEPRICE[i].PRCCD, new { id = "P_PRCCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -76,4 +79,3 @@
         }
     </div>
 </div>
-

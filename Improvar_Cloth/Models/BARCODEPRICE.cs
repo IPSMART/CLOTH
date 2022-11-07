@@ -13,6 +13,6 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double RATE { get; set; }
         public bool Checked { get; set; }
-        
+        public string OLDEFFDT { get; set; }
     }
 }
