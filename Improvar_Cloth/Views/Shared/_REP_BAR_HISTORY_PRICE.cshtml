@@ -55,11 +55,8 @@
 
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].EFFDT, new { htmlAttributes = new { @class = "atextBoxFor", autocomplete = "off", id = "P_EFFDT_" + i, onblur = "DocumentDateCHK(this);" } })
-                                            @Html.HiddenFor(model => Model.BARCODEPRICE[i].OLDEFFDT, new { id = "P_OLDEFFDT_" + i })
-                                            <script>
-                                                    $(function () {$("#" + "P_EFFDT_" + @i).datepicker({dateFormat: "dd/mm/yy",changeMonth: true,changeYear: true});});
-                                            </script>
+                                            @Html.TextBoxFor(model => Model.BARCODEPRICE[i].EFFDT, new { id = "P_EFFDT_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.BARCODEPRICE[i].PRCCD, new { id = "P_PRCCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -79,3 +76,4 @@
         }
     </div>
 </div>
+

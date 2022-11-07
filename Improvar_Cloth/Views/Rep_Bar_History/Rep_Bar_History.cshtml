@@ -14,6 +14,7 @@
         $("#DATEFROM").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         $("#DATETO").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         $("#EFFDT_NEW").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#P_EFFDT_NEW").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     });
 </script>
 <script>
@@ -302,6 +303,47 @@
         });
     }
 </script>
+<script>
+    function PriceOpen() {
+        if (!emptyFieldCheck("Please enter Bar Code", "BARCODE")) { return false; }
+            $('.PopUp_Backround').show();
+            $("#popupAddNewPrice").show();
+    }
+    function PriceClose() {
+        ClearAllTextBoxes("P_EFFDT_NEW,P_CPRATE_NEW,P_WPRATE_NEW,P_RPRATE_NEW");
+        $("#popupAddNewPrice").hide();
+        $('.PopUp_Backround').fadeOut();
+    }
+    function SavePrice() {
+        debugger;
+        if (retFloat($("#P_CPRATE_NEW").val()) == 0 && retFloat($("#P_WPRATE_NEW").val()) == 0 && retFloat($("#P_RPRATE_NEW").val()) == 0) {
+            if (!emptyFieldCheck("Please enter any rate", "P_CPRATE_NEW")) { return false; }
+        }
+        if (retFloat($("#P_CPRATE_NEW").val()) != 0 || retFloat($("#P_WPRATE_NEW").val()) != 0 || retFloat($("#P_RPRATE_NEW").val()) != 0) {
+            if (!emptyFieldCheck("Select Effective Date", "P_EFFDT_NEW")) { return false; }
+        }
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("SaveNewPrice", "Rep_Bar_History")",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Save Successfully !");
+                }
+                else {
+                    msgInfo(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -327,8 +369,11 @@
         <div class="col-md-3">
             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
         </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Add_Barcode" value="Add Barcode" title="Click to Add Barcode" onclick="BarcodeOpen()" />
+        </div>
+        <div class="col-md-1">
+            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Add_Barcode" value="Add Price" title="Click to Add Price" onclick="PriceOpen()" />
         </div>
     </div>
     <div class="row">
@@ -577,6 +622,9 @@
                                         <div class="PopUp_Backround">
                                             <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
                                                 @Html.Partial("_Rep_Bar_History_AddNewBarno")
+                                            </div>
+                                            <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                                                @Html.Partial("_Rep_Bar_History_AddNewPrice")
                                             </div>
                                         </div>
                                     </div>
