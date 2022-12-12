@@ -134,7 +134,11 @@ namespace Improvar.Controllers
                             if (parkID == "")
                             {
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
-                                TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                //TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                if (VE.DocumentType.Count == 1)
+                                {
+                                    TCH.DOCCD = VE.DocumentType[0].value;
+                                }
                                 VE.T_CNTRL_HDR = TCH;
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
@@ -160,6 +164,22 @@ namespace Improvar.Controllers
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
                     Cn.getdocmaxmindate(VE.T_CNTRL_HDR.DOCCD, docdt, VE.DefaultAction, VE.T_CNTRL_HDR.DOCONLYNO, VE);
+                    if (VE.DefaultAction == "A" && parkID == "")
+                    {
+                        VE.T_CNTRL_HDR.DOCDT = Cn.getCurrentDate(VE.mindate);
+                    }
+                    if (VE.DefaultAction == "E")
+                    {
+                        if (VE.ISSUEDT.retStr() != "")
+                        {
+                            VE.mindate = VE.ISSUEDT;
+                        }
+                        else
+                        {
+                            var bb = VE.TBILTYR.Select(b => Convert.ToDateTime(b.PBLDT)).ToList();
+                            VE.mindate = bb.Max().retDateStr();
+                        }
+                    }
                     return View(VE);
                 }
             }
@@ -237,10 +257,42 @@ namespace Improvar.Controllers
                                   PBLDT = dr["prefdt"].retDateStr()
                               }).OrderBy(s => s.SLNO).ToList();
                 string concatStr = "";
+                string arrBalenoYr = (from a in VE.TBILTYR select a.BALENO + "" + a.BALEYR).ToArray().retSqlfromStrarray();
+                //string doctype = "'KHSR','TRWB','TRFB','SBILD'";
+                string nextdoctype = "'KHSR','TRWB','TRFB','SBILD'";
+                string prevdoctype = "'BLTG','SPBL'";
+                string doctype = nextdoctype + "," + prevdoctype;
+                var dttbl = salesfunc.GetBaleHistory("", "", arrBalenoYr, doctype);
+
+                var dr1 = dttbl.Select("doctype in (" + nextdoctype + ")");
+                DataTable dt = new DataTable();
+                if (dr1 != null && dr1.Count() > 0)
+                {
+                    dt = dr1.CopyToDataTable();
+                }
+
+                var dr2 = dttbl.Select("doctype in (" + prevdoctype + ")");
+                if (dr2 != null && dr2.Count() > 0)
+                {
+                    var dt1 = dr2.CopyToDataTable();
+                    VE.ISSUEDT = dt1.AsEnumerable().Max(r => r.Field<DateTime>("docdt")).retStr();
+                }
                 for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                 {
                     if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
                     VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
+
+                    string blautono = VE.TBILTYR[i].BLAUTONO;
+                    string balenoyrcd = VE.TBILTYR[i].BALENO + "" + VE.TBILTYR[i].BALEYR;
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        var chk = (from DataRow dr in dt.Rows where dr["blautono"].retStr() == blautono && dr["BaleNoBaleYrcd"].retStr() == balenoyrcd select dr["autono"].retStr()).ToList();
+                        if (chk != null && chk.Count > 0)
+                        {
+                            VE.TBILTYR[i].ChildData = "Y";
+                            VE.Delete = "child record found";
+                        }
+                    }
 
                 }
                 VE.BALECOUNT = VE.TBILTYR.Select(a => a.BALENO).Distinct().Count().retStr();
@@ -322,9 +374,26 @@ namespace Improvar.Controllers
                     var selectedbillautoslno = VE.TBILTYR.Select(e => e.BLAUTONO + e.BALENO).Distinct().ToList();
                     VE.TBILTYR_POPUP.Where(x => selectedbillautoslno.Contains(x.BLAUTONO + x.BALENO)).ForEach(e => e.Checked = true);
                 }
+                string arrBalenoYr = (from a in VE.TBILTYR_POPUP select a.BALENO + "" + a.BALEYR).ToArray().retSqlfromStrarray();
+                string doctype = "'KHSR','TRWB','TRFB','SBILD'";
+                var dt = salesfunc.GetBaleHistory("", "", arrBalenoYr, doctype);
+
                 for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
                 {
                     VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
+                    if (VE.DefaultAction == "E")
+                    {
+                        string blautono = VE.TBILTYR_POPUP[p].BLAUTONO;
+                        string balenoyrcd = VE.TBILTYR_POPUP[p].BALENO + "" + VE.TBILTYR_POPUP[p].BALEYR;
+                        if (dt != null && dt.Rows.Count > 0)
+                        {
+                            var chk = (from DataRow dr in dt.Rows where dr["blautono"].retStr() == blautono && dr["BaleNoBaleYrcd"].retStr() == balenoyrcd select dr["autono"].retStr()).ToList();
+                            if (chk != null && chk.Count > 0)
+                            {
+                                VE.TBILTYR_POPUP[p].ChildData = "Y";
+                            }
+                        }
+                    }
                 }
                 if (VE.TBILTYR_POPUP.Count != 0)
                 {
@@ -953,12 +1022,12 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                dbnotsave:;
+                    dbnotsave:;
                     transaction.Rollback();
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                dbok:;
+                    dbok:;
                 }
                 catch (Exception ex)
                 {

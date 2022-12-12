@@ -673,9 +673,15 @@ namespace Improvar.Controllers
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         TTXNDTL.UOM = "MTR";
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
-                        if (ItemDet.ITCD.retStr() == "")
+                        if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
                             dupgrid.MESSAGE = "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year . ";
+                            DUGridlist.Add(dupgrid);
+                            break;
+                        }
+                        else if (ItemDet.ErrMsg.retStr() != "")
+                        {
+                            dupgrid.MESSAGE = ItemDet.ErrMsg;
                             DUGridlist.Add(dupgrid);
                             break;
                         }
@@ -858,14 +864,17 @@ namespace Improvar.Controllers
                     TMPVE.TBATCHDTL = TBATCHDTLlist;
                     TMPVE.TTXNAMT = TTXNAMTlist;
                     TMPVE.T_VCH_GST = new T_VCH_GST();
-                    string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
-                    var duplicateslno = string.Join(",", TMPVE.TBATCHDTL
-                                               .GroupBy(s => s.TXNSLNO)
-                                               .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
-                    TMPVE.MERGEINDTL = duplicateslno.retStr() != "" ? true : false;
-                    tslCont = tslCont.retStr().Split('~')[0];
-                    if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
-                    else dupgrid.MESSAGE = tslCont;
+                    if (dupgrid.MESSAGE.retStr() == "")
+                    {
+                        string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
+                        var duplicateslno = string.Join(",", TMPVE.TBATCHDTL
+                                                   .GroupBy(s => s.TXNSLNO)
+                                                   .Where(g => g.Count() > 1).Select(y => y.Key).ToArray());
+                        TMPVE.MERGEINDTL = duplicateslno.retStr() != "" ? true : false;
+                        tslCont = tslCont.retStr().Split('~')[0];
+                        if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
+                        else dupgrid.MESSAGE = tslCont;
+                    }
                     DUGridlist.Add(dupgrid);
                 }//outer
                 VE.STATUS = "Data Uploaded Successfully";

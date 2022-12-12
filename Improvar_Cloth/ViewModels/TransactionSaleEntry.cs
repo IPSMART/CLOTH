@@ -293,5 +293,7 @@ namespace Improvar.ViewModels
         public bool STOCKHOLD { get; set; }
         public string Last_DOCDT { get; set; }
         public string PARGLNM { get; set; }
+        public string ChildData { get; set; }
+        
     }
 }

@@ -49,6 +49,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_GODOWN = DropDownHelp.GetGocdforSelection();
                     VE.Gonm = MasterHelp.ComboFill("gocd", VE.DropDown_list_GODOWN, 0, 1);
 
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection();
+                    VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+
                     List<DropDown_list2> drplst = new List<DropDown_list2>();
                     DropDown_list2 dropobj1 = new DropDown_list2();
                     dropobj1.value = "S";
@@ -121,7 +124,7 @@ namespace Improvar.Controllers
 
                 //   string calmethod = (from x in VE.DropDown_list1 where x.value == calctype select x.text).SingleOrDefault();
 
-                string selgocd = "", selbrgrpcd = "", selitcd = "", unselitcd, selitgrpcd = "", prccd = "";
+                string selgocd = "", selbrgrpcd = "", selitcd = "", unselitcd, selitgrpcd = "", prccd = "", party = "";
                 string summary = VE.TEXTBOX3; // == true?"S":"D";
                 string repon = FC["repon"].ToString();
                 if (FC.AllKeys.Contains("itcdvalue")) selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
@@ -130,6 +133,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("gocdvalue")) selgocd = CommFunc.retSqlformat(FC["gocdvalue"].ToString());
                 if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("brgrpcdvalue")) selbrgrpcd = CommFunc.retSqlformat(FC["brgrpcdvalue"].ToString());
+                if (FC.AllKeys.Contains("slcdvalue")) party = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 string prcd = VE.PRCCD;
                 if (selgocd == "" && summary == "G")
                 {
@@ -159,12 +163,13 @@ namespace Improvar.Controllers
                 if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
-                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "");
+                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "","",VE.Checkbox9);
                 }
                 else
                 {
                     //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
-                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", VE.Checkbox7);
+                    //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", VE.Checkbox7);
+                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
                 }
                 if (summary == "D" || (summary == "F" && repon == "D"))
                 {

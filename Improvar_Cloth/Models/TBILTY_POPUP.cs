@@ -21,6 +21,7 @@ namespace Improvar.Models
         public string PREFDT { get; set; }
         public string TRANSLNM { get; set; }
         public string BALEYR { get; set; }
+        public string ChildData { get; set; }
 
     }
 }

@@ -2174,7 +2174,7 @@ namespace Improvar
                 return "";
             }
         }
-        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "", string pagenoslno = "", bool balStockOnly = true, string recupto = "")
+        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "", string pagenoslno = "", bool balStockOnly = true, bool skipNegetivStock = false)
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
 
@@ -2221,11 +2221,8 @@ namespace Improvar
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and " + Environment.NewLine;
             sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and " + Environment.NewLine;
             sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and " + Environment.NewLine;
-            if (mergeloca == false) sql += "d.loccd='" + LOC + "'  " + Environment.NewLine;
-            if (recupto.retStr() == "")
-            {
-                sql += "and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
-            }
+            if (mergeloca == false) sql += "d.loccd='" + LOC + "' and " + Environment.NewLine;
+            sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
             if (skipautono.retStr() != "") sql += "and b.autono not in ('" + skipautono + "') " + Environment.NewLine;
             sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno " + Environment.NewLine;
 
@@ -2240,10 +2237,7 @@ namespace Improvar
             if (pagenoslno.retStr() != "") sql += "g.pageno||'/'||g.pageslno in (" + pagenoslno + ") and " + Environment.NewLine;
             sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) " + Environment.NewLine;
             if (balStockOnly == true) sql += "and nvl(a.qnty, 0) <> 0 " + Environment.NewLine;
-            if (recupto.retStr() != "")
-            {
-                sql += "and f.docdt <= to_date('" + recupto + "', 'dd/mm/yyyy') " + Environment.NewLine;
-            }
+            if (skipNegetivStock == true) sql += " and nvl(a.qnty, 0)> 0 " + Environment.NewLine;//for wrong entry prev year stock became negetive in snfp
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, " + Environment.NewLine;
             sql += "g.nos, a.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, g.txblval, g.othramt, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno " + Environment.NewLine;
             sql += "order by baleyr, baleno, styleno " + Environment.NewLine;
@@ -2491,7 +2485,7 @@ namespace Improvar
                 return ex.Message;
             }
         }
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "")
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false)
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
@@ -2658,6 +2652,7 @@ namespace Improvar
                         tbl1 = var1.CopyToDataTable();
                         itrecofound = true;
                     }
+                    double lastinrt = (from DataRow dr in tbl1.Rows select dr["rate"]).LastOrDefault().retDbl();
 
                     outqty = 0; outnos = 0;
                     var tbl2 = rsOut.Select(data);
@@ -2726,7 +2721,14 @@ namespace Improvar
                                     //rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
                                     rsStock.Rows[rNo]["balqnty"] = chkqty;
                                     rsStock.Rows[rNo]["balnos"] = chknos;
-                                    rsStock.Rows[rNo]["rate"] = avrate;
+                                    if (isqty < 0 && negstkrtfrmmaster == true)
+                                    {
+                                        rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
+                                    }
+                                    else
+                                    {
+                                        rsStock.Rows[rNo]["rate"] = avrate;
+                                    }
                                     //rsStock.Rows[rNo]["amt"] = stkamt;
                                     rsStock.Rows[rNo]["itcd"] = stritcd;
                                     //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
@@ -2762,7 +2764,14 @@ namespace Improvar
                                 //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
                                 rsStock.Rows[rNo]["balqnty"] = balqty * -1;
                                 rsStock.Rows[rNo]["balnos"] = balnos * -1;
-                                rsStock.Rows[rNo]["rate"] = 0;
+                                if (isqty < 0 && negstkrtfrmmaster == true)
+                                {
+                                    rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
+                                }
+                                else
+                                {
+                                    rsStock.Rows[rNo]["rate"] = 0;
+                                }
                                 //rsStock.Rows[rNo]["amt"] = 0;
                                 rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                                 rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
@@ -2791,7 +2800,14 @@ namespace Improvar
                             //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
                             rsStock.Rows[rNo]["balqnty"] = isqty;
                             rsStock.Rows[rNo]["balnos"] = isnos;
-                            rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
+                            if (isqty < 0 && negstkrtfrmmaster == true)
+                            {
+                                rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
+                            }
+                            else
+                            {
+                                rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
+                            }
                             //rsStock.Rows[rNo]["amt"] = isamt;
                             rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                             rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
@@ -2960,6 +2976,80 @@ namespace Improvar
 
 
 
+        }
+        public DataTable GetBaleHistory(string fdt, string tdt, string BaleNoBaleYrcd = "", string doctype = "", string selbalenoyr = "", string unselbalenoyr = "", string selitcd = "", string unselitcd = "", string selitgrpcd = "")
+        {
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+
+            string sql = "";
+            sql += "select distinct a.autono, a.baleopen, a.blautono, a.txnslno, nvl(a.gocd,k.gocd)gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, nvl(a.itcd,k.itcd)itcd, b.shade, nvl(a.nos,k.nos)nos, nvl(a.qnty,k.qnty)qnty, c.usr_entdt, " + Environment.NewLine;
+            sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, nvl(g.gonm,k.gonm)gonm, nvl(f.styleno,k.styleno)styleno, nvl(f.itnm,k.itnm)itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, " + Environment.NewLine;
+            sql += "b.pageno, b.pageslno, b.lrno from " + Environment.NewLine;
+
+            sql += "( select '' baleopen, e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd slcd, " + Environment.NewLine;
+            sql += "sum(a.nos) nos, sum(a.qnty) qnty " + Environment.NewLine;
+            sql += "from " + scm + ".t_bilty e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bilty_hdr f, " + scm + ".m_doctype g " + Environment.NewLine;
+            sql += "where e.blautono = a.autono(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and " + Environment.NewLine;
+            sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd=g.doccd(+) and " + Environment.NewLine;
+            if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
+            if (tdt.retStr() != "") sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and  " + Environment.NewLine;
+            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) " + Environment.NewLine; // g.doctype not in ('KHSR') ";
+            sql += "group by '',  e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd " + Environment.NewLine;
+            sql += "union all " + Environment.NewLine;
+            sql += "select e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, " + Environment.NewLine;
+            sql += "sum(a.nos) nos, sum(a.qnty) qnty " + Environment.NewLine;
+            sql += "from " + scm + ".t_bale e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bale_hdr f, " + scm + ".m_doctype g " + Environment.NewLine;
+            sql += "where e.autono = a.autono(+) and e.slno=a.txnslno(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and " + Environment.NewLine;
+            sql += "not (g.doctype in ('KHSR') and a.gocd='TR') and d.doccd=g.doccd(+) and " + Environment.NewLine;
+            if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
+            if (tdt.retStr() != "") sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and  " + Environment.NewLine;
+            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and " + Environment.NewLine;
+            //sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
+            sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and e.autono = d.autono(+) " + Environment.NewLine;
+            sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) " + Environment.NewLine;
+            sql += "union all " + Environment.NewLine;
+            sql += "select e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, nvl(h.gocd,a.gocd) gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, " + Environment.NewLine;
+            sql += "sum(a.nos) nos, sum(a.qnty) qnty " + Environment.NewLine;
+            sql += "from " + scm + ".t_bale e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bale_hdr f, " + scm + ".m_doctype g, " + scm + ".t_batchdtl h " + Environment.NewLine;
+            sql += "where e.autono = a.autono(+) and e.slno=a.txnslno(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and " + Environment.NewLine;
+            sql += "nvl(e.baleopen,'N')='Y' and e.autono=h.autono(+) and e.slno-1000 = h.slno(+) and d.doccd=g.doccd(+) and " + Environment.NewLine;
+            if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
+            if (tdt.retStr() != "") sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and  " + Environment.NewLine;
+            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and " + Environment.NewLine;
+            sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) " + Environment.NewLine;
+            sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, nvl(h.gocd,a.gocd), b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, " + Environment.NewLine;
+
+            sql += "(select a.autono, a.slno, b.slcd, a.autono||a.slno autoslno, b.prefno, c.lrno, a.pageno, a.pageslno, " + Environment.NewLine;
+            sql += "listagg(d.shade,',') within group (order by d.autono, d.txnslno) as shade " + Environment.NewLine;
+            sql += " from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txntrans c, " + scm + ".t_batchdtl d " + Environment.NewLine;
+            sql += "where d.autono=a.autono(+) and d.txnslno=a.slno(+) and d.autono = b.autono(+) and d.autono = c.autono(+) and b.doctag in ('OP','PB') " + Environment.NewLine;
+            sql += "group by a.autono, a.slno, b.slcd, a.autono||a.slno, b.prefno, c.lrno, a.pageno, a.pageslno " + Environment.NewLine;
+            sql += ") b, " + Environment.NewLine;
+
+            //receive from mutia item detail
+            sql += "(select a.autono||a.txnslno autoslno,a.baleno,a.baleyr,sum(a.nos) nos, sum(a.qnty) qnty,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm " + Environment.NewLine;
+            sql += " from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d," + scm + ".m_sitem e," + scmf + ".m_godown f," + scm + ".m_doctype g " + Environment.NewLine;
+            sql += "where a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and b.itcd = e.itcd(+) and a.gocd = f.gocd(+) and d.doccd=g.doccd(+) " + Environment.NewLine;
+            sql += "group by a.autono||a.txnslno,a.baleno,a.baleyr,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm " + Environment.NewLine;
+            sql += ") k, " + Environment.NewLine;
+
+            sql += "" + scm + ".t_cntrl_hdr c, " + scm + ".t_txn d, " + scm + ".m_doctype e, " + Environment.NewLine;
+            sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g, " + scmf + ".m_subleg h, " + scm + ".t_txn i, " + scm + ".t_txntrans j " + Environment.NewLine;
+            sql += "where a.autoslno = b.autoslno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and " + Environment.NewLine;
+            sql += "a.blautono=i.autono(+) and a.blautono=j.autono(+) and " + Environment.NewLine;
+            sql += "c.doccd = e.doccd(+) and a.itcd = f.itcd(+) and a.gocd = g.gocd(+) and a.slcd = h.slcd(+) " + Environment.NewLine;
+            sql += "and a.autoslno=k.autoslno(+) and a.baleno = k.baleno(+) and a.baleyr = k.baleyr(+) " + Environment.NewLine;
+            if (selbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr in (" + selbalenoyr + ") " + Environment.NewLine;
+            if (unselbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr not in (" + unselbalenoyr + ") " + Environment.NewLine;
+            if (selitcd.retStr() != "") sql += "and a.itcd in(" + selitcd + ") " + Environment.NewLine;
+            if (unselitcd.retStr() != "") sql += "and a.itcd not in (" + unselitcd + ") " + Environment.NewLine;
+            if (selitgrpcd.retStr() != "") sql += "and f.itgrpcd in(" + selitgrpcd + ") " + Environment.NewLine;
+            if (BaleNoBaleYrcd.retStr() != "") sql += "and a.baleno || a.baleyr in(" + BaleNoBaleYrcd + ") " + Environment.NewLine;
+            if (doctype.retStr() != "") sql += "and e.doctype in(" + doctype + ") " + Environment.NewLine;
+            sql += "order by baleyr, baleno, styleno, itcd, usr_entdt ";
+
+            DataTable tbl = masterHelpFa.SQLquery(sql);
+            return tbl;
         }
     }
 }

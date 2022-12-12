@@ -73,5 +73,7 @@ namespace Improvar.Models
         public string BALEOPEN { get; set; }
         public bool CheckedBALEOPEN { get; set; }
         public string FLAG1 { get; set; }
+        public string ChildData { get; set; }
+
     }
 }

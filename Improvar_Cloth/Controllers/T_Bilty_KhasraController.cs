@@ -134,7 +134,11 @@ namespace Improvar.Controllers
                             if (parkID == "")
                             {
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
-                                TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                //TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                if (VE.DocumentType.Count == 1)
+                                {
+                                    TCH.DOCCD = VE.DocumentType[0].value;
+                                }
                                 VE.T_CNTRL_HDR = TCH;
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
@@ -162,6 +166,15 @@ namespace Improvar.Controllers
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
                     Cn.getdocmaxmindate(VE.T_CNTRL_HDR.DOCCD, docdt, VE.DefaultAction, VE.T_CNTRL_HDR.DOCONLYNO, VE);
+                    if (VE.DefaultAction == "A" && parkID == "")
+                    {
+                        VE.T_CNTRL_HDR.DOCDT = Cn.getCurrentDate(VE.mindate);
+                    }
+                    if (VE.DefaultAction == "E" && VE.ISSUEDT.retStr() != "")
+                    {
+                        VE.mindate = VE.ISSUEDT;
+                    }
+
                     return View(VE);
                 }
             }
@@ -267,6 +280,28 @@ namespace Improvar.Controllers
                                        PBLDT = dr["prefdt"].retDateStr(),
                                        BALEOPEN = dr["BALEOPEN"].retStr(),
                                    }).OrderBy(s => s.SLNO).ToList();
+
+                string arrBalenoYr = (from a in VE.TBILTYKHASRA select a.BALENO + "" + a.BALEYR).ToArray().retSqlfromStrarray();
+                //string doctype = VE.MENU_PARA == "KHSR" ? "'TRWB','TRFB','SBILD'" : "'SBILD'";
+                string nextdoctype = VE.MENU_PARA == "KHSR" ? "'TRWB','TRFB','SBILD'" : "'SBILD'";
+                string prevdoctype = VE.MENU_PARA == "KHSR" ? "'BLTR'" : "'TRFB','KHSR','SPBL'";
+                string doctype = nextdoctype + "," + prevdoctype;
+
+                var dttbl = salesfunc.GetBaleHistory("", "", arrBalenoYr, doctype);
+
+                var dr1 = dttbl.Select("doctype in (" + nextdoctype + ")");
+                DataTable dt = new DataTable();
+                if (dr1 != null && dr1.Count() > 0)
+                {
+                    dt = dr1.CopyToDataTable();
+                }
+
+                var dr2 = dttbl.Select("doctype in (" + prevdoctype + ") and autono not in ('" + TBH.AUTONO + "')");
+                if (dr2 != null && dr2.Count() > 0)
+                {
+                    var dt1 = dr2.CopyToDataTable();
+                    VE.ISSUEDT = dt1.AsEnumerable().Max(r => r.Field<DateTime>("docdt")).retStr();
+                }
                 if (CommVar.ClientCode(UNQSNO) == "SNFP")
                 {
                     VE.TBILTYKHASRA = VE.TBILTYKHASRA.OrderBy(a => a.BALENO).ToList();
@@ -283,6 +318,17 @@ namespace Improvar.Controllers
                 foreach (var v in VE.TBILTYKHASRA)
                 {
                     v.CheckedBALEOPEN = v.BALEOPEN.retStr() == "Y" ? true : false;
+                    string blautono = v.BLAUTONO;
+                    string balenoyrcd = v.BALENO + "" + v.BALEYR;
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        var chk = (from DataRow dr in dt.Rows where dr["blautono"].retStr() == blautono && dr["BaleNoBaleYrcd"].retStr() == balenoyrcd select dr["autono"].retStr()).ToList();
+                        if (chk != null && chk.Count > 0)
+                        {
+                            v.ChildData = "Y";
+                            VE.Delete = "child record found";
+                        }
+                    }
                 }
                 //if (TBALE != null)
                 //{
@@ -294,6 +340,8 @@ namespace Improvar.Controllers
                 }
                 VE.BALECOUNT = VE.TBILTYKHASRA.Select(a => a.BALENO).Distinct().Count().retStr();
                 if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
+
+
             }
             return VE;
         }
@@ -351,7 +399,7 @@ namespace Improvar.Controllers
             try
             {
                 string SkipGocd = "'TR'" + (code.retStr() == "" ? "" : "," + code.retSqlformat());
-                var str = masterHelp.GOCD_help(val, "");
+                var str = masterHelp.GOCD_help(val, SkipGocd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -377,15 +425,15 @@ namespace Improvar.Controllers
                 {
                     var GetPendig_Data = salesfunc.getPendKhasra(VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", (VE.T_BALE_HDR.AUTONO.retStr() == "" ? "" : VE.T_BALE_HDR.AUTONO.retSqlformat()));
                     DataView dv = new DataView(GetPendig_Data);
-                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "docno" };
+                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "docno", "baleyr" };
                     dt = dv.ToTable(true, COL);
                 }
                 else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
                 {
-                    //dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
-                    dt = salesfunc.GetBaleStock("", VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr(), "", "", "", "", false, "", "", true, VE.T_CNTRL_HDR.DOCDT.retDateStr());
+                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
+                    //dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr(), "", "", "", "", false, "", "", true, VE.T_CNTRL_HDR.DOCDT.retDateStr(), false, VE.MENU_PARA);
                     DataView dv = new DataView(dt);
-                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "baleyr" };
                     dt = dv.ToTable(true, COL);
                 }
 
@@ -396,6 +444,7 @@ namespace Improvar.Controllers
                                              LRNO = dr["lrno"].retStr(),
                                              LRDT = dr["lrdt"].retDateStr(),
                                              BALENO = dr["baleno"].retStr(),
+                                             BALEYR = dr["baleyr"].retStr(),
                                              PREFNO = dr["prefno"].retStr(),
                                              PREFDT = dr["PREFDT"].retDateStr(),
                                              DOCNO = VE.MENU_PARA == "KHSR" ? dr["docno"].retStr() : "",
@@ -416,6 +465,10 @@ namespace Improvar.Controllers
                         VE.TBILTYKHASRA_POPUP = VE.TBILTYKHASRA_POPUP.OrderBy(a => a.BALENO).ToList();
                     }
                 }
+                string arrBalenoYr = (from a in VE.TBILTYKHASRA_POPUP select a.BALENO + "" + a.BALEYR).ToArray().retSqlfromStrarray();
+                string doctype = VE.MENU_PARA == "KHSR" ? "'TRWB','TRFB','SBILD'" : "'SBILD'";
+                var dt1 = salesfunc.GetBaleHistory("", "", arrBalenoYr, doctype);
+
                 for (int p = 0; p <= VE.TBILTYKHASRA_POPUP.Count - 1; p++)
                 {
                     if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
@@ -428,6 +481,21 @@ namespace Improvar.Controllers
                     }
                     else { VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1); }
                     VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1);
+                    if (VE.DefaultAction == "E")
+                    {
+                        string blautono = VE.TBILTYKHASRA_POPUP[p].BLAUTONO;
+                        string balenoyrcd = VE.TBILTYKHASRA_POPUP[p].BALENO + "" + VE.TBILTYKHASRA_POPUP[p].BALEYR;
+                        //if(balenoyrcd== "33110042022" && blautono= "2022SNFPKOLKSSSPBL2209000005")
+                        //{ }
+                        if (dt1 != null && dt1.Rows.Count > 0)
+                        {
+                            var chk = (from DataRow dr in dt1.Rows where dr["blautono"].retStr() == blautono && dr["BaleNoBaleYrcd"].retStr() == balenoyrcd select dr["autono"].retStr()).ToList();
+                            if (chk != null && chk.Count > 0)
+                            {
+                                VE.TBILTYKHASRA_POPUP[p].ChildData = "Y";
+                            }
+                        }
+                    }
                 }
                 if (VE.TBILTYKHASRA_POPUP.Count != 0)
                 {

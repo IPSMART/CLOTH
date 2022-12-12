@@ -22,7 +22,7 @@ namespace Improvar.ViewModels
         public string SLNM { get; set; }
         public string REGMOBILE { get; set; }
         public string BALECOUNT { get; set; }
-
+        public string ISSUEDT { get; set; }
 
 
     }

@@ -107,6 +107,30 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:6px">
+                            @Html.Label("", "Only Sales")
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.CheckBoxFor(model => model.Checkbox2, true)
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:6px">
+                            @Html.Label("", "Show (bill no)")
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.CheckBoxFor(model => model.Checkbox3, true)
+                        </div>
+                    </div>
+                </div>
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -120,6 +144,12 @@
                         <label class="radio-inline">
                             @Html.RadioButtonFor(g => g.TEXTBOX1, "S")  @Html.Label("Standard(Barcode Wise)")
                         </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "B")  @Html.Label("Standard(Bill Wise)")
+                        </label>
+                        @*<label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX1, "D")  @Html.Label("Detail(Bill Wise)")
+                        </label>*@
                         @if (Model.Compnm == "LALF")
                         { <label class="radio-inline">
                             @Html.RadioButtonFor(g => g.TEXTBOX1, "AdityaBirlaStock")  @Html.Label("Aditya Birla Stock (Excel)")

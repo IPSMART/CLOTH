@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         string tdt = "";
         string LOC = "", COM = "";
         string MENU_PARA = "";
-        string slcd = "", itgrpcd = "", loccd = "",autono="";
+        string slcd = "", itgrpcd = "", loccd = "", autono = "";
         string reptype = "";
 
         // GET: Rep_Supplier
@@ -57,7 +57,7 @@ namespace Improvar.Controllers
                     VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
                     VE.Itgrpnm = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
 
-                    VE.DropDown_list_TXN  = DropDownHelp.GetTxnforSelection("","t_batchmst");
+                    VE.DropDown_list_TXN = DropDownHelp.GetTxnforSelection("", "t_batchmst");
                     VE.DOCNO = MasterHelp.ComboFill("autono", VE.DropDown_list_TXN, 0, 1);
 
                     VE.DropDown_list3 = (from i in DBF.M_LOCA
@@ -143,10 +143,20 @@ namespace Improvar.Controllers
                 if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") ";
                 if (loccd.retStr() != "") sql += "and a.loccd in (" + loccd + ") ";
                 if (autono.retStr() != "") sql += "and a.autono in (" + autono + ") ";
-                sql += Environment.NewLine + "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
+                if (reptype == "B")
+                {
+                    sql += Environment.NewLine + "order by slcd,slnm,blno,bldt";
+
+                }
+                else {
+
+                    sql += Environment.NewLine + "order by slcd,slnm,itgrpnm, itgrpcd, fabitnm, fabitcd, itnm, itcd, styleno, barno ";
+                }
+
                 tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
 
+                if (reptype == "B" || reptype == "D") { return GetBillWiseQnty(tbl, VE); }
                 string[] LOCTBLCOLS = new string[] { "loccd", "locnm" };
                 LOCDT = tbl.DefaultView.ToTable(true, LOCTBLCOLS);
                 // }
@@ -164,6 +174,8 @@ namespace Improvar.Controllers
                 if (reptype == "S") HC.GetPrintHeader(IR, "barno", "string", "c,30", "Bar No.");
                 if (reptype == "N") HC.GetPrintHeader(IR, "blno", "string", "c,40", "Bill No.");
                 if (reptype == "N") HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill Date");
+                if (reptype == "S") if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "blno", "string", "c,40", "Bill No.");
+                if (reptype == "S") if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill Date");
                 if (reptype == "S") HC.GetPrintHeader(IR, "itgrpnm", "string", "c,40", "Group");
                 HC.GetPrintHeader(IR, "styleno", "string", "c,40", "Styleno");
                 HC.GetPrintHeader(IR, "pdesign", "string", "c,20", "Party Design");
@@ -202,7 +214,7 @@ namespace Improvar.Controllers
 
                 maxB = tbl.Rows.Count - 1;
                 i = 0;
-                itgrpcd = "";
+                itgrpcd = ""; bool PrintSkip = false; int scount = 0;
                 int cnt = 0; //int indx = 0;
                 while (i <= maxB)
                 {
@@ -216,39 +228,51 @@ namespace Improvar.Controllers
                     slcd = tbl.Rows[i]["slcd"].retStr();
                     if (reptype == "N")
                     {
+
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["Dammy"] = tbl.Rows[i]["slnm"].ToString();
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+
                     }
-                    int indx = 0;
+                    int indx = 0; PrintSkip = false; int cntslcd = 0;
                     while (tbl.Rows[i]["slcd"].retStr() == slcd)
                     {
+                        int cntgrp = 0; scount = 0;
                         itgrpcd = tbl.Rows[i]["itgrpcd"].retStr();
                         if (reptype == "N")
                         {
+
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["Dammy"] = tbl.Rows[i]["itgrpnm"].ToString();
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+
                         }
-                        islno = 0;  indx = 0;
+                        islno = 0;
+
+                        indx = 0; PrintSkip = false;
                         while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd)
                         {
                             string itcd = tbl.Rows[i]["itcd"].retStr();
                             //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             //islno++; 
-                            islno = 0;  indx = 0;
+                            if (VE.Checkbox2 == false) islno = 0;
+                            indx = 0; PrintSkip = false;
                             double opqnty1 = 0, opvalue1 = 0, othersqnty1 = 0, othersvalue1 = 0, pbqnty1 = 0, pbvalue1 = 0, sbqnty1 = 0, sbvalue1 = 0, srqnty1 = 0, srvalue1 = 0, prqnty1 = 0, prvalue1 = 0, tiqnty1 = 0, tivalue1 = 0, toqnty1 = 0, tovalue1 = 0;
                             while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd)
                             {
+                                // scount = 0;
                                 opqnty1 = 0; opvalue1 = 0; othersqnty1 = 0; othersvalue1 = 0; pbqnty1 = 0; pbvalue1 = 0; sbqnty1 = 0; sbvalue1 = 0; srqnty1 = 0; srvalue1 = 0; prqnty1 = 0; prvalue1 = 0; tiqnty1 = 0; tivalue1 = 0; toqnty1 = 0; tovalue1 = 0;
-                                var blno = tbl.Rows[i]["blno"].retStr(); string colnm = ""; indx = 0;
+                                var blno = tbl.Rows[i]["blno"].retStr(); string colnm = ""; indx = 0; PrintSkip = false;
                                 while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd && tbl.Rows[i]["blno"].retStr() == blno)
                                 {
+                                    PrintSkip = false;
                                     indx = i; double opqnty = 0; double opvalue = 0; double othersqnty = 0; double othersvalue = 0; double pbqnty = 0; double pbvalue = 0; double sbqnty = 0; double sbvalue = 0; double srqnty = 0; double srvalue = 0; double prqnty = 0; double prvalue = 0; double tiqnty = 0; double tivalue = 0; double toqnty = 0; double tovalue = 0;
-                                       colnm = ""; //islno = 0;
-                                                       //string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr() + tbl.Rows[i]["loccd"].retStr();
+                                    colnm = ""; //islno = 0;
+                                                //string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr() + tbl.Rows[i]["loccd"].retStr();
                                     string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["loccd"].retStr();
-                                    while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd  && (tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["loccd"].retStr()) == key)
+                                    while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd && tbl.Rows[i]["itcd"].retStr() == itcd && (tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["loccd"].retStr()) == key)
                                     {
 
                                         //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -318,6 +342,7 @@ namespace Improvar.Controllers
                                             {
                                                 sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
                                                 sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+
                                             }
                                             else
                                             {
@@ -360,53 +385,68 @@ namespace Improvar.Controllers
 
                                     if (reptype == "S")
                                     {
-                                        islno++;
-                                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                        if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
-                                        IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
-                                        IR.Rows[rNo]["pdesign"] = tbl.Rows[i - 1]["pdesign"].ToString();
-                                        IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomnm"].ToString();
-                                        IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
-                                        IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
-                                        if (reptype == "S") IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
-                                        if (reptype == "S") IR.Rows[rNo]["barno"] = tbl.Rows[i - 1]["barno"].retStr();
-                                        if (reptype == "S") IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
-                                        IR.Rows[rNo]["openingqnty"] = opqnty;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = opvalue;
-
-                                        IR.Rows[rNo]["purchaseqnty"] = pbqnty;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = pbvalue;
-
-                                        IR.Rows[rNo]["purretqnty"] = prqnty;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = prvalue;
-
-                                        IR.Rows[rNo]["transferinqnty"] = tiqnty;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = tivalue;
-
-                                        IR.Rows[rNo]["transferoutqnty"] = toqnty;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = tovalue;
-
-                                        if (VE.Checkbox1 == true)
+                                        if (VE.Checkbox2 == true && sbqnty.retDbl() == 0) PrintSkip = true;
+                                        if (PrintSkip == false)
                                         {
-                                            //colnm = tbl.Rows[i-1]["loccd"].retStr() + "salesqnty";
-                                            if (colnm.retStr() != "") IR.Rows[rNo][colnm] = sbqnty;
+                                            islno++;
+                                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                            if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
+                                            if (VE.Checkbox3 == true) IR.Rows[rNo]["blno"] = tbl.Rows[i - 1]["blno"].retStr();
+                                            if (VE.Checkbox3 == true) IR.Rows[rNo]["bldt"] = tbl.Rows[i - 1]["bldt"].retDateStr();
 
-                                            if (colnm.retStr() != "") if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = sbvalue;
+                                            IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
+                                            IR.Rows[rNo]["pdesign"] = tbl.Rows[i - 1]["pdesign"].ToString();
+                                            IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomnm"].ToString();
+                                            IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
+                                            IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
+                                            if (reptype == "S") IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+                                            if (reptype == "S") IR.Rows[rNo]["barno"] = tbl.Rows[i - 1]["barno"].retStr();
+                                            if (reptype == "S") IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
+                                            IR.Rows[rNo]["openingqnty"] = opqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = opvalue;
 
+                                            IR.Rows[rNo]["purchaseqnty"] = pbqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = pbvalue;
+
+                                            IR.Rows[rNo]["purretqnty"] = prqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = prvalue;
+
+                                            IR.Rows[rNo]["transferinqnty"] = tiqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = tivalue;
+
+                                            IR.Rows[rNo]["transferoutqnty"] = toqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = tovalue;
+
+                                            if (VE.Checkbox1 == true)
+                                            {
+                                                //colnm = tbl.Rows[i-1]["loccd"].retStr() + "salesqnty";
+                                                if (colnm.retStr() != "") IR.Rows[rNo][colnm] = sbqnty;
+
+                                                if (colnm.retStr() != "") if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = sbvalue;
+
+                                            }
+                                            else
+                                            {
+                                                IR.Rows[rNo]["salesqnty"] = sbqnty;
+                                                if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue;
+                                            }
+
+
+
+                                            IR.Rows[rNo]["othersqnty"] = othersqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
+
+                                            IR.Rows[rNo]["stockqnty"] = (opqnty + pbqnty + tiqnty + srqnty + othersqnty) - (prqnty + toqnty + sbqnty);
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = (opvalue + pbvalue + tivalue + srvalue + othersvalue) - (prvalue + tovalue + sbvalue);
                                         }
                                         else
                                         {
-                                            IR.Rows[rNo]["salesqnty"] = sbqnty;
-                                            if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue;
+                                            if (scount == 0)
+                                            {
+                                                //if(IR.Rows.Count>0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                                            }
                                         }
-
-
-
-                                        IR.Rows[rNo]["othersqnty"] = othersqnty;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
-
-                                        IR.Rows[rNo]["stockqnty"] = (opqnty + pbqnty + tiqnty + srqnty + othersqnty) - (prqnty + toqnty + sbqnty);
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = (opvalue + pbvalue + tivalue + srvalue + othersvalue) - (prvalue + tovalue + sbvalue);
                                     }
 
                                     if (i > maxB) break;
@@ -414,82 +454,186 @@ namespace Improvar.Controllers
                                 if (reptype == "N")
                                 {
                                     //i = indx;
-                                    islno++;
-                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                    if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
-                                    IR.Rows[rNo]["styleno"] = tbl.Rows[indx]["styleno"].ToString();
-                                    IR.Rows[rNo]["pdesign"] = tbl.Rows[indx]["pdesign"].ToString();
-                                    IR.Rows[rNo]["uomnm"] = tbl.Rows[indx]["uomnm"].ToString();
-                                    IR.Rows[rNo]["itgrpcd"] = tbl.Rows[indx]["itgrpcd"].retStr();
-                                    IR.Rows[rNo]["slcd"] = tbl.Rows[indx]["slcd"].retStr();
-                                    IR.Rows[rNo]["blno"] = tbl.Rows[indx]["blno"].retStr();
-                                    IR.Rows[rNo]["bldt"] = tbl.Rows[indx]["bldt"].retDateStr();
-                                    IR.Rows[rNo]["openingqnty"] = opqnty1;
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = opvalue1;
 
-                                    IR.Rows[rNo]["purchaseqnty"] = pbqnty1;
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = pbvalue1;
-
-                                    IR.Rows[rNo]["purretqnty"] = prqnty1;
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = prvalue1;
-
-                                    IR.Rows[rNo]["transferinqnty"] = tiqnty1;
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = tivalue1;
-
-                                    IR.Rows[rNo]["transferoutqnty"] = toqnty1;
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = tovalue1;
-
-                                    if (VE.Checkbox1 == true)
+                                    if (VE.Checkbox2 == true && sbqnty1.retDbl() == 0) PrintSkip = true;
+                                    if (PrintSkip == false)
                                     {
-                                        //colnm = tbl.Rows[i-1]["loccd"].retStr() + "salesqnty";
-                                        if (colnm.retStr() != "") IR.Rows[rNo][colnm] = sbqnty1;
+                                        scount++; cntgrp++; cntslcd++;
+                                        islno++;
+                                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                        if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
+                                        IR.Rows[rNo]["styleno"] = tbl.Rows[indx]["styleno"].ToString();
+                                        IR.Rows[rNo]["pdesign"] = tbl.Rows[indx]["pdesign"].ToString();
+                                        IR.Rows[rNo]["uomnm"] = tbl.Rows[indx]["uomnm"].ToString();
+                                        IR.Rows[rNo]["itgrpcd"] = tbl.Rows[indx]["itgrpcd"].retStr();
+                                        IR.Rows[rNo]["slcd"] = tbl.Rows[indx]["slcd"].retStr();
+                                        IR.Rows[rNo]["blno"] = tbl.Rows[indx]["blno"].retStr();
+                                        IR.Rows[rNo]["bldt"] = tbl.Rows[indx]["bldt"].retDateStr();
+                                        IR.Rows[rNo]["openingqnty"] = opqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = opvalue1;
 
-                                        if (colnm.retStr() != "") if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = sbvalue1;
+                                        IR.Rows[rNo]["purchaseqnty"] = pbqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = pbvalue1;
 
+                                        IR.Rows[rNo]["purretqnty"] = prqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = prvalue1;
+
+                                        IR.Rows[rNo]["transferinqnty"] = tiqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = tivalue1;
+
+                                        IR.Rows[rNo]["transferoutqnty"] = toqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = tovalue1;
+
+                                        if (VE.Checkbox1 == true)
+                                        {
+                                            //colnm = tbl.Rows[i-1]["loccd"].retStr() + "salesqnty";
+                                            if (colnm.retStr() != "") IR.Rows[rNo][colnm] = sbqnty1;
+
+                                            if (colnm.retStr() != "") if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = sbvalue1;
+
+                                        }
+                                        else
+                                        {
+                                            IR.Rows[rNo]["salesqnty"] = sbqnty1;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue1;
+                                        }
+
+
+
+                                        IR.Rows[rNo]["othersqnty"] = othersqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue1;
+
+                                        IR.Rows[rNo]["stockqnty"] = (opqnty1 + pbqnty1 + tiqnty1 + srqnty1 + othersqnty1) - (prqnty1 + toqnty1 + sbqnty1);
+
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = (opvalue1 + pbvalue1 + tivalue1 + srvalue1 + othersvalue1) - (prvalue1 + tovalue1 + sbvalue1);
                                     }
                                     else
                                     {
-                                        IR.Rows[rNo]["salesqnty"] = sbqnty1;
-                                        if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue1;
+                                        if (scount == 0)
+                                        {
+                                            //if(IR.Rows.Count>0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                                        }
                                     }
 
-
-
-                                    IR.Rows[rNo]["othersqnty"] = othersqnty1;
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue1;
-
-                                    IR.Rows[rNo]["stockqnty"] = (opqnty1 + pbqnty1 + tiqnty1 + srqnty1 + othersqnty1) - (prqnty1 + toqnty1 + sbqnty1);
-                                    if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = (opvalue1 + pbvalue1 + tivalue1 + srvalue1 + othersvalue1) - (prvalue1 + tovalue1 + sbvalue1);
                                 }
                                 if (i > maxB) break;
                             }
+                            if (scount == 0)
+                            {
+                                //if (IR.Rows.Count > 0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                            }
                             if (i > maxB) break;
+
+                            if (scount == 0)
+                            {
+                                //if (IR.Rows.Count > 0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                            }
                         }
                         if (reptype == "N")
                         {
+                            if (scount == 0 && cntgrp == 0)
+                            {
+
+                                IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                            }
+
+                            if (cntgrp != 0)
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["itgrpnm"].ToString();
+                                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
+
+                                itgrpcd = tbl.Rows[indx]["itgrpcd"].ToString();
+                                slcd = tbl.Rows[indx]["slcd"].ToString();
+                                if (slcd == "OV00004")
+                                {
+
+                                }
+                                cnt = 0;
+
+                                var uomlist = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd).Select(a => a.Field<string>("uomnm")).Distinct().ToList();
+                                if (uomlist != null && uomlist.Count > 0)
+                                {
+                                    for (int x = 0; x < uomlist.Count; x++)
+                                    {
+                                        if (cnt != 0)
+                                        {
+                                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                        }
+                                        string uomnm = uomlist[x].retStr();
+                                        IR.Rows[rNo]["uomnm"] = uomnm;
+                                        int strart = reptype == "N" ? 9 : 10;
+                                        for (int a = strart; a < IR.Columns.Count - 2; a++)
+                                        {
+                                            var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
+                                                   .GroupBy(g => g.Field<string>("uomnm"))
+                                                   .Select(g =>
+                                                   {
+                                                       var row = IR.NewRow();
+                                                       row["uomnm"] = g.Key;
+                                                       row[IR.Columns[a].ColumnName] = g.Sum(r => r.Field<double?>(IR.Columns[a].ColumnName) == null ? 0 : r.Field<double>(IR.Columns[a].ColumnName));
+                                                       return row;
+                                                   }).CopyToDataTable();
+
+                                            if (unitwisegrptotal != null && unitwisegrptotal.Rows.Count > 0)
+                                            {
+                                                IR.Rows[rNo][IR.Columns[a].ColumnName] = unitwisegrptotal.Rows[0][IR.Columns[a].ColumnName];
+                                            }
+                                        }
+                                        cnt++;
+                                    }
+                                }
+
+                                if (cnt > 1)
+                                {
+                                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
+                                }
+                                else
+                                {
+                                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                                }
+                            }
+                        }
+                        if (i > maxB) break;
+                    }
+                    if (reptype == "N")
+                    {
+                        if (scount == 0 && cntslcd == 0)
+                        {
+
+                            IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                        }
+                        if (cntslcd != 0)
+                        {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["itgrpnm"].ToString();
+                            IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["slnm"].ToString();
                             IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
 
-                            itgrpcd = tbl.Rows[indx]["itgrpcd"].ToString();
                             slcd = tbl.Rows[indx]["slcd"].ToString();
-                            cnt = 0;
-
-                            var uomlist = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd).Select(a => a.Field<string>("uomnm")).Distinct().ToList();
-                            if (uomlist != null && uomlist.Count > 0)
+                            if (slcd == "OV00004")
                             {
-                                for (int x = 0; x < uomlist.Count; x++)
+                            }
+
+
+                            cnt = 0;
+                            var uomlist1 = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd).Select(a => a.Field<string>("uomnm")).Distinct().ToList();
+                            if (uomlist1 != null && uomlist1.Count > 0)
+                            {
+                                for (int x = 0; x < uomlist1.Count; x++)
                                 {
                                     if (cnt != 0)
                                     {
                                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                     }
-                                    string uomnm = uomlist[x].retStr();
+                                    string uomnm = uomlist1[x].retStr();
                                     IR.Rows[rNo]["uomnm"] = uomnm;
                                     int strart = reptype == "N" ? 9 : 10;
                                     for (int a = strart; a < IR.Columns.Count - 2; a++)
                                     {
-                                        var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
+                                        var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
                                                .GroupBy(g => g.Field<string>("uomnm"))
                                                .Select(g =>
                                                {
@@ -517,57 +661,6 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
                             }
                         }
-                        if (i > maxB) break;
-                    }
-                    if (reptype == "N")
-                    {
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["slnm"].ToString();
-                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
-
-                        slcd = tbl.Rows[indx]["slcd"].ToString();
-                        cnt = 0;
-                        var uomlist1 = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd).Select(a => a.Field<string>("uomnm")).Distinct().ToList();
-                        if (uomlist1 != null && uomlist1.Count > 0)
-                        {
-                            for (int x = 0; x < uomlist1.Count; x++)
-                            {
-                                if (cnt != 0)
-                                {
-                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                }
-                                string uomnm = uomlist1[x].retStr();
-                                IR.Rows[rNo]["uomnm"] = uomnm;
-                                int strart = reptype == "N" ? 9 : 10;
-                                for (int a = strart; a < IR.Columns.Count - 2; a++)
-                                {
-                                    var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
-                                           .GroupBy(g => g.Field<string>("uomnm"))
-                                           .Select(g =>
-                                           {
-                                               var row = IR.NewRow();
-                                               row["uomnm"] = g.Key;
-                                               row[IR.Columns[a].ColumnName] = g.Sum(r => r.Field<double?>(IR.Columns[a].ColumnName) == null ? 0 : r.Field<double>(IR.Columns[a].ColumnName));
-                                               return row;
-                                           }).CopyToDataTable();
-
-                                    if (unitwisegrptotal != null && unitwisegrptotal.Rows.Count > 0)
-                                    {
-                                        IR.Rows[rNo][IR.Columns[a].ColumnName] = unitwisegrptotal.Rows[0][IR.Columns[a].ColumnName];
-                                    }
-                                }
-                                cnt++;
-                            }
-                        }
-
-                        if (cnt > 1)
-                        {
-                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
-                        }
-                        else
-                        {
-                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
-                        }
                     }
                     if (i > maxB) break;
                 }
@@ -593,6 +686,546 @@ namespace Improvar.Controllers
             return null;
         }
 
+
+        public ActionResult GetBillWiseQnty(DataTable tbl, ReportViewinHtml VE)
+        {
+            try
+            {
+
+                MENU_PARA = VE.MENU_PARA.retStr();
+
+                reptype = VE.TEXTBOX1.retStr();
+
+                DataTable LOCDT = new DataTable("loccd");
+
+                string[] LOCTBLCOLS = new string[] { "loccd", "locnm" };
+                LOCDT = tbl.DefaultView.ToTable(true, LOCTBLCOLS);
+                // }
+                Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
+                maxR = tbl.Rows.Count - 1;
+                Int32 islno = 0;
+
+                Models.PrintViewer PV = new Models.PrintViewer();
+                HtmlConverter HC = new HtmlConverter();
+                DataTable IR = new DataTable("");
+
+                HC.RepStart(IR, 2);
+                if (reptype == "D") HC.GetPrintHeader(IR, "slno", "long", "n,4", "Slno");
+                if (reptype == "B") HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party");
+                HC.GetPrintHeader(IR, "blno", "string", "c,40", "Bill No.");
+                HC.GetPrintHeader(IR, "bldt", "string", "c,10", "Bill Date");
+               // if (reptype == "B") HC.GetPrintHeader(IR, "itgrpnm", "string", "c,40", "Group");
+                if (reptype == "D") HC.GetPrintHeader(IR, "barno", "string", "c,30", "Bar No.");
+                if (reptype == "D") HC.GetPrintHeader(IR, "styleno", "string", "c,40", "Styleno");
+                if (reptype == "D") HC.GetPrintHeader(IR, "pdesign", "string", "c,20", "Party Design");
+                if (reptype == "D") HC.GetPrintHeader(IR, "uomnm", "string", "c,5", "uom");
+                HC.GetPrintHeader(IR, "openingqnty", "double", "n,10,2", "Opening Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "openingamt", "double", "n,10,2", "Opening Value");
+                HC.GetPrintHeader(IR, "purchaseqnty", "double", "n,10,2", "Purchase Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "purchaseamt", "double", "n,10,2", "Purchase Value");
+                HC.GetPrintHeader(IR, "purretqnty", "double", "n,10,2", "Pur.Ret Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "purretamt", "double", "n,10,2", "Pur.Ret Value");
+                HC.GetPrintHeader(IR, "transferinqnty", "double", "n,10,2", "Transfer In Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferinamt", "double", "n,10,2", "Transfer In Value");
+                HC.GetPrintHeader(IR, "transferoutqnty", "double", "n,10,2", "Transfer Out Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "transferoutamt", "double", "n,10,2", "Transfer Out Value");
+                if (VE.Checkbox1 == true)
+                {
+                    foreach (DataRow dr in LOCDT.Rows)
+                    {
+                        HC.GetPrintHeader(IR, dr["loccd"].ToString() + "salesqnty", "double", "n,10,2", dr["locnm"].ToString() + " Sales Qty");
+                        if (MENU_PARA != "Q") HC.GetPrintHeader(IR, dr["loccd"].ToString() + "salesamt", "double", "n,10,2", dr["locnm"].ToString() + " Sales Value");
+                    }
+                }
+                else
+                {
+                    HC.GetPrintHeader(IR, "salesqnty", "double", "n,10,2", "Sales Qty");
+                    if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales Value");
+                }
+
+                HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others Value");
+                HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Closing Stock Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "stockamt", "double", "n,10,2", "Closing Stock Value");
+
+                IR.Columns.Add("itgrpcd", typeof(string), "");
+                IR.Columns.Add("slcd", typeof(string), "");
+
+                maxB = tbl.Rows.Count - 1;
+                i = 0;
+                itgrpcd = ""; bool PrintSkip = false; int scount = 0;
+                int cnt = 0; //int indx = 0;
+                while (i <= maxB)
+                {
+                    if (i != 0 && reptype == "N")
+                    {
+                        // Create Blank line
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["dammy"] = " ";
+                        IR.Rows[rNo]["flag"] = " height:8px; ";
+                    }
+                    slcd = tbl.Rows[i]["slcd"].retStr();
+                    if (reptype == "N")
+                    {
+
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["Dammy"] = tbl.Rows[i]["slnm"].ToString();
+                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+
+                    }
+                    int indx = 0; PrintSkip = false; int cntslcd = 0;
+                    while (tbl.Rows[i]["slcd"].retStr() == slcd)
+                    {
+                        int cntgrp = 0; scount = 0;
+                        itgrpcd = tbl.Rows[i]["itgrpcd"].retStr();
+                        if (reptype == "N")
+                        {
+
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["Dammy"] = tbl.Rows[i]["itgrpnm"].ToString();
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+
+                        }
+                        islno = 0;
+
+                        indx = 0; PrintSkip = false; var blno = tbl.Rows[i]["blno"].retStr(); var bldt = tbl.Rows[i]["bldt"].retDateStr();
+                        while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["itgrpcd"].retStr() == itgrpcd)
+                        {
+                            string itcd = tbl.Rows[i]["itcd"].retStr();
+                            //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            //islno++; 
+                            if (VE.Checkbox2 == false) islno = 0;
+                            indx = 0; PrintSkip = false; blno = tbl.Rows[i]["blno"].retStr(); bldt = tbl.Rows[i]["bldt"].retDateStr();
+                            double opqnty1 = 0, opvalue1 = 0, othersqnty1 = 0, othersvalue1 = 0, pbqnty1 = 0, pbvalue1 = 0, sbqnty1 = 0, sbvalue1 = 0, srqnty1 = 0, srvalue1 = 0, prqnty1 = 0, prvalue1 = 0, tiqnty1 = 0, tivalue1 = 0, toqnty1 = 0, tovalue1 = 0;
+                            while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["blno"].retStr() == blno && tbl.Rows[i]["bldt"].retDateStr() == bldt)
+                            {
+                                // scount = 0;
+                                blno = tbl.Rows[i]["blno"].retStr(); bldt = tbl.Rows[i]["bldt"].retDateStr();
+                                opqnty1 = 0; opvalue1 = 0; othersqnty1 = 0; othersvalue1 = 0; pbqnty1 = 0; pbvalue1 = 0; sbqnty1 = 0; sbvalue1 = 0; srqnty1 = 0; srvalue1 = 0; prqnty1 = 0; prvalue1 = 0; tiqnty1 = 0; tivalue1 = 0; toqnty1 = 0; tovalue1 = 0;
+                                string colnm = ""; indx = 0; PrintSkip = false;
+                                while (tbl.Rows[i]["slcd"].retStr() == slcd && tbl.Rows[i]["blno"].retStr() == blno && tbl.Rows[i]["bldt"].retDateStr() == bldt)
+                                {
+                                    PrintSkip = false;
+                                    indx = i; double opqnty = 0; double opvalue = 0; double othersqnty = 0; double othersvalue = 0; double pbqnty = 0; double pbvalue = 0; double sbqnty = 0; double sbvalue = 0; double srqnty = 0; double srvalue = 0; double prqnty = 0; double prvalue = 0; double tiqnty = 0; double tivalue = 0; double toqnty = 0; double tovalue = 0;
+                                    colnm = ""; //islno = 0;
+                                                //string key = tbl.Rows[i]["barno"].retStr() + tbl.Rows[i]["pdesign"].retStr() + tbl.Rows[i]["doctag"].retStr() + tbl.Rows[i]["loccd"].retStr();
+                                    string key = tbl.Rows[i]["blno"].retStr() + tbl.Rows[i]["bldt"].retDateStr() + tbl.Rows[i]["loccd"].retStr();
+                                    while (tbl.Rows[i]["slcd"].retStr() == slcd && (tbl.Rows[i]["blno"].retStr() + tbl.Rows[i]["bldt"].retDateStr() + tbl.Rows[i]["loccd"].retStr()) == key)
+                                    {
+
+                                        //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                        //if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
+                                        //IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
+                                        //IR.Rows[rNo]["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
+                                        //IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
+                                        //IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i]["itgrpcd"].retStr();
+                                        //IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].retStr();
+                                        //if (reptype == "S") IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr();
+                                        //if (reptype == "S") IR.Rows[rNo]["barno"] = tbl.Rows[i]["barno"].retStr();
+                                        //if (reptype == "S") IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i]["itgrpnm"].retStr();
+                                        //if (reptype == "S") IR.Rows[rNo]["blno"] = tbl.Rows[i]["blno"].retStr();
+                                        //if (reptype == "S") IR.Rows[rNo]["bldt"] = tbl.Rows[i]["bldt"].retDateStr();
+                                        if (tbl.Rows[i]["doctag"].retStr() == "OP")
+                                        {
+                                            //IR.Rows[rNo]["openingqnty"] = IR.Rows[rNo]["openingqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
+                                            //if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = IR.Rows[rNo]["openingamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                                            opqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            opvalue += tbl.Rows[i]["txblval"].retDbl();
+                                        }
+                                        else if (tbl.Rows[i]["doctag"].retStr() == "PB")
+                                        {
+                                            //IR.Rows[rNo]["purchaseqnty"] = IR.Rows[rNo]["purchaseqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
+                                            //if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = IR.Rows[rNo]["purchaseamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                                            pbqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            pbvalue += tbl.Rows[i]["txblval"].retDbl();
+                                        }
+                                        else if (tbl.Rows[i]["doctag"].retStr() == "PR")
+                                        {
+                                            //IR.Rows[rNo]["purretqnty"] = IR.Rows[rNo]["purretqnty"].retDbl() + (tbl.Rows[i]["qnty"].retDbl() * -1);
+                                            //if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = IR.Rows[rNo]["purretamt"].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
+                                            prqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                            prvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+                                        }
+                                        else if (tbl.Rows[i]["doctag"].retStr() == "TI")
+                                        {
+                                            //IR.Rows[rNo]["transferinqnty"] = IR.Rows[rNo]["transferinqnty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
+                                            //if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = IR.Rows[rNo]["transferinamt"].retDbl() + tbl.Rows[i]["txblval"].retDbl();
+                                            tiqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            tivalue += tbl.Rows[i]["txblval"].retDbl();
+                                        }
+                                        else if (tbl.Rows[i]["doctag"].retStr() == "TO")
+                                        {
+                                            //IR.Rows[rNo]["transferoutqnty"] = IR.Rows[rNo]["transferoutqnty"].retDbl() + (tbl.Rows[i]["qnty"].retDbl() * -1);
+                                            //if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = IR.Rows[rNo]["transferoutamt"].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
+                                            toqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                            tovalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+                                        }
+                                        else if (tbl.Rows[i]["doctag"].retStr() == "SB" || tbl.Rows[i]["doctag"].retStr() == "SR")
+                                        {
+                                            if (VE.Checkbox1 == true)
+                                            {
+                                                colnm = tbl.Rows[i]["loccd"].retStr() + "salesqnty";
+                                                //IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + (tbl.Rows[i]["doctag"].retStr() == "SB" ? (tbl.Rows[i]["qnty"].retDbl() * -1) : tbl.Rows[i]["qnty"].retDbl());//modify by mithun
+                                                //if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = IR.Rows[rNo][colnm].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
+
+                                            }
+                                            else
+                                            {
+                                                //IR.Rows[rNo]["salesqnty"] = IR.Rows[rNo]["salesqnty"].retDbl() + (tbl.Rows[i]["doctag"].retStr() == "SB" ? (tbl.Rows[i]["qnty"].retDbl() * -1) : tbl.Rows[i]["qnty"].retDbl());//modify by mithun
+                                                //if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = IR.Rows[rNo]["salesamt"].retDbl() + (tbl.Rows[i]["txblval"].retDbl() * -1);
+
+                                            }
+
+                                            if (tbl.Rows[i]["doctag"].retStr() == "SB")
+                                            {
+                                                sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                                sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+
+                                            }
+                                            else
+                                            {
+                                                srqnty += tbl.Rows[i]["qnty"].retDbl();
+                                                srvalue += tbl.Rows[i]["txblval"].retDbl();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            othersqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            othersvalue += tbl.Rows[i]["txblval"].retDbl();
+
+                                            //opqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            //opvalue += tbl.Rows[i]["txblval"].retDbl();
+                                        }
+                                        //IR.Rows[rNo]["othersqnty"] = othersqnty;
+                                        //if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
+
+                                        //IR.Rows[rNo]["stockqnty"] = opqnty+ pbqnty+ prqnty+ tiqnty + toqnty+ sbqnty+ srqnty+ othersqnty;
+                                        //if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = opvalue+ pbvalue+ prvalue+ tivalue+ tovalue+ sbvalue+ srvalue+ othersvalue;
+                                        i++;
+                                        if (i > maxB) break;
+                                    }
+                                    opqnty1 += opqnty;
+                                    opvalue1 += opvalue;
+                                    pbqnty1 += pbqnty;
+                                    pbvalue1 += pbvalue;
+                                    prqnty1 += prqnty;
+                                    prvalue1 += prvalue;
+                                    tiqnty1 += tiqnty;
+                                    tivalue1 += tivalue;
+                                    toqnty1 += toqnty;
+                                    tovalue1 += tovalue;
+                                    sbqnty1 += sbqnty;
+                                    sbvalue1 += sbvalue;
+                                    srqnty1 += srqnty;
+                                    srvalue1 += srvalue;
+                                    othersqnty1 += othersqnty;
+                                    othersvalue1 += othersvalue;
+
+                                    if (reptype == "B")
+                                    {
+                                        if (VE.Checkbox2 == true && sbqnty.retDbl() == 0) PrintSkip = true;
+                                        if (PrintSkip == false)
+                                        {
+                                            islno++;
+                                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                            if (reptype == "D") IR.Rows[rNo]["slno"] = islno;
+                                            IR.Rows[rNo]["blno"] = tbl.Rows[i - 1]["blno"].retStr();
+                                            IR.Rows[rNo]["bldt"] = tbl.Rows[i - 1]["bldt"].retDateStr();
+
+                                            //IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
+                                            //IR.Rows[rNo]["pdesign"] = tbl.Rows[i - 1]["pdesign"].ToString();
+                                            //IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomnm"].ToString();
+                                            //IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
+                                            // IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
+                                            IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].retStr();
+
+                                            //IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
+                                            IR.Rows[rNo]["openingqnty"] = opqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = opvalue;
+
+                                            IR.Rows[rNo]["purchaseqnty"] = pbqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = pbvalue;
+
+                                            IR.Rows[rNo]["purretqnty"] = prqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = prvalue;
+
+                                            IR.Rows[rNo]["transferinqnty"] = tiqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = tivalue;
+
+                                            IR.Rows[rNo]["transferoutqnty"] = toqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = tovalue;
+
+                                            if (VE.Checkbox1 == true)
+                                            {
+                                                //colnm = tbl.Rows[i-1]["loccd"].retStr() + "salesqnty";
+                                                if (colnm.retStr() != "") IR.Rows[rNo][colnm] = sbqnty;
+
+                                                if (colnm.retStr() != "") if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = sbvalue;
+
+                                            }
+                                            else
+                                            {
+                                                IR.Rows[rNo]["salesqnty"] = sbqnty;
+                                                if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue;
+                                            }
+
+
+
+                                            IR.Rows[rNo]["othersqnty"] = othersqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
+
+                                            IR.Rows[rNo]["stockqnty"] = (opqnty + pbqnty + tiqnty + srqnty + othersqnty) - (prqnty + toqnty + sbqnty);
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = (opvalue + pbvalue + tivalue + srvalue + othersvalue) - (prvalue + tovalue + sbvalue);
+                                        }
+                                        else
+                                        {
+                                            if (scount == 0)
+                                            {
+                                                //if(IR.Rows.Count>0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                                            }
+                                        }
+                                    }
+
+                                    if (i > maxB) break;
+                                }
+                                if (reptype == "D")
+                                {
+                                    //i = indx;
+
+                                    if (VE.Checkbox2 == true && sbqnty1.retDbl() == 0) PrintSkip = true;
+                                    if (PrintSkip == false)
+                                    {
+                                        scount++; cntgrp++; cntslcd++;
+                                        islno++;
+                                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                        if (reptype == "D") IR.Rows[rNo]["slno"] = islno;
+                                        IR.Rows[rNo]["slcd"] = tbl.Rows[indx]["slcd"].retStr();
+                                        IR.Rows[rNo]["barno"] = tbl.Rows[indx]["barno"].ToString();
+                                        IR.Rows[rNo]["pdesign"] = tbl.Rows[indx]["pdesign"].ToString();
+                                        IR.Rows[rNo]["uomnm"] = tbl.Rows[indx]["uomnm"].ToString();
+                                        IR.Rows[rNo]["itgrpcd"] = tbl.Rows[indx]["itgrpcd"].retStr();
+                                        IR.Rows[rNo]["slcd"] = tbl.Rows[indx]["slcd"].retStr();
+                                        IR.Rows[rNo]["blno"] = tbl.Rows[indx]["blno"].retStr();
+                                        IR.Rows[rNo]["bldt"] = tbl.Rows[indx]["bldt"].retDateStr();
+                                        IR.Rows[rNo]["openingqnty"] = opqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["openingamt"] = opvalue1;
+
+                                        IR.Rows[rNo]["purchaseqnty"] = pbqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["purchaseamt"] = pbvalue1;
+
+                                        IR.Rows[rNo]["purretqnty"] = prqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["purretamt"] = prvalue1;
+
+                                        IR.Rows[rNo]["transferinqnty"] = tiqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["transferinamt"] = tivalue1;
+
+                                        IR.Rows[rNo]["transferoutqnty"] = toqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["transferoutamt"] = tovalue1;
+
+                                        if (VE.Checkbox1 == true)
+                                        {
+                                            //colnm = tbl.Rows[i-1]["loccd"].retStr() + "salesqnty";
+                                            if (colnm.retStr() != "") IR.Rows[rNo][colnm] = sbqnty1;
+
+                                            if (colnm.retStr() != "") if (MENU_PARA != "Q") IR.Rows[rNo][colnm] = sbvalue1;
+
+                                        }
+                                        else
+                                        {
+                                            IR.Rows[rNo]["salesqnty"] = sbqnty1;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue1;
+                                        }
+
+
+
+                                        IR.Rows[rNo]["othersqnty"] = othersqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue1;
+
+                                        IR.Rows[rNo]["stockqnty"] = (opqnty1 + pbqnty1 + tiqnty1 + srqnty1 + othersqnty1) - (prqnty1 + toqnty1 + sbqnty1);
+
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["stockamt"] = (opvalue1 + pbvalue1 + tivalue1 + srvalue1 + othersvalue1) - (prvalue1 + tovalue1 + sbvalue1);
+                                    }
+                                    else
+                                    {
+                                        if (scount == 0)
+                                        {
+                                            //if(IR.Rows.Count>0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                                        }
+                                    }
+
+                                }
+                                if (i > maxB) break;
+                            }
+                            if (scount == 0)
+                            {
+                                //if (IR.Rows.Count > 0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                            }
+                            if (i > maxB) break;
+
+                            if (scount == 0)
+                            {
+                                //if (IR.Rows.Count > 0) IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+
+                            }
+                        }
+                        if (reptype == "D")
+                        {
+                            if (scount == 0 && cntgrp == 0)
+                            {
+
+                                IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                            }
+
+                            if (cntgrp != 0)
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["itgrpnm"].ToString();
+                                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
+
+                                itgrpcd = tbl.Rows[indx]["itgrpcd"].ToString();
+                                slcd = tbl.Rows[indx]["slcd"].ToString();
+                                if (slcd == "OV00004")
+                                {
+
+                                }
+                                cnt = 0;
+
+                                var uomlist = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd).Select(a => a.Field<string>("uomnm")).Distinct().ToList();
+                                if (uomlist != null && uomlist.Count > 0)
+                                {
+                                    for (int x = 0; x < uomlist.Count; x++)
+                                    {
+                                        if (cnt != 0)
+                                        {
+                                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                        }
+                                        string uomnm = uomlist[x].retStr();
+                                        IR.Rows[rNo]["uomnm"] = uomnm;
+                                        int strart = reptype == "N" ? 9 : 10;
+                                        for (int a = strart; a < IR.Columns.Count - 2; a++)
+                                        {
+                                            var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
+                                                   .GroupBy(g => g.Field<string>("uomnm"))
+                                                   .Select(g =>
+                                                   {
+                                                       var row = IR.NewRow();
+                                                       row["uomnm"] = g.Key;
+                                                       row[IR.Columns[a].ColumnName] = g.Sum(r => r.Field<double?>(IR.Columns[a].ColumnName) == null ? 0 : r.Field<double>(IR.Columns[a].ColumnName));
+                                                       return row;
+                                                   }).CopyToDataTable();
+
+                                            if (unitwisegrptotal != null && unitwisegrptotal.Rows.Count > 0)
+                                            {
+                                                IR.Rows[rNo][IR.Columns[a].ColumnName] = unitwisegrptotal.Rows[0][IR.Columns[a].ColumnName];
+                                            }
+                                        }
+                                        cnt++;
+                                    }
+                                }
+
+                                if (cnt > 1)
+                                {
+                                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
+                                }
+                                else
+                                {
+                                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                                }
+                            }
+                        }
+                        if (i > maxB) break;
+                    }
+                    if (reptype == "D")
+                    {
+                        if (scount == 0 && cntslcd == 0)
+                        {
+
+                            IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                        }
+                        if (cntslcd != 0)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["slnm"].ToString();
+                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
+
+                            slcd = tbl.Rows[indx]["slcd"].ToString();
+                            if (slcd == "OV00004")
+                            {
+                            }
+
+
+                            cnt = 0;
+                            var uomlist1 = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd).Select(a => a.Field<string>("uomnm")).Distinct().ToList();
+                            if (uomlist1 != null && uomlist1.Count > 0)
+                            {
+                                for (int x = 0; x < uomlist1.Count; x++)
+                                {
+                                    if (cnt != 0)
+                                    {
+                                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    }
+                                    string uomnm = uomlist1[x].retStr();
+                                    IR.Rows[rNo]["uomnm"] = uomnm;
+                                    int strart = reptype == "N" ? 9 : 10;
+                                    for (int a = strart; a < IR.Columns.Count - 2; a++)
+                                    {
+                                        var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
+                                               .GroupBy(g => g.Field<string>("uomnm"))
+                                               .Select(g =>
+                                               {
+                                                   var row = IR.NewRow();
+                                                   row["uomnm"] = g.Key;
+                                                   row[IR.Columns[a].ColumnName] = g.Sum(r => r.Field<double?>(IR.Columns[a].ColumnName) == null ? 0 : r.Field<double>(IR.Columns[a].ColumnName));
+                                                   return row;
+                                               }).CopyToDataTable();
+
+                                        if (unitwisegrptotal != null && unitwisegrptotal.Rows.Count > 0)
+                                        {
+                                            IR.Rows[rNo][IR.Columns[a].ColumnName] = unitwisegrptotal.Rows[0][IR.Columns[a].ColumnName];
+                                        }
+                                    }
+                                    cnt++;
+                                }
+                            }
+
+                            if (cnt > 1)
+                            {
+                                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
+                            }
+                            else
+                            {
+                                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                            }
+                        }
+                    }
+                    if (i > maxB) break;
+                }
+
+                IR.Columns.Remove("itgrpcd");
+                IR.Columns.Remove("slcd");
+                string pghdr1 = "";
+                string repname = ("Rep_Supplier").retRepname();
+
+                pghdr1 = (MENU_PARA != "Q" ? "Supplier Wise Report with value from " : "Supplier wise Sales & Stock from ") + fdt + " to " + tdt;
+                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+
+                TempData[repname] = PV;
+                TempData[repname + "xxx"] = IR;
+                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+            return null;
+        }
 
 
         public ActionResult retPurchaseWiseStock(string scm, string scmf, string fdt, string tdt, string LOC, string COM, string slcd = "", string itgrpcd = "", string loccd = "")

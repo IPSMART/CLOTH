@@ -22,5 +22,6 @@ namespace Improvar.Models
         public string BALEYR { get; set; }
         public string STATUS { get; set; }
         public bool Checked_LRNO { get; set; }
+        public string ChildData { get; set; }
     }
 }

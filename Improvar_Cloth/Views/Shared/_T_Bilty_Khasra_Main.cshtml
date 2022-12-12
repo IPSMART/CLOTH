@@ -54,10 +54,18 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].Checked, new { id = "chkid_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_', 'BLAUTONO_/BALENO_', 'T_Bilty_Khasra_Main');" })
+                                            @if (Model.TBILTYKHASRA[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].Checked, new { id = "chkid_" + i, style = "pointer-events:none;background-color:#eee" })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].Checked, new { id = "chkid_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_', 'BLAUTONO_/BALENO_', 'T_Bilty_Khasra_Main');" })
+                                            }
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BLAUTONO, new { id = "BLAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BALEYR, new { id = "BALEYR_" + i })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BLSLNO, new { id = "BLSLNO_" + i })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA[i].ChildData, new { id = "ChildData_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
@@ -90,17 +98,30 @@
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PAGENO, new { id = "PAGENO_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @*@Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1');", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0');GodownBaleopenFill(" + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
-                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1')" />*@
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1','GOCD');GetLastGodownGrid(" + i + ");CopyLastGodownGrid(" + i + ");RemoveLastGodownGrid(" + i + ")", onblur = "GetGodown(this.value," + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1','GOCD')" />
+                                            @if (Model.TBILTYKHASRA[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            }
+                                            else {
+                                                @*@Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1');", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0');GodownBaleopenFill(" + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1')" />*@
+                                                @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1','GOCD');GetLastGodownGrid(" + i + ");CopyLastGodownGrid(" + i + ");RemoveLastGodownGrid(" + i + ")", onblur = "GetGodown(this.value," + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1','GOCD')" />
+                                            }
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GONM, new { id = "GONM_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].FLAG1, new { id = "FLAG1_" + i })
                                         </td>
                                         <td class="grid_td" style="padding-left:11px;padding-right:11px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].CheckedBALEOPEN, new { id = "CheckedBALEOPEN_" + i, Onclick = "GodownBaleopenFill(" + i + ");", onkeyup = "GodownBaleopenFill(" + i + ");" })
+                                            @if (Model.TBILTYKHASRA[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].CheckedBALEOPEN, new { id = "CheckedBALEOPEN_" + i, style = "pointer-events:none;background-color:#eee" })
+
+                                            }
+                                            else {
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].CheckedBALEOPEN, new { id = "CheckedBALEOPEN_" + i, Onclick = "GodownBaleopenFill(" + i + ");", onkeyup = "GodownBaleopenFill(" + i + ");" })
+                                            }
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PBLNO, new { id = "PBLNO_" + i, maxlength = 15, @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })

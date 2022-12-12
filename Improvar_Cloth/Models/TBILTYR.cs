@@ -68,7 +68,7 @@ namespace Improvar.Models
         public string PBLNO { get; set; }
         public string PBLDT { get; set; }
         public string SHADE { get; set; }
-        
+        public string ChildData { get; set; }
 
 
 

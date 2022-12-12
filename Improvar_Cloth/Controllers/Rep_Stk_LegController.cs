@@ -52,6 +52,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
 
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection();
+                    VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+
 
                     var locnmlist = (from a in DBF.M_LOCA
                                      select new DropDown_list2()
@@ -111,11 +114,15 @@ namespace Improvar.Controllers
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "";
-                string selitcd = "", plist = "", selgocd = "", selgonm = "", LOCCD = "";
+                string selitcd = "", plist = "", selgocd = "", selgonm = "", LOCCD = "",party="";
 
                 if (FC.AllKeys.Contains("Godown"))
                 {
                     selgocd = FC["Godown"].ToString().retSqlformat();
+                }
+                if (FC.AllKeys.Contains("slcdvalue"))
+                {
+                    party = FC["slcdvalue"].ToString().retSqlformat();
                 }
 
                 if (FC.AllKeys.Contains("plist"))
@@ -154,6 +161,7 @@ namespace Improvar.Controllers
                     //sql += "and k.itmprccd in (" + plist + ")  ";
                 }
                 if (selgocd.retStr() != "") sql += "and a.gocd in (" + selgocd + ") " + Environment.NewLine;
+                if (party.retStr() != "") sql += "and b.slcd in (" + party + ") " + Environment.NewLine;
                 //if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                 sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval,a.pageslno ) a, " + Environment.NewLine;

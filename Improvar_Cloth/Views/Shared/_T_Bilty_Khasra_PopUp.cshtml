@@ -71,17 +71,37 @@
                                         @if (Model.MENU_PARA == "KHSR")
                                         {
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].CheckedAll, new { id = "CheckedAll_" + i, @TabIndex = -1 })
+                                                @if (Model.TBILTYKHASRA_POPUP[i].ChildData.retStr() == "Y")
+                                                {
+                                                    @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].CheckedAll, new { id = "CheckedAll_" + i, @TabIndex = -1, style = "pointer-events:none;background-color:#eee" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].CheckedAll, new { id = "CheckedAll_" + i, @TabIndex = -1 })
+                                                }
                                             </td>}
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_K_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_K_POPUP_', 'BLAUTONO_K_POPUP_/BALENO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
+                                            @if (Model.TBILTYKHASRA_POPUP[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_K_POPUP_" + i, style = "pointer-events:none;background-color:#eee" })
+                                            }
+                                            else {
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_K_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_K_POPUP_', 'BLAUTONO_K_POPUP_/BALENO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
+                                            }
                                             @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BLAUTONO, new { id = "BLAUTONO_K_POPUP_" + i })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BALEYR, new { id = "BALEY_K_POPUP_" + i })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].ChildData, new { id = "BALEY_K_ChildData_" + i })
                                         </td>
                                         @if (Model.MENU_PARA == "KHSR")
                                         {
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'Checked_LRNO_', 'LRNO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
+                                                @if (Model.TBILTYKHASRA_POPUP[i].ChildData.retStr() == "Y")
+                                                {
+                                                    @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, style = "pointer-events:none;background-color:#eee" })
+                                                }
+                                                else {
+                                                    @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'Checked_LRNO_', 'LRNO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
+                                                }
                                             </td>
                                         }
                                         <td class="">

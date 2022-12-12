@@ -22,6 +22,7 @@ namespace Improvar.Controllers
         T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS; T_TXNMEMO TXNMEMO;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
+        DataTable ITEMDT = new DataTable();
         // GET: T_SALE
         public ActionResult T_SALE(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string ThirdParty = "no", string loadOrder = "N")
         {
@@ -702,6 +703,9 @@ namespace Improvar.Controllers
                 {
                     VE.STOCKHOLD = Getstkdrcr.STKDRCR == "C" ? true : false;
                 }
+                var GetAdjBill = (from i in DBF.T_VCH_BL_ADJ where i.AUTONO == TXN.AUTONO select i).ToList();
+                if (GetAdjBill != null && GetAdjBill.Count > 0) VE.ReturnAdjustwithBill = true;
+
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
                 str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
@@ -982,6 +986,8 @@ namespace Improvar.Controllers
                     if (chk_child != "")
                     {
                         v.ChildData = "Y";
+                        if (VE.MENU_PARA == "PB") VE.ChildData = "child record found";
+
                     }
 
 
@@ -1953,7 +1959,7 @@ namespace Improvar.Controllers
                                select dr["baleno"].retStr()).ToArray().retSqlfromStrarray();
                     }
                 }
-                var str = masterHelp.BaleNo_help(val, tdt, gocd, "", true, true);
+                var str = masterHelp.BaleNo_help(val, tdt, gocd, "", true, true,"",true,true);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3162,7 +3168,7 @@ namespace Improvar.Controllers
                 sql += "and t.doctag in('" + doctag + "')  ";
                 if (R_DOCNO.retStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                 if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
-                if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT >= to_date('" + TDT + "', 'dd/mm/yyyy') ");
+                if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
                 if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
                 if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
                 sql += ")x, ";
@@ -3224,7 +3230,7 @@ namespace Improvar.Controllers
                     sql += "and t.doctag in('" + doctag + "')  ";
                     if (R_DOCNO.retStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                     //if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
-                    if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT >= to_date('" + TDT + "', 'dd/mm/yyyy') ");
+                    if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
                     if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
                     if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
                     sql += ")x, ";
@@ -3513,6 +3519,8 @@ namespace Improvar.Controllers
         public ActionResult Update_Transport(TransactionSaleEntry VE)
         {
             Cn.getQueryString(VE);
+            string ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO);
+            if (ContentFlg != "") return Content(ContentFlg);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             string sql = "";
@@ -3525,7 +3533,7 @@ namespace Improvar.Controllers
                 try
                 {
                     string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                    string ContentFlg = "";
+                    ContentFlg = "";
                     var schnm = CommVar.CurSchema(UNQSNO);
                     var fschnm = CommVar.FinSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
@@ -6399,6 +6407,133 @@ namespace Improvar.Controllers
                     }
 
                     #endregion
+
+                    #region STOCK CHECKING
+                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS"))
+                    {
+                        bool stockcheck = true;
+                        if (VE.MENU_PARA == "PI") stockcheck = false;
+                        else if (VE.MENU_PARA == "SR" && VE.DefaultAction == "A") stockcheck = false;
+                        //if (VE.MENU_PARA != "PI")
+                        if (stockcheck == true)
+                        {
+                            GRIDDATA();
+                            if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
+                            {
+                                for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                                {
+                                    if (VE.TBATCHDTL[i].ITCD.retStr() != "")
+                                    {
+
+
+                                        DataRow ROWDATA = ITEMDT.NewRow();
+                                        ROWDATA["ITCD"] = VE.TBATCHDTL[i].ITCD.retStr();
+                                        ROWDATA["BALENO"] = VE.TBATCHDTL[i].BALENO.retStr();
+                                        ROWDATA["QNTY"] = VE.TBATCHDTL[i].QNTY.retDbl();
+
+
+                                        ITEMDT.Rows.Add(ROWDATA);
+
+                                    }
+                                }
+                            }
+                            string GCS = Cn.GCS();
+                            //var ITCD = string.Join(",", (from Z in VE.TTXNDTL where Z.ITCD.retStr() != "" select "'" + Z.ITCD + "'").Distinct());
+                            var ITCDList = (from Z in VE.TBATCHDTL where Z.ITCD.retStr() != "" select Z.ITCD).Distinct().ToArray();
+                            // var linkitcd = (from Z in VE.TBATCHDTL where Z.LINKITCD.retStr() != "" select Z.LINKITCD).Distinct().ToArray();
+                            var ITCD = ITCDList.retSqlfromStrarray(); //+ (linkitcd.Count() > 0 ? "," + linkitcd.retSqlfromStrarray() : "");
+                            string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
+                            string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).Distinct().ToArray().retSqlfromStrarray();
+                            var stocktype = string.Join(",", (from Z in VE.TBATCHDTL where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
+                            var bale = (from a in VE.TBATCHDTL select a.BALENO).ToList();
+                           
+                            var BALENO = (from a in VE.TBATCHDTL where a.BALENO!=null select a.BALENO + GCS + a.BALEYR).Distinct().ToArray().retSqlfromStrarray();
+                            if (BALENO.retStr()!="")
+                            {
+                                var balno = string.Join("", BALENO.Split(Convert.ToChar(Cn.GCS())));
+
+                                var mtrljobcd = VE.MTRLJOBCD.retStr();
+                                if (mtrljobcd.retStr() == "")
+                                {
+                                    mtrljobcd = "'FS'";
+                                }
+                                else
+                                {
+                                    mtrljobcd = mtrljobcd.retSqlformat();
+
+                                }
+                                DataTable ITEM_STOCK_DATA = new DataTable();
+
+                                //ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, "", ITGRPCD, "", "", "", false, "", "", true);
+                                ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, "", ITGRPCD, "", "", "", false, "", "", true);
+
+
+
+                                string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
+
+
+                                var txndata = ITEMDT.AsEnumerable().Where(a=>a.Field<string>("BALENO").retStr()!="")
+                                                                .GroupBy(g => new { itcd = g["itcd"] })
+                                                                .Select(g => new
+                                                                {
+                                                                    ITCD = g.Key.itcd.retStr(),
+                                                                    QNTY = g.Sum(r => r.Field<double>("qnty")),
+                                                                }).ToList();
+                                if (txndata != null && txndata.Count > 0)
+                                {
+                                    for (int i = 0; i <= txndata.Count - 1; i++)
+                                    {
+                                        string ITEM = txndata[i].ITCD;
+
+                                        string QNTY = ""; double STOCK_QNTY = 0; double SHORTAGE_QNTY = 0; double saleqnty = 0;
+
+                                        var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
+                                                              .Where(g => g.Field<string>("itcd") == ITEM)
+                                                                  .GroupBy(g => new { itcd = g["itcd"] })
+                                                                   .Select(g =>
+                                                                   {
+                                                                       var row = ITEM_STOCK_DATA.NewRow();
+                                                                       row["qnty"] = g.Sum(r => r.Field<decimal>("qnty"));
+                                                                       return row;
+                                                                   });
+                                        if (vQNTY != null && vQNTY.Count() > 0)
+                                        {
+                                            var vQNTY1 = vQNTY.CopyToDataTable();
+                                            QNTY = vQNTY1.Rows[0]["qnty"].retStr();
+                                            STOCK_QNTY = QNTY.retDbl();
+
+                                            saleqnty = txndata[i].QNTY.retDbl();
+
+
+                                            STOCK_QNTY = VE.MENU_PARA == "SR" ? STOCK_QNTY + saleqnty.retDbl() : STOCK_QNTY - saleqnty.retDbl();
+                                        }
+
+                                      
+
+                                        if (STOCK_QNTY < 0)
+                                        {
+                                            ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - saleqnty.retDbl();
+
+                                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Item/Link Item : " + txndata[i].ITCD + " , Entered Quantity : " + saleqnty + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
+                                        }
+                                    }
+
+                                }
+                                if (ERROR_MESSAGE.Length > 0)
+                                {
+                                    ContentFlg = "Entry Can't Save ! Stock Not Available for Following :-</br></br>" + ERROR_MESSAGE + "";
+                                    goto dbnotsave;
+                                }
+
+                            }
+                        }
+                    }
+
+                    #endregion
+
+
+
+
                     if (VE.DefaultAction == "A")
                     {
                         ContentFlg = "1" + " (Bill No. " + DOCPATTERN + ")~" + TTXN.AUTONO;
@@ -6678,9 +6813,27 @@ namespace Improvar.Controllers
         }
         private string ChildRecordCheck(string autono)
         {
+            TransactionSaleEntry VE = new TransactionSaleEntry();
+            Cn.getQueryString(VE);
             string message = "";
             string scm = CommVar.CurSchema(UNQSNO);
             string fcm = CommVar.FinSchema(UNQSNO);
+
+            if (VE.MENU_PARA == "PB")
+            {
+                string doctype = VE.MENU_PARA == "PB" ? "'BLTG'" : "";
+                var dt1 = salesfunc.GetBaleHistory("", "", "", doctype);
+                if (dt1 != null && dt1.Rows.Count > 0)
+                {
+                    var chk = (from DataRow dr in dt1.Rows where dr["blautono"].retStr() == autono select new { docno = dr["docno"].retStr(), docdt = dr["docdt"].retStr(), docnm = dr["docnm"].retStr(), autono = dr["autono"].retStr() }).ToList();
+                    if (chk != null && chk.Count > 0)
+                    {
+                        message = "Child record found at docno:" + chk[0].docno.ToString() + " docdt:" + chk[0].docdt.retDateStr() + " docnm:" + chk[0].docnm.ToString() + " autono:" + chk[0].autono.ToString() + " ";
+                        return message;
+                    }
+                }
+            }
+
             sql = "";
             sql += "select a.autono,b.docno,b.docdt,c.docnm ";
             sql += "from " + scm + ".T_BALE a,  " + scm + ".t_cntrl_hdr b,  " + scm + ".m_doctype c ";
@@ -6840,6 +6993,15 @@ namespace Improvar.Controllers
                     str = masterHelp.ToReturnFieldValues("", dt);
                 }
                 VE.M_SYSCNFG = salesfunc.M_SYSCNFG(docdt);
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                VE.Database_Combo4 = (from n in DB.T_BATCHDTL
+                                      select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
+                List<DropDown_list2> RETURN_TYPE = new List<DropDown_list2> {
+                    new DropDown_list2 { value = "N", text = "NO"},
+                    new DropDown_list2 { value = "Y", text = "YES"},
+                    };
+                VE.RETURN_TYPE = RETURN_TYPE;
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRID_DATA = RenderRazorViewToString(ControllerContext, "_T_SALE_BarTab", VE);
@@ -6898,6 +7060,13 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        private void GRIDDATA()
+        {
+            ITEMDT.Columns.Add("ITCD", typeof(string));
+            ITEMDT.Columns.Add("BALENO", typeof(string));
+            ITEMDT.Columns.Add("QNTY", typeof(double));
+
         }
 
     }

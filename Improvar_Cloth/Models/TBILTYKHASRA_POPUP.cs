@@ -24,5 +24,6 @@ namespace Improvar.Models
         public bool CheckedAll { get; set; }
         public short ShortSLNO { get; set; }
         public string DOCNO { get; set; }
+        public string ChildData { get; set; }
     }
 }

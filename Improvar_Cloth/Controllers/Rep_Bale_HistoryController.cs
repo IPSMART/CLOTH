@@ -94,7 +94,7 @@ namespace Improvar.Controllers
                 {
                     //sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
                     //sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
-                    sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, nvl(a.gocd,k.gocd)gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, nvl(a.itcd,k.itcd)itcd, b.shade, nvl(a.nos,k.nos)nos, nvl(a.qnty,k.qnty)qnty, c.usr_entdt, ";
+                    sql += "select distinct a.autono, a.baleopen, a.blautono, a.txnslno, nvl(a.gocd,k.gocd)gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, nvl(a.itcd,k.itcd)itcd, b.shade, nvl(a.nos,k.nos)nos, nvl(a.qnty,k.qnty)qnty, c.usr_entdt, ";
                     sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, nvl(g.gonm,k.gonm)gonm, nvl(f.styleno,k.styleno)styleno, nvl(f.itnm,k.itnm)itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
                     sql += "b.pageno, b.pageslno, b.lrno from ";
 

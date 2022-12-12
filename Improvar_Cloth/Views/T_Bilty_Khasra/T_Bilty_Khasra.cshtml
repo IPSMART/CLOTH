@@ -34,6 +34,11 @@
                 $("#GOCD").attr('readonly', 'readonly');
                 $("#gocdhlp").hide();
             }
+            if ("@Model.Delete" == "child record found") {
+                $("#DOCDT").attr("readonly", "readonly");
+                $("#DOCDT").attr("style", "pointer-events:none");
+            }
+
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -72,7 +77,7 @@
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         var GridRowMain = $("#T_Bilty_Khasra_Main > tbody > tr").length;
 
-        if ("@Model.MENU_PARA" == "TRWB") {
+        if ("@Model.MENU_PARA" == "TRWB" || "@Model.MENU_PARA" == "TRFB") {
             var gocd = $("#GOCD").val();
             if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             for (var i = 0; i < GridRowMain; i++) {
@@ -184,6 +189,12 @@
                     $("#popup").animate({ marginTop: '-10px' }, 50);
                     $("#popup").html(result);
                     $("#search_T_Bilty_Khasra_PopUp").focus();
+                    if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
+                        $("#GOCD").attr("readonly", "readonly");
+                        $("#gocdhlp").hide();
+                    }
+                    $("#DOCDT").attr("readonly", "readonly");
+                    $("#DOCDT").attr("style", "pointer-events:none");
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -232,7 +243,14 @@
                         lrnoflag = true;
                     }
                 }
-                if (flag == true) {
+                var ChildData = "";
+                if (tableid == "T_Bilty_Khasra_Main") {
+                    var ChildData = $("#ChildData_" + i).val();
+                }
+                else {
+                    var ChildData = $("#BALEY_K_ChildData_" + i).val();
+                }
+                if (flag == true && ChildData != "Y") {
                     document.getElementById(checkboxid + i).checked = true;
                     if (lrnoflag == true) {
                         document.getElementById("chkid_K_POPUP_" + i).checked = true;
@@ -257,7 +275,14 @@
                         lrnoflag = true;
                     }
                 }
-                if (flag == true) {
+                var ChildData = "";
+                if (tableid == "T_Bilty_Khasra_Main") {
+                    var ChildData = $("#ChildData_" + i).val();
+                }
+                else {
+                    var ChildData = $("#BALEY_K_ChildData_" + i).val();
+                }
+                if (flag == true && ChildData != "Y") {
                     document.getElementById(checkboxid + i).checked = false;
                     if (lrnoflag == true) {
                         document.getElementById("chkid_K_POPUP_" + i).checked = false;
@@ -367,11 +392,14 @@
                 $("#GOCD_" + i).val(GOCD);
                 $("#GONM_" + i).val(GONM);
                 $("#FLAG1_" + i).val(FLAG1);
-                if (BALEOPEN == true && $("#FLAG1_" + i).val() == "SHOP") {
-                    document.getElementById("CheckedBALEOPEN_" + i).checked = true;
-                }
-                else {
-                    document.getElementById("CheckedBALEOPEN_" + i).checked = false;
+                var ChildData = $("#ChildData_" + i).val();
+                if (ChildData != "Y") {
+                    if (BALEOPEN == true && $("#FLAG1_" + i).val() == "SHOP") {
+                        document.getElementById("CheckedBALEOPEN_" + i).checked = true;
+                    }
+                    else {
+                        document.getElementById("CheckedBALEOPEN_" + i).checked = false;
+                    }
                 }
             }
         }
@@ -678,7 +706,7 @@
                 }
                 else
                 {
-                    @Html.HiddenFor(a => a.T_TXN.GOCD)
+                    @Html.HiddenFor(a => a.T_TXN.GOCD, new { id = "AUTONO" })
                     if (Model.DefaultAction != "V")
                     {  <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">

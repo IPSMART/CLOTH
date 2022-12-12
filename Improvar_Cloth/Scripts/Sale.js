@@ -111,7 +111,8 @@ function GetBarnoDetails(id, HelpFrom) {
                                 if (value == "true") {
                                     RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
                                 }
-                                if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
+                                //if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
+                                if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "PI" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
                                     AddBarCodeGrid();
                                 }
                             }
@@ -2223,7 +2224,7 @@ function AddBarCodeGrid() {
     var ModuleCode = $("#ModuleCode").val();
     var Delete = $("#Delete").val();
     if (DefaultAction == "V") return true;
-    var MENU_PARA = $("#MENU_PARA").val();
+    var MENU_PARA = $("#MENU_PARA").val();    
     var ClientCode = $("#ClientCode").val();
     var MNTNPART = $("#MNTNPART").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
@@ -2483,6 +2484,15 @@ function AddBarCodeGrid() {
     }
     else {
         TXNSLNO = retInt($("#TXNSLNO").val());
+    }
+
+    if (DefaultAction == "A" && MNTNBALE == "Y" && MENU_PARA == "SBDIR"  && !$('#GOCD').is('[readonly]')) {
+        $('#GOCD').attr('readonly', 'readonly');
+        $('#gocd_help').hide();
+    }
+    if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+        $('#SLCD').attr('readonly', 'readonly');
+        $('#PARTY_HELP').hide();
     }
 
     var tr = "";
@@ -4123,6 +4133,8 @@ function Sale_SelectTTXNDTLDetails() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+    var MNTNBALE = $("#MNTNBALE").val();
     var Count = 0;
     var GridRow = $("#T_SALE_POPUP_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
@@ -4134,6 +4146,14 @@ function Sale_SelectTTXNDTLDetails() {
     if (Count == 0) {
         msgInfo("Please select a Against Docno. !");
         return false;
+    }
+    if (DefaultAction == "A" && MNTNBALE == "Y" && MENU_PARA == "SBDIR" && !$('#GOCD').is('[readonly]')) {
+        $('#GOCD').attr('readonly', 'readonly');
+        $('#gocd_help').hide();
+    }
+    if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+        $('#SLCD').attr('readonly', 'readonly');
+        $('#PARTY_HELP').hide();
     }
     $.ajax({
         type: 'post',
@@ -4281,6 +4301,9 @@ function Update_Pageno_slno() {
             if (result == "1") {
                 msgSuccess1("Update Successfully !");
             }
+            else {
+                msgWarning(result);
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -4363,6 +4386,9 @@ function Update_Transport() {
             $("#WaitingMode").hide();
             if (result == "1") {
                 msgSuccess1("Update Successfully !");
+            }
+            else {
+                msgWarning(result);
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -4475,6 +4501,18 @@ function SelectGeneralLedgerCode(id, GLCD, GLNM) {
 function GetBaleData() {
     if (!emptyFieldCheck("Please Select / Enter Bale No.", "BALENO_HELP")) { return false; }
     if ($("#LINKAUTONO").val() == "") { return false; }
+    var DefaultAction = $("#DefaultAction").val();
+    var MNTNBALE = $("#MNTNBALE").val();
+    var MENU_PARA = $("#MENU_PARA").val();
+
+    if (DefaultAction == "A" && MNTNBALE == "Y" && MENU_PARA == "SBDIR" && !$('#GOCD').is('[readonly]')) {
+        $('#GOCD').attr('readonly', 'readonly');
+        $('#gocd_help').hide();
+    }
+    if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+        $('#SLCD').attr('readonly', 'readonly');
+        $('#PARTY_HELP').hide();
+    }
     $.ajax({
         type: 'post',
         url: $("#UrlGetBaleData").val(), //"@Url.Action("GetBaleData", PageControllerName)",
@@ -4484,6 +4522,11 @@ function GetBaleData() {
             debugger;
             $("#BALENO_HELP").val("");
             $('#partialdivBarCodeTab').html(result);
+            if (MENU_PARA == "SBDIR")
+            {
+                $("#DOCDT").attr("readonly", "readonly");
+                $("#DOCDT").attr("style", "pointer-events:none");
+            }
             var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
             for (var i = 0; i <= GridRow - 1; i++) {
                 if (retStr($("#B_ITCD_" + i).val()) != "") {

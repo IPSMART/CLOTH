@@ -16,20 +16,28 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
+        debugger;
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $(".sl_bom_grid").prop("disabled", false);
         }
         else if ("@Model.DefaultAction" == "E") {
 
+            if ("@Model.Delete" == "child record found")
+            {
+                $("#DOCDT").attr("readonly", "readonly");
+                $("#DOCDT").attr("style", "pointer-events:none");
+            }
+
+
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
-       
+
     });
-   
+
 </script>
 <script>
     @{
@@ -89,6 +97,10 @@
                     else {
                         $("#popup").animate({ marginTop: '-10px' }, 50);
                         $("#popup").html(result);
+                        $("#MUTSLCD").attr("readonly", "readonly");
+                        $("#PARTY_HELP").hide();
+                        $("#DOCDT").attr("readonly", "readonly");
+                        $("#DOCDT").attr("style", "pointer-events:none");
                         //var arr = new Array();
                         //var arr1 = new Array();
                         //var GridRowMain = $("#T_BiltyG_Mutia_Main > tbody > tr").length;
@@ -109,7 +121,7 @@
                         //        document.getElementById("chkid_POPUP_" + i).checked = true;
                         //    }
                         //}
-                      
+
                     }
                     $("#WaitingMode").hide();
                 },
@@ -121,7 +133,7 @@
             });
         }
     }
- 
+
 </script>
 <script>
     function AddDOCrow() {
@@ -176,7 +188,7 @@
     }
 </script>
 <script>
- 
+
     function DeleteRow() {
         $.ajax({
             type: 'POST',
@@ -206,24 +218,23 @@
         var idno = idn[2];
         var LRNO = $("#LRNO_POPUP" + idno).val();
         var chkbox = document.getElementById("chkid_POPUP_" + i).checked;
-        if (chkbox == true)
-            {
-        var Table_name = "#T_BiltyG_Mutia_PopUp > tbody > tr";
-        var lngth = $(Table_name).length;
-        for (var i = 0; i <= lngth - 1; i++) {
-            //check with lrno                 
-            var lrno = $("#LRNO_POPUP" + i).val();
-            if (LRNO == lrno) {
-                //$("#chkid_POPUP_" + i).checked = true;
-                document.getElementById("chkid_POPUP_" + i).checked = true;
+        if (chkbox == true) {
+            var Table_name = "#T_BiltyG_Mutia_PopUp > tbody > tr";
+            var lngth = $(Table_name).length;
+            for (var i = 0; i <= lngth - 1; i++) {
+                //check with lrno
+                var lrno = $("#LRNO_POPUP" + i).val();
+                if (LRNO == lrno) {
+                    //$("#chkid_POPUP_" + i).checked = true;
+                    document.getElementById("chkid_POPUP_" + i).checked = true;
+                }
             }
-        }
         }
         if (chkbox == false) {
             document.getElementById("chkid_POPUP_" + i).checked = false;
         }
     }
-    
+
     function SelectPendingLRNO() {
         debugger;
         var mutslcd = "";
@@ -261,7 +272,7 @@
         }
 
     }
-   
+
     function CancelLRNO() {
         $('#popup').html("");
         $('.PopUp_Backround').fadeOut();
@@ -342,7 +353,7 @@
                 <div class="col-md-6">
                     <div class="editor-field">
                         @Html.DropDownListFor(model => model.DRCR, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control", id = "DRCR" })
-                       
+
 
                     </div>
                 </div>
@@ -355,8 +366,15 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_BILTY_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')" />
+                            @if (Model.DefaultAction == "A")
+                            {
+                                @Html.EditorFor(model => model.T_BILTY_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')" />
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.T_BILTY_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control", id = "MUTSLCD", maxlength = 8, @title = "Only for View", @placeholder = "MUTSLCD", @readonly = "readonly", tabindex = "-1" } })
+                            }
                         </div>
                     </div>
                     <div class="col-md-9">

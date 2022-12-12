@@ -29,5 +29,6 @@ namespace Improvar.ViewModels
 
         public string BALECOUNT { get; set; }
         public string M_SLIP_NO { get; set; }
+        public string ISSUEDT { get; set; }
     }
 }

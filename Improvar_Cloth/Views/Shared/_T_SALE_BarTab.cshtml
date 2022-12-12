@@ -327,15 +327,15 @@
                                             @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                             {
                                                 <td class="">
-@if (Model.MENU_PARA == "SBDIR")
-{
-    @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();", @TabIndex = -1, @readonly = "readonly" } })
-}
-else
-{
-    @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();" } })
-}
-                                                 </td>
+                                                    @if (Model.MENU_PARA == "SBDIR")
+                                                    {
+                                                        @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();", @TabIndex = -1, @readonly = "readonly" } })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();" } })
+                                                    }
+                                                </td>
                                             }
                                             @if (Model.SHOWSTKTYPE == "Y")
                                             {
@@ -544,9 +544,9 @@ else
                                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onblur = "HasChangeBarSale('Y'," + i + ");" })
                                                 }
                                                 else {
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @style = "cursor:pointer", onblur = "HasChangeBarSale('Y'," + i + ");" })
+                                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @style = "cursor:pointer", onblur = "HasChangeBarSale('Y'," + i + ");" })
                                                 }
-                                             </td>
+                                            </td>
                                             <td class="">
                                                 @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && (Model.T_TXN.BARGENTYPE == "E" || Model.TBATCHDTL[i].BARGENTYPE == "E"))
                                                 {

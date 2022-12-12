@@ -37,7 +37,14 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTY[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                                            @if (Model.TBILTY[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.TBILTY[i].Checked, new  { id = "chkid", style = "pointer-events:none;background-color:#eee" } )
+                                            }
+                                            else {
+                                                @Html.CheckBoxFor(model => model.TBILTY[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                                            }
+                                            @Html.HiddenFor(model => model.TBILTY[i].ChildData, new { id = "ChildData_" + i })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTY[i].SLNO, new { id = "SLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
@@ -60,12 +67,12 @@
                                             @Html.TextBoxFor(model => Model.TBILTY[i].PREFDT, new { id = "PREFNODT_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                     </tr>
-                                } 
+                                }
                             }
                         </tbody>
                     </table>
-                    </div>
-                </div>
-                    }
                 </div>
             </div>
+        }
+    </div>
+</div>

@@ -25,65 +25,72 @@
                     <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_BiltyG_Mutia_PopUp');" />
                     <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
                 </div>
-                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Details</b></center>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Details</b></center>
             </div>
-                <div class="sticky-table sticky-ltr-cells">
-                    <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
-                        <table id="T_BiltyG_Mutia_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1000px;">
-                            <thead>
-                                <tr class="sticky-header" style="height:30px;">
-                                    <th class="sticky-cell" style="width: 27px;"></th>
-                                    <th class="" style="width: 27px;">SL No.</th>
-                                    <th class="" style="width:100px;">LR No</th>
-                                    <th class="" style="width:100px;">LR Date</th>
-                                    <th class="" style="width:100px;">Bale No</th>
-                                    <th class="" style="width: 100px;">Bill No</th>
-                                    <th class="" style="width:78px;">Bill Date</th>
-                                    <th class="">Transporter Name</th>
-                                    
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.TBILTY_POPUP != null)
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
+                    <table id="T_BiltyG_Mutia_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1000px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 27px;">SL No.</th>
+                                <th class="" style="width:100px;">LR No</th>
+                                <th class="" style="width:100px;">LR Date</th>
+                                <th class="" style="width:100px;">Bale No</th>
+                                <th class="" style="width: 100px;">Bill No</th>
+                                <th class="" style="width:78px;">Bill Date</th>
+                                <th class="">Transporter Name</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TBILTY_POPUP != null)
+                            {
+                                for (int i = 0; i <= Model.TBILTY_POPUP.Count - 1; i++)
                                 {
-                                    for (int i = 0; i <= Model.TBILTY_POPUP.Count - 1; i++)
-                                    {
-                                        <tr style="font-size:12px; font-weight:bold;">
-                                            <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i, @class = "chkid_popup_", onclick = "SelectMatchingCheckBoxes("+i+")" })
-                                                @Html.HiddenFor(model => model.TBILTY_POPUP[i].BLAUTONO, new { id = "BLAUTONO_POPUP_" + i })
-                                                @Html.HiddenFor(model => model.TBILTY_POPUP[i].BALEYR, new { id = "BALEYR_POPUP_" + i })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].SLNO, new { id = "SLNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].LRNO, new { id = "LRNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 20, @readonly = "readonly" })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].LRDT, new { id = "LRDT_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].BALENO, new { id = "BALENO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFNO, new { id = "PREFNO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            </td>
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].TRANSLNM, new { id = "TRANSLNM_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            </td>
-                                        </tr>
-                                    }
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @if (Model.TBILTY_POPUP[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i, @class = "chkid_popup_", style = "pointer-events:none;background-color:#eee" })
+                                            }
+                                            else {
+                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i, @class = "chkid_popup_", onclick = "SelectMatchingCheckBoxes(" + i + ")" })
+                                            }
+                                            @Html.HiddenFor(model => model.TBILTY_POPUP[i].BLAUTONO, new { id = "BLAUTONO_POPUP_" + i })
+                                            @Html.HiddenFor(model => model.TBILTY_POPUP[i].BALEYR, new { id = "BALEYR_POPUP_" + i })
+                                            @Html.HiddenFor(model => model.TBILTY_POPUP[i].ChildData, new { id = "ChildData_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].SLNO, new { id = "SLNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].LRNO, new { id = "LRNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 20, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].LRDT, new { id = "LRDT_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].BALENO, new { id = "BALENO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFNO, new { id = "PREFNO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].TRANSLNM, new { id = "TRANSLNM_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            }
-        
+            </div>
+        }
+
     </div>
     <div class="row" style="padding:5px;text-align:center;">
         <div class="col-md-10">
