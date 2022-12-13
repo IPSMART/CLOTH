@@ -300,6 +300,7 @@
     <Compile Include="Controllers\Rep_Misc_Qry_UpdtController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_PartyStmtController.cs" />
+    <Compile Include="Controllers\Rep_PendChallanController.cs" />
     <Compile Include="Controllers\Rep_Pend_JobController.cs" />
     <Compile Include="Controllers\Rep_Job_regController.cs" />
     <Compile Include="Controllers\Rep_Pend_LRController.cs" />
@@ -707,6 +708,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>JobIssue_DIWH.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\JobRecv.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobRecv.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\Rep_JobBillWithItem.cs">
@@ -1502,6 +1509,7 @@
     <Content Include="Views\Shared\_T_PhyStock_UpdatePrice.cshtml" />
     <Content Include="Views\Rep_TranReg\Rep_TranReg.cshtml" />
     <Content Include="Views\Shared\_Rep_Bar_History_AddNewPrice.cshtml" />
+    <Content Include="Views\Rep_PendChallan\Rep_PendChallan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1630,6 +1638,10 @@
     <Content Include="Report\Rep_JobBillWithItem.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Rep_JobBillWithItem.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\JobRecv.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>JobRecv.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
