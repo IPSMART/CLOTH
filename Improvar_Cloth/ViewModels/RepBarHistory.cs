@@ -31,6 +31,7 @@ namespace Improvar.ViewModels
         public string COLRCD { get; set; }
         public string COLRNM { get; set; }
         public string ITGRPCD { get; set; }
+        public string BAR_CODE { get; set; }
         public string ITGRPNM { get; set; }
         public string BARCODE { get; set; }
         public string FABITCD { get; set; }

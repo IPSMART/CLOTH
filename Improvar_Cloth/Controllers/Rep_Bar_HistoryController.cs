@@ -244,7 +244,7 @@ namespace Improvar.Controllers
                 sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
                 sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
                 sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                sql1 += "a.AUTONO = f.AUTONO(+) and f.compcd = g.compcd(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BARCODE + "' ";
+                sql1 += "a.AUTONO = f.AUTONO(+) and f.compcd = g.compcd(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BAR_CODE + "' ";
                 sql1 += "order by b.DOCDT,b.DOCNO ";
                 DataTable barcdhistory = masterHelp.SQLquery(sql1);
 
@@ -328,12 +328,12 @@ namespace Improvar.Controllers
                     var schnm = CommVar.CurSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                    var T_BATCHMST_cnt = DB1.T_BATCHMST.Where(x => x.BARNO == VE.BARCODE).Select(a => a.AUTONO).Distinct().Count();
+                    var T_BATCHMST_cnt = DB1.T_BATCHMST.Where(x => x.BARNO == VE.BAR_CODE).Select(a => a.AUTONO).Distinct().Count();
 
                     for (int i = 0; i <= VE.BARCODEPRICE.Count - 1; i++)
                     {
                         sql = "update " + schnm + ".T_BATCHMST_PRICE set RATE =" + VE.BARCODEPRICE[i].RATE + " "
-                                 + " where BARNO='" + VE.BARCODE + "' and PRCCD='" + VE.BARCODEPRICE[i].PRCCD.retStr() + "' and EFFDT=to_date('" + VE.BARCODEPRICE[i].EFFDT.retStr() + "','dd/mm/yyyy')  ";
+                                 + " where BARNO='" + VE.BAR_CODE + "' and PRCCD='" + VE.BARCODEPRICE[i].PRCCD.retStr() + "' and EFFDT=to_date('" + VE.BARCODEPRICE[i].EFFDT.retStr() + "','dd/mm/yyyy')  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         if (T_BATCHMST_cnt == 1)
@@ -341,19 +341,19 @@ namespace Improvar.Controllers
                             if (VE.BARCODEPRICE[i].PRCCD.retStr() == "CP")
                             {
                                 sql = "update " + schnm + ". T_BATCHMST set RATE='" + VE.BARCODEPRICE[i].RATE + "' "
-                                    + " where BARNO='" + VE.BARCODE + "'   ";
+                                    + " where BARNO='" + VE.BAR_CODE + "'   ";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                             else if (VE.BARCODEPRICE[i].PRCCD.retStr() == "WP")
                             {
                                 sql = "update " + schnm + ". T_BATCHMST set WPRATE='" + VE.BARCODEPRICE[i].RATE + "' "
-                                    + " where BARNO='" + VE.BARCODE + "'   ";
+                                    + " where BARNO='" + VE.BAR_CODE + "'   ";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                             else if (VE.BARCODEPRICE[i].PRCCD.retStr() == "RP")
                             {
                                 sql = "update " + schnm + ". T_BATCHMST set RPRATE='" + VE.BARCODEPRICE[i].RATE + "' "
-                                    + " where BARNO='" + VE.BARCODE + "'   ";
+                                    + " where BARNO='" + VE.BAR_CODE + "'   ";
                                 OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                             }
                         }
@@ -481,7 +481,7 @@ namespace Improvar.Controllers
                     var schnm = CommVar.CurSchema(UNQSNO);
 
                     sql = "update " + schnm + ". T_BATCHMST set PDESIGN='" + VE.PDESIGN + "' "
-                                  + " where BARNO='" + VE.BARCODE + "'   ";
+                                  + " where BARNO='" + VE.BAR_CODE + "'   ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     ModelState.Clear();
@@ -522,7 +522,7 @@ namespace Improvar.Controllers
                         double RATE = i == 0 ? VE.NEWPRICEDATA.CPRATE.retDbl() : i == 1 ? VE.NEWPRICEDATA.WPRATE.retDbl() : VE.NEWPRICEDATA.RPRATE.retDbl();
                         if (RATE != 0)
                         {
-                            var chk = DB.T_BATCHMST_PRICE.Where(a => a.BARNO.ToUpper() == VE.BARCODE.ToUpper() && a.EFFDT == VE.NEWPRICEDATA.EFFDT && a.PRCCD == PRCCD && a.RATE == RATE).Select(a => a.BARNO).Distinct().ToList();
+                            var chk = DB.T_BATCHMST_PRICE.Where(a => a.BARNO.ToUpper() == VE.BAR_CODE.ToUpper() && a.EFFDT == VE.NEWPRICEDATA.EFFDT && a.PRCCD == PRCCD && a.RATE == RATE).Select(a => a.BARNO).Distinct().ToList();
                             if (chk.Count > 0)
                             {
                                 OraTrans.Rollback();
@@ -533,7 +533,7 @@ namespace Improvar.Controllers
                             TBATCHMSTPRICE.EMD_NO = 0;
                             TBATCHMSTPRICE.CLCD = CommVar.ClientCode(UNQSNO);
                             TBATCHMSTPRICE.EFFDT = VE.NEWPRICEDATA.EFFDT != null ? Convert.ToDateTime(VE.NEWPRICEDATA.EFFDT) : System.DateTime.Now.Date;
-                            TBATCHMSTPRICE.BARNO = VE.BARCODE.retStr();
+                            TBATCHMSTPRICE.BARNO = VE.BAR_CODE.retStr();
                             TBATCHMSTPRICE.PRCCD = PRCCD;
                             TBATCHMSTPRICE.RATE = RATE;
                             dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE, "A");

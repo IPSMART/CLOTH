@@ -76,6 +76,7 @@
                         $("#WaitingMode").hide();
                         var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
                         document.getElementById("BARCODE").value = returncolvalue(res[0], "BARNO");
+                        document.getElementById("BAR_CODE").value = returncolvalue(res[0], "BARNO");
                         document.getElementById("ITGRPCD").value = returncolvalue(res[0], "ITGRPCD");
                         document.getElementById("ITGRPNM").value = returncolvalue(res[0], "ITGRPNM");
                         document.getElementById("FABITCD").value = returncolvalue(res[0], "FABITCD");
@@ -120,7 +121,8 @@
                         hlpblurval = id;
                         document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
                         FillImageModal();
-
+                        $("#" + BARNO.id).val("");
+                        $("#BARCODE").focus();
                     }
                     else {
 
@@ -231,7 +233,7 @@
         debugger;
         var AUTONO = "";
         var DOCDT = $("#DOCDT").val();
-        var BARNO = $("#BARCODE").val();
+        var BARNO = $("#BAR_CODE").val();
         window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO, "_blank")
     }
 </script>
@@ -305,7 +307,7 @@
 </script>
 <script>
     function PriceOpen() {
-        if (!emptyFieldCheck("Please enter Bar Code", "BARCODE")) { return false; }
+        if (!emptyFieldCheck("Please enter Bar Code", "BAR_CODE")) { return false; }
             $('.PopUp_Backround').show();
             $("#popupAddNewPrice").show();
     }
@@ -379,208 +381,221 @@
     <div class="row">
         <div class="col-md-1">
             <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Group")
+                @Html.Label("", "Bar Code")
             </div>
         </div>
         <div class="col-md-5">
             <div class="editor-field">
-                @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
+                @Html.EditorFor(model => model.BAR_CODE, new { htmlAttributes = new { @class = "form-control", id = "BAR_CODE", @placeholder = "Bar Code", @readonly = "readonly", @TabIndex = -1 } })
 
             </div>
         </div>
-        <div class="col-md-7">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
         </div>
-        <div class="col-md-1" style="width:auto;">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Fabric")
+        <div class="row">
+            <div class="col-md-1">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Group")
+                </div>
             </div>
-        </div>
-        <div class="col-md-5" style="width:auto;">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", @placeholder = "FABITCD", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-7">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-4"></div>
-        <div class="col-lg-1" id="divmtrljobcd">
-            <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
-                <table id="exampleMTRL" border="1" style="width: auto;">
-                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
-                    {
-                        <tr>
-                            <td align="center">
-                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
-                            </td>
-                            <td align="center">
-                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                @Html.DisplayFor(model => STRC)
-                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
-                            </td>
-                            <td align="center">
-                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                @Html.DisplayFor(model => STRC1)
-                            </td>
-                        </tr>
-                                    }
-                </table>
-            </div>
-            @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
-        </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
 
-    </div>
-    <div class="row">
-        <div class="col-md-1">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Item")
+                </div>
             </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @placeholder = "ITCD", @readonly = "readonly", @TabIndex = -1 } })
+            <div class="col-md-7">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
             </div>
-        </div>
-        <div class="col-md-7">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "ITNM", @readonly = "readonly", @TabIndex = -1 } })
+            <div class="col-md-1" style="width:auto;">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Fabric")
+                </div>
             </div>
-        </div>
-        <div class="col-md-1" style="width:auto;">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Design")
+            <div class="col-md-5" style="width:auto;">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", @placeholder = "FABITCD", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
             </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
+            <div class="col-md-7">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
             </div>
-        </div>
-        <div class="col-md-1" style="width:auto;">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Uom ")
+            <div class="col-md-4"></div>
+            <div class="col-lg-1" id="divmtrljobcd">
+                <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
+                    <table id="exampleMTRL" border="1" style="width: auto;">
+                        @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
+                        {
+                            <tr>
+                                <td align="center">
+                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
+                                </td>
+                                <td align="center">
+                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                    @Html.DisplayFor(model => STRC)
+                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
+                                </td>
+                                <td align="center">
+                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                    @Html.DisplayFor(model => STRC1)
+                                </td>
+                            </tr>
+                                        }
+                    </table>
+                </div>
+                @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
             </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "UOMCD", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-1">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Party")
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", @placeholder = "SLCD", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-7" style="width:auto;">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", @placeholder = "SLNM", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-5" style="width:auto;">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "DISTRICT", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @placeholder = "GSTNO", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-1" style="width:auto;">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "P/Design")
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "PDESIGN", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div id="divPDESIGN" class="col-md-1" style="width:auto;display:none;">
-            <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" id="Update_Price" value="Update P/Design" title="Click to Update P/Design" onclick="Update_PDesignData()" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-1">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Color")
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control", id = "COLRCD", @placeholder = "COLRCD", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-7">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @placeholder = "COLRNM", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
 
-    </div>
-    <div class="row">
-        <div class="col-md-1">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Size")
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Item")
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @placeholder = "ITCD", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "ITNM", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-1" style="width:auto;">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Design")
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-1" style="width:auto;">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Uom ")
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "UOMCD", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
             </div>
         </div>
-        <div class="col-md-5">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", @placeholder = "SIZECD", @readonly = "readonly", @TabIndex = -1 } })
+        <div class="row">
+            <div class="col-md-1">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Party")
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", @placeholder = "SLCD", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-7" style="width:auto;">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", @placeholder = "SLNM", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-5" style="width:auto;">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "DISTRICT", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @placeholder = "GSTNO", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-1" style="width:auto;">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "P/Design")
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "PDESIGN", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div id="divPDESIGN" class="col-md-1" style="width:auto;display:none;">
+                <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" id="Update_Price" value="Update P/Design" title="Click to Update P/Design" onclick="Update_PDesignData()" />
             </div>
         </div>
-        <div class="col-md-7">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.SIZENM, new { htmlAttributes = new { @class = "form-control", id = "SIZENM", @placeholder = "SIZENM", @readonly = "readonly", @TabIndex = -1 } })
+        <div class="row">
+            <div class="col-md-1">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Color")
+                </div>
             </div>
-        </div>
-        <div class="col-md-5"></div><div class="col-md-5"></div>
-        <div class="col-md-1" style="margin-top: 6px;width:auto;">
-            <div class="editor-field">
-                @Html.Label("", "Balance")
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control", id = "COLRCD", @placeholder = "COLRCD", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.TOTALIN, new { htmlAttributes = new { @class = "form-control", id = "TOTALIN", @placeholder = "TOTALIN", @readonly = "readonly", @TabIndex = -1 } })
+            <div class="col-md-7">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @placeholder = "COLRNM", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.TOTALOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTALOUT", @placeholder = "TOTALOUT", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
-        <div class="col-md-3" style="font:bold;">
-            <div class="editor-field">
-                @Html.EditorFor(model => model.TOTINOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTINOUT", @placeholder = "TOTINOUT", @readonly = "readonly", @TabIndex = -1 } })
-            </div>
-        </div>
 
-    </div>
-    <div class="row" style="margin-top:20PX">
-        <div class="col-lg-3">
-            <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove">
-                @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Size")
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", @placeholder = "SIZECD", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.SIZENM, new { htmlAttributes = new { @class = "form-control", id = "SIZENM", @placeholder = "SIZENM", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-5"></div><div class="col-md-5"></div>
+            <div class="col-md-1" style="margin-top: 6px;width:auto;">
+                <div class="editor-field">
+                    @Html.Label("", "Balance")
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.TOTALIN, new { htmlAttributes = new { @class = "form-control", id = "TOTALIN", @placeholder = "TOTALIN", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.TOTALOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTALOUT", @placeholder = "TOTALOUT", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+            <div class="col-md-3" style="font:bold;">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.TOTINOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTINOUT", @placeholder = "TOTINOUT", @readonly = "readonly", @TabIndex = -1 } })
+                </div>
+            </div>
+
+        </div>
+        <div class="row" style="margin-top:20PX">
+            <div class="col-lg-3">
+                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove">
+                    @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                    @*@Html.Partial("_REP_BAR_HISTORY")*@
+                </div>
             </div>
         </div>
-        <div class="col-lg-9">
-            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                @*@Html.Partial("_REP_BAR_HISTORY")*@
-            </div>
-        </div>
-    </div>
         @*<div class="row">
 
                     @Html.HiddenFor(model => model.BarImages)
@@ -590,58 +605,58 @@
                                 <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
 
             </div>*@
-                                    <div class="row">
-                                        <div class="col-lg-3">
-                                            <div class="row">
-                                                <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
-                                                    @Html.Label("", "BarCode Image")
-                                                </div>
-                                            </div>
-                                            @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-                                            <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
-                                                <div id="myCarousel" class="carousel" data-ride="carousel">
-                                                    <div class="carousel-inner" id="div_carousel_inner">
-                                                        <div class="item active">
-                                                            <img src="" alt="Los Angeles" style="width:100%;">
-                                                        </div>
-                                                        <div class="item">
-                                                            <img src="" alt="Chicago" style="width:100%;">
-                                                        </div>
-                                                    </div>
-                                                    <!-- Left and right controls -->
-                                                    <a class="left  carousel-control arrow-left" id="prev">
-                                                        <span class="glyphicon glyphicon-chevron-left"></span>
-                                                    </a>
-                                                    <a class="right  carousel-control arrow-right" id="next">
-                                                        <span class="glyphicon glyphicon-chevron-right"></span>
-                                                    </a>
-                                                </div>
-                                            </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="row">
+                    <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
+                        @Html.Label("", "BarCode Image")
+                    </div>
+                </div>
+                @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+                <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                    <div id="myCarousel" class="carousel" data-ride="carousel">
+                        <div class="carousel-inner" id="div_carousel_inner">
+                            <div class="item active">
+                                <img src="" alt="Los Angeles" style="width:100%;">
+                            </div>
+                            <div class="item">
+                                <img src="" alt="Chicago" style="width:100%;">
+                            </div>
+                        </div>
+                        <!-- Left and right controls -->
+                        <a class="left  carousel-control arrow-left" id="prev">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                        </a>
+                        <a class="right  carousel-control arrow-right" id="next">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </a>
+                    </div>
+                </div>
 
-                                        </div>
-                                        <div class="PopUp_Backround">
-                                            <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                                                @Html.Partial("_Rep_Bar_History_AddNewBarno")
-                                            </div>
-                                            <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                                                @Html.Partial("_Rep_Bar_History_AddNewPrice")
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @*<div class="row" style="margin-top:20PX">
-                                            <div class="col-lg-6">
-                                                <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
+            </div>
+            <div class="PopUp_Backround">
+                <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                    @Html.Partial("_Rep_Bar_History_AddNewBarno")
+                </div>
+                <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                    @Html.Partial("_Rep_Bar_History_AddNewPrice")
+                </div>
+            </div>
+        </div>
+        @*<div class="row" style="margin-top:20PX">
+                <div class="col-lg-6">
+                    <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
 
-                                            </div>
-                                        </div>*@
-                                    @*<div class="row" style="background-color:#c4b9b9;width:100%">
-                                        <div id="PartialdivEWBILL">*@
-                                    @*@Html.Partial("_Rep_Bar_History")*@
-                                    @*</div>
-                                        </div>*@
-                                    <div class="container">
-                                        <div id="helpDIV">
+                </div>
+            </div>*@
+        @*<div class="row" style="background-color:#c4b9b9;width:100%">
+            <div id="PartialdivEWBILL">*@
+        @*@Html.Partial("_Rep_Bar_History")*@
+        @*</div>
+            </div>*@
+        <div class="container">
+            <div id="helpDIV">
 
-                                        </div>
-                                    </div>
-                                    }
+            </div>
+        </div>
+        }
