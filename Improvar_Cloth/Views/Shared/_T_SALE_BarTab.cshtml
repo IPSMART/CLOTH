@@ -442,7 +442,7 @@
                                             {
                                                 <td class="">
                                                     @*@Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })*@
-                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, onblur = "RateUpdate(" + i + ",'#B_');HasChangeBarSale();" } })
+                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, onblur = "RateUpdate(" + i + ",'#B_');HasChangeBarSale('Y',"+i+");" } })
                                                 </td>
                                             }
 

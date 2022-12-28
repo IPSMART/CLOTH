@@ -149,6 +149,21 @@
                 @(new HtmlString(Model.Itnm))
             </div>
         </div>
+        <div class="row" style="margin-top:6px">
+            <div class="col-md-6">
+                <div class="editor-label" style="margin-top:5px">
+                    @Html.Label("", "Show Report On")
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(model => model.TEXTBOX2, "Details", new { @checked = "checked" })  @Html.Label("Details")
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(model => model.TEXTBOX2, "Summary")  @Html.Label("Summary")
+                </label>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-6">
                 <input type="submit" formtarget="_blank" name="Show_rep" value="Show Report" title="Show report in a new tab" class="btn btn-default" />

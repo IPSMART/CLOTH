@@ -18,7 +18,8 @@ namespace Improvar.Controllers
         // GET: Rep_PendChallan
         public ActionResult Rep_PendChallan()
         {
-            try {
+            try
+            {
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -30,7 +31,7 @@ namespace Improvar.Controllers
                     jobcd = VE.MENU_PARA;
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                    VE.FDT =  CommVar.FinStartDate(UNQSNO);
+                    VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.Checkbox1 = false; //show summary
                     VE.Checkbox2 = true; //Show Party
@@ -38,7 +39,7 @@ namespace Improvar.Controllers
                     VE.TEXTBOX2 = "P"; //Calc on Box/Pcs/Sets;
                     VE.TEXTBOX4 = CommVar.CurrDate(UNQSNO);
                     string comcd = CommVar.Compcd(UNQSNO);
-                    string location =  CommVar.Loccd(UNQSNO);
+                    string location = CommVar.Loccd(UNQSNO);
                     jobcd = VE.MENU_PARA;
                     jobnm = DB.M_JOBMST.Find(jobcd).JOBNM;
 
@@ -95,7 +96,7 @@ namespace Improvar.Controllers
                     {
                         return Content("0");
                     }
-                    
+
                 }
             }
             catch (Exception Ex)
@@ -113,31 +114,31 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "", AsOnDt = "";
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string strslcd = "", linecd = "", stritcd = "", itgrpcd = "", fdt, tdt = "", AsOnDt = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
                 AsOnDt = VE.TEXTBOX4;
                 jobcd = VE.TEXTBOX1;
-                jobnm = jobcd.retStr() == ""?"": DB.M_JOBMST.Find(jobcd).JOBNM;
+                jobnm = jobcd.retStr() == "" ? "" : DB.M_JOBMST.Find(jobcd).JOBNM;
                 bool showitem = false, showsumm = VE.Checkbox1, showparty = VE.Checkbox2;
 
                 if (FC.AllKeys.Contains("slcdvalue"))
                 {
-                    slcd = FC["slcdvalue"].ToString().retSqlformat();
+                    strslcd = FC["slcdvalue"].ToString().retSqlformat();
                 }
                 if (FC.AllKeys.Contains("itcdvalue"))
                 {
-                    slcd = FC["itcdvalue"].ToString().retSqlformat();
+                    strslcd = FC["itcdvalue"].ToString().retSqlformat();
                 }
-                DataTable tbl = Salesfunc.GetPendChallans(jobcd, slcd, AsOnDt,"","","",true,false,"","",VE.FDT,VE.TDT);
-                tbl.DefaultView.Sort = "slnm, slcd, docdt, docno, styleno, itnm, itcd, partnm, partcd";
+                DataTable tbl = Salesfunc.GetPendChallans(jobcd, strslcd, AsOnDt, "", "", "", true, false, "", "", VE.FDT, VE.TDT);
+                tbl.DefaultView.Sort = "docdt,docno,slnm, slcd,styleno, itnm, itcd, partnm, partcd";
                 tbl = tbl.DefaultView.ToTable();
                 if (tbl != null && tbl.Rows.Count > 0)
                 {
-                    if (itcd != "")
+                    if (stritcd != "")
                     {
-                        var ITEM_LIST = itcd.Split(',');
+                        var ITEM_LIST = stritcd.Split(',');
                         tbl = (from DataRow DR in tbl.Rows where ITEM_LIST.Contains(DR["itcd"].ToString()) select DR).CopyToDataTable();
                     }
                 }
@@ -162,11 +163,14 @@ namespace Improvar.Controllers
                 HC.RepStart(IR, 3);
 
                 HC.GetPrintHeader(IR, "slno", "string", "n,3", "Sl");
-                HC.GetPrintHeader(IR, "docno", "string", "c,16", "Chl No");
-                HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Chl Date");
-                HC.GetPrintHeader(IR, "slcd", "string", "c,10", "Party Code");
-                HC.GetPrintHeader(IR, "slnm", "string", "c,30", "Party Name");
-                HC.GetPrintHeader(IR, "itnm", "string", "c,40", "Item Name [Style No] ");
+                HC.GetPrintHeader(IR, "docno", "string", "c,16", "Chl;No");
+                HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Chl;Date");
+                HC.GetPrintHeader(IR, "slcd", "string", "c,10", "Party;Code");
+                HC.GetPrintHeader(IR, "slnm", "string", "c,30", "Party;Name");
+                if (VE.TEXTBOX2 == "Details")
+                {
+                    HC.GetPrintHeader(IR, "itnm", "string", "c,40", "Item Name;[Style No] ");
+                }
                 HC.GetPrintHeader(IR, "qnty", "double", qtydsp, "Quantity");
 
                 Int32 maxR = 0, i = 0, rNo = 0;
@@ -174,21 +178,42 @@ namespace Improvar.Controllers
                 i = 0; maxR = tbl.Rows.Count - 1;
                 while (i <= maxR)
                 {
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["slno"] = i + 1;
-                    IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Remove(10);
-                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
-                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
-                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                    IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString() + " [ " + tbl.Rows[i]["styleno"].ToString() + " ] ";
-                    IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
-                    TotalQnty = TotalQnty + Convert.ToDouble(IR.Rows[rNo]["qnty"].ToString());
-                    i++;
+                    string autono = tbl.Rows[i]["autono"].retStr();
+                    while (tbl.Rows[i]["autono"].ToString() == autono)
+                    {
+                        string slcd = tbl.Rows[i]["slcd"].ToString();
+                        while (tbl.Rows[i]["autono"].ToString() == autono && tbl.Rows[i]["slcd"].ToString() == slcd)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["slno"] = i + 1;
+                            IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Remove(10);
+                            IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
+                            IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                            if (VE.TEXTBOX2 == "Details")
+                            {
+                                IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString() + " [ " + tbl.Rows[i]["styleno"].ToString() + " ] ";
+                            }
+                            double qnty = 0;
+                            string fld = VE.TEXTBOX2 == "Details" ? "itcd" : "slcd";
+                            string fldval = tbl.Rows[i][fld].ToString();
+                            while (tbl.Rows[i]["autono"].ToString() == autono && tbl.Rows[i]["slcd"].ToString() == slcd && tbl.Rows[i][fld].ToString() == fldval)
+                            {
+                                qnty += tbl.Rows[i]["qnty"].retDbl();
+                                TotalQnty += tbl.Rows[i]["qnty"].retDbl();
+                                i++;
+                                if (i > maxR) break;
+                            }
+                            IR.Rows[rNo]["qnty"] = qnty;
+                            if (i > maxR) break;
+                        }
+                        if (i > maxR) break;
+                    }
                     if (i > maxR) break;
                 }
 
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                IR.Rows[rNo]["itnm"] = "Grand Totals";
+                IR.Rows[rNo]["slnm"] = "Grand Totals";
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
                 IR.Rows[rNo]["qnty"] = TotalQnty;
                 string pghdr1 = "", repname = CommFunc.retRepname("rep_partyleg");

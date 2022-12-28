@@ -814,7 +814,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onchange = "DocumentDateChng(this);", onblur = "DocumentDateChng(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onchange = "DocumentDateChng(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                             @Html.HiddenFor(model => Model.Last_DOCDT, new { @class = "form-control", id = "Last_DOCDT" })
                         </div>
                     </div>
@@ -2503,6 +2503,9 @@
                                         <div class="row">
                                             <div class="col-md-1" style="width:auto;">
                                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
+                                            </div>
+                                            <div class="col-md-1" style="width:auto;">
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="O" value="Regenerate Bill Sl(Alt+O)" title="Click to Regenerate Bill Sl in Bar Code Tab" onclick="UpdateBillSlno()" />
                                             </div>
                                         </div>
                                     </div>

@@ -2224,7 +2224,7 @@ function AddBarCodeGrid() {
     var ModuleCode = $("#ModuleCode").val();
     var Delete = $("#Delete").val();
     if (DefaultAction == "V") return true;
-    var MENU_PARA = $("#MENU_PARA").val();    
+    var MENU_PARA = $("#MENU_PARA").val();
     var ClientCode = $("#ClientCode").val();
     var MNTNPART = $("#MNTNPART").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
@@ -2486,7 +2486,7 @@ function AddBarCodeGrid() {
         TXNSLNO = retInt($("#TXNSLNO").val());
     }
 
-    if (DefaultAction == "A" && MNTNBALE == "Y" && MENU_PARA == "SBDIR"  && !$('#GOCD').is('[readonly]')) {
+    if (DefaultAction == "A" && MNTNBALE == "Y" && MENU_PARA == "SBDIR" && !$('#GOCD').is('[readonly]')) {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
@@ -2720,7 +2720,7 @@ function AddBarCodeGrid() {
     }
     else {
         tr += '    <td class="" title="' + RATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="RateUpdate(' + rowindex + ',\'#B_\');HasChangeBarSale();" value="' + RATE + '" >';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="RateUpdate(' + rowindex + ',\'#B_\');HasChangeBarSale(\'Y\',' + rowindex + ');" value="' + RATE + '" >';
         tr += '    </td>';
     }
 
@@ -2803,14 +2803,13 @@ function AddBarCodeGrid() {
         tr += '    </td>';
     }
     tr += '    <td class="">';
-    if (ClientCode == "DIWH")
-     {
-         tr += '<input class=" atextBoxFor " data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" type="text" value=""> ';
+    if (ClientCode == "DIWH") {
+        tr += '<input class=" atextBoxFor " data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" type="text" value=""> ';
     }
-    else{
+    else {
         tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" onclick="OpenZoomTextBoxModal(this.id)" style="cursor:pointer" type="text" value="">';
     }
-         //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
+    //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
 
 
@@ -4522,8 +4521,7 @@ function GetBaleData() {
             debugger;
             $("#BALENO_HELP").val("");
             $('#partialdivBarCodeTab').html(result);
-            if (MENU_PARA == "SBDIR")
-            {
+            if (MENU_PARA == "SBDIR") {
                 $("#DOCDT").attr("readonly", "readonly");
                 $("#DOCDT").attr("style", "pointer-events:none");
             }
@@ -4889,6 +4887,52 @@ function Update_Agent() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+}
+function UpdateBillSlno() {
+    $("#WaitingMode").show();
+    var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    var MERGEINDTL = document.getElementById("MERGEINDTL").checked;
+    var slno = 1;
+    if (MERGEINDTL == false) {
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            $("#B_TXNSLNO_" + i).val(slno);
+            slno++;
+        }
+    }
+    else {
+        var matchslno = [];
+        cnt = 0;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var chk = jQuery.inArray(i, matchslno);
+            if (chk == -1) {
+                for (j = 0; j <= GridRowMain - 1; j++) {
+
+                    if (retStr($("#B_ITGRPCD_" + i).val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#B_MTRLJOBCD_" + i).val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                    retStr($("#B_MTBARCODE_" + i).val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#B_ITCD_" + i).val()) == retStr($("#B_ITCD_" + j).val()) &&
+                    retStr($("#B_DISCTYPE_" + i).val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#B_TDDISCTYPE_" + i).val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                    retStr($("#B_SCMDISCTYPE_" + i).val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#B_UOM_" + i).val()) == retStr($("#B_UOM_" + j).val()) &&
+                    retStr($("#B_STKTYPE_" + i).val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#B_RATE_" + i).val()) == retFloat($("#B_RATE_" + j).val()) &&
+                    retFloat($("#B_DISCRATE_" + i).val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#B_SCMDISCRATE_" + i).val()) == retFloat($("#B_SCMDISCRATE_" + j).val()) &&
+                    retFloat($("#B_TDDISCRATE_" + i).val()) == retFloat($("#B_TDDISCRATE_" + j).val()) && retFloat($("#B_GSTPER_" + i).val()) == retFloat($("#B_GSTPER_" + j).val()) &&
+                    retFloat($("#B_FLAGMTR_" + i).val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#B_HSNCODE_" + i).val()) == retStr($("#B_HSNCODE_" + j).val()) &&
+                    retStr($("#B_PRODGRPGSTPER_" + i).val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                    retStr($("#B_GLCD_" + i).val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#B_FABITCD_" + i).val()) == retStr($("#B_FABITCD_" + j).val()) &&
+                    retStr($("#B_BLUOMCD_" + i).val()) == retStr($("#B_BLUOMCD_" + j).val()) && retStr($("#B_ITREM_" + i).val()) == retStr($("#B_ITREM_" + j).val()) &&
+                    retStr($("#B_AGDOCNO_" + i).val()) == retStr($("#B_AGDOCNO_" + j).val()) && retStr($("#B_AGDOCDT_" + i).val()) == retStr($("#B_AGDOCDT_" + j).val()) &&
+                    retFloat($("#B_LISTPRICE_" + i).val()) == retFloat($("#B_LISTPRICE_" + j).val()) && retFloat($("#B_LISTDISCPER_" + i).val()) == retFloat($("#B_LISTDISCPER_" + j).val()) &&
+                    retStr($("#B_BALENO_" + i).val()) == retStr($("#B_BALENO_" + j).val())) {
+                        $("#B_TXNSLNO_" + j).val(slno);
+                        matchslno[cnt] = j;
+                        cnt++;
+                    }
+                }
+                slno++;
+            }
+           
+        }
+    }
+    HasChangeBarSale();
+    $("#WaitingMode").hide();
 }
 
 
