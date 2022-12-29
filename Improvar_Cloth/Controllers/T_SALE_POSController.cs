@@ -2809,7 +2809,7 @@ namespace Improvar.Controllers
                                 R_TTXNDTL.PARTCD = VE.TsalePos_TBATCHDTL_RETURN[i].PARTCD;
                                 R_TTXNDTL.COLRCD = VE.TsalePos_TBATCHDTL_RETURN[i].COLRCD;
                                 R_TTXNDTL.SIZECD = VE.TsalePos_TBATCHDTL_RETURN[i].SIZECD;
-                                R_TTXNDTL.STKDRCR = dr;
+                                R_TTXNDTL.STKDRCR = VE.MENU_PARA == "SBCMR" ? cr : dr;
                                 R_TTXNDTL.STKTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE;
                                 R_TTXNDTL.HSNCODE = VE.TsalePos_TBATCHDTL_RETURN[i].HSNCODE;
                                 R_TTXNDTL.ITREM = VE.TsalePos_TBATCHDTL_RETURN[i].ITREM;
@@ -3004,7 +3004,7 @@ namespace Improvar.Controllers
                                 TsalePos_TBATCHDTL_RETURN.MTRLJOBCD = VE.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD;
                                 TsalePos_TBATCHDTL_RETURN.PARTCD = VE.TsalePos_TBATCHDTL_RETURN[i].PARTCD;
                                 TsalePos_TBATCHDTL_RETURN.HSNCODE = VE.TsalePos_TBATCHDTL_RETURN[i].HSNCODE;
-                                TsalePos_TBATCHDTL_RETURN.STKDRCR = dr;
+                                TsalePos_TBATCHDTL_RETURN.STKDRCR = VE.MENU_PARA == "SBCMR" ? cr : dr;
                                 TsalePos_TBATCHDTL_RETURN.NOS = VE.TsalePos_TBATCHDTL_RETURN[i].NOS;
                                 TsalePos_TBATCHDTL_RETURN.QNTY = VE.TsalePos_TBATCHDTL_RETURN[i].QNTY;
                                 TsalePos_TBATCHDTL_RETURN.BLQNTY = VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY;
@@ -3970,7 +3970,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -3985,7 +3985,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
