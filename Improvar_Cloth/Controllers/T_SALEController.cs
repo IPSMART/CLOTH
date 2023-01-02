@@ -1959,7 +1959,7 @@ namespace Improvar.Controllers
                                select dr["baleno"].retStr()).ToArray().retSqlfromStrarray();
                     }
                 }
-                var str = masterHelp.BaleNo_help(val, tdt, gocd, "", true, true,"",true,true);
+                var str = masterHelp.BaleNo_help(val, tdt, gocd, "", true, true, "", true, true);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3519,7 +3519,7 @@ namespace Improvar.Controllers
         public ActionResult Update_Transport(TransactionSaleEntry VE)
         {
             Cn.getQueryString(VE);
-            string ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO);
+            string ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO, "Y");
             if (ContentFlg != "") return Content(ContentFlg);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -6446,9 +6446,9 @@ namespace Improvar.Controllers
                             string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).Distinct().ToArray().retSqlfromStrarray();
                             var stocktype = string.Join(",", (from Z in VE.TBATCHDTL where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
                             var bale = (from a in VE.TBATCHDTL select a.BALENO).ToList();
-                           
-                            var BALENO = (from a in VE.TBATCHDTL where a.BALENO!=null select a.BALENO + GCS + a.BALEYR).Distinct().ToArray().retSqlfromStrarray();
-                            if (BALENO.retStr()!="")
+
+                            var BALENO = (from a in VE.TBATCHDTL where a.BALENO != null select a.BALENO + GCS + a.BALEYR).Distinct().ToArray().retSqlfromStrarray();
+                            if (BALENO.retStr() != "")
                             {
                                 var balno = string.Join("", BALENO.Split(Convert.ToChar(Cn.GCS())));
 
@@ -6472,7 +6472,7 @@ namespace Improvar.Controllers
                                 string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
 
 
-                                var txndata = ITEMDT.AsEnumerable().Where(a=>a.Field<string>("BALENO").retStr()!="")
+                                var txndata = ITEMDT.AsEnumerable().Where(a => a.Field<string>("BALENO").retStr() != "")
                                                                 .GroupBy(g => new { itcd = g["itcd"] })
                                                                 .Select(g => new
                                                                 {
@@ -6508,7 +6508,7 @@ namespace Improvar.Controllers
                                             STOCK_QNTY = VE.MENU_PARA == "SR" ? STOCK_QNTY + saleqnty.retDbl() : STOCK_QNTY - saleqnty.retDbl();
                                         }
 
-                                      
+
 
                                         if (STOCK_QNTY < 0)
                                         {
@@ -6811,7 +6811,7 @@ namespace Improvar.Controllers
             var result = Tuple.Create(doc);
             return result;
         }
-        private string ChildRecordCheck(string autono)
+        private string ChildRecordCheck(string autono, string Updatetrns = "")
         {
             TransactionSaleEntry VE = new TransactionSaleEntry();
             Cn.getQueryString(VE);
@@ -6839,10 +6839,13 @@ namespace Improvar.Controllers
             sql += "from " + scm + ".T_BALE a,  " + scm + ".t_cntrl_hdr b,  " + scm + ".m_doctype c ";
             sql += "where a.autono = B.AUTONO and b.doccd = c.DOCCD and nvl(b.cancel,'N') = 'N'  and a.blautono = '" + autono + "'  ";
             sql += "and a.autono not in ('" + autono + "')";
-            sql += "union all ";
-            sql += "select a.autono,b.docno,b.docdt,c.docnm  ";
-            sql += "from  " + fcm + ".T_vch_bl_adj a," + fcm + ".t_cntrl_hdr b ," + fcm + ".m_doctype c  ";
-            sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD  and nvl(b.cancel,'N') = 'N'  and (a.i_autono='" + autono + "' OR a.r_autono='" + autono + "'  )and a.autono not in ('" + autono + "')";
+            if (Updatetrns.retStr() != "Y")
+            {
+                sql += "union all ";
+                sql += "select a.autono,b.docno,b.docdt,c.docnm  ";
+                sql += "from  " + fcm + ".T_vch_bl_adj a," + fcm + ".t_cntrl_hdr b ," + fcm + ".m_doctype c  ";
+                sql += "where a.autono=B.AUTONO and b.doccd=c.DOCCD  and nvl(b.cancel,'N') = 'N'  and (a.i_autono='" + autono + "' OR a.r_autono='" + autono + "'  )and a.autono not in ('" + autono + "')";
+            }
             DataTable dt = masterHelp.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
