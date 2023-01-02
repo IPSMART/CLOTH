@@ -720,7 +720,11 @@ namespace Improvar.Controllers
                             while (auto1 == tbl.Rows[i]["autono"].ToString())
                             {
                                 double mult = 1;
-                                if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
+                                if (tbl.Rows[i]["doctag"].retStr() == "SB" && tbl.Rows[i]["stkdrcr"].retStr() == "D")
+                                { mult = -1; }
+                                else if (tbl.Rows[i]["doctag"].retStr() == "PB" && tbl.Rows[i]["stkdrcr"].retStr() == "C")
+                                { mult = -1; }
+                               else if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
                                 { mult = -1; }
                                 ino = ino + 1;
                                 DataRow dr = IR.NewRow();
