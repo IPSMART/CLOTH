@@ -231,13 +231,12 @@ namespace Improvar.Controllers
                 sql += " from  " + CommVar.FinSchema(UNQSNO) + ".t_txneinv a,  " + CommVar.FinSchema(UNQSNO) + ".t_vch_gst b,  " + CommVar.FinSchema(UNQSNO) + ".m_subleg c, ";
                 sql += "  " + CommVar.FinSchema(UNQSNO) + ".t_cntrl_hdr d,  " + CommVar.FinSchema(UNQSNO) + ".t_txnewb e,  " + CommVar.SaleSchema(UNQSNO) + ".t_txnoth f ";
                 sql += " where a.autono = b.autono(+) and b.pcode = c.slcd(+) and a.autono = d.autono(+) and ";
-                sql += " d.compcd = '" + CommVar.Compcd(UNQSNO) + "' and ";
+                sql += " d.compcd = '" + CommVar.Compcd(UNQSNO) + "' and d.loccd = '" + CommVar.Loccd(UNQSNO) + "' and ";
                 sql += " a.autono = e.autono(+) and a.autono = f.autono(+) ";
                 if (autonos != "") sql += " and b.autono in(" + autonos + ") ";
                 sql += " AND  b.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND b.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY')   ";
                 sql += " group by f.sapblno, b.docdt, c.gstno, c.state, e.lorryno, e.ewaybillno,a.ackdt, a.irnno, b.blno ";
                 sql += " order by  to_char(b.docdt,'dd.mm.yyyy')  , b.blno";
-
             }
             else
             {
@@ -264,15 +263,15 @@ namespace Improvar.Controllers
 
                 sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO);
-                sql = "select distinct a.autono, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm) slnm, sum(a.blamt) blamt, e.translcd, f.slnm translnm, e.lorryno ";
+                sql = "select distinct a.autono,a.invtypecd, f.regntype, f.gstno, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm) slnm, sum(a.blamt) blamt, e.translcd, f.slnm translnm, e.lorryno ";
                 sql += "from " + scmf + ".t_vch_gst a, " + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f ";
                 sql += "where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.translcd=f.slcd(+) and a.autono=e.autono(+) and ";
                 sql += "a.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and a.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
-                sql += "nvl(a.gstregntype,b.regntype) in ('R','C') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N' and ";
+                sql += "nvl(a.gstregntype,b.regntype) in ('R','C','U') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N' and ";
                 sql += "a.autono not in (select autono from " + scmf + ".t_txneinv) and d.modcd='" + Module.MODCD + "' and ";
                 sql += "a.autono not in (select distinct autono from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_doc_pass) and ";
-                sql += "d.compcd='" + CommVar.Compcd(UNQSNO) + "' and b.gstno is not null ";
-                sql += "group by a.autono, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm), e.translcd, f.slnm, e.lorryno ";
+                sql += "d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "' and ( (b.gstno is null and a.invtypecd not in ('01') or b.gstno is not null ) )  ";
+                sql += "group by a.autono, a.invtypecd, f.regntype, f.gstno,c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm), e.translcd, f.slnm, e.lorryno ";
                 sql += "order by docdt,autono ";
                 DataTable txn = masterHelp.SQLquery(sql);
                 VE.GenEinvIRNGrid = (from DataRow dr in txn.Rows
@@ -355,11 +354,11 @@ namespace Improvar.Controllers
                         };
 
                         sql = "";
-                        sql += "select a.autono, a.slno, b.doccd, a.blno, a.bldt,  a.invtypecd, a.pos,a.gstslnm posslnm,a.gstno posgstno,a.gstslpin pospin,a.gstsldist posdist ,a.gstsladd1 posadd1,a.gstsladd2 posadd2,";
+                        sql += "select a.autono, a.slno, b.doccd, a.blno, a.bldt, a.expcd, a.invtypecd, a.pos,a.gstslnm posslnm,a.gstno posgstno,a.gstslpin pospin,a.gstsldist posdist ,a.gstsladd1 posadd1,a.gstsladd2 posadd2,";
                         sql += "a.SHIPDOCNO,a.SHIPDOCDT,a.PORTCD, a.basamt , a.discamt, a.GOOD_SERV,dncnsalpur, ";
-                        sql += " translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,p.PROPNAME LegalNm, d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
+                        sql += " translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, nvl(d.gstno,'URP') gstno, p.PROPNAME LegalNm, d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
 
-                        sql += "translate(nvl(a.gstslnm,nvl(p.fullname,p.slnm)),'+[#./()]^',' ') bslnm, nvl(a.gstno,p.gstno) bgstno, p.PROPNAME bLegalNm, decode(a.gstsladd1,null,p.add1||' '||p.add2,a.gstsladd1||' '||a.gstsladd2) badd1, ";
+                        sql += "translate(nvl(a.gstslnm,nvl(p.fullname,p.slnm)),'+[#./()]^',' ') bslnm, nvl(nvl(a.gstno,p.gstno),'URP') bgstno, p.PROPNAME bLegalNm, decode(a.gstsladd1,null,p.add1||' '||p.add2,a.gstsladd1||' '||a.gstsladd2) badd1, ";
                         sql += "p.add3||' '||p.add4 badd2, nvl(a.gstsldist,p.district) bdistrict, nvl(a.gstslpin,p.pin) bpin, nvl(a.pos,p.statecd) bstatecd, upper(q.statenm) bstatenm, p.regemailid bregemailid,nvl(p.phno1std||p.phno1,p.regmobile) bregph, ";
                         sql += " p.OTHADD1 bOTHADD1, p.othadd2 bothadd2, p.othadd4 bothadd4, p.OTHADDPIN bOTHADDPIN, p.OTHADDEMAIL bOTHADDEMAIL, ";
                         sql += "e.slnm trslnm, e.gstno trgst, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt,a.rate, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
@@ -382,6 +381,7 @@ namespace Improvar.Controllers
                         sql += "order by blno, bldt, autono, slno ";
                         DataTable dt = masterHelp.SQLquery(sql);
                         if (dt.Rows.Count == 0) { VE.Message = "No Data; " + sql; return VE; }
+
                         AdaequareIRN adaequareIRN = new AdaequareIRN();
                         TranDtls tranDtls = new TranDtls();
                         DocDtls docDtls = new DocDtls();
@@ -409,6 +409,10 @@ namespace Improvar.Controllers
                                     tranDtls.SupTyp = "SEZWOP"; break;
                                 case "04":
                                     tranDtls.SupTyp = "DEXP"; break;
+                                case "05":
+                                    tranDtls.SupTyp = "EXPWP"; break;
+                                case "06":
+                                    tranDtls.SupTyp = "EXPWOP"; break;
                                 default:
                                     tranDtls.SupTyp = "B2B"; break;
                             }
