@@ -2409,6 +2409,8 @@ namespace Improvar
                 new INVTYPE_list { Value = "02", Text = "SEZ supplies with payment" },
                 new INVTYPE_list { Value = "03", Text = "SEZ supplies without payment" },
                 new INVTYPE_list { Value = "04", Text = "Deemed Exp" },
+                new INVTYPE_list { Value = "05", Text = "Expwp" },
+                new INVTYPE_list { Value = "06", Text = "Expwop" },
             };
             return (INVTYPE_list);
         }

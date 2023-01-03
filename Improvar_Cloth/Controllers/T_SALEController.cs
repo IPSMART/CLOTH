@@ -19,7 +19,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl(); DropDownHelp dropDownHelp = new DropDownHelp();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS; T_TXNMEMO TXNMEMO;
+        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS; T_TXNMEMO TXNMEMO; T_VCH_GST VCHGST;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         DataTable ITEMDT = new DataTable();
@@ -215,6 +215,7 @@ namespace Improvar.Controllers
                             VE.T_TXN_LINKNO = TTXNLINKNO;
                             VE.T_TXNEINV = TTXNEINV;
                             VE.T_TDSTXN = TTDS;
+                            VE.T_VCH_GST = VCHGST;
                             if (VE.MENU_PARA == "SBPOS")
                             {
                                 VE.T_TXNMEMO = TXNMEMO;
@@ -580,14 +581,14 @@ namespace Improvar.Controllers
         public TransactionSaleEntry Navigation(TransactionSaleEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+            ImprovarDB DBC = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             string COM_CD = CommVar.Compcd(UNQSNO);
             string LOC_CD = CommVar.Loccd(UNQSNO);
             string DATABASE = CommVar.CurSchema(UNQSNO).ToString();
             string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
 
-            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO();
+            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO(); VCHGST = new T_VCH_GST();
 
             //if (VE.IndexKey.Count != 0 || (loadOrder.retStr().Length > 1 && index >= 0))
             if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
@@ -610,6 +611,14 @@ namespace Improvar.Controllers
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
                 TTXNEINV = DBF.T_TXNEINV.Find(TXN.AUTONO);
                 TTDS = DBF.T_TDSTXN.Where(m => m.AUTONO == TXN.AUTONO).FirstOrDefault();
+                VCHGST = (from x in DBF.T_VCH_GST where x.AUTONO == TXN.AUTONO select x).FirstOrDefault();
+                if (VCHGST != null)
+                {
+                    VE.PORTNM = DBC.MS_PORTCD.Find(VCHGST.PORTCD)?.PORTNM;
+                    VE.GSTSLNM = VCHGST.GSTSLNM;
+                    VE.POS = VCHGST.POS;
+                    //VE.STATE = (from x in DBC.MS_STATE where x.STATECD == VCHGST.POS select x.STATENM).FirstOrDefault();
+                }
                 if (VE.MENU_PARA == "SB" && loadOrder == "N")
                 {
                     TTXNLINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == TXN.AUTONO select a).FirstOrDefault();
