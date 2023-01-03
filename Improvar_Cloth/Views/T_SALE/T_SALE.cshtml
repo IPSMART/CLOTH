@@ -875,7 +875,7 @@
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                         </div>
                     }
-                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR" && (Model.T_TXNTRANS.EWAYBILLNO.retStr() == "" || Model.T_TXNTRANS.LRNO.retStr() == ""))
+                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "PR" && (Model.T_TXNTRANS.EWAYBILLNO.retStr() == "" || Model.T_TXNTRANS.LRNO.retStr() == "") && Model.T_CNTRL_HDR.CANCEL != "Y")
                     {
                         <div class="col-md-1" style="width:auto;">
                             <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Transport" id="edit_Transport" value="Update Transport" title="Click to Update Transport button for edit Transport Tab" onclick="Edit_Transport()" />
