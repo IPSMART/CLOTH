@@ -2609,7 +2609,7 @@ namespace Improvar
             rsStock.Columns.Add("balnos", typeof(double), "");
             //rsStock.Columns.Add("basrate", typeof(double), "");
             rsStock.Columns.Add("rate", typeof(double), "");
-            //rsStock.Columns.Add("amt", typeof(double), "");
+            rsStock.Columns.Add("amt", typeof(double), "");
             rsStock.Columns.Add("itgrpcd", typeof(string), "");
             rsStock.Columns.Add("itgrpnm", typeof(string), "");
             //rsStock.Columns.Add("fabitcd", typeof(string), "");
@@ -2729,7 +2729,7 @@ namespace Improvar
                                     {
                                         rsStock.Rows[rNo]["rate"] = avrate;
                                     }
-                                    //rsStock.Rows[rNo]["amt"] = stkamt;
+                                    rsStock.Rows[rNo]["amt"] = stkamt;
                                     rsStock.Rows[rNo]["itcd"] = stritcd;
                                     //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
                                     rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
@@ -2772,7 +2772,7 @@ namespace Improvar
                                 {
                                     rsStock.Rows[rNo]["rate"] = 0;
                                 }
-                                //rsStock.Rows[rNo]["amt"] = 0;
+                                rsStock.Rows[rNo]["amt"] = 0;
                                 rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                                 rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                                 rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
@@ -2808,7 +2808,7 @@ namespace Improvar
                             {
                                 rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
                             }
-                            //rsStock.Rows[rNo]["amt"] = isamt;
+                            rsStock.Rows[rNo]["amt"] = isamt;
                             rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                             rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                             rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
