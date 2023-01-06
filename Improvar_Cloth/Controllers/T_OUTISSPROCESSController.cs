@@ -3857,7 +3857,7 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                                     TXNSLNO = a.SLNO.retShort(),
                                     //QQNTY = a.QNTY.retDbl(),
                                     QNTY = a.BOMQNTY.retDbl(),
-                                    RECPROGITSTYLE = a.ITNM.retStr(),
+                                    RECPROGITSTYLE =a.QITNM.retStr(),// a.ITNM.retStr(),
                                     //UOM = a.QUOM.retStr(),
                                     BARNO = a.BARNO.retStr(),
                                     ITGRPCD = a.ITGRPCD.retStr(),
@@ -3898,21 +3898,25 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                 DataTable allprodgrpgstper_data = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL where a.BARNO.retStr() != "" select a.BARNO).ToArray().retSqlfromStrarray();
                 string ITCD = (from a in VE.TBATCHDTL where a.ITCD.retStr() != "" select a.ITCD).ToArray().retSqlfromStrarray();
-                //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
+                string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL where a.ITGRPCD.retStr() != "" select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 string autono = VE.T_TXN.AUTONO.retStr() == "" ? "" : VE.T_TXN.AUTONO.retSqlformat();
-                allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD, autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true,"JB");
 
 
                 //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                 var MSYSCNFG = salesfunc.M_SYSCNFG(VE.T_TXN.DOCDT.retDateStr());
+                double slno = 0;
                 foreach (var v in VE.TBATCHDTL)
                 {
+                    slno++;
+                    v.SLNO = slno.retShort();
+                    v.TXNSLNO = slno.retShort();
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     //v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and mtrljobcd= '" + v.MTRLJOBCD + "'");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
