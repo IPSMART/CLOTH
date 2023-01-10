@@ -105,7 +105,7 @@ namespace Improvar.Controllers
                     { return Content(str = ""); }
                     else {
                         string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
-                        sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE, ";
+                        sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel, ";
                         sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm ";
                         sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
                         sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i ";
@@ -137,18 +137,18 @@ namespace Improvar.Controllers
                                                  SLNO = dr["SLNO"].retShort(),
                                                  AUTONO = dr["AUTONO"].retStr(),
                                                  DOCDT = dr["DOCDT"].retDateStr(),
-                                                 DOCNO = dr["DOCNO"].retStr(),
+                                                 DOCNO = dr["cancel"].retStr() == "N" ? dr["DOCNO"].retStr(): dr["DOCNO"].retStr()+ " (Record Cancelled)",
                                                  PREFNO = dr["PREFNO"].retStr(),
                                                  SLNM = dr["doccd"].retStr() == "SCM" ? dr["RTDEBCD"].retStr() == "" ? "" : dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
                                                  LOCNM = dr["LOCANM"].retStr(),
-                                                 NOS = dr["NOS"].retDbl(),
-                                                 RATE = dr["RATE"].retDbl(),
+                                                 NOS = dr["cancel"].retStr()=="N"?dr["NOS"].retDbl():0,
+                                                 RATE = dr["cancel"].retStr() == "N" ? dr["RATE"].retDbl():0,
                                                  STKDRCR = dr["STKDRCR"].retStr(),
-                                                 QNTY = dr["QNTY"].retDbl(),
+                                                 QNTY = dr["cancel"].retStr() == "N" ? dr["QNTY"].retDbl():0,
                                                  DOCNM = dr["DOCNM"].retStr(),
-                                                 DISCPER = dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr(),
-                                                 INQNTY = dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl(),
-                                                 OUTQNTY = dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl(),
+                                                 DISCPER = dr["cancel"].retStr() == "N" ? (dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr()):0.retStr(),
+                                                 INQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl()):0,
+                                                 OUTQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl()):0,
                                              }).Distinct().ToList();
                         //}).OrderBy(a => a.SLNO).Distinct().ToList();
 
@@ -239,7 +239,7 @@ namespace Improvar.Controllers
 
                 string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
                 sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE, ";
-                sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM ";
+                sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,nvl(f.cancel,'N')cancel ";
                 sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
                 sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
                 sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
@@ -253,15 +253,15 @@ namespace Improvar.Controllers
                 {
                     wsSheet1.Cells[i + 2, 1].Value = barcdhistory.Rows[i]["SLNO"].retShort();
                     wsSheet1.Cells[i + 2, 2].Value = barcdhistory.Rows[i]["DOCDT"].retDateStr();
-                    wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["DOCNO"].retStr();
+                    wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["DOCNO"].retStr(): barcdhistory.Rows[i]["DOCNO"].retStr() + " (Record Cancelled)";
                     wsSheet1.Cells[i + 2, 4].Value = barcdhistory.Rows[i]["PREFNO"].retStr();
                     wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
                     wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
                     wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
                     //var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
                     //var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    InQty = barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0;
-                    OutQty = barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0;
+                    InQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0):0;
+                    OutQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0):0;
                     //if (inqty != null)
                     //{
                     //    InQty = inqty.QNTY.retDbl();
@@ -274,12 +274,12 @@ namespace Improvar.Controllers
                     //}
                     //else { OutQty = 0; }
                     wsSheet1.Cells[i + 2, 9].Value = OutQty;
-                    wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["NOS"].retDbl();
-                    wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["RATE"].retDbl();
-                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr();
+                    wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl():0;
+                    wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["RATE"].retDbl():0;
+                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr()):0.retStr();
                     TINQTY = TINQTY + InQty;
                     TOUTQTY = TOUTQTY + OutQty;
-                    TNOS = TNOS + barcdhistory.Rows[i]["NOS"].retDbl();
+                    TNOS = TNOS + barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl():0;
                     exlrowno++;
                 }
                 wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
