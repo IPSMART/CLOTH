@@ -482,7 +482,8 @@
                 mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
                 if (Model.T_CNTRL_HDR.CANCEL == "Y")
                 {
-                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled) <span style='font-size: small;'>" + Model.T_CNTRL_HDR.CANC_REM + "</span>";
+                    //ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
                 }
             }
         }
