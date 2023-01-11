@@ -79,6 +79,23 @@ namespace Improvar.Controllers
                     VE.DropDown_list2 = drplst;
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.PRCCD = "CP"; VE.PRCNM = "CP";
+
+                    string SCHEMA = CommVar.CurSchema(UNQSNO);
+                    string SQL = "select a.MTRLJOBCD,a.MTRLJOBNM  ";
+                    SQL += "from " + SCHEMA + ".M_MTRLJOBMST a, " + SCHEMA + ".m_cntrl_hdr b ";
+                    SQL += "where a.m_autono = b.m_autono(+) and nvl(b.inactive_tag, 'N')= 'N' ";
+                    SQL += "order by a.MTRLJOBNM ";
+                    var data = MasterHelp.SQLquery(SQL);
+                    if (data != null)
+                    {
+                        VE.DropDown_list3 = (from DataRow DR in data.Rows
+                                             select new DropDown_list3()
+                                             {
+                                                 value = DR["MTRLJOBCD"].ToString(),
+                                                 text = DR["MTRLJOBNM"].ToString()
+                                             }).ToList();
+                    }
+                    VE.TEXTBOX1 = MasterHelp.ComboFill("mtrljobcd", VE.DropDown_list3, 0, 1);
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -134,13 +151,17 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("brgrpcdvalue")) selbrgrpcd = CommFunc.retSqlformat(FC["brgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdvalue")) party = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
+
+                string mtrljobcd = "'FS'";
+                if (FC.AllKeys.Contains("mtrljobcdvalue")) mtrljobcd = CommFunc.retSqlformat(FC["mtrljobcdvalue"].ToString());
+
                 string prcd = VE.PRCCD;
                 if (selgocd == "" && summary == "G")
                 {
                     selgocd = string.Join(",", (from a in DBF.M_GODOWN select a.GOCD).ToList()).retSqlformat();
                 }
                 if (summary == "B") prccd = VE.PRCCD;
-
+                bool Onlynegativestock = VE.Checkbox10;
 
                 Boolean summdtl = ((summary == "F" && repon == "D") ? false : true);
                 //if (ageingperiod != 0) summdtl = false;
@@ -163,13 +184,24 @@ namespace Improvar.Controllers
                 if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
-                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "","",VE.Checkbox9);
+                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
                 }
                 else
                 {
-                    //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
-                    //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", VE.Checkbox7);
-                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
+                    //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
+                    tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
+                }
+                if (tbl != null && tbl.Rows.Count > 0 && Onlynegativestock == true)
+                {
+                    var temptbl = tbl.Select("balqnty < 0");
+                    if (temptbl != null && temptbl.Count() > 0)
+                    {
+                        tbl = temptbl.CopyToDataTable();
+                    }
+                    else
+                    {
+                        tbl = tbl.Clone();
+                    }
                 }
                 if (summary == "D" || (summary == "F" && repon == "D"))
                 {
@@ -717,7 +749,7 @@ namespace Improvar.Controllers
 
             while (i <= maxR)
             {
-                string keyval = tbl1.Rows[i]["uomcd"].retStr() + tbl1.Rows[i]["itgrpcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr() + tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["styleno"].retStr() + tbl1.Rows[i]["barno"].retStr() ;// + tbl1.Rows[i]["barno"].retStr();
+                string keyval = tbl1.Rows[i]["uomcd"].retStr() + tbl1.Rows[i]["itgrpcd"].retStr() + tbl1.Rows[i]["fabitcd"].retStr() + tbl1.Rows[i]["itcd"].retStr() + tbl1.Rows[i]["styleno"].retStr() + tbl1.Rows[i]["barno"].retStr();// + tbl1.Rows[i]["barno"].retStr();
 
                 //calculation
                 double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
@@ -823,15 +855,15 @@ namespace Improvar.Controllers
                 i++;
                 if (i > maxR) break;
             }
-           
-           if(VE.Checkbox8==true)
+
+            if (VE.Checkbox8 == true)
             { summarybarcode.DefaultView.Sort = "hsncode,itgrpcd,itcd,fabitcd,styleno,barno "; }
             else { summarybarcode.DefaultView.Sort = "itgrpcd,itcd,fabitcd,styleno,barno "; }
 
 
             summarybarcode = summarybarcode.DefaultView.ToTable();
             #endregion
-            string chkfld1 = "", chkval1 = "", chkfld2 = "", chkval2 = "", chkval3 = "", chkfld3 ="";
+            string chkfld1 = "", chkval1 = "", chkfld2 = "", chkval2 = "", chkval3 = "", chkfld3 = "";
             chkfld1 = VE.Checkbox3 == true ? "styleno" : "itfabitcd";
             chkfld2 = VE.Checkbox4 == true ? "barno" : "itfabitcd";
             chkfld3 = VE.Checkbox8 == true ? "hsncode" : "itfabitcd";
@@ -880,7 +912,7 @@ namespace Improvar.Controllers
                         while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString())
                         {
                             chkval2 = summarybarcode.Rows[i][chkfld2].ToString();
-                            
+
                             double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
 
                             while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd && itcdfabitcd == summarybarcode.Rows[i]["itfabitcd"].retStr() && chkval1 == summarybarcode.Rows[i][chkfld1].ToString() && chkval2 == summarybarcode.Rows[i][chkfld2].ToString())
