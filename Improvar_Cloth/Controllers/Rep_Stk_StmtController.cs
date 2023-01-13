@@ -184,7 +184,8 @@ namespace Improvar.Controllers
                 if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
-                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
+                    //tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
+                    tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
                 }
                 else
                 {
@@ -316,7 +317,12 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
             pghdr1 = summary == "F" ? "Stock Valuation(FIFO)[Detail] as on " + ASDT : "Stock Valuation[Detail] as on " + ASDT;
-            PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+            string pghdr2 = "";
+            if (FC.AllKeys.Contains("mtrljobcdvalue"))
+            {
+                pghdr2 += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+            }
+            PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
 
             TempData[repname] = PV;
             TempData[repname + "xxx"] = IR;
@@ -532,7 +538,12 @@ namespace Improvar.Controllers
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
             pghdr1 = summary == "F" ? "Stock Valuation(FIFO)[Summary] as on " + ASDT : "Stock Valuation[Summary] as on " + ASDT;
-            PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+            string pghdr2 = "";
+            if (FC.AllKeys.Contains("mtrljobcdvalue"))
+            {
+                pghdr2 += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+            }
+            PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
 
             TempData[repname] = PV;
             TempData[repname + "xxx"] = IR;
@@ -651,7 +662,12 @@ namespace Improvar.Controllers
             string repname = "Stock_Val" + System.DateTime.Now;
 
             pghdr1 = "Stock Valuation(Godown Wise) as on " + ASDT;
-            PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+            string pghdr2 = "";
+            if (FC.AllKeys.Contains("mtrljobcdvalue"))
+            {
+                pghdr2 += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+            }
+            PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
 
             TempData[repname] = PV;
             TempData[repname + "xxx"] = IR;
@@ -1131,7 +1147,12 @@ namespace Improvar.Controllers
             string repname = "Stock_Val" + System.DateTime.Now;
 
             pghdr1 = "Stock Valuation(Barcode Wise Summary) as on " + ASDT;
-            PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+            string pghdr2 = "";
+            if (FC.AllKeys.Contains("mtrljobcdvalue"))
+            {
+                pghdr2 += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+            }
+            PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
 
             TempData[repname] = PV;
             TempData[repname + "xxx"] = IR;

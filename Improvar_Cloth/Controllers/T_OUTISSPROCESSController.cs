@@ -683,7 +683,7 @@ namespace Improvar.Controllers
                         //{
                         //    v.BALSTOCK = q.BALSTOCK;
                         //}
-                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and mtrljobcd = '" + v.MTRLJOBCD + "'");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
@@ -2643,22 +2643,6 @@ namespace Improvar.Controllers
                     }
                     DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                     DB.SaveChanges();
-                    transaction.Commit();
-                }
-                using (var transaction = DB.Database.BeginTransaction())
-                {
-                    DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
-                    T_CNTRL_HDR TCH1 = new T_CNTRL_HDR();
-                    if (par1 == "*#*")
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.FinSchema(UNQSNO));
-                    }
-                    else
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.FinSchema(UNQSNO), par1);
-                    }
-                    DBF.Entry(TCH1).State = System.Data.Entity.EntityState.Modified;
-                    DBF.SaveChanges();
                     transaction.Commit();
                 }
                 return Content("1");

@@ -63,6 +63,24 @@ namespace Improvar.Controllers
                                          text = a.LOCNM
                                      }).Distinct().ToList();
                     VE.Locnm = MasterHelp.ComboFill("loccd", locnmlist, 0, 1);
+
+                    string SCHEMA = CommVar.CurSchema(UNQSNO);
+                    string SQL = "select a.MTRLJOBCD,a.MTRLJOBNM  ";
+                    SQL += "from " + SCHEMA + ".M_MTRLJOBMST a, " + SCHEMA + ".m_cntrl_hdr b ";
+                    SQL += "where a.m_autono = b.m_autono(+) and nvl(b.inactive_tag, 'N')= 'N' ";
+                    SQL += "order by a.MTRLJOBNM ";
+                    var data = MasterHelp.SQLquery(SQL);
+                    if (data != null)
+                    {
+                        VE.DropDown_list3 = (from DataRow DR in data.Rows
+                                             select new DropDown_list3()
+                                             {
+                                                 value = DR["MTRLJOBCD"].ToString(),
+                                                 text = DR["MTRLJOBNM"].ToString()
+                                             }).ToList();
+                    }
+                    VE.TEXTBOX2 = MasterHelp.ComboFill("mtrljobcd", VE.DropDown_list3, 0, 1);
+
                     VE.DefaultView = true;
                     VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
@@ -114,7 +132,7 @@ namespace Improvar.Controllers
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "";
-                string selitcd = "", plist = "", selgocd = "", selgonm = "", LOCCD = "",party="";
+                string selitcd = "", plist = "", selgocd = "", selgonm = "", LOCCD = "", party = "";
 
                 if (FC.AllKeys.Contains("Godown"))
                 {
@@ -136,6 +154,9 @@ namespace Improvar.Controllers
                 }
                 if (FC.AllKeys.Contains("loccdvalue")) LOCCD = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
+                string mtrljobcd = "'FS'";
+                if (FC.AllKeys.Contains("mtrljobcdvalue")) mtrljobcd = CommFunc.retSqlformat(FC["mtrljobcdvalue"].ToString());
+
                 bool showbatch = true;
                 var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
                 string sql = "";
@@ -164,6 +185,7 @@ namespace Improvar.Controllers
                 if (party.retStr() != "") sql += "and b.slcd in (" + party + ") " + Environment.NewLine;
                 //if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+                if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
                 sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval,a.pageslno ) a, " + Environment.NewLine;
 
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos " + Environment.NewLine;
@@ -398,6 +420,11 @@ namespace Improvar.Controllers
                 if (selgocd != "")
                 {
                     selgonm = "Godown: " + string.Join(",", (from a in DBF.M_GODOWN where (selgocd.Contains(a.GOCD)) select a.GONM).ToList()).retSqlformat();
+                }
+                if (FC.AllKeys.Contains("mtrljobcdvalue"))
+                {
+                    if (selgonm != "") selgonm += "</br>";
+                    selgonm += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'","");
                 }
                 PV = HC.ShowReport(IR, repname, pghdr1, selgonm, true, true, "L", false);
 

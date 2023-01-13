@@ -5070,6 +5070,21 @@ namespace Improvar.Controllers
                         {
                             if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "")
                             {
+                                if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                {
+                                    ContentFlg = "TAX amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
+                                    goto dbnotsave;
+                                }
+                                else if (VE.TTXNDTL[i].CGSTAMT.retDbl() == 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N")
+                                {
+                                    ContentFlg = "Cgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
+                                    goto dbnotsave;
+                                }
+                                else if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                {
+                                    ContentFlg = "Sgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
+                                    goto dbnotsave;
+                                }
                                 if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "PI")
                                 {
                                     if (VE.TTXNDTL[i].PRODGRPGSTPER.retStr() == "")
@@ -5250,7 +5265,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -5596,6 +5611,21 @@ namespace Improvar.Controllers
                         {
                             if (VE.TTXNAMT[i].SLNO != 0 && VE.TTXNAMT[i].AMTCD != null && VE.TTXNAMT[i].AMT != 0)
                             {
+                                if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                {
+                                    ContentFlg = "TAX amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
+                                    goto dbnotsave;
+                                }
+                                else if (VE.TTXNAMT[i].CGSTAMT.retDbl() == 0 && VE.TTXNAMT[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N")
+                                {
+                                    ContentFlg = "Cgst amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
+                                    goto dbnotsave;
+                                }
+                                else if (VE.TTXNAMT[i].CGSTAMT.retDbl() != 0 && VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                {
+                                    ContentFlg = "Sgst amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
+                                    goto dbnotsave;
+                                }
                                 T_TXNAMT TTXNAMT = new T_TXNAMT();
                                 TTXNAMT.AUTONO = TTXN.AUTONO;
                                 TTXNAMT.SLNO = VE.TTXNAMT[i].SLNO;
@@ -6690,7 +6720,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -6698,7 +6728,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

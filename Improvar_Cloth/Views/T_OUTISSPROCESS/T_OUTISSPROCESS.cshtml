@@ -58,7 +58,8 @@
                 mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
                 if (Model.T_CNTRL_HDR.CANCEL == "Y")
                 {
-                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled) <span style='font-size: small;'>" + Model.T_CNTRL_HDR.CANC_REM + "</span>";
+                    //ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
                 }
             }
         }
@@ -2287,6 +2288,7 @@
         <input type="hidden" id="UrlAddDOCRow" value="@Url.Action("AddDOCRow", PageControllerName)" />
         <input type="hidden" id="UrlDeleteDOCRow" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
         <input type="hidden" id="UrlRateHistory" value="@Url.Action("GetRateHistoryDetails", PageControllerName )" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
