@@ -1439,7 +1439,7 @@ namespace Improvar
             sql += " group by a.blautono, a.balenoyr) h,	";
 
             sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e," + schema + ".t_txndtl f," + schema + ".m_sitem g ";
-            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+)and a.baleno=f.baleno(+) and f.itcd = g.itcd(+) and ";
+            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+)and a.baleno=f.baleno(+)  and a.autono=f.autono(+) and f.itcd = g.itcd(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
             sql += "and a.autono = h.blautono(+) and a.balenoyr = h.balenoyr(+) ";
             if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
