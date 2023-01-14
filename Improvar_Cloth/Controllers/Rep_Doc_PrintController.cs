@@ -639,7 +639,8 @@ namespace Improvar.Controllers
                 reportdocument.SetParameterValue("billheading", hddsp);
                 reportdocument.SetParameterValue("chlntype", "");
                 reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
-                if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
                 Response.Buffer = false;
                 Response.ClearContent();
                 Response.ClearHeaders();
@@ -671,12 +672,12 @@ namespace Improvar.Controllers
 
                 switch (jobcd)
                 {
-                    case "KT": hddsp = "Receive Challan (Knitter)"; gooditem = "Yarn"; jobnm = "Knitting Job";  progprint = true; break;//repname = "YarnIssue";
-                    case "YD": hddsp = "Receive Challan (Yarn Dyer)"; gooditem = "Yarn"; jobnm = "Dying Job";  progprint = true; break;//repname = "YarnIssue";
-                    case "FP": hddsp = "Receive to Processor"; gooditem = "Fabrics"; jobnm = "Processing Job";  progprint = true; break;//repname = "FabIssue";
-                    case "DY": hddsp = "Receive Challan (Dyer)"; gooditem = "Fabrics"; jobnm = "Dying Job";  progprint = true; break;//repname = "FabIssue";
-                    case "BL": hddsp = "Receive Challan (Bleacher)"; gooditem = "Fabrics"; jobnm = "Bleaching Job";  progprint = true; break;//repname = "FabIssue";
-                    case "CT": hddsp = "Receive Challan (Cutter)"; gooditem = "Fabrics"; jobnm = "Cutting Job";  QntyIn = "D"; progprint = true; break;//repname = "CutRec";
+                    case "KT": hddsp = "Receive Challan (Knitter)"; gooditem = "Yarn"; jobnm = "Knitting Job"; progprint = true; break;//repname = "YarnIssue";
+                    case "YD": hddsp = "Receive Challan (Yarn Dyer)"; gooditem = "Yarn"; jobnm = "Dying Job"; progprint = true; break;//repname = "YarnIssue";
+                    case "FP": hddsp = "Receive to Processor"; gooditem = "Fabrics"; jobnm = "Processing Job"; progprint = true; break;//repname = "FabIssue";
+                    case "DY": hddsp = "Receive Challan (Dyer)"; gooditem = "Fabrics"; jobnm = "Dying Job"; progprint = true; break;//repname = "FabIssue";
+                    case "BL": hddsp = "Receive Challan (Bleacher)"; gooditem = "Fabrics"; jobnm = "Bleaching Job"; progprint = true; break;//repname = "FabIssue";
+                    case "CT": hddsp = "Receive Challan (Cutter)"; gooditem = "Fabrics"; jobnm = "Cutting Job"; QntyIn = "D"; progprint = true; break;//repname = "CutRec";
                     case "PR": hddsp = "Receive Challan Printer"; gooditem = "Cut fabrics"; jobnm = "Printing Job"; QntyIn = "B"; break;
                     case "EM": hddsp = "Receive Challan (Embroider)"; gooditem = "cut fabrics"; jobnm = "Embriodery Job"; QntyIn = "B"; break;
                     case "JW": hddsp = "Receive Challan (Job Work)"; gooditem = "cut fabrics"; jobnm = "Jow Work"; QntyIn = "B"; break;
@@ -1074,7 +1075,7 @@ namespace Improvar.Controllers
                 }
 
                 DataSet IR = new DataSet();
-                 IR.Tables.Add(IR_PROG);
+                IR.Tables.Add(IR_PROG);
                 if (repname != "JobIssue_DIWH.rpt")
                 { IR.Tables.Add(IR_ISSUE); }
                 IR.Tables.Add(IR_STOCK);
@@ -1096,7 +1097,8 @@ namespace Improvar.Controllers
                 reportdocument.SetParameterValue("billheading", hddsp);
                 reportdocument.SetParameterValue("chlntype", "");
                 reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
-                if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
                 Response.Buffer = false;
                 Response.ClearContent();
                 Response.ClearHeaders();

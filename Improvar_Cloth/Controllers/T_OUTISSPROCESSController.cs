@@ -56,7 +56,7 @@ namespace Improvar.Controllers
                     string YR1 = CommVar.YearCode(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE,VE.DefaultAction);
+                    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE, VE.DefaultAction);
                     //return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
                     VE.Database_Combo1 = (from n in DB.T_TXNOTH
                                           select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
@@ -868,7 +868,7 @@ namespace Improvar.Controllers
                         string mtrljob = str.retCompValue("MTRLJOBCD").retStr() == "" ? "" : str.retCompValue("MTRLJOBCD").retSqlformat();
                         string oldrate = str.retCompValue("RATE");
                         //var ratedata = salesfunc.GenStocktblwithVal("FIFO", "", barno, mtrljob, "", "", GOCD);
-                        var ratedata = salesfunc.GenStocktblwithVal("FIFO", "", barno, mtrljob, "","", GOCD);
+                        var ratedata = salesfunc.GenStocktblwithVal("FIFO", "", barno, mtrljob, "", "", GOCD);
                         if (ratedata != null && ratedata.Rows.Count > 0)
                         {
                             double amt = ratedata.AsEnumerable().Select(a => a.Field<double>("amt")).Sum();
@@ -2301,19 +2301,40 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 List<TPROGBOM> ITEMSIZE = new List<TPROGBOM>();
-                int count = 0;
-                for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
-                {
-                    if (VE.TPROGBOM[i].Checked == false)
-                    {
-                        count += 1;
-                        TPROGBOM item = new TPROGBOM();
-                        item = VE.TPROGBOM[i];
-                        item.SLNO = count.retShort();
-                        ITEMSIZE.Add(item);
-                    }
+                //int count = 0;
+                //for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
+                //{
+                //    if (VE.TPROGBOM[i].Checked == false)
+                //    {
+                //        count += 1;
+                //        TPROGBOM item = new TPROGBOM();
+                //        item = VE.TPROGBOM[i];
+                //        item.SLNO = count.retShort();
+                //        ITEMSIZE.Add(item);
+                //    }
 
+                //}
+                int i = 0;
+                while (i <= VE.TPROGBOM.Count() - 1)
+                {
+                    string slno = VE.TPROGBOM[i].SLNO.retStr();
+                    int rslno = 0;
+                    while (VE.TPROGBOM[i].SLNO.retStr() == slno)
+                    {
+                        if (VE.TPROGBOM[i].Checked == false)
+                        {
+                            rslno++;
+                            TPROGBOM item = new TPROGBOM();
+                            item = VE.TPROGBOM[i];
+                            item.RSLNO = rslno.retShort();
+                            ITEMSIZE.Add(item);
+                        }
+                        i++;
+                        if (i > VE.TPROGBOM.Count() - 1) break;
+                    }
+                    if (i > VE.TPROGBOM.Count() - 1) break;
                 }
+
                 VE.TPROGBOM = ITEMSIZE;
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -3841,7 +3862,7 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                                     TXNSLNO = a.SLNO.retShort(),
                                     //QQNTY = a.QNTY.retDbl(),
                                     QNTY = a.BOMQNTY.retDbl(),
-                                    RECPROGITSTYLE =a.QITNM.retStr(),// a.ITNM.retStr(),
+                                    RECPROGITSTYLE = a.QITNM.retStr(),// a.ITNM.retStr(),
                                     //UOM = a.QUOM.retStr(),
                                     BARNO = a.BARNO.retStr(),
                                     ITGRPCD = a.ITGRPCD.retStr(),
@@ -3885,7 +3906,7 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                 string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL where a.ITGRPCD.retStr() != "" select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 string autono = VE.T_TXN.AUTONO.retStr() == "" ? "" : VE.T_TXN.AUTONO.retSqlformat();
-                allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD, autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true,"JB");
+                allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD, autono, ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true, "JB");
 
 
                 //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
