@@ -1410,7 +1410,8 @@ namespace Improvar
 
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
-            sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM,g.styleno,f.qnty,g.uomcd,f.pageno,f.pageslno from ";
+            //sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM,g.styleno,f.qnty,g.uomcd,f.pageno,f.pageslno from ";
+            sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM,g.styleno,sum(f.qnty)qnty,g.uomcd,f.pageno,f.pageslno from ";
 
             sql += "(select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
             sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
@@ -1446,6 +1447,8 @@ namespace Improvar
             if (translcd.retStr() != "") sql += " and c.TRANSLCD in(" + translcd + ")  ";
             if (lrnoLike.retStr() != "") sql += "and c.lrno like '%" + lrnoLike.retStr() + "%'  ";
             sql += " and 1 - nvl(b.bnos, 0) > 0 and 1 - nvl(h.bnos, 0) > 0 ";
+            sql += "group by a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
+            sql += "d.prefno, d.prefdt, 1 - nvl(b.bnos, 0),c.TRANSLCD,e.slnm,g.styleno,g.uomcd,f.pageno,f.pageslno ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
@@ -1480,10 +1483,10 @@ namespace Improvar
             sql += " select a.blautono, a.mutslcd, a.trem, j.slnm mutianm, j.regmobile, a.baleno, a.baleyr, e.lrno, e.lrdt,	 ";
             sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.slno blslno, g.nos, g.qnty,	";
             sql += " '' shade, g.pageno, g.pageslno, ";
-            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0)-nvl(c.bnos,0) bnos, h.styleno||' '||h.itnm  itstyle,a.status,a.docdt from ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0)-nvl(c.bnos,0) bnos, h.styleno||' '||h.itnm  itstyle,a.status,a.docdt,a.docno from ";
 
             sql += "( ";
-            sql += "select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,'Issued' status,d.docdt ";
+            sql += "select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,'Issued' status,d.docdt,d.docno ";
             sql += "from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
@@ -1493,7 +1496,7 @@ namespace Improvar
                 sql += "union all ";
 
                 //sql += "select distinct a.autono blautono, '' mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
-                sql += "select distinct a.autono blautono, e.translcd mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr,'Direct' status,a.docdt ";
+                sql += "select distinct a.autono blautono, e.translcd mutslcd, '' trem, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr,'Direct' status,a.docdt,a.docno ";
                 sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d, " + schema + ".t_txntrans e ";
                 sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
                 sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";

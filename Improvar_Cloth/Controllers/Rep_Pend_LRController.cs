@@ -67,7 +67,7 @@ namespace Improvar.Controllers
                 DataTable tbl1 = new DataTable();
                 if (BltyPending == "R" && ShowDocDate == true)
                 {
-                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno","docdt", "pageslno");
+                    tbl1 = dv.ToTable(true, "lrno", "lrdt", "prefdt", "baleno", "styleno", "qnty", "uomcd", "pageno","docdt", "pageslno", "docno");
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "slno", "double", "n,8", "Sl No.");
                 HC.GetPrintHeader(IR, "lrno", "string", "c,20", "LR No");
                 HC.GetPrintHeader(IR, "lrdt", "string", "d,10", "LR Date");
-                if (ShowDocDate == true) HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Doc. Date");
+                if (ShowDocDate == true) { HC.GetPrintHeader(IR, "docdt", "string", "d,10", "Doc. Date"); HC.GetPrintHeader(IR, "docno", "string", "c,20", "Doc No"); }
                 HC.GetPrintHeader(IR, "baleno", "string", "c,35", "Bale No");
                 HC.GetPrintHeader(IR, "sortno", "string", "c,20", "Sort No");
                 HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Pcs");
@@ -108,7 +108,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["slno"] = slno;
                     IR.Rows[rNo]["lrno"] = tbl1.Rows[i]["lrno"].retStr();
                     IR.Rows[rNo]["lrdt"] = tbl1.Rows[i]["lrdt"].retDateStr();
-                    if (ShowDocDate == true) IR.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"].retDateStr();
+                    if (ShowDocDate == true) { IR.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"].retDateStr(); IR.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"].retStr(); }
                     IR.Rows[rNo]["prefdt"] = tbl1.Rows[i]["prefdt"].retDateStr();
                     IR.Rows[rNo]["baleno"] = tbl1.Rows[i]["baleno"].retStr();
                     IR.Rows[rNo]["sortno"] = tbl1.Rows[i]["styleno"].retStr();
