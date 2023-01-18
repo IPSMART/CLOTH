@@ -383,7 +383,7 @@
                     if (retStr(result.AddrBno) != "") { add1 = result.AddrBno + " "; };
                     if (retStr(result.AddrFlno) != "") { add1 = add1 + result.AddrFlno + " "; };
                     if (retStr(result.AddrBnm) != "") { add1 = add1 + result.AddrBnm + " "; };
-                    if (retStr(result.AddrLoc) != "") { locnm = locnm + " "+ result.AddrLoc ; };
+                    if (retStr(result.AddrLoc) != "") { locnm = locnm + " " + result.AddrLoc; };
                     add1 = add1.trim();
 
                     document.getElementById("GSTNO").value = result.Gstin;
@@ -425,38 +425,38 @@
         $("#update_slnm_det").show();
         $("#cancel_slnm_det").show();
         $("#update_slnm_det").prop("disabled", false);
-            var DefaultAction = $("#DefaultAction").val();
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("RowBind", PageControllerName)",
-                beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize(),
-                success: function (result) {
-                    $("#WaitingMode").hide();
-                    $("#partialdivSalesman").animate({ marginTop: '-10px' }, 50);
-                    $("#partialdivSalesman").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-            var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
-            if (GridRow != 0) {
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    $("#SLMSLCD_" + i).attr("readonly", false);
-                    $(".help_slnm").show();
-                    $("#S_PER_" + i).attr("readonly", false);
-                    $("#S_ITAMT_" + i).attr("readonly", false);
-                    $("#S_BLAMT_" + i).attr("readonly", false);
-                    if (i == 0) $("#SLMSLCD_" + i).focus();
-                }
+        var DefaultAction = $("#DefaultAction").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("RowBind", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivSalesman").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivSalesman").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
             }
+        });
+        var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+        if (GridRow != 0) {
+            for (var i = 0; i <= GridRow - 1; i++) {
+                $("#SLMSLCD_" + i).attr("readonly", false);
+                $(".help_slnm").show();
+                $("#S_PER_" + i).attr("readonly", false);
+                $("#S_ITAMT_" + i).attr("readonly", false);
+                $("#S_BLAMT_" + i).attr("readonly", false);
+                if (i == 0) $("#SLMSLCD_" + i).focus();
+            }
+        }
 
 
-       // }
-       
+        // }
+
     }
     function Cancel_SalesManDet() {
         location.reload();
@@ -515,6 +515,14 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
+    }
+</script>
+<script>
+    function Barcodeprinting() {
+        debugger;
+        var AUTONO = $("#AUTONO").val();
+        var DOCDT = $("#DOCDT").val();
+        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
     }
 </script>
 @using (Html.BeginForm())
@@ -820,7 +828,8 @@
                     {
                             <div class="col-md-1" style="width:auto;">
                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Mobile" id="edit_Mobile" value="Update Mobile" title="Click to Update Mobile button for edit Mobile " onclick="Edit_Mobile()" />
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Mobile" value="Update" title="Click to Update Mobile" disabled onclick="Update_Mobile()" />
+                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Mobile" value="Update" title="Click to Update Mobile" disabled onclick="Update_Mobile()" />
                                 <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Mobile" value="Cancel" title="Click to Cancel" onclick="Cancel_Mobile()" />
                             </div>
 
@@ -961,12 +970,12 @@
                     <div class="col-lg-2" style="margin-top:12px">
                         @if (Model.DefaultAction == "V")
                     {<div class="row">
-                                <div class="col-md-1" style="width:auto;">
-                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update Sales Man Details" id="edit_slnm_det" value="update Sales Man Details(Alt+G)" accesskey="G" title="Click to update Sales Man Details button for edit Sales Man Details fields" onclick="Edit_SalesManDet()" />
-                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_slnm_det" value="Update(Alt+I)" accesskey="I" title="Click to Update Sales Man Details" disabled onclick="Update_SalesManDet()" />
-                                    <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_slnm_det" value="Cancel" title="Click to Cancel for unchaneg Sales Man Details" onclick="Cancel_SalesManDet()" />
-                                </div>
+                            <div class="col-md-1" style="width:auto;">
+                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update Sales Man Details" id="edit_slnm_det" value="update Sales Man Details(Alt+G)" accesskey="G" title="Click to update Sales Man Details button for edit Sales Man Details fields" onclick="Edit_SalesManDet()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_slnm_det" value="Update(Alt+I)" accesskey="I" title="Click to Update Sales Man Details" disabled onclick="Update_SalesManDet()" />
+                                <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_slnm_det" value="Cancel" title="Click to Cancel for unchaneg Sales Man Details" onclick="Cancel_SalesManDet()" />
                             </div>
+                        </div>
                         }
                     </div>
                 </div>

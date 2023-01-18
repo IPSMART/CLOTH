@@ -1460,7 +1460,10 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.GOCD_help(val);
+                TransactionSaleEntry VE = new TransactionSaleEntry();
+                Cn.getQueryString(VE);
+                string SkipGocd = (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR") ? "'TR'" : "";
+                var str = masterHelp.GOCD_help(val, SkipGocd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
