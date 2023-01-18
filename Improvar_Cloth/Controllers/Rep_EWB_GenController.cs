@@ -18,7 +18,7 @@ namespace Improvar.Controllers
 {
     public class Rep_EWB_GenController : Controller
     {
-        string CS = null; string doctype = "SPRM,SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB";
+        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI";
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
         AdaequareGSP adaequareGSP = new AdaequareGSP();
@@ -576,7 +576,7 @@ namespace Improvar.Controllers
                     prejson.SLNO = Convert.ToInt16(i + 1);
                     prejson.AUTONO = tbl.Rows[i]["AUTONO"].ToString();
                     prejson.Supply_Type = "O"; //a (Outward)
-                    if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB")
+                    if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB"|| tbl.Rows[i]["doctype"].ToString() == "TRFI")
                     {
                         prejson.SubSupply_Type = "5"; //b (OWN USE)
                         prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)

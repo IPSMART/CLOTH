@@ -357,5 +357,36 @@ namespace Improvar
                             select new DropDown_list_BLTYPE() { Text = dr["BLTYPE"].retStr(), Value = dr["BLTYPE"].retStr() }).OrderBy(s => s.Text).Distinct().ToList();
             return BL_TYPE_list;
         }
+        public List<DropDown_list_GLCD> GetGlcdforSelection(string linkcd = "", string slcdmust = "'N','Y'", string gltag = "")
+        {
+            List<DropDown_list_GLCD> sllist = new List<DropDown_list_GLCD>();
+            string gllinkcd = linkcd;
+            string glslcdmust = "'Y','N'";
+            if (slcdmust != "") glslcdmust = slcdmust;
+            if (linkcd == "") linkcd = "'B','S','D','C','O'";
+
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), scmc = CommVar.CommSchema();
+            string sql = "";
+
+            sql = "select distinct a.glcd, a.glnm ";
+            sql += "from " + scmf + ".M_GENLEG a, " + scmf + ".m_cntrl_hdr b, " + scmf + ".m_cntrl_loca c, " + scmc + ".MS_GLHDGRP d ";
+            sql += "where a.m_autono=b.m_autono(+) and a.m_autono=c.m_autono(+) and a.GLHDGRPCD=d.GLHDGRPCD(+) ";
+            sql += "and nvl(b.inactive_tag,'N')='N' ";
+            sql += "and a.LINKCD in (" + linkcd + ") and a.SLCDMUST in (" + glslcdmust + ") ";
+            if (gltag.retStr() != "") sql += "and d.gltag in (" + gltag + ") ";
+            sql += "and (c.compcd='" + COM + "' or c.compcd is null) and (c.loccd='" + LOC + "' or c.loccd is null) ";
+            sql += "order by glnm ";
+            DataTable tbl = MasterHelp.SQLquery(sql);
+
+            sllist = (from DataRow dr in tbl.Rows
+                      select new DropDown_list_GLCD()
+                      {
+                          text = dr["glnm"].ToString(),
+                          value = dr["glcd"].ToString(),
+                      }).ToList();
+
+            return sllist;
+        }
+
     }
 }

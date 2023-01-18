@@ -89,7 +89,14 @@ namespace Improvar
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             string sql = "", scmf = CommVar.FinSchema(UNQSNO); string tempid = "";
             string smsmsg = "", smsmsgsend = "", altmobno = "", autosend = "";
-            sql = "select a.smsmsg,tempid,ALTMOBNO, AUTOSEND from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
+
+            sql = "";
+            sql += "SELECT smsmsg,tempid,ALTMOBNO, AUTOSEND FROM " + scmf + ".m_sms_dtl WHERE EXISTS(select * from " + scmf + ".m_sms_dtl WHERE compcd = '"
+                + CommVar.Compcd(UNQSNO) + "') and compcd = '" + CommVar.Compcd(UNQSNO) + "' AND REPTYPE = '" + reptype + "' " + Environment.NewLine;
+            sql += " union all ";
+            sql += "SELECT smsmsg,tempid,ALTMOBNO, AUTOSEND FROM " + scmf + ".m_sms_dtl WHERE not EXISTS(select * from " + scmf + ".m_sms_dtl WHERE compcd = '"
+                + CommVar.Compcd(UNQSNO) + "')  AND REPTYPE = '" + reptype + "' AND COMPCD IS NULL " + Environment.NewLine;
+            //sql = "select a.smsmsg,tempid,ALTMOBNO, AUTOSEND from " + scmf + ".m_sms_dtl a where a.reptype='" + reptype + "' and (a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null ) order by slno";
             DataTable tbl = masterHelp.SQLquery(sql);
             if (tbl.Rows.Count > 0)
             {
@@ -199,6 +206,5 @@ namespace Improvar
             }
             return rval;
         }
-
 }
 }

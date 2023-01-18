@@ -13,7 +13,9 @@ namespace Improvar.Models
         public string FavoriteManuDetails { get; set; }
         public string UNQSNO { get; set; }
         public string PostAction { get; set; }
+        public int CurrentIndex { get; set; }
         public List<DashboardDetails> DashboardList { get; set; }
+        public List<DropDown_list_GLCD> DropDown_list_GLCD { get; set; }
     }
     public class DashboardDetails
     {
@@ -23,6 +25,7 @@ namespace Improvar.Models
         public string RefreshedTime { get; set; }
         public DataTable DataTable { get; set; }
         public EMAILSTATUSTBL EMAILSTATUSTBL { get; set; }
+        public SPREPORT SPREPORT { get; set; }
     }
     public class EMAILSTATUSTBL
     {
@@ -36,5 +39,15 @@ namespace Improvar.Models
         public string AGENT_NAME { get; set; }
         public string AGENT_CODE { get; set; }
         public string CCMAIL { get; set; }
+        public string PARTY_CODE { get; set; }
+        public string PARTY_NAME { get; set; }
+    }
+    public class SPREPORT
+    {
+        public string fdt { get; set; }
+        public string tdt { get; set; }
+        public string salepur { get; set; }
+        public string glcd { get; set; }
+        public int noofrec { get; set; }
     }
 }

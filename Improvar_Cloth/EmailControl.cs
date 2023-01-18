@@ -99,69 +99,7 @@ namespace Improvar
                 }
             }
         }
-        //public bool SendHtmlFormattedEmail(string recepientEmail, string subject, string emailTemplate, string[,] emailvar, List<Attachment> emailattachItem, string ccemail = "", string bccemail = "", string body = "")
-        //{
-        //    using (MailMessage mailMessage = new MailMessage())
-        //    {
-        //        try
-        //        {
-        //            if (recepientEmail == "defaultemail") recepientEmail = ConfigurationManager.AppSettings["emailtosenddefault"];
-
-        //            mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["emailuserName"]);
-        //            mailMessage.Subject = subject;
-        //            if (body == "") mailMessage.AlternateViews.Add(Mail_Body(emailTemplate, emailvar));
-        //            if (body != "") mailMessage.Body = body;
-        //            if (emailattachItem != null)
-        //            {
-        //                foreach (var ema in emailattachItem)
-        //                {
-        //                    mailMessage.Attachments.Add(ema);
-        //                }
-        //            }
-
-        //            mailMessage.IsBodyHtml = true;
-
-        //            foreach (var address in recepientEmail.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
-        //            {
-        //                mailMessage.To.Add(address);
-        //            }
-
-        //            if (ccemail != "")
-        //            {
-        //                foreach (var address in ccemail.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
-        //                {
-        //                    mailMessage.CC.Add(address);
-        //                }
-        //            }
-        //            if (bccemail != "")
-        //            {
-        //                foreach (var address in bccemail.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
-        //                {
-        //                    mailMessage.Bcc.Add(address);
-        //                }
-        //            }
-        //            //mailMessage.To.Add(new MailAddress(recepientEmail));
-        //            SmtpClient smtp = new SmtpClient();
-        //            smtp.Host = ConfigurationManager.AppSettings["emailhost"];
-        //            smtp.EnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["emailenableSsl"]);
-        //            System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
-        //            NetworkCred.UserName = ConfigurationManager.AppSettings["emailuserName"];
-        //            NetworkCred.Password = ConfigurationManager.AppSettings["emailpassword"];
-        //            smtp.UseDefaultCredentials = true;
-        //            smtp.Credentials = NetworkCred;
-        //            smtp.Port = int.Parse(ConfigurationManager.AppSettings["emailport"]);
-        //            smtp.Send(mailMessage);
-        //            smtp.Dispose();
-        //            return true;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            //throw;
-        //            return false;
-        //        }
-        //    }
-        //}
-
+ 
         public AlternateView Mail_Body(string emailTemplate, string[,] emailvar) 
         {
             string body = string.Empty;
@@ -241,7 +179,7 @@ namespace Improvar
                     smtp.EnableSsl = true;
                     System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
                     NetworkCred.UserName = "ipsmart.erp@gmail.com";
-                    NetworkCred.Password = "ipsmart@123";
+                    NetworkCred.Password = "peelwkwfqhdrvxnj";  //"ipsmart@123";
                     smtp.UseDefaultCredentials = true;
                     smtp.Credentials = NetworkCred;
                     smtp.Port = 587;

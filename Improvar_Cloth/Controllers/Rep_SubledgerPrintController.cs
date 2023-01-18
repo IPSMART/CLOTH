@@ -56,7 +56,6 @@ namespace Improvar.Controllers
                     //}
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("ALL");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-
                     VE.DropDown_list = (from i in DB1.MS_LINK select new DropDown_list() { value = i.LINKCD, text = i.LINKNM }).OrderBy(s => s.text).ToList();
                     VE.TEXTBOX3 = MasterHelp.ComboFill("linkcd", VE.DropDown_list, 0, 1);
                     VE.Checkbox1 = true;
@@ -81,7 +80,7 @@ namespace Improvar.Controllers
                 string com = CommVar.Compcd(UNQSNO);
                 string loc = CommVar.Loccd(UNQSNO);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string slcd = "", linkcd = "", sql = "";
+                string slcd = "", sql = "", linkcd = "";
                 string scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
 
                 if (FC.AllKeys.Contains("slcdvalue"))
@@ -96,9 +95,10 @@ namespace Improvar.Controllers
                 string query = "";
                 if (reptype == "All")
                 {
-                    query = query + "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID from " + dbname + ".m_subleg a," + dbname + ".m_subleg_link b where a.slcd=b.slcd(+) ";
-                    if (linkcd != "") query += " and b.linkcd in(" + linkcd + ") ";
-                    query += " order by a.slnm ";
+                    query = query + "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF  ";
+                    query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+) ";
+                    if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") ";
+                    query += " order by a.SLNM ";
                     tbl = MasterHelp.SQLquery(query);
                     if (tbl.Rows.Count != 0)
                     {
@@ -109,12 +109,17 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "SLCD", "string", "c,12", "Ledger Code");
                         HC.GetPrintHeader(IR, "SLNM", "string", "c,28", "Ledger Name");
                         HC.GetPrintHeader(IR, "FULLNAME", "string", "c,26", "Full Name");
+                        HC.GetPrintHeader(IR, "PARTYCD", "string", "c,12", "Party Group Code");
+                        HC.GetPrintHeader(IR, "PARTYNM", "string", "c,26", "Party Group Name");
+                        HC.GetPrintHeader(IR, "STATE", "string", "c,26", "State");
+                        HC.GetPrintHeader(IR, "SLAREA", "string", "c,50", "Area");
                         HC.GetPrintHeader(IR, "ADDRESS", "string", "c,50", "Address");
                         HC.GetPrintHeader(IR, "PANNO", "string", "c,14", "PANNO");
                         HC.GetPrintHeader(IR, "GSTNO", "string", "c,17", "GSTNO");
                         HC.GetPrintHeader(IR, "ADHAARNO", "string", "c,13", "ADHAARNO");
                         HC.GetPrintHeader(IR, "REGMOBILE", "string", "c,13", "Mobile");
                         HC.GetPrintHeader(IR, "REGEMAILID", "string", "c,27", "Email");
+                        if (VE.Checkbox2 == true) HC.GetPrintHeader(IR, "AUTOREMINDEROFF", "string", "c,10", "Auto Send Email/Sms of reminder disable");
 
                         Int32 i = 0; Int32 maxR = 0;
                         i = 0; maxR = tbl.Rows.Count - 1;
@@ -124,6 +129,10 @@ namespace Improvar.Controllers
                             IR.Rows[i]["SLCD"] = tbl.Rows[i]["SLCD"];
                             IR.Rows[i]["SLNM"] = tbl.Rows[i]["SLNM"];
                             IR.Rows[i]["FULLNAME"] = tbl.Rows[i]["FULLNAME"];
+                            IR.Rows[i]["PARTYCD"] = tbl.Rows[i]["PARTYCD"];
+                            IR.Rows[i]["PARTYNM"] = tbl.Rows[i]["PARTYNM"];
+                            IR.Rows[i]["STATE"] = tbl.Rows[i]["STATE"];
+                            IR.Rows[i]["SLAREA"] = tbl.Rows[i]["SLAREA"];
                             IR.Rows[i]["ADDRESS"] = tbl.Rows[i]["add1"].ToString() + "," + tbl.Rows[i]["add2"].ToString() + "," + tbl.Rows[i]["add3"].ToString() + "," +
                                  tbl.Rows[i]["add4"].ToString() + "," + tbl.Rows[i]["add5"].ToString() + "," + tbl.Rows[i]["add6"].ToString() + "," + tbl.Rows[i]["add7"].ToString();
                             IR.Rows[i]["PANNO"] = tbl.Rows[i]["PANNO"];
@@ -131,6 +140,7 @@ namespace Improvar.Controllers
                             IR.Rows[i]["ADHAARNO"] = tbl.Rows[i]["ADHAARNO"];
                             IR.Rows[i]["REGMOBILE"] = tbl.Rows[i]["REGMOBILE"];
                             IR.Rows[i]["REGEMAILID"] = tbl.Rows[i]["REGEMAILID"];
+                            if (VE.Checkbox2 == true) IR.Rows[i]["AUTOREMINDEROFF"] = tbl.Rows[i]["AUTOREMINDEROFF"].retStr() == "Y" ? "Yes" : "No";
                             i = i + 1;
                         }
 
@@ -150,7 +160,8 @@ namespace Improvar.Controllers
                     sql += "a.compcd = '" + CommVar.Compcd(UNQSNO) + "' ";
                     DataTable tblComp = MasterHelp.SQLquery(sql);
 
-                    sql = "select distinct a.slcd, nvl(a.fullname,a.slnm) slnm, a.add1, a.add2, a.add3, a.add4, ";
+                    //sql = "select distinct a.slcd, nvl(a.fullname,a.slnm) slnm, a.add1, a.add2, a.add3, a.add4, ";
+                    sql = "select distinct a.slcd, a.slnm, a.add1, a.add2, a.add3, a.add4, ";
                     sql += "a.add5, a.add6, a.add7, a.regmobile, a.regemailid ";
                     sql += "from " + scmf + ".m_subleg a," + scmf + ".m_subleg_link b where a.slcd=b.slcd(+) ";
                     if (slcd == "")

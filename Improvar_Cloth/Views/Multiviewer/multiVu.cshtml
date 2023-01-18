@@ -16,7 +16,7 @@
     <link rel="stylesheet" media="all" href="~/Content/bootstrap.min.css" />
     <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico">
     @*<link rel="stylesheet" href="~/Content/layout_misc.css?Ver=@Module.ContentVersion" type="text/css" />
-    <link rel="stylesheet" href="~/Content/GridView.css" type="text/css" />*@
+        <link rel="stylesheet" href="~/Content/GridView.css" type="text/css" />*@
     <link rel="stylesheet" media="all" href="~/Content/treeview.css" />
     <link rel="stylesheet" media="all" href="~/Content/main_layout.css?Ver=@Module.ContentVersion" />
     <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
@@ -32,6 +32,9 @@
     @*@Scripts.Render("~/Scripts/bootstrap-select.js?n=1")*@
     @*@Styles.Render("~/Content/bootstrap.css?Ver=" + Module.ContentVersion)*@
     @*@Scripts.Render("~/Scripts/Custom.js?Ver=" + Module.ContentVersion)*@
+    <script src="~/Scripts/CustomCombo.js"></script>
+   
+
     @Styles.Render("~/Content/MyStyle.css?Ver=" + Module.ContentVersion)
     @Styles.Render("~/Content/themes/base/core.css")
     @Styles.Render("~/Content/themes/base/accordion.css")
@@ -163,8 +166,13 @@
             }
     </style>
     <style>
-.odd{color:black;}
-.even{color:black;}
+        .odd {
+            color: black;
+        }
+
+        .even {
+            color: black;
+        }
     </style>
     <script>
         $(document).ready(function () {
@@ -375,6 +383,72 @@
                 }
             });
         }
+        function OS_RM_SMSSend(index) {
+            debugger;
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("OS_RM_SMSSend", "Multiviewer")",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&index=" + index,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result != " ") {
+                        msgSuccess(result)
+                    } else {
+                        msgInfo(result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    </script>
+    <script>
+        function UpdateLedger(index) {
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("UpdateLedger", "Multiviewer")",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&index=" + index,
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    if (res[0] == "ok") {
+                        if (res[1] != "") {
+                            $("#partialdivLedger").html(res[1]);
+                        }
+                    }
+                    else {
+                        msgInfo(result.message);
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+        $(document).mouseup(function (e) {
+            var tab = $("#csTableid").val();
+            var container = $("#" + tab);
+
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                container.hide();
+            }
+        });
+        $(document).keyup(function (e) {
+            if (e.keyCode == 27) {
+                var tab = $("#csTableid").val();
+                var container = $("#" + tab);
+                container.hide();
+
+            }
+        });
     </script>
 </head>
 
@@ -467,9 +541,10 @@
             });
         }
 
-        function FormSubmit(CallFor) {
+        function FormSubmit(CallFor, Index) {
             $("#PostAction").val(CallFor);
-            jQuery("form").attr("target", "_blank");
+            $("#CurrentIndex").val(Index);
+            jQuery("formmain").attr("target", "_blank");
             $("#formmain").submit();
         }
     </script>
@@ -508,6 +583,7 @@
         @using (Html.BeginForm("multiVu", "Multiviewer", FormMethod.Post, new { htmlAttributes = new { @id = "formmain" } }))
         {
             @Html.HiddenFor(model => model.PostAction)
+            @Html.HiddenFor(model => model.CurrentIndex)
             <div class="row">
                 @Html.Partial("_Dashboard")
             </div>

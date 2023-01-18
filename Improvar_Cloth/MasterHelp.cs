@@ -838,7 +838,7 @@ namespace Improvar
             }
         }
 
-        public string ComboFill<T>(string name, IEnumerable<T> Linqlist, int textindex, int valindex, int width = 219)
+        public string ComboFill<T>(string name, IEnumerable<T> Linqlist, int textindex, int valindex, int width = 219, string[] selval = null)
         {
             PropertyInfo[] columns = null;
             foreach (T i in Linqlist)
@@ -855,17 +855,17 @@ namespace Improvar
             string search = name + "src";
             string maindiv = name + "maindiv";
             string tablename = name + "cstable";
-            string button = "<button type='button' class='btn btn-default' value='' style='height:35px; width:" + buttonwidth + "' onclick=csTableOnOff('" + maindiv + "','" + search + "');>";
-            button = button + "<input id='" + hiddentext + "' type='text' value='' placeholder='Nothing selected' style='width:" + textwidth + ";border:none;outline:none;background-color:initial;cursor:pointer;font-size:12px' readonly='readonly' />";
+            //string button = "<button type='button' class='btn btn-default' value='' style='height:35px; width:" + buttonwidth + "' onclick=csTableOnOff('" + maindiv + "','" + search + "');>";
+            //button = button + "<input id='" + hiddentext + "' type='text' value='' placeholder='Nothing selected' style='width:" + textwidth + ";border:none;outline:none;background-color:initial;cursor:pointer;font-size:12px' readonly='readonly' />";
             //button = button + "<span class='bs-caret' style='float:right;text-align:center'><span class='caret'></span></span><input id='" + hiddenval + "' type='hidden' value='' /></button>";
-            button = button + "<span class='bs-caret' style='float:right;text-align:center'><span class='caret'></span></span><input id='" + hiddenval + "' type='hidden' value='' /></button>";
-            button = button + "<input id='" + unselval + "' type='hidden' value='' /></button>";
+            //button = button + "<span class='bs-caret' style='float:right;text-align:center'><span class='caret'></span></span><input id='" + hiddenval + "' type='hidden' value='' /></button>";
+            //button = button + "<input id='" + unselval + "' type='hidden' value='' /></button>";
 
             string div = "<div id='" + maindiv + "' style='border:1px solid #e6e4e4;position:absolute;z-index:2;background-color:#ffffff;display:none;min-width:219px'><div class='row' style='padding:5px;width:auto'><input id='" + search + "' autocomplete='off' type='text' placeholder='Search..' class='form-control' onkeyup=filterCSTABLETable(event,'" + tablename + "'); /></div>";
 
             div = div + "<div class='row' style='padding:1px;width:auto'><div class='col-sm-6'><input type='button' class='btn btn-default' title='Select all' value='Select all' style='width:100%' onclick=cstableSelect('" + tablename + "'," + textindex + "," + valindex + "," + lastindex + ",'" + name + "'); /></div>";
             div = div + "<div class='col-sm-6'><input type='button' class='btn btn-default' title='Deselect all' value='Deselect all' style='width:100%' onclick=cstableDeselect('" + tablename + "'," + textindex + "," + valindex + "," + lastindex + ",'" + name + "'); /></div></div>";
-            string str = "";
+            string str = ""; string selvaltext = "";
             if (columns != null)
             {
                 str = "<div class='sticky-table sticky-ltr-cells' style='border-top:none'><div class='row' style='padding-left:5px;padding-right:5px;width:auto;height:auto; max-height:250px;overflow-y:auto;margin-bottom:5px;margin-top:5px'><table id='" + tablename + "' class='cstable' cellspacing='0' cellpadding='2' style='width:100%;table-layout:auto'><thead><tr class='sticky-header'>";
@@ -878,17 +878,62 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int x = 0; x <= Linqlist.Count() - 1; x++)
                 {
+                    bool flag = false;
                     var t = Linqlist.ElementAt(x);
                     SB.Append("<tr tabIndex='100' onclick=rowtoggle(" + textindex + "," + valindex + "," + lastindex + ",this,'" + name + "');>");
                     columns = ((Type)t.GetType()).GetProperties();
+                    int index = 0; string text = "";
                     foreach (PropertyInfo GetProperty in columns)
                     {
                         SB.Append("<td>" + GetProperty.GetValue(t, null) + "</td>");
+                        if (selval != null)
+                        {
+                            if (index == textindex)
+                            {
+                                text = GetProperty.GetValue(t, null).retStr();
+                            }
+
+                            if (index == valindex && selval.Contains(GetProperty.GetValue(t, null).retStr()))
+                            {
+                                flag = true;
+                            }
+                            index++;
+                        }
+
                     }
-                    SB.Append("<td align='center'><span class=''></span></td></tr>");
+                    if (flag == false)
+                    {
+                        SB.Append("<td align='center'><span class=''></span></td></tr>");
+                    }
+                    else
+                    {
+                        selvaltext += selvaltext == "" ? text : "*" + text;
+                        SB.Append("<td align='center'><span class='glyphicon glyphicon-ok'></span></td></tr>");
+                    }
                 }
                 str = str + SB.ToString() + "</tbody></table><script>SortableColumncsTable('" + tablename + "');</script></div></div>";
             }
+
+            string button = "<button type='button' class='btn btn-default' value='' style='height:35px; width:" + buttonwidth + "' onclick=csTableOnOff('" + maindiv + "','" + search + "');>";
+            if (selval == null)
+            {
+                button = button + "<input id='" + hiddentext + "' type='text' value='' placeholder='Nothing selected' style='width:" + textwidth + ";border:none;outline:none;background-color:initial;cursor:pointer;font-size:12px' readonly='readonly' />";
+            }
+            else
+            {
+                button = button + "<input id='" + hiddentext + "' type='text' value='" + selvaltext + "' placeholder='Nothing selected' style='width:" + textwidth + ";border:none;outline:none;background-color:initial;cursor:pointer;font-size:12px' readonly='readonly' title='" + selvaltext + "' />";
+            }
+            //button = button + "<span class='bs-caret' style='float:right;text-align:center'><span class='caret'></span></span><input id='" + hiddenval + "' type='hidden' value='' /></button>";
+            if (selval == null)
+            {
+                button = button + "<span class='bs-caret' style='float:right;text-align:center'><span class='caret'></span></span><input id='" + hiddenval + "' type='hidden' value='' /></button>";
+            }
+            else
+            {
+                string val = string.Join(",", (from a in selval select a).ToList());
+                button = button + "<span class='bs-caret' style='float:right;text-align:center'><span class='caret'></span></span><input id='" + hiddenval + "' name='" + hiddenval + "' type='hidden' value=" + val + " /></button>";
+            }
+            button = button + "<input id='" + unselval + "' type='hidden' value='' /></button>";
             str = str + "</div>";
             return button + div + str;
         }

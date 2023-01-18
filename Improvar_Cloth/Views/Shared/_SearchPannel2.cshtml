@@ -6,7 +6,7 @@
         var hidcol3 = parseInt($("#RefHiddenColumn3").val());
         //initial table into datatable
         var table = $('#helpmnu').DataTable({
-            responsive: true,
+            //responsive: true,
             keys: true,
             "columnDefs": [
           {
@@ -27,7 +27,7 @@
             ],
             "lengthMenu": [10, 15, 20, 25, 30, 100]
         });
-
+        new $.fn.dataTable.FixedHeader(table);
         // "targets": [ 0, 2 ],HIDDEN FIELD
         $('#helpmnu').dataTable().api();
         new $.fn.dataTable.Api('#helpmnu');
@@ -200,7 +200,7 @@
         border: none;
         overflow: auto;
         width: 100%;
-        background-color: cornsilk;
+        background-color: cornsilk;        
         max-height: 600px;
     }
 
@@ -234,6 +234,8 @@
 
     #helpmnu thead tr {
         background-color: #0a898c;
+        position:sticky;
+        top:-5px;
     }
 
         #helpmnu thead tr th {
@@ -242,6 +244,18 @@
 
     #helpmnu tbody tr td {
         padding: 2px;
+    }
+     @@media (max-width:768px) {
+        #textarea {
+        width:100%;
+        }
+        #wrapper {
+        width:100%;
+        }
+        #helpDIV {
+        width:100%;
+        margin-top:30%;
+        }
     }
 </style>
 <div id="wrapper">

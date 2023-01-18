@@ -834,7 +834,7 @@ namespace Improvar.Controllers
             exdt[0] = dt;
             string[] sheetname = new string[1];
             sheetname[0] = "Sheet1";
-            mas.ExcelfromDataTables(exdt, sheetname, "Document Type Master", true,"Document Type");
+            mas.ExcelfromDataTables(exdt, sheetname, "Document Type Master", true,"Document Type", false);
             return Content("Downloded");
         }
     }

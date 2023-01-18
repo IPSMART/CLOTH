@@ -225,7 +225,8 @@ namespace Improvar.Controllers
                         newdt.Columns.Remove("celldesign");
                     }
                     //remove a blank row from datatable
-                    newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrWhiteSpace(field as string))).CopyToDataTable();
+                    //newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrWhiteSpace(field as string))).CopyToDataTable();
+                    newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrEmpty(field as string ?? field.ToString()))).CopyToDataTable();
                     ExcelPackage workbook = new ExcelPackage();
                     ExcelWorksheet worksheet = workbook.Workbook.Worksheets.Add("Sheet1");
                     worksheet.Cells["A1"].Value = PV.Vname + ", " + PV.Title;

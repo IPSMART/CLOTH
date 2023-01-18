@@ -7,6 +7,8 @@ using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using System.Collections;
 using System.Security.Cryptography;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace Improvar.Controllers
 {
@@ -18,6 +20,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection();
         string CS = null;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
+        DropDownHelp DropDownHelp = new DropDownHelp();
         public ActionResult multiVu()
         {
             try
@@ -230,6 +233,38 @@ namespace Improvar.Controllers
 
                                         EMAILSTATUSTBL.curdt = System.DateTime.Now.Date.retDateStr();
                                         det.EMAILSTATUSTBL = EMAILSTATUSTBL;
+                                    }
+
+                                }
+                            }
+                            else if (MENU_PROGCALL == "FABOARD3")
+                            {
+                                DashboardDetails.Add(new DashboardDetails { BoardCode = "FABOARD3", Permission = "1", Caption = "Top Sales/Purchase" });
+                                foreach (DashboardDetails det in DashboardDetails)
+                                {
+                                    string COM = CommVar.Compcd(UNQSNO);
+                                    if (det.BoardCode == "FABOARD3")
+                                    {
+                                        INI Handel_Ini = new INI();
+                                        string glcd = Handel_Ini.IniReadValue("FABOARD3_P", "GLCDVALUE", Server.MapPath("~/Ipsmart.ini"));
+
+                                        SPREPORT SPREPORT = new SPREPORT();
+                                        SPREPORT.fdt = CommVar.FinStartDate(UNQSNO);
+                                        SPREPORT.tdt = CommVar.CurrDate(UNQSNO);
+                                        SPREPORT.salepur = "P";
+                                        SPREPORT.noofrec = 10;
+                                        Mnu.DropDown_list_GLCD = DropDownHelp.GetGlcdforSelection("", "", "'1'");
+
+                                        if (glcd.retStr() != "")
+                                        {
+                                            var arrglcd = glcd.Split(',');
+                                            SPREPORT.glcd = masterHelp.ComboFill("glcd", Mnu.DropDown_list_GLCD, 0, 1, 219, arrglcd);
+                                        }
+                                        else
+                                        {
+                                            SPREPORT.glcd = masterHelp.ComboFill("glcd", Mnu.DropDown_list_GLCD, 0, 1);
+                                        }
+                                        det.SPREPORT = SPREPORT;
                                     }
 
                                 }
@@ -448,6 +483,7 @@ namespace Improvar.Controllers
                         SQL += "d.doctype = c.dcd and b.slcd = f.slcd(+) and nvl(b.cancel,'N')='N' and b.compcd='" + CommVar.Compcd(UNQSNO) + "' and ";
                         SQL += "e.usrid = '" + Session["UR_ID"].ToString() + "' ";
                         SQL += " and a.autono not in (select autono from " + DB + ".T_TXNSTATUS where STSTYPE = 'N') ";
+                        SQL += "and a.autono not in (select autono from " + DBF + ".T_TXNEINV) ";
                         SQL += "order by dname, doccd, doctype, docno ";
                         DataTable tbltmp = masterHelp.SQLquery(SQL);
 
@@ -605,7 +641,17 @@ namespace Improvar.Controllers
                     if (CallingFor == "DashboardDetails") return det;
 
                     #endregion
-
+                    #region FABOARD3
+                    else if (det.BoardCode == "FABOARD3")
+                    {
+                        det.SPREPORT.fdt = CommVar.FinStartDate(UNQSNO);
+                        det.SPREPORT.tdt = CommVar.CurrDate(UNQSNO);
+                        det.SPREPORT.salepur = "P";
+                        det.SPREPORT.noofrec = 10;
+                        Mnu.DropDown_list_GLCD = DropDownHelp.GetGlcdforSelection("", "", "'1'");
+                        det.SPREPORT.glcd = masterHelp.ComboFill("glcd", Mnu.DropDown_list_GLCD, 0, 1);
+                    }
+                    #endregion
                 }
                 Mnu.DashboardList = DashboardDetails;
 
@@ -618,28 +664,37 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult multiVu(Menu Mnu)
+        public ActionResult multiVu(Menu Mnu, FormCollection FC)
         {
+            string msg = "";
             try
             {
+                if (Mnu.PostAction == "FABOARD3")
+                {
+                    msg = DownloadExcelSalePur(Mnu, Mnu.CurrentIndex, FC);
+                }
+                else
+                {
                     #region excel
-                   
-                        DashboardDetails det = (DashboardDetails)UpdateDeshBoard(Mnu, Mnu.PostAction, "DashboardDetails");
-                        DataTable dt = det.DataTable;
-                        if (dt.Rows.Count == 0) return Content("No data Found !");
-                        DataTable[] exdt = new DataTable[1] { dt };
-                        string[] sheetname = new string[1] { "Sheet1" };
-                        masterHelp.ExcelfromDataTables(exdt, sheetname, Mnu.PostAction.retRepname(), false, det.Caption + " as on " + CommVar.CurrDate(UNQSNO), false);
-                   
+
+                    DashboardDetails det = (DashboardDetails)UpdateDeshBoard(Mnu, Mnu.PostAction, "DashboardDetails");
+                    DataTable dt = det.DataTable;
+                    if (dt.Rows.Count == 0) return Content("No data Found !");
+                    DataTable[] exdt = new DataTable[1] { dt };
+                    string[] sheetname = new string[1] { "Sheet1" };
+                    masterHelp.ExcelfromDataTables(exdt, sheetname, Mnu.PostAction.retRepname(), false, det.Caption + " as on " + CommVar.CurrDate(UNQSNO), false);
+
                     #endregion
+                }
+
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
             }
-            return null;
+            return Content(msg);
         }
-        public ActionResult OS_RM_MailSend(Menu Mnu,int index, FormCollection FC)
+        public ActionResult OS_RM_MailSend(Menu Mnu, int index, FormCollection FC)
         {
             try
             {
@@ -654,9 +709,9 @@ namespace Improvar.Controllers
                         ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                         ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                         string COM = CommVar.Compcd(UNQSNO);
-                        string errmsg = "", rsemailid = "", mailSubject = "", sendemailids = "", slnm = "", emlslcd = "", body = "", sladd = "", callfrm = "", templatenm = "", strem = "", grpemailid="";
-                       
-                        var curdt = FC["DashboardList["+ index + "].EMAILSTATUSTBL.curdt"].retDateStr();
+                        string errmsg = "", rsemailid = "", mailSubject = "", sendemailids = "", slnm = "", emlslcd = "", body = "", sladd = "", callfrm = "", templatenm = "", strem = "", grpemailid = "";
+
+                        var curdt = FC["DashboardList[" + index + "].EMAILSTATUSTBL.curdt"].retDateStr();
                         var Curtime = Convert.ToDateTime(System.DateTime.Now).ToString("HH:mm");
                         bool MyBoolValue = Convert.ToBoolean(FC["DashboardList[" + index + "].EMAILSTATUSTBL.autoreminderofff"].Split(',')[0]);
                         var autoreminderofff = MyBoolValue == true ? "Y" : " ";
@@ -669,19 +724,19 @@ namespace Improvar.Controllers
                         //
                         var ostbl = masterHelpFa.GenOSTbl("", "", curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, unselslcd);
                         //var ostbl = masterHelpFa.GenOSTbl("", "'DA00076','DL00001'", curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, ""); //testing
-                        if (ostbl.Rows.Count==0)
+                        if (ostbl.Rows.Count == 0)
                         {
                             errmsg = "Record not found";
                             goto msgreturn;
                         }
-                            var rsemailid1 = ostbl;
+                        var rsemailid1 = ostbl;
                         rsemailid1.DefaultView.Sort = "SLCD";
                         int maxR = rsemailid1.Rows.Count - 1;
                         Int32 iz = 0;
                         double COUNTER = 0;
                         while (iz <= maxR)
                         {
-                        nextslcd:;
+                            nextslcd:;
                             body = ""; errmsg = ""; sladd = "";
                             double days = 0, cdays = 0, odays = 0, osamt = 0, totalosamt = 0, checkdays = 0;
                             var slcd = rsemailid1.Rows[iz]["slcd"].retStr();
@@ -780,7 +835,7 @@ namespace Improvar.Controllers
                             if (partydata.PANNO.retStr() != "") sladd += "PAN # " + partydata.PANNO + "<br/>";
                             #endregion
                             #region company details
-                            string locacommu = "", compcommu="";
+                            string locacommu = "", compcommu = "";
                             string compaddress = masterHelp.retCompAddress();
                             DataTable comptbl = masterHelpFa.retComptbl();
                             if (comptbl.Rows[0]["phno1"].ToString() != "") locacommu += (locacommu == "" ? "" : ", ") + comptbl.Rows[0]["phno1"].ToString();
@@ -788,8 +843,8 @@ namespace Improvar.Controllers
                             locacommu = "Phone : " + locacommu;
                             if (comptbl.Rows[0]["phno3"].ToString() != "") locacommu += ", Fax : " + comptbl.Rows[0]["phno3"].ToString();
 
-                            if (comptbl.Rows[0]["regdoffsame"].ToString() == "Y") { compcommu = locacommu;}
-                          
+                            if (comptbl.Rows[0]["regdoffsame"].ToString() == "Y") { compcommu = locacommu; }
+
                             #endregion
                             // email
 
@@ -818,7 +873,7 @@ namespace Improvar.Controllers
 
                             bool emailsent = false;
                             string emlsendon = "", ccsendon = "";
-                            ccsendon = grpemailid.ToString()+";"+ ccmail;
+                            ccsendon = grpemailid.ToString() + ";" + ccmail;
                             emlsendon += rsemailid.ToString() + ";" + emlsendon;
                             string ccemailid = "";// ConfigurationManager.AppSettings["ccemailid"];
                             strem += slcd + "," + emlsendon;
@@ -838,8 +893,173 @@ namespace Improvar.Controllers
 
                             if (iz > maxR) break;
                         }
-                        
-                    msgreturn:;
+
+                        msgreturn:;
+                        errmsg = sendemailids;
+                        if (sendemailids == "")
+                        {
+                            return Content(errmsg);
+                        }
+                        else
+                        {
+                            return Content(errmsg);
+                        }
+                    }
+
+
+                    #endregion
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+            return null;
+        }
+        public ActionResult OS_RM_SMSSend(Menu Mnu, int index, FormCollection FC)
+        {
+            try
+            {
+
+                foreach (var i in Mnu.DashboardList)
+                {
+                    #region FABOARD4
+                    if (i.BoardCode == "FABOARD4")
+                    {
+                        SMS sms = new SMS();
+                        ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                        ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                        string COM = CommVar.Compcd(UNQSNO);
+                        string errmsg = "", rsmobno = "", sendemailids = "", slnm = "", emlslcd = "";
+
+                        var curdt = FC["DashboardList[" + index + "].EMAILSTATUSTBL.curdt"].retDateStr();
+                        var Curtime = Convert.ToDateTime(System.DateTime.Now).ToString("HH:mm");
+                        bool MyBoolValue = Convert.ToBoolean(FC["DashboardList[" + index + "].EMAILSTATUSTBL.autoreminderofff"].Split(',')[0]);
+                        var autoreminderofff = MyBoolValue == true ? "Y" : " ";
+                        var caldt = FC["DashboardList[" + index + "].EMAILSTATUSTBL.caldt"].retStr();
+                        var graceday = FC["DashboardList[" + index + "].EMAILSTATUSTBL.graceday"].retDbl();
+                        var agslcd = FC["DashboardList[" + index + "].EMAILSTATUSTBL.AGENT_CODE"].retStr();
+                        var selslcd = FC["DashboardList[" + index + "].EMAILSTATUSTBL.PARTY_CODE"].retStr();
+                        selslcd = selslcd.retStr() == "" ? "" : selslcd.retSqlformat();
+                        agslcd = agslcd.retStr() == "" ? "" : agslcd.retSqlformat();
+                        var ccmail = FC["DashboardList[" + index + "].EMAILSTATUSTBL.CCMAIL"].retStr();
+                        //select unselslcd
+                        var unselslcd = string.Join(",", (DBF.M_SUBLEG.Where(e => e.AUTOREMINDEROFF == autoreminderofff).Select(e => e.SLCD))).retSqlformat();
+                        var selglcd = string.Join(",", (DBF.M_GENLEG.Where(e => e.LINKCD == "D" && e.SLCDMUST == "Y").Select(e => e.GLCD))).retSqlformat();
+                        //
+                        //var ostbl = masterHelpFa.GenOSTbl("", "", curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, unselslcd);
+                        //var ostbl = masterHelpFa.GenOSTbl("", "'DR00064'", curdt, "", "", "", "", "", "Y", agslcd, "", "", "", "", false, false, ""); //testing
+                        var ostbl = masterHelpFa.GenOSTbl(selglcd, selslcd, curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, unselslcd);
+
+                        if (ostbl.Rows.Count == 0)
+                        {
+                            errmsg = "Record not found";
+                            goto msgreturn;
+                        }
+                        var rsemailid1 = ostbl;
+                        rsemailid1.DefaultView.Sort = "SLCD";
+                        int maxR = rsemailid1.Rows.Count - 1;
+                        Int32 iz = 0;
+                        double COUNTER = 0;
+                        while (iz <= maxR)
+                        {
+                            string[,] smsaryMsg = new string[4, 2];
+                            nextslcd:;
+                            errmsg = "";
+                            double days = 0, cdays = 0, odays = 0, osamt = 0, totalosamt = 0, checkdays = 0;
+                            var slcd = rsemailid1.Rows[iz]["slcd"].retStr();
+                            //string slmobno = "", agmobno = "";
+                            var partydata = (from a in DBF.M_SUBLEG
+                                             where a.SLCD == slcd
+                                             select a).FirstOrDefault();
+
+                            //slcd = tbl.Rows[0]["slcd"].ToString();
+                            //if (rsemailid1.Rows[iz]["phno"].ToString().retStr() != "") slmobno = rsemailid1.Rows[iz]["phno"].ToString();
+                            //if (rsemailid1.Rows[0]["agregmobile"].ToString().retStr() != "") agmobno = rsemailid1.Rows[0]["agregmobile"].ToString();
+
+                            while (rsemailid1.Rows[iz]["slcd"].retStr() == slcd)
+                            {
+
+                                if (partydata != null) rsmobno = partydata.REGMOBILE.retStr();
+                                if (rsmobno.retStr() != "")
+                                {
+
+                                    TimeSpan TSdys, TCdys;
+                                    checkdays = graceday.retDbl();
+                                    days = 0;
+                                    string checkdt = "";
+                                    if (caldt == "D" || caldt == "L")
+                                    {
+                                        if (caldt == "D") checkdt = rsemailid1.Rows[iz]["duedt"].retStr(); else checkdt = rsemailid1.Rows[iz]["lrdt"].retStr();
+                                        if (checkdt == "") checkdt = rsemailid1.Rows[iz]["docdt"].retStr();
+                                        TSdys = Convert.ToDateTime(curdt) - Convert.ToDateTime(checkdt);
+                                        days = cdays + TSdys.Days;
+                                    }
+                                    else
+                                    {
+                                        TSdys = Convert.ToDateTime(curdt) - Convert.ToDateTime(rsemailid1.Rows[iz]["docdt"]);
+                                        days = TSdys.Days;
+                                    }
+                                    if (caldt == "D") { days = days - cdays; }
+                                    if (days > checkdays && rsemailid1.Rows[iz]["drcr"].retStr() == "D")
+                                    {
+                                        osamt += rsemailid1.Rows[iz]["bal_amt"].retDbl();
+                                    }
+                                    totalosamt += rsemailid1.Rows[iz]["bal_amt"].retDbl();
+                                    //NoOfMail++;
+                                    slnm = rsemailid1.Rows[iz]["slnm"].ToString();
+                                    emlslcd = rsemailid1.Rows[iz]["slcd"].ToString();
+                                    //get agent cc mail
+                                    var agentdata = (from a in DBF.M_SUBLEG
+                                                     where a.SLCD == agslcd
+                                                     select a).FirstOrDefault();
+                                    //if (agentdata != null) grpemailid = agentdata.REGEMAILID;
+                                    //end
+
+                                }
+
+                                iz++;
+                                if (iz > maxR) break;
+                            }
+                            smsaryMsg[0, 0] = "&slnm&"; smsaryMsg[0, 1] = slnm;
+                            smsaryMsg[1, 0] = "&osamt&"; smsaryMsg[1, 1] = Cn.Indian_Number_format(osamt.ToString(), "0.00");
+                            smsaryMsg[2, 0] = "&totalosamt&"; smsaryMsg[2, 1] = Cn.Indian_Number_format(totalosamt.ToString(), "0.00");
+                            smsaryMsg[3, 0] = "&asondate&"; smsaryMsg[3, 1] = curdt;
+                            if (osamt == 0)
+                            {
+                                //errmsg = "party o/s not found";
+                                if (iz > maxR) break;
+                                goto nextslcd;
+                            }
+                            if (!string.IsNullOrEmpty(rsmobno))
+                            {
+                                COUNTER = COUNTER + 1;
+                                string running_no = COUNTER.ToString().PadLeft(4, '0');
+
+                                //compcd+|current date (ddmmyy) | skip party check box | DBL | grace days | hh(24 format)|0001..
+                                string autono = CommVar.Compcd(UNQSNO) + "|" + Convert.ToDateTime(curdt).ToString("ddMMyy") + "|" + autoreminderofff + "|" + caldt + "|" + graceday + "|" + Convert.ToDateTime(Curtime).TimeOfDay.Hours + "|" + running_no;
+
+                                List<string> sendmsg = sms.SMSMessContectGen(slcd, "AOSRM", smsaryMsg);
+                                //var msgresult = sms.SMSsend(slmobno, sendmsg[0], sendmsg[1], agmobno);
+                                var msgresult = sms.SMSsend(rsmobno, sendmsg[0], sendmsg[1]);
+
+                                string[] msgretval = msgresult.Split('=');
+                                if (msgretval[0].retStr() == "")
+                                {
+                                    masterHelp.insT_TXNSTATUS(autono, "S", "AOSRM", msgresult);
+                                    var smsSendInfo = sms.retSMSSendInfo(autono, "S", "AOSRM");
+                                    sendemailids += smsSendInfo;
+                                }
+                            }
+
+
+
+                            if (iz > maxR) break;
+                        }
+
+                        msgreturn:;
                         errmsg = sendemailids;
                         if (sendemailids == "")
                         {
@@ -866,7 +1086,11 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.SLCD_help(val, Code, "Agent");
+                var cd = Code.Split(Convert.ToChar(Cn.GCS()))[0];
+                var caption = Code.Split(Convert.ToChar(Cn.GCS()))[1];
+                //var str = masterHelp.SLCD_help(val, Code, "Agent");
+                var str = masterHelp.SLCD_help(val, cd, caption);
+
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -882,5 +1106,180 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public string DownloadExcelSalePur(Menu Mnu, int index, FormCollection FC)
+        {
+            try
+            {
+                var fdt = FC["DashboardList[" + index + "].SPREPORT.fdt"].retStr();
+                var tdt = FC["DashboardList[" + index + "].SPREPORT.tdt"].retStr();
+                var salepur = FC["DashboardList[" + index + "].SPREPORT.salepur"].retStr();
+                var glcd = "";
+                if (FC.AllKeys.Contains("glcdvalue"))
+                {
+                    glcd = CommFunc.retSqlformat(FC["glcdvalue"].ToString());
+                    //save glcd ini file
+                    INI Handel_ini = new INI();
+                    Handel_ini.IniWriteValue("FABOARD3_" + salepur, "GLCDVALUE", FC["glcdvalue"].ToString(), Server.MapPath("~/Ipsmart.ini"));
+                }
+                var noofrec = FC["DashboardList[" + index + "].SPREPORT.noofrec"].retStr();
+                string scmf = CommVar.FinSchema(UNQSNO);
+                string compcd = CommVar.Compcd(UNQSNO);
+
+                string sql = "";
+                sql += "select a.panno, a.slnm, a.slarea,a.amt,a.blamt from(  " + Environment.NewLine;
+                sql += "select a.panno, b.slnm, b.slarea,  " + Environment.NewLine;
+                sql += "sum(a.amt) amt, sum(a.blamt) blamt from " + Environment.NewLine;
+                sql += "(select c.panno, a.expglcd, " + Environment.NewLine;
+                if (salepur == "P")
+                {
+                    sql += "sum(case a.drcr when 'D' then a.amt when 'C' then a.amt * -1 end) amt, " + Environment.NewLine;
+                    sql += "sum(case a.drcr when 'D' then a.blamt when 'C' then a.blamt * -1 end) blamt " + Environment.NewLine;
+                }
+                else
+                {
+                    sql += "sum(case a.drcr when 'C' then a.amt when 'D' then a.amt * -1 end) amt, " + Environment.NewLine;
+                    sql += "sum(case a.drcr when 'C' then a.blamt when 'D' then a.blamt * -1 end) blamt " + Environment.NewLine;
+                }
+                sql += "from " + scmf + ".t_vch_gst a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".m_subleg c " + Environment.NewLine;
+                sql += "where a.autono = b.autono(+) and a.pcode = c.slcd(+) and " + Environment.NewLine;
+                sql += "b.compcd = '" + compcd + "' and nvl(b.cancel, 'N') = 'N'  " + Environment.NewLine;
+                if (glcd.retStr() != "") sql += "and a.expglcd in (" + glcd + ")  " + Environment.NewLine;
+                if (fdt.retStr() != "") sql += "and b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
+                sql += "and a.salpur = '" + salepur + "' and nvl(a.pinv, 'N') = 'N' and c.panno is not null " + Environment.NewLine;
+                sql += "group by c.panno, a.expglcd ) a, " + Environment.NewLine;
+
+                sql += "(select panno, slnm, slarea from ( " + Environment.NewLine;
+                sql += "select a.panno, a.slnm, a.slcd, nvl(a.district, a.slarea) slarea,  " + Environment.NewLine;
+                sql += "row_number() over(partition by a.panno order by slcd) rn " + Environment.NewLine;
+                sql += "from " + scmf + ".m_subleg a ) " + Environment.NewLine;
+                sql += "where rn = 1 ) b, " + Environment.NewLine;
+
+                sql += scmf + ".m_genleg c " + Environment.NewLine;
+                sql += "where a.panno = b.panno(+) and a.expglcd = c.glcd(+) " + Environment.NewLine;
+                sql += "group by a.panno, b.slnm, b.slarea " + Environment.NewLine;
+                sql += "order by amt desc, slnm ";
+                sql += ")a ";
+                if (noofrec.retDbl() != 0) sql += "where ROWNUM <= " + noofrec + " " + Environment.NewLine;
+                DataTable tbl = masterHelp.SQLquery(sql);
+                if (tbl.Rows.Count == 0) return "no records..";
+
+
+
+
+                string filename = ("Top Sales/Purchase " + (salepur == "P" ? "Purchase" : "Sales")).retRepname();
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("sheet1");
+
+                string Excel_Header = "Party Name" + "|" + "PAN NO." + "|" + "Area" + "|" + "Amount" + "|" + "Billamt";
+                using (ExcelRange Rng = wsSheet1.Cells["A1:E1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                    Rng.Style.Font.Size = 14; Rng.Style.Font.Bold = true;
+                    wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
+                }
+                using (ExcelRange Rng = wsSheet1.Cells["A2:E2"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                    Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
+                    wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
+                }
+                using (ExcelRange Rng = wsSheet1.Cells["A3:E3"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
+                    Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
+                    wsSheet1.Cells["A3:A3"].Value = "Top " + noofrec + " " + (salepur == "P" ? "Purchase" : "Sales") + " as on " + tdt;
+                }
+                using (ExcelRange Rng = wsSheet1.Cells["A4:E4"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Font.Bold = true; //Rng.Style.Font.Size = 9;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                    Rng.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    Rng.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    Rng.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    Rng.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    string[] Header = Excel_Header.Split('|');
+                    for (int j = 0; j < Header.Length; j++)
+                    {
+                        wsSheet1.Cells[4, j + 1].Value = Header[j];
+                    }
+                }
+                Int32 maxR = tbl.Rows.Count - 1;
+                int exlrowno = 5; int slno = 0; int i = 0;
+                while (i <= maxR)
+                {
+                    //wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["slcd"].retStr();
+                    wsSheet1.Cells[exlrowno, 1].Value = tbl.Rows[i]["slnm"].retStr();
+                    wsSheet1.Cells[exlrowno, 2].Value = tbl.Rows[i]["panno"].retStr();
+                    wsSheet1.Cells[exlrowno, 3].Value = tbl.Rows[i]["slarea"].retStr();
+                    wsSheet1.Cells[exlrowno, 4].Value = tbl.Rows[i]["amt"].retDbl();
+                    wsSheet1.Cells[exlrowno, 5].Value = tbl.Rows[i]["blamt"].retDbl();
+                    exlrowno++;
+                    i++;
+                    if (i > maxR) break;
+                }
+                wsSheet1.Cells[exlrowno, 4].Formula = "=sum(" + wsSheet1.Cells[5, 4].Address + ":" + wsSheet1.Cells[exlrowno - 1, 4].Address + ")";
+                wsSheet1.Cells[exlrowno, 5].Formula = "=sum(" + wsSheet1.Cells[5, 5].Address + ":" + wsSheet1.Cells[exlrowno - 1, 5].Address + ")";
+                using (ExcelRange Rng = wsSheet1.Cells[exlrowno, 1, exlrowno, 5])
+                {
+                    Rng.Style.Font.Bold = true;
+                }
+                wsSheet1.Cells[exlrowno, 1].Value = "Total";
+                wsSheet1.Cells[4, 1, exlrowno, 5].AutoFitColumns();
+                wsSheet1.Column(4).Style.Numberformat.Format = "0.00";
+                wsSheet1.Column(5).Style.Numberformat.Format = "0.00";
+
+                //for download//
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
+
+            }
+
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return ex.Message;
+            }
+            return "";
+        }
+        public ActionResult UpdateLedger(Menu Mnu, int index, FormCollection FC)
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            try
+            {
+                var salepur = FC["DashboardList[" + index + "].SPREPORT.salepur"].retStr();
+
+                INI Handel_Ini = new INI();
+                string glcd = Handel_Ini.IniReadValue("FABOARD3_" + salepur, "GLCDVALUE", Server.MapPath("~/Ipsmart.ini"));
+                string htmlglcd = ""; string[] arrglcd = null;
+                Mnu.DropDown_list_GLCD = DropDownHelp.GetGlcdforSelection("", "", "'1'");
+                if (glcd.retStr() != "")
+                {
+                    arrglcd = glcd.Split(',');
+                }
+                htmlglcd = masterHelp.ComboFill("glcd", Mnu.DropDown_list_GLCD, 0, 1, 219, arrglcd);
+
+                ModelState.Clear();
+                return Content("ok" + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + htmlglcd);
+            }
+            catch (Exception ex)
+            {
+                dic.Add("message", ex.Message + ex.InnerException);
+                Cn.SaveException(ex, "");
+            }
+            return Json(dic, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }
