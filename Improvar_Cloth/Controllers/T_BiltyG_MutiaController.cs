@@ -339,6 +339,14 @@ namespace Improvar.Controllers
                                        TRANSLNM = dr["TRANSLNM"].retStr(),
                                        BALEYR = dr["BALEYR"].retStr(),
                                    }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                if (VE.TBILTY_POPUP != null && VE.TBILTY_POPUP.Count > 0)
+                {
+                    if (VE.FDT.retDateStr() != "" || VE.TDT.retDateStr() != "")
+                    {
+                        if (VE.FDT.retDateStr() != "") VE.TBILTY_POPUP = (from a in VE.TBILTY_POPUP where Convert.ToDateTime(a.PREFDT) >= VE.FDT select a).ToList();
+                        if (VE.TDT.retDateStr() != "") VE.TBILTY_POPUP = (from a in VE.TBILTY_POPUP where Convert.ToDateTime(a.PREFDT) <= VE.TDT select a).ToList();
+                    }
+                }
                 if (VE.TBILTY != null)
                 {//checked when opend secone times.
                     var selectedbill = VE.TBILTY.Select(e => e.BLAUTONO).Distinct().ToList();
@@ -403,7 +411,8 @@ namespace Improvar.Controllers
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos, (VE.T_BILTY_HDR.AUTONO.retStr() == "" ? "" : VE.T_BILTY_HDR.AUTONO.retSqlformat()), "", MUTSLCD.retSqlformat());
                 DataView dv = new DataView(GetPendig_Data);
-                dt = dv.ToTable(true);
+                string[] COL = new string[] { "autono", "baleno", "lrno", "lrdt", "prefno", "prefdt", "baleyr" };
+                dt = dv.ToTable(true, COL);
                 var existingdata = VE.TBILTY;
                 if (VE.TBILTY != null)
                 {

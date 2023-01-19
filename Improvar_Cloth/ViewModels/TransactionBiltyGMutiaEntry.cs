@@ -20,6 +20,9 @@ namespace Improvar.ViewModels
         public string SLNM { get; set; }
         public string REGMOBILE { get; set; }
         public string BALECOUNT { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? FDT { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? TDT { get; set; }
     }
 }

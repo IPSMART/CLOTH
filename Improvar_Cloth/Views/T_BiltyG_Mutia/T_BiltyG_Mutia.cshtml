@@ -23,8 +23,7 @@
         }
         else if ("@Model.DefaultAction" == "E") {
 
-            if ("@Model.Delete" == "child record found")
-            {
+            if ("@Model.Delete" == "child record found") {
                 $("#DOCDT").attr("readonly", "readonly");
                 $("#DOCDT").attr("style", "pointer-events:none");
             }
@@ -77,6 +76,8 @@
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
             $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -354,8 +355,6 @@
                 <div class="col-md-6">
                     <div class="editor-field">
                         @Html.DropDownListFor(model => model.DRCR, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control", id = "DRCR" })
-
-
                     </div>
                 </div>
                 <div class="row">
@@ -402,7 +401,26 @@
                     </div>
                     @if (Model.DefaultAction != "V")
                     {
-
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "P.From Date")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "P.To Date")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 2px;">
                                 <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Pending Data " onclick="GetPendingData()" />
