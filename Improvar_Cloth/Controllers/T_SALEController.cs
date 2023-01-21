@@ -6507,7 +6507,7 @@ namespace Improvar.Controllers
                                 DataTable ITEM_STOCK_DATA = new DataTable();
 
                                 //ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, "", ITGRPCD, "", "", "", false, "", "", true);
-                                ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, "", ITGRPCD, "", "", "", false, "", "", true);
+                                ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, VE.DefaultAction=="E"? TTXN.AUTONO:"", ITGRPCD, "", "", "", false, "", "", true);
 
 
 
