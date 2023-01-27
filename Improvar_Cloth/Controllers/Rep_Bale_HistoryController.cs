@@ -94,8 +94,8 @@ namespace Improvar.Controllers
                 {
                     //sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
                     //sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
-                    sql += "select distinct a.autono, a.baleopen, a.blautono, a.txnslno, nvl(a.gocd,k.gocd)gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, nvl(a.itcd,k.itcd)itcd, b.shade, nvl(a.nos,k.nos)nos, nvl(a.qnty,k.qnty)qnty, c.usr_entdt, ";
-                    sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, nvl(g.gonm,k.gonm)gonm, nvl(f.styleno,k.styleno)styleno, nvl(f.itnm,k.itnm)itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
+                    sql += "select distinct a.autono, a.baleopen, a.blautono, nvl(a.txnslno,k.txnslno)txnslno, nvl(a.gocd,k.gocd)gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, nvl(a.itcd,k.itcd)itcd, b.shade, nvl(a.nos,k.nos)nos, nvl(a.qnty,k.qnty)qnty, c.usr_entdt, ";
+                    sql += "c.docno || (case when nvl(c.cancel,'N')='Y' then ' (Cancelled)' else '' end)docno, c.docdt, b.prefno, a.slcd, h.slnm, nvl(g.gonm,k.gonm)gonm, nvl(f.styleno,k.styleno)styleno, nvl(f.itnm,k.itnm)itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
                     sql += "b.pageno, b.pageslno, b.lrno from ";
 
                     sql += "( select '' baleopen, e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd slcd, ";
@@ -105,7 +105,8 @@ namespace Improvar.Controllers
                     sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
                     if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                     sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
-                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
+                    //sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
                     sql += "group by '',  e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd ";
                     sql += "union all ";
                     sql += "select e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, ";
@@ -115,7 +116,8 @@ namespace Improvar.Controllers
                     sql += "not (g.doctype in ('KHSR') and a.gocd='TR') and ";
                     if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                     sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
-                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
+                    //sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and e.baleno is not null and e.autono = f.autono(+) and ";
                     //sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
                     sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and e.autono = d.autono(+) ";
                     sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ";
@@ -127,7 +129,8 @@ namespace Improvar.Controllers
                     sql += "nvl(e.baleopen,'N')='Y' and e.autono=h.autono(+) and e.slno-1000 = h.slno(+) and ";
                     if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                     sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
-                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
+                    //sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and e.baleno is not null and e.autono = f.autono(+) and ";
                     sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
                     sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, nvl(h.gocd,a.gocd), b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, ";
 
@@ -139,10 +142,10 @@ namespace Improvar.Controllers
                     sql += ") b, ";
 
                     //receive from mutia item detail
-                    sql += "(select a.autono||a.txnslno autoslno,a.baleno,a.baleyr,sum(a.nos) nos, sum(a.qnty) qnty,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm ";
+                    sql += "(select a.autono||a.txnslno autoslno,a.txnslno,a.baleno,a.baleyr,sum(a.nos) nos, sum(a.qnty) qnty,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm ";
                     sql += " from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d," + scm + ".m_sitem e," + scmf + ".m_godown f," + scm + ".m_doctype g ";
                     sql += "where a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and b.itcd = e.itcd(+) and a.gocd = f.gocd(+) and d.doccd=g.doccd(+) ";
-                    sql += "group by a.autono||a.txnslno,a.baleno,a.baleyr,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm ";
+                    sql += "group by a.autono||a.txnslno,a.txnslno,a.baleno,a.baleyr,b.itcd,a.gocd,f.gonm, e.styleno, e.itnm ";
                     sql += ") k, ";
 
                     sql += "" + scm + ".t_cntrl_hdr c, " + scm + ".t_txn d, " + scm + ".m_doctype e, ";
@@ -186,6 +189,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "docnm", "string", "c,15", "Activity In");
                     HC.GetPrintHeader(IR, "docdt", "string", "c,11", "Doc Date");
                     HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
+                    HC.GetPrintHeader(IR, "slno", "string", "c,8", "Sl.");
                     HC.GetPrintHeader(IR, "gonm", "string", "c,16", "Godown");
                     HC.GetPrintHeader(IR, "slnm", "string", "c,22", "Particulars");
                     HC.GetPrintHeader(IR, "nos", "double", "n,7", "Nos");
@@ -223,6 +227,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["docnm"] = tbl.Rows[i]["docnm"].ToString();
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
+                                IR.Rows[rNo]["slno"] = tbl.Rows[i]["txnslno"].ToString();
                                 IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].ToString();
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + (tbl.Rows[i]["baleopen"].retStr() == "Y" ? " (Open)" : "");
                                 IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
