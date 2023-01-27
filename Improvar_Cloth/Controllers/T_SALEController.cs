@@ -275,8 +275,13 @@ namespace Improvar.Controllers
                                              where a.DOCCD == doccd1 && b.LOCCD == LOC && b.COMPCD == COM
                                              orderby a.AUTONO descending
                                              select a).FirstOrDefault();
-
-                                TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                if (CommVar.ClientCode(UNQSNO) == "SNFP" && VE.MENU_PARA == "SBDIR")
+                                {
+                                    TTXN.GOCD = "SHOP";
+                                }
+                                else {
+                                    TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                }
                                 TTXN.PARGLCD = TempData["LASTPARGLCD" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
@@ -3989,7 +3994,7 @@ namespace Improvar.Controllers
                 string str1 = "";
                 DataTable tbl = new DataTable();
 
-                str1 += "select i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, "+Environment.NewLine;
+                str1 += "select i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, " + Environment.NewLine;
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,sum(nvl(i.QNTY,0))QNTY,sum(nvl(i.NOS,0))NOS,i.RATE,i.DISCRATE, " + Environment.NewLine;
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,sum(nvl(i.FLAGMTR,0))FLAGMTR,i.LOCABIN,i.BALEYR " + Environment.NewLine;
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, " + Environment.NewLine;
@@ -6507,7 +6512,7 @@ namespace Improvar.Controllers
                                 DataTable ITEM_STOCK_DATA = new DataTable();
 
                                 //ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, "", ITGRPCD, "", "", "", false, "", "", true);
-                                ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, VE.DefaultAction=="E"? TTXN.AUTONO:"", ITGRPCD, "", "", "", false, "", "", true);
+                                ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, VE.DefaultAction == "E" ? TTXN.AUTONO : "", ITGRPCD, "", "", "", false, "", "", true);
 
 
 
