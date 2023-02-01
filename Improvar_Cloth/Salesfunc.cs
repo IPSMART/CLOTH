@@ -2255,7 +2255,7 @@ namespace Improvar
             try
             {
                 string DefaultAction = "A"; grpnm = grpnm.ToUpper();
-                var tMGROU = DB.M_GROUP.Where(m => m.ITGRPNM == grpnm).FirstOrDefault();
+                var tMGROU = DB.M_GROUP.Where(m => m.ITGRPNM.ToUpper() == grpnm).FirstOrDefault();
                 if (tMGROU != null)
                 {
                     return tMGROU;
