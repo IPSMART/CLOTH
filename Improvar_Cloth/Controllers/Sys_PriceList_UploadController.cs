@@ -10,6 +10,7 @@ using System.Globalization;
 using Oracle.ManagedDataAccess.Client;
 using OfficeOpenXml;
 using System.IO;
+using OfficeOpenXml.Style;
 //using NDbfReader;
 namespace Improvar.Controllers
 {
@@ -48,11 +49,18 @@ namespace Improvar.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
-            if (Request.Files.Count == 0) return Content("No File Selected");
-            HttpPostedFileBase file = Request.Files["UploadedFile"];
-            if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
-            string resp = ReadRaymondPricelist(VE, file.InputStream);
-            return Content(resp);
+            if (Command == "Download Template")
+            {
+                string resp = DownloadTemplatePricelist(VE);
+                return Content(resp);
+            }
+            else {
+                if (Request.Files.Count == 0) return Content("No File Selected");
+                HttpPostedFileBase file = Request.Files["UploadedFile"];
+                if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
+                string resp = ReadRaymondPricelist(VE, file.InputStream);
+                return Content(resp);
+            }
         }
         public string ReadRaymondPricelist(ReportViewinHtml VE, Stream stream)
         {
@@ -71,10 +79,17 @@ namespace Improvar.Controllers
                         string grpnm = workSheet.Cells[row, 1].Value.ToString();
                         string style = workSheet.Cells[row, 2].Value.ToString() + workSheet.Cells[row, 3].Value.ToString().Split('-')[0];
                         string HSNCODE = workSheet.Cells[row, 7].Value.ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE, "","", "F", "C","");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE, "", "", "F", "C", "");
                         if (ItemDet.ITCD.retStr() == "")
                         {
-                            return "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year of  row:" + row;
+                            if (ItemDet.ErrMsg.retStr() != "")
+                            {
+                                return ItemDet.ErrMsg + " row:" + row;
+                            }
+                            else
+                            {
+                                return "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year of  row:" + row;
+                            }
                         }
                         sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno ='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
                         var dt = masterHelp.SQLquery(sql);
@@ -99,6 +114,46 @@ namespace Improvar.Controllers
             }
             return "Failed because of row:" + msg;
         }
-  
+        public string DownloadTemplatePricelist(ReportViewinHtml VE)
+        {
+            try
+            {
+                string Excel_Header = "Description" + "|" + "Material Group" + "|" + "Material" + "|" + "Ex factory price" + "|" + "Whosale Price" + "|" + "Retail Price"
+                    + "|" + "HSN CODE" + "|" + "GST" + "|";
+
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                using (ExcelRange Rng = wsSheet1.Cells["A1:H1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    string[] Header = Excel_Header.Split('|');
+                    for (int i = 0; i < Header.Length; i++)
+                    {
+                        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                    }
+                }
+                wsSheet1.Cells[1, 1, 1, 8].AutoFitColumns();
+
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=Price list.xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
+                return "Download Sucessfull";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return ex.Message + ex.InnerException + "  ";
+            }
+            return null;
+        }
+
     }
 }
