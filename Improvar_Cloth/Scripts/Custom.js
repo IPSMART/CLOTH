@@ -1602,3 +1602,46 @@ function scrollToEnd(Id) {
     var chatList = document.getElementById(Id);
     chatList.scrollTop = chatList.scrollHeight;
 }
+function TooltipEventBind() {
+    $('.Tooltip').bind('contextmenu', function (e) {
+        e.preventDefault();
+        document.addEventListener('click', onClick, false);
+    });
+    function onClick(e) {
+        TooltipHide()
+        document.removeEventListener('click', onClick);
+    }
+}
+function TooltipShow(e, id, str, fld) {
+    debugger;
+    var left = e.clientX + "px";
+    var top = e.clientY + "px";
+    if (str.length > 0) {
+        $("td").on("mouseover", function (e) {
+            var titlee = $(this).find("input:visible");
+            var tax = titlee[0].id.indexOf(fld);
+            if (tax >= 0) {
+                $(this).removeAttr("tooltip");
+                $(this).removeAttr("title");
+            }
+        });
+        var div = $(".ToolFixed");
+        //$(".ToolFixed").css({ top: e.clientY, left: e.clientX }).fadeIn(400);
+        $(".ToolFixed").fadeIn(400);
+
+        str = str.replace("<table>", "<table class='Tooltiptable' style='color:#636060;'>");
+        $("#Tooltipbox").html(str);
+        var Height = document.querySelector(".Tooltiptable").offsetHeight;
+        if (Height == 0) {
+            Height = 91;
+        }
+        var Width = document.querySelector(".Tooltiptable").offsetWidth;
+        if (Width == 0) {
+            Width = 195;
+        }
+        $(".ToolFixed").css({ top: e.clientY - Height, left: e.clientX - Width });
+    }
+}
+function TooltipHide() {
+    $(".ToolFixed").hide();
+}

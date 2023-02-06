@@ -72,9 +72,9 @@ namespace Improvar.Controllers
 
 
                 string sql = "";
-                sql += " select a.autono,a.docno,a.docdt,a.translcd,a.translnm,a.lrno,a.lrdt,a.trwt,a.slcd,a.slnm,a.blamt,a.ntwt,b.tranamt from ";
+                sql += " select a.autono,a.docno,a.docdt,a.translcd,a.translnm,a.lrno,a.lrdt,a.trwt,a.slcd,a.slnm,a.blamt,a.ntwt,b.tranamt,a.cancel from ";
 
-                sql += "(select a.autono,c.docno,c.docdt,b.translcd,d.slnm translnm,b.lrno,b.lrdt,b.trwt,a.slcd,e.slnm,a.blamt,b.ntwt ";
+                sql += "(select a.autono,c.docno,c.docdt,b.translcd,d.slnm translnm,b.lrno,b.lrdt,b.trwt,a.slcd,e.slnm,a.blamt,b.ntwt,c.cancel ";
                 sql += "from " + scm1 + ".t_txn a," + scm1 + ".t_txntrans b, " + scm1 + ".t_cntrl_hdr c," + scmf + ".m_subleg d," + scmf + ".m_subleg e," + scmf + ".m_doctype f ";
                 sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.translcd = d.slcd(+) and a.slcd = e.slcd(+) and c.doccd=f.doccd and f.doctype in ('SBILD','SPRM')  ";
                 sql += "and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "'  ";
@@ -100,7 +100,9 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"];
+                    string cancrem = "";
+                    if (tbl.Rows[i]["cancel"].ToString() == "Y") cancrem = "  (CANCELLED)";
+                    IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"]+ cancrem;
                     IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().retDateStr();
                     IR.Rows[rNo]["translnm"] = tbl.Rows[i]["translnm"].ToString() + " [" + tbl.Rows[i]["translcd"].ToString() + "]";
                     IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"];
