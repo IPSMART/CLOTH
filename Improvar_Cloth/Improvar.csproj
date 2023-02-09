@@ -295,6 +295,7 @@
     <Compile Include="Controllers\Rep_DnCn_PrintController.cs" />
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
+    <Compile Include="Controllers\Rep_EWB_ChangesController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_Job_LedgerController.cs" />
     <Compile Include="Controllers\Rep_Misc_Qry_UpdtController.cs" />
@@ -897,6 +898,7 @@
     <Compile Include="ViewModels\RepBarcodeImage.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\RepBarHistory.cs" />
+    <Compile Include="ViewModels\RepEWBChanges.cs" />
     <Compile Include="ViewModels\RepMiscQryUpdt.cs" />
     <Compile Include="ViewModels\SalePymtEntry.cs" />
     <Compile Include="ViewModels\StitchMaster.cs" />
@@ -1510,6 +1512,7 @@
     <Content Include="Views\Rep_TranReg\Rep_TranReg.cshtml" />
     <Content Include="Views\Shared\_Rep_Bar_History_AddNewPrice.cshtml" />
     <Content Include="Views\Rep_PendChallan\Rep_PendChallan.cshtml" />
+    <Content Include="Views\Rep_EWB_Changes\Rep_EWB_Changes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

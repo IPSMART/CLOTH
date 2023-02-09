@@ -42,7 +42,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string VECHLTYPE { get; set; }
 
-        public double? DISTANCE { get; set; }
+        public decimal? DISTANCE { get; set; }
 
         [StringLength(20)]
         public string EWAYBILLNO { get; set; }
@@ -53,5 +53,15 @@ namespace Improvar.Models
 
         [StringLength(6)]
         public string GOCD { get; set; }
+        [StringLength(4)]
+        public string REASONCD { get; set; }
+
+        [StringLength(100)]
+        public string REASONREM { get; set; }
+
+        [StringLength(40)]
+        public string CHNG_BY { get; set; }
+
+        public DateTime? CHNG_TIME { get; set; }
     }
 }
