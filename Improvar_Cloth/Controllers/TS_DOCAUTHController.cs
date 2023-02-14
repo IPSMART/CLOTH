@@ -241,52 +241,116 @@ namespace Improvar.Controllers
                     }
                 }
                 string SQL = "", SQL1 = "", SQL2 = "", SQL3 = "";
+                string SQLC = "and a.autono not in (select autono from " + DATABSE_F + ".t_txneinv) ";
                 if (SHOW_RECORD == "P" || SHOW_RECORD.retStr() == "C")
                 {
+                    //pending=new entry,current level auth pending but prev level auth done and next level auth pending
                     string DOCTYPE1 = DOCTYPE.Replace("e.", "d.");
                     DOCTYPE1 = DOCTYPE1.Replace("c.", "b.");
-                    SQL1 = "select distinct '' docpassed,a.autono,a.slno,a.pass_level,a.authcd,a.AUTHREM,c.dname,b.doccd,b.docno,b.docdt,b.usr_id,b.usr_entdt, ";
-                    SQL1 += "b.emd_no,b.slcd,b.docamt,f.slnm,c.menu_progcall,c.MENU_PARA,d.doctype,b.cancel,b.glcd,g.glnm,b.loccd,'' user_name from ";
-                    SQL1 += DATABSE + ".t_cntrl_doc_pass a," + DATABSE + ".t_cntrl_hdr b," + DATABSE + ".m_dtype c," + DATABSE + ".m_doctype d, ";
-                    SQL1 += DATABSE_F + ".m_sign_auth e, ";
-                    SQL1 += DATABSE_F + ".m_subleg f," + DATABSE_F + ".m_genleg g where a.autono = b.autono and a.authcd = e.authcd and b.doccd = d.doccd  ";
-                    SQL1 += " and d.doctype = c.dcd and b.slcd = f.slcd(+) and b.glcd = g.glcd(+) ";
-                    SQL1 += " and a.autono not in (select autono from " + DATABSE + ".T_TXNSTATUS where STSTYPE = 'N') ";
-                    SQL1 += "and e.usrid = '" + Session["UR_ID"].ToString() + "' " + DOCTYPE1 + " and b.compcd='" + compcd + "' ";
-                    if (SHOW_RECORD == "P") { SQL1 += "  and nvl(b.cancel,'N')='N' "; } else { SQL1 += "  and nvl(b.cancel,'N')='Y' "; }
-                    if (FROMDT.retStr() != "") SQL1 += "and b.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') ";
-                    if (TODT.retStr() != "") SQL1 += "and b.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') ";
-                    if (SHOW_RECORD == "P") SQL1 += "order by docdt,docno ";
+                    SQL1 = "select distinct x.docpassed,x.autono,x.slno,x.pass_level,x.authcd,x.AUTHREM,x.dname,x.doccd,x.docno,x.docdt,x.usr_id,x.usr_entdt, " + Environment.NewLine;
+                    SQL1 += "x.emd_no,x.slcd,x.docamt,x.slnm,x.menu_progcall,x.MENU_PARA,x.doctype,x.cancel,x.glcd,x.glnm,x.loccd,x.user_name,l.lvl authrisedlvl from( " + Environment.NewLine;
+
+                    SQL1 += "select j.STSTYPE docpassed,a.autono,a.slno,min(a.pass_level)pass_level,a.authcd,a.AUTHREM,c.dname,b.doccd,b.docno,b.docdt,b.usr_id,b.usr_entdt, " + Environment.NewLine;
+                    SQL1 += "b.emd_no,b.slcd,b.docamt,f.slnm,c.menu_progcall,c.MENU_PARA,d.doctype,b.cancel,b.glcd,g.glnm,b.loccd,'' user_name,j.USR_ID authrisedUSR_ID, " + Environment.NewLine;
+                    SQL1 += "row_number() over(partition by a.autono order by a.autono desc) as rn " + Environment.NewLine;
+                    SQL1 += "from " + Environment.NewLine;
+                    SQL1 += DATABSE + ".t_cntrl_doc_pass a," + DATABSE + ".t_cntrl_hdr b," + DATABSE + ".m_dtype c," + DATABSE + ".m_doctype d, " + Environment.NewLine;
+                    SQL1 += DATABSE_F + ".m_sign_auth e, " + Environment.NewLine;
+                    SQL1 += DATABSE_F + ".m_subleg f," + DATABSE_F + ".m_genleg g," + DATABSE + ".M_DOC_AUTH i," + DATABSE + ".T_TXNSTATUS j " + Environment.NewLine;
+                    SQL1 += "where a.autono = b.autono and a.authcd = e.authcd and b.doccd = d.doccd and e.authcd=i.authcd and b.doccd=i.doccd and a.autono=j.autono(+)  " + Environment.NewLine;
+                    SQL1 += " and d.doctype = c.dcd and b.slcd = f.slcd(+) and b.glcd = g.glcd(+) " + Environment.NewLine;
+                    SQL1 += " and (a.autono not in (select autono from " + DATABSE + ".T_TXNSTATUS where STSTYPE in ('N','C','A') )or " + Environment.NewLine;
+                    SQL1 += " a.autono in (select autono from " + DATABSE + ".T_TXNSTATUS where STSTYPE in ('A') )) " + Environment.NewLine;
+                    SQL1 += "and e.usrid = '" + Session["UR_ID"].ToString() + "' " + DOCTYPE1 + " and b.compcd='" + compcd + "' " + Environment.NewLine;
+                    if (SHOW_RECORD == "P") { SQL1 += "  and nvl(b.cancel,'N')='N' " + Environment.NewLine; } else { SQL1 += "  and nvl(b.cancel,'N')='Y' " + Environment.NewLine; }
+                    if (FROMDT.retStr() != "") SQL1 += "and b.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    if (TODT.retStr() != "") SQL1 += "and b.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    SQL1 += SQLC;
+                    SQL1 += "group by j.STSTYPE,a.autono,a.slno,a.authcd,a.AUTHREM,c.dname,b.doccd,b.docno,b.docdt,b.usr_id,b.usr_entdt, " + Environment.NewLine;
+                    SQL1 += "b.emd_no,b.slcd,b.docamt,f.slnm,c.menu_progcall,c.MENU_PARA,d.doctype,b.cancel,b.glcd,g.glnm,b.loccd,j.USR_ID " + Environment.NewLine;
+                    SQL1 += ") x, ";
+
+                    SQL1 += "(select a.autono,max(c.lvl)lvl,b.usrid,c.DOCCD from " + DATABSE + ".t_txnstatus a," + DATABSE_F + ".m_sign_auth b," + DATABSE + ".M_DOC_AUTH c " + Environment.NewLine;
+                    SQL1 += "where b.authcd = c.authcd and STSTYPE='A' " + Environment.NewLine;
+                    SQL1 += "and c.lvl not in (select distinct PASS_LEVEL from " + DATABSE + ".t_cntrl_doc_pass where autono=a.autono) " + Environment.NewLine;
+                    SQL1 += "and b.authcd = c.authcd and STSTYPE='A' " + Environment.NewLine;
+                    SQL1 += "group by  a.autono,b.usrid,c.DOCCD " + Environment.NewLine;
+                    SQL1 += ")l " + Environment.NewLine;
+
+                    SQL1 += "where x.autono=l.autono(+) and x.authrisedUSR_ID=l.usrid(+) AND x.DOCCD = l.doccd(+) " + Environment.NewLine;
+                    SQL1 += "and x.rn = 1 " + Environment.NewLine;
+                    if (SHOW_RECORD == "P") SQL1 += "order by docdt,docno " + Environment.NewLine;
                     SQL = SQL1;
                 }
-                if (SHOW_RECORD.retStr() == "A" || SHOW_RECORD.retStr() == "C")
+                if (SHOW_RECORD.retStr() == "A" || SHOW_RECORD.retStr() == "C")//auth=current status=auth,upto current level auth done and next level auth pending
                 {
-                    SQL2 = "select distinct a.STSTYPE docpassed, a.autono,b.slno,b.pass_level,'' authcd,a.STSREM AUTHREM, d.dname,c.doccd,c.docno,c.docdt,c.usr_id,c.usr_entdt, ";
-                    SQL2 += "c.emd_no,c.slcd,c.docamt,g.slnm,d.menu_progcall,d.MENU_PARA,e.doctype,c.cancel,c.glcd,h.glnm,c.loccd,i.user_name ";
-                    SQL2 += "from " + DATABSE + ".T_TXNSTATUS a, " + DATABSE + ".T_CNTRL_AUTH b, " + DATABSE + ".t_cntrl_hdr c, " + DATABSE + ".m_dtype d, " + DATABSE + ".m_doctype e, ";
-                    SQL2 += "" + DATABSE_F + ".m_subleg g, " + DATABSE_F + ".m_genleg h, user_appl i ";
-                    SQL2 += "where a.autono = b.autono(+) and a.autono = c.autono  and c.doccd = e.doccd and e.doctype = d.dcd and c.slcd = g.slcd(+) ";
-                    SQL2 += "and c.glcd = h.glcd(+) and a.usr_id = i.user_id(+) and a.usr_id = '" + Session["UR_ID"].ToString() + "'  and c.compcd = '" + compcd + "'  " + DOCTYPE + " ";
-                    if (SHOW_RECORD.retStr() == "A") { SQL2 += "  and a.STSTYPE = 'A' "; } else { SQL2 += "  and a.STSTYPE = 'C' "; }
-                    if (FROMDT.retStr() != "") SQL2 += "and c.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') ";
-                    if (TODT.retStr() != "") SQL2 += "and c.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') ";
-                    if (SHOW_RECORD.retStr() == "A") SQL2 += "order by docdt,docno ";
+                    //current auth data
+                    SQL2 = "select distinct a.STSTYPE docpassed, a.autono,b.slno,b.pass_level,'' authcd,a.STSREM AUTHREM, d.dname,c.doccd,c.docno,c.docdt,c.usr_id,c.usr_entdt, " + Environment.NewLine;
+                    SQL2 += "c.emd_no,c.slcd,c.docamt,g.slnm,d.menu_progcall,d.MENU_PARA,e.doctype,c.cancel,c.glcd,h.glnm,c.loccd,i.user_name,0 authrisedlvl " + Environment.NewLine;
+                    SQL2 += "from " + DATABSE + ".T_TXNSTATUS a, " + DATABSE + ".T_CNTRL_AUTH b, " + DATABSE + ".t_cntrl_hdr c, " + DATABSE + ".m_dtype d, " + DATABSE + ".m_doctype e, " + Environment.NewLine;
+                    SQL2 += "" + DATABSE_F + ".m_subleg g, " + DATABSE_F + ".m_genleg h, user_appl i," + DATABSE + ".M_DOC_AUTH j," + DATABSE_F + ".m_sign_auth k " + Environment.NewLine;
+                    SQL2 += "where a.autono = b.autono(+) and a.autono = c.autono  and c.doccd = e.doccd and e.doctype = d.dcd and c.slcd = g.slcd(+) " + Environment.NewLine;
+                    SQL2 += "and c.doccd=j.doccd and b.pass_level=j.lvl and j.authcd=k.authcd ";
+                    SQL2 += "and c.glcd = h.glcd(+) and a.usr_id = i.user_id(+) and k.usrid = '" + Session["UR_ID"].ToString() + "'  and c.compcd = '" + compcd + "'  " + DOCTYPE + " " + Environment.NewLine;
+                    if (SHOW_RECORD.retStr() == "A") { SQL2 += "  and a.STSTYPE = 'A' " + Environment.NewLine; } else { SQL2 += "  and a.STSTYPE = 'C' " + Environment.NewLine; }
+                    if (FROMDT.retStr() != "") SQL2 += "and c.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    if (TODT.retStr() != "") SQL2 += "and c.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    SQL2 += SQLC;
+
+                    //current level unauth prev lavel data
+                    SQL2 += "union " + Environment.NewLine;
+                    SQL2 += "select distinct 'A' docpassed,a.autono,j.slno,i.lvl pass_level,''authcd,''AUTHREM,c.dname,b.doccd,b.docno,b.docdt,b.usr_id,b.usr_entdt, " + Environment.NewLine;
+                    SQL2 += "b.emd_no,b.slcd,b.docamt,f.slnm,c.menu_progcall,c.MENU_PARA,d.doctype,b.cancel,b.glcd,g.glnm,b.loccd,'' user_name,0 authrisedlvl from " + Environment.NewLine;
+                    SQL2 += DATABSE + ".t_cntrl_doc_pass a," + DATABSE + ".t_cntrl_hdr b," + DATABSE + ".m_dtype c," + DATABSE + ".m_doctype d, " + Environment.NewLine;
+                    SQL2 += DATABSE_F + ".m_subleg f," + DATABSE_F + ".m_genleg g," + DATABSE + ".M_DOC_AUTH i," + DATABSE + ".T_TXNSTATUS j," + DATABSE_F + ".m_sign_auth e," + DATABSE + ".M_DOC_AUTH j," + DATABSE_F + ".m_sign_auth k " + Environment.NewLine;
+                    SQL2 += "where a.autono = b.autono and b.doccd = d.doccd and a.authcd = i.authcd and b.doccd=i.doccd(+) and a.autono=j.autono and i.authcd = e.authcd  " + Environment.NewLine;
+                    SQL2 += "and d.doctype = c.dcd and b.slcd = f.slcd(+) and b.glcd = g.glcd(+) and " + Environment.NewLine;
+                    SQL2 += "b.doccd=j.doccd and i.lvl=j.lvl and j.authcd=k.authcd and ";
+
+                    SQL2 += "i.lvl+1 in (select min(z.lvl)lvl from " + DATABSE + ".t_txnstatus x," + DATABSE_F + ".m_sign_auth y," + DATABSE + ".M_DOC_AUTH z " + Environment.NewLine;
+                    SQL2 += "where y.authcd = z.authcd and STSTYPE='N' and x.autono=a.autono " + Environment.NewLine;
+                    SQL2 += "and z.lvl in (select distinct PASS_LEVEL from " + DATABSE + ".t_cntrl_doc_pass where autono=x.autono) " + Environment.NewLine;
+                    SQL2 += ") " + Environment.NewLine;
+
+                    SQL2 += "and k.usrid = '" + Session["UR_ID"].ToString() + "' " + DOCTYPE + " and b.compcd='" + compcd + "' " + Environment.NewLine;
+                    if (FROMDT.retStr() != "") SQL2 += "and b.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    if (TODT.retStr() != "") SQL2 += "and b.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    SQL2 += SQLC;
+
+                    if (SHOW_RECORD.retStr() == "A") SQL2 += "order by docdt,docno " + Environment.NewLine;
                     SQL = SQL2;
 
                 }
                 if (SHOW_RECORD.retStr() == "R" || SHOW_RECORD.retStr() == "C")
                 {
-                    SQL3 = "select distinct a.STSTYPE docpassed, a.autono,b.slno,b.pass_level,'' authcd,a.STSREM AUTHREM, d.dname,c.doccd,c.docno,c.docdt,c.usr_id,c.usr_entdt, ";
-                    SQL3 += "c.emd_no,c.slcd,c.docamt,g.slnm,d.menu_progcall,d.MENU_PARA,e.doctype,c.cancel,c.glcd,h.glnm,c.loccd,i.user_name ";
-                    SQL3 += "from " + DATABSE + ".T_TXNSTATUS a, " + DATABSE + ".t_cntrl_doc_pass b, " + DATABSE + ".t_cntrl_hdr c, " + DATABSE + ".m_dtype d, " + DATABSE + ".m_doctype e, " + DATABSE_F + ".m_sign_auth f, ";
-                    SQL3 += "" + DATABSE_F + ".m_subleg g, " + DATABSE_F + ".m_genleg h, user_appl i ";
-                    SQL3 += "where a.autono = b.autono(+) and a.autono = c.autono  and c.doccd = e.doccd and e.doctype = d.dcd and c.slcd = g.slcd(+) ";
+                    SQL3 = "select x.docpassed, x.autono,x.slno,x.pass_level,x.authcd,x.AUTHREM, x.dname,x.doccd,x.docno,x.docdt,x.usr_id,x.usr_entdt, " + Environment.NewLine;
+                    SQL3 += "x.emd_no,x.slcd,x.docamt,x.slnm,x.menu_progcall,x.MENU_PARA,x.doctype,x.cancel,x.glcd,x.glnm,x.loccd,x.user_name,l.lvl authrisedlvl from (" + Environment.NewLine;
+
+                    SQL3 += "select distinct a.STSTYPE docpassed, a.autono,b.slno,b.pass_level,'' authcd,a.STSREM AUTHREM, d.dname,c.doccd,c.docno,c.docdt,c.usr_id,c.usr_entdt, " + Environment.NewLine;
+                    SQL3 += "c.emd_no,c.slcd,c.docamt,g.slnm,d.menu_progcall,d.MENU_PARA,e.doctype,c.cancel,c.glcd,h.glnm,c.loccd,i.user_name,0 authrisedlvl,a.USR_ID authrisedUSR_ID " + Environment.NewLine;
+                    SQL3 += ",row_number() over(partition by a.autono order by a.autono,b.pass_level asc) as rn " + Environment.NewLine;
+                    SQL3 += "from " + DATABSE + ".T_TXNSTATUS a, " + DATABSE + ".t_cntrl_doc_pass b, " + DATABSE + ".t_cntrl_hdr c, " + DATABSE + ".m_dtype d, " + DATABSE + ".m_doctype e, " + DATABSE_F + ".m_sign_auth f, " + Environment.NewLine;
+                    SQL3 += "" + DATABSE_F + ".m_subleg g, " + DATABSE_F + ".m_genleg h, user_appl i," + DATABSE + ".M_DOC_AUTH j," + DATABSE_F + ".m_sign_auth k " + Environment.NewLine;
+                    SQL3 += "where a.autono = b.autono(+) and a.autono = c.autono  and c.doccd = e.doccd and e.doctype = d.dcd and c.slcd = g.slcd(+) " + Environment.NewLine;
                     //SQL3 += "and c.glcd = h.glcd(+) and a.usr_id = i.user_id(+) and b.authcd = f.authcd(+) and f.usrid = '" + Session["UR_ID"].ToString() + "' and a.usr_id = '" + Session["UR_ID"].ToString() + "'  and c.compcd = '" + compcd + "' " + DOCTYPE + " ";
-                    SQL3 += "and c.glcd = h.glcd(+) and a.usr_id = i.user_id(+) and b.authcd = f.authcd(+) and f.usrid = '" + Session["UR_ID"].ToString() + "' and c.compcd = '" + compcd + "' " + DOCTYPE + " ";
-                    if (SHOW_RECORD.retStr() == "R") { SQL3 += "and a.STSTYPE = 'N' "; } else { SQL3 += "and a.STSTYPE = 'C' "; }
-                    if (FROMDT.retStr() != "") SQL3 += "and c.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') ";
-                    if (TODT.retStr() != "") SQL3 += "and c.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') ";
-                    if (SHOW_RECORD.retStr() == "R") SQL3 += "order by docdt,docno ";
+                    SQL3 += "and c.glcd = h.glcd(+) and a.usr_id = i.user_id(+) and a.usr_id = f.usrid(+) and b.authcd = f.authcd  and c.compcd = '" + compcd + "' " + DOCTYPE + " " + Environment.NewLine;
+                    SQL3 += "and c.doccd=j.doccd and b.pass_level=j.lvl and j.authcd=k.authcd and k.usrid = '" + Session["UR_ID"].ToString() + "' ";
+                    if (SHOW_RECORD.retStr() == "R") { SQL3 += "and a.STSTYPE = 'N' " + Environment.NewLine; } else { SQL3 += "and a.STSTYPE = 'C' " + Environment.NewLine; }
+                    if (FROMDT.retStr() != "") SQL3 += "and c.docdt >= to_date('" + FROMDT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    if (TODT.retStr() != "") SQL3 += "and c.docdt <= to_date('" + TODT + "', 'dd/mm/yyyy') " + Environment.NewLine;
+                    SQL3 += SQLC;
+                    SQL3 += ")x, ";
+
+                    SQL3 += "(select a.autono,min(c.lvl)lvl,b.usrid,c.DOCCD from " + DATABSE + ".t_txnstatus a," + DATABSE_F + ".m_sign_auth b," + DATABSE + ".M_DOC_AUTH c " + Environment.NewLine;
+                    SQL3 += "where b.authcd = c.authcd and STSTYPE='N' " + Environment.NewLine;
+                    SQL3 += "and c.lvl in (select distinct PASS_LEVEL from " + DATABSE + ".t_cntrl_doc_pass where autono=a.autono) " + Environment.NewLine;
+                    SQL3 += "and b.authcd = c.authcd " + Environment.NewLine;
+                    SQL3 += "group by  a.autono,b.usrid,c.DOCCD " + Environment.NewLine;
+                    SQL3 += ")l " + Environment.NewLine;
+                    SQL3 += "where x.autono=l.autono(+) and x.authrisedUSR_ID=l.usrid(+) AND x.DOCCD = l.doccd(+) and x.pass_level=l.lvl " + Environment.NewLine;
+                    SQL3 += "and x.rn = 1 " + Environment.NewLine;
+
+                    if (SHOW_RECORD.retStr() == "R") SQL3 += "order by docdt,docno " + Environment.NewLine;
                     SQL = SQL3;
                 }
 
@@ -298,6 +362,10 @@ namespace Improvar.Controllers
                 DataTable GRID_DATA = new DataTable();
 
                 GRID_DATA = masterHelp.SQLquery(SQL);
+
+                string sql = "select a.AUTONO,STSTYPE,b.doccd from  " + DATABSE + ".t_txnstatus a," + DATABSE + ".t_cntrl_hdr b ";
+                sql += "where a.autono=b.autono ";
+                DataTable dt = masterHelp.SQLquery(sql);
 
                 VE.TCNTRLAUTH = (from DataRow dr in GRID_DATA.Rows
                                  select new TCNTRLAUTH()
@@ -322,14 +390,55 @@ namespace Improvar.Controllers
                                      MENU_PROGCALL = dr["menu_progcall"].ToString(),
                                      MENU_PARA = dr["menu_PARA"].ToString(),
                                      Cancel = (dr["CANCEL"].ToString().ToUpper() == "Y" ? true : false),
-                                     DOCPASSED = (SHOW_RECORD.retStr() == "R" || SHOW_RECORD.retStr() == "A") ? dr["DOCPASSED"].ToString() : "",
+                                     //DOCPASSED = (SHOW_RECORD.retStr() == "R" || SHOW_RECORD.retStr() == "A") ? dr["DOCPASSED"].ToString() : "",
+                                     DOCPASSED = dr["DOCPASSED"].ToString(),
                                      LOCCD = dr["LOCCD"].ToString(),
                                      AUTH_MNM = SHOW_RECORD.retStr() == "P" ? "" : dr["user_name"].ToString(),
+                                     AUTHLVL = dr["authrisedlvl"].ToString(),
+                                     PREVLVLSTS = "A",
+                                     NXTLVLSTS = "N",
                                  }).ToList();
-
+                int cnt = 1;
                 for (int p = 0; p <= VE.TCNTRLAUTH.Count - 1; p++)
                 {
-                    VE.TCNTRLAUTH[p].AUTH_SLNO = Convert.ToInt32(p + 1);
+
+                    string authlvl = VE.TCNTRLAUTH[p].PASS_LEVEL.retStr();
+
+                    if (SHOW_RECORD.retStr() == "P")
+                    {
+                        VE.TCNTRLAUTH[p].DOCPASSED = "";
+                        if (authlvl.retDbl() == 0)
+                        {
+                            VE.TCNTRLAUTH[p].NXTLVLSTS = "N"; VE.TCNTRLAUTH[p].PREVLVLSTS = "N";
+                        }
+                        else if (authlvl.retDbl() <= VE.TCNTRLAUTH[p].AUTHLVL.retDbl() && VE.TCNTRLAUTH[p].DOCPASSED.retStr() == "A")
+                        {
+                            //Authorised
+                            if (authlvl.retDbl() < VE.TCNTRLAUTH[p].AUTHLVL.retDbl()) { VE.TCNTRLAUTH[p].NXTLVLSTS = "A"; VE.TCNTRLAUTH[p].PREVLVLSTS = "A"; }
+                        }
+                        else if (authlvl.retDbl() < VE.TCNTRLAUTH[p].AUTHLVL.retDbl() && VE.TCNTRLAUTH[p].DOCPASSED.retStr() == "N")
+                        {
+                            //Authorised
+                            if (authlvl.retDbl() < VE.TCNTRLAUTH[p].AUTHLVL.retDbl() - 1) { VE.TCNTRLAUTH[p].NXTLVLSTS = "A"; VE.TCNTRLAUTH[p].PREVLVLSTS = "A"; }
+                        }
+                        else if (authlvl.retDbl() > VE.TCNTRLAUTH[p].AUTHLVL.retDbl() && VE.TCNTRLAUTH[p].DOCPASSED.retStr() == "N")
+                        {
+                            VE.TCNTRLAUTH[p].NXTLVLSTS = "N"; VE.TCNTRLAUTH[p].PREVLVLSTS = "N";
+                        }
+
+                        string doccd = VE.TCNTRLAUTH[p].DOCCD.retStr();
+                        string autono = VE.TCNTRLAUTH[p].AUTONO.retStr();
+
+                        var chk = (from DataRow dr in dt.Rows where dr["doccd"].retStr() == doccd && dr["autono"].retStr() == autono && (dr["STSTYPE"].retStr() == "A" || dr["STSTYPE"].retStr() == "N") select dr).Count();
+                        if ((dt == null || chk == 0) && authlvl.retDbl() > 1)
+                        {
+                            VE.TCNTRLAUTH[p].NXTLVLSTS = "N"; VE.TCNTRLAUTH[p].PREVLVLSTS = "N";
+                        }
+                    }
+                    else if (SHOW_RECORD.retStr() == "C")
+                    {
+                        VE.TCNTRLAUTH[p].DOCPASSED = "";
+                    }
                     if (VE.TCNTRLAUTH[p].DOCPASSED == "A")
                     {
                         VE.TCNTRLAUTH[p].Approved = true;
@@ -338,8 +447,13 @@ namespace Improvar.Controllers
                     {
                         VE.TCNTRLAUTH[p].UnApproved = true;
                     }
-
+                    if (VE.TCNTRLAUTH[p].PREVLVLSTS == "A" && VE.TCNTRLAUTH[p].NXTLVLSTS == "N")
+                    {
+                        VE.TCNTRLAUTH[p].AUTH_SLNO = cnt;
+                        cnt++;
+                    }
                 }
+                VE.TCNTRLAUTH = (from a in VE.TCNTRLAUTH where a.PREVLVLSTS == "A" && a.NXTLVLSTS == "N" select a).ToList();
                 VE.SHOW_RECORD = SHOW_RECORD;
                 if (TAG == true)
                 {
@@ -365,21 +479,23 @@ namespace Improvar.Controllers
                 {
                     if (VE.TCNTRLAUTH[i].Approved == true || VE.TCNTRLAUTH[i].UnApproved == true || VE.TCNTRLAUTH[i].Cancel == true)
                     {
-                        string DOCPASSED = "";
+                        string DOCPASSED = "",flag="";
                         if (VE.TCNTRLAUTH[i].Approved == true)
                         {
                             DOCPASSED = "A";
+                            flag = "Auth";
                         }
                         else if (VE.TCNTRLAUTH[i].UnApproved == true)
                         {
                             DOCPASSED = "N";
-                            //DOCPASSED = "U";
+                            flag = "UnAth";
                         }
                         else if (VE.TCNTRLAUTH[i].Cancel == true)
                         {
                             DOCPASSED = "C";
+                            flag = "Cancel";
                         }
-                        Cn.DocumentAuthorisation_Save(VE.TCNTRLAUTH[i].DOCCD, VE.TCNTRLAUTH[i].AUTONO, VE.TCNTRLAUTH[i].SLNO, VE.TCNTRLAUTH[i].DOCAMT, VE.TCNTRLAUTH[i].EMD_NO.retShort(), "name", VE.TCNTRLAUTH[i].AUTH_REM, Convert.ToByte(VE.TCNTRLAUTH[i].PASS_LEVEL), DOCPASSED);
+                        Cn.DocumentAuthorisation_Save(VE.TCNTRLAUTH[i].DOCCD, VE.TCNTRLAUTH[i].AUTONO, VE.TCNTRLAUTH[i].SLNO, VE.TCNTRLAUTH[i].DOCAMT, VE.TCNTRLAUTH[i].EMD_NO.retShort(), flag, VE.TCNTRLAUTH[i].AUTH_REM, Convert.ToByte(VE.TCNTRLAUTH[i].PASS_LEVEL), DOCPASSED);
                     }
                 }
 

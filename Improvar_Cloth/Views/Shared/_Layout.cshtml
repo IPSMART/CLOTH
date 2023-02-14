@@ -18,7 +18,7 @@
     <script src="~/Scripts/globalize.js"></script>
     <script src="~/Scripts/Globalization.culture.js"></script>
     <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
-
+    <script src="~/Scripts/CustomCombo.js"></script>
     @Scripts.Render("~/Scripts/Multiple-Select-min.js?n=1")
     @Scripts.Render("~/Scripts/bootstrap-select.js?n=1")
     @Styles.Render("~/Content/bootstrap.css?Ver=" + Module.ContentVersion)
@@ -113,6 +113,40 @@
                 }
             }
         }
+        $(document).mouseup(function (e) {
+            var tab = $("#csTableid").val();
+            var container = $("#" + tab);
+
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                container.hide();
+            }
+        });
+        $(document).keyup(function (e) {
+            if (e.keyCode == 27) {
+                var tab = $("#csTableid").val();
+                var container = $("#" + tab);
+                container.hide();
+
+            }
+        });
+        $(document).mouseup(function (e) {
+            var tab = $("#csTableid").val();
+            var container = $("#" + tab);
+
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                container.hide();
+            }
+        });
+        $(document).keyup(function (e) {
+            if (e.keyCode == 27) {
+                var tab = $("#csTableid").val();
+                var container = $("#" + tab);
+                container.hide();
+
+            }
+        });
     </script>
     <script type="text/javascript">
 
@@ -177,7 +211,7 @@
 
 
             if (e.altKey && (e.which == 69)) {
-            //if (e.altKey ) {
+                //if (e.altKey ) {
                 //edit
                 if('@Model'!='null')
                 {
@@ -279,6 +313,8 @@
     <input type="hidden" id="tempHDD" name="tempHDD" value="" />
     <input type="hidden" id="SearchFldValue" name="SearchFldValue" value="" />
     <input type="hidden" id="SearchValue" name="SearchValue" value="" />
+    <input type="hidden" id="csTableid" value="csTableidVal" />
+    <input type="hidden" id="csTableidVal" value="" />
     @Html.HiddenFor(model => model.AuthorisationAUTHCD)
     @Html.HiddenFor(model => model.AuthorisationLVL)
     @Html.HiddenFor(model => model.AuthorisationSLNO)
@@ -709,26 +745,26 @@
                                 }
                                 if (TotalCount >= 0)
                                 {
-                                    if (Model.MENU_TYPE == "E")
+                                    if (Model.MENU_TYPE == "E" && Model.CancelRecord == false)
                                     {
                                         if (Model.AuthorisationAUTHCD.retStr() != "")
                                         {
                                             if (Model.AuthorisationStatus == "A")
                                             {
                                                 <li class="menu-item" id="authorised_nav">
-                                                    <a href="#" title="Click for Unauthorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:greenyellow;"></span></a>
+                                                    <a href="#" title="Click for Unauthorised Record (Level-@Model.AuthorisationLVL)" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:greenyellow;"></span></a>
                                                 </li>
                                             }
                                             else if (Model.AuthorisationStatus == "N")
                                             {
                                                 <li class="menu-item" id="authorised_nav">
-                                                    <a href="#" title="Click for Authorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-down" style="font-size:larger;color:mediumvioletred;"></span></a>
+                                                    <a href="#" title="Click for Authorised Record (Level-@Model.AuthorisationLVL)" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-down" style="font-size:larger;color:mediumvioletred;"></span></a>
                                                 </li>
                                             }
                                             else
                                             {
                                                 <li class="menu-item" id="authorised_nav">
-                                                    <a href="#" title="Click for Authorised Record" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:lightskyblue;"></span></a>
+                                                    <a href="#" title="Click for Authorised Record (Level-@Model.AuthorisationLVL)" onclick="return OpenAuthoriseRemarks();showLoder(this);"><span class="glyphicon glyphicon-thumbs-up" style="font-size:larger;color:lightskyblue;"></span></a>
                                                 </li>
                                             }
                                         }
@@ -892,7 +928,7 @@
                 <div style="padding:5px;" id="UndoCancel" align="center">
                     <p><strong>Are you sure to un cancelled this record?</strong></p>
                     <input type="button" class="btn btn-success" value="Yes" onclick="CAN_UNDO_Record();" />
-                    <input type="button" class="btn btn-info" value="No" onclick="CAN_Remark_undo();" />
+                    <input type="button" class="btn btn-info" value="Undo" onclick="CAN_Remark_undo();" />
                     <script type="text/javascript">
                         document.body.style.background="#FFCCCC";
                     </script>
@@ -951,7 +987,7 @@
                 }
                 else if (Model.AuthorisationStatus == "N")
                 {
-                    <p><strong id="AuthoriseCaption">Are you sure to Unauthorise this record?</strong></p>
+                    <p><strong id="AuthoriseCaption">Are you sure to Authorised this record?</strong></p>
                     <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
                 }
                 else

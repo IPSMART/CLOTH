@@ -3,9 +3,6 @@ using System.IO;
 using System.Net.Mail;
 using System.Configuration;
 using System.Net.Mime;
-using System.Net;
-using System.Text;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Improvar
@@ -143,10 +140,7 @@ namespace Improvar
                     }
                     else
                     {
-                        if(emailvar[i, 1] != null)
-                        {
-                            body = body.Replace(emailvar[i, 0], emailvar[i, 1]);
-                        }
+                        body = body.Replace(emailvar[i, 0], emailvar[i, 1]);
                     }
                 }
                 body = body.Replace("~", "<br />");
@@ -179,7 +173,7 @@ namespace Improvar
                     smtp.EnableSsl = true;
                     System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
                     NetworkCred.UserName = "ipsmart.erp@gmail.com";
-                    NetworkCred.Password = "peelwkwfqhdrvxnj";  //"ipsmart@123";
+                    NetworkCred.Password = "peelwkwfqhdrvxnj"; //"ipsmart@123";
                     smtp.UseDefaultCredentials = true;
                     smtp.Credentials = NetworkCred;
                     smtp.Port = 587;

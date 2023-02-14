@@ -42,20 +42,27 @@
                                 {
                                     <th class="" style="width:120px;">Authorised By</th>
                                 }
+                                <th class="" style="width:38px">Level</th>
                                 <th class="" style="width:200px">Authorization Remarks</th>
                                 <th class="" style="width:200px">Remark</th>
-                                <th class="sticky-cell-opposite" style="width:48px;font-size: smaller;right:105px" title="Approved">
+                                <th class="sticky-cell-opposite" style="width:48px;font-size: smaller;" title="Approved">
                                     Aproved
                                     <input type="checkbox" class="atextBoxFor" name="Test" id="Test" onclick="SelectAllCheckBox_A(this, '_TS_DOCAUTH_DATALIST_GRID','#Test1','#Test2')" />
                                 </th>
-                                <th class="sticky-cell-opposite" style="width:66px;font-size: smaller;right:43px" title="Un-Approved">
-                                    Un-Aproved
-                                    <input class="atextBoxFor" type="checkbox" name="Test1" id="Test1" onclick="SelectAllCheckBox_UA(this, '_TS_DOCAUTH_DATALIST_GRID','#Test','#Test2')" />
-                                </th>
-                                <th class="sticky-cell-opposite" style="width:43px;font-size: smaller;right:0px" title="Un-Approved">
-                                    Cancel
-                                    <input class="atextBoxFor" type="checkbox" name="Test2" id="Test2" onclick="SelectAllCheckBox_CANCEL(this, '_TS_DOCAUTH_DATALIST_GRID','#Test','#Test1')" />
-                                </th>
+                                @if (Model.SHOW_RECORD != "P" && Model.SHOW_RECORD != "C")
+                                {
+                                    <th class="sticky-cell-opposite" style="width:66px;font-size: smaller;" title="Un-Approved">
+                                        Un-Aproved
+                                        <input class="atextBoxFor" type="checkbox" name="Test1" id="Test1" onclick="SelectAllCheckBox_UA(this, '_TS_DOCAUTH_DATALIST_GRID','#Test','#Test2')" />
+                                    </th>
+                                }
+                                @if (Model.SHOW_RECORD != "A")
+                                {
+                                    <th class="sticky-cell-opposite" style="width:43px;font-size: smaller;" title="Un-Approved">
+                                        Cancel
+                                        <input class="atextBoxFor" type="checkbox" name="Test2" id="Test2" onclick="SelectAllCheckBox_CANCEL(this, '_TS_DOCAUTH_DATALIST_GRID','#Test','#Test1')" />
+                                    </th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -66,7 +73,7 @@
                                         @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_SLNO, new { id = "AUTH_SLNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
                                         @Html.HiddenFor(model => Model.TCNTRLAUTH[i].SLNO)
                                         @Html.HiddenFor(model => Model.TCNTRLAUTH[i].AUTONO)
-                                        @Html.HiddenFor(model => Model.TCNTRLAUTH[i].PASS_LEVEL, new { id = "PASS_LEVEL_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        @*@Html.HiddenFor(model => Model.TCNTRLAUTH[i].PASS_LEVEL, new { id = "PASS_LEVEL_" + i, @class = " atextBoxFor ", @readonly = "readonly" })*@
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DNAME, new { id = "DNAME_" + i, @class = "atextBoxFor", maxlength = 40, @readonly = "readonly" })
@@ -121,20 +128,29 @@
                                         </td>
                                     }
                                     <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].PASS_LEVEL, new { id = "PASS_LEVEL_" + i, maxlength = 100, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
                                         @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTHREM, new { id = "AUTHREM_" + i, maxlength = 100, @class = " atextBoxFor ", @readonly = "readonly" })
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_REM, new { id = "AUTH_REM_" + i, maxlength = 100, @class = " atextBoxFor " })
                                     </td>
-                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:105px">
+                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;">
                                         @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Approved, new { id = "SelectCheck_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck_" + i + "','SelectCheck1_" + i + "','SelectCheckCancel_" + i + "');" })
                                     </td>
-                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:43px">
-                                        @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].UnApproved, new { id = "SelectCheck1_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck1_" + i + "','SelectCheck_" + i + "','SelectCheckCancel_" + i + "');" })
-                                    </td>
-                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:0px">
-                                        @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Cancel, new { id = "SelectCheckCancel_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheckCancel_" + i + "','SelectCheck_" + i + "','SelectCheck1_" + i + "');" })
-                                    </td>
+                                    @if (Model.SHOW_RECORD != "P" && Model.SHOW_RECORD != "C")
+                                    {
+                                        <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;">
+                                            @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].UnApproved, new { id = "SelectCheck1_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck1_" + i + "','SelectCheck_" + i + "','SelectCheckCancel_" + i + "');" })
+                                        </td>
+                                    }
+                                    @if (Model.SHOW_RECORD != "A")
+                                    {
+                                        <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;">
+                                            @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Cancel, new { id = "SelectCheckCancel_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheckCancel_" + i + "','SelectCheck_" + i + "','SelectCheck1_" + i + "');" })
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -157,11 +173,18 @@
                                 {
                                     <th title="Authorised By"></th>
                                 }
+                                <th title="Level"></th>
                                 <th title="Authorization Remarks"></th>
                                 <th title="Remark"></th>
-                                <th class="sticky-cell-opposite" style="right:105px;"></th>
-                                <th class="sticky-cell-opposite" style="right:43px;"></th>
                                 <th class="sticky-cell-opposite"></th>
+                                @if (Model.SHOW_RECORD != "P" && Model.SHOW_RECORD != "C")
+                                {
+                                    <th class="sticky-cell-opposite"></th>
+                                }
+                                @if (Model.SHOW_RECORD != "A")
+                                {
+                                    <th class="sticky-cell-opposite"></th>
+                                }
                             </tr>
                         </tfoot>
 

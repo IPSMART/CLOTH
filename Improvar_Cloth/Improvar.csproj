@@ -1513,6 +1513,7 @@
     <Content Include="Views\Shared\_Rep_Bar_History_AddNewPrice.cshtml" />
     <Content Include="Views\Rep_PendChallan\Rep_PendChallan.cshtml" />
     <Content Include="Views\Rep_EWB_Changes\Rep_EWB_Changes.cshtml" />
+    <Content Include="Views\Shared\_PopUp4.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

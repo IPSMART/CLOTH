@@ -1093,6 +1093,10 @@ namespace Improvar
         }
         public List<Models.UploadDOC> GetUploadImageTransaction(string schema, string AutoNO)
         {
+            if (AutoNO == null) AutoNO = "";
+            if (AutoNO != "") if (AutoNO.IndexOf("'") < 0) AutoNO = "'" + AutoNO + "'";
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            MasterHelp MasterHelp = new MasterHelp();
             string SCHEMA = Getschema;
             Improvar.Models.ImprovarDB DB1 = new Models.ImprovarDB(GetConnectionString(), SCHEMA);
             var doctP = (from i in DB1.MS_DOCCTG
@@ -1101,32 +1105,31 @@ namespace Improvar
                              value = i.DOC_CTG,
                              text = i.DOC_CTG
                          }).OrderBy(s => s.text).ToList();
-            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), schema);
-
+            string sql = "select a.autono, a.doc_ctg, a.doc_desc, a.doc_extn, a.doc_flname, a.slno, b.rslno, b.doc_string ";
+            sql += "from " + schema + ".t_cntrl_hdr_doc a, " + schema + ".t_cntrl_hdr_doc_dtl b ";
+            sql += "where a.autono = b.autono(+) and a.slno = b.slno(+) ";
+            sql += "and a.autono in ( " + AutoNO + " )";
+            sql += "order by autono, slno, rslno ";
+            DataTable maintbl = MasterHelp.SQLquery(sql);
+            DataView dv = new DataView(maintbl);
+            string[] cloum = new string[] { "slno", "doc_ctg", "doc_flname", "doc_desc" };
+            DataTable slnotbl = dv.ToTable(true, cloum);
             List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
-            var doc = (from s in DB.T_CNTRL_HDR_DOC where s.AUTONO == AutoNO select s).ToList();
-            foreach (var i in doc)
+            foreach (DataRow dr in slnotbl.Rows)
             {
+                Int16 slno = Convert.ToInt16(dr["slno"].retStr());
                 UploadDOC UPL = new UploadDOC();
+                var doc_string = string.Join("", maintbl.AsEnumerable()
+                .Where(r => ((Int16)r["slno"]) == slno)
+                                     .Select(x => x["doc_string"].ToString())
+                                     .ToArray());
                 UPL.DocumentType = doctP;
-                UPL.docID = i.DOC_CTG;
-                UPL.DOC_FILE_NAME = i.DOC_FLNAME;
-                UPL.DOC_DESC = i.DOC_DESC;
-                var image = (from h in DB.T_CNTRL_HDR_DOC_DTL
-                             where h.AUTONO == i.AUTONO && h.SLNO == i.SLNO
-                             select h).OrderBy(d => d.RSLNO).ToList();
-
-                var hh = image.GroupBy(x => x.AUTONO).Select(x => new
-                {
-                    namefl = string.Join("", x.Select(n => n.DOC_STRING))
-                });
-                foreach (var ii in hh)
-                {
-                    UPL.DOC_FILE = ii.namefl;
-                }
+                UPL.DOC_FILE = doc_string;
+                UPL.docID = dr["doc_ctg"].ToString();
+                UPL.DOC_FILE_NAME = dr["DOC_FLNAME"].ToString();
+                UPL.DOC_DESC = dr["DOC_DESC"].ToString();
                 UploadDOC1.Add(UPL);
             }
-
             return UploadDOC1;
         }
         public Tuple<List<T_CNTRL_HDR_REM>> SAVETRANSACTIONREMARKS(T_CNTRL_HDR_REM TCNTRLHDRREM, string AUTONO, string CLCD, int EMD)
@@ -1178,19 +1181,19 @@ namespace Improvar
         }
         public Tuple<List<T_CNTRL_DOC_PASS>> T_CONTROL_DOC_PASS(string DCODE, double Transaction_Amount, int EMD_NUMBER, string Auto_Number, string DATABASE, string authrem = "")
         {
-            var UNQSNO = getQueryStringUNQSNO();
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), DATABASE);
             List<T_CNTRL_DOC_PASS> TCDP = new List<T_CNTRL_DOC_PASS>();
 
             var MDOCAUTH_DATA = (from i in DB.M_DOC_AUTH
                                  where i.DOCCD == DCODE && Transaction_Amount >= i.AMT_FR && Transaction_Amount <= i.AMT_TO
-                                 select new { PASS_LEVEL = i.LVL, AUTHCD = i.AUTHCD }).ToList();
+                                 select new { PASS_LEVEL = i.LVL, AUTHCD = i.AUTHCD, SLNO = i.SLNO }).ToList();
 
             for (int x = 0; x <= MDOCAUTH_DATA.Count() - 1; x++)
             {
                 Models.T_CNTRL_DOC_PASS TCDP1 = new Models.T_CNTRL_DOC_PASS();
                 TCDP1.AUTONO = Auto_Number;
-                TCDP1.SLNO = Convert.ToByte(x + 1);
+                TCDP1.SLNO = Convert.ToByte(MDOCAUTH_DATA[x].SLNO);
                 TCDP1.EMD_NO = EMD_NUMBER;
                 TCDP1.CLCD = CommVar.ClientCode(UNQSNO);
                 TCDP1.PASS_LEVEL = MDOCAUTH_DATA[x].PASS_LEVEL;
@@ -2279,8 +2282,7 @@ namespace Improvar
                 SaveException(ex, "");
                 return "";
             }
-        }
-        //public String getdocmaxmindate(string doccd, string docdt, string action, string docno, object ViewClass, bool opening = false, string AUTONO = "")
+        }        //public String getdocmaxmindate(string doccd, string docdt, string action, string docno, object ViewClass, bool opening = false, string AUTONO = "")
         //{
         //    try
         //    {
