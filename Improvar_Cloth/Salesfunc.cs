@@ -217,25 +217,25 @@ namespace Improvar
             sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
             sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm,g.bargentype, f.uomcd, j.itnm fabitnm, ";
             sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, m.commonuniqbar, d.linecd, l.print_seq, ";
-            sql += "a.balqnty, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm from ";
+            sql += "a.balqnty, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset from ";
 
-            sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno, ";
+            sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno,o.stktype, ";
             sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
             sql += "sum(case a.stkdrcr when 'C' then a.nos when 'D' then a.nos*-1 end) balnos ";
-            sql += "from " + scm + ".t_progdtl a, " + scm + ".t_progmast b, " + scm + ".t_cntrl_hdr c ";
-            sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.autono=c.autono(+) and ";
+            sql += "from " + scm + ".t_progdtl a, " + scm + ".t_progmast b, " + scm + ".t_cntrl_hdr c," + scm + ".t_batchdtl o ";
+            sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.autono=c.autono(+) and a.progautono=o.autono(+)and  a.progslno=o.slno(+) and ";
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
             if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
             if (jobcd.retStr() != "") sql += "b.jobcd in (" + jobcd + ") and ";
             if (txnupto.retStr() != "") sql += "a.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
-            sql += "group by a.progautono, a.progslno, a.progautono||a.progslno ) a, ";
+            sql += "group by a.progautono, a.progslno, a.progautono||a.progslno,o.stktype  ) a, ";
 
             sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";
             sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, ";
-            sql += scm + ".m_linemast k, " + scm + ".m_size l, " + scm + ".t_batchmst m ";
+            sql += scm + ".m_linemast k, " + scm + ".m_size l, " + scm + ".t_batchmst m," + scm + ".t_cntrl_hdr n," + scm + ".m_brand p ";
             sql += "where a.progautono=d.autono(+) and a.progslno=d.slno(+) and a.progautono=e.autono(+) and d.barno=m.barno(+) and ";
-            sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and ";
+            sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and d.ordautono=n.autono(+)and f.brandcd=p.brandcd(+) and ";
             if (progfromdt.retStr() != "") sql += "e.docdt >= to_date('" + progfromdt + "', 'dd/mm/yyyy') and ";
             if (slcd.retStr() != "") sql += "d.slcd in (" + slcd + ") and ";
             if (linecd.retStr() != "") sql += "d.linecd in (" + linecd + ") and ";

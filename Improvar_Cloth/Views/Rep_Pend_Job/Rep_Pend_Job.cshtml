@@ -210,6 +210,18 @@
         <div class="row" style="margin-top: 5px;">
             <div class="col-lg-2">
                 <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Show Order No.")
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="editor-field" style="margin-top:6px;">
+                    @Html.CheckBoxFor(model => model.Checkbox6)
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 5px;">
+            <div class="col-lg-2">
+                <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "Show Item Summary")
                 </div>
             </div>

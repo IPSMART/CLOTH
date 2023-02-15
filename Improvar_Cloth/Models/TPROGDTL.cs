@@ -105,5 +105,10 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
         public string ITSTYLE { get; set; }
+        public string ORDDOCNO { get; set; }
+        public string ORDAUTONO { get; set; }
+        public string MAKESTYLENO { get; set; }
+        public string MAKEITCD { get; set; }
+        
     }
 }

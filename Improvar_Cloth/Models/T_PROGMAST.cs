@@ -103,6 +103,9 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string SAMPLE { get; set; }
-       
+
+        [StringLength(30)]
+        public string MAKESTYLENO { get; set; }
+
     }
 }

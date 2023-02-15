@@ -356,12 +356,12 @@ namespace Improvar.Controllers
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,l.szbarcode,m.colrnm,m.clrbarcode,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,q.decimals from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,q.decimals,s.docno ORDDOCNO,a.ordautono,a.makestyleno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p, " + scmf + ".m_uom q ";
+                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p, " + scmf + ".m_uom q," + Scm + ".t_cntrl_hdr s ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
                 str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and k.uomcd=q.uomcd(+) and ";
-                str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
+                str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+)and a.ordautono=s.autono(+) and a.autono='" + TXN.AUTONO + "'";
                 str += "order by a.slno ";
 
                 DataTable Progdtltbl = masterHelp.SQLquery(str);
@@ -392,7 +392,9 @@ namespace Improvar.Controllers
                                    DECIMALS = dr["decimals"].retShort(),
                                    CLRBARCODE = dr["CLRBARCODE"].retStr(),
                                    SZBARCODE = dr["SZBARCODE"].retStr(),
-
+                                   ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                   ORDDOCNO = dr["ORDDOCNO"].retStr(),
+                                   MAKESTYLENO = dr["MAKESTYLENO"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
                 string BARNO = VE.TPROGDTL.Select(a => a.BARNO).ToArray().retSqlfromStrarray();
                 string ITCD = VE.TPROGDTL.Select(a => a.ITCD).ToArray().retSqlfromStrarray();
@@ -1260,7 +1262,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.ITCD_help(val, "", Code);
+                 var str = masterHelp.ITCD_help(val, "", Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3081,6 +3083,8 @@ namespace Improvar.Controllers
                             TPROGMAST.SHADE = VE.TPROGDTL[i].SHADE;
                             TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();
                             TPROGMAST.JOBCD = TTXN.JOBCD;
+                            TPROGMAST.ORDAUTONO = VE.TPROGDTL[i].ORDAUTONO;
+                            TPROGMAST.MAKESTYLENO = VE.TPROGDTL[i].MAKESTYLENO;
                             //TPROGMAST.PROGUNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO) + COUNTER.retStr();
                             TPROGMAST.PROGUNIQNO = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TPROGDTL[i].SLNO));
                             if (VE.TPROGDTL[i].CheckedSample == true) TPROGMAST.SAMPLE = "Y"; else TPROGMAST.SAMPLE = "N";
@@ -4098,6 +4102,31 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
             }
             catch (Exception ex)
             {
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetOrderDetails(string val, string Code)
+        {
+            try
+            {
+                TransactionSalePosEntry VE = new TransactionSalePosEntry();
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string Orderautono = data[0].retStr();
+                string slcd = data[1].retStr();
+                var str = masterHelp.GetOrderDetails(val==""?"":Orderautono.retSqlformat(), val, "SB", "", "", slcd.retSqlformat());
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }

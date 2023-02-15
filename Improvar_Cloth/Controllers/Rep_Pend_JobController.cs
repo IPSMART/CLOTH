@@ -218,6 +218,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "docno", "string", "c,16", "Ref No");
                     HC.GetPrintHeader(IR, "dsc", "string", "c,40", "particulars");
                 }
+                if (VE.Checkbox6 == true) HC.GetPrintHeader(IR, "ordno", "string", "c,15", "Order No");
                 if (VE.Checkbox4 == true) HC.GetPrintHeader(IR, "batchno", "string", "c,15", "Batch No");
                 if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "recdocno", "string", "c,16", "Recd Ref");
                 if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "recslnm", "string", "c,20", "Recd from");
@@ -281,7 +282,7 @@ namespace Improvar.Controllers
                             while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                             {
                                 string autono = tbl.Rows[i]["progautono"].ToString();
-                                string dsc = "";
+                                string dsc = ""; string ordno = "";
                                 double issqty = 0, recqty = 0, retqty = 0, shrqty = 0, losqty = 0, rakqty = 0;
                                 double issqty1 = 0, recqty1 = 0, retqty1 = 0, shrqty1 = 0;
                                 string oldbatchno = VE.Checkbox4 == true ?tbl.Rows[i]["batchno"].ToString():"";
@@ -292,6 +293,7 @@ namespace Improvar.Controllers
                                     if (tbl.Rows[i]["styleno"].ToString() == "") dsc += tbl.Rows[i]["itnm"].ToString() + ",";
                                     else dsc += tbl.Rows[i]["styleno"].ToString() + " " + tbl.Rows[i]["partcd"] + ",";
                                     oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString():"";
+                                    if (tbl.Rows[i]["ORDDOCNO"].ToString() != "") ordno += tbl.Rows[i]["ORDDOCNO"].ToString()+" ,";
                                     while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono && tbl.Rows[i]["itcd"].ToString() == chk1)
                                     {
                                         chkqty = Convert.ToDouble(tbl.Rows[i]["balqnty"]);
@@ -324,6 +326,7 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"];
                                     IR.Rows[rNo]["dsc"] = dsc;
                                     IR.Rows[rNo]["issqnty"] = issqty;
+                                    if (VE.Checkbox6 == true) IR.Rows[rNo]["ordno"] = ordno;
                                     if (VE.Checkbox4 == true) IR.Rows[rNo]["batchno"] = tbl.Rows[i - 1]["batchno"];
                                     if (VE.Checkbox3 == true) IR.Rows[rNo]["recdocno"] = tbl.Rows[i - 1]["recdocno"];
                                     if (VE.Checkbox3 == true) IR.Rows[rNo]["recslnm"] = tbl.Rows[i - 1]["recslnm"];
@@ -482,7 +485,7 @@ namespace Improvar.Controllers
                 if (VE.TEXTBOX3 != null) mtrljobcd = "'" + VE.TEXTBOX3 + "'";
 
                 DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd);
-                tbl.DefaultView.Sort = "brandnm, brandcd, itgrpnm, itgrpcd, styleno, itcd, partcd, print_seq, sizecdgrp, sizenm";
+                tbl.DefaultView.Sort = "brandnm, brandcd, itgrpnm, itgrpcd, styleno, itcd, partcd, print_seq, sizenm";//sizecdgrp
                 //var data = from d in tbl.AsEnumerable()
                 //           orderby d.Field<string>("brandnm") + d.Field<string>("brandcd") + d.Field<string>("itgrpnm") + d.Field<string>("itgrpcd") +
                 //           Convert.ToInt32(string.Join(null, System.Text.RegularExpressions.Regex.Split(d.Field<string>("styleno"), "[^\\d]"))) +
