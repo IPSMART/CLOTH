@@ -155,12 +155,11 @@
             $("#" + PartyName.id).val("");
         }
         else {
-
-            var DOC_DT = document.getElementById("DOCDT").value;
+            
             $.ajax({
                 type: 'GET',
                 url: "@Url.Action("GetPartyDetails", "Rep_EWB_Changes")",
-                data: { val: id, TAG: TAG, DOC_DT: DOC_DT, },
+                data: { val: id, TAG: TAG },
                 success: function (result) {
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
