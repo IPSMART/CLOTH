@@ -1270,7 +1270,7 @@ namespace Improvar.Controllers
                         if (SCONT.Count != 0) { DB_PREVYR.M_SUBLEG_CONT.AddRange(SCONT); }
                         if (SIFSC.Count != 0) { DB_PREVYR.M_SUBLEG_IFSC.AddRange(SIFSC); }
                         if (STAX.Count != 0) { DB_PREVYR.M_SUBLEG_TAX.AddRange(STAX); }
-                        if (STAX.Count != 0) { DB_PREVYR.M_SUBLEG_LOCOTH.AddRange(SLOCOTH); }
+                        if (SLOCOTH.Count != 0) { DB_PREVYR.M_SUBLEG_LOCOTH.AddRange(SLOCOTH); }
 
                         DB_PREVYR.SaveChanges();
                         ModelState.Clear();
@@ -1311,7 +1311,7 @@ namespace Improvar.Controllers
                         if (SCONT.Count != 0) { DB_PREVYR.M_SUBLEG_CONT.AddRange(SCONT); }
                         if (SIFSC.Count != 0) { DB_PREVYR.M_SUBLEG_IFSC.AddRange(SIFSC); }
                         if (STAX.Count != 0) { DB_PREVYR.M_SUBLEG_TAX.AddRange(STAX); }
-                        if (STAX.Count != 0) { DB_PREVYR.M_SUBLEG_LOCOTH.AddRange(SLOCOTH); }
+                        if (SLOCOTH.Count != 0) { DB_PREVYR.M_SUBLEG_LOCOTH.AddRange(SLOCOTH); }
                         DB_PREVYR.SaveChanges();
                         ModelState.Clear();
                         transaction.Commit();
@@ -1461,6 +1461,7 @@ namespace Improvar.Controllers
                     {
                         if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                         {
+                            string action = VE.DefaultAction;
                             string SLedType = "";
                             for (int i = 0; i <= VE.LinkType.Count - 1; i++)
                             {
@@ -1587,7 +1588,15 @@ namespace Improvar.Controllers
                             if (VE.DefaultAction == "E")
                             {
                                 MSUBLEG.SLCD = VE.M_SUBLEG.SLCD;
-                                MSUBLEG.M_AUTONO = VE.M_SUBLEG.M_AUTONO;
+                                if (VE.M_SUBLEG.M_AUTONO.retDbl() == 0)
+                                {
+                                    MSUBLEG.M_AUTONO = Cn.M_AUTONO(CommVar.FinSchema(UNQSNO));
+                                    action = "A";
+                                }
+                                else
+                                {
+                                    MSUBLEG.M_AUTONO = VE.M_SUBLEG.M_AUTONO;
+                                }
 
                                 DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MSUBLEG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                                 DB.M_CNTRL_LOCA.RemoveRange(DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MSUBLEG.M_AUTONO));
@@ -1791,7 +1800,8 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
-                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", MSUBLEG.M_AUTONO, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                            //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", MSUBLEG.M_AUTONO, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", MSUBLEG.M_AUTONO, action, CommVar.FinSchema(UNQSNO));
                             MCH.PKGLEGACYCD = VE.M_CNTRL_HDR.PKGLEGACYCD;
                             if (VE.DefaultAction == "A")
                             {
@@ -1802,7 +1812,16 @@ namespace Improvar.Controllers
                             else if (VE.DefaultAction == "E")
                             {
                                 DB.Entry(MSUBLEG).State = System.Data.Entity.EntityState.Modified;
-                                DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
+                                if (action == "A")
+                                {
+                                    DB.M_CNTRL_HDR.Add(MCH);
+                                    DB.SaveChanges();
+                                }
+                                else
+                                {
+                                    DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
+                                }
+                                DB.Entry(MSUBLEG).State = System.Data.Entity.EntityState.Modified;
                             }
                             if (VE.UploadDOC != null)
                             {
@@ -1999,7 +2018,6 @@ namespace Improvar.Controllers
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 //var AdqrRespGstInfo = adaequareGSP.AdqrGstInfoTestMode(GSTNO);
                 var AdqrRespGstInfo = adaequareGSP.AdqrGstInfo(GSTNO);
-
                 if (AdqrRespGstInfo.success == true && AdqrRespGstInfo.result != null)
                 {
                     dic.Add("message", "ok");

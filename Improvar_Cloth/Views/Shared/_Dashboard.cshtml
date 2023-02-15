@@ -1,5 +1,9 @@
 ﻿@model Improvar.Models.Menu
 @*inv fin sales*@
+<input type="hidden" id="tempHDD" name="tempHDD" value="" />
+<input type="hidden" id="SearchFldValue" value="" />
+<input type="hidden" id="csTableid" value="csTableidVal" />
+<input type="hidden" id="csTableidVal" value="" />
 @if (Model != null && Model.DashboardList != null)
 {
     for (int index = 0; index < Model.DashboardList.Count; index++)
@@ -30,36 +34,36 @@
                                         {
                                             for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                             {
-                                    <tr style="border-bottom:1pt solid #dbd7d7">
-                                        <td style="padding-left:10px">
-                                            <span>@Model.DashboardList[index].DataTable.Rows[i]["dname"] [@Model.DashboardList[index].DataTable.Rows[i]["doccd"]] &nbsp;</span>
-                                        </td>
-                                        <td>
-                                            <div class="container_imageDIV" title="Document No - @Model.DashboardList[index].DataTable.Rows[i]["docno"]" style="cursor:pointer">
-                                                @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["total_docno"]) > 0)
+                                                <tr style="border-bottom:1pt solid #dbd7d7">
+                                                    <td style="padding-left:10px">
+                                                        <span>@Model.DashboardList[index].DataTable.Rows[i]["dname"] [@Model.DashboardList[index].DataTable.Rows[i]["doccd"]] &nbsp;</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="container_imageDIV" title="Document No - @Model.DashboardList[index].DataTable.Rows[i]["docno"]" style="cursor:pointer">
+                                                            @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["total_docno"]) > 0)
                                                             {
-                                                            <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
-                                                                <img src="~/Image/greenlight.png" height="50px" width="50px" />
-                                                                <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
-                                                            </a>
+                                                                <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
+                                                                    <img src="~/Image/greenlight.png" height="50px" width="50px" />
+                                                                    <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
+                                                                </a>
                                                             }
                                                             else
                                                             {
-                                                            <img src="~/Image/redlight.png" height="50px" width="50px" />
-                                                            <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
+                                                                <img src="~/Image/redlight.png" height="50px" width="50px" />
+                                                                <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
                                                             }
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             }
                                         }
                                         else
                                         {
-                                    <tr>
-                                        <td style="text-align:center;font-weight:bold;color:#fa0606">
-                                            Pending Doc. Authorization Not Found !!
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td style="text-align:center;font-weight:bold;color:#fa0606">
+                                                    Pending Doc. Authorization Not Found !!
+                                                </td>
+                                            </tr>
                                         }
                                     </table>
                                     }
@@ -95,43 +99,43 @@
                                 <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
                                     @if (Model.DashboardList[index].DataTable != null)
                                     {
-                                    <table cellpadding="10px" cellspacing="10px" style="color:black;width:100%;height:100%">
-                                        @if (Model.DashboardList[index].DataTable.Rows.Count > 0)
+                                        <table cellpadding="10px" cellspacing="10px" style="color:black;width:100%;height:100%">
+                                            @if (Model.DashboardList[index].DataTable.Rows.Count > 0)
                                             {
                                                 for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                                 {
-                                        <tr style="border-bottom:1pt solid #dbd7d7">
-                                            <td style="padding-left:10px">
-                                                <span>@Model.DashboardList[index].DataTable.Rows[i]["Name"] &nbsp;</span>
-                                            </td>
-                                            <td>
-                                                <div class="container_imageDIV" style="cursor:pointer">
-                                                    @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["Total"]) > 0)
+                                                    <tr style="border-bottom:1pt solid #dbd7d7">
+                                                        <td style="padding-left:10px">
+                                                            <span>@Model.DashboardList[index].DataTable.Rows[i]["Name"] &nbsp;</span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="container_imageDIV" style="cursor:pointer">
+                                                                @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["Total"]) > 0)
                                                                 {
-                                                        <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
-                                                            <img src="~/Image/greenlight.png" height="50px" width="50px" />
-                                                            <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
-                                                        </a>
+                                                                    <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
+                                                                        <img src="~/Image/greenlight.png" height="50px" width="50px" />
+                                                                        <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
+                                                                    </a>
                                                                 }
                                                                 else
                                                                 {
-                                                        <img src="~/Image/redlight.png" height="50px" width="50px" />
-                                                        <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
+                                                                    <img src="~/Image/redlight.png" height="50px" width="50px" />
+                                                                    <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["Total"]</div>
                                                                 }
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 }
                                             }
                                             else
                                             {
-                                        <tr>
-                                            <td style="text-align:center;font-weight:bold;color:#fa0606">
-                                                Pending Not Found !!
-                                            </td>
-                                        </tr>
+                                                <tr>
+                                                    <td style="text-align:center;font-weight:bold;color:#fa0606">
+                                                        Pending Not Found !!
+                                                    </td>
+                                                </tr>
                                             }
-                                    </table>
+                                        </table>
                                     }
                                 </div>
                             </div>
@@ -165,29 +169,29 @@
                             <div class="row">
                                 <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
                                     @if (Model.DashboardList[index].DataTable != null)
-                            {
-                                    <table class="table compact table-condensed" style="color: darkcyan;">
-                                        <thead>
-                                            <tr>
-                                                @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
-                                            {
-                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
-                                            }
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
-                                        {
-                                    <tr>
-                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                    {
+                                        <table class="table compact table-condensed" style="color: darkcyan;">
+                                            <thead>
+                                                <tr>
+                                                    @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
+                                                    {
+                                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                                 {
-                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                                    <tr>
+                                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                                        {
+                                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                                        }
+                                                    </tr>
                                                 }
-                                    </tr>
-                                        }
-                                        </tbody>
-                                    </table>
-                            }
+                                            </tbody>
+                                        </table>
+                                    }
                                 </div>
                             </div>
                             <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
@@ -219,29 +223,29 @@
                             <div class="row">
                                 <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
                                     @if (Model.DashboardList[index].DataTable != null)
-                            {
-                                    <table class="table table-condensed" style="color: darkcyan;">
-                                        <thead>
-                                            <tr>
-                                                @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
-                                            {
-                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
-                                            }
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
-                                        {
-                                    <tr>
-                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                    {
+                                        <table class="table table-condensed" style="color: darkcyan;">
+                                            <thead>
+                                                <tr>
+                                                    @for (int i = 0; i < Model.DashboardList[index].DataTable.Columns.Count; i++)
+                                                    {
+                                                        <th>@Html.DisplayFor(model => Model.DashboardList[index].DataTable.Columns[i].Caption)</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i <= Model.DashboardList[index].DataTable.Rows.Count - 1; i++)
                                                 {
-                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                                    <tr>
+                                                        @for (int j = 0; j < Model.DashboardList[index].DataTable.Columns.Count; j++)
+                                                        {
+                                                            <td>@Model.DashboardList[index].DataTable.Rows[i][j].retStr()</td>
+                                                        }
+                                                    </tr>
                                                 }
-                                    </tr>
-                                        }
-                                        </tbody>
-                                    </table>
-                            }
+                                            </tbody>
+                                        </table>
+                                    }
                                 </div>
                             </div>
                             <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
@@ -299,7 +303,216 @@
                                 </div>
                             </div>
                             <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
-                                <button class="btn-sm btn-info" name="PostAction" onclick="FormSubmit('@Model.DashboardList[index].BoardCode')" style="margin-top: 5px;">Excel</button>
+                                <button class="btn-sm btn-info" name="btnPostAction" onclick="FormSubmit('@Model.DashboardList[index].BoardCode')" style="margin-top: 5px;">Excel</button>
+                                <img src="~/Image/squere.png" style="float:right;padding-top:3px;padding-right:25px" width="62px" height="40px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.DashboardList[index].BoardCode == "FABOARD4")
+        {
+            <div>
+                @Html.HiddenFor(model => model.DashboardList[index].BoardCode, new { id = "FABOARD4_BoardCode" })
+                @Html.HiddenFor(model => model.DashboardList[index].Permission, new { id = "FABOARD4_Permission" })
+                <input type="hidden" id="agentlinkcd" value="A" />
+                <input type="hidden" id="agentcap" value="Agent" />
+                <input type="hidden" id="partylinkcd" value="" />
+                <input type="hidden" id="partycap" value="Party" />
+                <div id="@Model.DashboardList[index].BoardCode">
+                    <div class="col-md-9">
+                        <div style="height:250px;border:4px solid #86abd8;border-radius:15px;position:relative;width:367px;margin-top:10px;margin-left:17px">
+                            <div class="row">
+                                <div class="col-sm-6 tabtitle" style="padding-top:5px;">
+                                    @Html.DisplayFor(model => model.DashboardList[index].Caption)
+                                </div>
+                                <div class="col-sm-3" style="padding-top:2px;"><span title="Last Updated Time" id="span_authenticationDash">@Html.DisplayFor(model => model.DashboardList[index].RefreshedTime)</span> </div>
+                                <div class="col-sm-1">
+                                    <span title="Refresh Board" class="glyphicon glyphicon-refresh" style="color:greenyellow;vertical-align:middle;cursor:pointer;"
+                                          onclick="UpdateDashboard('@Model.DashboardList[index].BoardCode','@index')"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
+                                    <table class="table table-condensed" style="color: darkcyan;">
+                                        <tr style="border-bottom:1pt solid #dbd7d7">
+                                            <td colspan="2">
+                                                @Html.Label("", "Last exercise done on")
+                                                <br>
+                                                @Html.DisplayFor(model => model.DashboardList[index].EMAILSTATUSTBL.luserid, new { htmlAttributes = new { @class = "form-control", id = "luserid", @TabIndex = -1, @readonly = "readonly", maxlength = 4 } })
+                                                @Html.DisplayFor(model => model.DashboardList[index].EMAILSTATUSTBL.luserentdt, new { htmlAttributes = new { @class = "form-control", id = "luserentdt", @TabIndex = -1, @readonly = "readonly", maxlength = 4 } })
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "Current Date")
+                                            </td>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.curdt, new { htmlAttributes = new { @class = "form-control", id = "curdt", Style = "height: 25px;", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                                                <script>
+                                                    $(function () {
+                                                        $("#curdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+                                                    });
+                                                </script>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "Skip Parties whose Auto Mail Off")
+                                            </td>
+                                            <td style="width:113px;padding:-1px;">
+                                                @Html.CheckBoxFor(model => model.DashboardList[index].EMAILSTATUSTBL.autoreminderofff, new { @class = "form-control", id = "autoreminderofff", @style = "height: 20px;" })
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                @Html.Label("", "Due days calculate on")
+                                                <br>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].EMAILSTATUSTBL.caldt, "D", new { id = "caldt" })  @Html.Label("Due Date")
+                                                </label>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].EMAILSTATUSTBL.caldt, "B", new { id = "caldt" })  @Html.Label("Doc Date")
+                                                </label>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].EMAILSTATUSTBL.caldt, "L", new { id = "caldt" })  @Html.Label("LR Date")
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "Grace Days from above")
+                                            </td>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.graceday, new { htmlAttributes = new { @class = "form-control", id = "graceday", @onkeypress = "return numericOnly(this,0);", maxlength = 3, Style = "height: 25px;", autocomplete = "off" } })
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.AGENT_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGENT_CODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "Multiviewer") + "','Sub Ledger Details','AGENT_CODE','AGENT_CODE=slcd=1/AGENT_NAME=slnm=0','agentlinkcd/agentcap')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "Multiviewer") + "','Sub Ledger Details','AGENT_CODE','AGENT_CODE=slcd=1/AGENT_NAME=slnm=0','agentlinkcd/agentcap');", @placeholder = "Code", maxlength = 10 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", "Multiviewer")','Sub Ledger Details','AGENT_CODE','AGENT_CODE=slcd=1/AGENT_NAME=slnm=0','agentlinkcd/agentcap')" />
+                                            </td>
+                                            <td>
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.AGENT_NAME, new { htmlAttributes = new { @class = "form-control", id = "AGENT_NAME", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @TabIndex = -1, @readonly = "readonly" } })
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.PARTY_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTY_CODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "Multiviewer") + "','Sub Ledger Details','PARTY_CODE','PARTY_CODE=slcd=1/PARTY_NAME=slnm=0','partylinkcd/partycap')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "Multiviewer") + "','Sub Ledger Details','PARTY_CODE','PARTY_CODE=slcd=1/PARTY_NAME=slnm=0','partylinkcd/partycap');", @placeholder = "Code", maxlength = 10 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", "Multiviewer")','Sub Ledger Details','PARTY_CODE','PARTY_CODE=slcd=1/PARTY_NAME=slnm=0','partylinkcd/partycap')" />
+                                            </td>
+                                            <td>
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.PARTY_NAME, new { htmlAttributes = new { @class = "form-control", id = "PARTY_NAME", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @TabIndex = -1, @readonly = "readonly" } })
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "CC Mail")
+                                            </td>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.CCMAIL, new { htmlAttributes = new { @class = "form-control", id = "CCMAIL", maxlength = 100, Style = "height: 25px;", autocomplete = "off" } })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
+                                @*<button class="btn-sm btn-info" name="btnPostAction" onclick="FormSubmit('@Model.DashboardList[index].BoardCode')" style="margin-top: 5px;">Email</button>*@
+                                <input type="button" class="btn-sm btn-info" onclick="OS_RM_MailSend('@index');" name="Email" value="Email" />
+                                <input type="button" class="btn-sm btn-info" onclick="OS_RM_SMSSend('@index');" name="SMS" value="SMS" />
+                                <img src="~/Image/squere.png" style="float:right;padding-top:3px;padding-right:25px" width="62px" height="40px" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.DashboardList[index].BoardCode == "FABOARD3")
+        {
+            <div>
+                @Html.HiddenFor(model => model.DashboardList[index].BoardCode, new { id = "FABOARD3_BoardCode" })
+                @Html.HiddenFor(model => model.DashboardList[index].Permission, new { id = "FABOARD3_Permission" })
+                <div id="@Model.DashboardList[index].BoardCode">
+                    <div class="col-md-9">
+                        <div style="height:250px;border:4px solid #86abd8;border-radius:15px;position:relative;width:367px;margin-top:10px;margin-left:17px">
+                            <div class="row">
+                                <div class="col-sm-6 tabtitle" style="padding-top:5px;">
+                                    @Html.DisplayFor(model => model.DashboardList[index].Caption)
+                                </div>
+                                <div class="col-sm-3" style="padding-top:2px;"><span title="Last Updated Time" id="span_authenticationDash">@Html.DisplayFor(model => model.DashboardList[index].RefreshedTime)</span> </div>
+                                <div class="col-sm-1">
+                                    <span title="Refresh Board" class="glyphicon glyphicon-refresh" style="color:greenyellow;vertical-align:middle;cursor:pointer;"
+                                          onclick="UpdateDashboard('@Model.DashboardList[index].BoardCode','@index')"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="padding:0px 0px;background-color:#ffffff;margin-top:10px;height:159px;overflow-y:auto">
+                                    <table class="table table-condensed" style="color: darkcyan;">
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "Report On")
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].SPREPORT.salepur, "P", new { id = "salepur", onchange = "UpdateLedger(" + index + ")" })  @Html.Label("Purchase")
+                                                </label>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].SPREPORT.salepur, "S", new { id = "salepur" , onchange = "UpdateLedger(" + index + ")" })  @Html.Label("Sales")
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "From Date")
+                                            </td>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].SPREPORT.fdt, new { htmlAttributes = new { @class = "form-control", id = "fdt", Style = "height: 25px;", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                                                <script>
+                                                    $(function () {
+                                                        $("#fdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+                                                    });
+                                                </script>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "To Date")
+                                            </td>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].SPREPORT.tdt, new { htmlAttributes = new { @class = "form-control", id = "tdt", Style = "height: 25px;", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                                                <script>
+                                                    $(function () {
+                                                        $("#tdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+                                                    });
+                                                </script>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "Ledger")
+                                            </td>
+                                            <td style="width:113px;">
+                                                <div id="partialdivLedger">
+                                                    @(new HtmlString(Model.DashboardList[index].SPREPORT.glcd))
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "No. of Record Showing(Top)")
+                                            </td>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].SPREPORT.noofrec, new { htmlAttributes = new { @class = "form-control", id = "noofrec", @onkeypress = "return numericOnly(this,0);", maxlength = 3, Style = "height: 25px;", autocomplete = "off" } })
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="background:linear-gradient(#eeeeee,#dbd7d7);height:42px;width:100%; position:absolute;bottom:0;left:0; border-bottom-left-radius:10px;border-bottom-right-radius:10px">
+                                @*<input type="button" class="btn-sm btn-info" onclick="DownloadExcelSalePur('@index');" name="Excel" value="Excel" />*@
+                                <button class="btn-sm btn-info" formtarget="_blank" name="btnPostAction" onclick="FormSubmit('@Model.DashboardList[index].BoardCode','@index')" style="margin-top: 5px;">Excel</button>
+
                                 <img src="~/Image/squere.png" style="float:right;padding-top:3px;padding-right:25px" width="62px" height="40px" />
                             </div>
                         </div>

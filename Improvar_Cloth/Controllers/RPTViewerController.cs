@@ -15,6 +15,11 @@ namespace Improvar.Controllers
 {
     public class RPTViewerController : Controller
     {
+        string CS = null;
+        MasterHelpFa masterhelpfa = new MasterHelpFa();
+        MasterHelp masterhelp = new MasterHelp();
+        Connection Cn = new Connection();
+        string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: RPTViewer
         public ActionResult PrintViewer()
         {
@@ -156,7 +161,7 @@ namespace Improvar.Controllers
         }
         public ActionResult GetFreez(string freezIndex)
         {
-            string ReportName = "";
+            string ReportName = "";string extr_col = "";
             var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
             var uri = new Uri(PreviousUrl);//Create Virtually Query String
             var queryString = HttpUtility.ParseQueryString(uri.Query);
@@ -170,7 +175,11 @@ namespace Improvar.Controllers
             PrintViewer PV1 = (Improvar.Models.PrintViewer)System.Web.HttpContext.Current.Session[ReportName];
             DataTable IR = (DataTable)PV1.IR;
             string html = PV1.SetReportContaint[0].GetHtml;
-            PrintViewer PV = HC.ShowReport3(IR, ReportName, "", "", true, true, "L", false, Convert.ToInt32(rowColindex[1]), Colindex - 3, PV1);
+            if (IR.Columns.Contains("doclink"))
+            {
+                extr_col="doclink";
+            }
+            PrintViewer PV = HC.ShowReport3(IR, ReportName, "", "", true, true, "L", false, Convert.ToInt32(rowColindex[1]), Colindex - 3, PV1, extr_col);
             string HTML1 = PV.SetReportContaint[0].GetHtml;
             PV.SetReportContaint[0].GetHtml = html;
             return Content(HTML1 + "******~~~****" + PV.FreezInnerWidth);
@@ -192,6 +201,7 @@ namespace Improvar.Controllers
                 {
                     PrintViewer PV = (Improvar.Models.PrintViewer)System.Web.HttpContext.Current.Session[ReportName];
                     DataTable newdt = new DataView(PV.IR).ToTable();
+                    var extr_col = "";
                     if (newdt.Columns[0].ColumnName == "dammy")
                     {
                         var dammmyval = newdt.AsEnumerable().Where(a => a.Field<string>("dammy") != "").Select(a => a.Field<string>("dammy")).Distinct().FirstOrDefault();
@@ -223,6 +233,11 @@ namespace Improvar.Controllers
                         }
                         newdt.Columns.Remove("flag");
                         newdt.Columns.Remove("celldesign");
+                        if(newdt.Columns.Contains("doclink"))
+                        { newdt.Columns.Remove("doclink");
+                            extr_col = "doclink";
+                        }
+                        
                     }
                     //remove a blank row from datatable
                     //newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrWhiteSpace(field as string))).CopyToDataTable();
@@ -244,8 +259,9 @@ namespace Improvar.Controllers
                     int rowslength = PV.HeaderArray.GetLength(0);
                     int collength = PV.HeaderArray.GetLength(1);
                     string hdrvalue = "";
-
-                    for (int i = 3; i < collength; i++)
+                    int i1 = 0;int i2 = 0;int i3 = 0;
+                    if (extr_col == "") { i1 = 3; i2 = 1; i3 = 2; } else { i1 = 4;i2 = 2; i3 = 3; }
+                    for (int i = i1; i < collength; i++)
                     {
                         hdrvalue = "";
                         for (int j = 1; j < rowslength; j++)
@@ -255,11 +271,11 @@ namespace Improvar.Controllers
                         }
                         if (isdammy)
                         {
-                            worksheet.Cells[3, i - 1].Value = hdrvalue;
+                            worksheet.Cells[3, i - i2].Value = hdrvalue;
                         }
                         else
                         {
-                            worksheet.Cells[3, i - 2].Value = hdrvalue;
+                            worksheet.Cells[3, i - i3].Value = hdrvalue;
                         }
                     }
                     worksheet.View.FreezePanes(4, 1);
@@ -284,6 +300,137 @@ namespace Improvar.Controllers
             }
             return Content("");
         }
+        public ActionResult CheckDocument(string autono,string extr_col="")
+        {
+            try
+            {
+                if (autono == null) autono = "";
+                if (autono != "") if (autono.IndexOf("'") < 0) autono = "'" + autono + "'";
+                string scmS = CommVar.SaleSchema(UNQSNO);
+                string scmF = CommVar.FinSchema(UNQSNO);
+                string scmI = CommVar.InvSchema(UNQSNO);
+                string scmP = CommVar.PaySchema(UNQSNO);
+                string sql = "", str = "", PopupDetails = "", RecordCnt = "", scm = "", docsrc = "", docdesc = "", docno = "";
+                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                sql += "from " + scmS + ".t_cntrl_hdr_doc x," + scmS + ".t_cntrl_hdr y " + Environment.NewLine;
+                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+
+                sql += "union all " + Environment.NewLine;
+
+                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                sql += "from " + scmF + ".t_cntrl_hdr_doc x," + scmF + ".t_cntrl_hdr y " + Environment.NewLine;
+                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+
+                sql += "union all " + Environment.NewLine;
+
+                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                sql += "from " + scmI + ".t_cntrl_hdr_doc x," + scmI + ".t_cntrl_hdr y " + Environment.NewLine;
+                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+
+                sql += "union all " + Environment.NewLine;
+
+                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                sql += "from " + scmP + ".t_cntrl_hdr_doc x," + scmP + ".t_cntrl_hdr y " + Environment.NewLine;
+                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+
+                DataTable dt = masterhelp.SQLquery(sql);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    RecordCnt = dt.Rows[0]["cnt"].retStr();
+                    switch (dt.Rows[0]["modcd"].retStr())
+                    {
+                        case "F":
+                            scm = CommVar.FinSchema(UNQSNO); break;
+                        case "I":
+                            scm = CommVar.InvSchema(UNQSNO); break;
+                        case "S":
+                            scm = CommVar.SaleSchema(UNQSNO); break;
+                        case "P":
+                            scm = CommVar.PaySchema(UNQSNO); break;
+                    }
+                    docno = dt.Rows[0]["docno"].retStr();
+                }
+                if (RecordCnt.retDbl() > 1)
+                {
+                    DataTable IR = new DataTable("mstrep1");
+                    Models.PrintViewer PV = new Models.PrintViewer();
+                    HtmlConverter HC = new HtmlConverter();
+                    string pghdr1 = "";
+                    HC.RepStart(IR, 2, extr_col);
+                    HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", "Doc. Date");
+                    HC.GetPrintHeader(IR, "docno", "string", "c,45", "Doc. No");
+                    HC.GetPrintHeader(IR, "DOC_CTG", "string", "C,45", "Doc. Type");
+                    HC.GetPrintHeader(IR, "DOC_DESC", "string", "C,45", "Doc. Desc");
+                    HC.GetPrintHeader(IR, "image_1", "string", "c,10", "Image");
+
+                    List<UploadDOC> UploadDOC = new List<Models.UploadDOC>();
+                    UploadDOC = Cn.GetUploadImageTransaction(scm, autono);
+                    for (int i = 0; i <= UploadDOC.Count - 1; i++)
+                    {
+                        DataRow dr = IR.NewRow();
+                        dr["DOC_CTG"] = UploadDOC[i].docID;
+                        dr["DOC_DESC"] = UploadDOC[i].DOC_DESC;
+                        dr["image_1"] = UploadDOC[i].DOC_FILE;
+                        //dr["Link"] = "";
+                        dr["docdt"] = dt.Rows[0]["docdt"].retStr().retDateStr();
+                        dr["docno"] = dt.Rows[0]["docno"].retStr();
+                        IR.Rows.Add(dr);
+                    }
+
+                    string repname = "Popup Register".retRepname();
+                    PV = HC.ShowReportPopup(IR, repname, "", "", true, true, "P", false, "", "docpopup_overlay", "docno", "doc_ctg");
+
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    SB.Append(PV.SetReportContaint[0].GetHtml);
+                    PV.SetReportContaint[0].GetHtml = SB.ToString();
+                    SB.Append("##^^");
+                    SB.Append(" ");
+                    SB.Append("##^^");
+                    SB.Append("RPTViewer%20" + repname);
+                    SB.Append("##^^");
+                    SB.Append("RPTViewer%20" + repname);
+                    //return PartialView("_PopUp4", SB.ToString());
+                    ModelState.Clear();
+                    PopupDetails = RenderRazorViewToString(ControllerContext, "_PopUp4", SB.ToString());//BINDING GRID
+                }
+                if (RecordCnt.retDbl() == 1)
+                {
+                    List<UploadDOC> UploadDOC = new List<Models.UploadDOC>();
+                    UploadDOC = Cn.GetUploadImageTransaction(scm, autono);
+                    docsrc = UploadDOC[0].DOC_FILE;
+                    docdesc = UploadDOC[0].docID;
+                }
+                str = "";
+                str += "^RECORDCOUNT=^" + RecordCnt + Cn.GCS();
+                str += "^DOCDETAILS=^" + PopupDetails + Cn.GCS();
+                str += "^DOCSRC=^" + docsrc + Cn.GCS();
+                str += "^DOCDESC=^" + docdesc + Cn.GCS();
+                str += "^DOCNO=^" + docno + Cn.GCS();
+                return Content(str);
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+        }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
+            }
+        }
     }
 
     public class HtmlConverter
@@ -295,6 +442,197 @@ namespace Improvar.Controllers
         public string SpanColumnContaint { get; set; }
         public string SpanColumnLength { get; set; }
         public string SpanColumnSetIndex { get; set; }
+        //public PrintViewer GetResponsiveHTML(DataTable Table, PrintViewer pv, string[,] headerArray1)
+        //{
+        //    List<ReportContaint> listemail = new List<ReportContaint>();
+        //    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+
+        //    int aryA = pv.HeaderArray.GetLength(0);
+        //    int aryB = pv.HeaderArray.GetLength(1);
+        //    string[] columnNames = Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+        //    string[] columnTypes = Table.Columns.Cast<DataColumn>().Select(x => x.DataType.ToString()).ToArray();
+        //    string[] span = SpanColumnContaint == null ? null : SpanColumnContaint.Split(',');
+        //    string[] spanLangth = SpanColumnLength == null ? null : SpanColumnLength.Split(',');
+        //    string[] setIndex = SpanColumnSetIndex == null ? null : SpanColumnSetIndex.Split(',');
+        //    try
+        //    {
+        //        string assign_table = "<table class='grid_table'>";
+        //        SB.Append(assign_table);
+        //        //Start Hook Codding To Print Header in Every Page When Print
+        //        string Header = "<thead>";
+        //        string Vname = pv.Vname;
+        //        string Title = pv.Title;
+        //        string Para1 = pv.Para1;
+        //        string Para2 = pv.Para2;
+        //        int col_span = pv.ColspanForPDF;
+
+        //        Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size:17px;font-weight:300; '>" + Vname + "</th> </tr> ";
+        //        Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size:17px;font-weight:300;'>" + Title + "</th> </tr> ";
+
+        //        if (Para1 != "") { Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size: 15px;font-weight:100;'>" + Para1 + "</th> </tr> "; }
+        //        if (Para2 != "") { Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size: 15px;font-weight:100;'>" + Para2 + "</th> </tr> "; }
+        //        //Header = Header + "<tr> <th colspan='" + col_span + "' style='font-size: 15px;font-weight:100;'></th> </tr> ";
+
+        //        SB.Append(Header);
+        //        int totalCol = aryB - 4;
+        //        string chk = "";
+        //        bool img;
+        //        int maxA = aryA - 1; int maxB = aryB - 1;
+        //        int a = 1; int b = 0;
+        //        if (span != null)
+        //        {
+        //            Header = "<tr style='color:white;font-size:12px;font-style: normal;font-weight:bold;height:25px'>";
+        //            for (int i = 0; i <= totalCol; i++)
+        //            {
+        //                int flag = 0;
+        //                for (int x = 0; x <= setIndex.Length - 1; x++)
+        //                {
+        //                    if (i.ToString() == setIndex[x].ToString())
+        //                    {
+        //                        Header = Header + "<th class='' colspan='" + spanLangth[x] + "' style='background-color:#808080;text-align:center;border:1px solid white;' valign='middle'>" + span[x] + "</th>";
+        //                        flag = 1;
+        //                        i = i + Convert.ToInt32(spanLangth[x]);
+        //                    }
+        //                }
+        //                if (flag == 0)
+        //                {
+        //                    Header = Header + "<th align='center' class='' style='background-color:#808080;border:1px solid white;'> " + "" + "</th>";
+        //                }
+        //                else if (flag == 1)
+        //                {
+        //                    if (i <= totalCol)
+        //                    {
+        //                        Header = Header + "<th align='center' class='' style='background-color:#808080;border:1px solid white;'>" + "" + "</th>";
+        //                    }
+        //                }
+        //            }
+        //            Header = Header + "</tr>";
+        //            SB.Append(Header);
+        //        }
+        //        while (a <= maxA)
+        //        {
+        //            Header = "";
+        //            Header = Header + "<tr style='font-size:12px;font-style: normal;height:16px'>";
+        //            b = 0;
+        //            while (b <= maxB)
+        //            {
+        //                chk = Table.Columns[b].ColumnName.ToString().ToLower();
+
+        //                if (chk != "flag" && chk != "dammy" && chk != "celldesign")
+        //                {
+        //                    var sd1 = Table.Rows[0][b].GetType();
+        //                    var sd2 = columnTypes[b].ToString().Replace("System.", "");
+        //                    int colwidth = getCollen(pv.HeaderArray[0, b].ToString());
+        //                    int colmult;
+        //                    if (sd2 == "String")
+        //                    { colmult = 7; }
+        //                    else { colmult = 6; }
+        //                    colwidth = colwidth * colmult;
+        //                    string widthpx = "";
+        //                    if (colwidth != 0) widthpx = "width:" + Convert.ToString(colwidth) + "px;";
+        //                    if (chk == "")
+        //                    { Header = Header + "<th  style='border:1px solid #cac7c7;" + widthpx + "' class='grid_th' > </th>"; }
+        //                    else
+        //                    if (sd2 == "Double" || sd2 == "Long" || sd2 == "Int")
+        //                    { Header = Header + "<th  style='text-align:right;border:1px solid #cac7c7;background-color:dodgerblue;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() + "" + "</th>"; }
+        //                    //   { Header = Header + "<th  style='text-align:right;border:1px outset;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() ?? "" + "</th>"; }
+        //                    else
+        //                    { Header = Header + "<th  style='border:1px solid #cac7c7;background-color:dodgerblue;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() + "" + "</th>"; }
+        //                    // { Header = Header + "<th  STYLE='border:1px outset;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() ?? "" + "</th>"; }
+        //                }
+        //                b = b + 1;
+        //            }
+        //            if (Header != "")
+        //            {
+        //                Header = Header + "</tr>";
+        //                SB.Append(Header);
+        //            }
+        //            a = a + 1;
+        //        }
+        //        Header = "</thead>";
+        //        SB.Append(Header);
+
+        //        string Body = "<tbody style='border:1px solid;' >";
+        //        SB.Append(Body);
+        //        for (Int32 i = 0; i < Table.Rows.Count; i++)
+        //        {
+        //            string InnerRow = "<tr style='font-size:9pt;'>";
+        //            if (pv.AlternetiveRowColor)
+        //            {
+        //                if (i % 2 == 0) InnerRow = "<tr style='font-size:9pt;background-color:#e2effa;'>";
+        //            }
+        //            for (int x = 0; x <= Table.Columns.Count - 1; x++)
+        //            {
+        //                string cellform = getCellDesign(columnNames[x].ToString(), Table.Rows[i]["celldesign"].ToString());
+        //                string[] chkn1 = cellform.ToString().Split('~');
+        //                string cellstyle = "";
+        //                cellform = chkn1[0].ToString();
+        //                if (chkn1.Count() > 1) cellstyle = chkn1[1].ToString();
+        //                chk = Table.Columns[x].ColumnName.ToString().ToLower();
+
+        //                if (chk.IndexOf("image_") == -1) img = false;
+        //                else img = true;
+
+        //                if (chk != "flag" && chk != "celldesign")
+        //                {
+        //                    if (chk == "dammy")
+        //                    {
+        //                        if (Table.Rows[i][x].ToString() != "")
+        //                        {
+        //                            string[] dammyCOLSPAN = Table.Rows[i]["Flag"].ToString().Split('~');
+        //                            if (dammyCOLSPAN.Length > 1)
+        //                            {
+        //                                InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";
+        //                                x += 4;
+        //                            }
+        //                            else
+        //                            {
+        //                                InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "' colspan='" + col_span + "' style='" + Table.Rows[i]["Flag"].ToString() + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+        //                                break;
+        //                            }
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        if (Table.Rows[i][x].ToString() != "")
+        //                        {
+        //                            var sd = Table.Rows[i][x].GetType();
+        //                            if (img == true)
+        //                            {
+        //                                InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+        //                            }
+        //                            else if (sd == typeof(string)) InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+        //                            else
+        //                            {
+        //                                var objvalue = Table.Rows[i][x];
+        //                                if (cellstyle == "") cellstyle = pv.HeaderArray[0, x].ToString();
+        //                                string dspform = getformat(cellstyle);
+        //                                string precisionvalue = "";
+        //                                precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
+        //                                InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+        //                            }
+        //                        }
+        //                        else InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+        //                    }
+        //                }
+        //            }
+        //            InnerRow = InnerRow + "</tr>";
+        //            SB.Append(InnerRow);
+        //        }
+        //        SB.Append("</tbody>");
+        //        SB.Append("</table>");
+        //        ReportContaint Rc1 = new ReportContaint();
+        //        Rc1.GetHtml = SB.ToString();
+        //        listemail.Add(Rc1);
+        //        PV.SetReportContaint = listemail;
+        //        return PV;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        var er = e;
+        //        return PV;
+        //    }
+        //}
         public PrintViewer GetResponsiveHTML(DataTable Table, PrintViewer pv, string[,] headerArray1)
         {
             List<ReportContaint> listemail = new List<ReportContaint>();
@@ -488,14 +826,16 @@ namespace Improvar.Controllers
         }
 
         public PrintViewer ShowReport(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-            string orientation = "P", Boolean alternativerowcolor = true)
+            string orientation = "P", Boolean alternativerowcolor = true, string extr_col = "")
         {
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
             { PV.Portrait = true; }
             else { PV.Portrait = false; }
             PV.IR = IR;
-            PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3;
+            if (extr_col != "")
+            { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
+            else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
             PV.Title = CommVar.LocName(UNQSNO);
             PV.Vname = CommVar.CompName(UNQSNO);
             PV.Para1 = header1; PV.Para2 = header2;
@@ -605,7 +945,7 @@ namespace Improvar.Controllers
             PV.TotReportWidth += (colno * 6);
         }
 
-        public void RepStart(DataTable IR, int noheadrow = 2)
+        public void RepStart(DataTable IR, int noheadrow = 2,string extr_col="")
         {
             int aryA = noheadrow; int aryB = 3;
             string[,] hdArray = new string[aryA, aryB];
@@ -613,16 +953,26 @@ namespace Improvar.Controllers
             IR.Columns.Add("dammy", typeof(string));
             IR.Columns.Add("flag", typeof(string));
             IR.Columns.Add("celldesign", typeof(string));
+            if(extr_col.Count()>0)
+            {
+                var extr_col_add = extr_col.Split(',');
+                for (int i = 0; i <= extr_col_add.Count() - 1; i++)
+                { IR.Columns.Add(extr_col_add[i], typeof(string)); }
+            }
+           
+            
         }
         public PrintViewer ShowReport2(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-            string orientation = "P", Boolean alternativerowcolor = true, string RowIDColumnNM = "", bool expand = false)
+            string orientation = "P", Boolean alternativerowcolor = true, string RowIDColumnNM = "", bool expand = false, string extr_col = "")
         {
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
             { PV.Portrait = true; }
             else { PV.Portrait = false; }
 
-            PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3;
+            if (extr_col != "")
+            { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
+            else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
             PV.AlternetiveRowColor = true;
             PV.Title = CommVar.LocName(UNQSNO);
             PV.Vname = CommVar.CompName(UNQSNO);
@@ -637,14 +987,16 @@ namespace Improvar.Controllers
             return PV;
         }
         public PrintViewer ShowReport1(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-            string orientation = "P", Boolean alternativerowcolor = true, string RowIDColumnNM = "", bool expand = false)
+            string orientation = "P", Boolean alternativerowcolor = true, string RowIDColumnNM = "", bool expand = false, string extr_col = "")
         {
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
             { PV.Portrait = true; }
             else { PV.Portrait = false; }
 
-            PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3;
+            if (extr_col != "")
+            { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
+            else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
             PV.AlternetiveRowColor = true;
             PV.Title = CommVar.LocName(UNQSNO);
             PV.Vname = CommVar.CompName(UNQSNO);
@@ -660,14 +1012,16 @@ namespace Improvar.Controllers
         }
 
         public PrintViewer ShowReport1(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-           string orientation = "P", Boolean alternativerowcolor = true, int height = 0, string link = "", string pagename = "")
+           string orientation = "P", Boolean alternativerowcolor = true, int height = 0, string link = "", string pagename = "", string extr_col = "")
         {
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
             { PV.Portrait = true; }
             else { PV.Portrait = false; }
 
-            PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3;
+            if (extr_col != "")
+            { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
+            else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
 
             PV.Title = CommVar.LocName(UNQSNO);
             PV.Vname = CommVar.CompName(UNQSNO);
@@ -725,7 +1079,7 @@ namespace Improvar.Controllers
                     {
                         chk = Table.Columns[b].ColumnName.ToString().ToLower();
 
-                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "footer")
+                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "footer" && chk != "doclink")
                         {
                             var sd1 = Table.Rows[0][b].GetType();
                             var sd2 = columnTypes[b].ToString().Replace("System.", "");
@@ -811,7 +1165,7 @@ namespace Improvar.Controllers
                         if (chk.IndexOf("image_") == -1) img = false;
                         else img = true;
 
-                        if (chk != "flag" && chk != "celldesign" && chk != RowIDColumnNM && chk != "link" && chk != "footer")
+                        if (chk != "flag" && chk != "celldesign" && chk != RowIDColumnNM && chk != "link" && chk != "doclink" && chk != "footer")
                         {
                             if (chk == "dammy")
                             {
@@ -979,7 +1333,7 @@ namespace Improvar.Controllers
                     {
                         chk = Table.Columns[b].ColumnName.ToString().ToLower();
 
-                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "footer")
+                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "footer" && chk != "doclink")
                         {
                             var sd1 = Table.Rows[0][b].GetType();
                             var sd2 = columnTypes[b].ToString().Replace("System.", "");
@@ -1065,7 +1419,7 @@ namespace Improvar.Controllers
                         if (chk.IndexOf("image_") == -1) img = false;
                         else img = true;
 
-                        if (chk != "flag" && chk != "celldesign" && chk != RowIDColumnNM && chk != "link" && chk != "footer")
+                        if (chk != "flag" && chk != "celldesign" && chk != RowIDColumnNM && chk != "link" && chk != "doclink" && chk != "footer")
                         {
                             if (chk == "dammy")
                             {
@@ -1234,7 +1588,7 @@ namespace Improvar.Controllers
                     {
                         chk = Table.Columns[b].ColumnName.ToString().ToLower();
 
-                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != link)
+                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != link && chk != "doclink")
                         {
                             var sd1 = Table.Rows[0][b].GetType();
                             var sd2 = columnTypes[b].ToString().Replace("System.", "");
@@ -1297,7 +1651,7 @@ namespace Improvar.Controllers
                         if (chk.IndexOf("image_") == -1) img = false;
                         else img = true;
 
-                        if (chk != "flag" && chk != "celldesign" && chk != link)
+                        if (chk != "flag" && chk != "celldesign" && chk != link && chk != "doclink")
                         {
                             if (chk == "dammy")
                             {
@@ -1369,15 +1723,17 @@ namespace Improvar.Controllers
             }
         }
         public PrintViewer ShowReport3(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-          string orientation = "P", Boolean alternativerowcolor = true, int RowIndex = 0, int colIndex = 0, PrintViewer PV2 = null)
+          string orientation = "P", Boolean alternativerowcolor = true, int RowIndex = 0, int colIndex = 0, PrintViewer PV2 = null,string extr_col="")
         {
             PV = PV2;
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
             { PV.Portrait = true; }
             else { PV.Portrait = false; }
-
-            PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3;
+            if(extr_col!="")
+            { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
+            else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
+            
             PV.AlternetiveRowColor = true;
             // PV.Title = CommVar.LocName(UNQSNO);
             //  PV.Vname = CommVar.CompName(UNQSNO); 
@@ -1434,7 +1790,7 @@ namespace Improvar.Controllers
                     {
                         chk = Table.Columns[b].ColumnName.ToString().ToLower();
 
-                        if (chk != "flag" && chk != "dammy" && chk != "celldesign")
+                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "doclink")
                         {
                             var sd1 = Table.Rows[0][b].GetType();
                             var sd2 = columnTypes[b].ToString().Replace("System.", "");
@@ -1510,7 +1866,7 @@ namespace Improvar.Controllers
                         if (chk.IndexOf("image_") == -1) img = false;
                         else img = true;
 
-                        if (chk != "flag" && chk != "celldesign")
+                        if (chk != "flag" && chk != "celldesign" && chk != "doclink")
                         {
                             if (chk == "dammy")
                             {
@@ -1641,7 +1997,7 @@ namespace Improvar.Controllers
                         if (chk.IndexOf("image_") == -1) img = false;
                         else img = true;
 
-                        if (chk != "flag" && chk != "celldesign")
+                        if (chk != "flag" && chk != "celldesign" && chk != "doclink")
                         {
                             if (chk == "dammy")
                             {
@@ -1758,6 +2114,494 @@ namespace Improvar.Controllers
                 return PV;
             }
         }
+
+        public PrintViewer ShowReportWithImage(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
+        string orientation = "P", Boolean alternativerowcolor = true, string Link_Var = "",string extr_col = "")
+        {
+            PV.RepetedHeader = showhdronevrypage;
+            if (orientation == "P")
+            { PV.Portrait = true; }
+            else { PV.Portrait = false; }
+            PV.IR = IR;
+            PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4;
+
+            PV.Title = CommVar.LocName(UNQSNO);
+            PV.Vname = CommVar.CompName(UNQSNO);
+
+            PV.Para1 = header1; PV.Para2 = header2;
+
+            PV.AlternetiveRowColor = alternativerowcolor;
+            PV = GetResponsiveHTMLWithImage(IR, PV, headerArray, Link_Var, extr_col);
+
+            PV.ReportName = reportname;
+            if (showfooter == true) PV.StaticFooter = DateTime.Now.ToString("dd/MM/yyyy") + " " + DateTime.Now.ToString("hh:mm:ss tt");
+            System.Web.HttpContext.Current.Session[reportname] = PV;
+            return PV;
+        }
+
+        public PrintViewer GetResponsiveHTMLWithImage(DataTable Table, PrintViewer pv, string[,] headerArray1, string Link_Var,string extr_col="")
+        {
+            List<ReportContaint> listemail = new List<ReportContaint>();
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+
+            int aryA = pv.HeaderArray.GetLength(0);
+            int aryB = pv.HeaderArray.GetLength(1);
+            string[] columnNames = Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            string[] columnTypes = Table.Columns.Cast<DataColumn>().Select(x => x.DataType.ToString()).ToArray();
+            string[] span = SpanColumnContaint == null ? null : SpanColumnContaint.Split(',');
+            string[] spanLangth = SpanColumnLength == null ? null : SpanColumnLength.Split(',');
+            string[] setIndex = SpanColumnSetIndex == null ? null : SpanColumnSetIndex.Split(',');
+            try
+            {
+                string assign_table = "<table class='grid_table'>";
+                SB.Append(assign_table);
+                //Start Hook Codding To Print Header in Every Page When Print
+                string Header = "<thead>";
+                string Vname = pv.Vname;
+                string Title = pv.Title;
+                string Para1 = pv.Para1;
+                string Para2 = pv.Para2;
+                int col_span = pv.ColspanForPDF;
+
+                Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size:17px;font-weight:300; '>" + Vname + "</th> </tr> ";
+                Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size:17px;font-weight:300;'>" + Title + "</th> </tr> ";
+
+                if (Para1 != "") { Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size: 15px;font-weight:100;'>" + Para1 + "   " + " </th></tr> "; }
+                if (Para2 != "") { Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size: 15px;font-weight:100;'>" + Para2 + "</th> </tr> "; }
+
+                SB.Append(Header);
+                int totalCol = aryB - 4;
+                string chk = "";
+                bool img;
+                int maxA = aryA - 1; //int maxB = aryB - 1;
+                int maxB = aryB - 1;
+                int a = 1; int b = 0;
+                if (span != null)
+                {
+                    Header = "<tr style='color:white;font-size:12px;font-style: normal;font-weight:bold;height:25px'>";
+                    for (int i = 0; i <= totalCol; i++)
+                    {
+                        int flag = 0;
+                        for (int x = 0; x <= setIndex.Length - 1; x++)
+                        {
+                            if (i.ToString() == setIndex[x].ToString())
+                            {
+                                Header = Header + "<th class='' colspan='" + spanLangth[x] + "' style='background-color:#808080;text-align:center;border:1px solid white;' valign='middle'>" + span[x] + "</th>";
+                                flag = 1;
+                                i = i + Convert.ToInt32(spanLangth[x]);
+                            }
+                        }
+                        if (flag == 0)
+                        {
+                            Header = Header + "<th align='center' class='' style='background-color:#808080;border:1px solid white;'> " + "" + "</th>";
+                        }
+                        else if (flag == 1)
+                        {
+                            if (i <= totalCol)
+                            {
+                                Header = Header + "<th align='center' class='' style='background-color:#808080;border:1px solid white;'>" + "" + "</th>";
+                            }
+                        }
+                    }
+                    Header = Header + "</tr>";
+                    SB.Append(Header);
+                }
+                while (a <= maxA)
+                {
+                    Header = "";
+                    Header = Header + "<tr style='font-size:12px;font-style: normal;height:16px'>";
+                    b = 0;
+                    while (b <= maxB)
+                    {
+                        chk = Table.Columns[b].ColumnName.ToString().ToLower();
+
+                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "doclink")
+                        {
+                            var sd1 = Table.Rows[0][b].GetType();
+                            var sd2 = columnTypes[b].ToString().Replace("System.", "");
+                            int colwidth = getCollen(pv.HeaderArray[0, b].ToString());
+                            int colmult;
+                            if (sd2 == "String")
+                            { colmult = 7; }
+                            else { colmult = 6; }
+                            colwidth = colwidth * colmult;
+                            string widthpx = "";
+                            if (colwidth != 0) widthpx = "width:" + Convert.ToString(colwidth) + "px;";
+
+                            if (chk == "")
+                            {
+                                Header = Header + "<th  style='border:1px solid #cac7c7;" + widthpx + "' class='grid_th' > </th>";
+                            }
+                            else {
+                                if (sd2 == "Double" || sd2 == "Long" || sd2 == "Int")
+                                {
+                                    Header = Header + "<th  style='text-align:right;border:1px solid #cac7c7;background-color:dodgerblue;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() + "" + "</th>";
+                                }
+                                else
+                                {
+                                    Header = Header + "<th  style='border:1px solid #cac7c7;background-color:dodgerblue;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() + "" + "</th>";
+                                }
+                            }
+                        }
+
+                        b = b + 1;
+                    }
+                    if (Header != "")
+                    {
+                        Header = Header + "</tr>";
+                        SB.Append(Header);
+                    }
+                    a = a + 1;
+                }
+                Header = "</thead>";
+                SB.Append(Header);
+
+                string Body = "<tbody style='border:1px solid;' >";
+                SB.Append(Body);
+                for (Int32 i = 0; i < Table.Rows.Count; i++)
+                {
+                    string linkcd = Table.Rows[i]["doclink"] == null ? "" : Table.Rows[i]["doclink"].ToString();
+
+                    string InnerRow = "";
+                    if (pv.AlternetiveRowColor)
+                    {
+                        if (i % 2 == 0) InnerRow = "<tr style='font-size:9pt;background-color:#e2effa;" + (linkcd == "" ? "" : "cursor:pointer;") + "' " + linkcd + ">";
+                    }
+                    for (int x = 0; x <= Table.Columns.Count - 1; x++)
+                    {
+                        string cellform = getCellDesign(columnNames[x].ToString(), Table.Rows[i]["celldesign"].ToString());
+                        string[] chkn1 = cellform.ToString().Split('~');
+                        string cellstyle = "";
+                        cellform = chkn1[0].ToString();
+                        if (chkn1.Count() > 1) cellstyle = chkn1[1].ToString();
+                        chk = Table.Columns[x].ColumnName.ToString().ToLower();
+
+                        if (chk == "doclink")
+                        { }
+                        var LinkVar = Link_Var.Split(',');
+
+                        if (chk.IndexOf("image_") == -1) img = false;
+                        else img = true;
+                        if (chk != "flag" && chk != "celldesign" && chk != "doclink")
+                        {
+                            if (chk == "dammy")
+                            {
+                                if (Table.Rows[i][x].ToString() != "")
+                                {
+                                    string[] dammyCOLSPAN = Table.Rows[i]["Flag"].ToString().Split('~');
+                                    if (dammyCOLSPAN.Length > 1)
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "  </td>";
+                                        x += 4;
+                                    }
+                                    else
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "' colspan='" + col_span + "' style='" + Table.Rows[i]["Flag"].ToString() + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (Table.Rows[i][x].ToString() != "")
+                                {
+                                    var sd = Table.Rows[i][x].GetType();
+                                    if (img == true)
+                                    {
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;' />" + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                    }
+                                    else if (sd == typeof(string) && LinkVar.Contains(chk) && Table.Rows[i]["doclink"].ToString() != "")
+                                    {
+                                        string linkpara = Table.Rows[i]["doclink"].retStr().Replace("'", "\'");
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> ";//onclick=ShowPopup();
+                                        InnerRow = InnerRow + " <a href='#' onclick=\"CheckDocument(" + linkpara + ",'"+ extr_col + "');return false;\">" + Table.Rows[i][x].ToString() + " </a>  <script>Rmenu('col_" + i + "_" + x + "','',1);</script> </td>";
+                                    }
+                                    else if (sd == typeof(string) && chk != "doclink") InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";//onclick=ShowPopup();
+
+                                    else
+                                    {
+                                        var objvalue = Table.Rows[i][x];
+                                        if (cellstyle == "") cellstyle = pv.HeaderArray[0, x].ToString();
+                                        string dspform = getformat(cellstyle);
+                                        string precisionvalue = "";
+                                        precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
+                                        InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                    }
+                                }
+                                else
+                                {
+                                    InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+                                }
+                            }
+                        }
+
+                    }
+                    InnerRow = InnerRow + "</tr>";
+                    SB.Append(InnerRow);
+                }
+                SB.Append("</tbody>");
+                SB.Append("</table>");
+                ReportContaint Rc1 = new ReportContaint();
+                Rc1.GetHtml = SB.ToString();
+                listemail.Add(Rc1);
+                PV.SetReportContaint = listemail;
+                return PV;
+            }
+            catch (Exception e)
+            {
+                var er = e;
+                return PV;
+            }
+        }
+
+        public PrintViewer ShowReportPopup(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
+      string orientation = "P", Boolean alternativerowcolor = true, string header3 = "", string pagename = "", string imgprev_para1 = "", string imgprev_para2 = "")
+        {
+            PV.RepetedHeader = showhdronevrypage;
+            if (orientation == "P")
+            { PV.Portrait = true; }
+            else { PV.Portrait = false; }
+
+            PV.ColspanForPDF = PV.HeaderArray.GetLength(1);
+
+            PV.Title = CommVar.LocName(UNQSNO);
+            PV.Vname = CommVar.CompName(UNQSNO);
+
+            PV.Para1 = header1; PV.Para2 = header2;
+            PV.Para3 = header3;
+
+            PV.AlternetiveRowColor = alternativerowcolor;
+            PV = GetResponsiveHTMLPopup(IR, PV, headerArray, pagename, imgprev_para1, imgprev_para2);
+
+            PV.ReportName = reportname;
+            if (showfooter == true) PV.StaticFooter = DateTime.Now.ToString("dd/MM/yyyy") + " " + DateTime.Now.ToString("hh:mm:ss tt");
+            System.Web.HttpContext.Current.Session[reportname] = PV;
+            return PV;
+        }
+        public PrintViewer GetResponsiveHTMLPopup(DataTable Table, PrintViewer pv, string[,] headerArray1, string pagename = "", string imgprev_para1 = "", string imgprev_para2 = "")
+        {
+            List<ReportContaint> listemail = new List<ReportContaint>();
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+
+            int aryA = pv.HeaderArray.GetLength(0);
+            int aryB = pv.HeaderArray.GetLength(1);
+            string[] columnNames = Table.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            string[] columnTypes = Table.Columns.Cast<DataColumn>().Select(x => x.DataType.ToString()).ToArray();
+            string[] span = SpanColumnContaint == null ? null : SpanColumnContaint.Split(',');
+            string[] spanLangth = SpanColumnLength == null ? null : SpanColumnLength.Split(',');
+            string[] setIndex = SpanColumnSetIndex == null ? null : SpanColumnSetIndex.Split(',');
+            try
+            {
+                string assign_table = "<table class='grid_table'>";
+                SB.Append(assign_table);
+                //Start Hook Codding To Print Header in Every Page When Print
+                string Header = "<thead>";
+                string Vname = pv.Vname;
+                string Title = pv.Title;
+                string Para1 = pv.Para1;
+                string Para2 = pv.Para2;
+                string Para3 = pv.Para3;
+                int col_span = pv.ColspanForPDF;
+
+                Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size:17px;font-weight:300; '>" + Vname + "</th><th align='right' style='border: hidden;text-align:right;cursor:pointer;'><img src='../Image/close.png' title='Close' width='16px' height='16px' onclick=PopupPageclose('" + pagename + "');> </img></th> </tr> ";
+                Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size:17px;font-weight:300;'>" + Title + "</th> </tr> ";
+
+                if (Para1 != "") { Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size: 15px;font-weight:100;'>" + Para1 + "   " + " </th></tr> "; }
+                if (Para2 != "") { Header = Header + "<tr style='height:24px;'> <th colspan='" + col_span + "' style='border: hidden;font-size: 15px;font-weight:100;'>" + Para2 + "</th> </tr> "; }
+
+                SB.Append(Header);
+                int totalCol = aryB - 4;
+                string chk = ""; string linkbtn = "";
+                bool img; bool link;
+                int maxA = aryA - 1; int maxB = aryB - 1;
+                int a = 1; int b = 0;
+                if (span != null)
+                {
+                    Header = "<tr style='color:white;font-size:12px;font-style: normal;font-weight:bold;height:25px'>";
+                    for (int i = 0; i <= totalCol; i++)
+                    {
+                        int flag = 0;
+                        for (int x = 0; x <= setIndex.Length - 1; x++)
+                        {
+                            if (i.ToString() == setIndex[x].ToString())
+                            {
+                                Header = Header + "<th class='' colspan='" + spanLangth[x] + "' style='background-color:#808080;text-align:center;border:1px solid white;' valign='middle'>" + span[x] + "</th>";
+                                flag = 1;
+                                i = i + Convert.ToInt32(spanLangth[x]);
+                            }
+                        }
+                        if (flag == 0)
+                        {
+                            Header = Header + "<th align='center' class='' style='background-color:#808080;border:1px solid white;'> " + "" + "</th>";
+                        }
+                        else if (flag == 1)
+                        {
+                            if (i <= totalCol)
+                            {
+                                Header = Header + "<th align='center' class='' style='background-color:#808080;border:1px solid white;'>" + "" + "</th>";
+                            }
+                        }
+                    }
+                    Header = Header + "</tr>";
+                    SB.Append(Header);
+                }
+                while (a <= maxA)
+                {
+                    Header = "";
+                    Header = Header + "<tr style='font-size:12px;font-style: normal;height:16px'>";
+                    b = 0;
+                    while (b <= maxB)
+                    {
+                        chk = Table.Columns[b].ColumnName.ToString().ToLower();
+
+                        if (chk != "flag" && chk != "dammy" && chk != "celldesign" && chk != "doclink")
+                        {
+                            var sd1 = Table.Rows[0][b].GetType();
+                            var sd2 = columnTypes[b].ToString().Replace("System.", "");
+                            int colwidth = getCollen(pv.HeaderArray[0, b].ToString());
+                            int colmult;
+                            if (sd2 == "String")
+                            { colmult = 7; }
+                            else { colmult = 6; }
+                            colwidth = colwidth * colmult;
+                            string widthpx = "";
+                            if (colwidth != 0) widthpx = "width:" + Convert.ToString(colwidth) + "px;";
+                            if (chk == "")
+                            { Header = Header + "<th  style='border:1px solid #cac7c7;" + widthpx + "' class='grid_th' > </th>"; }
+                            else
+                            if (sd2 == "Double" || sd2 == "Long" || sd2 == "Int")
+                            { Header = Header + "<th  style='text-align:right;border:1px solid #cac7c7;background-color:dodgerblue;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() + "" + "</th>"; }
+                            else
+                            { Header = Header + "<th  style='border:1px solid #cac7c7;background-color:dodgerblue;" + widthpx + "' class='grid_th' > " + pv.HeaderArray[a, b]?.ToString() + "" + "</th>"; }
+                        }
+                        b = b + 1;
+                    }
+                    if (Header != "")
+                    {
+                        Header = Header + "</tr>";
+                        SB.Append(Header);
+                    }
+                    a = a + 1;
+                }
+                Header = "</thead>";
+                SB.Append(Header);
+
+                // string Body = "<tbody style='border:1px solid;' >";
+                string Body = "<tbody style='border:1px;' >";
+                SB.Append(Body);
+                for (Int32 i = 0; i < Table.Rows.Count; i++)
+                {
+                    string InnerRow = "<tr style='font-size:9pt;'>";
+                    if (pv.AlternetiveRowColor)
+                    {
+                        if (i % 2 == 0) InnerRow = "<tr style='font-size:9pt;background-color:#e2effa;'>";
+                    }
+                    string str_docno = "", str_docdesc = "";
+                    for (int x = 0; x <= Table.Columns.Count - 1; x++)
+                    {
+                        string cellform = getCellDesign(columnNames[x].ToString(), Table.Rows[i]["celldesign"].ToString());
+                        string[] chkn1 = cellform.ToString().Split('~');
+                        string cellstyle = "";
+                        cellform = chkn1[0].ToString();
+                        if (chkn1.Count() > 1) cellstyle = chkn1[1].ToString();
+                        chk = Table.Columns[x].ColumnName.ToString().ToLower();
+
+                        if (chk.IndexOf("image_") == -1) img = false;
+                        else img = true;
+
+                        if (chk != "flag" && chk != "celldesign" && chk != "doclink")
+                        {
+                            if (chk == "dammy")
+                            {
+                                if (Table.Rows[i][x].ToString() != "")
+                                {
+                                    string[] dammyCOLSPAN = Table.Rows[i]["Flag"].ToString().Split('~');
+                                    if (dammyCOLSPAN.Length > 1)
+                                    {
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "  </td>";
+                                        x += 4;
+                                    }
+                                    else
+                                    {
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "' colspan='" + col_span + "' style='" + Table.Rows[i]["Flag"].ToString() + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (Table.Rows[i][x].ToString() != "")
+                                {
+                                    var sd = Table.Rows[i][x].GetType();
+                                    // string str = "";
+                                    if (chk == imgprev_para1)
+                                    { str_docno += Table.Rows[i][x].ToString(); }
+                                    if (chk == imgprev_para2)
+                                    { str_docdesc += Table.Rows[i][x].ToString(); }
+
+                                    if (img == true)
+                                    {
+                                        if (Table.Rows[i][x].ToString().Contains("pdf") == true && Table.Rows[i][x].ToString().Contains("data:image") == false)
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            InnerRow = InnerRow + " <img src = '../Image/pdf_48_icon.png' id='img1_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;cursor:pointer;'onclick = imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            InnerRow = InnerRow + "<input id='col_" + i + "_" + x + "' type=hidden value='" + Table.Rows[i][x].ToString() + "'/>" + " <script> Rmenu('col_" + i + "_" + x + "', '', 1);</script>" + "</td> ";
+                                        }
+                                        else if (Table.Rows[i][x].ToString().Contains("text") == true && Table.Rows[i][x].ToString().Contains("data:image") == false)
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            InnerRow = InnerRow + " <img src = '../Image/text_48_icon.png' id='img1_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;cursor:pointer;'onclick = imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            InnerRow = InnerRow + "<input id='col_" + i + "_" + x + "' type=hidden value='" + Table.Rows[i][x].ToString() + "'/>" + " <script> Rmenu('col_" + i + "_" + x + "', '', 1);</script>" + "</td> ";
+
+                                        }
+                                        else if (Table.Rows[i][x].ToString().Contains("openxmlformats") == true && Table.Rows[i][x].ToString().Contains("data:image") == false)
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;display:none;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            InnerRow = InnerRow + " <img src = '../Image/excel_48_icon.png' id='img1_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;cursor:pointer;'onclick = imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                            InnerRow = InnerRow + "<input id='col_" + i + "_" + x + "' type=hidden value='" + Table.Rows[i][x].ToString() + "'/>" + " <script> Rmenu('col_" + i + "_" + x + "', '', 1);</script>" + "</td> ";
+
+                                        }
+                                        else
+                                        {
+                                            InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px;cursor:pointer; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> <img src = '" + Table.Rows[i][x].ToString() + "' id='img_" + i + "' width ='40px' height ='35px' style ='max-height:100%; max-width:100%; vertical-align:middle;'onclick=imgpreview('img_" + i + "','" + str_docno + "','" + str_docdesc + "','',''); />";
+                                        }
+                                    }
+                                    else if (sd == typeof(string)) InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";//onclick=ShowPopup();
+
+                                    else
+                                    {
+                                        var objvalue = Table.Rows[i][x];
+                                        if (cellstyle == "") cellstyle = pv.HeaderArray[0, x].ToString();
+                                        string dspform = getformat(cellstyle);
+                                        string precisionvalue = "";
+                                        precisionvalue = Cn.Indian_Number_format(objvalue.ToString(), dspform);//Convert.ToDouble(objvalue).ToString(dspform);
+                                        InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:right;border: 1px outset;padding-right: 1px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + precisionvalue + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>";
+                                    }
+                                }
+                                else InnerRow = InnerRow + "<td id='Pcol_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + "</td>"; //<a href='#' target='_blank'>Document Details
+
+
+                            }
+                        }
+                    }
+                    InnerRow = InnerRow + "</tr>";
+                    SB.Append(InnerRow);
+                }
+                SB.Append("</tbody>");
+                SB.Append("</table>");
+                ReportContaint Rc1 = new ReportContaint();
+                Rc1.GetHtml = SB.ToString();
+                listemail.Add(Rc1);
+                PV.SetReportContaint = listemail;
+                return PV;
+            }
+            catch (Exception e)
+            {
+                var er = e;
+                return PV;
+            }
+        }
+
 
     }
 }

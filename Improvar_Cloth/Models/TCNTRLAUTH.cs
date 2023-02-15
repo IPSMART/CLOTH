@@ -79,5 +79,8 @@ namespace Improvar.Models
         public string LOCCD { get; set; }
         [StringLength(50)]
         public string AUTH_MNM { get; set; }
+        public string AUTHLVL { get; set; }
+        public string PREVLVLSTS { get; set; }
+        public string NXTLVLSTS { get; set; }
     }
 }

@@ -84,8 +84,7 @@
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                    msgError("Error: " + textStatus + "," + errorThrown);
                 }
             });
         }
@@ -102,6 +101,10 @@
                 $("#partialdivLEVEL1").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivLEVEL1").html(result);
 
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -117,8 +120,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -136,8 +138,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -153,8 +154,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -172,8 +172,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -189,8 +188,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -208,8 +206,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -225,8 +222,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -244,8 +240,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -261,8 +256,7 @@
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                msgError("Error: " + textStatus + "," + errorThrown);
             }
         });
     }
@@ -338,7 +332,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_DOC_AUTH.EFF_DT, new { htmlAttributes = new { @class = "form-control", id = "EFF_DT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                @Html.EditorFor(model => model.M_DOC_AUTH.EFF_DT, new { htmlAttributes = new { @class = "form-control", id = "EFF_DT", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                             </div>
                         </div>
                     </div>

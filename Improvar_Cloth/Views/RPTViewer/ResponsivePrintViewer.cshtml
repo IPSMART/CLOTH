@@ -17,6 +17,7 @@
     <link rel="stylesheet" media="all" href="~/Content/main_layout.css?Ver=@Module.ContentVersion" />
     <link rel="stylesheet" href="~/Content/GridView.css" type="text/css" />
     <link rel="stylesheet" href="~/Content/bootstrap.css?Ver=@Module.ContentVersion" />
+    @Scripts.Render("~/Scripts/Custom.js?Ver=" + Module.ContentVersion)
     <style>
         .side-by-side {
             float: left;
@@ -47,7 +48,18 @@
             z-index: 2;
             cursor: pointer;
         }
-
+          #docpopup_overlay {
+            position: fixed;
+            display: block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+        }
         #popup_overlay1 {
             position: fixed;
             display: block;
@@ -305,6 +317,7 @@
 
         }
         function createFreez() {
+            debugger;
             $("#outer").show();
             $.ajax({
                 type: 'post',
@@ -377,6 +390,82 @@
                 $('#getfreez').html("");
             }
         };
+    </script>
+    <script>
+        function CheckDocument(autonum, extr_col) {
+            debugger;
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("CheckDocument", "RPTViewer")",
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    autono: autonum, extr_col: extr_col
+                },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var reccnt = retFloat(returncolvalue(result, "RECORDCOUNT"));
+                        if (reccnt > 1) {
+                            $("#popup").html(returncolvalue(result, "DOCDETAILS"));
+                            $("#popup").show();
+                            $("#col_70_6").focus();
+                        }
+                        else if (reccnt == 1) {
+                            documentsrc = returncolvalue(result, "DOCSRC");
+                            doc_desc = returncolvalue(result, "DOCDESC");
+                            imgpreview('', returncolvalue(result, "DOCNO"), doc_desc, documentsrc, 'MainRep')
+                        }
+                    }
+                    else {
+                        msgInfo(result);
+                    }
+
+                    $("#WaitingMode").hide();
+                    return false;
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+            return false;
+        }
+        function imgpreview(id, docno, doc_desc, documentsrc, callfrm) {
+            debugger;
+            if (callfrm != "MainRep") {
+                documentsrc = document.getElementById(id).src;
+            }
+            catgr = documentsrc.search('image');
+            HTMLCode = "<HTML><HEAD><title>Document/Image Viewer " + docno + " ( " + doc_desc + " )</title>";
+            HTMLCode = HTMLCode + "</HEAD><BODY TOPMARGIN=0 LEFTMARGIN=0 MARGINHEIGHT=0 MARGINWIDTH=0 style='background-color:rgba(0, 0, 0, 0.56)'><CENTER>";
+
+            if (catgr == -1) {
+                HTMLCode = HTMLCode + "<iframe id='pdfiframe' SRC='" + documentsrc + "' name='pdfiframe' runat='server' width='100%' Height='700px' />";
+            }
+            else {
+                HTMLCode = HTMLCode + "<IMG name='uploadimage' src='" + documentsrc + "' BORDER=0 NAME=FullImage  ";
+                HTMLCode = HTMLCode + " STYLE='WIDTH: max-content; height: max-content; MAX-WIDTH:-webkit-fill-available;MAX-HEIGHT:-webkit-fill-available;' >";
+            }
+            HTMLCode = HTMLCode + "</CENTER></BODY></HTML>";
+            if (catgr == -1) {
+                mywindow = window.open('', 'PDF', 'toolbar = yes, scrollbars = yes, resizable = yes, top = 30, left = 100, width = 1160, height = 600');
+            }
+            else {
+                mywindow = window.open('', 'image', 'toolbar=0,location=0,menuBar=0,top = 30, left = 100,scrollbars=0,resizable=0,width=1160,height=600');
+            }
+            mywindow.document.open();
+            mywindow.document.write(HTMLCode);
+            mywindow.document.close();
+        }
+        function PopupPageclose(pname) {
+                $("#" + pname).hide(300);
+                if ($('#popup').html().length == 0) {
+                    $("body").css("overflow", "auto");
+                }
+                $('#popup').html("");
+                $('#popup').hide();
+                $("#" + pname).fadeOut();
+        }
     </script>
     <style>
         #outer {
@@ -573,6 +662,7 @@
             <input type="hidden" id="ParameterVal" value="" />
             <input type="hidden" id="urlpopup" value="@Url.Action("POPUPSCREEN", "Rep_Trial_Zoom")" />
             <input type="hidden" id="urlpopup1" value="@Url.Action("POPUPSCREEN1", "Rep_Trial_Zoom")" />
+            <input type="hidden" id="urlpopup2" value="@Url.Action("POPUPSCREEN1", "RPTViewer")" />
             <div class="navbar navbar-inverse navbar-fixed-top dontprint" role="navigation" style="display:none;width:100%" id="navhead">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 @*<div id="d1" style="width:25%; display:inline-block;">*@
@@ -614,27 +704,27 @@
                 </menu>
                 <div name="as" id="as" style="padding:10px;">
                     <div class="table-responsive" style="PADDING: 10PX;border:none;background-color: white;border-radius: 10px;">
-                    @*<div class="table-responsive" style="overflow:auto;border:none;border-radius: 10px;">
-                        <div style="width:fit-content;background-color: #f0f7fe;padding: 10px;border-radius: 6px;">*@
-                            @{
-                                if (Model.SetReportContaint != null)
+                        @*<div class="table-responsive" style="overflow:auto;border:none;border-radius: 10px;">
+                            <div style="width:fit-content;background-color: #f0f7fe;padding: 10px;border-radius: 6px;">*@
+                        @{
+                            if (Model.SetReportContaint != null)
+                            {
+                                if (Model.SetReportContaint.Count > 0)
                                 {
-                                    if (Model.SetReportContaint.Count > 0)
-                                    {
-                                        @(new HtmlString(Model.SetReportContaint[0].GetHtml))
-                                    }
-                                    else
-                                    {
-                                        <h1 style="color:red">No Record Found.</h1>
-                                    }
+                                    @(new HtmlString(Model.SetReportContaint[0].GetHtml))
                                 }
                                 else
                                 {
                                     <h1 style="color:red">No Record Found.</h1>
                                 }
                             }
-                            <hr />
-                            <span style="font-size:10px;">@Model.StaticFooter</span>
+                            else
+                            {
+                                <h1 style="color:red">No Record Found.</h1>
+                            }
+                        }
+                        <hr />
+                        <span style="font-size:10px;">@Model.StaticFooter</span>
                         @*</div>*@
                     </div>
                 </div>
@@ -658,6 +748,11 @@
         </div>
         <div id="popup1"></div>
         <div id="popup2"></div>
+        <div id="Msgdiv1" style="display:none">
+            <div id="back_cover">
+                @Html.Partial("_MessageBox")
+            </div>
+        </div>
         <div id="WaitingMode" style="display:none; margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: rgb(16, 134, 16); z-index: 30001; opacity: 0.4;">
             <p style="position: absolute; color: White; top: 46%; left: 47%;">
                 Loading, please wait...<br />
