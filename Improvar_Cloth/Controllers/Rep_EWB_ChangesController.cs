@@ -110,10 +110,14 @@ namespace Improvar.Controllers
                     var LORRYNO = VE.LORRYNO1.retStr();
                     var REASONCD = VE.REASONCD.retStr()==""?"00": VE.REASONCD.retStr();
                     var REASONREM = VE.REASONREM.retStr();
+                    var AGSLCD = VE.AGSLCD1.retStr();
 
                     var CHNG_BY = CommVar.UserID();
                     var CHNG_TIME = "to_date('" + System.DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
 
+                    sql = "update " + schnm + ".T_TXNOTH set AGSLCD ='" + AGSLCD + "' "
+                               + " where AUTONO='" + VE.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     sql = "update " + schnm + ".t_txntrans set LRDT =to_date('" + LRDT + "','dd/mm/yyyy'),LRNO ='" + LRNO + "',TRANSLCD ='" + TRANSLCD + "',LORRYNO ='" + LORRYNO + "' "
                                  + " where AUTONO='" + VE.AUTONO + "'  ";
@@ -122,10 +126,10 @@ namespace Improvar.Controllers
                     sql = "update " + schnmF + ".t_txnewb set LRDT =to_date('" + LRDT + "','dd/mm/yyyy'),LRNO ='" + LRNO + "',TRANSLCD ='" + TRANSLCD + "',LORRYNO ='" + LORRYNO + "',REASONCD ='" + REASONCD + "',REASONREM ='" + REASONREM + "',CHNG_BY ='" + CHNG_BY + "',CHNG_TIME =to_date('" + System.DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
                     sql += "','dd/mm/yyyy hh24:mi:ss')";
                     sql += " where AUTONO='" + VE.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                   
-
-                
+                    sql = "update " + schnmF + ".t_vch_bl set AGSLCD ='" + AGSLCD + "' ";
+                    sql += " where AUTONO='" + VE.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     
 
@@ -179,11 +183,11 @@ namespace Improvar.Controllers
                 }
                 if (val == null)
                 {
-                    return PartialView("_Help2", masterHelp.SubLeg_Help(val, LINK_CD));
+                    return PartialView("_Help2", masterHelp.SubLeg_help(val, LINK_CD));
                 }
                 else
                 {
-                    string str = masterHelp.SubLeg_Help(val, LINK_CD);
+                    string str = masterHelp.SubLeg_help(val, LINK_CD);
                     return Content(str);
                 }
             }

@@ -3241,62 +3241,6 @@ namespace Improvar
             }
             return GRPCD;
         }
-        public string BLNO_help(string val, string autono = "", string DOCDT = "")
-        {
-            try
-            {
-                string scm1 = CommVar.FinSchema(UNQSNO); string Compcd = CommVar.Compcd(UNQSNO); string Loccd = CommVar.Loccd(UNQSNO);
-                string valsrch = val.ToUpper().Trim();
-                string sql = "";
-
-                sql += "select distinct a.autono, a.pcode slcd, c.slnm, c.gstno, a.blno, to_char(a.bldt,'dd/mm/yyyy')bldt, sum(a.blamt) blamt, b.ewaybillno,to_char(b.ewaybilldt,'dd/mm/yyyy')ewaybilldt, " + System.Environment.NewLine;
-                sql += "b.lrno, to_char(b.lrdt,'dd/mm/yyyy')lrdt, b.translcd, b.lorryno, d.slnm trslnm  " + System.Environment.NewLine;
-                sql += "from " + scm1 + ".t_vch_gst a, " + scm1 + ".t_txnewb b, " + scm1 + ".t_cntrl_hdr e, " + System.Environment.NewLine;
-                sql += "" + scm1 + ".m_subleg c, " + scm1 + ".m_subleg d " + System.Environment.NewLine;
-                sql += "where a.autono = b.autono and a.autono = e.autono(+) and " + System.Environment.NewLine;
-                sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and b.translcd is not null and " + System.Environment.NewLine;
-                if (DOCDT.retStr() != "") sql += "e.docdt >= to_date('" + DOCDT.retStr() + "', 'dd/mm/yyyy') and ";
-                //sql += "e.docdt >= to_date('01/07/2022', 'dd/mm/yyyy') and ";
-                sql += "a.pcode = c.slcd and b.translcd = d.slcd(+) " + System.Environment.NewLine;
-                //if(autono.retStr()!="") sql += "and ( upper(a.autono) like '%" + autono + "%')  " + System.Environment.NewLine;
-                if (valsrch.retStr() != "") sql += "and ( upper(a.blno) like '%" + valsrch + "%' or upper(a.autono) like '%" + valsrch + "%')  " + System.Environment.NewLine;
-                sql += "group by a.autono, a.pcode, c.slnm, c.gstno, a.blno, a.bldt, b.ewaybillno, b.ewaybilldt, " + System.Environment.NewLine;
-                sql += "b.lrno, b.lrdt, b.translcd, b.lorryno, d.slnm ";
-                sql += "order by bldt, blno ";
-
-                DataTable rsTmp = SQLquery(sql);
-
-
-                if (val.retStr() == "" || rsTmp.Rows.Count > 1)
-                {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
-                    {
-                        SB.Append("<tr><td>" + rsTmp.Rows[i]["blno"] + "</td><td>" + rsTmp.Rows[i]["bldt"] + "</td><td>" + rsTmp.Rows[i]["autono"] + "</td></tr>");
-                    }
-                    var hdr = "Bill No." + Cn.GCS() + "Bill Date" + Cn.GCS() + "Autono";
-                    return Generate_help(hdr, SB.ToString(), "2");
-                }
-                else
-                {
-                    string str = "";
-                    if (rsTmp.Rows.Count > 0)
-                    {
-                        str = ToReturnFieldValues("", rsTmp);
-                    }
-                    else
-                    {
-                        str = "Invalid Sales Bill No. Please Enter a Valid Sales Bill No. !!";
-                    }
-                    return str;
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message + " " + ex.InnerException;
-            }
-
-        }
 
 
     }

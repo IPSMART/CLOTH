@@ -2564,6 +2564,114 @@ namespace Improvar
             if (!System.IO.File.Exists(compStamp)) compStamp = "";
             return compStamp;
         }
+        public string BLNO_help(string val, string autono = "", string DOCDT = "")
+        {
+            try
+            {
+                string scm1 = CommVar.FinSchema(UNQSNO); string Compcd = CommVar.Compcd(UNQSNO); string Loccd = CommVar.Loccd(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string sql = "";
 
+                sql += "select distinct a.autono, a.pcode slcd, c.slnm, c.gstno, a.blno, to_char(a.bldt,'dd/mm/yyyy')bldt, sum(a.blamt) blamt, b.ewaybillno,to_char(b.ewaybilldt,'dd/mm/yyyy')ewaybilldt, " + System.Environment.NewLine;
+                sql += "b.lrno, to_char(b.lrdt,'dd/mm/yyyy')lrdt, b.translcd, b.lorryno, d.slnm trslnm,f.agslcd,g.slnm agslnm,b.reasoncd,b.reasonrem  " + System.Environment.NewLine;
+                sql += "from " + scm1 + ".t_vch_gst a, " + scm1 + ".t_txnewb b, " + scm1 + ".t_cntrl_hdr e, " + System.Environment.NewLine;
+                sql += "" + scm1 + ".m_subleg c, " + scm1 + ".m_subleg d," + scm1 + ".t_vch_bl f," + scm1 + ".m_subleg g  " + System.Environment.NewLine;
+                sql += "where a.autono = b.autono and a.autono = e.autono(+) and a.autono = f.autono(+) and " + System.Environment.NewLine;
+                sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and b.translcd is not null and " + System.Environment.NewLine;
+                if (DOCDT.retStr() != "") sql += "e.docdt >= to_date('" + DOCDT.retStr() + "', 'dd/mm/yyyy') and ";
+                //sql += "e.docdt >= to_date('01/07/2022', 'dd/mm/yyyy') and ";
+                sql += "a.pcode = c.slcd and b.translcd = d.slcd(+) and f.agslcd = g.slcd(+) " + System.Environment.NewLine;
+                //if(autono.retStr()!="") sql += "and ( upper(a.autono) like '%" + autono + "%')  " + System.Environment.NewLine;
+                if (valsrch.retStr() != "") sql += "and ( upper(a.blno) like '%" + valsrch + "%' or upper(a.autono) like '%" + valsrch + "%')  " + System.Environment.NewLine;
+                sql += "group by a.autono, a.pcode, c.slnm, c.gstno, a.blno, a.bldt, b.ewaybillno, b.ewaybilldt, " + System.Environment.NewLine;
+                sql += "b.lrno, b.lrdt, b.translcd, b.lorryno, d.slnm,f.agslcd,g.slnm,b.reasoncd,b.reasonrem ";
+                sql += "order by bldt, blno ";
+
+                DataTable rsTmp = SQLquery(sql);
+
+
+                if (val.retStr() == "" || rsTmp.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["blno"] + "</td><td>" + rsTmp.Rows[i]["bldt"] + "</td><td>" + rsTmp.Rows[i]["autono"] + "</td></tr>");
+                    }
+                    var hdr = "Bill No." + Cn.GCS() + "Bill Date" + Cn.GCS() + "Autono";
+                    return Generate_help(hdr, SB.ToString(), "2");
+                }
+                else
+                {
+                    string str = "";
+                    if (rsTmp.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", rsTmp);
+                    }
+                    else
+                    {
+                        str = "Invalid Sales Bill No. Please Enter a Valid Sales Bill No. !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
+        }
+        public string SubLeg_help(string val, string LINK_CD = "", string CAPTION = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                string[] linkcode = LINK_CD.Split(',');
+
+                var query = (from a in DB.M_SUBLEG
+                             join b in DB.M_SUBLEG_LINK on a.SLCD equals b.SLCD into x
+                             from b in x.DefaultIfEmpty()
+                             join i in DB.M_CNTRL_HDR on a.M_AUTONO equals i.M_AUTONO
+                             join c in DB.M_CNTRL_LOCA on a.M_AUTONO equals c.M_AUTONO into g
+                             from c in g.DefaultIfEmpty()
+                             where (linkcode.Contains(b.LINKCD) && c.COMPCD == COM && c.LOCCD == LOC && i.INACTIVE_TAG == "N" || linkcode.Contains(b.LINKCD) && c.COMPCD == null && c.LOCCD == null && i.INACTIVE_TAG == "N")
+                             select new
+                             {
+                                 SLNM = a.SLNM,
+                                 SLCD = a.SLCD,
+                                 GSTNO = a.GSTNO,
+                                 SLAREA = a.SLAREA,
+                                 DISTRICT = a.DISTRICT
+                             }).ToList();
+
+                if (val == null || val == "")
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].SLNM + "</td><td>" + query[i].SLCD + "</td><td>" + query[i].GSTNO + "</td><td>" + query[i].SLAREA + "</td></tr>");
+                    }
+                    var hdr = "" + CAPTION + " Name" + Cn.GCS() + "" + CAPTION + " Code" + Cn.GCS() + "GST Number" + Cn.GCS() + "Area";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.SLCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = ToReturnFieldValues(query);
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid " + CAPTION + " Code ! Please Enter a Valid " + CAPTION + " Code !!";
+                    }
+                }
+            }
+        }
     }
 }

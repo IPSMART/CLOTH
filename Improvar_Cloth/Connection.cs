@@ -1179,21 +1179,27 @@ namespace Improvar
             var result = Tuple.Create(REM);
             return result;
         }
-        public Tuple<List<T_CNTRL_DOC_PASS>> T_CONTROL_DOC_PASS(string DCODE, double Transaction_Amount, int EMD_NUMBER, string Auto_Number, string DATABASE, string authrem = "")
+        public Tuple<List<T_CNTRL_DOC_PASS>> T_CONTROL_DOC_PASS(string DCODE, double Transaction_Amount, int EMD_NUMBER, string Auto_Number, string DATABASE, string authrem = "", byte level = 0)
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), DATABASE);
             List<T_CNTRL_DOC_PASS> TCDP = new List<T_CNTRL_DOC_PASS>();
-
+            byte MAXSLNO = 0;
             var MDOCAUTH_DATA = (from i in DB.M_DOC_AUTH
                                  where i.DOCCD == DCODE && Transaction_Amount >= i.AMT_FR && Transaction_Amount <= i.AMT_TO
-                                 select new { PASS_LEVEL = i.LVL, AUTHCD = i.AUTHCD, SLNO = i.SLNO }).ToList();
+                                 select new { PASS_LEVEL = i.LVL, AUTHCD = i.AUTHCD }).ToList();
+            if (level.retDbl() != 0)
+            {
+                MDOCAUTH_DATA = MDOCAUTH_DATA.Where(a => a.PASS_LEVEL == level).ToList();
+                MAXSLNO = DB.T_CNTRL_DOC_PASS.Where(a => a.AUTONO == Auto_Number).Select(a => a.SLNO).DefaultIfEmpty().Max();
+            }
 
             for (int x = 0; x <= MDOCAUTH_DATA.Count() - 1; x++)
             {
+                MAXSLNO++;
                 Models.T_CNTRL_DOC_PASS TCDP1 = new Models.T_CNTRL_DOC_PASS();
                 TCDP1.AUTONO = Auto_Number;
-                TCDP1.SLNO = Convert.ToByte(MDOCAUTH_DATA[x].SLNO);
+                TCDP1.SLNO = MAXSLNO;// Convert.ToByte(x + 1);
                 TCDP1.EMD_NO = EMD_NUMBER;
                 TCDP1.CLCD = CommVar.ClientCode(UNQSNO);
                 TCDP1.PASS_LEVEL = MDOCAUTH_DATA[x].PASS_LEVEL;
@@ -2018,7 +2024,7 @@ namespace Improvar
             {
                 MasterHelp masterHelp = new MasterHelp();
                 var UNQSNO = getQueryStringUNQSNO();
-                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), YRCD = CommVar.YearCode(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), YRCD = CommVar.YearCode(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 using (ImprovarDB DB = new ImprovarDB(GetConnectionString(), CommVar.CurSchema(UNQSNO)))
                 {
                     string MonthCode = "";
@@ -2229,33 +2235,113 @@ namespace Improvar
                     //CHECK AND AUTHORISATION start
                     if (AUTONO != "" && action == "V")
                     {
-                        sql = "select AUTONO,STSTYPE,FLAG1 from  " + CommVar.CurSchema(UNQSNO) + ".t_txnstatus where autono='" + AUTONO + "'";
-                        DataTable dt = masterHelp.SQLquery(sql);
+                        string nextlvlsts = "N", prevlvlsts = "A", authcd = "", authslno = "", authlvl = "";
+                        DataTable dt = new DataTable();
+
+                        //userid respect level details
+                        sql = " select A.AUTHcd,a.LVL,a.slno from (";
+                        sql += " select A.AUTHcd,B.LVL,b.slno ";
+                        sql += ",row_number() over(partition by A.AUTHcd order by A.AUTHcd,B.LVL asc) as rn " + Environment.NewLine;
+                        sql += "from   " + scmf + ".m_sign_auth a,  " + scm + ".M_DOC_AUTH b ";
+                        sql += " where a.authcd = b.authcd and a.usrid = '" + CommVar.UserID() + "' AND b.DOCCD = '" + doccd + "'";
+                        sql += ") a where rn=1 ";
+                        dt = masterHelp.SQLquery(sql);
+                        if (dt.Rows.Count > 0)
+                        {
+                            authcd = dt.Rows[0]["AUTHcd"].retStr();
+                            authslno = dt.Rows[0]["slno"].retStr();
+                            authlvl = dt.Rows[0]["LVL"].retStr();
+                        }
+
+
+                        sql = "select AUTONO,STSTYPE,FLAG1,USR_ID from  " + scm + ".t_txnstatus where autono='" + AUTONO + "'";
+                        dt = masterHelp.SQLquery(sql);
+                        bool flagauth = false;
                         foreach (DataRow dr in dt.Rows)
                         {
+                            string STSTYPE = dr["STSTYPE"].ToString();
+
                             if (dr["STSTYPE"].ToString() == "K")
                             {//cheched
                                 ViewClass.GetType().GetProperty("IsChecked").SetValue(ViewClass, true);
                             }
-                            else if (dr["STSTYPE"].ToString() == "A")
-                            {//Authorised
-                                ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "A");
-                                ViewClass.GetType().GetProperty("Edit").SetValue(ViewClass, "");
-                            }
-                            else if (dr["STSTYPE"].ToString() == "N")
-                            {//Reject
-                                ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "N");
+                            else if (dr["STSTYPE"].ToString() == "A" || dr["STSTYPE"].ToString() == "N")
+                            {
+                                string LVL = "";
+                                if (STSTYPE == "A")
+                                {
+                                    sql = "select max(c.lvl)lvl from " + scm + ".t_txnstatus a," + scmf + ".m_sign_auth b," + scm + ".M_DOC_AUTH c " + Environment.NewLine;
+                                    sql += "where b.authcd = c.authcd and STSTYPE='" + STSTYPE + "' " + Environment.NewLine;
+                                    sql += "and c.lvl not in (select distinct PASS_LEVEL from " + scm + ".t_cntrl_doc_pass where autono=a.autono) " + Environment.NewLine;
+                                    sql += "and a.autono='" + dr["autono"].ToString() + "' and  a.USR_ID ='" + dr["USR_ID"].ToString() + "' and  c.doccd ='" + doccd + "' " + Environment.NewLine;
+                                }
+                                else
+                                {
+                                    sql = "select min(c.lvl)lvl from " + scm + ".t_txnstatus a," + scmf + ".m_sign_auth b," + scm + ".M_DOC_AUTH c " + Environment.NewLine;
+                                    sql += "where b.authcd = c.authcd and STSTYPE='" + STSTYPE + "' " + Environment.NewLine;
+                                    sql += "and c.lvl in (select distinct PASS_LEVEL from " + scm + ".t_cntrl_doc_pass where autono=a.autono) " + Environment.NewLine;
+                                    sql += "and a.autono='" + dr["autono"].ToString() + "' and  a.USR_ID ='" + dr["USR_ID"].ToString() + "' and  c.doccd ='" + doccd + "' " + Environment.NewLine;
+                                }
+                                DataTable dt1 = masterHelp.SQLquery(sql);
+                                LVL = dt1.Rows[0]["lvl"].retStr();
+                                flagauth = true;
+                                if (authlvl.retDbl() == 0)
+                                {
+                                    if (dr["STSTYPE"].ToString() == "A")
+                                    {
+                                        //Authorised
+                                        ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "A");
+                                    }
+                                    else if (dr["STSTYPE"].ToString() == "N")
+                                    {
+                                        //Authorised
+                                        ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "N");
+                                    }
+                                    nextlvlsts = "N"; prevlvlsts = "N";
+                                }
+                                else if (authlvl.retDbl() <= LVL.retDbl() && dr["STSTYPE"].ToString() == "A")
+                                {
+                                    //Authorised
+                                    ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "A");
+                                    if (authlvl.retDbl() < LVL.retDbl()) { nextlvlsts = "A"; prevlvlsts = "A"; }
+                                }
+                                else if (LVL.ToString() == authlvl && dr["STSTYPE"].ToString() == "N")
+                                {
+                                    //Reject
+                                    ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "N");
+                                }
+                                else if (authlvl.retDbl() < LVL.retDbl() && dr["STSTYPE"].ToString() == "N")
+                                {
+                                    //Authorised
+                                    ViewClass.GetType().GetProperty("AuthorisationStatus").SetValue(ViewClass, "A");
+                                    if (authlvl.retDbl() < LVL.retDbl() - 1) { nextlvlsts = "A"; prevlvlsts = "A"; }
+                                }
+                                else if (authlvl.retDbl() > LVL.retDbl() && dr["STSTYPE"].ToString() == "N")
+                                {
+                                    nextlvlsts = "N"; prevlvlsts = "N";
+                                }
                             }
                         }
-
-                        sql = " select A.AUTHcd,B.LVL,b.slno from   " + CommVar.FinSchema(UNQSNO) + ".m_sign_auth a,  " + CommVar.CurSchema(UNQSNO) + ".M_DOC_AUTH b" +
-                              " where a.authcd = b.authcd and a.usrid = '" + CommVar.UserID() + "' AND b.DOCCD = '" + doccd + "'";
-                        dt = masterHelp.SQLquery(sql);
-                        if (dt.Rows.Count > 0)
+                        var chk = (from DataRow dr in dt.Rows where dr["STSTYPE"].retStr() == "A" || dr["STSTYPE"].retStr() == "N" select dr).Count();
+                        if ((dt == null || chk == 0) && authlvl.retDbl() > 1)
                         {
-                            ViewClass.GetType().GetProperty("AuthorisationAUTHCD").SetValue(ViewClass, dt.Rows[0]["AUTHcd"].retStr());
-                            ViewClass.GetType().GetProperty("AuthorisationSLNO").SetValue(ViewClass, dt.Rows[0]["slno"].retStr());
-                            ViewClass.GetType().GetProperty("AuthorisationLVL").SetValue(ViewClass, dt.Rows[0]["LVL"].retStr());
+                            nextlvlsts = "N"; prevlvlsts = "N";
+                        }
+                        if (prevlvlsts == "A" && nextlvlsts == "N")
+                        {
+                            ViewClass.GetType().GetProperty("AuthorisationAUTHCD").SetValue(ViewClass, authcd);
+                            ViewClass.GetType().GetProperty("AuthorisationSLNO").SetValue(ViewClass, authslno);
+                            ViewClass.GetType().GetProperty("AuthorisationLVL").SetValue(ViewClass, authlvl);
+                        }
+
+                        sql = "select distinct B.LVL from   " + scmf + ".m_sign_auth a,  " + scm + ".M_DOC_AUTH b ";
+                        sql += "where a.authcd = b.authcd AND b.DOCCD = '" + doccd + "'";
+                        sql += "and b.lvl not in (select pass_level from " + scm + ".t_cntrl_doc_pass where autono='" + AUTONO + "' )";
+                        dt = masterHelp.SQLquery(sql);
+                        if (dt.Rows.Count > 0 && flagauth == true)
+                        {
+                            ViewClass.GetType().GetProperty("Edit").SetValue(ViewClass, "");
+                            ViewClass.GetType().GetProperty("Delete").SetValue(ViewClass, "");
                         }
                     }
                     //CHECK AND AUTHORISATION end
@@ -2282,7 +2368,8 @@ namespace Improvar
                 SaveException(ex, "");
                 return "";
             }
-        }        //public String getdocmaxmindate(string doccd, string docdt, string action, string docno, object ViewClass, bool opening = false, string AUTONO = "")
+        }
+        //public String getdocmaxmindate(string doccd, string docdt, string action, string docno, object ViewClass, bool opening = false, string AUTONO = "")
         //{
         //    try
         //    {

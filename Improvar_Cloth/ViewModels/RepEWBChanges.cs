@@ -47,6 +47,9 @@ namespace Improvar.ViewModels
         public double BLAMT { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
-
+        public string AGSLCD { get; set; }
+        public string AGSLNM { get; set; }
+        public string AGSLCD1 { get; set; }
+        public string AGSLNM1 { get; set; }
     }
 }

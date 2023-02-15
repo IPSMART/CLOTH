@@ -28,7 +28,7 @@
         if (id == "") {
             $("#" + BLNO.id).val("");
             //$("#" + AUTONO.id).val("");
-            ClearAllTextBoxes("BLNO,AUTONO,BLDT,SLNM,GSTNO,ITCD_NEW,BLAMT,EWAYBILLNO,EWAYBILLDT,TRSLCD,TRSLNM,LRNO,LRDT,LORRYNO,TRSLCD1,TRSLNM1,LRNO1,LRDT1,LORRYNO1,reasoncd,reasonrem");
+            ClearAllTextBoxes("BLNO,AUTONO,BLDT,SLNM,GSTNO,ITCD_NEW,BLAMT,EWAYBILLNO,EWAYBILLDT,TRSLCD,TRSLNM,LRNO,LRDT,LORRYNO,TRSLCD1,TRSLNM1,LRNO1,LRDT1,LORRYNO1,reasoncd,reasonrem,AGSLCD,AGSLNM,AGSLCD1,AGSLNM1");
         }
         else {
             $.ajax({
@@ -60,8 +60,25 @@
                         document.getElementById("LRNO1").value = returncolvalue(res, "LRNO");
                         document.getElementById("LRDT1").value = returncolvalue(res, "LRDT");
                         document.getElementById("LORRYNO1").value = returncolvalue(res, "LORRYNO");
-                        document.getElementById("reasoncd").value = returncolvalue(res, "reasoncd");
-                        document.getElementById("reasonrem").value = returncolvalue(res, "reasonrem");
+                        var reasoncd = returncolvalue(res, "reasoncd");
+                        var reasonrem = returncolvalue(res, "reasonrem");  
+                        if (reasoncd != "")
+                        {
+                            $('#reasoncd').html('');
+                            var options = '';
+                            options += '<option value="' + reasoncd + '"></option>';
+                            $('#reasoncd').append(options);
+                        }
+                        if (reasonrem != "") {
+                            $('#reasonrem').html('');
+                            var options = '';
+                            options += '<option value="' + reasonrem + '"></option>';
+                            $('#reasonrem').append(options);
+                        }
+                        document.getElementById("AGSLCD1").value = returncolvalue(res, "AGSLCD");
+                        document.getElementById("AGSLNM1").value = returncolvalue(res, "AGSLNM");
+                        document.getElementById("AGSLCD").value = returncolvalue(res, "AGSLCD");
+                        document.getElementById("AGSLNM").value = returncolvalue(res, "AGSLNM");
 
                     }
                     else {
@@ -88,7 +105,6 @@
     function Update_Data() {
         debugger;
         if ($("#BLNO").val() == "") { msgInfo("Please Enter/Select Sales Bill No. !"); message_value = "BLNO"; return false; }
-        if ($("#REASONCD").val() == "") { msgInfo("Please Enter/Select Reason code !"); message_value = "REASONCD"; return false; }
         if ($("#REASONREM").val() == "") { msgInfo("Please Enter/Select Reason Remarks !"); message_value = "REASONREM"; return false; }
         if ($("#LRDT1").val() != "") {
             var dt = $("#BLDT").val();
@@ -310,6 +326,24 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Agent")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.AGSLCD, new { htmlAttributes = new { @class = "form-control", id = "AGSLCD", @placeholder = "AGSLCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.AGSLNM, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM", @placeholder = "AGSLNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+
+    </div>
     <div class="row" style="margin-top:15px;">
         <ul class="nav nav-tabs">
             <li id="MAIN_LI" class="active"><a data-toggle="tab" href="#MAIN">Changed to</a></li>
@@ -373,8 +407,27 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="editor-field" style="margin-top: 6px;">
+                            @Html.Label("", "Agent")
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-field">
+
+                            @Html.EditorFor(model => model.AGSLCD1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD1", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetPartyDetails", "Rep_EWB_Changes") + "','AGSLCD1/AGSLNM1','1/0','Agent Details','AGSLCD1','A')", onblur = "SelectPartyCode(this.value,AGSLCD1,AGSLNM1,'A');", @placeholder = "AGSLCD" } })
+                            <img src="~/Image/search.png" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetPartyDetails", "Rep_EWB_Changes")','AGSLCD1/AGSLNM1','1/0','Agent Details','AGSLCD1','A')" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.AGSLNM1, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM1", @placeholder = "AGSLNM", @readonly = "readonly", @TabIndex = -1 } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-field" style="margin-top: 6px;">
                             @Html.Label("", "Reason code")
-                            <b style="color:Red;">*</b>
                         </div>
                     </div>
                     <div class="col-md-5">
