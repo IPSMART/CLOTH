@@ -356,7 +356,7 @@ namespace Improvar.Controllers
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,l.szbarcode,m.colrnm,m.clrbarcode,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,q.decimals,s.docno ORDDOCNO,a.ordautono,a.makestyleno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,q.decimals,s.docno ORDDOCNO,a.ordautono,A.ORDSLNO,a.makestyleno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p, " + scmf + ".m_uom q," + Scm + ".t_cntrl_hdr s ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
@@ -393,6 +393,7 @@ namespace Improvar.Controllers
                                    CLRBARCODE = dr["CLRBARCODE"].retStr(),
                                    SZBARCODE = dr["SZBARCODE"].retStr(),
                                    ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                   ORDSLNO = dr["ORDSLNO"].retShort(),
                                    ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                    MAKESTYLENO = dr["MAKESTYLENO"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
@@ -3084,6 +3085,7 @@ namespace Improvar.Controllers
                             TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();
                             TPROGMAST.JOBCD = TTXN.JOBCD;
                             TPROGMAST.ORDAUTONO = VE.TPROGDTL[i].ORDAUTONO;
+                            TPROGMAST.ORDSLNO = VE.TPROGDTL[i].ORDSLNO;
                             TPROGMAST.MAKESTYLENO = VE.TPROGDTL[i].MAKESTYLENO;
                             //TPROGMAST.PROGUNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO) + COUNTER.retStr();
                             TPROGMAST.PROGUNIQNO = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TPROGDTL[i].SLNO));
@@ -4113,8 +4115,9 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string Orderautono = data[0].retStr();
-                string slcd = data[1].retStr();
-                var str = masterHelp.GetOrderDetails(val==""?"":Orderautono.retSqlformat(), val, "SB", "", "", slcd.retSqlformat());
+                string Ordslno = data[1].retStr();
+                string slcd = data[2].retStr();
+                var str = masterHelp.GetOrderDetails(val==""?"":Orderautono.retSqlformat(), val, "SB", "", val == ""?"": Ordslno);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

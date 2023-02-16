@@ -109,6 +109,8 @@ namespace Improvar.Models
         public string ORDAUTONO { get; set; }
         public string MAKESTYLENO { get; set; }
         public string MAKEITCD { get; set; }
+        public short ORDSLNO { get; set; }
         
+
     }
 }

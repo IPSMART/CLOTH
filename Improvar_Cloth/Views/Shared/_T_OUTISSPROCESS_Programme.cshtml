@@ -58,7 +58,8 @@
                                 <th class="" style="width:77px;">Shade</th>
                                 <th class="" style="">Remarks</th>
                                 <th class="" style="width:366px;">Order No.</th>
-                                <th class="" style="width:131px;">Make StyleNo.</th>
+                                <th class="" style="width:30px;">Order Slno.</th>
+                                <th class="" style="width:356px;">Make StyleNo.</th>
                                 <th class="" style="width:30px; text-align:center">Img</th>
                                 <th class="" style="text-align:center;">Sample</th>
                             </tr>
@@ -171,14 +172,17 @@
                                         </td>
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })*@
-                                            @Html.EditorFor(model => model.TPROGDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "P_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_OUTISSPROCESS") + "','Order Details','" + "P_ORDDOCNO_" + i + "','" + "P_ORDDOCNO_" + i + "=docno=0/" + "P_ORDAUTONO_" + i + "=autono=7','"+ "P_ORDAUTONO_" + i + "/SLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_OUTISSPROCESS") + "','Order Details','" + "P_ORDDOCNO_" + i + "','" + "P_ORDDOCNO_" + i + "=docno=0/" + "P_ORDAUTONO_" + i + "=autono=7','" + "P_ORDAUTONO_" + i + "/SLCD');", maxlength = 15 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_OUTISSPROCESS")','Order Details','P_ORDDOCNO_@i','P_ORDDOCNO_@i=docno=0/P_ORDAUTONO_@i=autono=7','P_ORDAUTONO_@i/SLCD')" />
+                                            @Html.EditorFor(model => model.TPROGDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "P_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_OUTISSPROCESS") + "','Order Details','" + "P_ORDDOCNO_" + i + "','" + "P_ORDDOCNO_" + i + "=docno=0/" + "P_ORDAUTONO_" + i + "=autono=7/" + "P_ORDSLNO_" + i + "=SLNO=1','" + "P_ORDAUTONO_" + i + "/" + "P_ORDSLNO_" + i + "/SLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_OUTISSPROCESS") + "','Order Details','" + "P_ORDDOCNO_" + i + "','" + "P_ORDDOCNO_" + i + "=docno=0/" + "P_ORDAUTONO_" + i + "=autono=7/" + "P_ORDSLNO_" + i + "=SLNO=1','" + "P_ORDAUTONO_" + i + "/" + "P_ORDSLNO_" + i + "/SLCD');", maxlength = 15 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_OUTISSPROCESS")','Order Details','P_ORDDOCNO_@i','P_ORDDOCNO_@i=docno=0/P_ORDAUTONO_@i=autono=7/P_ORDSLNO_@i=SLNO=1','P_ORDAUTONO_@i/P_ORDSLNO_@i/SLCD')" />
                                             @Html.HiddenFor(model => model.TPROGDTL[i].ORDAUTONO, new { id = "P_ORDAUTONO_" + i })
-                                            @*@Html.HiddenFor(model => model.TPROGDTL[i].ORDSLNO, new { id = "B_ORDSLNO_" + i })*@
+                                            @*@Html.HiddenFor(model => model.TPROGDTL[i].ORDSLNO, new { id = "P_ORDSLNO_" + i })*@
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].MAKESTYLENO, new { id = "MAKESTYLENO_" + i, maxlength = 30, onkeydown = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "MAKESTYLENO_" + i + "','" + "MAKESTYLENO_" + i + "=styleno=0/"  + "MAKEITCD_" + i + "=itcd=2 ');", onblur = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "MAKESTYLENO_" + i + "','"  + "MAKESTYLENO_" + i + "=styleno=0/"  + "MAKEITCD_" + i + "=itcd=2/');", @class = " atextBoxFor textbox_image" }) @*,'"  + "MAKEITCD_" + i + "/cllfrm'*@
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGridItemDetails", "T_OUTISSPROCESS")','Item Details','MAKESTYLENO_@i','MAKESTYLENO_@i=styleno=0/MAKEITCD_@i=itcd=2')" />    @*'MAKEITCD_@i/cllfrm'*@
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].ORDSLNO, new { id = "P_ORDSLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].MAKESTYLENO, new { id = "MAKESTYLENO_" + i, maxlength = 30, onkeydown = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "MAKESTYLENO_" + i + "','" + "MAKESTYLENO_" + i + "=itstyle=0/" + "MAKEITCD_" + i + "=itcd=2 ');", onblur = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "MAKESTYLENO_" + i + "','"  + "MAKESTYLENO_" + i + "=itstyle=0/" + "MAKEITCD_" + i + "=itcd=2/');", @class = " atextBoxFor textbox_image" }) @*,'"  + "MAKEITCD_" + i + "/cllfrm'*@
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGridItemDetails", "T_OUTISSPROCESS")','Item Details','MAKESTYLENO_@i','MAKESTYLENO_@i=itstyle=0/MAKEITCD_@i=itcd=2')" />    @*'MAKEITCD_@i/cllfrm'*@
                                             @Html.HiddenFor(model => model.TPROGDTL[i].MAKEITCD, new { id = "MAKEITCD_" + i })
                                         </td>
                                         <td class="">

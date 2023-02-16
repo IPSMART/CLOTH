@@ -2490,7 +2490,7 @@ function AddBarCodeGrid() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
-    if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
         $('#PARTY_HELP').hide();
     }
@@ -4508,7 +4508,7 @@ function GetBaleData() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
-    if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
         $('#PARTY_HELP').hide();
     }

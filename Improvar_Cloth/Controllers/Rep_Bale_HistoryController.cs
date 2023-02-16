@@ -186,6 +186,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "pblno", "string", "c,20", "P/Blno");
                     HC.GetPrintHeader(IR, "lrno", "string", "c,14", "LR No");
                     HC.GetPrintHeader(IR, "styleno", "string", "c,25", "Style No");
+                    HC.GetPrintHeader(IR, "pageno", "string", "c,25", "Page No");
                     HC.GetPrintHeader(IR, "docnm", "string", "c,15", "Activity In");
                     HC.GetPrintHeader(IR, "docdt", "string", "c,11", "Doc Date");
                     HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
@@ -224,6 +225,7 @@ namespace Improvar.Controllers
                                 if (RepeatAllRow == true || itemfirst == true) IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
                                 if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["pblno"] = tbl.Rows[i]["prefno"].ToString();
                                 if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].ToString();
+                                if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].ToString();
                                 IR.Rows[rNo]["docnm"] = tbl.Rows[i]["docnm"].ToString();
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();

@@ -4450,6 +4450,40 @@ namespace Improvar.Controllers
                     string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen,baleno from " + scm1 + ".t_bale where baleno in (" + baleno + ") ";
                     baledata = masterHelp.SQLquery(str);
                 }
+
+                DataTable baledatas = new DataTable();
+                DataTable lr_det = new DataTable();
+                if ((VE.MENU_PARA == "PB") && balenocount > 0)
+                {
+                    var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToArray().retSqlfromStrarray();
+                    string str = "select a.autono,b.docno,a.baleno from " + scm1 + ".T_BATCHDTL a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono and b.doccd='" + VE.T_TXN.DOCCD + "' and baleno in (" + baleno + ") ";
+                    if(VE.T_TXN.AUTONO!=null) str+=" and a.autono <>'"+ VE.T_TXN.AUTONO + "' ";
+                    baledatas = masterHelp.SQLquery(str);
+                    if(baledatas.Rows.Count>0)
+                    {
+                        string dublicate_baleno = (from DataRow dr in baledatas.Rows select dr["baleno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
+
+                        string exsist_bale_docno = (from DataRow dr in baledatas.Rows select dr["docno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
+
+
+                        ContentFlg = "Bale No. ["+ dublicate_baleno + "] already exsist in these Doc No.["+ exsist_bale_docno + "] "; goto dbnotsave;
+                    }
+
+                    string str1 = "select a.autono,b.docno,a.lrno from " + scm1 + ".T_TXNTRANS a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono and b.doccd='" + VE.T_TXN.DOCCD + "' and a.LRNO ='" + VE.T_TXNTRANS.LRNO + "' ";
+                    if (VE.T_TXN.AUTONO != null) str1 += " and a.autono <>'" + VE.T_TXN.AUTONO + "' ";
+                    lr_det = masterHelp.SQLquery(str1);
+                    if (lr_det.Rows.Count > 0)
+                    {
+                        
+                        string exsist_Lr_docno = (from DataRow dr in lr_det.Rows select dr["docno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
+
+
+                        ContentFlg = "LR No. [" + VE.T_TXNTRANS.LRNO + "] already exsist in these Doc No.[" + exsist_Lr_docno + "] "; goto dbnotsave;
+                    }
+
+
+                }
+
                 string MasterTblDataExist = IsMasterTblDataExist(VE);
                 if (MasterTblDataExist != "")
                 {
