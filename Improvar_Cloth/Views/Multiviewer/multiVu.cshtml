@@ -33,7 +33,7 @@
     @*@Styles.Render("~/Content/bootstrap.css?Ver=" + Module.ContentVersion)*@
     @*@Scripts.Render("~/Scripts/Custom.js?Ver=" + Module.ContentVersion)*@
     <script src="~/Scripts/CustomCombo.js"></script>
-   
+
 
     @Styles.Render("~/Content/MyStyle.css?Ver=" + Module.ContentVersion)
     @Styles.Render("~/Content/themes/base/core.css")
@@ -488,6 +488,12 @@
                     <li class="liclass">
                         <img title="Data Lock" src="~/Image/datalock.png" class="imgicon" onclick="window.open('@Url.Action("datalock","Datalock",new { US=Model.UNQSNO})','_blank')" />
                     </li>
+                    if (Module.MODCD == "F" || Module.MODCD == "S")
+                    {
+                        <li class="liclass">
+                            <img title="Mobile User Rights" src="~/Image/mobuser_right.png" class="imgicon" onclick="window.open('@Url.Action("mob_user_rights", "UserRights", new { US = Model.UNQSNO })','_blank')" />
+                        </li>
+                    }
                     <li class="liclass">
                         <img title="User Rights" src="~/Image/user_right.png" class="imgicon" onclick="window.open('@Url.Action("user_rights","UserRights",new { US=Model.UNQSNO})','_blank')" />
                     </li>

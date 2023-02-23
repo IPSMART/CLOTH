@@ -14,7 +14,8 @@ namespace Improvar.ViewModels
         public int index { get; set; }
         public string serializeString { get; set; }
         public string serializeStringChild { get; set; }
-        public List<URightByComp> Comp_List { get; set; }       
+        public List<URightByComp> Comp_List { get; set; }
+        public string MobModuleCode { get; set; }
     }
     public class URightByComp
     {

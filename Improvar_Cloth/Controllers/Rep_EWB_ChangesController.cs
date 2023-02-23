@@ -131,7 +131,32 @@ namespace Improvar.Controllers
                     sql = "update " + schnmF + ".t_vch_bl set AGSLCD ='" + AGSLCD + "' ";
                     sql += " where AUTONO='" + VE.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                    
+
+                    var MAXEMDNO = (from p in DB1.T_CNTRL_HDR where p.AUTONO == VE.AUTONO select p.EMD_NO).Max();
+
+                    sql = "update " + schnm + ".t_cntrl_hdr set ";
+                    sql = sql + "dtag=" +masterHelp.filc("E");
+                    sql = sql + ", lm_usr_id=" + masterHelp.filc(CommVar.UserID());
+                    sql = sql + ", lm_usr_entdt=SYSDATE";
+                    sql = sql + ", lm_usr_lip=" + masterHelp.filc(Cn.GetIp());
+                    sql = sql + ", lm_usr_sip=" + masterHelp.filc(Cn.GetStaticIp());
+                    sql = sql + ", lm_usr_os=" + masterHelp.filc(null);
+                    sql = sql + ", lm_usr_mnm=" + masterHelp.filc(Cn.DetermineCompName(Cn.GetIp()));
+                    sql = sql + ", emd_no=" + MAXEMDNO;                    
+                    sql = sql + " where autono=" + masterHelp.filc(VE.AUTONO);
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnmF + ".t_cntrl_hdr set ";
+                    sql = sql + "dtag=" + masterHelp.filc("E");
+                    sql = sql + ", lm_usr_id=" + masterHelp.filc(CommVar.UserID());
+                    sql = sql + ", lm_usr_entdt=SYSDATE";
+                    sql = sql + ", lm_usr_lip=" + masterHelp.filc(Cn.GetIp());
+                    sql = sql + ", lm_usr_sip=" + masterHelp.filc(Cn.GetStaticIp());
+                    sql = sql + ", lm_usr_os=" + masterHelp.filc(null);
+                    sql = sql + ", lm_usr_mnm=" + masterHelp.filc(Cn.DetermineCompName(Cn.GetIp()));
+                    sql = sql + ", emd_no=" + MAXEMDNO;
+                    sql = sql + " where autono=" + masterHelp.filc(VE.AUTONO);
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     ModelState.Clear();
                     OraTrans.Commit();

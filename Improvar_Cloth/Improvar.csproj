@@ -1137,6 +1137,7 @@
     <Content Include="Image\loader.gif" />
     <Content Include="Image\log_back1.jpg" />
     <Content Include="Image\Minus.png" />
+    <Content Include="Image\mobuser_right.png" />
     <Content Include="Image\NoImage.jpg" />
     <Content Include="Image\pass_eye.png" />
     <Content Include="Image\pass_eye_close.png" />

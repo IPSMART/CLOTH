@@ -25,6 +25,7 @@ namespace Improvar.Controllers
             }
             else
             {
+                ViewBag.Title = "User Rights";
                 string SCHEMA = Cn.Getschema;
                 UserRight UR = new UserRight();
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), SCHEMA);
@@ -97,7 +98,7 @@ namespace Improvar.Controllers
                 return View(UR);
             }
         }
-        public ActionResult generateTree(UserRight URight, string user)
+        public ActionResult generateTree(UserRight URight, string user, string MobModuleCode)
         {
             try
             {
@@ -119,11 +120,13 @@ namespace Improvar.Controllers
                 string sql = null;
                 string comcode = CommVar.Compcd(UNQSNO);
                 string LOCCODE = CommVar.Loccd(UNQSNO);
+                string ModuleCode = MobModuleCode.retStr() != "" ? MobModuleCode.retStr() : CommVar.ModuleCode();
+                string Scm = MobModuleCode.retStr() != "" ? CommVar.FinSchema(UNQSNO) : CommVar.CurSchema(UNQSNO);
                 sql = "select distinct a.MENU_ID,a.MENU_NAME,a.MENU_INDEX,a.MENU_PARENT_ID,a.MENU_PROGCALL,b.USER_RIGHT,b.E_DAY,b.A_DAY,'Y' AS PERDOTNETMENU,'Y' AS ATVDOTNETMENU,b.D_DAY,a.MENU_ORDER_CODE,b.USER_ID,a.menu_type,a.menu_date_option ,a.PKG_INDEX from ("
                     + "Select m.MENU_ID, m.MENU_NAME,m.MENU_INDEX,m.PKG_INDEX, m.MENU_PARENT_ID,  m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL, 'Y' AS PERDOTNETMENU, 'Y' AS ATVDOTNETMENU, m.MENU_ORDER_CODE,m.menu_type,m.menu_date_option from " + SCHEMA + ".APPL_MENU m";
-                sql += " where M.MODULE_CODE = '" + CommVar.ModuleCode() + "')a left join (Select m.MENU_ID, m.MENU_NAME, m.MENU_INDEX, m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL, p.USER_RIGHT, p.E_DAY, p.A_DAY, 'Y' AS PERDOTNETMENU, 'Y' AS ATVDOTNETMENU,"
-                    + " p.D_DAY, m.MENU_ORDER_CODE, P.USER_ID from " + SCHEMA + ".APPL_MENU m  inner join " + CommVar.CurSchema(UNQSNO) + ".M_USR_ACS p  on p.MENU_NAME = m.MENU_ID and p.MENU_INDEX = m.MENU_INDEX";
-                sql += "  where M.MODULE_CODE = '" + CommVar.ModuleCode() + "' and P.USER_ID = '" + user + "' and p.compcd='" + comcode + "' and p.loccd = '" + LOCCODE + "')b on  a.MENU_NAME = b.MENU_NAME and a.MENU_INDEX = b.MENU_INDEX and a.MENU_ID = b.MENU_ID order by a.MENU_ORDER_CODE,a.PKG_INDEX";
+                sql += " where M.MODULE_CODE = '" + ModuleCode + "')a left join (Select m.MENU_ID, m.MENU_NAME, m.MENU_INDEX, m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL, p.USER_RIGHT, p.E_DAY, p.A_DAY, 'Y' AS PERDOTNETMENU, 'Y' AS ATVDOTNETMENU,"
+                    + " p.D_DAY, m.MENU_ORDER_CODE, P.USER_ID from " + SCHEMA + ".APPL_MENU m  inner join " + Scm + ".M_USR_ACS p  on p.MENU_NAME = m.MENU_ID and p.MENU_INDEX = m.MENU_INDEX";
+                sql += "  where M.MODULE_CODE = '" + ModuleCode + "' and P.USER_ID = '" + user + "' and p.compcd='" + comcode + "' and p.loccd = '" + LOCCODE + "')b on  a.MENU_NAME = b.MENU_NAME and a.MENU_INDEX = b.MENU_INDEX and a.MENU_ID = b.MENU_ID order by a.MENU_ORDER_CODE,a.PKG_INDEX";
                 MenuTble = masterHelp.SQLquery(sql);
                 if (MenuTble.Rows.Count > 0)
                 {
@@ -175,7 +178,7 @@ namespace Improvar.Controllers
                         MRU.Add(MU);
                     }
                     UR.MenuRightByUser = MRU;
-                    string IDENTIFIER = Session["MotherMenuIdentifier"].ToString();
+                    string IDENTIFIER = MobModuleCode.retStr() != "" ? "MOBIPSMART" : Session["MotherMenuIdentifier"].ToString();
                     IEnumerable<DataRow> results =
                     from row in MenuTble.AsEnumerable()
                     where row.Field<string>("MENU_PARENT_ID") == IDENTIFIER
@@ -265,8 +268,8 @@ namespace Improvar.Controllers
                                         int index = (int)Main_Menu_Head[RecallDetails[2]];
                                         string Manuname = (string)Main_Menu[RecallDetails[2]];
 
-                                        string code = "Menu_" + CommVar.ModuleCode() + "_" + RecallDetails[2].ToString();
-                                        string Controller = "Con_" + CommVar.ModuleCode() + "_" + RecallDetails[2].ToString();
+                                        string code = "Menu_" + ModuleCode + "_" + RecallDetails[2].ToString();
+                                        string Controller = "Con_" + ModuleCode + "_" + RecallDetails[2].ToString();
 
                                         string ssv = Server.MapPath("");
                                         string[] M_INDEX = RecallDetails[0].ToString().Split('!');
@@ -320,30 +323,64 @@ namespace Improvar.Controllers
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 UR.serializeString = javaScriptSerializer.Serialize(UR.MenuRightByUser);
                 UR.serializeStringChild = javaScriptSerializer.Serialize(OnlyMenu);
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                var Comp_List = (from i in DB.M_USR_ACS
-                                 where i.USER_ID == user
-                                 select new URightByComp()
-                                 {
-                                     Check = false,
-                                     comcd = i.COMPCD,
-                                     loccd = i.LOCCD,
-                                     comnm = "",
-                                     locnm = ""
-                                 }).Distinct().ToList();
-                UR.Comp_List = URight.Comp_List;
-
-                if (UR.Comp_List != null)
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Scm);
+                if (MobModuleCode.retStr() != "")
                 {
-                    foreach (var i in UR.Comp_List)
+                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CommSchema());
+
+                    sql = "Select distinct a.COMPCD,a.LOCCD ";
+                    sql += "from " + Scm + ".M_USR_ACS a, " + SCHEMA + ".APPL_MENU b where a.MENU_NAME = b.MENU_ID and a.MENU_INDEX = b.MENU_INDEX ";
+                    sql += "and b.MODULE_CODE = '" + ModuleCode + "' and a.USER_ID = '" + user + "' ";
+                    DataTable dt = masterHelp.SQLquery(sql);
+                    var Comp_List = (from DataRow i in dt.Rows
+                                     select new URightByComp()
+                                     {
+                                         Check = false,
+                                         comcd = i["COMPCD"].retStr(),
+                                         loccd = i["LOCCD"].retStr(),
+                                         comnm = "",
+                                         locnm = ""
+                                     }).Distinct().ToList();
+                    UR.Comp_List = URight.Comp_List;
+                    if (UR.Comp_List != null)
                     {
-                        i.Check = false;
-                    }
-                    foreach (var i in Comp_List)
-                    {
-                        UR.Comp_List.Where(x => x.comcd == i.comcd && x.loccd == i.loccd).ToList().ForEach(x => { x.Check = true; });
+                        foreach (var i in UR.Comp_List)
+                        {
+                            i.Check = false;
+                        }
+                        foreach (var i in Comp_List)
+                        {
+                            UR.Comp_List.Where(x => x.comcd == i.comcd && x.loccd == i.loccd).ToList().ForEach(x => { x.Check = true; });
+                        }
                     }
                 }
+                else
+                {
+                    var Comp_List = (from i in DB.M_USR_ACS
+                                     where i.USER_ID == user
+                                     select new URightByComp()
+                                     {
+                                         Check = false,
+                                         comcd = i.COMPCD,
+                                         loccd = i.LOCCD,
+                                         comnm = "",
+                                         locnm = ""
+                                     }).Distinct().ToList();
+                    UR.Comp_List = URight.Comp_List;
+
+                    if (UR.Comp_List != null)
+                    {
+                        foreach (var i in UR.Comp_List)
+                        {
+                            i.Check = false;
+                        }
+                        foreach (var i in Comp_List)
+                        {
+                            UR.Comp_List.Where(x => x.comcd == i.comcd && x.loccd == i.loccd).ToList().ForEach(x => { x.Check = true; });
+                        }
+                    }
+                }
+
                 ModelState.Clear();
                 var utree = RenderRazorViewToString(this.ControllerContext, "_userrightTree", UR);
                 var compermission = RenderRazorViewToString(this.ControllerContext, "_userrightcompanygrid", UR);
@@ -416,250 +453,122 @@ namespace Improvar.Controllers
             string newSerialize = javaScriptSerializer.Serialize(MR1);
             return Content(newSerialize + "^^^~~~~^^^" + flag);
         }
-        public ActionResult Save(UserRight URight, string serialize, string user, string child)
+        public ActionResult Save(UserRight URight, string serialize, string user, string child, string MobModuleCode)
         {
-            try
+
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string ModuleCode = MobModuleCode.retStr() != "" ? MobModuleCode.retStr() : CommVar.ModuleCode();
+            string Scm = MobModuleCode.retStr() != "" ? CommVar.FinSchema(UNQSNO) : CommVar.CurSchema(UNQSNO);
+            string modcd = MobModuleCode.retStr() != "" ? "F" : "";
+            List<MenuRightByUser> MR1 = new List<MenuRightByUser>();
+            List<MenuRightByUser> MR2 = new List<MenuRightByUser>();
+            var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            MR1 = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(serialize);
+            MR2 = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(child);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Scm);
+            ImprovarDB DBimp = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+            string SCHEMA = Cn.Getschema;
+            Hashtable checkParent = new Hashtable();
+
+            //Oracle Queries
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            OracleTransaction OraTrans;
+            string dbsql = "", whereClause = "", sql = "";
+            string[] dbsql1;
+
+            OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
+            OraCmd.Transaction = OraTrans;
+            using (var transactionImp = DBimp.Database.BeginTransaction())
             {
-                var UNQSNO = Cn.getQueryStringUNQSNO();
-                List<MenuRightByUser> MR1 = new List<MenuRightByUser>();
-                List<MenuRightByUser> MR2 = new List<MenuRightByUser>();
-                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                MR1 = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(serialize);
-                MR2 = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(child);
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                string SCHEMA = Cn.Getschema;
-                CS = Cn.GetConnectionString();
-                Cn.con = new OracleConnection(CS);
-                Hashtable checkParent = new Hashtable();
-                if (Cn.con.State == ConnectionState.Closed)
-                {
-                    Cn.con.Open();
-                }
                 using (var transaction = DB.Database.BeginTransaction())
                 {
-                    foreach (var i in URight.Comp_List)
+                    try
                     {
-                        string comcode = i.comcd;
-                        string LOCCODE = i.loccd;
-                        var emdno = DB.M_USR_ACS.Where(x => x.USER_ID == user && x.COMPCD == comcode && x.LOCCD == LOCCODE).Max(s => s.EMD_NO);
-                        if (emdno == null)
+                        foreach (var i in URight.Comp_List)
                         {
-                            emdno = 0;
-                        }
-                        else
-                        {
-                            emdno = Convert.ToByte(emdno + 1);
-                        }
-                        if (i.Check)
-                        {
-                            DB.M_USR_ACS.RemoveRange(DB.M_USR_ACS.Where(x => x.USER_ID == user && x.COMPCD == i.comcd && x.LOCCD == i.loccd));
-                            checkParent.Clear();
-                            foreach (MenuRightByUser MRU in MR2)
+                            string comcode = i.comcd;
+                            string LOCCODE = i.loccd;
+                            var emdno = DB.M_USR_ACS.Where(x => x.USER_ID == user && x.COMPCD == comcode && x.LOCCD == LOCCODE).Max(s => s.EMD_NO);
+                            if (emdno == null)
                             {
-                                MenuRightByUser MRU1 = (from h in MR1 where (h.MENU_PROGCALL == MRU.MENU_PROGCALL) select h).SingleOrDefault();
-                                if (MRU1.MENU_type == "E" || MRU1.MENU_type == "M")
+                                emdno = 0;
+                            }
+                            else
+                            {
+                                emdno = Convert.ToByte(emdno + 1);
+                            }
+                            whereClause = "USER_ID = '" + user + "' and COMPCD = '" + i.comcd + "' and LOCCD = '" + i.loccd + "' and MENU_NAME||MENU_INDEX in (select MENU_ID||MENU_INDEX from " + Cn.Getschema + ".APPL_MENU where MODULE_CODE='" + ModuleCode + "') ";
+                            dbsql = masterHelp.TblUpdt("M_USR_ACS", "", "E", modcd, whereClause);
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                            if (i.Check)
+                            {
+                                checkParent.Clear();
+                                foreach (MenuRightByUser MRU in MR2)
                                 {
-                                    if (MRU1.Add == true || MRU1.Edit == true || MRU1.Delete == true || MRU1.Check == true || MRU1.View == true)
+                                    MenuRightByUser MRU1 = (from h in MR1 where (h.MENU_PROGCALL == MRU.MENU_PROGCALL) select h).SingleOrDefault();
+                                    if (MRU1.MENU_type == "E" || MRU1.MENU_type == "M")
                                     {
-                                        string[] parent = MRU1.ParentID.Split('!');
-                                        M_USR_ACS MUA = new M_USR_ACS();
-                                        MUA.COMPCD = comcode;
-                                        if (MRU1.MENU_date_option == "Y")
+                                        if (MRU1.Add == true || MRU1.Edit == true || MRU1.Delete == true || MRU1.Check == true || MRU1.View == true)
                                         {
-                                            MUA.A_DAY = MRU1.A_DAY;
-                                            MUA.D_DAY = MRU1.D_DAY;
-                                            MUA.E_DAY = MRU1.E_DAY;
-                                        }
-                                        else
-                                        {
-                                            MUA.A_DAY = 0;
-                                            MUA.D_DAY = 0;
-                                            MUA.E_DAY = 0;
-                                        }
-                                        MUA.LOCCD = LOCCODE;
-                                        MUA.MENU_INDEX = MRU1.MENU_INDEX;
-                                        MUA.EMD_NO = emdno;
-                                        MUA.MENU_NAME = MRU1.MENU_ID;
-                                        MUA.CLCD = CommVar.ClientCode(UNQSNO);
-                                        MUA.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
-                                        MUA.USER_ID = user;
-                                        MUA.USR_ID = Session["UR_ID"].ToString();
-                                        string rights = "";
-                                        int viewflag = 0;
-                                        if (MRU1.Add == true)
-                                        {
-                                            rights = rights + "A";
-                                        }
-                                        if (MRU1.Edit == true)
-                                        {
-                                            rights = rights + "E";
-                                            viewflag = 1;
-                                        }
-                                        if (MRU1.Delete == true)
-                                        {
-                                            rights = rights + "D";
-                                            viewflag = 1;
-                                        }
-                                        if (MRU1.Check == true)
-                                        {
-                                            rights = rights + "C";
-                                            viewflag = 1;
-                                        }
-                                        if (viewflag == 1 || MRU1.View == true)
-                                        {
-                                            rights = rights + "V";
-                                        }
-                                        MUA.USER_RIGHT = rights;
-                                        MUA.USR_ENTDT = DateTime.Now;
-                                        DB.M_USR_ACS.Add(MUA);
-                                        Cn.com = new OracleCommand("select * from " + SCHEMA + ".appl_menu where menu_id='" + parent[0] + "' and menu_index=" + parent[1] + " and MODULE_CODE='" + CommVar.ModuleCode() + "'", Cn.con);
-                                        OracleDataReader dr = Cn.com.ExecuteReader();
-                                        dr.Read();
-                                        if (dr["MENU_ID"].ToString().Trim() == dr["MENU_PARENT_ID"].ToString().Trim())
-                                        {
-                                            string progcall = dr["MENU_ID"].ToString() + "~" + dr["MENU_INDEX"].ToString() + "~" + (dr["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr["MENU_PROGCALL"].ToString());
-                                            if (checkParent[progcall] == null)
+                                            string[] parent = MRU1.ParentID.Split('!');
+                                            M_USR_ACS MUA = new M_USR_ACS();
+                                            MUA.COMPCD = comcode;
+                                            if (MRU1.MENU_date_option == "Y")
                                             {
-                                                MenuRightByUser MRU2 = (from h in MR1 where (h.MENU_PROGCALL == progcall) select h).SingleOrDefault();
-                                                M_USR_ACS MUA1 = new M_USR_ACS();
-                                                MUA1.COMPCD = comcode;
-                                                MUA1.LOCCD = LOCCODE;
-                                                MUA1.CLCD = CommVar.ClientCode(UNQSNO);
-                                                MUA1.MENU_INDEX = MRU2.MENU_INDEX;
-                                                MUA1.MENU_NAME = MRU2.MENU_ID;
-                                                MUA1.EMD_NO = emdno;
-                                                MUA1.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
-                                                MUA1.USER_ID = user;
-                                                MUA1.USR_ID = Session["UR_ID"].ToString();
-                                                MUA1.USER_RIGHT = "";
-                                                MUA1.USR_ENTDT = DateTime.Now;
-                                                DB.M_USR_ACS.Add(MUA1);
-                                                checkParent.Add(progcall, MRU2.MENU_NAME);
+                                                MUA.A_DAY = MRU1.A_DAY;
+                                                MUA.D_DAY = MRU1.D_DAY;
+                                                MUA.E_DAY = MRU1.E_DAY;
                                             }
-                                            dr.Close();
-                                        }
-                                        else
-                                        {
-                                            string[] parendid = dr["MENU_PARENT_ID"].ToString().Split('!');
-                                            string progcall = dr["MENU_ID"].ToString() + "~" + dr["MENU_INDEX"].ToString() + "~" + (dr["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr["MENU_PROGCALL"].ToString());
-                                            if (checkParent[progcall] == null)
+                                            else
                                             {
-                                                MenuRightByUser MRU2 = (from h in MR1 where (h.MENU_PROGCALL == progcall) select h).SingleOrDefault();
-                                                M_USR_ACS MUA1 = new M_USR_ACS();
-                                                MUA1.COMPCD = comcode;
-                                                MUA1.LOCCD = LOCCODE;
-                                                MUA1.CLCD = CommVar.ClientCode(UNQSNO);
-                                                MUA1.EMD_NO = emdno;
-                                                MUA1.MENU_INDEX = MRU2.MENU_INDEX;
-                                                MUA1.MENU_NAME = MRU2.MENU_ID;
-                                                MUA1.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
-                                                MUA1.USER_ID = user;
-                                                MUA1.USR_ID = Session["UR_ID"].ToString();
-                                                MUA1.USER_RIGHT = "";
-                                                MUA1.USR_ENTDT = DateTime.Now;
-                                                DB.M_USR_ACS.Add(MUA1);
-                                                checkParent.Add(progcall, MRU2.MENU_NAME);
+                                                MUA.A_DAY = 0;
+                                                MUA.D_DAY = 0;
+                                                MUA.E_DAY = 0;
                                             }
-                                            dr.Close();
-                                            while (true)
+                                            MUA.LOCCD = LOCCODE;
+                                            MUA.MENU_INDEX = MRU1.MENU_INDEX;
+                                            MUA.EMD_NO = emdno;
+                                            MUA.MENU_NAME = MRU1.MENU_ID;
+                                            MUA.CLCD = CommVar.ClientCode(UNQSNO);
+                                            MUA.SCHEMA_NAME = Scm;
+                                            MUA.USER_ID = user;
+                                            MUA.USR_ID = Session["UR_ID"].ToString();
+                                            string rights = "";
+                                            int viewflag = 0;
+                                            if (MRU1.Add == true)
                                             {
-                                                Cn.com = new OracleCommand("select * from " + SCHEMA + ".appl_menu where menu_id='" + parendid[0] + "' and menu_index=" + parendid[1] + " and MODULE_CODE='" + CommVar.ModuleCode() + "'", Cn.con);
-                                                OracleDataReader dr1 = Cn.com.ExecuteReader();
-                                                dr1.Read();
-                                                if (dr1["MENU_ID"].ToString().Trim() == dr1["MENU_PARENT_ID"].ToString().Trim())
-                                                {
-                                                    string progcall1 = dr1["MENU_ID"].ToString() + "~" + dr1["MENU_INDEX"].ToString() + "~" + (dr1["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr1["MENU_PROGCALL"].ToString());
-                                                    if (checkParent[progcall1] == null)
-                                                    {
-                                                        MenuRightByUser MRU3 = (from h in MR1 where (h.MENU_PROGCALL == progcall1) select h).SingleOrDefault();
-                                                        M_USR_ACS MUA2 = new M_USR_ACS();
-                                                        MUA2.COMPCD = comcode;
-                                                        MUA2.LOCCD = LOCCODE;
-                                                        MUA2.CLCD = CommVar.ClientCode(UNQSNO);
-                                                        MUA2.EMD_NO = emdno;
-                                                        MUA2.MENU_INDEX = MRU3.MENU_INDEX;
-                                                        MUA2.MENU_NAME = MRU3.MENU_ID;
-                                                        MUA2.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
-                                                        MUA2.USER_ID = user;
-                                                        MUA2.USR_ID = Session["UR_ID"].ToString();
-                                                        MUA2.USER_RIGHT = "";
-                                                        MUA2.USR_ENTDT = DateTime.Now;
-                                                        DB.M_USR_ACS.Add(MUA2);
-                                                        checkParent.Add(progcall1, MRU3.MENU_NAME);
-                                                    }
-                                                    dr1.Close();
-                                                    break;
-                                                }
-                                                else
-                                                {
-                                                    string progcall1 = dr1["MENU_ID"].ToString() + "~" + dr1["MENU_INDEX"].ToString() + "~" + (dr1["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr1["MENU_PROGCALL"].ToString());
-                                                    if (checkParent[progcall1] == null)
-                                                    {
-                                                        MenuRightByUser MRU3 = (from h in MR1 where (h.MENU_PROGCALL == progcall1) select h).SingleOrDefault();
-                                                        M_USR_ACS MUA2 = new M_USR_ACS();
-                                                        MUA2.COMPCD = comcode;
-                                                        MUA2.LOCCD = LOCCODE;
-                                                        MUA2.CLCD = CommVar.ClientCode(UNQSNO);
-                                                        MUA2.EMD_NO = emdno;
-                                                        MUA2.MENU_INDEX = MRU3.MENU_INDEX;
-                                                        MUA2.MENU_NAME = MRU3.MENU_ID;
-                                                        MUA2.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
-                                                        MUA2.USER_ID = user;
-                                                        MUA2.USR_ID = Session["UR_ID"].ToString();
-                                                        MUA2.USER_RIGHT = "";
-                                                        MUA2.USR_ENTDT = DateTime.Now;
-                                                        DB.M_USR_ACS.Add(MUA2);
-                                                        checkParent.Add(progcall1, MRU3.MENU_NAME);
-                                                    }
-                                                    parendid = dr1["MENU_PARENT_ID"].ToString().Split('!');
-                                                    dr1.Close();
-                                                }
+                                                rights = rights + "A";
                                             }
-                                        }
-                                    }
-                                }
-                                else if (MRU1.MENU_type == "" || MRU1.MENU_type == null || MRU1.MENU_type == "O")
-                                {
-                                    if (MRU1.Active)
-                                    {
-                                        string[] parent = MRU1.ParentID.Split('!');
-                                        M_USR_ACS MUA = new M_USR_ACS();
-                                        MUA.COMPCD = comcode;
-                                        if (MRU1.MENU_date_option == "Y")
-                                        {
-                                            MUA.A_DAY = MRU1.A_DAY;
-                                            MUA.D_DAY = MRU1.D_DAY;
-                                            MUA.E_DAY = MRU1.E_DAY;
-                                        }
-                                        else
-                                        {
-                                            MUA.A_DAY = 0;
-                                            MUA.D_DAY = 0;
-                                            MUA.E_DAY = 0;
-                                        }
-                                        MUA.LOCCD = LOCCODE;
-                                        MUA.CLCD = CommVar.ClientCode(UNQSNO);
-                                        MUA.MENU_INDEX = MRU1.MENU_INDEX;
-                                        MUA.EMD_NO = emdno;
-                                        MUA.MENU_NAME = MRU1.MENU_ID;
-                                        MUA.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
-                                        MUA.USER_ID = user;
-                                        MUA.USR_ID = Session["UR_ID"].ToString();
-                                        MUA.USER_RIGHT = "";
-                                        MUA.USR_ENTDT = DateTime.Now;
-                                        DB.M_USR_ACS.Add(MUA);
-                                        if (parent.Count() > 1)
-                                        {
-                                            Cn.com = new OracleCommand("select * from " + SCHEMA + ".appl_menu where menu_id='" + parent[0] + "' and menu_index=" + parent[1] + " and MODULE_CODE='" + CommVar.ModuleCode() + "'", Cn.con);
-                                        }
-                                        else
-                                        {
-                                            Cn.com = new OracleCommand("select * from " + SCHEMA + ".appl_menu where menu_id='" + parent[0] + "' and menu_index='' and MODULE_CODE='" + CommVar.ModuleCode() + "'", Cn.con);
-                                        }
-                                        OracleDataReader dr = Cn.com.ExecuteReader();
-                                        dr.Read();
-                                        if (dr.HasRows)
-                                        {
+                                            if (MRU1.Edit == true)
+                                            {
+                                                rights = rights + "E";
+                                                viewflag = 1;
+                                            }
+                                            if (MRU1.Delete == true)
+                                            {
+                                                rights = rights + "D";
+                                                viewflag = 1;
+                                            }
+                                            if (MRU1.Check == true)
+                                            {
+                                                rights = rights + "C";
+                                                viewflag = 1;
+                                            }
+                                            if (viewflag == 1 || MRU1.View == true)
+                                            {
+                                                rights = rights + "V";
+                                            }
+                                            MUA.USER_RIGHT = rights;
+                                            MUA.USR_ENTDT = DateTime.Now;
+                                            dbsql = masterHelp.RetModeltoSql(MUA, "A", Scm);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            sql = "select * from " + SCHEMA + ".appl_menu where menu_id='" + parent[0] + "' and menu_index=" + parent[1] + " and MODULE_CODE='" + ModuleCode + "'";
+                                            OraCmd.CommandText = sql;
+                                            OracleDataReader dr = OraCmd.ExecuteReader();
+                                            dr.Read();
                                             if (dr["MENU_ID"].ToString().Trim() == dr["MENU_PARENT_ID"].ToString().Trim())
                                             {
                                                 string progcall = dr["MENU_ID"].ToString() + "~" + dr["MENU_INDEX"].ToString() + "~" + (dr["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr["MENU_PROGCALL"].ToString());
@@ -670,15 +579,16 @@ namespace Improvar.Controllers
                                                     MUA1.COMPCD = comcode;
                                                     MUA1.LOCCD = LOCCODE;
                                                     MUA1.CLCD = CommVar.ClientCode(UNQSNO);
-                                                    MUA1.EMD_NO = emdno;
                                                     MUA1.MENU_INDEX = MRU2.MENU_INDEX;
                                                     MUA1.MENU_NAME = MRU2.MENU_ID;
-                                                    MUA1.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
+                                                    MUA1.EMD_NO = emdno;
+                                                    MUA1.SCHEMA_NAME = Scm;
                                                     MUA1.USER_ID = user;
                                                     MUA1.USR_ID = Session["UR_ID"].ToString();
                                                     MUA1.USER_RIGHT = "";
                                                     MUA1.USR_ENTDT = DateTime.Now;
-                                                    DB.M_USR_ACS.Add(MUA1);
+                                                    dbsql = masterHelp.RetModeltoSql(MUA1, "A", Scm);
+                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                     checkParent.Add(progcall, MRU2.MENU_NAME);
                                                 }
                                                 dr.Close();
@@ -697,19 +607,21 @@ namespace Improvar.Controllers
                                                     MUA1.EMD_NO = emdno;
                                                     MUA1.MENU_INDEX = MRU2.MENU_INDEX;
                                                     MUA1.MENU_NAME = MRU2.MENU_ID;
-                                                    MUA1.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
+                                                    MUA1.SCHEMA_NAME = Scm;
                                                     MUA1.USER_ID = user;
                                                     MUA1.USR_ID = Session["UR_ID"].ToString();
                                                     MUA1.USER_RIGHT = "";
                                                     MUA1.USR_ENTDT = DateTime.Now;
-                                                    DB.M_USR_ACS.Add(MUA1);
+                                                    dbsql = masterHelp.RetModeltoSql(MUA1, "A", Scm);
+                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                     checkParent.Add(progcall, MRU2.MENU_NAME);
                                                 }
                                                 dr.Close();
                                                 while (true)
                                                 {
-                                                    Cn.com = new OracleCommand("select * from " + SCHEMA + ".appl_menu where menu_id='" + parendid[0] + "' and menu_index=" + parendid[1] + " and MODULE_CODE='" + CommVar.ModuleCode() + "'", Cn.con);
-                                                    OracleDataReader dr1 = Cn.com.ExecuteReader();
+                                                    sql = "select * from " + SCHEMA + ".appl_menu where menu_id='" + parendid[0] + "' and menu_index=" + parendid[1] + " and MODULE_CODE='" + ModuleCode + "'";
+                                                    OraCmd.CommandText = sql;
+                                                    OracleDataReader dr1 = OraCmd.ExecuteReader();
                                                     dr1.Read();
                                                     if (dr1["MENU_ID"].ToString().Trim() == dr1["MENU_PARENT_ID"].ToString().Trim())
                                                     {
@@ -724,12 +636,13 @@ namespace Improvar.Controllers
                                                             MUA2.EMD_NO = emdno;
                                                             MUA2.MENU_INDEX = MRU3.MENU_INDEX;
                                                             MUA2.MENU_NAME = MRU3.MENU_ID;
-                                                            MUA2.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
+                                                            MUA2.SCHEMA_NAME = Scm;
                                                             MUA2.USER_ID = user;
                                                             MUA2.USR_ID = Session["UR_ID"].ToString();
                                                             MUA2.USER_RIGHT = "";
                                                             MUA2.USR_ENTDT = DateTime.Now;
-                                                            DB.M_USR_ACS.Add(MUA2);
+                                                            dbsql = masterHelp.RetModeltoSql(MUA2, "A", Scm);
+                                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                             checkParent.Add(progcall1, MRU3.MENU_NAME);
                                                         }
                                                         dr1.Close();
@@ -748,12 +661,13 @@ namespace Improvar.Controllers
                                                             MUA2.EMD_NO = emdno;
                                                             MUA2.MENU_INDEX = MRU3.MENU_INDEX;
                                                             MUA2.MENU_NAME = MRU3.MENU_ID;
-                                                            MUA2.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
+                                                            MUA2.SCHEMA_NAME = Scm;
                                                             MUA2.USER_ID = user;
                                                             MUA2.USR_ID = Session["UR_ID"].ToString();
                                                             MUA2.USER_RIGHT = "";
                                                             MUA2.USR_ENTDT = DateTime.Now;
-                                                            DB.M_USR_ACS.Add(MUA2);
+                                                            dbsql = masterHelp.RetModeltoSql(MUA2, "A", Scm);
+                                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                             checkParent.Add(progcall1, MRU3.MENU_NAME);
                                                         }
                                                         parendid = dr1["MENU_PARENT_ID"].ToString().Split('!');
@@ -763,53 +677,204 @@ namespace Improvar.Controllers
                                             }
                                         }
                                     }
+                                    else if (MRU1.MENU_type == "" || MRU1.MENU_type == null || MRU1.MENU_type == "O")
+                                    {
+                                        if (MRU1.Active)
+                                        {
+                                            string[] parent = MRU1.ParentID.Split('!');
+                                            M_USR_ACS MUA = new M_USR_ACS();
+                                            MUA.COMPCD = comcode;
+                                            if (MRU1.MENU_date_option == "Y")
+                                            {
+                                                MUA.A_DAY = MRU1.A_DAY;
+                                                MUA.D_DAY = MRU1.D_DAY;
+                                                MUA.E_DAY = MRU1.E_DAY;
+                                            }
+                                            else
+                                            {
+                                                MUA.A_DAY = 0;
+                                                MUA.D_DAY = 0;
+                                                MUA.E_DAY = 0;
+                                            }
+                                            MUA.LOCCD = LOCCODE;
+                                            MUA.CLCD = CommVar.ClientCode(UNQSNO);
+                                            MUA.MENU_INDEX = MRU1.MENU_INDEX;
+                                            MUA.EMD_NO = emdno;
+                                            MUA.MENU_NAME = MRU1.MENU_ID;
+                                            MUA.SCHEMA_NAME = Scm;
+                                            MUA.USER_ID = user;
+                                            MUA.USR_ID = Session["UR_ID"].ToString();
+                                            MUA.USER_RIGHT = "";
+                                            MUA.USR_ENTDT = DateTime.Now;
+                                            dbsql = masterHelp.RetModeltoSql(MUA, "A", Scm);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                            if (parent.Count() > 1)
+                                            {
+                                                sql = "select * from " + SCHEMA + ".appl_menu where menu_id='" + parent[0] + "' and menu_index=" + parent[1] + " and MODULE_CODE='" + ModuleCode + "'";
+                                            }
+                                            else
+                                            {
+                                                sql = "select * from " + SCHEMA + ".appl_menu where menu_id='" + parent[0] + "' and menu_index='' and MODULE_CODE='" + ModuleCode + "'";
+                                            }
+                                            OraCmd.CommandText = sql;
+                                            OracleDataReader dr = OraCmd.ExecuteReader();
+                                            dr.Read();
+                                            if (dr.HasRows)
+                                            {
+                                                if (dr["MENU_ID"].ToString().Trim() == dr["MENU_PARENT_ID"].ToString().Trim())
+                                                {
+                                                    string progcall = dr["MENU_ID"].ToString() + "~" + dr["MENU_INDEX"].ToString() + "~" + (dr["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr["MENU_PROGCALL"].ToString());
+                                                    if (checkParent[progcall] == null)
+                                                    {
+                                                        MenuRightByUser MRU2 = (from h in MR1 where (h.MENU_PROGCALL == progcall) select h).SingleOrDefault();
+                                                        M_USR_ACS MUA1 = new M_USR_ACS();
+                                                        MUA1.COMPCD = comcode;
+                                                        MUA1.LOCCD = LOCCODE;
+                                                        MUA1.CLCD = CommVar.ClientCode(UNQSNO);
+                                                        MUA1.EMD_NO = emdno;
+                                                        MUA1.MENU_INDEX = MRU2.MENU_INDEX;
+                                                        MUA1.MENU_NAME = MRU2.MENU_ID;
+                                                        MUA1.SCHEMA_NAME = Scm;
+                                                        MUA1.USER_ID = user;
+                                                        MUA1.USR_ID = Session["UR_ID"].ToString();
+                                                        MUA1.USER_RIGHT = "";
+                                                        MUA1.USR_ENTDT = DateTime.Now;
+                                                        dbsql = masterHelp.RetModeltoSql(MUA1, "A", Scm);
+                                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                                        checkParent.Add(progcall, MRU2.MENU_NAME);
+                                                    }
+                                                    dr.Close();
+                                                }
+                                                else
+                                                {
+                                                    string[] parendid = dr["MENU_PARENT_ID"].ToString().Split('!');
+                                                    string progcall = dr["MENU_ID"].ToString() + "~" + dr["MENU_INDEX"].ToString() + "~" + (dr["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr["MENU_PROGCALL"].ToString());
+                                                    if (checkParent[progcall] == null)
+                                                    {
+                                                        MenuRightByUser MRU2 = (from h in MR1 where (h.MENU_PROGCALL == progcall) select h).SingleOrDefault();
+                                                        M_USR_ACS MUA1 = new M_USR_ACS();
+                                                        MUA1.COMPCD = comcode;
+                                                        MUA1.LOCCD = LOCCODE;
+                                                        MUA1.CLCD = CommVar.ClientCode(UNQSNO);
+                                                        MUA1.EMD_NO = emdno;
+                                                        MUA1.MENU_INDEX = MRU2.MENU_INDEX;
+                                                        MUA1.MENU_NAME = MRU2.MENU_ID;
+                                                        MUA1.SCHEMA_NAME = Scm;
+                                                        MUA1.USER_ID = user;
+                                                        MUA1.USR_ID = Session["UR_ID"].ToString();
+                                                        MUA1.USER_RIGHT = "";
+                                                        MUA1.USR_ENTDT = DateTime.Now;
+                                                        dbsql = masterHelp.RetModeltoSql(MUA1, "A", Scm);
+                                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                                        checkParent.Add(progcall, MRU2.MENU_NAME);
+                                                    }
+                                                    dr.Close();
+                                                    while (true)
+                                                    {
+                                                        sql = "select * from " + SCHEMA + ".appl_menu where menu_id='" + parendid[0] + "' and menu_index=" + parendid[1] + " and MODULE_CODE='" + ModuleCode + "'";
+                                                        OraCmd.CommandText = sql;
+                                                        OracleDataReader dr1 = OraCmd.ExecuteReader();
+                                                        dr1.Read();
+                                                        if (dr1["MENU_ID"].ToString().Trim() == dr1["MENU_PARENT_ID"].ToString().Trim())
+                                                        {
+                                                            string progcall1 = dr1["MENU_ID"].ToString() + "~" + dr1["MENU_INDEX"].ToString() + "~" + (dr1["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr1["MENU_PROGCALL"].ToString());
+                                                            if (checkParent[progcall1] == null)
+                                                            {
+                                                                MenuRightByUser MRU3 = (from h in MR1 where (h.MENU_PROGCALL == progcall1) select h).SingleOrDefault();
+                                                                M_USR_ACS MUA2 = new M_USR_ACS();
+                                                                MUA2.COMPCD = comcode;
+                                                                MUA2.LOCCD = LOCCODE;
+                                                                MUA2.CLCD = CommVar.ClientCode(UNQSNO);
+                                                                MUA2.EMD_NO = emdno;
+                                                                MUA2.MENU_INDEX = MRU3.MENU_INDEX;
+                                                                MUA2.MENU_NAME = MRU3.MENU_ID;
+                                                                MUA2.SCHEMA_NAME = Scm;
+                                                                MUA2.USER_ID = user;
+                                                                MUA2.USR_ID = Session["UR_ID"].ToString();
+                                                                MUA2.USER_RIGHT = "";
+                                                                MUA2.USR_ENTDT = DateTime.Now;
+                                                                dbsql = masterHelp.RetModeltoSql(MUA2, "A", Scm);
+                                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                                                checkParent.Add(progcall1, MRU3.MENU_NAME);
+                                                            }
+                                                            dr1.Close();
+                                                            break;
+                                                        }
+                                                        else
+                                                        {
+                                                            string progcall1 = dr1["MENU_ID"].ToString() + "~" + dr1["MENU_INDEX"].ToString() + "~" + (dr1["MENU_PROGCALL"] == DBNull.Value ? "Notset" : dr1["MENU_PROGCALL"].ToString());
+                                                            if (checkParent[progcall1] == null)
+                                                            {
+                                                                MenuRightByUser MRU3 = (from h in MR1 where (h.MENU_PROGCALL == progcall1) select h).SingleOrDefault();
+                                                                M_USR_ACS MUA2 = new M_USR_ACS();
+                                                                MUA2.COMPCD = comcode;
+                                                                MUA2.LOCCD = LOCCODE;
+                                                                MUA2.CLCD = CommVar.ClientCode(UNQSNO);
+                                                                MUA2.EMD_NO = emdno;
+                                                                MUA2.MENU_INDEX = MRU3.MENU_INDEX;
+                                                                MUA2.MENU_NAME = MRU3.MENU_ID;
+                                                                MUA2.SCHEMA_NAME = Scm;
+                                                                MUA2.USER_ID = user;
+                                                                MUA2.USR_ID = Session["UR_ID"].ToString();
+                                                                MUA2.USER_RIGHT = "";
+                                                                MUA2.USR_ENTDT = DateTime.Now;
+                                                                dbsql = masterHelp.RetModeltoSql(MUA2, "A", Scm);
+                                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                                                checkParent.Add(progcall1, MRU3.MENU_NAME);
+                                                            }
+                                                            parendid = dr1["MENU_PARENT_ID"].ToString().Split('!');
+                                                            dr1.Close();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+
+
+
+                        var clcd = CommVar.ClientCode(UNQSNO);
+
+                        whereClause = "USER_ID = '" + user + "' and CLCD = '" + clcd + "' and SCHEMA_NAME = '" + Scm + "' and MODULE_CODE='" + ModuleCode + "' ";
+                        dbsql = "delete from " + Cn.Getschema + ".MS_MUSRACS where  " + whereClause;
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                        sql = " select distinct clcd, user_id, compcd, loccd, schema_name  from " + Scm + ".m_usr_acs where USER_ID = '" + user + "' union ";
+                        sql += " select distinct a.clcd, a.user_id, b.compcd, b.loccd, b.schema_name ";
+                        sql += " from " + Scm + ".m_usr_acs_grpdtl a, " + Scm + ".m_usr_acs b where a.linkuser_id = b.user_id AND B.USER_ID = '" + user + "' ";
+                        var tbl = masterHelp.SQLquery(sql);
+                        foreach (DataRow dr in tbl.Rows)
+                        {
+                            MS_MUSRACS MUSRACS = new MS_MUSRACS();
+                            MUSRACS.CLCD = CommVar.ClientCode(UNQSNO);
+                            MUSRACS.COMPCD = dr["compcd"].retStr();
+                            MUSRACS.LOCCD = dr["loccd"].retStr();
+                            MUSRACS.USER_ID = dr["user_id"].retStr();
+                            MUSRACS.SCHEMA_NAME = dr["schema_name"].retStr();
+                            MUSRACS.MODULE_CODE = ModuleCode;
+                            dbsql = masterHelp.RetModeltoSql(MUSRACS, "A", Cn.Getschema);
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        }
+                        ModelState.Clear();
+                        transaction.Commit();
+                        transactionImp.Commit();
+                        OraTrans.Commit();
+
                     }
-                    Cn.con.Close();
-                    DB.SaveChanges();
-                    transaction.Commit();
-                    ImprovarDB DBimp = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                    using (var imptransaction = DBimp.Database.BeginTransaction())
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            var clcd = CommVar.ClientCode(UNQSNO);
-                            DBimp.MS_MUSRACS.RemoveRange(DBimp.MS_MUSRACS.Where(x => x.USER_ID == user && x.CLCD == clcd && x.SCHEMA_NAME == DB.CacheKey));
-                            DBimp.SaveChanges();
-                            string sql = " select distinct clcd, user_id, compcd, loccd, schema_name  from " + CommVar.CurSchema(UNQSNO) + ".m_usr_acs where USER_ID = '" + user + "' union ";
-                            sql += " select distinct a.clcd, a.user_id, b.compcd, b.loccd, b.schema_name ";
-                            sql += " from " + CommVar.CurSchema(UNQSNO) + ".m_usr_acs_grpdtl a, " + CommVar.CurSchema(UNQSNO) + ".m_usr_acs b where a.linkuser_id = b.user_id AND B.USER_ID = '" + user + "' ";
-                            var tbl = masterHelp.SQLquery(sql);
-                            foreach (DataRow dr in tbl.Rows)
-                            {
-                                MS_MUSRACS MUSRACS = new MS_MUSRACS();
-                                MUSRACS.CLCD = CommVar.ClientCode(UNQSNO);
-                                MUSRACS.COMPCD = dr["compcd"].retStr();
-                                MUSRACS.LOCCD = dr["loccd"].retStr();
-                                MUSRACS.USER_ID = dr["user_id"].retStr();
-                                MUSRACS.SCHEMA_NAME = dr["schema_name"].retStr();
-                                MUSRACS.MODULE_CODE = CommVar.ModuleCode();
-                                DBimp.MS_MUSRACS.Add(MUSRACS);
-                            }
-                            DBimp.SaveChanges();
-                            imptransaction.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            Cn.SaveException(ex, "");
-                            imptransaction.Rollback();
-                        }
+                        OraTrans.Rollback();
+                        OraCon.Dispose();
+                        Cn.SaveException(ex, "");
+                        return Content(ex.Message + " " + ex.InnerException);
                     }
+
                 }
-                return Content("1");
             }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + " " + ex.InnerException);
-            }
+            return Content("1");
         }
         public ActionResult Individual_UserRight_auto(string serial, string id, string index)
         {
@@ -992,5 +1057,56 @@ namespace Improvar.Controllers
             image_name = image_name.Substring(0, image_name.Length - 1);
             return Content(Serialize + "^^^^^^^+++++++^^^^^^" + image_name);
         }
+        public ActionResult mob_user_rights()
+        {
+            if (Session["UR_ID"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            else
+            {
+                ViewBag.Title = "Mobile User Rights";
+                string SCHEMA = Cn.Getschema;
+                UserRight UR = new UserRight();
+                string fldcd = "", comptbl = "";
+                fldcd = "mobapp1"; comptbl = "fin_company";
+
+                MasterHelp masterHelp = new MasterHelp();
+                string sql = "select * from (select a.user_id, a.user_id||' - '||a.user_name user_name, a." + fldcd + " modacess from " + CommVar.CommSchema() + ".user_appl a ";
+                sql += ") where nvl(modacess,'Y') = 'Y' order by user_name";
+                DataTable tbl = masterHelp.SQLquery(sql);
+                var doctP = (from DataRow dr in tbl.Rows
+                             select new DocumentType()
+                             {
+                                 value = dr["user_id"].ToString(),
+                                 text = dr["user_name"].ToString(),
+                             }).ToList();
+                UR.user = doctP;
+                ImprovarDB DB2 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                string userid = Session["UR_ID"].ToString();
+                var comp = (from i in DB2.M_COMP select new { code = i.COMPCD, name = i.COMPNM }).ToList();
+                var loca = (from i in DB2.M_LOCA select new { code = i.LOCCD, name = i.LOCNM, compcd = i.COMPCD }).ToList();
+
+                sql = "select distinct a.compcd, a.loccd, a.locnm, b.compnm ";
+                sql += "from " + CommVar.FinSchema(UNQSNO) + ".m_loca a, " + CommVar.FinSchema(UNQSNO) + ".m_comp b," + CommVar.FinSchema(UNQSNO) + ".m_cntrl_hdr c ";
+                sql += "where a.compcd=b.compcd(+) and a.m_autono=c.m_autono and nvl(c.inactive_tag, 'N')= 'N' ";
+                sql += "order by compcd, locnm ";
+                tbl = masterHelp.SQLquery(sql);
+                UR.Comp_List = (from DataRow dr in tbl.Rows
+                                select new URightByComp()
+                                {
+                                    Check = false,
+                                    comcd = dr["compcd"].ToString(),
+                                    loccd = dr["loccd"].ToString(),
+                                    comnm = dr["compnm"].ToString(),
+                                    locnm = dr["locnm"].ToString(),
+                                }).Distinct().ToList();
+                UR.MobModuleCode = "MOBAPP";
+                UR.UNQSNO = UNQSNO;
+
+                return View("user_rights", UR);
+            }
+        }
+
     }
 }

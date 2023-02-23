@@ -2577,7 +2577,8 @@ namespace Improvar
                 sql += "from " + scm1 + ".t_vch_gst a, " + scm1 + ".t_txnewb b, " + scm1 + ".t_cntrl_hdr e, " + System.Environment.NewLine;
                 sql += "" + scm1 + ".m_subleg c, " + scm1 + ".m_subleg d," + scm1 + ".t_vch_bl f," + scm1 + ".m_subleg g  " + System.Environment.NewLine;
                 sql += "where a.autono = b.autono and a.autono = e.autono(+) and a.autono = f.autono(+) and " + System.Environment.NewLine;
-                sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and b.translcd is not null and " + System.Environment.NewLine;
+                //sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and b.translcd is not null and " + System.Environment.NewLine;
+                sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and " + System.Environment.NewLine;
                 if (DOCDT.retStr() != "") sql += "e.docdt >= to_date('" + DOCDT.retStr() + "', 'dd/mm/yyyy') and ";
                 //sql += "e.docdt >= to_date('01/07/2022', 'dd/mm/yyyy') and ";
                 sql += "a.pcode = c.slcd and b.translcd = d.slcd(+) and f.agslcd = g.slcd(+) " + System.Environment.NewLine;
