@@ -44,6 +44,9 @@
                 for (var n = 0; n < data.length ; n++) {
                     for (var m = 0; m < returnseq.length ; m++) {
                         if (n.toString() == returnseq[m].toString()) {
+                            if (data[n].indexOf('+') >= 0) {
+                                data[n] = data[n].replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+                            }
                             if (srhValue == "") {
                                 srhValue += data[n];
                             }
@@ -54,6 +57,9 @@
                     }
                 }
                 if (srhValue == "") {
+                    if (data[0].indexOf('+') >= 0) {
+                        data[0] = data[0].replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+                    }
                     srhValue += data[0];
                 }
                 var url = window.location.href;
@@ -76,6 +82,9 @@
             for (var n = 0; n < data.length ; n++) {
                 for (var m = 0; m < returnseq.length ; m++) {
                     if (n.toString() == returnseq[m].toString()) {
+                        if (data[n].indexOf('+') >= 0) {
+                            data[n] = data[n].replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+                        }
                         if (srhValue == "") {
                             srhValue += data[n];
                         }
@@ -86,6 +95,9 @@
                 }
             }
             if (srhValue == "") {
+                if (data[0].indexOf('+') >= 0) {
+                    data[0] = data[0].replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+                }
                 srhValue += data[0];
             }
             var url = window.location.href;

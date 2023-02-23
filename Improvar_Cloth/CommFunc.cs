@@ -66,6 +66,7 @@ namespace Improvar
         public static string retSqlformat(this string codestr)
         {
             string rtval = "";
+            codestr = codestr.retStr().Replace("'", "");
             string[] cdval = codestr.retStr().Split(',');
             if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString().Trim() != "")
             {
@@ -194,7 +195,7 @@ namespace Improvar
                 retval = findin.Substring(pos + extpos, npos);
             }
             return retval;
-        }
+        }      
         public static string Encrypt_URL(string UNQSNO)
         {
             Connection Cn = new Connection();
