@@ -4512,6 +4512,14 @@ function GetBaleData() {
         $('#SLCD').attr('readonly', 'readonly');
         $('#PARTY_HELP').hide();
     }
+    var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        if (retStr($("#B_BALENO_" + i).val()) == retStr($("#BALENO_HELP").val())) {
+            msgInfo("Bale no Already Exist in Grid !");
+            message_value = "BALENO_HELP";
+            return false;
+        }
+    }
     $.ajax({
         type: 'post',
         url: $("#UrlGetBaleData").val(), //"@Url.Action("GetBaleData", PageControllerName)",
@@ -4932,6 +4940,27 @@ function UpdateBillSlno() {
         }
     }
     HasChangeBarSale();
+    $("#WaitingMode").hide();
+}
+function SelectSameBale(index) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+    if (!(MENU_PARA == "SBPCK" || MENU_PARA == "SBDIR" || MENU_PARA == "SBEXP" || MENU_PARA == "PR" || MENU_PARA == "SBPOS")) return true;
+
+    $("#WaitingMode").show();
+    var baleno = $("#B_BALENO_" + index).val();
+    var baleyr = $("#B_BALEYR_" + index).val();
+    var balenochecked = document.getElementById("B_Checked_" + index).checked;
+    if (baleno != "") {
+        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if ($("#B_BALENO_" + j).val() == baleno && $("#B_BALEYR_" + j).val() == baleyr) {
+                document.getElementById("B_Checked_" + j).checked = balenochecked;
+            }
+        }
+    }
+
     $("#WaitingMode").hide();
 }
 
