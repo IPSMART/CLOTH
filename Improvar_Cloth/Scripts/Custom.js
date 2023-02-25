@@ -1338,7 +1338,6 @@ function DocumentDateCHK(dateField, auto, current_date_auto_if_blank, disabledt)
         dateField.value = day + "/" + mon + "/" + yy;
     }
 }
-
 var message_value;
 function closeDiv(id, flag) {
     $(id).hide();
@@ -1346,23 +1345,36 @@ function closeDiv(id, flag) {
     $("#" + will_go).focus();
     if (flag == 1) {
         var servl = $("#SearchValue").val();
+        var parkIDval = getQueryStringParameter("parkID");
         if (servl == "") {
-            location.reload();
+            if (typeof (parkIDval) == "undefined") {
+                location.reload();
+            }
+            else {
+                var crntLocation = document.location.href;
+                crntLocation = updateQueryStringParameter(crntLocation, "parkID", "");
+                location.href = crntLocation;
+            }
         }
         else {
-
-            var RemoveParamNm = getQueryStringParameter("RemoveParam");
             if (typeof (Storage) !== "undefined") {
                 var TEMPC = localStorage.getItem("ADDCONTROL");
+                var RemoveParamNm = getQueryStringParameter("RemoveParam");
                 if (TEMPC == "NOTAUTOADD") {
                     var crntLocation = document.location.href;
                     var ViewLocation = crntLocation.replace("op=A", "op=V");
+                    if (typeof (parkIDval) !== "undefined") {
+                        ViewLocation = updateQueryStringParameter(ViewLocation, "parkID", "");
+                    }
                     ViewLocation = updateQueryStringParameter(ViewLocation, "searchValue", servl);
                     location.href = ViewLocation;
                 }
                 else if (typeof (RemoveParamNm) !== "undefined") {
                     var crntLocation = document.location.href;
                     var ViewLocation = crntLocation;
+                    if (typeof (parkIDval) !== "undefined") {
+                        ViewLocation = updateQueryStringParameter(ViewLocation, "parkID", "");
+                    }
                     var arrRemoveParamNm = RemoveParamNm.split("~");
                     if (arrRemoveParamNm.length != null && arrRemoveParamNm.length > 0) {
                         for (var i = 0; i <= arrRemoveParamNm.length - 1; i++) {
@@ -1375,7 +1387,14 @@ function closeDiv(id, flag) {
                     location.href = ViewLocation;
                 }
                 else {
-                    location.reload();
+                    if (typeof (parkIDval) == "undefined") {
+                        location.reload();
+                    }
+                    else {
+                        var crntLocation = document.location.href;
+                        crntLocation = updateQueryStringParameter(crntLocation, "parkID", "");
+                        location.href = crntLocation;
+                    }
                 }
             } else {
                 alert("Sorry, your browser does not support Web Storage...");
@@ -1473,9 +1492,9 @@ function CloseZoomTextBoxModal() {
     $("#" + ZoomTextBoxModalId).focus();
 }
 var hlpblurval = "";
-function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formdata) {
+function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds, formdata) {
     debugger;
-    if($("#" + hlpfield).prop('readonly')) return true
+    if ($("#" + hlpfield).prop('readonly')) return true
     const keyName = event.key;
     const keyType = event.type;
     var blurvalue = "";
@@ -1528,11 +1547,15 @@ function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formda
     }
     else {
         var Data = "";
+        var val = value;
+        if (val.indexOf('+') >= 0) {
+            val = val.replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+        }
         if (formdata == "Y") {
-            Data = $('form').serialize() + "&val=" + value + "&Code=" + dependfldIds;
+            Data = $('form').serialize() + "&val=" + val + "&Code=" + dependfldIds;
         }
         else {
-            Data = "&val=" + value + "&Code=" + dependfldIds;
+            Data = "&val=" + val + "&Code=" + dependfldIds;
         }
         $.ajax({
             type: 'POST',
@@ -1601,6 +1624,22 @@ function retFloat(val) {
 function scrollToEnd(Id) {
     var chatList = document.getElementById(Id);
     chatList.scrollTop = chatList.scrollHeight;
+}
+function scrollGrid(TableId) {
+    $(this).on('keydown', 'input,select,text,button', function (e) {
+        var tableheader = $("#" + TableId).parent().parent();
+        var tr_index = $(this).parent().parent().index();
+        if (e.which == 40) { // down arrow
+            if (tr_index > 2 && tr_index % 2 == 0) {
+                tableheader.animate({ scrollTop: tableheader.scrollTop() + 42 }, 300);//or+ 150 }, 300)
+            }
+        }
+        else if (e.which == 38) { // up arrow
+            if (tr_index % 2 == 0) {
+                tableheader.animate({ scrollTop: tableheader.scrollTop() - 42 }, 300);
+            }
+        }
+    });
 }
 function TooltipEventBind() {
     $('.Tooltip').bind('contextmenu', function (e) {

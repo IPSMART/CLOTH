@@ -69,7 +69,7 @@ namespace Improvar.Controllers
                 + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d ," + scmf + ".t_txneinv e "
                    + " where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and  a.autono=e.autono and ";
                 sql += "  A.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND A.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY') AND  ";
-                sql += " nvl(a.gstregntype,b.regntype) in ('R','C') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null ";
+                sql += " nvl(a.gstregntype,b.regntype) in ('R','C','U') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null ";
                 sql += " and a.autono in (select autono from " + scmf + ".t_txneinv) and nvl(d.cancel,'N') = 'N' ";
                 sql += " and d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "' and d.modcd='" + Module.MODCD + "' ";
                 sql += " group by a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM,e.IRNNO ";

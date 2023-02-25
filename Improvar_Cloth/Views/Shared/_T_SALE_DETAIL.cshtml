@@ -46,8 +46,8 @@
                         <table id="_T_SALE_DETAIL_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
                             <thead>
                                 <tr class="sticky-header" style="height:30px;">
-                                    <th class="sticky-cell" style="width: 27px;"></th>
-                                    <th class="sticky-cell" style="width: 40px;text-align:center;left:27px">SL No</th>
+                                    @*<th class="sticky-cell" style="width: 27px;"></th>*@
+                                    <th class="sticky-cell" style="width: 40px;text-align:center;">SL No</th>
                                     @if (Model.MENU_PARA == "PJBL")
                                     {
                                         <th class="" style="width: 55px;">Return</th>
@@ -138,8 +138,11 @@
                                     for (int i = 0; i <= Model.TTXNDTL.Count - 1; i++)
                                     {
                                         <tr style="font-size:12px; font-weight:bold;">
-                                            <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @*<td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                                 @Html.CheckBoxFor(model => model.TTXNDTL[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
+                                            </td>*@
+                                            <td class="sticky-cell">
+                                                @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                                 @if (Model.M_SYSCNFG.MNTNFLAGMTR != "Y")
                                                 {
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].FLAGMTR, new { id = "D_FLAGMTR_" + i })
@@ -202,9 +205,6 @@
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].BLQNTY, new { id = "D_BLQNTY_" + i })
                                                 }
                                                 @Html.HiddenFor(model => model.TTXNDTL[i].CONVQTYPUNIT, new { id = "D_CONVQTYPUNIT_" + i })
-                                            </td>
-                                            <td class="sticky-cell" style="left:27px;">
-                                                @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                             @if (Model.MENU_PARA == "PJBL")
                                             {
@@ -456,7 +456,7 @@
                                             @Html.HiddenFor(model => model.T_NET_AMT, new { id = "T_NET_AMT" })
                                         }
                                     </td>
-                                    <td class="sticky-cell" style="left:27px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    @*<td class="sticky-cell" style="left:27px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     @if (Model.MENU_PARA == "PJBL")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

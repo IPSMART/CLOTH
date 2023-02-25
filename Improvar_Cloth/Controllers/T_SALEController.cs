@@ -595,7 +595,6 @@ namespace Improvar.Controllers
 
             TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO(); VCHGST = new T_VCH_GST();
 
-            //if (VE.IndexKey.Count != 0 || (loadOrder.retStr().Length > 1 && index >= 0))
             if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
             {
                 string[] aa = null;
@@ -622,7 +621,6 @@ namespace Improvar.Controllers
                     VE.PORTNM = DBC.MS_PORTCD.Find(VCHGST.PORTCD)?.PORTNM;
                     VE.GSTSLNM = VCHGST.GSTSLNM;
                     VE.POS = VCHGST.POS;
-                    //VE.STATE = (from x in DBC.MS_STATE where x.STATECD == VCHGST.POS select x.STATENM).FirstOrDefault();
                 }
                 if (VE.MENU_PARA == "SB" && loadOrder == "N")
                 {
@@ -669,11 +667,6 @@ namespace Improvar.Controllers
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
 
-                //var party_data = salesfunc.GetSlcdDetails(TXN.SLCD.retStr(), TXN.DOCDT.retStr().Remove(10));
-                //if (party_data != null && party_data.Rows.Count > 0)
-                //{
-                //    TXNOTH.TAXGRPCD = party_data.Rows[0]["TAXGRPCD"].retStr();
-                //}
                 //tcsdata
                 string TDSCODE = TXN.TDSCODE.retStr() == "" ? "" : TXN.TDSCODE.retStr().retSqlformat();
                 var tdsdt = getTDS(TXN.DOCDT.retStr().Remove(10), TXN.SLCD, TDSCODE);
@@ -712,11 +705,11 @@ namespace Improvar.Controllers
                 {
                     TXNMEMO = DB.T_TXNMEMO.Find(TXN.AUTONO);
                 }
-                var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.AUTONO == TXN.AUTONO select new { STKDRCR = j.STKDRCR, AUTONO = i.AUTONO }).OrderBy(s => s.AUTONO).FirstOrDefault();
-                if (Getstkdrcr != null)
-                {
-                    VE.STOCKHOLD = Getstkdrcr.STKDRCR == "C" ? true : false;
-                }
+                //var Getstkdrcr = (from i in DB.T_TXN join j in DB.T_TXNDTL on i.AUTONO equals j.AUTONO where i.AUTONO == TXN.AUTONO select new { STKDRCR = j.STKDRCR, AUTONO = i.AUTONO }).OrderBy(s => s.AUTONO).FirstOrDefault();
+                //if (Getstkdrcr != null)
+                //{
+                //    VE.STOCKHOLD = Getstkdrcr.STKDRCR == "C" ? true : false;
+                //}
                 var GetAdjBill = (from i in DBF.T_VCH_BL_ADJ where i.AUTONO == TXN.AUTONO select i).ToList();
                 if (GetAdjBill != null && GetAdjBill.Count > 0) VE.ReturnAdjustwithBill = true;
 
@@ -815,21 +808,25 @@ namespace Improvar.Controllers
                                     CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                                     FREESTK = dr["FREESTK"].retStr(),
                                 }).OrderBy(s => s.SLNO).ToList();
-                int count = 0; var latbaleno = "";
-                for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                //int count = 0; var latbaleno = "";
+                //for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                //{
+                //    var baleno = VE.TBATCHDTL[i].BALENO;
+                //    var salebalno = (from j in VE.TBATCHDTL where j.BALENO == baleno select j.BALENO).Distinct().FirstOrDefault();
+                //    if (salebalno != null && latbaleno != salebalno)
+                //    { count = count + 1; latbaleno = salebalno; }
+                //}
+                //VE.TOTBALENO = count.retDbl();
+                if (VE.MENU_PARA == "PB" && VE.DefaultAction == "V")
                 {
-                    var baleno = VE.TBATCHDTL[i].BALENO;
-                    var salebalno = (from j in VE.TBATCHDTL where j.BALENO == baleno select j.BALENO).Distinct().FirstOrDefault();
-                    if (salebalno != null && latbaleno != salebalno)
-                    { count = count + 1; latbaleno = salebalno; }
+                    VE.TOTBALENO = (from j in VE.TBATCHDTL where j.BALENO.retStr() != "" select j.BALENO).Distinct().Count().retDbl();
                 }
-                VE.TOTBALENO = count.retDbl();
 
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
                 str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT, ";
-                str1 += "i.ITREM,i.AGDOCNO,i.AGDOCDT,i.LISTPRICE,i.LISTDISCPER,i.PAGENO,i.PAGESLNO,i.BLUOMCD,j.CONVQTYPUNIT,nvl(i.FREESTK,'N')FREESTK ";
+                str1 += "i.ITREM,i.AGDOCNO,i.AGDOCDT,i.LISTPRICE,i.LISTDISCPER,i.PAGENO,i.PAGESLNO,i.BLUOMCD,j.CONVQTYPUNIT,nvl(i.FREESTK,'N')FREESTK,i.STKDRCR ";
                 str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                 str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
@@ -910,8 +907,10 @@ namespace Improvar.Controllers
                 VE.T_SGST_AMT = VE.TTXNDTL.Sum(a => a.SGSTAMT).retDbl();
                 VE.T_CESS_AMT = VE.TTXNDTL.Sum(a => a.CESSAMT).retDbl();
                 VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
-
-
+                if (VE.MENU_PARA == "PI" && VE.TTXNDTL != null && VE.TTXNDTL.Count > 0)
+                {
+                    VE.STOCKHOLD = VE.TTXNDTL[0].STKDRCR == "C" ? true : false;
+                }
                 //fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
@@ -927,9 +926,9 @@ namespace Improvar.Controllers
                 {
                     allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
-
-                //var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                var MSYSCNFG = salesfunc.M_SYSCNFG(TXN.DOCDT.retDateStr());
+                DataTable syscnfgdata = salesfunc.GetSyscnfgData(TXN.DOCDT.retDateStr());
+                var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
+               
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
@@ -989,63 +988,33 @@ namespace Improvar.Controllers
                         }
                     }
 
-                    //checking childdata exist against barno
-                    //var chk_child = (from a in DB.T_BATCHDTL where a.BARNO == v.BARNO && a.AUTONO != TXN.AUTONO select a).ToList();
-                    //if (chk_child.Count() > 0)
-                    //{
-                    //    v.ChildData = "Y";
-                    //}
-
-                    var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
+                    //var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
                     if (chk_child != "")
                     {
                         v.ChildData = "Y";
                         if (VE.MENU_PARA == "PB") VE.ChildData = "child record found";
-
                     }
 
-
-                    //if ((VE.MENU_PARA == "PB") && ((TXN.BARGENTYPE == "E") || (TXN.BARGENTYPE == "C" && v.BARGENTYPE == "E")))
-                    //{
-                    //    v.WPRATE = v.RATE * VE.WPPER;
-                    //    v.RPRATE = v.RATE * VE.WPPER;
-                    //}
-
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (syscnfgdata != null && syscnfgdata.Rows.Count > 0))
                     {
 
                         if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "" || v.WPPER.retDbl() == 0 || v.RPPER.retDbl() == 0)
                         {
-                            DataTable syscnfgdata = salesfunc.GetSyscnfgData(TXN.DOCDT.retDateStr());
-
                             if (v.WPPRICEGEN.retStr() == "")
                             {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
-                                {
-                                    v.WPPRICEGEN = syscnfgdata.Rows[0]["wppricegen"].retStr();
-                                }
-
+                                v.WPPRICEGEN = syscnfgdata.Rows[0]["wppricegen"].retStr();
                             }
                             if (v.RPPRICEGEN.retStr() == "")
                             {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
-                                {
-                                    v.RPPRICEGEN = syscnfgdata.Rows[0]["rppricegen"].retStr();
-                                }
+                                v.RPPRICEGEN = syscnfgdata.Rows[0]["rppricegen"].retStr();
                             }
                             if (v.WPPER.retDbl() == 0)
                             {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
-                                {
-                                    v.WPPER = syscnfgdata.Rows[0]["WPPER"].retDbl();
-                                }
+                                v.WPPER = syscnfgdata.Rows[0]["WPPER"].retDbl();
                             }
                             if (v.RPPER.retDbl() == 0)
                             {
-                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
-                                {
-                                    v.RPPER = syscnfgdata.Rows[0]["RPPER"].retDbl();
-                                }
+                                v.RPPER = syscnfgdata.Rows[0]["RPPER"].retDbl();
                             }
                         }
                     }
@@ -4457,30 +4426,26 @@ namespace Improvar.Controllers
                 {
                     var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToArray().retSqlfromStrarray();
                     string str = "select a.autono,b.docno,a.baleno from " + scm1 + ".T_BATCHDTL a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono and b.doccd='" + VE.T_TXN.DOCCD + "' and baleno in (" + baleno + ") ";
-                    if(VE.T_TXN.AUTONO!=null) str+=" and a.autono <>'"+ VE.T_TXN.AUTONO + "' ";
+                    if (VE.T_TXN.AUTONO != null) str += " and a.autono <>'" + VE.T_TXN.AUTONO + "' ";
                     baledatas = masterHelp.SQLquery(str);
-                    if(baledatas.Rows.Count>0)
+                    if (baledatas.Rows.Count > 0)
                     {
                         string dublicate_baleno = (from DataRow dr in baledatas.Rows select dr["baleno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
 
                         string exsist_bale_docno = (from DataRow dr in baledatas.Rows select dr["docno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
 
 
-                        ContentFlg = "Bale No. ["+ dublicate_baleno + "] already exsist in these Doc No.["+ exsist_bale_docno + "] "; goto dbnotsave;
+                        ContentFlg = "Bale No. [" + dublicate_baleno + "] already exsist in these Doc No.[" + exsist_bale_docno + "] "; goto dbnotsave;
                     }
 
-                    string str1 = "select a.autono,b.docno,a.lrno from " + scm1 + ".T_TXNTRANS a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono and b.doccd='" + VE.T_TXN.DOCCD + "' and a.LRNO ='" + VE.T_TXNTRANS.LRNO + "' ";
-                    if (VE.T_TXN.AUTONO != null) str1 += " and a.autono <>'" + VE.T_TXN.AUTONO + "' ";
-                    lr_det = masterHelp.SQLquery(str1);
-                    if (lr_det.Rows.Count > 0)
-                    {
-                        
-                        string exsist_Lr_docno = (from DataRow dr in lr_det.Rows select dr["docno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
-
-
-                        ContentFlg = "LR No. [" + VE.T_TXNTRANS.LRNO + "] already exsist in these Doc No.[" + exsist_Lr_docno + "] "; goto dbnotsave;
-                    }
-
+                    //string str1 = "select a.autono,b.docno,a.lrno from " + scm1 + ".T_TXNTRANS a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono and b.doccd='" + VE.T_TXN.DOCCD + "' and a.LRNO ='" + VE.T_TXNTRANS.LRNO + "' ";
+                    //if (VE.T_TXN.AUTONO != null) str1 += " and a.autono <>'" + VE.T_TXN.AUTONO + "' ";
+                    //lr_det = masterHelp.SQLquery(str1);
+                    //if (lr_det.Rows.Count > 0)
+                    //{                        
+                    //    string exsist_Lr_docno = (from DataRow dr in lr_det.Rows select dr["docno"].retStr()).Distinct().ToArray().retSqlfromStrarray();
+                    //    ContentFlg = "LR No. [" + VE.T_TXNTRANS.LRNO + "] already exsist in these Doc No.[" + exsist_Lr_docno + "] "; goto dbnotsave;
+                    //}
 
                 }
 
@@ -5129,7 +5094,7 @@ namespace Improvar.Controllers
                                         ContentFlg = "Sgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
                                         goto dbnotsave;
                                     }
-                                    if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].IGSTAMT.retDbl() != 0 )
+                                    if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].IGSTAMT.retDbl() != 0)
                                     {
                                         ContentFlg = "Cgst+Sgst+Igst 3 amount found. Please check tax at slno " + VE.TTXNDTL[i].SLNO;
                                         goto dbnotsave;

@@ -18,7 +18,7 @@ namespace Improvar.Controllers
 {
     public class Rep_EWB_GenController : Controller
     {
-        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI";
+        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI,MTSL";
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
         AdaequareGSP adaequareGSP = new AdaequareGSP();

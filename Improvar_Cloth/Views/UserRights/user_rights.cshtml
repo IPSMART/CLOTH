@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.UserRight
 @{
-    ViewBag.Title = "User Rights";
+    //ViewBag.Title = "User Rights";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>User Rights</title>
+    <title>@ViewBag.Title</title>
     <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
     <link rel="icon" href="~/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" media="all" href="~/Content/treeview.css" />
@@ -297,7 +297,9 @@
         }
 
         function gotoTree() {
+            debugger;
             var user = $("#userID").val();
+            var MobModuleCode = $("#MobModuleCode").val();
             if (user == "") {
                 $("#Msgdiv1").show();
                 $("#info").show();
@@ -312,7 +314,7 @@
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
                 url: $("#treegen").val(),
-                data: $('form').serialize() + "&user=" + user,
+                data: $('form').serialize() + "&user=" + user + "&MobModuleCode=" + MobModuleCode,
                 success: function (result) {
                     $("#WaitingMode").hide();
                     $("#_userTree").html(result.utree);
@@ -368,7 +370,7 @@
                 type: 'post',
                 beforesend: $("#WaitingMode").show(),
                 url: $("#saveuserrighturl").val(),
-                data: $('form').serialize() + "&serialize=" + $("#serializeString").val() + "&user=" + $("#userID").val() + "&child=" + $("#serializeStringChild").val(),
+                data: $('form').serialize() + "&serialize=" + $("#serializeString").val() + "&user=" + $("#userID").val() + "&child=" + $("#serializeStringChild").val() + "&MobModuleCode=" + $("#MobModuleCode").val(),
                 success: function (result) {
                     $("#WaitingMode").hide();
                     if (result == "1") {
@@ -473,6 +475,7 @@
     <input type="hidden" id="updateuserrighturl" value="@Url.Action("UpdateRights", "UserRights")" />
     <input type="hidden" id="saveuserrighturl" value="@Url.Action("Save", "UserRights")" />
     <input type="hidden" id="defaultpermissiourl" value="@Url.Action("DefaultPermission", "UserRights")" />
+    @Html.HiddenFor(model => model.MobModuleCode, new { id = "MobModuleCode" })
     <nav>
         <div>
             <img class="logo" src="~/Image/IPSMART-LOGO.png" />
