@@ -1515,6 +1515,7 @@
     <Content Include="Views\Rep_PendChallan\Rep_PendChallan.cshtml" />
     <Content Include="Views\Rep_EWB_Changes\Rep_EWB_Changes.cshtml" />
     <Content Include="Views\Shared\_PopUp4.cshtml" />
+    <Content Include="Views\Shared\_MobileLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

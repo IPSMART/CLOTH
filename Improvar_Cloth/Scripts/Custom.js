@@ -84,7 +84,16 @@ function msgSuccess3(msgText) {
     $("#close_success3").focus();
     return false;
 }
-
+function msgSuccess4(msgText) {
+    $("#WaitingMode").hide();
+    $("#message_stay").val($("#loadurl").val());
+    $("#Msgdiv1").show();
+    $("#success4").show();
+    $("#msgbody_success4").html(msgText);
+    $("#close_success4").focus();
+    return false;
+    return false;
+}
 function msgWarning(msgText) {
     $("#WaitingMode").hide();
     $("#message_stay").val($("#loadurl").val());
@@ -310,6 +319,12 @@ function deletePageData() {
             if (result == "3") {
                 $("#WaitingMode").hide()
                 msgSuccess3("Deleted Successfully");
+                return false;
+            }
+            else if (result == "4") {
+                $("#WaitingMode").hide()
+                msgSuccess4("Deleted Successfully");
+                return false;
                 return false;
             }
             else {
@@ -554,6 +569,9 @@ function searchPannelOpen() {
     var SRC_FDT = $("#SRC_FDT").val();
     var SRC_TDT = $("#SRC_TDT").val();
     var SRC_FLAG = $("#SRC_FLAG").val();
+    if (SRC_FLAG != undefined && SRC_FLAG.indexOf('+') >= 0) {
+        SRC_FLAG = SRC_FLAG.replaceAll("+", "%2B");//encodeURIComponent('+')="%2B"
+    }
     const keyName = event.key;
     if (keyName == "F" || keyName == "f") {
         $.ajax({
@@ -1444,6 +1462,12 @@ function closeDiv(id, flag) {
         else {
             location.reload();
         }
+    }
+    else if (flag == 4) {
+        var crntLocation = document.location.href;
+        var ViewLocation = crntLocation.replace("op=V", "op=A");
+        ViewLocation = updateQueryStringParameter(ViewLocation, "searchValue", "");
+        location.href = ViewLocation;
     }
 }
 function EnabledfilteredSearch() {

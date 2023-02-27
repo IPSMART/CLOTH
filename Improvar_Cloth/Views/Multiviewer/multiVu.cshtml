@@ -203,9 +203,17 @@
         function ThirdPartyCall(urlresult) {
             window.open("../" + urlresult);
         }
-        function winopen(Controller, MENU_PERMISSION, DC, MP) {
+        function winopen(Controller, MENU_PERMISSION, DC, MP, MENU_CHECK) {
+            debugger;
             var usno = '@Model.UNQSNO';
-            var MyURL = "../" + Controller + "/" + Controller + "?op=V" + "&MNUDET=" + MENU_PERMISSION + "&US=" + usno + "&DC=" + DC + "&MP=" + MP;
+            var MyURL = "";
+            if (MENU_CHECK == "M") {
+                MyURL = "../" + Controller + "/" + Controller + "?op=A" + "&MNUDET=" + MENU_PERMISSION + "&US=" + usno + "&DC=" + DC + "&MP=" + MP;
+            }
+            else {
+                MyURL = "../" + Controller + "/" + Controller + "?op=V" + "&MNUDET=" + MENU_PERMISSION + "&US=" + usno + "&DC=" + DC + "&MP=" + MP;
+
+            }
             MenuArray[MenuOpen] = window.open(MyURL);
             MenuOpen++;
             $.ajax({//

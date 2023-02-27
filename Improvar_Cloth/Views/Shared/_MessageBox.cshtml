@@ -112,7 +112,18 @@
         <input id="btnok_success3" type="button" value="OK" style="width:50px;height:25px;background-color:#4F8A10;color:#DFF2BF;" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 3); " />
     </div>
 </div>
-
+@* new by hook            Use for Mobile Delete*@
+<div id="success4" class="success_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1',4, '#success_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_success4" href="#" class="close_msg_button" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 4); ">&times;</a>
+        <i style="margin-right:10px;" id="success_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_success4" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_success4" type="button" value="OK" style="width:50px;height:25px;background-color:#4F8A10;color:#DFF2BF;" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 4); " />
+    </div>
+</div>
 <div id="warning" class="warning_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 0, '#warning_msg_box');">
     <strong style="font-size: large;">
         <a id="close_warning" href="#" class="close_msg_button" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 0); ">&times;</a>

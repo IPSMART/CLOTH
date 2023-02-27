@@ -70,7 +70,7 @@ namespace Improvar.Controllers
                     sql += fld1;
                     sql += "p.E_DAY,p.A_DAY,'Y' AS PERDOTNETMENU,'Y' AS ATVDOTNETMENU,p.D_DAY,m.MENU_ORDER_CODE,m.MENU_DOCCD,m.MENU_PARA  menu_para, ";
                     sql += "(select case  when exists(select 1 from appl_menu_fav f where  m.menu_id=f.menu_id and m.menu_index=f.menu_index and m.module_code='"
-                        + CommVar.ModuleCode() + "' and user_id='" + CommVar.UserID() + "') then 'Y'  else 'N' end from dual) as menu_fav ";
+                        + CommVar.ModuleCode() + "' and user_id='" + CommVar.UserID() + "') then 'Y'  else 'N' end from dual) as menu_fav,m.MENU_CHECK ";
                     sql += " from " + CommVar.CurSchema(unqsno) + ".M_USR_ACS p , APPL_MENU m ";
                     sql += " where p.MENU_NAME=m.MENU_ID and p.MENU_INDEX=m.MENU_INDEX and p.USER_ID='" + CommVar.UserID() + "' and m.module_code='" + CommVar.ModuleCode() + "' and ";
                     sql += "p.compcd = '" + CommVar.Compcd(unqsno) + "' and p.loccd = '" + CommVar.Loccd(unqsno) + "' and p.schema_name = '" + CommVar.CurSchema(unqsno) + "' " + fld2;
@@ -80,7 +80,7 @@ namespace Improvar.Controllers
                     sql += fld1;
                     sql += "p.E_DAY,p.A_DAY,'Y' AS PERDOTNETMENU,'Y' AS ATVDOTNETMENU,p.D_DAY,m.MENU_ORDER_CODE,m.MENU_DOCCD,m.MENU_PARA , ";
                     sql += "(select case  when exists(select 1 from appl_menu_fav f where  m.menu_id=f.menu_id and m.menu_index=f.menu_index and m.module_code='"
-                        + CommVar.ModuleCode() + "' and user_id='" + CommVar.UserID() + "') then 'Y'  else 'N' end from dual) as menu_fav ";
+                        + CommVar.ModuleCode() + "' and user_id='" + CommVar.UserID() + "') then 'Y'  else 'N' end from dual) as menu_fav,m.MENU_CHECK ";
                     sql += " from " + CommVar.CurSchema(unqsno) + ".m_usr_acs_grpdtl q, " + CommVar.CurSchema(unqsno) + ".M_USR_ACS p ,APPL_MENU m ";
                     sql += " where p.MENU_NAME=m.MENU_ID and p.MENU_INDEX=m.MENU_INDEX and q.USER_ID='" + CommVar.UserID() + "' and m.module_code='" + CommVar.ModuleCode() + "' and ";
                     sql += " p.compcd = '" + CommVar.Compcd(unqsno) + "' and p.loccd = '" + CommVar.Loccd(unqsno) + "' and p.schema_name='" + CommVar.CurSchema(unqsno) + "' and q.linkuser_id=p.user_id and ";
@@ -93,7 +93,7 @@ namespace Improvar.Controllers
                     if (trandisable == true && masterdisable == true) { fld1 = "decode(b.menu_type,'M',trim(translate(C.USER_RIGHT,'AED','   ')),'E',trim(translate(C.USER_RIGHT,'AED','   ')),C.user_right) user_right"; }
                     sql = "select distinct a.user_id, a.menu_id, a.menu_index, b.menu_name, b.menu_parent_id,"
                         + "b.MENU_ID||'~'||b.MENU_INDEX||'~'||nvl(b.MENU_PROGCALL,'Notset')||'~'||b.menu_date_option||'~'||b.menu_type||'~'||c.E_DAY||'~'||c.D_DAY as MENU_PERMISSIONID,";
-                    sql += " b.menu_date_option, b.module_code, b.menu_progcall, b.menu_find_id ,b.MENU_PARA, b.menu_doccd ,b.menu_type, b.menu_order_code," + fld1;
+                    sql += " b.menu_date_option, b.module_code, b.menu_progcall, b.menu_find_id ,b.MENU_PARA, b.menu_doccd ,b.menu_type, b.menu_order_code,a.MENU_CHECK," + fld1;
                     sql += " from appl_menu_fav a,appl_menu b, " + CommVar.CurSchema(unqsno) + ".M_USR_ACS c ";
                     sql += " where a.menu_id=b.menu_id and a.menu_index=b.menu_index and a.module_code=b.module_code and A.MENU_ID = C.MENU_name and A.MENU_Index = C.MENU_Index";
                     sql += " AND a.user_id='" + CommVar.UserID() + "' and a.module_code='" + MODULE_CODE + "' and c.user_id = '" + CommVar.UserID() + "'";
@@ -114,6 +114,8 @@ namespace Improvar.Controllers
                         string MENU_PARA = maindr["menu_para"].retStr();
                         string mnamefav = maindr["menu_fav"].retStr();
                         string user_right = maindr["user_right"].retStr();
+                        string MENU_CHECK = maindr["MENU_CHECK"].retStr();
+
                         string Uidindex = "";
                         if (parentId == IDENTIFIER)
                         {
@@ -182,7 +184,7 @@ namespace Improvar.Controllers
                             string enc_MENU_DOCCD = Cn.Encrypt_URL(MENU_DOCCD);
                             string enc_MENU_PARA = Cn.Encrypt_URL(MENU_PARA);
                             Menu += " <li><span class='tree_label'>";
-                            Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "');>" + MENU_NAME + menu_find_id + "</a>&nbsp;";
+                            Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "','" + MENU_CHECK + "');>" + MENU_NAME + menu_find_id + "</a>&nbsp;";
                             if (mnamefav == "Y")
                             {
                                 Menu += "<img src = '../Image/favrit2.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "'); />";
@@ -296,6 +298,8 @@ namespace Improvar.Controllers
                         string MENU_DOCCD = maindr["MENU_DOCCD"].retStr();
                         string MENU_PARA = maindr["menu_para"].retStr();
                         string user_right = maindr["user_right"].retStr();
+                        string MENU_CHECK = maindr["MENU_CHECK"].retStr();
+
                         string Uidindex = "";
                         if (parentId == IDENTIFIER)
                         {
@@ -311,7 +315,7 @@ namespace Improvar.Controllers
                         string enc_MENU_DOCCD = Cn.Encrypt_URL(MENU_DOCCD);
                         string enc_MENU_PARA = Cn.Encrypt_URL(MENU_PARA);
                         Menu += " <li><span class='tree_label'>";
-                        Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "');>" + MENU_NAME + "</a>&nbsp;";
+                        Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "','" + MENU_CHECK + "');>" + MENU_NAME + "</a>&nbsp;";
                         Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "'); />";
                         Menu += " </span></li>";
                         SB.Append(Menu);
