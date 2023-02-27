@@ -9,7 +9,7 @@ namespace Improvar
         public static string MODULE = "SALES";
         public static string Module_Code = "SALES";
         public static string Module_Name = "Sales & Production";
-        public static string ContentVersion = "7";
+        public static string ContentVersion = "17";
     }
 
     public class BundleConfig
