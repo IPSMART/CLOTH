@@ -522,7 +522,7 @@
 
 
     <script>
-        function addFavorite(MENU_ID, MENU_INDEX) {
+        function addFavorite(MENU_ID, MENU_INDEX,MENU_CHECK) {
             //24-04-18 hook
             $.ajax({
                 type: 'post',
@@ -530,7 +530,8 @@
                 beforesend: $("#WaitingMode").show(),
                 data: {
                     MENU_ID: MENU_ID,
-                    MENU_INDEX: MENU_INDEX
+                    MENU_INDEX: MENU_INDEX,
+                    MENU_CHECK: MENU_CHECK
                 },
                 success: function (result) {
                     $("#WaitingMode").hide();

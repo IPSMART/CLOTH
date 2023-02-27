@@ -187,11 +187,11 @@ namespace Improvar.Controllers
                             Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "','" + MENU_CHECK + "');>" + MENU_NAME + menu_find_id + "</a>&nbsp;";
                             if (mnamefav == "Y")
                             {
-                                Menu += "<img src = '../Image/favrit2.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "'); />";
+                                Menu += "<img src = '../Image/favrit2.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "','" + MENU_CHECK + "'); />";
                             }
                             else
                             {
-                                Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "'); />";
+                                Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "','" + MENU_CHECK + "'); />";
                             }
                             Menu += " </span></li>";
 
@@ -316,7 +316,7 @@ namespace Improvar.Controllers
                         string enc_MENU_PARA = Cn.Encrypt_URL(MENU_PARA);
                         Menu += " <li><span class='tree_label'>";
                         Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "','" + MENU_CHECK + "');>" + MENU_NAME + "</a>&nbsp;";
-                        Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "'); />";
+                        Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "','" + MENU_CHECK + "'); />";
                         Menu += " </span></li>";
                         SB.Append(Menu);
                     }
@@ -405,7 +405,7 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-        public string addFavorite(string MENU_ID, string MENU_INDEX)
+        public string addFavorite(string MENU_ID, string MENU_INDEX,string MENU_CHECK)
         {
             string schema = Cn.Getschema;
             string MODULE_CODE = Session["ModuleCode"].ToString();
@@ -429,7 +429,7 @@ namespace Improvar.Controllers
                 DataTable rsTmp = masterHelp.SQLquery(Query);
                 if (rsTmp.Rows.Count == 0)
                 {
-                    Query = "insert into " + schema + ".APPL_MENU_FAV(USER_ID,mODULE_CODE,MENU_iD,MENU_INDEX) VALUES('" + Userid + "','" + MODULE_CODE + "','" + MENU_ID + "'," + MENU_INDEX + ")";
+                    Query = "insert into " + schema + ".APPL_MENU_FAV(USER_ID,mODULE_CODE,MENU_iD,MENU_INDEX,MENU_CHECK) VALUES('" + Userid + "','" + MODULE_CODE + "','" + MENU_ID + "'," + MENU_INDEX + ",'" + MENU_CHECK + "')";
                     flag = true;
                 }
                 else
