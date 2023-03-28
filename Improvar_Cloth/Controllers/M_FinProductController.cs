@@ -343,6 +343,7 @@ namespace Improvar.Controllers
                 {
                     VE.Checked = false;
                 }
+                VE.FAVITEMChecked = sl.FAVITEM == "Y" ? true : false;
 
                 string sql = "";
                 sql += "select i.SLCD,j.SLNM,i.JOBRT,i.PDESIGN from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_SLCD i,";
@@ -567,7 +568,7 @@ namespace Improvar.Controllers
                 str += "from " + scm + ".T_BATCHMST_PRICE a ";
                 //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "where a.prccd = 'WP' ";
-                if (CommVar.ClientCode(UNQSNO) == "DIWH"|| CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans/SN FABRIC max effdt rate comes
+                if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans/SN FABRIC max effdt rate comes
                 str += ") where rn = 1 ) b, ";
                 str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
                 str += "where a.barno = b.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
@@ -1651,6 +1652,8 @@ namespace Improvar.Controllers
                         //MSITEM.STDLOTCOMPLTDAYS = VE.M_SITEM.STDLOTCOMPLTDAYS;
                         //MSITEM.STDBATCHQTY = VE.M_SITEM.STDBATCHQTY;
                         //MSITEM.MERGEPCS = VE.M_SITEM.MERGEPCS;
+                        MSITEM.FAVITEM = VE.FAVITEMChecked == true ? "Y" : "N";
+                        MSITEM.FAVCOLR = VE.M_SITEM.FAVCOLR;
                         if (VE.DefaultAction == "E")
                         {
                             MSITEM.DTAG = "E";

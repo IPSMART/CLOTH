@@ -112,6 +112,40 @@ namespace Improvar.Controllers
                                     TCH.DOCCD = VE.DocumentType[0].value;
                                 }
                                 VE.T_CNTRL_HDR = TCH;
+
+                                T_PHYSTK_HDR TPHYSTKHDR = new T_PHYSTK_HDR();
+                                TPHYSTKHDR.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                TPHYSTKHDR.PRCCD = TempData["LASTPRCCD" + VE.MENU_PARA].retStr();
+                                TempData.Keep();
+                                string doccd = "";
+                                if (VE.DocumentType.Count() > 0)
+                                {
+                                    doccd = VE.DocumentType.FirstOrDefault().value;
+                                }
+                                var T_PHYSTK_HDR = (from a in DB.T_PHYSTK_HDR where a.DOCCD == doccd select new { a.GOCD, a.PRCCD }).FirstOrDefault();
+
+
+                                if (TPHYSTKHDR.GOCD.retStr() == "")
+                                {
+                                    TPHYSTKHDR.GOCD = T_PHYSTK_HDR.GOCD;
+                                }
+                                string gocd = TPHYSTKHDR.GOCD.retStr();
+                                if (gocd != "")
+                                {
+                                    VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
+                                }
+
+                                if (TPHYSTKHDR.PRCCD.retStr() == "")
+                                {
+                                    TPHYSTKHDR.PRCCD = T_PHYSTK_HDR.PRCCD;
+                                }
+                                string prccd = TPHYSTKHDR.PRCCD.retStr();
+                                if (prccd != "")
+                                {
+                                    VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == prccd).Select(b => b.PRCNM).FirstOrDefault();
+                                }
+                                VE.T_PHYSTK_HDR = TPHYSTKHDR;
+
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
                                 UPL.DocumentType = Cn.DOC_TYPE();
@@ -253,24 +287,25 @@ namespace Improvar.Controllers
             string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "";
 
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd,c.gonm ";
-            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_godown c ";
-            sql += "where a.autono=b.autono and a.gocd=c.gocd(+) and b.doccd in (" + doccd + ") and ";
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd,c.gonm,sum(nvl(d.qnty,0))qnty ";
+            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_godown c, " + scm + ".T_PHYSTK d ";
+            sql += "where a.autono=b.autono and a.gocd=c.gocd(+) and a.autono=d.autono and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
             // if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
+            sql += "group by a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy'), b.doccd,a.gocd,c.gonm ";
             sql += "order by docdt, docno ";
             DataTable tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown Name" + Cn.GCS() + "AUTO NO";
+            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown Name" + Cn.GCS() + "Quantity" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "]</td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "]</td><td>" + tbl.Rows[j]["qnty"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "3", "3"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
         }
         public ActionResult GetBarCodeDetails(string val, string Code)
         {
@@ -578,6 +613,10 @@ namespace Improvar.Controllers
                             auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
                             TBHDR.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                             Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
+
+                            TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_PHYSTK_HDR.GOCD;
+                            TempData["LASTPRCCD" + VE.MENU_PARA] = VE.T_PHYSTK_HDR.PRCCD;
+
                         }
                         else
                         {
@@ -593,7 +632,7 @@ namespace Improvar.Controllers
                         TBHDR.DOCNO = DOCNO;
                         TBHDR.GOCD = VE.T_PHYSTK_HDR.GOCD;
                         TBHDR.TREM = VE.T_PHYSTK_HDR.TREM;
-
+                        TBHDR.PRCCD = VE.T_PHYSTK_HDR.PRCCD;
                         if (VE.DefaultAction == "E")
                         {
                             dbsql = MasterHelpFa.TblUpdt("T_PHYSTK", TBHDR.AUTONO, "E");
@@ -1042,5 +1081,30 @@ namespace Improvar.Controllers
         //        }
         //    }
         //}
+        public ActionResult Print(TransactionPhyStockEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                ReportViewinHtml ind = new ReportViewinHtml();
+                ind.DOCCD = DOC_CD;
+                ind.FDOCNO = DOCNO;
+                ind.TDOCNO = DOCNO;
+                ind.FDT = DOCDT;
+                ind.TDT = DOCDT;
+                ind.MENU_PARA = VE.MENU_PARA;
+                if (TempData["printparameter"] != null)
+                {
+                    TempData.Remove("printparameter");
+                }
+                TempData["printparameter"] = ind;
+                return Content("");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
     }
 }

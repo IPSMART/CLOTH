@@ -49,7 +49,7 @@
     }
 </script>
 <script>
-    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD, DOCDT, TAXGRPCD, GOCD, PRCCD, ALLMTRLJOBCD) {
+    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD, DOCDT, TAXGRPCD, GOCD, PRCCD, ALLMTRLJOBCD,HelpFrom) {
         debugger;
         var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
         var PARTCD = document.getElementById(PARTCD.id).value;
@@ -59,9 +59,10 @@
         var PRCCD = document.getElementById(PRCCD.id).value;
         var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value;
         //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
-        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD
+        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD+ String.fromCharCode(181) + HelpFrom
         if (id == "") {
             $("#" + BARNO.id).val("");
+            $("#STYLENO").val("");
             //$("#" + CLASS1NM.id).val("");
         }
         else {
@@ -96,6 +97,8 @@
                         document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
                         document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
                         document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
+                        document.getElementById("STYLENO").value = returncolvalue(res[0], "STYLENO");
+
                         if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
                             $("#PDESIGN").prop('readonly', false);
                             $("#divPDESIGN").show();
@@ -121,14 +124,29 @@
                         hlpblurval = id;
                         document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
                         FillImageModal();
+
                         $("#" + BARNO.id).val("");
-                        $("#BARCODE").focus();
+                        $("#STYLENO").val("");
+                        if (HelpFrom == "Bar") {
+                            $("#BARCODE").focus();
+                        }
+                        else{
+                            $("#STYLENO").focus();
+                        }
                     }
                     else {
-
-                        msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
-                        $("#" + BARNO.id).val("");
-                        message_value = BARNO.id;
+                        if (HelpFrom == "Bar") {
+                            msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
+                            $("#" + BARNO.id).val("");
+                            $("#STYLENO").val("");
+                            message_value = BARNO.id;
+                        }
+                        else{
+                            msgInfo("Invalid Design No./Item ! Please Enter a Valid Design No./Item !!");
+                            $("#STYLENO").val("");
+                            $("#" + BARNO.id).val("");
+                            message_value = "STYLENO";
+                        }
 
                     }
                 },
@@ -308,8 +326,8 @@
 <script>
     function PriceOpen() {
         if (!emptyFieldCheck("Please enter Bar Code", "BAR_CODE")) { return false; }
-            $('.PopUp_Backround').show();
-            $("#popupAddNewPrice").show();
+        $('.PopUp_Backround').show();
+        $("#popupAddNewPrice").show();
     }
     function PriceClose() {
         ClearAllTextBoxes("P_EFFDT_NEW,P_CPRATE_NEW,P_WPRATE_NEW,P_RPRATE_NEW");
@@ -357,8 +375,8 @@
         </div>
         <div class="col-md-8">
             <div class="editor-field">
-                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=7','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD,PARTCD,DOCDT,TAXGRPCD,GOCD,PRCCD,ALLMTRLJOBCD);", @placeholder = "Bar Code", maxlength = 25 } })
-                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=7','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=7/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/barhelpcap')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD,PARTCD,DOCDT,TAXGRPCD,GOCD,PRCCD,ALLMTRLJOBCD,'Bar');", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=7/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/barhelpcap')" />
                 @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
                 @Html.HiddenFor(model => model.GOCD, new { id = "GOCD" })
                 @Html.HiddenFor(model => model.PARTCD, new { id = "PARTCD" })
@@ -366,6 +384,20 @@
                 @Html.HiddenFor(model => model.PRCCD, new { id = "PRCCD" })
                 @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
                 @Html.HiddenFor(model => model.COMMONUNIQBAR, new { id = "COMMONUNIQBAR" })
+                <input type="hidden" id="barhelpcap" value="Bar" />
+
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="editor-label" style="margin-top: 6px;">
+                @Html.Label("", "Design No./Item")
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=7','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/stylehelpcap')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD,PARTCD,DOCDT,TAXGRPCD,GOCD,PRCCD,ALLMTRLJOBCD,'styleno');", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=7','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/stylehelpcap')" />
+                <input type="hidden" id="stylehelpcap" value="styleno" />
             </div>
         </div>
         <div class="col-md-3">
@@ -390,7 +422,7 @@
 
             </div>
         </div>
-        </div>
+    </div>
         <div class="row">
             <div class="col-md-1">
                 <div class="editor-field" style="margin-top: 6px;">
@@ -605,58 +637,58 @@
                                 <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
 
             </div>*@
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="row">
-                    <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
-                        @Html.Label("", "BarCode Image")
-                    </div>
-                </div>
-                @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-                <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
-                    <div id="myCarousel" class="carousel" data-ride="carousel">
-                        <div class="carousel-inner" id="div_carousel_inner">
-                            <div class="item active">
-                                <img src="" alt="Los Angeles" style="width:100%;">
-                            </div>
-                            <div class="item">
-                                <img src="" alt="Chicago" style="width:100%;">
-                            </div>
-                        </div>
-                        <!-- Left and right controls -->
-                        <a class="left  carousel-control arrow-left" id="prev">
-                            <span class="glyphicon glyphicon-chevron-left"></span>
-                        </a>
-                        <a class="right  carousel-control arrow-right" id="next">
-                            <span class="glyphicon glyphicon-chevron-right"></span>
-                        </a>
-                    </div>
-                </div>
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="row">
+                                                    <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
+                                                        @Html.Label("", "BarCode Image")
+                                                    </div>
+                                                </div>
+                                                @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+                                                <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                                                    <div id="myCarousel" class="carousel" data-ride="carousel">
+                                                        <div class="carousel-inner" id="div_carousel_inner">
+                                                            <div class="item active">
+                                                                <img src="" alt="Los Angeles" style="width:100%;">
+                                                            </div>
+                                                            <div class="item">
+                                                                <img src="" alt="Chicago" style="width:100%;">
+                                                            </div>
+                                                        </div>
+                                                        <!-- Left and right controls -->
+                                                        <a class="left  carousel-control arrow-left" id="prev">
+                                                            <span class="glyphicon glyphicon-chevron-left"></span>
+                                                        </a>
+                                                        <a class="right  carousel-control arrow-right" id="next">
+                                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-            </div>
-            <div class="PopUp_Backround">
-                <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                    @Html.Partial("_Rep_Bar_History_AddNewBarno")
-                </div>
-                <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                    @Html.Partial("_Rep_Bar_History_AddNewPrice")
-                </div>
-            </div>
-        </div>
-        @*<div class="row" style="margin-top:20PX">
-                <div class="col-lg-6">
-                    <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
+                                            </div>
+                                            <div class="PopUp_Backround">
+                                                <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                                                    @Html.Partial("_Rep_Bar_History_AddNewBarno")
+                                                </div>
+                                                <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                                                    @Html.Partial("_Rep_Bar_History_AddNewPrice")
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="row" style="margin-top:20PX">
+                                                <div class="col-lg-6">
+                                                    <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
 
-                </div>
-            </div>*@
-        @*<div class="row" style="background-color:#c4b9b9;width:100%">
-            <div id="PartialdivEWBILL">*@
-        @*@Html.Partial("_Rep_Bar_History")*@
-        @*</div>
-            </div>*@
-        <div class="container">
-            <div id="helpDIV">
+                                                </div>
+                                            </div>*@
+                                        @*<div class="row" style="background-color:#c4b9b9;width:100%">
+                                            <div id="PartialdivEWBILL">*@
+                                        @*@Html.Partial("_Rep_Bar_History")*@
+                                        @*</div>
+                                            </div>*@
+                                        <div class="container">
+                                            <div id="helpDIV">
 
-            </div>
-        </div>
-        }
+                                            </div>
+                                        </div>
+                                        }

@@ -20,7 +20,7 @@ namespace Improvar.ViewModels
         public string DRCR { get; set; }
         public string GONM { get; set; }
         public string PRCNM { get; set; }
-        public string PRCCD { get; set; }
+        //public string PRCCD { get; set; }
         public string BARCODE { get; set; }
         public string SHADE { get; set; }
         public string STYLENO { get; set; }

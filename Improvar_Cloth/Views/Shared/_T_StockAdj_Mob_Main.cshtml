@@ -1,0 +1,68 @@
+﻿@model Improvar.ViewModels.TransactionStkConvMobEntry
+<style>
+    div.mobcard {
+        height: 60px;
+        overflow-y: auto;
+        padding: 5px;
+    }
+</style>
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    @if (Model.DefaultView == true)
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.TMOBDTL != null)
+        {
+            int i = 0, maxR = Model.TMOBDTL.Count - 1, cnt = 0;
+            while (i <= maxR)
+            {
+                cnt = 0;
+                <div class="row">
+                    @while (cnt < 3)
+                    {
+                        <div class="col-md-7 col-sm-4 col-xs-4">
+                            <div class="thumbnail">
+                                <div>
+                                    <div class="mobcard" style="background-color:@Model.TMOBDTL[i].FAVCOLR;">
+                                        <label><b>@Model.TMOBDTL[i].ITSTYLE</b></label>
+                                    </div>
+                                    <div style="background-color:bisque;">
+                                        <div class="row">
+                                            <div class="col-lg-2 col-sm-2 col-xs-2">
+                                                <div class="editor-label mobfont" style="margin-top: 6px;">
+                                                    @Html.Label("", "Qty.")
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-10 col-sm-8 col-xs-8">
+                                                <div class="editor-field mobfont">
+                                                    @Html.EditorFor(model => Model.TMOBDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = "form-control", maxlength = 12 } })
+                                                    @Html.HiddenFor(model => model.TMOBDTL[i].CNTBARNO, new { id = "CNTBARNO_" + i })
+                                                    @Html.HiddenFor(model => model.TMOBDTL[i].BARNO, new { id = "BARNO_" + i })
+                                                    @Html.HiddenFor(model => model.TMOBDTL[i].ITCD, new { id = "ITCD_" + i })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        cnt++;
+                        i++;
+                        if (i > maxR)
+                        {
+                            break;
+                        }
+                    }
+                </div>
+
+                if (i > maxR)
+                {
+                    break;
+                }
+
+            }
+        }
+
+    }
+</div>

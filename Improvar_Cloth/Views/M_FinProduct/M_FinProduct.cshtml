@@ -22,13 +22,18 @@
             modeView();
             $("#SRC_FLAG").attr("readonly", false);
             $('form :input:enabled:visible:not([readonly]):first').focus();
+            SetColor('Y');
+            $("input[type='color']").css('pointer-events', 'none');
+
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#ITCD").attr("readonly", "readonly");
+            SetColor('Y');
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
+       
         $("#WaitingMode").hide();
     });
 </script>
@@ -886,6 +891,20 @@
         }
     }
 </script>
+<script>
+    function SetColor(action) {
+        debugger;
+        if (action == "Y")
+        {
+            var FAVCOLRCODE = $("#FAVCOLR").val();
+            $("#FAVCOLRCODE").val(FAVCOLRCODE);
+        }
+        else {
+            var FAVCOLRCODE = $("#FAVCOLRCODE").val();
+            $("#FAVCOLR").val(FAVCOLRCODE);
+        }
+    }
+</script>
 @section Scripts {
     <script>
         function ReloadWithData() {
@@ -1355,6 +1374,29 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Favorite")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.FAVITEMChecked)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Favorite Color")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    <input type="color" id="FAVCOLRCODE" value="#FFFFFF" onchange="SetColor()">
+                                    @Html.HiddenFor(a => a.M_SITEM.FAVCOLR, new { id = "FAVCOLR" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "De - Active")
                                 </div>
                             </div>
@@ -1371,7 +1413,7 @@
                                 <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
                                 <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
                                 <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
-                                            <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+                                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
                             }
                         </div>
                     </div>

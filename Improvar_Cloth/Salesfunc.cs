@@ -890,7 +890,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false)
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -975,7 +975,7 @@ namespace Improvar
             sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
             sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
             sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen,x.scmdiscrate,x.scmdisctype,c.commonuniqbar " + Environment.NewLine;
-            sql += ",p.conslcd,p.prefno,p.prefdt,c.slno " + Environment.NewLine;
+            sql += ",p.conslcd,p.prefno,p.prefdt,c.slno,d.favcolr " + Environment.NewLine;
             sql += "from " + Environment.NewLine;
 
             sql += "( " + Environment.NewLine;
@@ -1138,6 +1138,7 @@ namespace Improvar
             if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  " + Environment.NewLine;
             sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
             //if(MSYSCNFG.STKINCLPINV=="Y")  sql += "and p.doctag not in('PI')";
+            if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
 

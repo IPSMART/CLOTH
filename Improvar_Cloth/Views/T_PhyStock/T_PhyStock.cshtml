@@ -703,6 +703,25 @@
         });
     }
 </script>
+<script>
+    function pageprinting() {
+        debugger;
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: $('form').serialize() + "&DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("PhyStockPrint", "PhyStockPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -825,7 +844,7 @@
                     <div class="col-md-4">
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })*@
-                            @Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
+                            @Html.EditorFor(model => model.T_PHYSTK_HDR.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
                             <img src="~/Image/search.png" width="20px" height="20px" id="PRCCD_HELP" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />
 
                         </div>
@@ -835,7 +854,7 @@
                             @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
                         </div>
                     </div>
-                    <div class="col-md-7" style="width:auto;">
+                    @*<div class="col-md-7" style="width:auto;">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Price Increase/Decrease (%)")
                         </div>
@@ -844,7 +863,7 @@
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_CNTRL_HDR.DOCAMT, new { htmlAttributes = new { @class = "form-control", id = "DOCAMT", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @title = "Price Increase Decrease in %", @placeholder = "%" } })
                         </div>
-                    </div>
+                    </div>*@
                     @if (Model.DefaultAction == "V")
                     {
                         <div class="col-md-6">

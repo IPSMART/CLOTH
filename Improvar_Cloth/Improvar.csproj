@@ -305,6 +305,7 @@
     <Compile Include="Controllers\Rep_Pend_JobController.cs" />
     <Compile Include="Controllers\Rep_Job_regController.cs" />
     <Compile Include="Controllers\Rep_Pend_LRController.cs" />
+    <Compile Include="Controllers\PhyStockPrintController.cs" />
     <Compile Include="Controllers\Rep_PorterController.cs" />
     <Compile Include="Controllers\Rep_Rate_QueryController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
@@ -337,6 +338,7 @@
     <Compile Include="Controllers\T_SORDCANCController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
     <Compile Include="Controllers\T_StockAdjController.cs" />
+    <Compile Include="Controllers\T_StockAdj_MobController.cs" />
     <Compile Include="Controllers\User_GuideController.cs" />
     <Compile Include="DataSets\DSPrintBarcode.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -568,6 +570,7 @@
     <Compile Include="Models\TBILTY_POPUP.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
+    <Compile Include="Models\TMOBDTL.cs" />
     <Compile Include="Models\TPHYSTK.cs" />
     <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
@@ -620,6 +623,7 @@
     <Compile Include="Models\T_JBILL.cs" />
     <Compile Include="Models\T_JBILLDTL.cs" />
     <Compile Include="Models\T_KARDTL.cs" />
+    <Compile Include="Models\T_MOBDTL.cs" />
     <Compile Include="Models\T_PHYSTK.cs" />
     <Compile Include="Models\T_PHYSTK_HDR.cs" />
     <Compile Include="Models\T_PROGBOM.cs" />
@@ -952,6 +956,7 @@
     <Compile Include="ViewModels\TransactionPhyStockEntry.cs" />
     <Compile Include="ViewModels\TransactionSaleEntry.cs" />
     <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
+    <Compile Include="ViewModels\TransactionStkConvMobEntry.cs" />
     <Compile Include="ViewModels\Trans_document_Attach.cs" />
     <Compile Include="ViewModels\TTxnAckEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
@@ -1516,6 +1521,9 @@
     <Content Include="Views\Rep_EWB_Changes\Rep_EWB_Changes.cshtml" />
     <Content Include="Views\Shared\_PopUp4.cshtml" />
     <Content Include="Views\Shared\_MobileLayout.cshtml" />
+    <Content Include="Views\T_StockAdj_Mob\T_StockAdj_Mob.cshtml" />
+    <Content Include="Views\Shared\_T_StockAdj_Mob_Main.cshtml" />
+    <Content Include="Views\PhyStockPrint\PhyStockPrint.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

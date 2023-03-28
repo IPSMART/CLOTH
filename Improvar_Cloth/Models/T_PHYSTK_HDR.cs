@@ -40,5 +40,7 @@ namespace Improvar.Models
 
         [StringLength(100)]
         public string TREM { get; set; }
+        [StringLength(4)]
+        public string PRCCD { get; set; }
     }
 }

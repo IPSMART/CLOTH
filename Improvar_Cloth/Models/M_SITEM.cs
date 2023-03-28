@@ -95,5 +95,10 @@ namespace Improvar.Models
         public double? CONVQTYPUNIT { get; set; }
         [StringLength(3)]
         public string CONVUOMCD { get; set; }
+
+        [StringLength(1)]
+        public string FAVITEM { get; set; }
+        [StringLength(50)]
+        public string FAVCOLR { get; set; }
     }
 }

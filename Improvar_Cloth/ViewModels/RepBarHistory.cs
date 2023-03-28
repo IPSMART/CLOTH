@@ -73,6 +73,8 @@ namespace Improvar.ViewModels
         public NEWBARDATA NEWBARDATA { get; set; }
         public string COMMONUNIQBAR { get; set; }
         public NEWBARDATA NEWPRICEDATA { get; set; }
+        public string STYLENO { get; set; }
+
     }
     public class NEWBARDATA
     {

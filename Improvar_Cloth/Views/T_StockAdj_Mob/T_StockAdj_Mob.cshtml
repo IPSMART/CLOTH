@@ -1,0 +1,216 @@
+﻿@model Improvar.ViewModels.TransactionStkConvMobEntry
+@{
+    string PageControllerName = "T_StockAdj_Mob";
+    Layout = "~/Views/Shared/_MobileLayout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<style>
+    .mobfont{
+          font-size: 10px;
+    }
+    .form-control-mob{
+        font-size:11px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#WaitingMode").show();
+        //$("#ok_nav").hide();
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+                $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });          
+        }
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    function GetItem() {
+        debugger;
+        var ITGRPCD = $("#ITGRPCD").val();
+        if (ITGRPCD == null) ITGRPCD = "";
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetItemData", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: "&docdt=" + $("#DOCDT").val() + "&slcd=" + $("#SLCD").val() + "&gocd=" + $("#GOCD").val() + "&itgrpcd=" + ITGRPCD,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivMain").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
+        <input type="hidden" id="ImageName" value="" />
+        <input type="hidden" id="ImageStr" value="" />
+        @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
+        @Html.HiddenFor(a => a.Delete, new { id = "Delete" })
+        @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
+        @Html.HiddenFor(a => a.T_MOBDTL.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label mobfont" style="margin-top: 6px;">
+                        @Html.Label("", "Document Date")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field mobfont">
+                        @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control form-control-mob", id = "DOCDT", onchange = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        @Html.HiddenFor(model => model.T_CNTRL_HDR.DOCCD, new { id = "DOCCD" })
+                        @Html.HiddenFor(model => model.T_CNTRL_HDR.DOCONLYNO, new { id = "DOCONLYNO" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label mobfont" style="margin-top: 6px;">
+                        @Html.Label("", "Party Code")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field mobfont">
+                        @Html.EditorFor(model => model.T_CNTRL_HDR.SLCD, new { htmlAttributes = new { @class = "form-control form-control-mob textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0')" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field mobfont">
+                        @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control form-control-mob", id = "SLNM", maxlength = 45, @title = @ViewBag.Partycaption + " Name", @placeholder = @ViewBag.Partycaption + " Name", @readonly = "readonly", tabindex = "-1" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label mobfont" style="margin-top: 6px;">
+                        @Html.Label("", "Godown")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field mobfont">
+                        @Html.DropDownListFor(model => model.T_MOBDTL.GOCD, new SelectList(Model.DropDown_list_GODOWN, "Value", "Text"), new { @class = "form-control form-control-mob", id = "GOCD" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label mobfont" style="margin-top: 6px;">
+                        @Html.Label("", "Group")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field mobfont">
+                        @Html.DropDownListFor(model => model.ITGRPCD, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control form-control-mob", id = "ITGRPCD" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label mobfont" style="margin-top: 6px;">
+                        @Html.Label("", "Item Code")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field mobfont">
+                        @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control form-control-mob textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=ITCD=1/ITNM=ITNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=ITCD=1/ITNM=ITNM=0');", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=ITCD=1/ITNM=ITNM=0')" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field mobfont">
+                        @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control form-control-mob", id = "ITNM", maxlength = 45, @title = @ViewBag.Partycaption + " Name", @placeholder = @ViewBag.Partycaption + " Name", @readonly = "readonly", tabindex = "-1" } })
+                    </div>
+                </div>
+            </div>
+            @if (Model.DefaultAction != "V")
+            {
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="GetItcd" accesskey="Z" value="Get Item" title="Click to Clear" onclick="GetItem()" />
+                </div>
+            </div>
+            }
+            <div class="row">
+                <div class="div-responsive row">
+                    <div id="partialdivMain" style="margin-top:10px;">
+                        @Html.Partial("_T_StockAdj_Mob_Main")
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+        </div>
+    </div>
+}

@@ -94,7 +94,9 @@ namespace Improvar.Controllers
                 string GOCD = data[4].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr() == "" ? "WP" : data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                bool exactbarno = data[7].retStr() == "Bar" ? true : false;
+
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD,"", exactbarno);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -104,6 +106,7 @@ namespace Improvar.Controllers
                     if (str.IndexOf(Cn.GCS()) == -1)
                     { return Content(str = ""); }
                     else {
+                        string barno = str.retCompValue("BARNO").retStr();
                         string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
                         sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel, ";
                         sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm ";
@@ -111,7 +114,7 @@ namespace Improvar.Controllers
                         sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i ";
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+)and ";
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barnoOrStyle.ToUpper() + "' ";
+                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barno.ToUpper() + "' ";
                         sql1 += "order by b.DOCDT,b.DOCNO ";
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
                         sql2 += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
@@ -128,7 +131,7 @@ namespace Improvar.Controllers
                         sql2 += "a.prccd = b.prccd(+) and a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.barno = d.barno(+) and d.barno is null) a ";
                         sql2 += ") a, ";
                         sql2 += "" + scmf + ".m_prclst b ";
-                        sql2 += "where a.prccd = b.prccd(+) and upper(a.barno) = '" + barnoOrStyle.ToUpper() + "' ";
+                        sql2 += "where a.prccd = b.prccd(+) and upper(a.barno) = '" + barno.ToUpper() + "' ";
                         DataTable tbatchdtl = masterHelp.SQLquery(sql1);
                         DataTable itempricedtl = masterHelp.SQLquery(sql2);
                         VE.BARCODEHISTORY = (from DataRow dr in tbatchdtl.Rows
