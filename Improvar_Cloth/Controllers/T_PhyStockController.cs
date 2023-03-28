@@ -226,6 +226,10 @@ namespace Improvar.Controllers
                 TPH = DB.T_PHYSTK_HDR.Find(aa[0].Trim());
                 TCH = DB.T_CNTRL_HDR.Find(TPH.AUTONO);
                 VE.GONM = TPH.GOCD.retStr() == "" ? "" : DBF.M_GODOWN.Where(a => a.GOCD == TPH.GOCD).Select(b => b.GONM).FirstOrDefault();
+                if (TPH.PRCCD.retStr() != "")
+                {
+                    VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == TPH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
+                }
                 string scmf = CommVar.FinSchema(UNQSNO); string Scm = CommVar.CurSchema(UNQSNO);
                 //string sql = "";
                 //sql += " select a.prccd, a.prcnm ";

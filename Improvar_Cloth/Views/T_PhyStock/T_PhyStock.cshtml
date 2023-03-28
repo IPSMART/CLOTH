@@ -62,7 +62,7 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Price Code", "PRCCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Price Code", "PRCCD")) { return false; }
         return true;
     }
 </script>
