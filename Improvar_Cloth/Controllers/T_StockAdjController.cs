@@ -271,10 +271,10 @@ namespace Improvar.Controllers
                 #region OUT TAB DATA
                 str = "";
                 str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,i.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
-                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
+                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.autono adjautono ";
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
-                str += Scm + ".M_MTRLJOBMST p ";
-                str += "where  i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
+                str += Scm + ".M_MTRLJOBMST p," + Scm + ".T_MOBDTL q ";
+                str += "where  i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) and i.autono=q.adjautono(+) and i.barno=q.barno(+) ";
                 str += "and i.AUTONO = '" + sl.AUTONO + "' and i.SLNO < 1000 ";
                 str += "order by i.SLNO ";
                 DataTable tbl_out = Master_Help.SQLquery(str);
@@ -304,6 +304,7 @@ namespace Improvar.Controllers
                                         MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                                         MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
                                         MTBARCODE = dr["MTBARCODE"].retStr(),
+                                        ADJAUTONO = dr["adjautono"].retStr(),
                                     }).ToList();
 
                 VE.OUT_T_QNTY = VE.TBATCHDTL_OUT.Sum(a => a.QNTY).retDbl();
@@ -695,6 +696,10 @@ namespace Improvar.Controllers
 
                             dbsql = Master_Help.TblUpdt("t_cntrl_hdr_doc", TTXN.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                            dbsql = "update " + CommVar.CurSchema(UNQSNO) + ".T_MOBDTL set ADJAUTONO='' ";
+                            dbsql += "where ADJAUTONO='" + TTXN.AUTONO + "' ";
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         }
 
                         TTXNOTH.AUTONO = TTXN.AUTONO;
@@ -998,6 +1003,9 @@ namespace Improvar.Controllers
                                     TTXNDTL.MTRLJOBCD = GROUPDATA_OUT[i].MTRLJOBCD;
                                     dbsql = Master_Help.RetModeltoSql(TTXNDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+
+
                                 }
                             }
                             bool recoexist = false;
@@ -1147,6 +1155,12 @@ namespace Improvar.Controllers
 
                                         dbsql = Master_Help.RetModeltoSql(TBATCHDTL_OUT);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        if (VE.TBATCHDTL_OUT[i].ADJAUTONO.retStr() != "")
+                                        {
+                                            dbsql = "update " + CommVar.CurSchema(UNQSNO) + ".T_MOBDTL set ADJAUTONO='" + TTXN.AUTONO + "' ";
+                                            dbsql += "where autono='" + VE.TBATCHDTL_OUT[i].ADJAUTONO + "' and barno='" + VE.TBATCHDTL_OUT[i].BARNO + "' ";
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        }
                                     }
                                 }
                             }
@@ -1211,6 +1225,10 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
+                        dbsql = "update " + CommVar.CurSchema(UNQSNO) + ".T_MOBDTL set ADJAUTONO='' ";
+                        dbsql += "where ADJAUTONO='" + VE.T_TXN.AUTONO + "' ";
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
                         dbsql = Master_Help.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
@@ -1291,7 +1309,7 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
-                dbnotsave:;
+                    dbnotsave:;
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
@@ -1357,5 +1375,100 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetMobStockData(StockAdjustmentsConversionEntry VE, string GOCD, string DOCDT, string SKIPAUTONO)
+        {
+            DataTable dt = new DataTable();
+            Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+
+            string sql = "select b.docno,to_char(b.docdt,'DD/MM/YYYY')DOCDT,b.autono,a.gocd,c.gonm,e.itgrpcd,e.itgrpnm,d.itcd,d.styleno||' '||d.itnm itstyle,a.STKTYPE,d.uomcd," + Environment.NewLine;
+            sql += "d.FAVCOLR,a.barno,b.slcd,nvl(f.slarea,f.district) slarea,f.slnm,nvl(a.qnty,0)qnty,a.mtrljobcd,g.mtrljobnm " + Environment.NewLine;
+            sql += "from " + scm + ".T_MOBDTL a," + scm + ".T_CNTRL_HDR b," + scmf + ".M_GODOWN c," + scm + ".t_batchmst c," + scm + ".m_sitem d, " + Environment.NewLine;
+            sql += "" + scm + ".m_group e," + scmf + ".m_subleg f," + scm + ".m_mtrljobmst g " + Environment.NewLine;
+            sql += "where a.AUTONO=b.AUTONO and a.gocd=c.gocd and a.barno=c.barno and c.itcd=d.itcd and d.itgrpcd=e.itgrpcd and b.slcd=f.slcd(+) and a.mtrljobcd=g.mtrljobcd(+) " + Environment.NewLine;
+            sql += "and a.gocd='" + GOCD + "' ";
+            sql += "and b.docdt <= to_date('" + DOCDT + "','dd/mm/yyyy') " + Environment.NewLine;
+            sql += "and( ";
+            if (SKIPAUTONO.retStr() != "")
+            {
+                sql += "a.ADJAUTONO not in (select autono from " + scm + ".T_MOBDTL where autono = '" + SKIPAUTONO + "') or ";
+            }
+            sql += "a.ADJAUTONO is null ) ";
+
+            dt = Master_Help.SQLquery(sql);
+
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                VE.TMOBDTL = (from r1 in dt.AsEnumerable()
+                              select new TMOBDTL
+                              {
+                                  AUTONO = r1["autono"].retStr(),
+                                  DOCNO = r1["docno"].retStr(),
+                                  DOCDT = r1["docdt"].retDateStr(),
+                                  BARNO = r1["barno"].retStr(),
+                                  ITCD = r1["itcd"].retStr(),
+                                  ITSTYLE = r1["itstyle"].retStr(),
+                                  STKTYPE = r1["STKTYPE"].retStr(),
+                                  MTRLJOBCD = r1["MTRLJOBCD"].retStr(),
+                                  MTRLJOBNM = r1["MTRLJOBNM"].retStr(),
+                                  QNTY = r1["QNTY"].retDbl(),
+                                  ITGRPCD = r1["ITGRPCD"].retStr(),
+                                  ITGRPNM = r1["ITGRPNM"].retStr(),
+                                  UOM = r1["uomcd"].retStr(),
+                              }).ToList();
+
+                if (VE.TBATCHDTL_OUT != null && VE.TBATCHDTL_OUT.Count > 0)
+                {
+                    var outdata = (from a in VE.TBATCHDTL_OUT where a.ADJAUTONO.retStr() != "" select a.ADJAUTONO + a.BARNO).ToArray();
+                    VE.TMOBDTL = VE.TMOBDTL.Where(a => !outdata.Contains(a.AUTONO + a.BARNO)).ToList();
+                }
+                int slno = 0;
+                for (int p = 0; p <= VE.TMOBDTL.Count - 1; p++)
+                {
+                    slno++;
+                    VE.TMOBDTL[p].SLNO = slno.retShort();
+                }
+
+            }
+
+            VE.DefaultView = true;
+            return PartialView("_T_StockAdj_Popup", VE);
+        }
+        public ActionResult SelectMobStockDetails(StockAdjustmentsConversionEntry VE)
+        {
+
+
+            if (VE.TMOBDTL != null && VE.TMOBDTL.Count > 0)
+            {
+                VE.TBATCHDTL_OUT = (from a in VE.TMOBDTL
+                                    where a.Checked == true
+                                    select new TBATCHDTL
+                                    {
+                                        ADJAUTONO = a.AUTONO,
+                                        BARNO = a.BARNO,
+                                        ITGRPCD = a.ITGRPCD,
+                                        ITGRPNM = a.ITGRPNM,
+                                        ITCD = a.ITCD,
+                                        ITSTYLE = a.ITSTYLE,
+                                        UOM = a.UOM,
+                                        STKTYPE = a.STKTYPE,
+                                        MTRLJOBCD = a.MTRLJOBCD,
+                                        MTRLJOBNM = a.MTRLJOBNM,
+                                        QNTY = a.QNTY,
+                                    }).ToList();
+
+                int slno = 0;
+                for (int p = 0; p <= VE.TBATCHDTL_OUT.Count - 1; p++)
+                {
+                    slno++;
+                    VE.TBATCHDTL_OUT[p].SLNO = slno.retShort();
+                }
+
+            }
+            ModelState.Clear();
+            VE.DropDown_list_StkType = Master_Help.STK_TYPE();
+            VE.DefaultView = true;
+            return PartialView("_T_StockAdj_OUT_TAB", VE);
+        }
+
     }
 }

@@ -80,6 +80,12 @@ namespace Improvar.Models
         public double CNTBARNO { get; set; }
         public bool Checked { get; set; }
         public string FAVCOLR { get; set; }
+        public string DOCNO { get; set; }
+        public string DOCDT { get; set; }
+        public string ITGRPCD { get; set; }
+        public string ITGRPNM { get; set; }
+        public string UOM { get; set; }
+        public string MTRLJOBNM { get; set; }
 
     }
 }

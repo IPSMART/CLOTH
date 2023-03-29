@@ -97,7 +97,7 @@
             type: 'POST',
             url: "@Url.Action("GetItemData", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
-            data: "&docdt=" + $("#DOCDT").val() + "&slcd=" + $("#SLCD").val() + "&gocd=" + $("#GOCD").val() + "&itgrpcd=" + ITGRPCD,
+            data: "&docdt=" + $("#DOCDT").val() + "&slcd=" + $("#SLCD").val() + "&gocd=" + $("#GOCD").val() + "&itgrpcd=" + ITGRPCD + "&itcd=" + $("#ITCD").val(),
             success: function (result) {
                 $("#WaitingMode").hide();
                 $("#partialdivMain").html(result);
@@ -199,8 +199,8 @@
                 </div>
                 <div class="col-md-3">
                     <div class="editor-field mobfont">
-                        @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control form-control-mob textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=ITCD=1/ITNM=ITNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=ITCD=1/ITNM=ITNM=0');", @placeholder = "Code", maxlength = 8 } })
-                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=ITCD=1/ITNM=ITNM=0')" />
+                        @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control form-control-mob textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=ITCD=2/ITNM=ITSTYLE=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=ITCD=2/ITNM=ITSTYLE=0');", @placeholder = "Code", maxlength = 10 } })
+                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=ITCD=2/ITNM=ITSTYLE=0')" />
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -213,7 +213,7 @@
             {
             <div class="row">
                 <div class="col-md-4">
-                    <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="GetItcd" accesskey="Z" value="Get Item" title="Click to Clear" onclick="GetItem()" />
+                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="GetItcd" accesskey="Z" value="Get Favorite Item" title="Click to Clear" onclick="GetItem()" />
                 </div>
             </div>
             }

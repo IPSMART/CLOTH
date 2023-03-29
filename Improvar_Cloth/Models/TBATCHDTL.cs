@@ -198,5 +198,6 @@ namespace Improvar.Models
         public double? CONVQTYPUNIT { get; set; }
         [StringLength(1)]
         public string FREESTK { get; set; }
+        public string ADJAUTONO { get; set; }
     }
 }

@@ -35,5 +35,7 @@ namespace Improvar.ViewModels
         public M_SYSCNFG M_SYSCNFG { get; set; }
         public List<BARGEN_TYPE> BARGEN_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
+        public List<TMOBDTL> TMOBDTL { get; set; }
+
     }
 }

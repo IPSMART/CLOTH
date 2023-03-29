@@ -1,0 +1,93 @@
+﻿@model Improvar.ViewModels.StockAdjustmentsConversionEntry
+<script>
+    $("#popup").ready(function () {
+        $("#dragclass").draggable({ cursor: "move" });
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); }
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_StockAdj_PopuMob_GRID'));
+        FooterFilter('T_StockAdj_PopuMob_GRID');
+    });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:500px;height:auto;overflow-x:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="PO_Mob_IN_FS" name="PO_Mob_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_StockAdj_PopuMob_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bar No. Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:381px;">
+                    <table id="T_StockAdj_PopuMob_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 947px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;padding-left:7px;padding-right:7px;">
+                                    <input type="checkbox" name="Test" id="allchkord" onclick="SetAllCheckBoxesFilter(this, 'T_StockAdj_PopuMob_GRID', 'Mob_Checked_')" />
+                                </th>
+                                <th class="sticky-cell" style="width:27px;">SL No.</th>
+                                <th class="" style="width:129px;">Docno.</th>
+                                <th class="" style="width:129px;">Doc Date</th>
+                                <th class="" style="width:129px;">Bar No.</th>
+                                <th class="">Item Name</th>
+                                <th class="" style="width:50px;text-align:right;">Qnty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TMOBDTL != null)
+                            {
+                                for (int i = 0; i <= Model.TMOBDTL.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.TMOBDTL[i].Checked, new { id = "Mob_Checked_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].AUTONO, new { id = "Mob_AUTONO_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].ITCD, new { id = "Mob_ITCD_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].STKTYPE, new { id = "Mob_STKTYPE_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].MTRLJOBCD, new { id = "Mob_MTRLJOBCD_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].MTRLJOBNM, new { id = "Mob_MTRLJOBNM_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].ITGRPCD, new { id = "Mob_ITGRPCD_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].ITGRPNM, new { id = "Mob_ITGRPNM_" + i })
+                                            @Html.HiddenFor(model => model.TMOBDTL[i].UOM, new { id = "Mob_UOM_" + i })
+                                        </td>
+                                        <td class="sticky-cell">
+                                            @Html.TextBoxFor(model => Model.TMOBDTL[i].SLNO, new { id = "Mob_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TMOBDTL[i].DOCNO, new { id = "Mob_DOCNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TMOBDTL[i].DOCDT, new { id = "Mob_DOCDT_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TMOBDTL[i].BARNO, new { id = "Mob_BARNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TMOBDTL[i].ITSTYLE, new { id = "Mob_ITSTYLE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TMOBDTL[i].QNTY, new { htmlattributes = new { id = "Mob_QNTY_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <input type="hidden" id="pendorderpopup" />
+        <input type="button" class="btn btn-success" id="btnSelectTTXNDTLDetails" value="Select" style="padding: 2px 5px 2px 5px;" onclick="SelectMobStockDetails();" />
+        <input type="button" class="btn btn-danger" id="btnCancelTTXNDTLDetails" value="Close" style="padding: 2px 5px 2px 5px;" onclick="CloseMobStockDetails();" />
+    </div>
+</div>

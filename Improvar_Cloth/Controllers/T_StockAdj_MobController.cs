@@ -262,7 +262,7 @@ namespace Improvar.Controllers
                     dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TMOBDTL.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, Ddate, TMOBDTL.EMD_NO.retShort(), DOCONLYNO, Convert.ToDouble(DOCONLYNO), null, null, null, VE.T_CNTRL_HDR.SLCD);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-
+                    double dbqty = 0;
                     if (VE.TMOBDTL != null)
                     {
                         DataTable dt = (DataTable)TempData["ItemDetails_T_StockAdj_Mob" + VE.MENU_PARA]; TempData.Keep();
@@ -281,6 +281,7 @@ namespace Improvar.Controllers
                         int slno = 1;
                         VE.TMOBDTL = VE.TMOBDTL.OrderBy(a => a.ITCD).ToList();
                         int i = 0, maxR = VE.TMOBDTL.Count - 1;
+
                         while (i <= maxR)
                         {
                             string itcd = VE.TMOBDTL[i].ITCD.retStr();
@@ -315,7 +316,7 @@ namespace Improvar.Controllers
 
                                     dbsql = masterHelp.RetModeltoSql(TMOBDTL1);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
+                                    dbqty += VE.TMOBDTL[i].QNTY.retDbl();
                                 }
                                 i++;
                                 if (i > maxR) break;
@@ -324,7 +325,10 @@ namespace Improvar.Controllers
                             if (i > maxR) break;
                         }
                     }
-
+                    if (dbqty == 0)
+                    {
+                        ContentFlg = "Quantity not entered"; goto dbnotsave;
+                    }
                     if (VE.DefaultAction == "A")
                     {
                         ContentFlg = "1" + " (Doc No. " + DOCPATTERN + ")~" + TMOBDTL.AUTONO;
@@ -389,7 +393,7 @@ namespace Improvar.Controllers
                 var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Group" + Cn.GCS() + "autono";
                 for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["itgrpnm"] + " (" + tbl.Rows[j]["itgrpcd"] + ")" + "</td><td>" + tbl.Rows[j]["gonm"] + " (" + tbl.Rows[j]["gocd"] + ")" + "</td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["gonm"] + " (" + tbl.Rows[j]["gocd"] + ")" + "</td><td>" + tbl.Rows[j]["itgrpnm"] + " (" + tbl.Rows[j]["itgrpcd"] + ")" + "</td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
             }
@@ -449,7 +453,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetItemData(string docdt, string slcd, string gocd, string itgrpcd)
+        public ActionResult GetItemData(string docdt, string slcd, string gocd, string itgrpcd, string itcd)
         {
             try
             {
@@ -458,8 +462,15 @@ namespace Improvar.Controllers
                 gocd = gocd.retStr() == "" ? "" : gocd.retStr().retSqlformat();
                 slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
                 itgrpcd = itgrpcd.retStr() == "" ? "" : itgrpcd.retStr().retSqlformat();
-
-                var tbl = salesfunc.GetStock(docdt.retStr(), gocd.retStr(), "", "", "'FS'", "", itgrpcd, "", "WP", "COO1", "", "", true, true, "", "", false, false, true, "", true, "", slcd, false, true);
+                DataTable tbl = new DataTable();
+                if (itcd.retStr() == "")
+                {
+                    tbl = salesfunc.GetStock(docdt.retStr(), gocd.retStr(), "", "", "'FS'", "", itgrpcd, "", "WP", "COO1", "", "", true, true, "", "", false, false, true, "", true, "", slcd, false, true);
+                }
+                else
+                {
+                    tbl = salesfunc.GetStock(docdt.retStr(), gocd.retStr(), "", itcd.retSqlformat(), "'FS'", "", itgrpcd, "", "WP", "COO1", "", "", true, true, "", "", false, false, true, "", true, "", slcd, false);
+                }
                 TempData["ItemDetails_T_StockAdj_Mob" + VE.MENU_PARA] = tbl;
 
                 if (tbl != null && tbl.Rows.Count > 0)

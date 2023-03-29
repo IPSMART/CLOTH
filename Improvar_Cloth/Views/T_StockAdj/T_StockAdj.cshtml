@@ -239,10 +239,75 @@
         var DOCDT = $("#DOCDT").val();
         var BARNO = ""; var callfrm = "T_StockAdj";
         for (var i = 0; i <= $("#_T_StockAdj_IN_TAB_GRID > tbody > tr").length - 1; i++) {
-            BARNO +="'"+ $("#IN_BARNO_" + i).val()+"',";
+            BARNO += "'" + $("#IN_BARNO_" + i).val() + "',";
         }
         BARNO = BARNO.substring(0, BARNO.length - 1);
         window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT + "&barno=" + BARNO + "&callfrm=" + callfrm, "_blank")
+    }
+</script>
+<script>
+    function GetMobStockData() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
+
+        var GOCD = $("#GOCD").val();
+        var DOCDT = $("#DOCDT").val();
+        var SKIPAUTONO = $("#AUTONO").val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("GetMobStockData", PageControllerName)',
+            data: $('form').serialize() + "&GOCD=" + GOCD + "&DOCDT=" + DOCDT + "&SKIPAUTONO=" + SKIPAUTONO,
+            success: function (result) {
+                $("#popup").html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function SelectMobStockDetails() {
+        var Count = 0;
+        var GridRow = $("#T_StockAdj_PopuMob_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var Check = document.getElementById("Mob_Checked_" + i).checked;
+            if (Check == true) {
+                Count = Count + 1;
+            }
+        }
+        if (Count == 0) {
+            msgInfo("Please select Barno !");
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("SelectMobStockDetails", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                var MSG = result.indexOf('_T_StockAdj_OUT_TAB_GRID');
+                if (MSG >= 0) {
+                    $("#partialdivOUT").html(result);
+                    $("#popup").html("");
+                }
+                else {
+                    msgInfo("" + result + " !");
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+
+    }
+    function CloseMobStockDetails() {
+        $("#popup").html("");
     }
 </script>
 @using (Html.BeginForm())
@@ -374,10 +439,24 @@
                 </ul>
                 <div class="tab-content">
                     <div id="OutTab" class="tab-pane fade in active" style="margin-top: 10px;">
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="GetStock" accesskey="Z" value="Get Stock" title="Click to Get Stock" onclick="GetMobStockData()" />
+                                </div>
+                            </div>
+                        }
                         <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivOUT">
                                     @Html.Partial("_T_StockAdj_OUT_TAB")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div>
+                                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:13%;right:2%;position:absolute;width:fit-content;">
                                 </div>
                             </div>
                         </div>
