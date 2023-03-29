@@ -38,6 +38,17 @@
 </script>
 <script>
     function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if ($("#GOCD").val() == "" || $("#GOCD").val() == null) {
+            msgInfo("Please Select Godown ! ");
+            message_value = "GOCD";
+            return;
+        }
+        if ($("#ITGRPCD").val() == "" || $("#ITGRPCD").val() == null) {
+            msgInfo("Please Select Group ! ");
+            message_value = "ITGRPCD";
+            return;
+        }
         return true;
     }
 </script>
@@ -69,6 +80,17 @@
 <script>
     function GetItem() {
         debugger;
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if ($("#GOCD").val() == "" || $("#GOCD").val() == null) {
+            msgInfo("Please Select Godown ! ");
+            message_value = "GOCD";
+            return;
+        }
+        if ($("#ITGRPCD").val() == "" || $("#ITGRPCD").val() == null) {
+            msgInfo("Please Select Group ! ");
+            message_value = "ITGRPCD";
+            return;
+        }
         var ITGRPCD = $("#ITGRPCD").val();
         if (ITGRPCD == null) ITGRPCD = "";
         $.ajax({
@@ -147,6 +169,7 @@
                 <div class="col-md-4">
                     <div class="editor-label mobfont" style="margin-top: 6px;">
                         @Html.Label("", "Godown")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -159,6 +182,7 @@
                 <div class="col-md-4">
                     <div class="editor-label mobfont" style="margin-top: 6px;">
                         @Html.Label("", "Group")
+                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-3">

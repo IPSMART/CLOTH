@@ -40,7 +40,7 @@
                         </div>
                     </div>
                 </div>
-                @*<div class="row">
+                <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "From Doc No")
@@ -64,7 +64,7 @@
 
                         </div>
                     </div>
-                </div>*@
+                </div>
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -97,17 +97,35 @@
                     </div>
                     <div class="col-lg-2">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                            @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
                    </div>
                     </div>
                     <div class="col-md-10">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control", id = "GONM", @TabIndex = -1, @placeholder = "Party Name", maxlength = 45, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.TEXTBOX2, new { htmlAttributes = new { @class = "form-control", id = "GONM", @TabIndex = -1, @placeholder = "Party Name", maxlength = 45, @readonly = "readonly" } })
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Details", new { @checked = "checked" })  @Html.Label("Details")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary")  @Html.Label("Date Wise Summary")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Super Summary")  @Html.Label("Super Summary")
+                        </label>
+                    </div>
+                </div>
+                @*<div class="row">
                     <div class="col-lg-2">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Date Wise Club")
@@ -118,19 +136,7 @@
                             @Html.CheckBoxFor(model => model.Checkbox1, new { id = "Checkbox1" })
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Report Format")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.DropDownListFor(model => model.TEXTBOX6, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
-                        </div>
-                    </div>
-                </div>
+                </div>*@
                <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
@@ -139,12 +145,6 @@
                             <input type="submit" value="Show Report" name="Command" class="btn btn-default" sstyle="width:66px;" formtarget="_blank" />
                         </div>
                     </div>
-                    @*<div class="col-md-4"></div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top:8px;">
-                            <input type="submit" value="Excel" name="Command" class="btn btn-info" style="width:66px;" formtarget="_blank" />
-                        </div>
-                    </div>*@
                 </div>
                
 

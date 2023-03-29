@@ -114,21 +114,25 @@ namespace Improvar.Controllers
                 {
                     tdate = Convert.ToString(Convert.ToDateTime(FC["TDT"].ToString())).Substring(0, 10);
                 }
-                //string fdocno = FC["FDOCNO"].ToString();
-                //string tdocno = FC["TDOCNO"].ToString();
+                string fdocno = FC["FDOCNO"].ToString();
+                string tdocno = FC["TDOCNO"].ToString();
                 string doccd = FC["doccd"].ToString();
-                string godown = VE.TEXTBOX3;
-                bool DateWiseClub = VE.Checkbox1;
+                string godown = VE.TEXTBOX1;
+                string ReportType = VE.TEXTBOX3;
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 string yr_cd = CommVar.YearCode(UNQSNO);
 
                 DataTable tbl = new DataTable();
-
-                string sql = "select a.barno||a.cutlength||a.rate chkfld, a.docno,a.docdt,a.autoslno,a.autono,c.itcd,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr, " + Environment.NewLine;
-                sql += "a.baleno,c.styleno||' '||c.itnm itstyle,c.styleno,d.gonm,d.prcnm " + Environment.NewLine;
+                string chk = "a.barno||a.cutlength||a.rate";
+                if (ReportType == "Super Summary")
+                {
+                    chk = "a.autono";
+                }
+                string sql = "select " + chk + " chkfld, a.docno,a.docdt,a.autoslno,a.autono,c.itcd,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr, " + Environment.NewLine;
+                sql += "a.baleno,c.styleno||' '||c.itnm itstyle,c.styleno,d.gonm,d.prcnm,a.trem,a.usr_id " + Environment.NewLine;
 
                 sql += "from  ( " + Environment.NewLine;
-                sql += "select d.docno,d.docdt,a.autono||a.slno autoslno,a.autono,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr,a.baleno,b.gocd,b.prccd " + Environment.NewLine;
+                sql += "select d.docno,d.docdt,a.autono||a.slno autoslno,a.autono,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr,a.baleno,b.gocd,b.prccd,b.trem,d.usr_id " + Environment.NewLine;
                 sql += "from " + scm + ".T_PHYSTK a, " + scm + ".T_PHYSTK_hdr b, " + scm + ".t_cntrl_hdr d " + Environment.NewLine;
                 sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and " + Environment.NewLine;
                 sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and " + Environment.NewLine;
@@ -136,13 +140,13 @@ namespace Improvar.Controllers
                 if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' " + Environment.NewLine;
                 if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') " + Environment.NewLine;
                 if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') " + Environment.NewLine;
-                //if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' " + Environment.NewLine;
-                //if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   " + Environment.NewLine;
+                if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' " + Environment.NewLine;
+                if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   " + Environment.NewLine;
                 sql += ") a, " + Environment.NewLine;
 
                 sql += "" + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scmf + ".m_godown d," + scmf + ".m_uom e, " + scmf + ".M_PRCLST d " + Environment.NewLine;
                 sql += "where a.barno=b.barno and b.itcd=c.itcd(+) and a.gocd=d.gocd(+) and c.uomcd=e.uomcd(+) and a.prccd=d.prccd(+) " + Environment.NewLine;
-                if (DateWiseClub == true)
+                if (ReportType == "Date Wise Summary")
                 {
                     sql += "order by a.docdt,a.barno,c.styleno||' '||c.itnm,a.cutlength,a.rate ";
                 }
@@ -165,47 +169,69 @@ namespace Improvar.Controllers
                     HtmlConverter HC = new HtmlConverter();
 
                     HC.RepStart(IR, 2);
-                    if (DateWiseClub == false)
+                    if (ReportType == "Details" || ReportType == "Date Wise Summary")
+                    {
+                        if (ReportType == "Details")
+                        {
+                            HC.GetPrintHeader(IR, "docno", "string", "c,12", "Doc No.");
+                            HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Date");
+                            HC.GetPrintHeader(IR, "gonm", "string", "c,12", "Godown");
+                            HC.GetPrintHeader(IR, "prcnm", "string", "c,12", "Price");
+                        }
+                        HC.GetPrintHeader(IR, "barno", "string", "c,25", "Bar No.");
+                        HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Style No.");
+                        HC.GetPrintHeader(IR, "cutlength", "double", "c,6,2", "Length");
+                        HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
+                        HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
+                        HC.GetPrintHeader(IR, "rate", "double", "c,14,2", "Rate");
+                        if (ReportType == "Details")
+                        {
+                            HC.GetPrintHeader(IR, "stktype", "string", "c,12", "Stock Type");
+                            HC.GetPrintHeader(IR, "itrem", "string", "c,15", "Item Remarks");
+                        }
+                    }
+                    else
                     {
                         HC.GetPrintHeader(IR, "docno", "string", "c,12", "Doc No.");
                         HC.GetPrintHeader(IR, "docdt", "string", "c,12", "Date");
-                        HC.GetPrintHeader(IR, "gonm", "string", "c,12", "Godown");
-                        HC.GetPrintHeader(IR, "prcnm", "string", "c,12", "Price");
-                    }
-                    HC.GetPrintHeader(IR, "barno", "string", "c,25", "Bar No.");
-                    HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Style No.");
-                    HC.GetPrintHeader(IR, "cutlength", "double", "c,6,2", "Length");
-                    HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
-                    HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
-                    HC.GetPrintHeader(IR, "rate", "double", "c,14,2", "Rate");
-                    if (DateWiseClub == false)
-                    {
-                        HC.GetPrintHeader(IR, "stktype", "string", "c,12", "Stock Type");
-                        HC.GetPrintHeader(IR, "itrem", "string", "c,15", "Item Remarks");
+                        HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
+                        HC.GetPrintHeader(IR, "trem", "string", "c,15", "Remarks");
+                        HC.GetPrintHeader(IR, "usr_id", "string", "c,15", "Created By");
                     }
                     Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
                     i = 0; maxR = tbl.Rows.Count - 1;
                     string fld = "autoslno";
-                    if (DateWiseClub == true)
+                    if (ReportType == "Date Wise Summary")
                     {
                         fld = "docdt";
                     }
+                    else if (ReportType == "Super Summary")
+                    {
+                        fld = "autono";
+                    }
+                    double tnos = 0, tqnty = 0;
                     while (i <= maxR)
                     {
                         string fldval = tbl.Rows[i][fld].retStr();
-                        if (DateWiseClub == true)
+                        if (ReportType == "Date Wise Summary")
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["Dammy"] = "<span style='font-weight:bold;'>" + "Date :  " + tbl.Rows[i]["docdt"].retDateStr();
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                         }
+                        double tgrpnos = 0, tgrpqnty = 0;
+
                         while (tbl.Rows[i][fld].retStr() == fldval)
                         {
                             string chkfld = tbl.Rows[i]["chkfld"].retStr();
                             double nos = 0, qnty = 0;
                             while (tbl.Rows[i][fld].retStr() == fldval && tbl.Rows[i]["chkfld"].retStr() == chkfld)
                             {
-                                if (DateWiseClub == false)
+                                tnos += tbl.Rows[i]["nos"].retDbl();
+                                tqnty += tbl.Rows[i]["qnty"].retDbl();
+                                tgrpnos += tbl.Rows[i]["nos"].retDbl();
+                                tgrpqnty += tbl.Rows[i]["qnty"].retDbl();
+                                if (ReportType == "Details")
                                 {
                                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                     IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].retStr();
@@ -229,7 +255,7 @@ namespace Improvar.Controllers
                                 i = i + 1;
                                 if (i > maxR) break;
                             }
-                            if (DateWiseClub == true)
+                            if (ReportType == "Date Wise Summary")
                             {
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["barno"] = tbl.Rows[i - 1]["barno"].retStr();
@@ -238,17 +264,53 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["nos"] = nos;
                                 IR.Rows[rNo]["qnty"] = qnty;
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i - 1]["rate"].retDbl();
-                              
+                            }
+                            if (ReportType == "Super Summary")
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].retStr();
+                                IR.Rows[rNo]["docdt"] = tbl.Rows[i - 1]["docdt"].retDateStr();
+                                IR.Rows[rNo]["qnty"] = qnty;
+                                IR.Rows[rNo]["trem"] = tbl.Rows[i - 1]["trem"].retStr();
+                                IR.Rows[rNo]["usr_id"] = tbl.Rows[i - 1]["usr_id"].retStr();
+
+
                             }
                             if (i > maxR) break;
 
                         }
+                        if (ReportType == "Date Wise Summary")
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["dammy"] = "";
+                            IR.Rows[rNo]["itstyle"] = "Totals (" + fldval.retDateStr() + ")";
+                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                            IR.Rows[rNo]["nos"] = tgrpnos;
+                            IR.Rows[rNo]["qnty"] = tgrpqnty;
+                        }
+
                         if (i > maxR) break;
                     }
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["dammy"] = "";
+                    if (ReportType == "Super Summary")
+                    {
+                        IR.Rows[rNo]["docno"] = "Totals";
+                    }
+                    else
+                    {
+                        IR.Rows[rNo]["itstyle"] = "Totals";
+                    }
+                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                    if (ReportType != "Super Summary")
+                    {
+                        IR.Rows[rNo]["nos"] = tnos;
+                    }
+                    IR.Rows[rNo]["qnty"] = tqnty;
 
                     string pghdr1 = "";
 
-                    pghdr1 = "Physical Stock Details as on from " + fdate + " to " + tdate;
+                    pghdr1 = "Physical Stock " + ReportType + " as on from " + fdate + " to " + tdate;
 
                     PV = HC.ShowReport(IR, "PhyStockPrint", pghdr1, "", true, true, "P", false);
 

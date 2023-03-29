@@ -291,7 +291,7 @@ namespace Improvar.Controllers
             string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "";
 
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd,c.gonm,sum(nvl(d.qnty,0))qnty ";
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd,c.gonm,sum(nvl(d.qnty,0))qnty,b.usr_id ";
             sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_godown c, " + scm + ".T_PHYSTK d ";
             sql += "where a.autono=b.autono and a.gocd=c.gocd(+) and a.autono=d.autono and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -299,17 +299,17 @@ namespace Improvar.Controllers
             if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
             // if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-            sql += "group by a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy'), b.doccd,a.gocd,c.gonm ";
+            sql += "group by a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy'), b.doccd,a.gocd,c.gonm,b.usr_id ";
             sql += "order by docdt, docno ";
             DataTable tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown Name" + Cn.GCS() + "Quantity" + Cn.GCS() + "AUTO NO";
+            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown Name" + Cn.GCS() + "Quantity" + Cn.GCS() + "Created By" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "]</td><td>" + tbl.Rows[j]["qnty"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "]</td><td>" + tbl.Rows[j]["qnty"] + " </td><td>" + tbl.Rows[j]["usr_id"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
         }
         public ActionResult GetBarCodeDetails(string val, string Code)
         {

@@ -188,14 +188,14 @@ namespace Improvar.Controllers
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, " + Environment.NewLine;
             sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j, " + scm + ".m_doctype k " + Environment.NewLine;
             //sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and " + Environment.NewLine;
-            if (tphystk == true)
-            {
-                sql += "where a.barno=x.barno(+) and x.autono=c.autono(+) and c.autono=d.autono(+)  and " + Environment.NewLine;
-            }
-            else
-            {
+            //if (tphystk == true)
+            //{
+            //    sql += "where a.barno=x.barno(+) and x.autono=c.autono(+) and c.autono=d.autono(+)  and " + Environment.NewLine;
+            //}
+            //else
+            //{
                 sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
-            }
+            //}
             sql += "x.itcd=b.itcd(+) and b.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine; //x.fabitcd=e.itcd(+)
             sql += "a.barno=m.barno(+) and " + Environment.NewLine;
             sql += "x.colrcd=g.colrcd(+) and x.partcd=h.partcd(+) and c.slcd=i.slcd(+) and x.sizecd=j.sizecd(+) " + Environment.NewLine;

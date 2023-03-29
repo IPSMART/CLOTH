@@ -301,7 +301,7 @@ namespace Improvar.Controllers
                                     TMOBDTL1.BARNO = VE.TMOBDTL[i].BARNO;
                                     TMOBDTL1.STKTYPE = VE.TMOBDTL[i].STKTYPE;
                                     TMOBDTL1.MTRLJOBCD = VE.TMOBDTL[i].MTRLJOBCD;
-                                    TMOBDTL1.STKDRCR = "N";// VE.TMOBDTL[i].STKDRCR;
+                                    TMOBDTL1.STKDRCR = "C";// VE.TMOBDTL[i].STKDRCR;
                                     TMOBDTL1.QNTY = VE.TMOBDTL[i].QNTY;
 
                                     //TMOBDTL1.PARTCD = VE.TMOBDTL[i].PARTCD;

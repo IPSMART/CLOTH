@@ -897,6 +897,9 @@
         if (action == "Y")
         {
             var FAVCOLRCODE = $("#FAVCOLR").val();
+            if (FAVCOLRCODE == "") {
+                FAVCOLRCODE = "#FFFFFF";
+            }
             $("#FAVCOLRCODE").val(FAVCOLRCODE);
         }
         else {
