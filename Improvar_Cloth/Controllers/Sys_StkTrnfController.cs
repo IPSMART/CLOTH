@@ -50,17 +50,18 @@ namespace Improvar.Controllers
 
         public ActionResult Sys_StkTrnf1(ReportViewinHtml VE)
         {
-            string retmsg = "", oldschema = "", oldFinschema = "", newschema = "", newFinschema = "", yrcd = CommVar.YearCode(UNQSNO);
+            string retmsg = "", oldschema = "", oldFinschema = "", newschema = "", newFinschema = "", yrcd = CommVar.YearCode(UNQSNO), compcd = "";
             yrcd = (Convert.ToDecimal(yrcd) - 1).ToString();
             newschema = CommVar.CurSchema(UNQSNO);
             oldschema = CommVar.CurSchema(UNQSNO).Substring(0, CommVar.CurSchema(UNQSNO).Length - 4) + yrcd;
             oldFinschema = CommVar.FinSchema(UNQSNO).Substring(0, CommVar.FinSchema(UNQSNO).Length - 4) + yrcd;
             newschema = newschema.ToUpper(); oldschema = oldschema.ToUpper();
             oldschema = oldschema.ToUpper(); oldFinschema = oldFinschema.ToUpper();
-            retmsg = Stock_Transfer(VE.TEXTBOX1, oldschema, oldFinschema, newschema, newFinschema, VE);
+            compcd = VE.TEXTBOX2.retStr();
+            retmsg = Stock_Transfer(VE.TEXTBOX1, oldschema, oldFinschema, newschema, newFinschema, VE, compcd);
             return Content(retmsg);
         }
-        public string Stock_Transfer(string itgrpcd, string oldschema, string oldFinschema, string newschema, string newFinschema, ReportViewinHtml VE)
+        public string Stock_Transfer(string itgrpcd, string oldschema, string oldFinschema, string newschema, string newFinschema, ReportViewinHtml VE, string compcd)
         {
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf1 = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
             yrcd = (Convert.ToDecimal(yrcd) - 1).ToString();
@@ -115,7 +116,7 @@ namespace Improvar.Controllers
                         if (VE.Checkbox7 == true)
                         {
                             //tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
-                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false,"",false,"", scm1,"", scmf1);
+                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, "", scmf1);
                         }
                         else
                         {
@@ -134,7 +135,18 @@ namespace Improvar.Controllers
                         sqlc += "where b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
                         sqlc += "f.millnm in ('OPSTOCK') and ";
-                        sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        //sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        sqlc += "b.loccd='" + LOC + "' ";
+                        if (compcd.retStr() != "")
+                        {
+                            sqlc += "and b.compcd='" + compcd + "' ";
+                        }
+                        else
+                        {
+                            sqlc += "and b.compcd='" + COM + "' ";
+                        }
+
+
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
                         query = "delete from " + newschema + ".t_batchdtl where autono in (" + sqlc + ") ";
@@ -210,6 +222,10 @@ namespace Improvar.Controllers
                             string tautono = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                             string Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                             TCHOLD = Cn.T_CONTROL_HDR(defdoccd, Convert.ToDateTime(orgdocdt), docno, tautono, Month, DOCPATTERN, "A", CommVar.CurSchema(UNQSNO), null, null, 0, null);
+                            if (compcd.retStr() != "")
+                            {
+                                TCHOLD.COMPCD = compcd;
+                            }
                             newautono = TCHOLD.AUTONO;
 
                             dbsql = MasterHelpFa.RetModeltoSql(TCHOLD);
@@ -496,7 +512,17 @@ namespace Improvar.Controllers
                         sqlc += "where  b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) ";
                         sqlc += "and a.autono=g.autono(+)  and d.slno = g.slno and ";
                         sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK') and ";
-                        sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        //sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        sqlc += "b.loccd='" + LOC + "' ";
+                        if (compcd.retStr() != "")
+                        {
+                            sqlc += "and b.compcd='" + compcd + "' ";
+                        }
+                        else
+                        {
+                            sqlc += "and b.compcd='" + COM + "' ";
+                        }
+
                         sqlc += "and g.baleno||g.baleyr not in (select a.baleno || a.baleyr from " + newschema + ".t_bale a," + newschema + ".t_cntrl_hdr b where a.autono = b.autono and b.yr_cd = '" + CommVar.YearCode(UNQSNO) + "') ";
                         sqlc += "order by a.autono,d.slno ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
@@ -609,7 +635,10 @@ namespace Improvar.Controllers
                             T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
 
                             TCHOLD = DBOLD.T_CNTRL_HDR.Where(a => a.AUTONO == chkval).FirstOrDefault();
-
+                            if (compcd.retStr() != "")
+                            {
+                                TCHOLD.COMPCD = compcd;
+                            }
                             bool recoexist = false;
                             sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + chkval + "'";
                             OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
@@ -832,7 +861,18 @@ namespace Improvar.Controllers
                         sqlc = "select a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where a.itgrpcd='" + itgrpcd + "' and b.doccd=c.doccd(+) and ";
                         sqlc += "c.doctype in ('CUMSL') and ";
-                        sqlc += "a.autono=b.autono(+) and b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        //sqlc += "a.autono=b.autono(+) and b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        sqlc += "a.autono=b.autono(+) and b.yr_cd <= '" + CommVar.YearCode(UNQSNO) + "' and b.loccd='" + LOC + "' ";
+                        if (compcd.retStr() != "")
+                        {
+                            sqlc += " and b.compcd='" + compcd + "'";
+
+                        }
+                        else
+                        {
+                            sqlc += " and b.compcd='" + COM + "'";
+
+                        }
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
                         query = "delete from " + newschema + ".t_txndtl where autono in (" + sqlc + ") ";
@@ -873,7 +913,10 @@ namespace Improvar.Controllers
                             //DOCTYPE CUMSL
                             T_CNTRL_HDR cumtcH = new T_CNTRL_HDR();
                             cumtcH = Cn.T_CONTROL_HDR(cumdoccd, Convert.ToDateTime(cumDocdt), cumDocno, cumAutoNo, cumMonth, cumdocpattrn, "A", CommVar.CurSchema(UNQSNO), null, null, 0, "Y");
-
+                            if (compcd.retStr() != "")
+                            {
+                                cumtcH.COMPCD = compcd;
+                            }
                             dbsql = MasterHelpFa.RetModeltoSql(cumtcH);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -935,7 +978,17 @@ namespace Improvar.Controllers
                         sqlc = "select a.autono from " + newschema + ".t_sord a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where a.itgrpcd='" + itgrpcd + "' and b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.ordtag in ('SB') and ";
                         sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' ) and "; // or c.doctype in ('OPNG')) and ";
-                        sqlc += "b.compcd='" + COM + "' "; // and b.loccd='" + LOC + "' ";
+                                                                                        //sqlc += "b.compcd='" + COM + "' "; // and b.loccd='" + LOC + "' ";
+                        if (compcd.retStr() != "")
+                        {
+                            sqlc += "b.compcd='" + compcd + "' "; // and b.loccd='" + LOC + "' ";
+                        }
+                        else
+                        {
+                            sqlc += "b.compcd='" + COM + "' "; // and b.loccd='" + LOC + "' ";
+
+                        }
+
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
                         query = "delete from " + newschema + ".t_sorddtl where autono in (" + sqlc + ") ";
@@ -1007,6 +1060,10 @@ namespace Improvar.Controllers
                             T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
 
                             TCHOLD = DBOLD.T_CNTRL_HDR.Find(orgautono);
+                            if (compcd.retStr() != "")
+                            {
+                                TCHOLD.COMPCD = compcd;
+                            }
                             dbsql = MasterHelpFa.RetModeltoSql(TCHOLD);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1046,6 +1103,10 @@ namespace Improvar.Controllers
                                         {
                                             T_CNTRL_HDR TTCH = new T_CNTRL_HDR();
                                             TTCH = DBOLD.T_CNTRL_HDR.Find(txnautono);
+                                            if (compcd.retStr() != "")
+                                            {
+                                                TTCH.COMPCD = compcd;
+                                            }
                                             dbsql = MasterHelpFa.RetModeltoSql(TTCH);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1197,7 +1258,17 @@ namespace Improvar.Controllers
                         sqlc = "select b.autono from " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where b.doccd=c.doccd and ";
                         sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "'  and c.doctype in (" + issdoctype + ") and ";
-                        sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        //sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        sqlc += "b.loccd='" + LOC + "' ";
+                        if (compcd.retStr() != "")
+                        {
+                            sqlc += "and b.compcd='" + compcd + "' ";
+
+                        }
+                        else
+                        {
+                            sqlc += "and b.compcd='" + COM + "' ";
+                        }
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
                         query = "delete from " + newschema + ".T_TXNTRANS where autono in (" + sqlc + ") ";
@@ -1277,6 +1348,10 @@ namespace Improvar.Controllers
                                 if (recoexist == false)
                                 {
                                     T_CNTRL_HDR TTCH = DBOLD.T_CNTRL_HDR.Find(autono);
+                                    if (compcd.retStr() != "")
+                                    {
+                                        TTCH.COMPCD = compcd;
+                                    }
                                     dbsql = MasterHelpFa.RetModeltoSql(TTCH);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1344,6 +1419,22 @@ namespace Improvar.Controllers
                     }//checkbox5
                     #endregion
 
+                    #region BarNo Master Transfer
+                    if (VE.Checkbox9 == true)
+                    {
+                        dbsql = "";
+                        dbsql += "insert into " + newschema + ".t_batchmst ";
+                        dbsql += "select * from " + oldschema + ".t_batchmst ";
+                        dbsql += "where barno not in (select barno from " + newschema + ".t_batchmst) ";
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                        dbsql = "";
+                        dbsql += " insert into " + newschema + ".t_batchmst_price  ";
+                        dbsql += "select * from " + oldschema + ".t_batchmst_price ";
+                        dbsql += "where barno || prccd || effdt not in (select barno || prccd || effdt from " + newschema + ".t_batchmst_price) ";
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    }
+                    #endregion
                     ModelState.Clear();
                     OraTrans.Commit();
                     OraTrans.Dispose();
@@ -1362,5 +1453,26 @@ namespace Improvar.Controllers
                 }
             }
         }
+        public ActionResult GetCompanyDetails(string val)
+        {
+            try
+            {
+                if (val == null)
+                {
+                    return PartialView("_Help2", masterHelp.COMPANY_HELP(val));
+                }
+                else
+                {
+                    string str = masterHelp.COMPANY_HELP(val);
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
     }
 }
