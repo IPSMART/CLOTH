@@ -103,18 +103,30 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
-                            @Html.Label("", "Company")
+                            @Html.Label("", "From Company")
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-lg-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COMPCD", onkeyup = "GetHelp('" + @Url.Action("GetTCSDetails", PageControllerName) + "','COMPCD/COMPNM','1/0','Company Details','COMPCD')", onblur = "SelectCompCD(this.value,COMPCD,COMPNM);", @placeholder = "Code", maxlength = 4} })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTCSDetails", PageControllerName)','COMPCD/COMPNM','1/0','Company Details','COMPCD')" />
-                       </div>
+                            @Html.EditorFor(model => model.TEXTBOX2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COMPCD", onkeyup = "GetHelp('" + @Url.Action("GetCompanyDetails", PageControllerName) + "','COMPCD/COMPNM','1/0','Company Details','COMPCD')", onblur = "SelectCompCD(this.value,COMPCD,COMPNM);", @placeholder = "Code", maxlength = 4 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetCompanyDetails", PageControllerName)','COMPCD/COMPNM','1/0','Company Details','COMPCD')" />
+                        </div>
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control", id = "COMPNM", @placeholder = "Company Name", maxlength = 45, @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "BarNo Master Transfer")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox9)
                         </div>
                     </div>
                 </div>
@@ -154,18 +166,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "BarNo Master Transfer")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox9)
-                        </div>
-                    </div>
-                </div>
+             
+             
                 @*<div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
