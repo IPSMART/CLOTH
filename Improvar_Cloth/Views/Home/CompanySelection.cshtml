@@ -30,19 +30,24 @@
     <script>
         function getCompanyLocation() {
             debugger;
+            var company = document.getElementById("COMPCD");
+            var compnm = "";
+            if (company != undefined) {
+                compnm = company.options[company.selectedIndex].text;
+            }
             var compcd = $("#COMPCD").val();
             $("#divLoadingSubCat").show(); 
             $('#LOCCD').empty();
             var jsonarr = jQuery.parseJSON($('#LocationJSON').val());
             $.each(jsonarr, function (index, value) {
-                if (value.COMPCD == compcd) {
+                if (value.COMPCD == compcd && value.COMPNM == compnm) {
                     $('#LOCCD').append("<option value='" + value.LOCCD + "'>" + value.LOCNM + "</option>");
                 }
             });
             $('#Finyr').empty();
             var jsonarr = jQuery.parseJSON($('#FinYearJSON').val());
             $.each(jsonarr, function (index, value) {
-                if (value.COMPCD == compcd && value.LOCCD == $('#LOCCD').val()) {
+                if (value.COMPCD == compcd && value.LOCCD == $('#LOCCD').val() && value.COMPNM == compnm) {
                     $('#Finyr').append("<option value='" + value.FINYR + "'>" + value.FINYR + "</option>");
                 }
             });
@@ -51,12 +56,17 @@
 
         function getCompanyFinancial() {
             $("#divLoadingSubCat1").show();
+            var company = document.getElementById("COMPCD");
+            var compnm = "";
+            if (company != undefined) {
+                compnm = company.options[company.selectedIndex].text;
+            }
             var compcd = $("#COMPCD").val();
             var loccd = $("#LOCCD").val();
             $('#Finyr').empty();
             var jsonarr = jQuery.parseJSON($('#FinYearJSON').val());
             $.each(jsonarr, function (index, value) {
-                if (value.COMPCD == compcd && value.LOCCD == loccd) {
+                if (value.COMPCD == compcd && value.LOCCD == loccd && value.COMPNM == compnm ) {
                     $('#Finyr').append("<option value='" + value.FINYR + "'>" + value.FINYR + "</option>");
                 }
             });

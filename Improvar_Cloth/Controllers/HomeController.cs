@@ -55,7 +55,7 @@ namespace Improvar.Controllers
                 string Userid = Session["UR_ID"].ToString();
                 VE.Ischecked = false;
 
-                string sql = "select distinct compcd,loccd,locnm  from " + SCHEMA + "." + comp_table + "  where  ";
+                string sql = "select distinct compcd,loccd,locnm,compnm  from " + SCHEMA + "." + comp_table + "  where  ";
                 sql = sql + " loccd in (select loccd from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                 sql = sql + " order by locnm";
                 var dt = masterHelp.SQLquery(sql);
@@ -65,10 +65,11 @@ namespace Improvar.Controllers
                                            COMPCD = dr["compcd"].retStr(),
                                            LOCCD = dr["loccd"].retStr(),
                                            LOCNM = dr["locnm"].retStr(),
+                                           COMPNM = dr["COMPNM"].retStr(),
                                        }).ToList();
                 VE.CompanyLocation = new List<Models.CompanyLocation>();
                 VE.LocationJSON = JsonConvert.SerializeObject(CompanyLocation);
-                sql = "select DISTINCT compcd,loccd, TO_CHAR(from_date,'DD/MM/YYYY') ||' - '|| TO_CHAR(upto_date,'DD/MM/YYYY') as FINYR, from_date ";
+                sql = "select DISTINCT compcd,compnm,loccd, TO_CHAR(from_date,'DD/MM/YYYY') ||' - '|| TO_CHAR(upto_date,'DD/MM/YYYY') as FINYR, from_date ";
                 sql += " from " + SCHEMA + "." + comp_table + " where ";
                 sql += " schema_name in (select schema_name from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                 sql += " order by from_date desc ";
@@ -79,6 +80,7 @@ namespace Improvar.Controllers
                                         COMPCD = dr["compcd"].retStr(),
                                         LOCCD = dr["LOCCD"].retStr(),
                                         FINYR = dr["FINYR"].retStr(),
+                                        COMPNM = dr["COMPNM"].retStr(),
                                     }).ToList();
 
                 VE.CompanyFinyr = new List<Models.CompanyFinyr>();
@@ -92,7 +94,7 @@ namespace Improvar.Controllers
                     if (iniVal_Loc.Length != 0)
                     {
                         VE.LOCCD = iniVal_Loc;
-                        sql = "select distinct compcd,loccd,locnm  from " + SCHEMA + "." + comp_table + "  where COMPCD='" + iniVal_Com + "' AND ";
+                        sql = "select distinct compcd,compnm,loccd,locnm  from " + SCHEMA + "." + comp_table + "  where COMPCD='" + iniVal_Com + "' AND ";
                         sql += " loccd in (select loccd from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                         sql += " order by locnm";
                         dt = masterHelp.SQLquery(sql);
@@ -102,12 +104,13 @@ namespace Improvar.Controllers
                                                   COMPCD = dr["compcd"].retStr(),
                                                   LOCCD = dr["loccd"].retStr(),
                                                   LOCNM = dr["locnm"].retStr(),
+                                                  COMPNM = dr["COMPNM"].retStr(),
                                               }).ToList();
                         string iniVal_Fin = Handel_Ini.IniReadValue(Userid, "Fin_year", Server.MapPath("~/Ipsmart.ini"));
                         if (iniVal_Fin.Length != 0)
                         {
                             VE.Finyr = iniVal_Fin;
-                            sql = "select DISTINCT compcd,loccd, TO_CHAR(from_date,'DD/MM/YYYY') ||' - '|| TO_CHAR(upto_date,'DD/MM/YYYY') as FINYR, from_date ";
+                            sql = "select DISTINCT compcd,compnm,loccd, TO_CHAR(from_date,'DD/MM/YYYY') ||' - '|| TO_CHAR(upto_date,'DD/MM/YYYY') as FINYR, from_date ";
                             sql += " from " + SCHEMA + "." + comp_table + " where  COMPCD='" + iniVal_Com + "' AND  loccd='" + iniVal_Loc + "' AND ";
                             sql += " schema_name in (select schema_name from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                             sql += " order by from_date desc ";
@@ -118,6 +121,7 @@ namespace Improvar.Controllers
                                                    COMPCD = dr["compcd"].retStr(),
                                                    LOCCD = dr["LOCCD"].retStr(),
                                                    FINYR = dr["FINYR"].retStr(),
+                                                   COMPNM = dr["COMPNM"].retStr(),
                                                }).ToList();
                             VE.Ischecked = true;
                         }

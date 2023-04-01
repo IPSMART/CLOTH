@@ -12,14 +12,13 @@
     var PageControllerName = "Sys_StkTrnf";
 }
 <script>
-    function Proceed() {
+    function Proceed(TAG) {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("Sys_StkTrnf1", PageControllerName)",
-            beforesend:$("#WaitingMode").show(),
-            data: $('form').serialize(),
-            success: function (result)
-            {
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&Tag=" + TAG,
+            success: function (result) {
                 msgInfo(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -27,7 +26,7 @@
                 msgError(XMLHttpRequest.responseText);
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
-    });
+        });
     }
 </script>
 <script>
@@ -35,48 +34,6 @@
         var chk = document.getElementById(id).checked;
         if (chk == true) {
             document.getElementById(id1).checked = false;
-        }
-    }
-</script>
-<script>
-    function SelectCompCD(id, COMPCD_, COMPNM_) {
-        debugger
-        var id1 = COMPCD_.id;
-        var id2 = COMPNM_.id;
-        if (id == "") {
-            $("#" + id1).val("");
-            $("#" + id2).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: "@Url.Action("GetCompanyDetails", PageControllerName )",
-                data: {
-                    val: id
-                },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                        document.getElementById(COMPCD_.id).value = str[0].toString();
-                        document.getElementById(COMPNM_.id).value = str[1].toString();
-                    }
-                    else {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + COMPCD_.id).val("");
-                        $("#" + COMPNM_.id).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
-                        message_value = COMPCD_.id;
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError("Error: " + textStatus + "," + errorThrown);
-                }
-            });
         }
     }
 </script>
@@ -89,47 +46,6 @@
 
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
 
-                @*<div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Item Group")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1),"--Select--", new { @class = " form-control" })
-                    </div>
-                </div>*@
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "From Company")
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COMPCD", onkeyup = "GetHelp('" + @Url.Action("GetCompanyDetails", PageControllerName) + "','COMPCD/COMPNM','1/0','Company Details','COMPCD')", onblur = "SelectCompCD(this.value,COMPCD,COMPNM);", @placeholder = "Code", maxlength = 4 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetCompanyDetails", PageControllerName)','COMPCD/COMPNM','1/0','Company Details','COMPCD')" />
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control", id = "COMPNM", @placeholder = "Company Name", maxlength = 45, @TabIndex = -1, @readonly = "readonly" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "BarNo Master Transfer")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox9)
-                        </div>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
@@ -166,66 +82,28 @@
                         </div>
                     </div>
                 </div>
-             
-             
-                @*<div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Cumulative Sales Transfer")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox3)
-                        </div>
-                    </div>
-                </div>
-
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
-                            @Html.Label("", "Pending Order (Sales) Transfer")
+                            @Html.Label("", "Physical Stock Transfer")
                         </div>
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox4)
+                            @Html.CheckBoxFor(model => model.Checkbox10)
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Pending Job Transfer")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox5)
-                        </div>
-                    </div>
-                </div>*@
-
-                @*<div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-label">
-                                @Html.Label("", "Pending Job Receive Transfer Not used")
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="editor-field" style="margin-top: 1px;">
-                                @Html.CheckBoxFor(model => model.Checkbox6)
-                            </div>
-                        </div>
-                    </div>*@
 
                 @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
                 {  <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
-                    <div class="col-LG-10">
+                    <div class="col-lg-3">
                         <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
                     </div>
                 </div> }
 

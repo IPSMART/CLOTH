@@ -29,6 +29,7 @@ namespace Improvar.Models
         public string COMPCD { get; set; }
         public string LOCCD { get; set; }
         public string LOCNM { get; set; }
+        public string COMPNM { get; set; }
     }
     public class CompanyFinyr
     {
@@ -36,6 +37,7 @@ namespace Improvar.Models
         public string LOCCD { get; set; }
         public string SCHEMA_NAME { get; set; }
         public string FINYR { get; set; }
+        public string COMPNM { get; set; }
     }
 
     public class CompanyLocationName
