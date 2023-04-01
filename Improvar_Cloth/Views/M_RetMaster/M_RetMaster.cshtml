@@ -383,7 +383,32 @@
         }
     }
 </script>
-<script></script>
+<script>
+    function AddToPrivious() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("SavePreviousYrData", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Previous year data save sucessfully");
+                    message_value = "btnPrvyr";
+                }
+                else {
+                    msgWarning(result);
+                    message_value = "btnPrvyr";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 
 @using (Html.BeginForm())
 {
@@ -420,6 +445,21 @@
 
                             </div>
                         </div>
+                        <div class="col-sm-1">
+                            @if (Model.DefaultAction == "V")
+                            {
+                                if (Model.isPresentinLastYrSchema == "")
+                                { }
+                                if (Model.isPresentinLastYrSchema == "ADD")
+                                {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
+                                }
+                                if (Model.isPresentinLastYrSchema == "EDIT")
+                                {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
+                                }
+                            }
+
+                        </div>
+
                     </div>
                     <div class="row">
                         <div class="col-md-4">

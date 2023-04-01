@@ -18,5 +18,6 @@ namespace Improvar.ViewModels
         public string REFRTDEBNM { get; set; }
         public string REFSLNM { get; set; }
         public string GSTNO { get; set; }
+        public string isPresentinLastYrSchema { get; set; }
     }
 }
