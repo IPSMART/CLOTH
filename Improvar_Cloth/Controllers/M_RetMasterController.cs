@@ -220,6 +220,24 @@ namespace Improvar.Controllers
                     VE.UploadDOC = UploadDOC1;
 
                 }
+                ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchemaPrevYr(UNQSNO));
+                if (CommVar.FinSchemaPrevYr(UNQSNO) == "")
+                {
+                    VE.isPresentinLastYrSchema = "";
+                }
+                else
+                {
+                    var RTDEBCD = sl.RTDEBCD;
+                    VE.isPresentinLastYrSchema = (from j in DB_PREVYR_temp.M_RETDEB where (j.RTDEBCD == RTDEBCD) select j.RTDEBCD).FirstOrDefault();
+                    if (string.IsNullOrEmpty(VE.isPresentinLastYrSchema))
+                    {
+                        VE.isPresentinLastYrSchema = "ADD";
+                    }
+                    else
+                    {
+                        VE.isPresentinLastYrSchema = "EDIT";
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -676,6 +694,122 @@ namespace Improvar.Controllers
         public ActionResult PrintReport()
         {
             return RedirectToAction("PrintViewer", "RPTViewer");
+        }
+        public ActionResult SavePreviousYrData(RetailDebtorMasterEntry VE, FormCollection FC)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            ImprovarDB DB_PREVYR = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchemaPrevYr(UNQSNO));
+            ImprovarDB DB_PREVYR_temp = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchemaPrevYr(UNQSNO));
+            using (var transaction = DB_PREVYR.Database.BeginTransaction())
+            {
+                try
+                {
+                    var PSL = (from j in DB_PREVYR_temp.M_RETDEB where (j.RTDEBCD == VE.M_RETDEB.RTDEBCD) select j).FirstOrDefault();
+                    var SL = (from j in DB.M_RETDEB where (j.RTDEBCD == VE.M_RETDEB.RTDEBCD) select j).FirstOrDefault();
+
+                   
+                    var MDOCDTL = (from j in DB.M_CNTRL_HDR_DOC_DTL where (j.M_AUTONO == VE.M_RETDEB.M_AUTONO) select j).ToList();
+                    var MCNTRLHDRDOC = (from j in DB.M_CNTRL_HDR_DOC where (j.M_AUTONO == VE.M_RETDEB.M_AUTONO) select j).ToList();
+                    var MCNTRLHDRREM = (from j in DB.M_CNTRL_HDR_REM where (j.M_AUTONO == VE.M_RETDEB.M_AUTONO) select j).ToList();
+                    
+                    if (PSL == null)
+                    {
+                        var mobno = VE.M_RETDEB.MOBILE;
+                        var ChkDuplicateMobNo = (from i in DB_PREVYR_temp.M_RETDEB where i.MOBILE == mobno select new { i.MOBILE, i.RTDEBNM }).FirstOrDefault();
+                        if (ChkDuplicateMobNo != null) { transaction.Rollback(); return Content("Mobile No : '" + ChkDuplicateMobNo.MOBILE + "' already exsist for '" + ChkDuplicateMobNo.RTDEBNM + "' please change entered Mobile No."); }
+
+                        var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.FinSchemaPrevYr(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO));
+                        DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
+                        DB_PREVYR.SaveChanges();
+
+                        M_RETDEB MSUBLEG_PREVYR = new M_RETDEB();
+                        MSUBLEG_PREVYR = SL;
+                        MSUBLEG_PREVYR.M_AUTONO = AUTONO_PREVYR;
+                        DB_PREVYR.M_RETDEB.Add(MSUBLEG_PREVYR);
+                        DB_PREVYR.SaveChanges();
+                        
+                        if (MDOCDTL.Count != 0) { DB_PREVYR.M_CNTRL_HDR_DOC_DTL.AddRange(MDOCDTL); }
+                        if (MCNTRLHDRDOC.Count != 0) { DB_PREVYR.M_CNTRL_HDR_DOC.AddRange(MCNTRLHDRDOC); }
+                        if (MCNTRLHDRREM.Count != 0) { DB_PREVYR.M_CNTRL_HDR_REM.AddRange(MCNTRLHDRREM); }
+                        DB_PREVYR.SaveChanges();
+                        ModelState.Clear();
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        var mobno = VE.M_RETDEB.MOBILE;
+                        var code = VE.M_RETDEB.RTDEBCD;
+                        var ChkDuplicateMobNo = (from i in DB_PREVYR_temp.M_RETDEB where i.MOBILE == mobno && i.RTDEBCD != code select new { i.MOBILE, i.RTDEBNM }).FirstOrDefault();
+                        if (ChkDuplicateMobNo != null) { transaction.Rollback(); return Content("Mobile No : '" + ChkDuplicateMobNo.MOBILE + "' already exsist for '" + ChkDuplicateMobNo.RTDEBNM + "' please change entered Mobile No."); }
+
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", PSL.M_AUTONO.retInt(), "E", CommVar.FinSchemaPrevYr(UNQSNO));
+                        DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
+                        DB_PREVYR.SaveChanges();
+
+                        M_RETDEB MSUBLEG_PREVYR = new M_RETDEB();
+                        MSUBLEG_PREVYR = SL; MSUBLEG_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                        DB_PREVYR.Entry(MSUBLEG_PREVYR).State = System.Data.Entity.EntityState.Modified;
+                        DB_PREVYR.SaveChanges();
+
+                        DB_PREVYR.M_CNTRL_HDR_REM.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                        DB_PREVYR.M_CNTRL_HDR_REM.RemoveRange(DB_PREVYR.M_CNTRL_HDR_REM.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO));
+                        DB_PREVYR.SaveChanges();
+
+                        DB_PREVYR.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                        DB_PREVYR.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB_PREVYR.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO));
+                        DB_PREVYR.SaveChanges();
+
+                        DB_PREVYR.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                        DB_PREVYR.M_CNTRL_HDR_DOC.RemoveRange(DB_PREVYR.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == MCH_PREVYR.M_AUTONO));
+                        DB_PREVYR.SaveChanges();
+
+
+                        if (MCNTRLHDRREM.Count != 0)
+                        {
+                            foreach (var v in MCNTRLHDRREM)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_REM.AddRange(MCNTRLHDRREM);
+                        }
+
+
+                        if (MCNTRLHDRDOC.Count != 0)
+                        {
+                            foreach (var v in MCNTRLHDRDOC)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC.AddRange(MCNTRLHDRDOC);
+                        }
+                        if (MDOCDTL.Count != 0)
+                        {
+                            foreach (var v in MDOCDTL)
+                            {
+                                v.M_AUTONO = MCH_PREVYR.M_AUTONO;
+                            }
+                            DB_PREVYR.M_CNTRL_HDR_DOC_DTL.AddRange(MDOCDTL);
+                        }
+                      
+
+                        DB_PREVYR.SaveChanges();
+                        ModelState.Clear();
+                        transaction.Commit();
+                    }
+
+                    return Content("1");
+                }
+
+
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    ModelState.Clear();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + " " + ex.InnerException);
+                }
+            }
         }
     }
 }
