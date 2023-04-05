@@ -62,9 +62,9 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public decimal? NOS { get; set; }
+        public double? NOS { get; set; }
 
-        public decimal? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
         [StringLength(50)]
         public string ITREMARK { get; set; }

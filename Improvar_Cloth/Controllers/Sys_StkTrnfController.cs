@@ -1096,133 +1096,328 @@ namespace Improvar.Controllers
 
                     #endregion
 
+                    #region Pending Job from Prev Yr OLD
+                    //if (VE.Checkbox5 == true)
+                    //{
+
+                    //    DataTable PendingJobDT = new DataTable("PendingJob");
+                    //    PendingJobDT.Columns.Add("autono", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("jobautoslno", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("docdt", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("docno", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("PBLNO", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("PBLdt", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("slcd", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("slnm", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("itcd", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("itrem", typeof(string), "");
+                    //    //IR.Columns.Add("itnm", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("uomcd", typeof(string), "");
+                    //    PendingJobDT.Columns.Add("issqnty", typeof(double), "");
+                    //    PendingJobDT.Columns.Add("issrate", typeof(double), "");
+                    //    PendingJobDT.Columns.Add("issamt", typeof(double), "");
+                    //    PendingJobDT.Columns.Add("balqnty", typeof(double), "");
+
+                    //    scm1 = CommVar.CurSchema(UNQSNO);
+                    //    string issdoctype = "'OJISS','JBREC','IJISS'", recdoctype = "'OJREC','OJRET','JBCHL','JBRET','IJREC','IJRET'";
+                    //    // if (IssueDoctype == "OJISS")
+                    //    // {
+                    //    //     issdoctype = "'OJISS'"; recdoctype = "'OJREC','OJRET'";
+
+                    //    // }
+                    //    // if (IssueDoctype == "JBREC")
+                    //    // {
+                    //    //     issdoctype = "'JBREC'"; recdoctype = "'JBCHL','JBRET'";
+                    //    // }
+                    //    // if (IssueDoctype == "IJISS")
+                    //    // {
+                    //    //     issdoctype = "'IJISS'"; recdoctype = "'IJREC','IJRET'";
+                    //    // }
+                    //    sql = "";
+                    //    sql += "select a.autono,a.jobautoslno, a.slno,a.doccd, a.itcd, a.qnty, a.scrapeqnty, h.lorryno, ";
+                    //    sql += "a.rate, a.basamt amt, b.usr_id, c.slcd,c.PBLNO,c.PBLdt, b.docno, b.docdt ";
+                    //    //sql += "nvl(d.fullname,d.slnm) slnm ";
+                    //    sql += "from (select a.autono,a.slno,a.jobautoslno,a.doccd, a.itcd, a.itrem, a.qnty, 0 scrapeqnty, a.rate, a.basamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt  ";
+                    //    sql += " from " + oldschema + ".t_txndtl a where  a.slno>1000 ";
+                    //    sql += "union all ";
+                    //    sql += "select a.autono, a.slno,a.jobautoslno,a.doccd, a.itcd, '' itrem, a.qnty, nvl(a.scrapeqnty,0) scrapeqnty, a.rate, a.amt basamt, a.igstper, a.igstamt, a.cgstper, a.sgstamt,  ";
+                    //    sql += "a.cgstamt, a.sgstper from " + oldschema + ".t_txnproddtl a  ";
+                    //    sql += " ) a,  ";
+                    //    sql += oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txn c,  ";
+                    //    sql += oldschema + ".m_doctype g, " + oldschema + ".t_txntrans h ";
+                    //    sql += "where a.autono=b.autono and a.autono=c.autono  and a.autono=h.autono(+) and ";
+                    //    sql += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and b.doccd=g.doccd(+) ";
+                    //    sql += " and g.doctype in (" + issdoctype + ")  and nvl(b.cancel,'N') = 'N'  ";
+                    //    sql += " order by docdt,jobautoslno,itcd ";
+                    //    DataTable tblISS = masterHelp.SQLquery(sql);
+
+                    //    sql = "";
+                    //    sql += "select a.autono,a.jobautoslno, a.slno rec_slno, a.doccd, a.itcd rec_itcd, a.itrem, a.qnty rec_qnty, a.scrapeqnty, h.lorryno rec_lorryno, ";
+                    //    sql += "a.rate rec_rate, a.basamt rec_amt, b.usr_id, c.slcd,c.PBLNO rec_pblno, b.docno rec_docno, b.docdt rec_docdt ";
+                    //    sql += "from (select a.autono,a.jobautoslno,a.slno,a.doccd, a.itcd, a.itrem, a.qnty, 0 scrapeqnty, a.rate, a.basamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt  ";
+                    //    sql += " from " + oldschema + ".t_txndtl a where a.slno>1000 ";
+                    //    sql += "union all ";
+                    //    sql += "select a.autono,a.jobautoslno, a.slno,a.doccd, a.itcd, '' itrem, a.qnty, nvl(a.scrapeqnty,0) scrapeqnty, a.rate,a.amt basamt, a.igstper, a.igstamt, a.cgstper, a.sgstamt,  ";
+                    //    sql += "a.cgstamt, a.sgstper from " + oldschema + ".t_txnproddtl a  ";
+                    //    sql += " ) a,  ";
+                    //    sql += oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txn c, ";
+                    //    sql += oldschema + ".m_doctype g, " + oldschema + ".t_txntrans h ";
+                    //    sql += "where a.autono=b.autono and a.autono=c.autono and a.autono=h.autono(+) and ";
+                    //    sql += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and b.doccd=g.doccd(+) ";
+                    //    sql += " and g.doctype in (" + recdoctype + ")  and nvl(b.cancel,'N') = 'N'  ";
+                    //    sql += "order  by rec_docdt,jobautoslno,itcd  ";
+                    //    DataTable rec_date = masterHelp.SQLquery(sql);
+
+                    //    Int32 rNo = 0;
+                    //    maxR = tblISS.Rows.Count - 1;
+                    //    while (i <= maxR)
+                    //    {
+                    //        autono = tblISS.Rows[i]["autono"].ToString();
+                    //        if (autono == "2020RATNCHATSSIJI00000000007")
+                    //        {
+
+                    //        }
+                    //        string itcd = tblISS.Rows[i]["itcd"].ToString();
+                    //        string jobautoslno = tblISS.Rows[i]["jobautoslno"].ToString();
+                    //        while (tblISS.Rows[i]["jobautoslno"].ToString() == jobautoslno && tblISS.Rows[i]["itcd"].ToString() == itcd)
+                    //        {
+                    //            DataRow[] results = rec_date.Select("JOBAUTOSLNO='" + jobautoslno + "'  and  rec_itcd= '" + itcd + "'"); double recqnty = 0;
+                    //            if (results.Length != 0)
+                    //            {
+                    //                foreach (DataRow dr in results) { recqnty += dr["rec_qnty"].retDbl(); }
+                    //            }
+                    //            if (tblISS.Rows[i]["qnty"].retDbl() - recqnty > 0)
+                    //            {
+                    //                PendingJobDT.Rows.Add(""); rNo = PendingJobDT.Rows.Count - 1;
+                    //                PendingJobDT.Rows[rNo]["autono"] = tblISS.Rows[i]["autono"];
+                    //                PendingJobDT.Rows[rNo]["jobautoslno"] = tblISS.Rows[i]["jobautoslno"];
+                    //                PendingJobDT.Rows[rNo]["docdt"] = tblISS.Rows[i]["docdt"].retDateStr();
+                    //                PendingJobDT.Rows[rNo]["docno"] = tblISS.Rows[i]["docno"];
+                    //                PendingJobDT.Rows[rNo]["PBLNO"] = tblISS.Rows[i]["PBLNO"];
+                    //                PendingJobDT.Rows[rNo]["PBLdt"] = tblISS.Rows[i]["PBLdt"].retDateStr();
+                    //                PendingJobDT.Rows[rNo]["slcd"] = tblISS.Rows[i]["slcd"];
+                    //                PendingJobDT.Rows[rNo]["itcd"] = tblISS.Rows[i]["itcd"];
+                    //                PendingJobDT.Rows[rNo]["issqnty"] = tblISS.Rows[i]["qnty"].retDbl();
+                    //                PendingJobDT.Rows[rNo]["issrate"] = tblISS.Rows[i]["rate"].retDbl();
+                    //                PendingJobDT.Rows[rNo]["issamt"] = tblISS.Rows[i]["amt"].retDbl();
+                    //                PendingJobDT.Rows[rNo]["balqnty"] = tblISS.Rows[i]["qnty"].retDbl() - recqnty;
+                    //            }
+                    //            i++;
+                    //            if (i > maxR) break;
+                    //        }
+                    //    }
+                    //    sqlc = "select b.autono from " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
+                    //    sqlc += "where b.doccd=c.doccd and ";
+                    //    sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "'  and c.doctype in (" + issdoctype + ") and ";
+                    //    sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                    //    DataTable tbldel = masterHelp.SQLquery(sqlc);
+
+                    //    query = "delete from " + newschema + ".T_TXNTRANS where autono in (" + sqlc + ") ";
+                    //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    query = "delete from " + newschema + ".T_TXNOTH where autono in (" + sqlc + ") ";
+                    //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    //query = "delete from " + newschema + ".T_TXNPRODDTL where autono in (" + sqlc + ") ";
+                    //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    query = "delete from " + newschema + ".T_JOBMST where autono in (" + sqlc + ") ";
+                    //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    query = "delete from " + newschema + ".T_TXNDTL where autono in (" + sqlc + ") ";
+                    //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    query = "delete from " + newschema + ".T_TXN where autono in (" + sqlc + ") ";
+                    //    OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
+                    //    {
+                    //        query = "delete from " + newschema + ".t_cntrl_hdr where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
+                    //        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                    //    }
+                    //    if (dberrmsg != "") goto dbnotsave;
+
+                    //    var vTXN = (from p in DBOLD.T_TXN
+                    //                join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                    //                where (q.COMPCD == COM)
+                    //                select p).ToList();
+
+                    //    var vTXNDTL = (from p in DBOLD.T_TXNDTL
+                    //                   join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                    //                   where (q.COMPCD == COM)
+                    //                   select p).ToList();
+
+                    //    //var vTXNPRODDTL = (from p in DBOLD.T_TXNPRODDTL
+                    //    //                   join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                    //    //                   where (q.COMPCD == COM)
+                    //    //                   select p).ToList();
+
+                    //    var vTXNOTH = (from p in DBOLD.T_TXNOTH
+                    //                   join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                    //                   where (q.COMPCD == COM)
+                    //                   select p).ToList();
+
+                    //    var vTXNTRANS = (from p in DBOLD.T_TXNTRANS
+                    //                     join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                    //                     where (q.COMPCD == COM)
+                    //                     select p).ToList();
+
+                    //    string[] selgocd = string.Join(",", (from DataRow dr in PendingJobDT.Rows select dr["jobautoslno"].ToString()).Distinct()).Split(',');
+                    //    string jobautonos = selgocd.retSqlfromStrarray();
+
+                    //    DataView dtView = new DataView(PendingJobDT);
+                    //    dtView.RowFilter = "jobautoslno in (" + jobautonos + ")";
+                    //    string[] itcol = new string[2];
+                    //    itcol[0] = "autono";
+                    //    itcol[1] = "jobautoslno";
+                    //    DataTable jobautoRefDisttbl = dtView.ToTable(true, itcol);
+
+                    //    bool recoexist = false;
+
+                    //    i = 0; maxR = 0;
+                    //    maxR = PendingJobDT.Rows.Count - 1;
+                    //    while (i <= maxR)
+                    //    {
+                    //        string jobautoslno = PendingJobDT.Rows[i]["jobautoslno"].ToString();
+                    //        sql = " ";
+                    //        //sql += " select a.autono,a.slno,a.jobautoslno  from " + oldschema + ".t_txnproddtl a where a.jobautoslno='" + jobautoslno + "' ";
+                    //        sql += " union all";
+                    //        sql += " select a.autono,a.slno,a.jobautoslno  from " + oldschema + ".t_txndtl a where a.jobautoslno='" + jobautoslno + "' ";
+                    //        DataTable JobIssRec = masterHelp.SQLquery(sql);
+                    //        //DataRow[] autodrow = jobautoRefDisttbl.Select("jobautoslno='" + jobautoslno + "'");
+                    //        for (int au = 0; au < JobIssRec.Rows.Count; au++)
+                    //        {
+                    //            autono = JobIssRec.Rows[au]["autono"].retStr();
+                    //            int slno = JobIssRec.Rows[au]["slno"].retInt();
+                    //            sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + autono + "'";
+                    //            OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                    //            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                    //            if (recoexist == false)
+                    //            {
+                    //                T_CNTRL_HDR TTCH = DBOLD.T_CNTRL_HDR.Find(autono);
+                    //                dbsql = MasterHelpFa.RetModeltoSql(TTCH);
+                    //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    //                var TTxn = vTXN.Where(m => m.AUTONO == autono).First();
+                    //                dbsql = MasterHelpFa.RetModeltoSql(TTxn);
+                    //                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //            }
+
+                    //            sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + autono + "' and slno=" + slno + "";
+                    //            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                    //            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                    //            if (recoexist == false)
+                    //            {
+                    //                var TXNDTL = vTXNDTL.Where(m => m.AUTONO == autono && m.SLNO == slno).FirstOrDefault();
+                    //                if (TXNDTL != null)
+                    //                {
+                    //                    TXNDTL.STKDRCR = "N";
+                    //                    dbsql = MasterHelpFa.RetModeltoSql(TXNDTL);
+                    //                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //                }
+                    //            }
+
+                    //            sql = "select autono from " + newschema + ".T_TXNPRODDTL where autono='" + autono + "' and slno=" + slno + "";
+                    //            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                    //            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                    //            if (recoexist == false)
+                    //            {
+                    //                //var TXNPRODDTL = vTXNPRODDTL.Where(m => m.AUTONO == autono && m.SLNO == slno).FirstOrDefault();
+                    //                //if (TXNPRODDTL != null)
+                    //                //{
+                    //                //    dbsql = MasterHelpFa.RetModeltoSql(TXNPRODDTL);
+                    //                //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //                //}
+                    //            }
+
+                    //            sql = "select autono from " + newschema + ".T_TXNOTH where autono='" + autono + "'";
+                    //            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                    //            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                    //            if (recoexist == false)
+                    //            {
+
+                    //                var TXNOTH = vTXNOTH.Where(m => m.AUTONO == autono).FirstOrDefault();
+                    //                if (TXNOTH != null)
+                    //                {
+                    //                    dbsql = MasterHelpFa.RetModeltoSql(TXNOTH);
+                    //                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //                }
+                    //            }
+                    //            sql = "select autono from " + newschema + ".T_TXNTRANS where autono='" + autono + "'";
+                    //            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                    //            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                    //            if (recoexist == false)
+                    //            {
+                    //                var TXNTRANS = vTXNTRANS.Where(m => m.AUTONO == autono).FirstOrDefault();
+                    //                if (TXNTRANS != null)
+                    //                {
+                    //                    dbsql = MasterHelpFa.RetModeltoSql(TXNTRANS);
+                    //                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //                }
+                    //            }
+                    //        }//for JobIssRec.Rows.Count
+                    //        i++;
+                    //        if (i > maxR) break;
+                    //    }//PendingJobDT.Rows.Count
+                    //}//checkbox5
+                    #endregion
                     #region Pending Job from Prev Yr
                     if (VE.Checkbox5 == true)
                     {
-
-                        DataTable PendingJobDT = new DataTable("PendingJob");
-                        PendingJobDT.Columns.Add("autono", typeof(string), "");
-                        PendingJobDT.Columns.Add("jobautoslno", typeof(string), "");
-                        PendingJobDT.Columns.Add("docdt", typeof(string), "");
-                        PendingJobDT.Columns.Add("docno", typeof(string), "");
-                        PendingJobDT.Columns.Add("PBLNO", typeof(string), "");
-                        PendingJobDT.Columns.Add("PBLdt", typeof(string), "");
-                        PendingJobDT.Columns.Add("slcd", typeof(string), "");
-                        PendingJobDT.Columns.Add("slnm", typeof(string), "");
-                        PendingJobDT.Columns.Add("itcd", typeof(string), "");
-                        PendingJobDT.Columns.Add("itrem", typeof(string), "");
-                        //IR.Columns.Add("itnm", typeof(string), "");
-                        PendingJobDT.Columns.Add("uomcd", typeof(string), "");
-                        PendingJobDT.Columns.Add("issqnty", typeof(double), "");
-                        PendingJobDT.Columns.Add("issrate", typeof(double), "");
-                        PendingJobDT.Columns.Add("issamt", typeof(double), "");
-                        PendingJobDT.Columns.Add("balqnty", typeof(double), "");
+                      string  jobcd = VE.JOBCD;
+                        DataTable PendingJobDT = new DataTable();
 
                         scm1 = CommVar.CurSchema(UNQSNO);
-                        string issdoctype = "'OJISS','JBREC','IJISS'", recdoctype = "'OJREC','OJRET','JBCHL','JBRET','IJREC','IJRET'";
-                        // if (IssueDoctype == "OJISS")
-                        // {
-                        //     issdoctype = "'OJISS'"; recdoctype = "'OJREC','OJRET'";
-
-                        // }
-                        // if (IssueDoctype == "JBREC")
-                        // {
-                        //     issdoctype = "'JBREC'"; recdoctype = "'JBCHL','JBRET'";
-                        // }
-                        // if (IssueDoctype == "IJISS")
-                        // {
-                        //     issdoctype = "'IJISS'"; recdoctype = "'IJREC','IJRET'";
-                        // }
-                        sql = "";
-                        sql += "select a.autono,a.jobautoslno, a.slno,a.doccd, a.itcd, a.qnty, a.scrapeqnty, h.lorryno, ";
-                        sql += "a.rate, a.basamt amt, b.usr_id, c.slcd,c.PBLNO,c.PBLdt, b.docno, b.docdt ";
-                        //sql += "nvl(d.fullname,d.slnm) slnm ";
-                        sql += "from (select a.autono,a.slno,a.jobautoslno,a.doccd, a.itcd, a.itrem, a.qnty, 0 scrapeqnty, a.rate, a.basamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt  ";
-                        sql += " from " + oldschema + ".t_txndtl a where  a.slno>1000 ";
-                        sql += "union all ";
-                        sql += "select a.autono, a.slno,a.jobautoslno,a.doccd, a.itcd, '' itrem, a.qnty, nvl(a.scrapeqnty,0) scrapeqnty, a.rate, a.amt basamt, a.igstper, a.igstamt, a.cgstper, a.sgstamt,  ";
-                        sql += "a.cgstamt, a.sgstper from " + oldschema + ".t_txnproddtl a  ";
-                        sql += " ) a,  ";
-                        sql += oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txn c,  ";
-                        sql += oldschema + ".m_doctype g, " + oldschema + ".t_txntrans h ";
-                        sql += "where a.autono=b.autono and a.autono=c.autono  and a.autono=h.autono(+) and ";
-                        sql += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and b.doccd=g.doccd(+) ";
-                        sql += " and g.doctype in (" + issdoctype + ")  and nvl(b.cancel,'N') = 'N'  ";
-                        sql += " order by docdt,jobautoslno,itcd ";
-                        DataTable tblISS = masterHelp.SQLquery(sql);
-
-                        sql = "";
-                        sql += "select a.autono,a.jobautoslno, a.slno rec_slno, a.doccd, a.itcd rec_itcd, a.itrem, a.qnty rec_qnty, a.scrapeqnty, h.lorryno rec_lorryno, ";
-                        sql += "a.rate rec_rate, a.basamt rec_amt, b.usr_id, c.slcd,c.PBLNO rec_pblno, b.docno rec_docno, b.docdt rec_docdt ";
-                        sql += "from (select a.autono,a.jobautoslno,a.slno,a.doccd, a.itcd, a.itrem, a.qnty, 0 scrapeqnty, a.rate, a.basamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt  ";
-                        sql += " from " + oldschema + ".t_txndtl a where a.slno>1000 ";
-                        sql += "union all ";
-                        sql += "select a.autono,a.jobautoslno, a.slno,a.doccd, a.itcd, '' itrem, a.qnty, nvl(a.scrapeqnty,0) scrapeqnty, a.rate,a.amt basamt, a.igstper, a.igstamt, a.cgstper, a.sgstamt,  ";
-                        sql += "a.cgstamt, a.sgstper from " + oldschema + ".t_txnproddtl a  ";
-                        sql += " ) a,  ";
-                        sql += oldschema + ".t_cntrl_hdr b, " + oldschema + ".t_txn c, ";
-                        sql += oldschema + ".m_doctype g, " + oldschema + ".t_txntrans h ";
-                        sql += "where a.autono=b.autono and a.autono=c.autono and a.autono=h.autono(+) and ";
-                        sql += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and b.doccd=g.doccd(+) ";
-                        sql += " and g.doctype in (" + recdoctype + ")  and nvl(b.cancel,'N') = 'N'  ";
-                        sql += "order  by rec_docdt,jobautoslno,itcd  ";
-                        DataTable rec_date = masterHelp.SQLquery(sql);
-
-                        Int32 rNo = 0;
-                        maxR = tblISS.Rows.Count - 1;
-                        while (i <= maxR)
+                        string issdoctype = "'ODYI','OEMI','OPRI','OSTI'";
+                        if(jobcd=="DY")
                         {
-                            autono = tblISS.Rows[i]["autono"].ToString();
-                            if (autono == "2020RATNCHATSSIJI00000000007")
-                            {
-
-                            }
-                            string itcd = tblISS.Rows[i]["itcd"].ToString();
-                            string jobautoslno = tblISS.Rows[i]["jobautoslno"].ToString();
-                            while (tblISS.Rows[i]["jobautoslno"].ToString() == jobautoslno && tblISS.Rows[i]["itcd"].ToString() == itcd)
-                            {
-                                DataRow[] results = rec_date.Select("JOBAUTOSLNO='" + jobautoslno + "'  and  rec_itcd= '" + itcd + "'"); double recqnty = 0;
-                                if (results.Length != 0)
-                                {
-                                    foreach (DataRow dr in results) { recqnty += dr["rec_qnty"].retDbl(); }
-                                }
-                                if (tblISS.Rows[i]["qnty"].retDbl() - recqnty > 0)
-                                {
-                                    PendingJobDT.Rows.Add(""); rNo = PendingJobDT.Rows.Count - 1;
-                                    PendingJobDT.Rows[rNo]["autono"] = tblISS.Rows[i]["autono"];
-                                    PendingJobDT.Rows[rNo]["jobautoslno"] = tblISS.Rows[i]["jobautoslno"];
-                                    PendingJobDT.Rows[rNo]["docdt"] = tblISS.Rows[i]["docdt"].retDateStr();
-                                    PendingJobDT.Rows[rNo]["docno"] = tblISS.Rows[i]["docno"];
-                                    PendingJobDT.Rows[rNo]["PBLNO"] = tblISS.Rows[i]["PBLNO"];
-                                    PendingJobDT.Rows[rNo]["PBLdt"] = tblISS.Rows[i]["PBLdt"].retDateStr();
-                                    PendingJobDT.Rows[rNo]["slcd"] = tblISS.Rows[i]["slcd"];
-                                    PendingJobDT.Rows[rNo]["itcd"] = tblISS.Rows[i]["itcd"];
-                                    PendingJobDT.Rows[rNo]["issqnty"] = tblISS.Rows[i]["qnty"].retDbl();
-                                    PendingJobDT.Rows[rNo]["issrate"] = tblISS.Rows[i]["rate"].retDbl();
-                                    PendingJobDT.Rows[rNo]["issamt"] = tblISS.Rows[i]["amt"].retDbl();
-                                    PendingJobDT.Rows[rNo]["balqnty"] = tblISS.Rows[i]["qnty"].retDbl() - recqnty;
-                                }
-                                i++;
-                                if (i > maxR) break;
-                            }
+                            issdoctype = "'ODYI'";
                         }
+                        else if (jobcd == "KR")
+                        {
+                            issdoctype = "'OEMI'";
+
+                        }
+                        else if (jobcd == "PR")
+                        {
+                            issdoctype = "'OPRI'";
+
+                        }
+                        else if (jobcd == "STI")
+                        {
+                            issdoctype = "'OSTI'";
+
+                        }
+                        else if (jobcd == "IR")
+                        {
+                            issdoctype = "'OIRI'";
+
+                        }
+
+                       
+                        PendingJobDT = Salesfunc.getPendProg(CommVar.CurrDate(UNQSNO), "", "", "", "'" + jobcd + "'", "", "","", oldschema);
+                        DataView dv = PendingJobDT.DefaultView;
+                        dv.Sort = "progautono,progslno";
+                        PendingJobDT = dv.ToTable();
+                        Int32 rNo = 0;
+                        maxR = PendingJobDT.Rows.Count - 1;
+                       
                         sqlc = "select b.autono from " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where b.doccd=c.doccd and ";
                         sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "'  and c.doctype in (" + issdoctype + ") and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
-                        query = "delete from " + newschema + ".T_TXNTRANS where autono in (" + sqlc + ") ";
+                    
+                      
+                        query = "delete from " + newschema + ".T_PROGDTL where autono in (" + sqlc + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        query = "delete from " + newschema + ".T_TXNOTH where autono in (" + sqlc + ") ";
-                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        //query = "delete from " + newschema + ".T_TXNPRODDTL where autono in (" + sqlc + ") ";
-                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
-                        query = "delete from " + newschema + ".T_JOBMST where autono in (" + sqlc + ") ";
+                        query = "delete from " + newschema + ".T_BATCHDTL where autono in (" + sqlc + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         query = "delete from " + newschema + ".T_TXNDTL where autono in (" + sqlc + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+
+                        query = "delete from " + newschema + ".T_PROGMAST where autono in (" + sqlc + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         query = "delete from " + newschema + ".T_TXN where autono in (" + sqlc + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        query = "delete from " + newschema + ".T_TXNTRANS where autono in (" + sqlc + ") ";
+                        OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
+                        query = "delete from " + newschema + ".T_TXNOTH where autono in (" + sqlc + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         for (Int32 q = 0; q <= tbldel.Rows.Count - 1; q++)
                         {
@@ -1241,10 +1436,28 @@ namespace Improvar.Controllers
                                        where (q.COMPCD == COM)
                                        select p).ToList();
 
-                        //var vTXNPRODDTL = (from p in DBOLD.T_TXNPRODDTL
-                        //                   join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                        //                   where (q.COMPCD == COM)
-                        //                   select p).ToList();
+                        var vTPROGMAST= (from p in DBOLD.T_PROGMAST
+                                    join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                    where (q.COMPCD == COM)
+                                    select p).ToList();
+
+                        var vTBATCHMST = (from p in DBOLD.T_PROGMAST
+                                          join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                          join s in DBOLD.T_BATCHMST on p.BARNO equals s.BARNO into g 
+                                          from s in g.DefaultIfEmpty()
+                                          where (q.COMPCD == COM)
+                                          select p).ToList();
+
+
+                        var vTBATCHDTL = (from p in DBOLD.T_BATCHDTL
+                                          join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                          where (q.COMPCD == COM)
+                                          select p).ToList();
+
+                        var vTPROGDTLL = (from p in DBOLD.T_PROGDTL
+                                           join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                           where (q.COMPCD == COM)
+                                           select p).ToList();
 
                         var vTXNOTH = (from p in DBOLD.T_TXNOTH
                                        join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
@@ -1255,102 +1468,154 @@ namespace Improvar.Controllers
                                          join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
                                          where (q.COMPCD == COM)
                                          select p).ToList();
-
-                        string[] selgocd = string.Join(",", (from DataRow dr in PendingJobDT.Rows select dr["jobautoslno"].ToString()).Distinct()).Split(',');
-                        string jobautonos = selgocd.retSqlfromStrarray();
-
-                        DataView dtView = new DataView(PendingJobDT);
-                        dtView.RowFilter = "jobautoslno in (" + jobautonos + ")";
-                        string[] itcol = new string[2];
-                        itcol[0] = "autono";
-                        itcol[1] = "jobautoslno";
-                        DataTable jobautoRefDisttbl = dtView.ToTable(true, itcol);
-
+                        
                         bool recoexist = false;
 
                         i = 0; maxR = 0;
                         maxR = PendingJobDT.Rows.Count - 1;
                         while (i <= maxR)
                         {
-                            string jobautoslno = PendingJobDT.Rows[i]["jobautoslno"].ToString();
-                            sql = " ";
-                            //sql += " select a.autono,a.slno,a.jobautoslno  from " + oldschema + ".t_txnproddtl a where a.jobautoslno='" + jobautoslno + "' ";
-                            sql += " union all";
-                            sql += " select a.autono,a.slno,a.jobautoslno  from " + oldschema + ".t_txndtl a where a.jobautoslno='" + jobautoslno + "' ";
-                            DataTable JobIssRec = masterHelp.SQLquery(sql);
-                            //DataRow[] autodrow = jobautoRefDisttbl.Select("jobautoslno='" + jobautoslno + "'");
-                            for (int au = 0; au < JobIssRec.Rows.Count; au++)
+                            string progautono = PendingJobDT.Rows[i]["progautono"].ToString();
+                          //  string progautoslno = PendingJobDT.Rows[i]["progautoslno"].ToString();
+                            T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
+
+
+                            sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + progautono + "'";
+                            OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                            if (recoexist == false)
                             {
-                                autono = JobIssRec.Rows[au]["autono"].retStr();
-                                int slno = JobIssRec.Rows[au]["slno"].retInt();
-                                sql = "select autono from " + newschema + ".t_cntrl_hdr where autono='" + autono + "'";
-                                OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                                if (recoexist == false)
+                                TCHOLD = DBOLD.T_CNTRL_HDR.Find(progautono);
+                                dbsql = MasterHelpFa.RetModeltoSql(TCHOLD);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                                //var TTxn = vTXN.Where(m => m.AUTONO == progautono).First();
+                                //dbsql = MasterHelpFa.RetModeltoSql(TTxn);
+                                //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
+
+                            sql = "select autono from " + newschema + ".T_Txn where autono='" + progautono + "'";
+                            OraCmd.CommandText = sql;  OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                            if (recoexist == false)
+                            {
+                                var TTxn = vTXN.Where(m => m.AUTONO == progautono).First();
+                                dbsql = MasterHelpFa.RetModeltoSql(TTxn);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
+                            
+
+                            sql = "select autono from " + newschema + ".T_TXNOTH where autono='" + progautono + "'";
+                            OraCmd.CommandText = sql;  OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                            if (recoexist == false)
+                            {
+
+                                var TXNOTH = vTXNOTH.Where(m => m.AUTONO == progautono).FirstOrDefault();
+                                if (TXNOTH != null)
                                 {
-                                    T_CNTRL_HDR TTCH = DBOLD.T_CNTRL_HDR.Find(autono);
-                                    dbsql = MasterHelpFa.RetModeltoSql(TTCH);
+                                    dbsql = MasterHelpFa.RetModeltoSql(TXNOTH);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                                    var TTxn = vTXN.Where(m => m.AUTONO == autono).First();
-                                    dbsql = MasterHelpFa.RetModeltoSql(TTxn);
+                                }
+                            }
+                            sql = "select autono from " + newschema + ".T_TXNTRANS where autono='" + progautono + "'";
+                            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                            if (recoexist == false)
+                            {
+                                var TXNTRANS = vTXNTRANS.Where(m => m.AUTONO == progautono).FirstOrDefault();
+                                if (TXNTRANS != null)
+                                {
+                                    dbsql = MasterHelpFa.RetModeltoSql(TXNTRANS);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
+                            }
 
-                                sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + autono + "' and slno=" + slno + "";
-                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                                if (recoexist == false)
+                            while (PendingJobDT.Rows[i]["progautono"].retStr() == progautono)
+                            {
+                                Int32 progslno = PendingJobDT.Rows[i]["progslno"].retInt();
+                                Int32 txnslno = PendingJobDT.Rows[i]["txnslno"].retInt();
+                                string itcd = PendingJobDT.Rows[i]["itcd"].ToString();
+                                while (PendingJobDT.Rows[i]["progautono"].retStr() == progautono && PendingJobDT.Rows[i]["progslno"].retInt() == progslno &&  PendingJobDT.Rows[i]["txnslno"].retInt() == txnslno && PendingJobDT.Rows[i]["itcd"].retStr() == itcd)
                                 {
-                                    var TXNDTL = vTXNDTL.Where(m => m.AUTONO == autono && m.SLNO == slno).FirstOrDefault();
-                                    if (TXNDTL != null)
+
+                                    sql = "select autono from " + newschema + ".T_PROGMAST where autono='" + progautono + "' and slno=" + progslno + " and itcd='" + itcd + "' ";
+                                    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                    var TPROGMAST = vTPROGMAST.Where(x => x.AUTONO == progautono && x.SLNO == progslno && x.ITCD == itcd).ToList();
+                                    if (TPROGMAST.Count != 0)
                                     {
-                                        TXNDTL.STKDRCR = "N";
-                                        dbsql = MasterHelpFa.RetModeltoSql(TXNDTL);
+                                        TPROGMAST[0].QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
+                                        TPROGMAST[0].ITCD = PendingJobDT.Rows[i]["itcd"].ToString();
+                                        TPROGMAST[0].NOS = PendingJobDT.Rows[i]["balnos"].retInt();
+                                        dbsql = MasterHelpFa.RetModeltoSql(TPROGMAST[0]);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     }
-                                }
 
-                                sql = "select autono from " + newschema + ".T_TXNPRODDTL where autono='" + autono + "' and slno=" + slno + "";
-                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                                if (recoexist == false)
-                                {
-                                    //var TXNPRODDTL = vTXNPRODDTL.Where(m => m.AUTONO == autono && m.SLNO == slno).FirstOrDefault();
-                                    //if (TXNPRODDTL != null)
-                                    //{
-                                    //    dbsql = MasterHelpFa.RetModeltoSql(TXNPRODDTL);
-                                    //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    //}
-                                }
+                                    #region Checking with transactios
 
-                                sql = "select autono from " + newschema + ".T_TXNOTH where autono='" + autono + "'";
-                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                                if (recoexist == false)
-                                {
-
-                                    var TXNOTH = vTXNOTH.Where(m => m.AUTONO == autono).FirstOrDefault();
-                                    if (TXNOTH != null)
+                                    sql = "select autono from " + newschema + ".T_PROGDTL where autono='" + progautono + "' and slno=" + progslno + " ";
+                                    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                    if (recoexist == false)
                                     {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TXNOTH);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        var TPROGDTLL = vTPROGDTLL.Where(m => m.AUTONO == progautono && m.SLNO == progslno).FirstOrDefault();
+                                        if (TPROGDTLL != null)
+                                        {
+                                            TPROGDTLL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
+                                            TPROGDTLL.NOS = PendingJobDT.Rows[i]["balnos"].retInt();
+                                            dbsql = MasterHelpFa.RetModeltoSql(TPROGDTLL);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        }
                                     }
-                                }
-                                sql = "select autono from " + newschema + ".T_TXNTRANS where autono='" + autono + "'";
-                                OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
-                                if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-                                if (recoexist == false)
-                                {
-                                    var TXNTRANS = vTXNTRANS.Where(m => m.AUTONO == autono).FirstOrDefault();
-                                    if (TXNTRANS != null)
+
+                                    sql = "select autono from " + newschema + ".T_TXNDTL where autono='" + progautono + "' and slno=" + txnslno + " and itcd='" + itcd + "' ";
+                                    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                    if (recoexist == false)
                                     {
-                                        dbsql = MasterHelpFa.RetModeltoSql(TXNTRANS);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        var TXNDTL = vTXNDTL.Where(m => m.AUTONO == progautono && m.SLNO == txnslno).FirstOrDefault();
+                                        if (TXNDTL != null)
+                                        {
+                                            TXNDTL.ITCD = PendingJobDT.Rows[i]["itcd"].ToString();
+                                            TXNDTL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
+                                            TXNDTL.NOS = PendingJobDT.Rows[i]["balnos"].retInt();
+                                            TXNDTL.STKDRCR = "N";
+                                            dbsql = MasterHelpFa.RetModeltoSql(TXNDTL);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        }
                                     }
+
+
+                                    sql = "select autono from " + newschema + ".T_BATCHDTL where autono='" + progautono + "' and slno=" + progslno + " and txnslno=" + txnslno + "  ";
+                                    OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                    if (recoexist == false)
+                                    {
+                                        var TBATCHDTL = vTBATCHDTL.Where(m => m.AUTONO == progautono && m.SLNO == progslno && m.TXNSLNO == txnslno).FirstOrDefault();
+                                        if (TBATCHDTL != null)
+                                        {
+                                            TBATCHDTL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
+                                            TBATCHDTL.NOS = PendingJobDT.Rows[i]["balnos"].retInt();
+                                            dbsql = MasterHelpFa.RetModeltoSql(TBATCHDTL);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+
+
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    i++;
+                                    if (i > maxR) break;
+
                                 }
-                            }//for JobIssRec.Rows.Count
-                            i++;
+                                if (i > maxR) break;
+
+                            }
                             if (i > maxR) break;
                         }//PendingJobDT.Rows.Count
                     }//checkbox5
@@ -1473,6 +1738,26 @@ namespace Improvar.Controllers
                     Cn.SaveException(ex, errorAutono);
                     return ex.Message + ex.InnerException + errorAutono;
                 }
+            }
+        }
+        public ActionResult GetJobDetails(string val)
+        {
+            try
+            {
+                var str = masterHelp.JOBCD_JOBMST_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
 

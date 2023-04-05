@@ -3078,8 +3078,8 @@ namespace Improvar.Controllers
                             TPROGMAST.PARTCD = VE.TPROGDTL[i].PARTCD;
                             TPROGMAST.COLRCD = VE.TPROGDTL[i].COLRCD;
                             TPROGMAST.SIZECD = VE.TPROGDTL[i].SIZECD;
-                            TPROGMAST.NOS = VE.TPROGDTL[i].NOS.retDcml();
-                            TPROGMAST.QNTY = VE.TPROGDTL[i].QNTY.retDcml();
+                            TPROGMAST.NOS = VE.TPROGDTL[i].NOS.retDbl();
+                            TPROGMAST.QNTY = VE.TPROGDTL[i].QNTY.retDbl();
                             TPROGMAST.ITREMARK = VE.TPROGDTL[i].ITREMARK;
                             TPROGMAST.SHADE = VE.TPROGDTL[i].SHADE;
                             TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();

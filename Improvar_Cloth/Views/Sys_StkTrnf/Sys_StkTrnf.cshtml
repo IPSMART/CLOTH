@@ -95,21 +95,60 @@
                         </div>
                     </div>
                 </div>
-             
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-md-6">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Job")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                </div>
 
-                @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
-                {  <div class="row" style="margin-top:10PX">
+                <div class="row">
                     <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Pending Job Transfer")
+                        </div>
                     </div>
-                    <div class="col-lg-3">
-                        <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox5)
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                        <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
-                    </div>
-                </div> }
+                </div>
+                <div class="row">
+                   
+                            <p>
+                                <b> Note : </b>   Plese select Job Code For Pending Job Transfer
 
-            </div>
+                            </p>
+                        
+                    
+                    </div>
+
+                    @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
+                    {  <div class="row" style="margin-top:10PX">
+                        <div class="col-lg-2">
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
+                        </div>
+                    </div> }
+
+                </div>
         </div>
     }
     <div class="container">
