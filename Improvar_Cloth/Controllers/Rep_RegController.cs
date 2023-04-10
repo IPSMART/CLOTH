@@ -195,6 +195,7 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_Reg(FormCollection FC, ReportViewinHtml VE)
         {
+            
             try
             {
                 //ReportViewinHtml VE = new ReportViewinHtml();
@@ -439,7 +440,7 @@ namespace Improvar.Controllers
                     amtDT.Columns.Add("AmtItcdtotAmt", typeof(double));
 
                     Int32 i = 0, istore = 0, rNo = 0, maxR = tbl.Rows.Count - 1;
-                    if (VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ" || VE.TEXTBOX7 == "PCWOQ" || VE.TEXTBOX8 == "All Purchase") showpbill = true;
+                    if (VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ" || VE.TEXTBOX7 == "PCWOQ" || VE.TEXTBOX8 == "All Purchase" || VE.TEXTBOX1 == "Sales Return") showpbill = true;
                     #region Normal Report               
                     HC.RepStart(IR, 3);
                     if (dtlsumm != "C")
@@ -489,6 +490,7 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C" && VE.Checkbox1 == true) HC.GetPrintHeader(IR, "bltype", "string", "c,20", "Bill;Type");
                         if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+
                         if ((dtlsumm != "C") || (dtlsumm == "C" && VE.Checkbox10 == true)) HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                     }
@@ -534,6 +536,10 @@ namespace Improvar.Controllers
                     while (i <= maxR)
                     {
                         auto1 = tbl.Rows[i]["autono"].ToString();
+                        if(auto1== "2022DIWHKOLKSSRET00000000411")
+                        {
+
+                        }
                         istore = i;
                         bldtl = true;
 
@@ -806,8 +812,10 @@ namespace Improvar.Controllers
                                         {
                                             var row = IR.NewRow();
                                             row["uomcd"] = g.Key;
-                                            row["qnty"] = g.Sum(r => r.Field<double>("qnty").retDbl());
-                                            row["nos"] = g.Sum(r => r.Field<double>("nos").retDbl());
+                                            row["qnty"]= g.Sum(r => r.Field<double?>("qnty") == null ? 0 : r.Field<double>("qnty"));
+                                            row["nos"] = g.Sum(r => r.Field<double?>("nos") == null ? 0 : r.Field<double>("nos"));
+                                            //row["qnty"] = g.Sum(r => r.Field<double>("qnty").retDbl());
+                                           // row["nos"] = g.Sum(r => r.Field<double>("nos").retDbl());
                                             return row;
                                         }).CopyToDataTable();
                         // int j = 0;
