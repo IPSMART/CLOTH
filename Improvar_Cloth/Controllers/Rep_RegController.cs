@@ -1681,5 +1681,36 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
+        //public ActionResult Rep_Reg1(FormCollection FC, ReportViewinHtml VE)
+        //{
+        //    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+        //    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+        //    string dtlsumm = "";
+        //    string fdt = VE.FDT.retDateStr(), tdt = VE.TDT.retDateStr();
+
+        //    string GODOWN = VE.TEXTBOX3.retStr();
+        //    bool itmdtl = false, batchdtl = false, itemrem = false;
+        //    dtlsumm = FC["DtlSumm"].ToString();
+        //    if (dtlsumm == "ID") itmdtl = true;   //if (VE.Checkbox1 == true) itmdtl = true;
+        //    if (VE.Checkbox2 == true) batchdtl = true;
+        //    if (VE.Checkbox6 == true) itemrem = true;
+
+        //    string itgrpcd = "";
+
+        //    //string reptype = FC["reptype"].ToString();
+        //    string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "", selSagslcd = "";
+        //    if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
+        //    if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
+        //    if (FC.AllKeys.Contains("ITGRPCDvalue")) itgrpcd = CommFunc.retSqlformat(FC["ITGRPCDvalue"].ToString());
+        //    if (FC.AllKeys.Contains("loccdvalue")) selloccd = FC["loccdvalue"].retSqlformat();
+        //    if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
+        //    if (FC.AllKeys.Contains("sagslcdvalue")) selSagslcd = CommFunc.retSqlformat(FC["sagslcdvalue"].ToString());
+        //    if (FC.AllKeys.Contains("bltypevalue")) bltype = CommFunc.retSqlformat(FC["bltypevalue"].ToString());
+
+
+
+        //    return Content(retmsg);
+        //}
     }
 }

@@ -2287,6 +2287,26 @@ namespace Improvar.Controllers
                         {
                             if (VE.TsalePos_TBATCHDTL[i].SLNO != 0 && VE.TsalePos_TBATCHDTL[i].ITCD != null)
                             {
+                                #region Negetive Stock Chking
+                                if (VE.MENU_PARA == "SBCM")
+                                {
+                                    if (VE.TsalePos_TBATCHDTL[i].QNTY != 0)
+                                    {
+                                        var BALSTOCK = VE.TsalePos_TBATCHDTL[i].BALSTOCK.retDbl();
+                                        var NEGSTOCK = VE.TsalePos_TBATCHDTL[i].NEGSTOCK;
+                                        var balancestock = BALSTOCK - VE.TsalePos_TBATCHDTL[i].QNTY;
+                                        if (balancestock < 0)
+                                        {
+                                            if (NEGSTOCK != "Y")
+                                            {
+                                                ContentFlg = "Quantity should not be grater than Stock at slno " + VE.TsalePos_TBATCHDTL[i].SLNO;
+                                                goto dbnotsave;
+                                            }
+                                        }
+                                    }
+                                }
+                                #endregion
+
                                 titamt = titamt + VE.TsalePos_TBATCHDTL[i].GROSSAMT.retDbl();
                                 titqty = titqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
                                 lastitemno = i;
@@ -4017,7 +4037,7 @@ namespace Improvar.Controllers
                 ContentFlg = ex.Message + ex.StackTrace;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraTrans.Commit();
                 OraCon.Dispose();
@@ -4032,7 +4052,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

@@ -160,6 +160,24 @@
         });
     }
 </script>
+<script>
+    function Proceed() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Rep_Reg1", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                msgInfo(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
@@ -413,6 +431,9 @@
                     <div class="col-lg-6">
                         <input type="button" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
                     </div>
+                    @*<div class="col-lg-6">
+                        <input type="button" value="Get Pending Profoma" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
+                    </div>*@
                 </div>
                 <div class="row">
                     <div class="modal fade" id="myColumnModal" role="dialog">

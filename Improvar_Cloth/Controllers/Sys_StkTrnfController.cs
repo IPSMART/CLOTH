@@ -1377,7 +1377,7 @@ namespace Improvar.Controllers
                             issdoctype = "'OPRI'";
 
                         }
-                        else if (jobcd == "STI")
+                        else if (jobcd == "ST")
                         {
                             issdoctype = "'OSTI'";
 
@@ -1387,23 +1387,40 @@ namespace Improvar.Controllers
                             issdoctype = "'OIRI'";
 
                         }
+                        else if (jobcd == "JB")
+                        {
+                            issdoctype = "''";
 
-                       
+                        }
+
+
                         PendingJobDT = Salesfunc.getPendProg(CommVar.CurrDate(UNQSNO), "", "", "", "'" + jobcd + "'", "", "","", oldschema);
                         DataView dv = PendingJobDT.DefaultView;
-                        dv.Sort = "progautono,progslno";
+                        dv.Sort = "progautono,progslno,styleno, itnm, itcd, partcd, print_seq, sizenm";
                         PendingJobDT = dv.ToTable();
+                        DataTable rstmp = new DataTable();
+                        string seldoccd = "";
                         Int32 rNo = 0;
                         maxR = PendingJobDT.Rows.Count - 1;
-                       
+
+                        //sql = "select doccd from " + oldschema + ".m_doctype where doctype in ('ODYR','OPRR','OEMR','ODYI','OEMI','OPRI','OSTI','OIRI')";
+                        //rstmp = masterHelp.SQLquery(sql);
+                        //seldoccd = string.Join("','", (from DataRow dr in rstmp.Rows select dr["doccd"].ToString()).Distinct());
+                        //string[] strdocd = seldoccd.Replace("'", "").Split(',');
+
+                        #region Record delete if found
+                        sql = "alter table " + newschema + ".t_progdtl disable constraint fkey_t_progdtl_progautono";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
                         sqlc = "select b.autono from " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c ";
                         sqlc += "where b.doccd=c.doccd and ";
                         sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "'  and c.doctype in (" + issdoctype + ") and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
+                       
 
-                    
-                      
+
+
                         query = "delete from " + newschema + ".T_PROGDTL where autono in (" + sqlc + ") ";
                         OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         query = "delete from " + newschema + ".T_BATCHDTL where autono in (" + sqlc + ") ";
@@ -1424,7 +1441,11 @@ namespace Improvar.Controllers
                             query = "delete from " + newschema + ".t_cntrl_hdr where autono='" + tbldel.Rows[q]["autono"].ToString() + "' ";
                             OraCmd.CommandText = query; OraCmd.ExecuteNonQuery();
                         }
+
                         if (dberrmsg != "") goto dbnotsave;
+                        #endregion
+
+                       
 
                         var vTXN = (from p in DBOLD.T_TXN
                                     join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
@@ -1451,7 +1472,7 @@ namespace Improvar.Controllers
 
                         var vTBATCHDTL = (from p in DBOLD.T_BATCHDTL
                                           join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                          where (q.COMPCD == COM)
+                                          where  (q.COMPCD == COM)
                                           select p).ToList();
 
                         var vTPROGDTLL = (from p in DBOLD.T_PROGDTL
@@ -1461,12 +1482,12 @@ namespace Improvar.Controllers
 
                         var vTXNOTH = (from p in DBOLD.T_TXNOTH
                                        join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                       where (q.COMPCD == COM)
+                                       where  (q.COMPCD == COM)
                                        select p).ToList();
 
                         var vTXNTRANS = (from p in DBOLD.T_TXNTRANS
                                          join q in DBOLD.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                         where (q.COMPCD == COM)
+                                         where  (q.COMPCD == COM)
                                          select p).ToList();
                         
                         bool recoexist = false;
@@ -1555,12 +1576,12 @@ namespace Improvar.Controllers
 
                                     #region Checking with transactios
 
-                                    sql = "select autono from " + newschema + ".T_PROGDTL where autono='" + progautono + "' and slno=" + progslno + " ";
+                                    sql = "select autono from " + newschema + ".T_PROGDTL where progautono='" + progautono + "' and progslno=" + progslno + " ";
                                     OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
                                     if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
                                     if (recoexist == false)
                                     {
-                                        var TPROGDTLL = vTPROGDTLL.Where(m => m.AUTONO == progautono && m.SLNO == progslno).FirstOrDefault();
+                                        var TPROGDTLL = vTPROGDTLL.Where(m => m.PROGAUTONO == progautono && m.PROGSLNO == progslno).FirstOrDefault();
                                         if (TPROGDTLL != null)
                                         {
                                             TPROGDTLL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
@@ -1620,6 +1641,8 @@ namespace Improvar.Controllers
                         }//PendingJobDT.Rows.Count
                     }//checkbox5
                     #endregion
+                    sql = "alter table " + newschema + ".t_progdtl enable constraint fkey_t_progdtl_progautono";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     ModelState.Clear();
                     OraTrans.Commit();

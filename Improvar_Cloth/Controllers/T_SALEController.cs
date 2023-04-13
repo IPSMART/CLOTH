@@ -4663,6 +4663,42 @@ namespace Improvar.Controllers
                     double titamt = 0, titqty = 0;
                     int lastitemno = 0;
 
+                    if (VE.TBATCHDTL != null)
+                    {
+                        for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                        {
+                            if (VE.TBATCHDTL[i].SLNO != 0 && VE.TBATCHDTL[i].ITCD != null)
+                            {
+                                #region Negetive Stock Chking
+                                if (VE.MENU_PARA != "SR" && VE.MENU_PARA != "SBCMR" && VE.MENU_PARA != "PB" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.TBATCHDTL[i].QNTY != 0)
+                                { 
+                                    if (VE.TBATCHDTL[i].QNTY != 0)
+                                    {
+                                        var BALSTOCK = VE.TBATCHDTL[i].BALSTOCK.retDbl();
+                                        var NEGSTOCK = VE.TBATCHDTL[i].NEGSTOCK;
+                                        var balancestock = BALSTOCK - VE.TBATCHDTL[i].QNTY;
+                                        if (balancestock < 0)
+                                        {
+                                            if (NEGSTOCK != "Y")
+                                            {
+                                                ContentFlg = "Quantity should not be grater than Stock at slno " + VE.TBATCHDTL[i].SLNO;
+                                                goto dbnotsave;
+                                            }
+                                        }
+                                    }
+                            }
+                                
+                                #endregion
+
+
+                            }
+                        }
+                    }
+
+
+
+
+
                     double _baldist_b = 0, _baldistq_b = 0, _rpldist_b = 0, _rpldistq_b = 0, _baldisttxblval_b = 0, _rpldisttxblval_b = 0;
                     if (VE.TTXNAMT != null)
                     {
@@ -5077,6 +5113,8 @@ namespace Improvar.Controllers
                         {
                             if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "")
                             {
+                             
+
                                 if (!(VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y"))
                                 {
                                     if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")

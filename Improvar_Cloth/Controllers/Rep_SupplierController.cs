@@ -99,28 +99,28 @@ namespace Improvar.Controllers
                 else if (reptype == "ClosingStockBarcode") { return ClosingStockBarcodeWise(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
                 //if (reptype != "PurchasebillwiseStock")
                 //{
-                string sql = "select a.autono,e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
+                string sql = "select a.autono,e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.stkdrcr, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                 sql += Environment.NewLine + "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
                 sql += Environment.NewLine + "nvl(rp.rate, 0) rprate, ";
                 sql += Environment.NewLine + "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,l.docno,l.docdt,nvl(m.prefno,l.docno)blno,nvl(m.prefdt,l.docdt)bldt   from ";
                 sql += Environment.NewLine + " ";
-                sql += Environment.NewLine + "(select b.autono,d.compcd, d.loccd, a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                sql += Environment.NewLine + "(select b.autono,d.compcd, d.loccd, a.barno, 'OP' doctag,a.stkdrcr, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
                 sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
                 sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
                 sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
                 sql += Environment.NewLine + "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
-                sql += Environment.NewLine + "group by b.autono,d.compcd, d.loccd, a.barno, 'OP' ";
+                sql += Environment.NewLine + "group by b.autono,d.compcd, d.loccd, a.barno, 'OP',a.stkdrcr ";
                 sql += Environment.NewLine + "union all ";
-                sql += Environment.NewLine + "select b.autono,d.compcd, d.loccd, a.barno, c.doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
+                sql += Environment.NewLine + "select b.autono,d.compcd, d.loccd, a.barno, c.doctag,a.stkdrcr, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval,  ";
                 sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
                 sql += Environment.NewLine + "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
                 sql += Environment.NewLine + "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
                 sql += Environment.NewLine + "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
                 sql += Environment.NewLine + "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
-                sql += Environment.NewLine + "group by b.autono,d.compcd, d.loccd, a.barno, c.doctag ) a, ";
+                sql += Environment.NewLine + "group by b.autono,d.compcd, d.loccd, a.barno, c.doctag,a.stkdrcr ) a, ";
                 sql += Environment.NewLine + " ";
                 sql += Environment.NewLine + "(select barno, effdt, prccd, rate from ( ";
                 sql += Environment.NewLine + "select a.barno, a.effdt, a.prccd, a.rate, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
@@ -204,6 +204,8 @@ namespace Improvar.Controllers
                     if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales Value");
                 }
 
+                HC.GetPrintHeader(IR, "salesretqnty", "double", "n,10,2", "Sales.Ret Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesretamt", "double", "n,10,2", "Sales.Ret Value");
                 HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others Qty");
                 if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others Value");
                 HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Closing Stock Qty");
@@ -340,8 +342,22 @@ namespace Improvar.Controllers
 
                                             if (tbl.Rows[i]["doctag"].retStr() == "SB")
                                             {
-                                                sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+                                                //sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                                //sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+
+                                                if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
+                                                {
+                                                    sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                                    sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+
+
+                                                }
+                                                else
+                                                {
+                                                    srqnty += tbl.Rows[i]["qnty"].retDbl();
+                                                    srvalue += tbl.Rows[i]["txblval"].retDbl();
+                                                }
+                                              
 
                                             }
                                             else
@@ -431,7 +447,8 @@ namespace Improvar.Controllers
                                                 if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue;
                                             }
 
-
+                                            IR.Rows[rNo]["salesretqnty"] = srqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["salesretamt"] = srvalue;
 
                                             IR.Rows[rNo]["othersqnty"] = othersqnty;
                                             if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
@@ -499,7 +516,8 @@ namespace Improvar.Controllers
                                         }
 
 
-
+                                        IR.Rows[rNo]["salesretqnty"] = srqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["salesretamt"] = srvalue1;
                                         IR.Rows[rNo]["othersqnty"] = othersqnty1;
                                         if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue1;
 
@@ -742,7 +760,8 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "salesqnty", "double", "n,10,2", "Sales Qty");
                     if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesamt", "double", "n,10,2", "Sales Value");
                 }
-
+                HC.GetPrintHeader(IR, "salesretqnty", "double", "n,10,2", "Sales.Ret Qty");
+                if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "salesretamt", "double", "n,10,2", "Sales.Ret Value");
                 HC.GetPrintHeader(IR, "othersqnty", "double", "n,10,2", "Others Qty");
                 if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "othersamt", "double", "n,10,2", "Others Value");
                 HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Closing Stock Qty");
@@ -880,8 +899,21 @@ namespace Improvar.Controllers
 
                                             if (tbl.Rows[i]["doctag"].retStr() == "SB")
                                             {
-                                                sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+                                                //sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                                //sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+
+                                                if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
+                                                {
+                                                    sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                                    sbvalue += tbl.Rows[i]["txblval"].retDbl() * -1;
+
+
+                                                }
+                                                else
+                                                {
+                                                    srqnty += tbl.Rows[i]["qnty"].retDbl();
+                                                    srvalue += tbl.Rows[i]["txblval"].retDbl();
+                                                }
 
                                             }
                                             else
@@ -971,7 +1003,8 @@ namespace Improvar.Controllers
                                                 if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue;
                                             }
 
-
+                                            IR.Rows[rNo]["salesretqnty"] = srqnty;
+                                            if (MENU_PARA != "Q") IR.Rows[rNo]["salesretamt"] = srvalue;
 
                                             IR.Rows[rNo]["othersqnty"] = othersqnty;
                                             if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue;
@@ -1039,7 +1072,8 @@ namespace Improvar.Controllers
                                             if (MENU_PARA != "Q") IR.Rows[rNo]["salesamt"] = sbvalue1;
                                         }
 
-
+                                        IR.Rows[rNo]["salesretqnty"] = srqnty1;
+                                        if (MENU_PARA != "Q") IR.Rows[rNo]["salesretamt"] = srvalue1;
 
                                         IR.Rows[rNo]["othersqnty"] = othersqnty1;
                                         if (MENU_PARA != "Q") IR.Rows[rNo]["othersamt"] = othersvalue1;
@@ -1240,7 +1274,7 @@ namespace Improvar.Controllers
             sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, sum(a.txblval) txblval, ";
             sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt, nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt, b.sizecd ";
 
-            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ,SD_SACHI2021.t_txndtl f ";
+            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ," + scm + ".t_txndtl f ";
             sql += Environment.NewLine + "where a.barno = b.barno(+)  and  c.autono = f.barno(+)  ";
             sql += Environment.NewLine + "and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' ";
             sql += Environment.NewLine + "and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
@@ -1249,7 +1283,7 @@ namespace Improvar.Controllers
             sql += Environment.NewLine + "union all select d.compcd, d.loccd, a.barno, c.doctag,d.docdt,d.docno,c.prefno,c.prefdt,a.shade,sum(a.nos)nos, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
             sql += Environment.NewLine + "sum(a.txblval) txblval, ";
             sql += Environment.NewLine + "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt,nvl(TDDISCAMT, 0) + nvl(SCMDISCAMT, 0) + nvl(DISCAMT, 0) discamt ,b.sizecd ";
-            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e,SD_SACHI2021.t_txndtl f  ";
+            sql += Environment.NewLine + "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e," + scm + ".t_txndtl f  ";
             sql += Environment.NewLine + "where a.barno = b.barno(+)  and  c.autono = f.barno(+)  ";
             sql += Environment.NewLine + "and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and d.compcd = '" + COM + "' ";
             sql += Environment.NewLine + "and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
