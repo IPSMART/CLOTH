@@ -412,7 +412,8 @@ namespace Improvar.Controllers
                                     {
                                         var aa = "";
                                     }
-                                    if (batchwise == true) inos = tbl.Rows[i]["balnos"].retShort();
+                                    //if (batchwise == true) inos = tbl.Rows[i]["balnos"].retShort();
+                                    if (batchwise == true) inos = tbl.Rows[i]["balnos"].retInt();
                                     iqty = Convert.ToDouble(tbl.Rows[i]["balqnty"]);
                                     rate = tbl.Rows[i]["rate"].retDbl();
                                     basamt = (rate * iqty).toRound();
