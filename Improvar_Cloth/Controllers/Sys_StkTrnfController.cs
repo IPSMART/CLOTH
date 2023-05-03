@@ -106,8 +106,10 @@ namespace Improvar.Controllers
                     DataTable tbl = new DataTable();
 
                     string lastdayofprvyear = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-1).retDateStr();
+                    bool SkipNegetivStock = false;
+                    if (VE.Checkbox9 == true) SkipNegetivStock = true;
 
-                    #region Stock Transfer
+                        #region Stock Transfer
                     DataTable tbltmp = new DataTable();
 
                     bool batchwise = true;
@@ -123,15 +125,15 @@ namespace Improvar.Controllers
                         if (VE.Checkbox7 == true)
                         {
                             //tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
-                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, "", scmf1);
+                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, "", scmf1,false,SkipNegetivStock);
                         }
                         else if (VE.Checkbox10 == true)
                         {
-                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1,false,false,true,"",false,"","",false,false, VE.Checkbox10);
+                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1,false,false,true,"",false,"","",false,false, VE.Checkbox10, SkipNegetivStock);
                         }
                         else
                         {
-                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1);
+                            tbl = Salesfunc.GetStock(lastdayofprvyear, gocd, "", "", "FS".retSqlformat(), "", "", "", "CP", "C001", "", "", true, false, scm1, scmf1,false,false,true,"",false,"","",false,false,false,SkipNegetivStock);
                         }
 
                         DataView dv = tbl.DefaultView;
@@ -495,7 +497,7 @@ namespace Improvar.Controllers
                         string[] selgocd = string.Join(",", (from DataRow dr in tbltmp.Rows select dr["gocd"].ToString()).Distinct()).Split(',');
                         string gocd = selgocd.retSqlfromStrarray();
                         if (selgocd[0] == "") gocd = "";
-                        tbl = Salesfunc.GetBaleStock(lastdayofprvyear, gocd, "", "", "", "", "", "", scm1, scmf1);
+                        tbl = Salesfunc.GetBaleStock(lastdayofprvyear, gocd, "", "", "", "", "", "", scm1, scmf1,false,"","",true,SkipNegetivStock);
 
                         DataView dv = tbl.DefaultView;
                         dv.Sort = "blautono, blslno, baleyr, baleno";

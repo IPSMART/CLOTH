@@ -30,7 +30,7 @@
     }
 </script>
 <script>
-    function FinStockChecked(id, id1,id2) {
+    function FinStockChecked(id, id1, id2) {
         var chk = document.getElementById(id).checked;
         if (chk == true) {
             document.getElementById(id1).checked = false;
@@ -46,7 +46,7 @@
             @Html.HiddenFor(s => s.DefaultAction)
 
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
-
+               
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label">
@@ -58,6 +58,16 @@
                             @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "FinStockChecked(this.id,'Checkbox7','Checkbox10');" })
                         </div>
                     </div>
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Skip Negetive Stock")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox9)
+                            </div>
+                        </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-2">
@@ -127,28 +137,27 @@
                     </div>
                 </div>
                 <div class="row">
-                   
-                            <p>
-                                <b> Note : </b>   Plese select Job Code For Pending Job Transfer
 
-                            </p>
-                        
-                    
-                    </div>
+                    <p>
+                        <b> Note : </b>   Plese select Job Code For Pending Job Transfer
+                    </p>
 
-                    @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
-                    {  <div class="row" style="margin-top:10PX">
-                        <div class="col-lg-2">
-                        </div>
-                        <div class="col-lg-3">
-                            <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
-                        </div>
-                    </div> }
 
                 </div>
+
+                @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
+                    {  <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
+                    </div>
+                </div> }
+
+            </div>
         </div>
     }
     <div class="container">

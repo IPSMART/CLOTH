@@ -890,7 +890,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false)
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock=false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1069,6 +1069,7 @@ namespace Improvar
                 if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  " + Environment.NewLine;
                 sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
+                if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
             }
             else
             {
@@ -1244,6 +1245,7 @@ namespace Improvar
                 sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
                 //if(MSYSCNFG.STKINCLPINV=="Y")  sql += "and p.doctag not in('PI')";
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
+                if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
             }
 
             tbl = masterHelpFa.SQLquery(sql);
@@ -2596,7 +2598,7 @@ namespace Improvar
                 return ex.Message;
             }
         }
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false)
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false,bool skipNegetivStock = false)
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
@@ -2657,6 +2659,7 @@ namespace Improvar
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
             if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
             sql += ",a.stktype,a.stkdrcr " + Environment.NewLine;
+            if (skipNegetivStock == true) sql += " and nvl(qnty, 0)> 0 " + Environment.NewLine;
             sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
             if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
 
@@ -2679,6 +2682,7 @@ namespace Improvar
             sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
+            if (skipNegetivStock == true) sql += " and nvl(qnty, 0)> 0 " + Environment.NewLine;
             sql += "order by itcd " + Environment.NewLine;
 
             str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;

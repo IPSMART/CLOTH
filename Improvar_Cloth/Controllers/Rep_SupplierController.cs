@@ -357,7 +357,7 @@ namespace Improvar.Controllers
                                                     srqnty += tbl.Rows[i]["qnty"].retDbl();
                                                     srvalue += tbl.Rows[i]["txblval"].retDbl();
                                                 }
-                                              
+
 
                                             }
                                             else
@@ -626,11 +626,16 @@ namespace Improvar.Controllers
                         }
                         if (cntslcd != 0)
                         {
-                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            slcd = tbl.Rows[indx]["slcd"].ToString();
+                            if (slcd != "")
+                            { 
+
+
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["styleno"] = "Total of " + tbl.Rows[indx]["slnm"].ToString();
                             IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
 
-                            slcd = tbl.Rows[indx]["slcd"].ToString();
+
                             if (slcd == "OV00004")
                             {
                             }
@@ -679,9 +684,115 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
                             }
                         }
+                        }
+
                     }
                     if (i > maxB) break;
                 }
+                // Create Blank line
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["dammy"] = " ";
+                IR.Rows[rNo]["flag"] = " height:8px; ";
+
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["styleno"] = "Grand Total";
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;";
+
+
+                cnt = 0;
+                var uomlist2 = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() != "").Select(a => a.Field<string>("uomnm")).Distinct().ToList();
+                if (uomlist2 != null && uomlist2.Count > 0)
+                {
+                    for (int x = 0; x < uomlist2.Count; x++)
+                    {
+                        if (cnt != 0)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        }
+                        string uomnm = uomlist2[x].retStr();
+                        IR.Rows[rNo]["uomnm"] = uomnm;
+                        int strart = reptype == "N" ? 9 : 10;
+                        for (int a = strart; a < IR.Columns.Count - 2; a++)
+                        {
+                            var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("itgrpcd").retStr() != "")
+                                   .GroupBy(g => g.Field<string>("uomnm"))
+                                   .Select(g =>
+                                   {
+                                       var row = IR.NewRow();
+                                       row["uomnm"] = g.Key;
+                                       row[IR.Columns[a].ColumnName] = g.Sum(r => r.Field<double?>(IR.Columns[a].ColumnName) == null ? 0 : r.Field<double>(IR.Columns[a].ColumnName));
+                                       return row;
+                                   }).CopyToDataTable();
+
+                            if (unitwisegrptotal != null && unitwisegrptotal.Rows.Count > 0)
+                            {
+                                IR.Rows[rNo][IR.Columns[a].ColumnName] = unitwisegrptotal.Rows[0][IR.Columns[a].ColumnName];
+                            }
+                        }
+                        cnt++;
+                    }
+                }
+                if (cnt > 1)
+                {
+                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
+                }
+                else
+                {
+                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                }
+
+                //var grptbl = IR.AsEnumerable().Where(g => g.Field<string>("itgrpcd").retStr() != "")
+                //                .GroupBy(g => g.Field<string>("uomnm"))
+                //                .Select(g =>
+                //                {
+                //                    var row = IR.NewRow();
+                //                    row["uomnm"] = g.Key;
+                //                    row["opqty"] = g.Sum(r => r.Field<double?>("opqty") == null ? 0 : r.Field<double>("opqty"));
+                //                    row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
+                //                    row["netpur"] = g.Sum(r => r.Field<double?>("netpur").retDbl());
+                //                    row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
+                //                    row["karqty"] = g.Sum(r => r.Field<double?>("karqty").retDbl());
+                //                    row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
+                //                    row["approval"] = g.Sum(r => r.Field<double?>("approval").retDbl());
+                //                    row["netstktrans"] = g.Sum(r => r.Field<double?>("netstktrans").retDbl());
+                //                    row["netadj"] = g.Sum(r => r.Field<double?>("netadj").retDbl());
+                //                    row["netsale"] = g.Sum(r => r.Field<double?>("netsale").retDbl());
+                //                    row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
+                //                    row["balqty"] = g.Sum(r => r.Field<double?>("balqty").retDbl());
+                //                    row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                //                    return row;
+                //                }).CopyToDataTable();
+                //int cnt1 = 0;
+                //for (int k = 0; k <= grptbl.Rows.Count - 1; k++)
+                //{
+                //    if (grptbl.Rows[k]["opqty"].retDbl() != 0 || grptbl.Rows[k]["netpur"].retDbl() != 0 || grptbl.Rows[k]["karqty"].retDbl() != 0 || grptbl.Rows[k]["approval"].retDbl() != 0 || grptbl.Rows[k]["netstktrans"].retDbl() != 0 || grptbl.Rows[k]["netadj"].retDbl() != 0 || grptbl.Rows[k]["netsale"].retDbl() != 0 || grptbl.Rows[k]["balqty"].retDbl() != 0)
+                //    {
+                //        cnt1++;
+                //        if (k != 0)
+                //        {
+                //            IR.Rows.Add("");
+                //            rNo = IR.Rows.Count - 1;
+                //            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;";
+                //        }
+
+                //        IR.Rows[rNo]["itgrpcd"] = "grandtotal";
+                //        IR.Rows[rNo]["uomnm"] = grptbl.Rows[k]["uomnm"];
+                //        IR.Rows[rNo]["opqty"] = grptbl.Rows[k]["opqty"];
+                //        IR.Rows[rNo]["opval"] = grptbl.Rows[k]["opval"];
+                //        IR.Rows[rNo]["netpur"] = grptbl.Rows[k]["netpur"];
+                //        IR.Rows[rNo]["purval"] = grptbl.Rows[k]["purval"];
+                //        IR.Rows[rNo]["karqty"] = grptbl.Rows[k]["karqty"];
+                //        IR.Rows[rNo]["karval"] = grptbl.Rows[k]["karval"];
+                //        IR.Rows[rNo]["approval"] = grptbl.Rows[k]["approval"];
+                //        IR.Rows[rNo]["netstktrans"] = grptbl.Rows[k]["netstktrans"];
+                //        IR.Rows[rNo]["netadj"] = grptbl.Rows[k]["netadj"];
+                //        IR.Rows[rNo]["netsale"] = grptbl.Rows[k]["netsale"];
+                //        IR.Rows[rNo]["salevalue"] = grptbl.Rows[k]["salevalue"];
+                //        IR.Rows[rNo]["balqty"] = grptbl.Rows[k]["balqty"];
+                //        IR.Rows[rNo]["balval"] = grptbl.Rows[k]["balval"];
+
+                //    }
+                //}
 
                 IR.Columns.Remove("itgrpcd");
                 IR.Columns.Remove("slcd");
