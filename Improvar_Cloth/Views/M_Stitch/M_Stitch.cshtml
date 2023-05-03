@@ -312,7 +312,8 @@
         <input type="hidden" id="jobMast" value="@Url.Action("JobMaster", PageControllerName)" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.M_STCHGRP.M_AUTONO)
-        <div class="form-horizontal">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+  <div class="form-horizontal">
             <div class="col-lg-9">
                 <div class="row">
                     <div class="row">

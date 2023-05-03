@@ -1380,7 +1380,8 @@
         @Html.HiddenFor(model => Model.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(model => Model.DOC_CODE, new { id = "DOC_CODE" })
         @Html.HiddenFor(model => model.BackupTable, new { id = "BackupTable" })
-        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;margin-top: -15px;">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="form-horizontal" style="padding-left:5px;padding-right:5px;margin-top: -15px;">
             <div class="row" style="margin-top: 10px;">
                 <div class="col-md-3">
                     <div class="editor-label" style="margin-top: 6px;">

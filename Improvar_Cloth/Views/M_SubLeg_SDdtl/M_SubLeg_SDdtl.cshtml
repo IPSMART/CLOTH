@@ -387,7 +387,8 @@
     {
         @Html.HiddenFor(a => Model.maxdate)
         @Html.HiddenFor(a => Model.mindate)
-        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />

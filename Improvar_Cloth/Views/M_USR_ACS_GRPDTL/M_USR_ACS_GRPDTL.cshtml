@@ -127,6 +127,8 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />*@
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_USR_ACS_GRPDTL.M_AUTONO)
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+
 
             <div class="row">
                 <div class="col-md-3">

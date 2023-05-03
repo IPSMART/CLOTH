@@ -16,6 +16,7 @@ namespace Improvar.Controllers
         ImprovarDB DB, DBI, DBINV, DBFIN;
         M_DOC_AUTH sl;
         M_CNTRL_HDR sll;
+
         // GET: DOCPASS_STRGY
 
         public ActionResult DOCPASS_STRGY(string op = "", string key = "", int Nindex = 0, string searchValue = "")
@@ -775,7 +776,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOC_AUTH", MDOCAUTH.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOC_AUTH", MDOCAUTH.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO), VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
@@ -802,8 +803,11 @@ namespace Improvar.Controllers
 
                     else if (VE.DefaultAction == "V")
                     {
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOC_AUTH", VE.M_DOC_AUTH.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO), VE.Audit_REM);
+                        DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
+                        DB.SaveChanges();
                         DB.M_DOC_AUTH.Where(x => x.M_AUTONO == VE.M_DOC_AUTH.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-                        DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_DOC_AUTH.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
+                        //DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_DOC_AUTH.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D";});
                         DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == VE.M_DOC_AUTH.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.SaveChanges();
 

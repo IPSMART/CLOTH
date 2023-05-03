@@ -578,7 +578,8 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
         @Html.HiddenFor(a => a.M_SYSCNFG.CMROFFTYPE, new { id = "CMROFFTYPE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNOURDESIGN, new { id = "MNTNOURDESIGN" })
-        <div class="form-horizontal">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
                 @Html.Partial("_FilteredSearch")

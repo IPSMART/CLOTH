@@ -531,7 +531,7 @@ namespace Improvar
             else chrd = chr.ToString();
             return chrd;
         }
-        public string finTblUpdt(string tblname, string autono, string dtag, string modcd = "F")
+        public string finTblUpdt(string tblname, string autono, string dtag, string modcd = "F", string auditrem = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             if (autono.IndexOf("'") < 0) autono = "'" + autono + "'";
@@ -548,8 +548,13 @@ namespace Improvar
                 case "P":
                     scmf = CommVar.PaySchema(UNQSNO); break;
             }
+            string sqlval = "";
+            if (auditrem.retStr() != "")
+            {
+                sqlval += dtag == "D" ? ", DEL_REM = '" + auditrem + "'" : ", LM_REM = '" + auditrem + "'";
+            }
             string sql = "";
-            sql = "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where autono in (" + autono + ") ";
+            sql = "update " + scmf + "." + tblname + " set dtag='" + dtag + "'" + sqlval + " where autono in (" + autono + ") ";
             sql = sql + "~" + "delete from " + scmf + "." + tblname + " where autono in (" + autono + ") ";
 
             return sql;
@@ -914,7 +919,7 @@ namespace Improvar
         }
 
         public string Instcntrl_hdr(string autono, string vchrmod, string modcd, string mnthcd, string doccd, string docno, string docdt, short emd_no, string dtag, string doconlyno, double vchrno,
-                string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double docamt = 0, string cancel = null)
+                string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double docamt = 0, string cancel = null, string auditrem = "")
 
         {
             string bl = "";
@@ -947,7 +952,7 @@ namespace Improvar
                 if (vchrmod == "A")
                 {
                     sql = "insert into " + scmf + ".t_cntrl_hdr (emd_no, clcd, dtag, ttag, autono, modcd, compcd, loccd, yr_cd, doccd, docno, docdt, doconlyno, vchrno, vchrsuffix, mnthcd, ";
-                    sql = sql + "calauto, glcd, slcd, docamt, cancel, usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm) values (";
+                    sql = sql + "calauto, glcd, slcd, docamt, cancel, usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm,LM_REM) values (";
                     sql = sql + emd_no;
                     sql = sql + "," + filc(clcd);
                     sql = sql + "," + filc(dtag);
@@ -975,6 +980,7 @@ namespace Improvar
                     sql = sql + "," + filc(Cn.GetStaticIp());
                     sql = sql + "," + filc(null);
                     sql = sql + "," + filc(Cn.DetermineCompName(uIP));
+                    sql = sql + "," + filc(auditrem);
                     sql = sql + ")";
                 }
                 else
@@ -999,6 +1005,14 @@ namespace Improvar
                     sql = sql + ", lm_usr_os=" + filc(null);
                     sql = sql + ", lm_usr_mnm=" + filc(Cn.DetermineCompName(uIP));
                     sql = sql + ", cancel=" + filc(cancel);
+                    if (vchrmod == "E")
+                    {
+                        sql = sql + ", LM_REM=" + filc(auditrem);
+                    }
+                    else
+                    {
+                        sql = sql + ", DEL_REM=" + filc(auditrem);
+                    }
                     sql = sql + " where autono=" + filc(autono);
                 }
 
@@ -1863,7 +1877,7 @@ namespace Improvar
                 return bl;
             }
         }
-        public string TblUpdt(string tblname, string autono, string dtag, string modcd = "", string whereClause = "")
+        public string TblUpdt(string tblname, string autono, string dtag, string modcd = "", string whereClause = "",string auditrem="")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             if (autono.IndexOf("'") < 0) autono = "'" + autono + "'";
@@ -1881,14 +1895,19 @@ namespace Improvar
                 case "P":
                     scmf = CommVar.PaySchema(UNQSNO); break;
             }
+            string sqlval = "";
+            if (auditrem.retStr() != "")
+            {
+                sqlval += dtag == "D" ? ", DEL_REM = '" + auditrem + "'" : ", LM_REM = '" + auditrem + "'";
+            }
             string sql = "";
             if (whereClause.ToString() == "") whereClause = "autono in (" + autono + ")";
-            sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where " + whereClause + "~";
+            sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "'" + sqlval + " where " + whereClause + "~";
             sql += "delete from " + scmf + "." + tblname + " where  " + whereClause;
             return sql;
         }
         public string T_Cntrl_Hdr_Updt_Ins(string autono, string vchrmod, string modcd, string mnthcd, string doccd, string docno, string docdt, short? emd_no, string doconlyno, double? vchrno,
-                string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double? docamt = 0)
+                string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double? docamt = 0, string auditrem = "")
 
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
@@ -1924,7 +1943,7 @@ namespace Improvar
                 if (vchrmod == "A")
                 {
                     sql = "insert into " + scmf + ".t_cntrl_hdr (emd_no, clcd, dtag, ttag, autono, modcd, compcd, loccd, yr_cd, doccd, docno, docdt, doconlyno, vchrno, vchrsuffix, mnthcd, ";
-                    sql = sql + "calauto, glcd, slcd, docamt, usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm) values (";
+                    sql = sql + "calauto, glcd, slcd, docamt, usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm,LM_REM) values (";
                     sql = sql + filnd(emd_no);
                     sql = sql + "," + filc(clcd);
                     sql = sql + "," + filc(null);
@@ -1951,6 +1970,7 @@ namespace Improvar
                     sql = sql + "," + filc(Cn.GetStaticIp());
                     sql = sql + "," + filc(null);
                     sql = sql + "," + filc(Cn.DetermineCompName(uIP));
+                    sql = sql + "," + filc(auditrem);
                     sql = sql + ")";
                 }
                 else if (vchrmod == "E")
@@ -1974,6 +1994,7 @@ namespace Improvar
                     sql = sql + ", lm_usr_sip=" + filc(Cn.GetStaticIp());
                     sql = sql + ", lm_usr_os=" + filc(null);
                     sql = sql + ", lm_usr_mnm=" + filc(Cn.DetermineCompName(uIP));
+                    sql = sql + ", LM_REM=" + filc(auditrem);
                     sql = sql + " where autono=" + filc(autono);
                 }
                 else if (vchrmod == "D")
@@ -1988,6 +2009,7 @@ namespace Improvar
                     sql = sql + ", del_usr_sip=" + filc(Cn.GetStaticIp());
                     sql = sql + ", del_usr_os=" + filc(null);
                     sql = sql + ", del_usr_mnm=" + filc(Cn.DetermineCompName(uIP));
+                    sql = sql + ", DEL_REM=" + filc(auditrem);
                     sql = sql + " where autono=" + filc(autono);
                     sql = sql + "~" + "delete from " + scmf + ".t_cntrl_hdr where autono in ('" + autono + "') ";
                 }

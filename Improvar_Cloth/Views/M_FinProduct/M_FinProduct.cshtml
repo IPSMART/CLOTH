@@ -942,7 +942,8 @@
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO, new { id = "M_AUTONO" })
             @Html.HiddenFor(a => a.MENU_PARA)
             @Html.HiddenFor(a => a.STRPRICES)
-            @if (Model.DefaultAction == "V")
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ @if (Model.DefaultAction == "V")
             {
                 <div class="row" style="border: 2px groove;background-color:#bddbf5;margin-top: 5px;">
                     <div class="row">

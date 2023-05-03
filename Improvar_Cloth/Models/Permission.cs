@@ -34,7 +34,7 @@ namespace Improvar.Models
         public string button { get; set; }
         public bool IsChecked { get; set; }
         public string MenuID { get; set; }
-        public string MenuIndex { get; set; }        
+        public string MenuIndex { get; set; }
         public string ControllerName { get; set; }
         public string MENU_DETAILS { get; set; }
         public string MENU_RIGHT { get; set; }
@@ -57,5 +57,17 @@ namespace Improvar.Models
         public bool VisiblePark { get; set; }
         public M_CNTRL_HDR_REM M_CNTRL_HDR_REM { get; set; }
         public string SrcFlagCaption { get; set; }
+        public string SrcButton { get; set; }
+        public List<CompanyLocationName> CompanyLocationName { get; set; }
+
+        [StringLength(100)]
+        public string Audit_REM { get; set; }
+        public string AUDITREMARKSLIST { get; set; }
+        public List<Dropdown_AuditRemarks> ListAuditRemarks { get; set; }
+    }
+    public class Dropdown_AuditRemarks
+    {
+        public string text { get; set; }
+        public string value { get; set; }
     }
 }

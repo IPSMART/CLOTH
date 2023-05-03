@@ -340,7 +340,8 @@
         @Html.HiddenFor(a => a.T_STCHALT.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
-        <div class="form-horizontal">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
                 @Html.Partial("_FilteredSearch")

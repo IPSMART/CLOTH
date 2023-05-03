@@ -348,6 +348,7 @@ namespace Improvar.Controllers
                             {
                                 MJMTSUB.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MJMTSUB.DTAG = "E";
                         }
                         MJMTSUB.SJOBNM = VE.M_JOBMSTSUB.SJOBNM;
                         MJMTSUB.JOBCD = VE.M_JOBMSTSUB.JOBCD;
@@ -358,7 +359,7 @@ namespace Improvar.Controllers
                         MJMTSUB.SJOBATCH = VE.M_JOBMSTSUB.SJOBATCH;
                         MJMTSUB.SJOBSAM = VE.M_JOBMSTSUB.SJOBSAM;
                         //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_JOBMSTSUB", MJMTSUB.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_JOBMSTSUB", MJMTSUB.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_JOBMSTSUB.Add(MJMTSUB);
@@ -402,7 +403,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_JOBMSTSUB", VE.M_JOBMSTSUB.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_JOBMSTSUB", VE.M_JOBMSTSUB.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

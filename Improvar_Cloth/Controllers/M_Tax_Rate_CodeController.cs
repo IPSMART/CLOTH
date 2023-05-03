@@ -213,10 +213,11 @@ namespace Improvar.Controllers
                             {
                                 MTAXGRP.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MTAXGRP.DTAG = "E";
                         }
                         MTAXGRP.TAXGRPCD = VE.M_TAXGRP.TAXGRPCD.ToUpper();
                         MTAXGRP.TAXGRPNM = VE.M_TAXGRP.TAXGRPNM;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_TAXGRP", MTAXGRP.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_TAXGRP", MTAXGRP.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
@@ -246,7 +247,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_TAXGRP", VE.M_TAXGRP.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_TAXGRP", VE.M_TAXGRP.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

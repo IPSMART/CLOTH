@@ -210,7 +210,7 @@ namespace Improvar.Controllers
                         MSIZE.ALTSIZENM = VE.M_SIZE.ALTSIZENM;
                         MSIZE.PRINT_SEQ = VE.M_SIZE.PRINT_SEQ;
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SIZE", MSIZE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SIZE", MSIZE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_SIZE.Add(MSIZE);
@@ -236,7 +236,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SIZE", VE.M_SIZE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SIZE", VE.M_SIZE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

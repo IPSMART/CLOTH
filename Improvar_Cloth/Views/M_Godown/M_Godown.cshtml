@@ -115,6 +115,8 @@
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_GODOWN.M_AUTONO)
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+
 
             <ul class="nav nav-tabs">
                 <li class="active">    <a data-toggle="tab" href="#Standard">Standard</a></li>

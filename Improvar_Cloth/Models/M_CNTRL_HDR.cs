@@ -93,5 +93,10 @@ namespace Improvar.Models
         [StringLength(20)]
         public string PKGLEGACYCD { get; set; }
 
-        }
+        [StringLength(100)]
+        public string DEL_REM { get; set; }
+
+        [StringLength(100)]
+        public string LM_REM { get; set; }
+    }
 }

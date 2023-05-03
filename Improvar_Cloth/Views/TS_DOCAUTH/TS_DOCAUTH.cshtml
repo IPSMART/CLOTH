@@ -251,7 +251,8 @@
             <input type="hidden" id="urlpopup1" value="@Url.Action("POPUPSCREEN1", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(s => s.DOCTYPE, new { id = "DOCTYPE" })
-            <div class="row" style="margin-top: 5px;">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="row" style="margin-top: 5px;">
                 <div class="col-md-1">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "From Date")

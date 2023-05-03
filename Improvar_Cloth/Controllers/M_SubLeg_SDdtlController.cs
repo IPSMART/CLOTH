@@ -673,6 +673,7 @@ namespace Improvar.Controllers
                             {
                                 MSUBLEGCOM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MSUBLEGCOM.DTAG = "E";
                         }
                         MSUBLEGCOM.SLCD = VE.M_SUBLEG_COM.SLCD;
                         MSUBLEGCOM.AGSLCD = VE.M_SUBLEG_COM.AGSLCD;
@@ -701,7 +702,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SUBLEG_COM.M_AUTONO));
                         }
                         //Control header
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_SUBLEG_COM", MSUBLEGCOM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_SUBLEG_COM", MSUBLEGCOM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
@@ -723,6 +724,7 @@ namespace Improvar.Controllers
                                 {
                                     M_SUBLEG_BRAND MSUBLEGBRAND = new M_SUBLEG_BRAND();
                                     MSUBLEGBRAND.EMD_NO = MSUBLEGCOM.EMD_NO;
+                                    MSUBLEGBRAND.DTAG = MSUBLEGCOM.DTAG;
                                     MSUBLEGBRAND.CLCD = MSUBLEGCOM.CLCD;
                                     MSUBLEGBRAND.SLCD = VE.M_SUBLEG_COM.SLCD;
                                     MSUBLEGBRAND.COMPCD = MSUBLEGCOM.COMPCD;
@@ -744,6 +746,7 @@ namespace Improvar.Controllers
                                 {
                                     M_SUBLEG_SDDTL MSUBLEGSDDTL = new M_SUBLEG_SDDTL();
                                     MSUBLEGSDDTL.EMD_NO = MSUBLEGCOM.EMD_NO;
+                                    MSUBLEGSDDTL.DTAG = MSUBLEGCOM.DTAG;
                                     MSUBLEGSDDTL.CLCD = MSUBLEGCOM.CLCD;
                                     MSUBLEGSDDTL.SLCD = VE.M_SUBLEG_COM.SLCD;
                                     MSUBLEGSDDTL.COMPCD = MSUBLEGCOM.COMPCD;
@@ -790,7 +793,7 @@ namespace Improvar.Controllers
                     else if (VE.DefaultAction == "V")
                     {
                         var COMPCD = CommVar.Compcd(UNQSNO);
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_SUBLEG_COM", VE.M_SUBLEG_COM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_SUBLEG_COM", VE.M_SUBLEG_COM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 
@@ -860,7 +863,7 @@ namespace Improvar.Controllers
                     if (PSL == null)
                     {
                         var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.LastYearSchema(UNQSNO));
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
                         M_SUBLEG_COM MSUBLEG_PREVYR = new M_SUBLEG_COM();
@@ -893,7 +896,7 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", PSL.M_AUTONO, "E", CommVar.LastYearSchema(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_SUBLEG_COM", PSL.M_AUTONO, "E", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                         M_SUBLEG_COM MSUBLEG_PREVYR = new M_SUBLEG_COM();
                         MSUBLEG_PREVYR = SL; MSUBLEG_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;

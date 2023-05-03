@@ -266,6 +266,7 @@ namespace Improvar.Controllers
                             {
                                 MFLRLCA.EMD_NO = Convert.ToInt16( MAXEMDNO+1);
                             }
+                            MFLRLCA.DTAG = "E";
                         }
 
                         MFLRLCA.FLRCD = VE.M_FLRLOCA.FLRCD.ToUpper();
@@ -274,7 +275,7 @@ namespace Improvar.Controllers
                         MFLRLCA.SLCD = VE.M_FLRLOCA.SLCD;
 
                         //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_FLRLOCA", MFLRLCA.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_FLRLOCA", MFLRLCA.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_FLRLOCA.Add(MFLRLCA);
@@ -303,7 +304,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_FLRLOCA", VE.M_FLRLOCA.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_FLRLOCA", VE.M_FLRLOCA.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

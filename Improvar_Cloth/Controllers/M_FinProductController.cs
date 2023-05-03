@@ -1735,6 +1735,7 @@ namespace Improvar.Controllers
                                 M_SITEM_SLCD MIS = new M_SITEM_SLCD();
                                 MIS.CLCD = MSITEM.CLCD;
                                 MIS.EMD_NO = MSITEM.EMD_NO;
+                                MIS.DTAG = MSITEM.DTAG;
                                 MIS.ITCD = MSITEM.ITCD;
                                 MIS.SLCD = VE.MSITEMSLCD[i].SLCD;
                                 MIS.JOBRT = VE.MSITEMSLCD[i].JOBRT;
@@ -1760,6 +1761,7 @@ namespace Improvar.Controllers
                                 M_SITEM_PARTS MIP = new M_SITEM_PARTS();
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EMD_NO = MSITEM.EMD_NO;
+                                MIP.DTAG = MSITEM.DTAG;
                                 MIP.ITCD = MSITEM.ITCD;
                                 MIP.PARTCD = VE.MSITEMPARTS[i].PARTCD;
                                 DB.M_SITEM_PARTS.Add(MIP);
@@ -1815,6 +1817,7 @@ namespace Improvar.Controllers
 
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
                                     TBATCHMST.EMD_NO = MSITEM.EMD_NO;
+                                    TBATCHMST.DTAG = MSITEM.DTAG;
                                     TBATCHMST.CLCD = MSITEM.CLCD;
                                     TBATCHMST.DTAG = MSITEM.DTAG;
                                     TBATCHMST.TTAG = MSITEM.TTAG;
@@ -1836,6 +1839,7 @@ namespace Improvar.Controllers
                                 M_SITEM_MEASURE MIM = new M_SITEM_MEASURE();
                                 MIM.CLCD = MSITEM.CLCD;
                                 MIM.EMD_NO = MSITEM.EMD_NO;
+                                MIM.DTAG = MSITEM.DTAG;
                                 MIM.ITCD = MSITEM.ITCD;
                                 MIM.SLNO = VE.MSITEMMEASURE[i].SLNO;
                                 MIM.MDESC = VE.MSITEMMEASURE[i].MDESC;
@@ -1846,7 +1850,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -1876,6 +1880,7 @@ namespace Improvar.Controllers
                                     T_BATCH_IMG_HDR_LINK m_batchImglink = new T_BATCH_IMG_HDR_LINK();
                                     m_batchImglink.CLCD = MSITEM.CLCD;
                                     m_batchImglink.EMD_NO = MSITEM.EMD_NO;
+                                    m_batchImglink.DTAG = MSITEM.DTAG;
                                     m_batchImglink.BARNO = imgbar;
                                     m_batchImglink.MAINBARNO = MAINBARNO;
                                     DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
@@ -1906,6 +1911,7 @@ namespace Improvar.Controllers
                                 var PRCCD = DTPRICES.Columns[j].ColumnName;
                                 T_BATCHMST_PRICE MIP = new T_BATCHMST_PRICE();
                                 MIP.EMD_NO = MSITEM.EMD_NO;
+                                MIP.DTAG = MSITEM.DTAG;
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
                                 MIP.PRCCD = PRCCD;
@@ -1958,7 +1964,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", VE.M_SITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", VE.M_SITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         string sbarno = getmasterbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
@@ -2211,7 +2217,7 @@ namespace Improvar.Controllers
                     if (PSL == null)
                     {
                         var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.LastYearSchema(UNQSNO));
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
                         M_SITEM MSUBLEG_PREVYR = new M_SITEM();
@@ -2242,7 +2248,7 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                         DB_PREVYR.SaveChanges();
 

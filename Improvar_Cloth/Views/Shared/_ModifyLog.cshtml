@@ -15,7 +15,7 @@
                                 <span class="text-right" style="float:unset;color:darkslateblue;"> Edited BY </span>
                             </th>
                         </tr>*@
-                        <tr><th>SL. No.</th><th>Activity Date</th><th>User Name</th></tr>
+                        <tr><th>SL. No.</th><th>Activity Date</th><th>User Name</th><th>Edit Remarks</th></tr>
                     </thead>
                     <tbody>
                         @for (int i = 0; i <= Model.ModifyLogGrid.Count - 1; i++)
@@ -29,6 +29,9 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(model => model.ModifyLogGrid[i].USERID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model.ModifyLogGrid[i].LM_REM)
                                 </td>
                             </tr>
                         }

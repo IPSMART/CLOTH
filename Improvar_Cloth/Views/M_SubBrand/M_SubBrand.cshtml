@@ -198,7 +198,8 @@
             @Html.HiddenFor(a => a.M_SUBBRAND.M_AUTONO)
             @Html.HiddenFor(a => a.M_CNTRL_HDR.M_AUTONO)
             @Html.HiddenFor(e => e.M_SUBBRAND.CLCD)
-            <ul class="nav nav-tabs">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
             </ul>

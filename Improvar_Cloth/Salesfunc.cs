@@ -2416,7 +2416,8 @@ namespace Improvar
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),"");
                     var dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -2531,7 +2532,8 @@ namespace Improvar
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),"");
                     var dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3038,7 +3040,8 @@ namespace Improvar
                         MSIZE.ALTSIZENM = "";
                         MSIZE.PRINT_SEQ = "0";
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
+                        //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString(),"");
                         string dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                         var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

@@ -203,7 +203,7 @@ namespace Improvar.Controllers
                         }
                         MCOLLECTION.COLLCD = VE.M_COLLECTION.COLLCD.ToUpper();
                         MCOLLECTION.COLLNM = VE.M_COLLECTION.COLLNM;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_COLLECTION", MCOLLECTION.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_COLLECTION", MCOLLECTION.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -231,7 +231,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_COLLECTION", VE.M_COLLECTION.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_COLLECTION", VE.M_COLLECTION.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

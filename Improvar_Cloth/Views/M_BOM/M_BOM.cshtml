@@ -931,7 +931,8 @@
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEMBOM.M_AUTONO)
             @Html.HiddenFor(a => a.M_SITEMBOM.BOMCD)
-            <div class="row">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="row">
                 <div class="col-lg-9">
                     <div class="row">
                         <div class="col-md-5">

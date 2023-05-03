@@ -264,6 +264,7 @@ namespace Improvar.Controllers
                             {
                                 MGOD.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MGOD.DTAG = "E";
                         }
 
                         MGOD.PRCCD = VE.M_PRCLST.PRCCD.ToUpper();
@@ -272,7 +273,7 @@ namespace Improvar.Controllers
                         MGOD.SLCD = VE.M_PRCLST.SLCD;
                         MGOD.SEQNO = VE.M_PRCLST.SEQNO;
                         //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_PRCLST", MGOD.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_PRCLST", MGOD.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_PRCLST.Add(MGOD);
@@ -301,7 +302,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_PRCLST", VE.M_PRCLST.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_PRCLST", VE.M_PRCLST.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

@@ -58,7 +58,8 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_PRODGRP.M_AUTONO)
-            <div class="row">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<div class="row">
                 <div class="col-md-6">
                     <div class="editor-field" style="margin-top: 4px;">
                         @Html.Label("", "Product Group Code")

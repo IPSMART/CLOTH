@@ -311,6 +311,7 @@ namespace Improvar.Controllers
                             {
                                 MTAXGRP.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
+                            MTAXGRP.DTAG = "E";
                         }
                         MTAXGRP.AMTNM = VE.M_AMTTYPE.AMTNM;
                         MTAXGRP.GLCD = VE.M_AMTTYPE.GLCD;
@@ -321,7 +322,7 @@ namespace Improvar.Controllers
                         MTAXGRP.TAXCODE = VE.TAXCODE;
                         MTAXGRP.CALCFORMULA = VE.M_AMTTYPE.CALCFORMULA;
                         MTAXGRP.SALPUR = VE.SALPUR;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_AMTTYPE", MTAXGRP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_AMTTYPE", MTAXGRP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
@@ -351,7 +352,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_AMTTYPE", VE.M_AMTTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_AMTTYPE", VE.M_AMTTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

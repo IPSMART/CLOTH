@@ -530,7 +530,7 @@ namespace Improvar.Controllers
                         MRETDEB.COUNTRY = VE.M_RETDEB.COUNTRY;
                         MRETDEB.REFRTDEBCD = VE.M_RETDEB.REFRTDEBCD;
                         MRETDEB.REFSLCD = VE.M_RETDEB.REFSLCD;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", Convert.ToInt32(MRETDEB.M_AUTONO), VE.DefaultAction, CommVar.FinSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", Convert.ToInt32(MRETDEB.M_AUTONO), VE.DefaultAction, CommVar.FinSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_RETDEB.Add(MRETDEB);
@@ -576,7 +576,7 @@ namespace Improvar.Controllers
                         var refrtdebcd = VE.M_RETDEB.REFRTDEBCD;
                         var ChkRefRetail = (from i in DB.M_RETDEB where i.REFRTDEBCD == refrtdebcd select new { i.REFRTDEBCD,i.RTDEBCD,i.RTDEBNM }).FirstOrDefault();
                         if (ChkRefRetail.REFRTDEBCD != null) { transaction.Rollback(); return Content("Delete not possible Child record found. Reference Retail found at Retail code: '" + ChkRefRetail.RTDEBCD + "' and Name : '" + ChkRefRetail.RTDEBNM +"'"); }
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", Convert.ToInt32(VE.M_RETDEB.M_AUTONO), VE.DefaultAction, CommVar.FinSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", Convert.ToInt32(VE.M_RETDEB.M_AUTONO), VE.DefaultAction, CommVar.FinSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 
@@ -719,7 +719,7 @@ namespace Improvar.Controllers
                         if (ChkDuplicateMobNo != null) { transaction.Rollback(); return Content("Mobile No : '" + ChkDuplicateMobNo.MOBILE + "' already exsist for '" + ChkDuplicateMobNo.RTDEBNM + "' please change entered Mobile No."); }
 
                         var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.FinSchemaPrevYr(UNQSNO));
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
 
@@ -743,7 +743,7 @@ namespace Improvar.Controllers
                         var ChkDuplicateMobNo = (from i in DB_PREVYR_temp.M_RETDEB where i.MOBILE == mobno && i.RTDEBCD != code select new { i.MOBILE, i.RTDEBNM }).FirstOrDefault();
                         if (ChkDuplicateMobNo != null) { transaction.Rollback(); return Content("Mobile No : '" + ChkDuplicateMobNo.MOBILE + "' already exsist for '" + ChkDuplicateMobNo.RTDEBNM + "' please change entered Mobile No."); }
 
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", PSL.M_AUTONO.retInt(), "E", CommVar.FinSchemaPrevYr(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", PSL.M_AUTONO.retInt(), "E", CommVar.FinSchemaPrevYr(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                         DB_PREVYR.SaveChanges();
 

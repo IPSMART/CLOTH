@@ -527,7 +527,7 @@ namespace Improvar.Controllers
                         if (PSL == null)
                         {
                             var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.LastYearSchema(UNQSNO));
-                            M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_DOCTYPE", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO));
+                            M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_DOCTYPE", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
                             DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                             DB_PREVYR.SaveChanges();
                             M_DOCTYPE MDOCTYPE_PREVYR = new M_DOCTYPE();
@@ -548,7 +548,7 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_DOCTYPE", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO));
+                            M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.IsChecked, "M_DOCTYPE", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
                             DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                             M_DOCTYPE MDOCTYPE_PREVYR = new M_DOCTYPE();
                             MDOCTYPE_PREVYR = SL; MDOCTYPE_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;
@@ -703,7 +703,7 @@ namespace Improvar.Controllers
                         MDOCTYPE.FLAG1 = VE.M_DOCTYPE.FLAG1;
                         if (VE.FDATE == true) MDOCTYPE.FDATE = "Y"; else MDOCTYPE.FDATE = "N";
                         if (VE.BACKDATE == true) MDOCTYPE.BACKDATE = "Y"; else MDOCTYPE.BACKDATE = "N";
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOCTYPE", MDOCTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOCTYPE", MDOCTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO), VE.Audit_REM);
                         if (VE.DefaultAction == "E")
                         {
                             DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MDOCTYPE.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
@@ -771,7 +771,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOCTYPE", VE.M_DOCTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOCTYPE", VE.M_DOCTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO), VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         M_DOCTYPE dcdfin = DBF.M_DOCTYPE.Find(VE.M_DOCTYPE.DOCCD);

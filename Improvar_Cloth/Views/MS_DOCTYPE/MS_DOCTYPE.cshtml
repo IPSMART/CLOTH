@@ -272,6 +272,7 @@
             <input type="hidden" id="urlname" value="@Url.Action("CheckDocumentCode", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_DOCTYPE.M_AUTONO)
 

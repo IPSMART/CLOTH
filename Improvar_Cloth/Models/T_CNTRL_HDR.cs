@@ -146,6 +146,12 @@ namespace Improvar.Models
         public string CANC_USR_OS { get; set; }
 
         [StringLength(50)]
-        public string CANC_USR_MNM { get; set; }       
+        public string CANC_USR_MNM { get; set; }
+        [StringLength(100)]
+        public string DEL_REM { get; set; }
+
+        [StringLength(100)]
+        public string LM_REM { get; set; }
+
     }
 }

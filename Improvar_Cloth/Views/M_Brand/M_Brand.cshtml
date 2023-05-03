@@ -151,7 +151,8 @@
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_BRAND.M_AUTONO)
             @Html.HiddenFor(e => e.M_BRAND.EMD_NO)
-            <ul class="nav nav-tabs">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
             </ul>

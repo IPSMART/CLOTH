@@ -240,13 +240,14 @@ namespace Improvar.Controllers
                             {
                                 MLINE.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MLINE.DTAG = "E";
                         }
 
                         MLINE.LINECD = VE.M_LINEMAST.LINECD.ToUpper().Trim();
                         MLINE.LINENM = VE.M_LINEMAST.LINENM;
                         MLINE.FLRCD = VE.M_LINEMAST.FLRCD;
                         //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_LINEMAST", MLINE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_LINEMAST", MLINE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_LINEMAST.Add(MLINE);
@@ -275,7 +276,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_LINEMAST", VE.M_LINEMAST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_LINEMAST", VE.M_LINEMAST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

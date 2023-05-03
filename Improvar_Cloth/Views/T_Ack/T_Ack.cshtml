@@ -225,7 +225,8 @@
             @Html.HiddenFor(a => a.BLAUTONO, new { id = "BLAUTONO" })
             @Html.HiddenFor(c => c.ACK_FLAG1)
             @Html.HiddenFor(c => c.ACK_DOCCTG)
-            <input type="hidden" id="SLCDlinkcd" value="T,U" />
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <input type="hidden" id="SLCDlinkcd" value="T,U" />
             <div class="row" style="margin-top:-15px;">
                 <ul class="nav nav-tabs" style="margin-top: 11px;">
                     <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>

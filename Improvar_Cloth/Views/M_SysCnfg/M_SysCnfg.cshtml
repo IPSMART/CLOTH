@@ -231,7 +231,8 @@
             @Html.HiddenFor(e => e.M_SYSCNFG.EMD_NO)
             @Html.HiddenFor(e => e.M_SYSCNFG.COMPCD)
             @Html.HiddenFor(e => e.Checked_DataExsist)
-            <input type="hidden" id="GLCDlinkcd" value="O,C,D" />
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<input type="hidden" id="GLCDlinkcd" value="O,C,D" />
             <input type="hidden" id="SLCDlinkcd" value="D,C,O" />
             <ul class="nav nav-tabs">
                 <li id="Main_LI" class="active"><a data-toggle="tab" href="#Main">Main</a></li>

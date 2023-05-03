@@ -655,13 +655,13 @@ namespace Improvar.Controllers
                         if (VE.MERGEINDTL == true) { MSYSCNFG.MERGEINDTL = "Y"; } else { MSYSCNFG.MERGEINDTL = "N"; }
                         if (VE.DefaultAction == "A")
                         {
-                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                             DB.M_SYSCNFG.Add(MSYSCNFG);
                             DB.M_CNTRL_HDR.Add(MCH);
                         }
                         else if (VE.DefaultAction == "E")
                         {
-                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "E", CommVar.CurSchema(UNQSNO).ToString());
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, "E", CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                             DB.Entry(MSYSCNFG).State = System.Data.Entity.EntityState.Modified;
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         }
@@ -699,7 +699,7 @@ namespace Improvar.Controllers
                     else if (VE.DefaultAction == "V")
                     {
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", VE.M_SYSCNFG.M_AUTONO.retInt(), VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", VE.M_SYSCNFG.M_AUTONO.retInt(), VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

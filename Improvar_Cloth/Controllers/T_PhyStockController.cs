@@ -630,6 +630,7 @@ namespace Improvar.Controllers
                             Month = VE.T_CNTRL_HDR.MNTHCD;
                             var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_PHYSTK_HDR.AUTONO select p.EMD_NO).Max();
                             if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1); }
+                            TBHDR.DTAG = "E";
                         }
                         TBHDR.DOCCD = DOCCD;
                         TBHDR.DOCDT = TCH.DOCDT;
@@ -653,7 +654,8 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl());
+                        //dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl());
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl(),VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -667,6 +669,8 @@ namespace Improvar.Controllers
                                 COUNTER = COUNTER + 1;
                                 T_PHYSTK TPHYSTK = new T_PHYSTK();
                                 TPHYSTK.CLCD = TBHDR.CLCD;
+                                TPHYSTK.EMD_NO = TBHDR.EMD_NO;
+                                TPHYSTK.DTAG = TBHDR.DTAG;
                                 TPHYSTK.AUTONO = TBHDR.AUTONO;
                                 TPHYSTK.SLNO = VE.TPHYSTK[i].SLNO;
                                 TPHYSTK.BARNO = VE.TPHYSTK[i].BARNO;
@@ -750,7 +754,8 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
 
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
+                        //dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null,null,null,null,null, VE.T_CNTRL_HDR.DOCAMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 

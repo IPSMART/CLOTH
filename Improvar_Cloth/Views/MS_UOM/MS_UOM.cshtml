@@ -41,7 +41,7 @@
     }
     function ModifyLogDetails() {
         if ("@Model.DefaultAction" == "V") {
-            ModifyLogDtl(@mldauto);
+            ModifyLogDtl(@mldauto,'@CommVar.FinSchema(Model.UNQSNO)');
         }
     }
 </script>
@@ -137,6 +137,7 @@
             <input type="hidden" id="urlnameGSTUOM" value="@Url.Action("GSTUOMCD", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" /> 
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_UOM.M_AUTONO)
             @Html.HiddenFor(e => e.M_UOM.CLCD)

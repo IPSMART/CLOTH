@@ -278,8 +278,10 @@
         });
     </script>
     <script>
-        function ModifyLogDtl(mldauto) {
-            var mdfyschem=$("#ModifyLogSchma").val();
+        function ModifyLogDtl(mldauto,mdfyschem) {
+            if(mdfyschem == ""){
+                mdfyschem=$("#ModifyLogSchma").val();
+            }
             if ("@Model.DefaultAction" == "V") {
                 $.ajax({
                     type: 'post',
@@ -946,6 +948,29 @@
                     <input type="button" class="btn btn-info" value="Close" onclick="CAN_Remark_close();" />
                 </div>
             }
+        </div>
+    </div>
+    <div id="Audit_overlay">
+        <div id="Audit_text">
+            <script type="text/javascript">
+                document.body.style.background="white";
+            </script>
+            <div style="padding:5px">
+                <p><b>Reason:</b></p>
+                @Html.DropDownListFor(model => model.AUDITREMARKSLIST, new SelectList(Model.ListAuditRemarks, "Value", "Text"), new { @class = "form-control", id = "AUDITREMARKSLIST", @onchange = "ChangeRemarks('Audit_Remarks','AUDITREMARKSLIST');" })
+                <input type="search" autofocus id="Audit_Remarks" maxlength="100" style="height:50px" readonly="readonly" placeholder="Remarks..." class="form-control" />
+                @if (Model.DefaultAction == "E")
+                {
+                    <p><strong>Note:</strong>Remarks should be proper for <b>Edit</b> the current record</p>
+                    <input type="button" class="btn btn-danger" value="Save" onclick="Audit_record_save('@Model.DefaultAction');" />
+                }
+                else
+                {
+                    <p><strong>Note:</strong>Remarks should be proper for <b>Delete</b> the current record</p>
+                    <input type="button" class="btn btn-danger" value="Delete" onclick="Audit_record_save('@Model.DefaultAction');" />
+                }
+                <input type="button" class="btn btn-info" value="Cancel" onclick="Audit_Remark_close();" />
+            </div>
         </div>
     </div>
     <div id="CHK_overlay">
