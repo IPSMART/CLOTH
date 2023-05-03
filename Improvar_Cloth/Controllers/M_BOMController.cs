@@ -1413,6 +1413,7 @@ namespace Improvar.Controllers
                             {
                                 ITEMBOM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            ITEMBOM.DTAG = "E";
                         }
                         ITEMBOM.EFFDT = VE.M_SITEMBOM.EFFDT;
                         ITEMBOM.ITCD = VE.M_SITEMBOM.ITCD;
@@ -1421,7 +1422,7 @@ namespace Improvar.Controllers
                         ITEMBOM.BASEQNTY = VE.M_SITEMBOM.BASEQNTY;
                         ITEMBOM.REMARKS = VE.M_SITEMBOM.REMARKS;
 
-                        MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEMBOM", ITEMBOM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEMBOM", ITEMBOM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -1472,6 +1473,7 @@ namespace Improvar.Controllers
                                     M_SITEMBOMPART ITEMBOMPART = new M_SITEMBOMPART();
                                     ITEMBOMPART.CLCD = ITEMBOM.CLCD;
                                     ITEMBOMPART.EMD_NO = ITEMBOM.EMD_NO;
+                                    ITEMBOMPART.DTAG = ITEMBOM.DTAG;
                                     ITEMBOMPART.BOMCD = ITEMBOM.BOMCD;
                                     ITEMBOMPART.EFFDT = ITEMBOM.EFFDT;
                                     ITEMBOMPART.SLNO = Convert.ToByte(VE.MSITEMBOMPART[i].SLNO);
@@ -1488,6 +1490,7 @@ namespace Improvar.Controllers
                                         M_SITEMBOMSUPLR ITEMBOMSUPLR = new M_SITEMBOMSUPLR();
                                         ITEMBOMSUPLR.EMD_NO = ITEMBOMPART.EMD_NO;
                                         ITEMBOMSUPLR.CLCD = ITEMBOMPART.CLCD;
+                                        ITEMBOMSUPLR.DTAG = ITEMBOMPART.DTAG;
                                         ITEMBOMSUPLR.BOMCD = ITEMBOMPART.BOMCD;
                                         ITEMBOMSUPLR.EFFDT = ITEMBOMPART.EFFDT;
                                         ITEMBOMSUPLR.SLNO = Convert.ToByte(i + 1);
@@ -1501,6 +1504,7 @@ namespace Improvar.Controllers
                                         M_SITEMBOMSUPLR ITEMBOMSUPLR = new M_SITEMBOMSUPLR();
                                         ITEMBOMSUPLR.EMD_NO = ITEMBOMPART.EMD_NO;
                                         ITEMBOMSUPLR.CLCD = ITEMBOMPART.CLCD;
+                                        ITEMBOMSUPLR.DTAG = ITEMBOMPART.DTAG;
                                         ITEMBOMSUPLR.BOMCD = ITEMBOMPART.BOMCD;
                                         ITEMBOMSUPLR.EFFDT = ITEMBOMPART.EFFDT;
                                         ITEMBOMSUPLR.SLNO = Convert.ToByte(i + 1);
@@ -1514,6 +1518,7 @@ namespace Improvar.Controllers
                                         M_SITEMBOMSUPLR ITEMBOMSUPLR = new M_SITEMBOMSUPLR();
                                         ITEMBOMSUPLR.EMD_NO = ITEMBOMPART.EMD_NO;
                                         ITEMBOMSUPLR.CLCD = ITEMBOMPART.CLCD;
+                                        ITEMBOMSUPLR.DTAG = ITEMBOMPART.DTAG;
                                         ITEMBOMSUPLR.BOMCD = ITEMBOMPART.BOMCD;
                                         ITEMBOMSUPLR.EFFDT = ITEMBOMPART.EFFDT;
                                         ITEMBOMSUPLR.SLNO = Convert.ToByte(i + 1);
@@ -1540,6 +1545,7 @@ namespace Improvar.Controllers
                                             {
                                                 M_SITEMBOMMTRL ITEMBOMMTRL = new M_SITEMBOMMTRL();
                                                 ITEMBOMMTRL.CLCD = ITEMBOM.CLCD;
+                                                ITEMBOMMTRL.DTAG = ITEMBOM.DTAG;
                                                 ITEMBOMMTRL.EMD_NO = ITEMBOM.EMD_NO;
                                                 ITEMBOMMTRL.BOMCD = ITEMBOM.BOMCD;
                                                 ITEMBOMMTRL.EFFDT = ITEMBOM.EFFDT;
@@ -1560,6 +1566,7 @@ namespace Improvar.Controllers
                                                     M_SITEMBOMSUPLR ITEMBOMSUPLRM = new M_SITEMBOMSUPLR();
                                                     ITEMBOMSUPLRM.EMD_NO = ITEMBOMPART.EMD_NO;
                                                     ITEMBOMSUPLRM.CLCD = ITEMBOMPART.CLCD;
+                                                    ITEMBOMSUPLRM.DTAG = ITEMBOMPART.DTAG;
                                                     ITEMBOMSUPLRM.BOMCD = ITEMBOMPART.BOMCD;
                                                     ITEMBOMSUPLRM.EFFDT = ITEMBOMPART.EFFDT;
                                                     ITEMBOMSUPLRM.SLNO = Convert.ToByte(i + 1);
@@ -1573,6 +1580,7 @@ namespace Improvar.Controllers
                                                     M_SITEMBOMSUPLR ITEMBOMSUPLRM = new M_SITEMBOMSUPLR();
                                                     ITEMBOMSUPLRM.EMD_NO = ITEMBOMPART.EMD_NO;
                                                     ITEMBOMSUPLRM.CLCD = ITEMBOMPART.CLCD;
+                                                    ITEMBOMSUPLRM.DTAG = ITEMBOMPART.DTAG;
                                                     ITEMBOMSUPLRM.BOMCD = ITEMBOMPART.BOMCD;
                                                     ITEMBOMSUPLRM.EFFDT = ITEMBOMPART.EFFDT;
                                                     ITEMBOMSUPLRM.SLNO = Convert.ToByte(i + 1);
@@ -1586,6 +1594,7 @@ namespace Improvar.Controllers
                                                     M_SITEMBOMSUPLR ITEMBOMSUPLRM = new M_SITEMBOMSUPLR();
                                                     ITEMBOMSUPLRM.EMD_NO = ITEMBOMPART.EMD_NO;
                                                     ITEMBOMSUPLRM.CLCD = ITEMBOMPART.CLCD;
+                                                    ITEMBOMSUPLRM.DTAG = ITEMBOMPART.DTAG;
                                                     ITEMBOMSUPLRM.BOMCD = ITEMBOMPART.BOMCD;
                                                     ITEMBOMSUPLRM.EFFDT = ITEMBOMPART.EFFDT;
                                                     ITEMBOMSUPLRM.SLNO = Convert.ToByte(i + 1);
@@ -1641,6 +1650,7 @@ namespace Improvar.Controllers
                                     M_SITEMBOMSJOB ITEMBOMSJOB = new M_SITEMBOMSJOB();
                                     ITEMBOMSJOB.CLCD = ITEMBOM.CLCD;
                                     ITEMBOMSJOB.EMD_NO = ITEMBOM.EMD_NO;
+                                    ITEMBOMSJOB.DTAG = ITEMBOM.DTAG;
                                     ITEMBOMSJOB.BOMCD = ITEMBOM.BOMCD;
                                     ITEMBOMSJOB.EFFDT = ITEMBOM.EFFDT;
                                     ITEMBOMSJOB.SLNO = VE.MSITEMBOMSJOB[i].SLNO;
@@ -1678,7 +1688,7 @@ namespace Improvar.Controllers
                                 string scm1 = CommVar.CurSchema(UNQSNO).ToString();
                                 string batchnos = "";
                                 string sql = "";
-                                sql = "select a.batchno, c.emd_no, c.clcd, a.autono, c.docdt, a.slno, a.itcd, a.partcd, c.jobcd, d.jobprccd ";
+                                sql = "select a.batchno, c.emd_no, c.clcd, a.autono, c.docdt, a.slno, a.itcd, a.partcd, c.jobcd, d.jobprccd,c.DTAG ";
                                 sql += "from " + scm1 + ".t_inhissmst a, " + scm1 + ".t_inhlotclshdr b, " + scm1 + ".t_inhiss c, " + scm1 + ".m_flrloca d ";
                                 sql += "where a.batchno = b.batchno(+) and b.batchno is null and a.autono=c.autono(+) and c.flrcd=d.flrcd(+) and a.itcd='" + ITEMBOM.ITCD.ToString() + "'";
                                 DataTable rsBatch = Master_Help.SQLquery(sql);
@@ -1727,6 +1737,7 @@ namespace Improvar.Controllers
                                         T_INHISSMSTSJOB tinhsjob = new T_INHISSMSTSJOB();
                                         tinhsjob.EMD_NO = Convert.ToSByte(rsBatch.Rows[y]["emd_no"]);
                                         tinhsjob.CLCD = rsBatch.Rows[y]["clcd"].ToString();
+                                        tinhsjob.DTAG = rsBatch.Rows[y]["DTAG"].ToString();
                                         tinhsjob.AUTONO = rsBatch.Rows[y]["autono"].ToString();
                                         tinhsjob.SLNO = Convert.ToSByte(rsBatch.Rows[y]["slno"]);
                                         tinhsjob.SJOBCD = query[z].SJOBCD;
@@ -1831,7 +1842,7 @@ namespace Improvar.Controllers
 
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEMBOM", VE.M_SITEMBOM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEMBOM", VE.M_SITEMBOM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

@@ -290,6 +290,7 @@ namespace Improvar.Controllers
                             {
                                 MJBMST.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MJBMST.DTAG = "E";
                         }
 
                         MJBMST.MTRLJOBCD = VE.M_MTRLJOBMST.MTRLJOBCD.ToUpper();
@@ -299,7 +300,7 @@ namespace Improvar.Controllers
                         MJBMST.MTRLDESC = VE.M_MTRLJOBMST.MTRLDESC;
 
                         //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_MTRLJOBMST", MJBMST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_MTRLJOBMST", MJBMST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_MTRLJOBMST.Add(MJBMST);
@@ -328,7 +329,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_MTRLJOBMST", VE.M_MTRLJOBMST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_MTRLJOBMST", VE.M_MTRLJOBMST.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

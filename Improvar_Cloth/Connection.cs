@@ -711,7 +711,7 @@ namespace Improvar
         //                                   }).ToList();
         //    return DOC_TYPE;
         //}
-        public Models.M_CNTRL_HDR M_CONTROL_HDR(bool Tag, string Table_Name, long Auto_Number, string ACTION, string DATABASE)
+        public Models.M_CNTRL_HDR M_CONTROL_HDR(bool Tag, string Table_Name, long Auto_Number, string ACTION, string DATABASE, string auditrem)
         {
             var UNQSNO = getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), DATABASE);
@@ -738,6 +738,8 @@ namespace Improvar
                                         INACTIVE_TAG = i.INACTIVE_TAG,
                                         NONOP_DT = i.NONOP_DT,
                                         NONOP_REM = i.NONOP_REM,
+                                        LM_REM = i.LM_REM,
+                                        DEL_REM = i.DEL_REM,
                                     }).ToList();
 
             MCH.M_AUTONO = Auto_Number;
@@ -826,9 +828,18 @@ namespace Improvar
                 }
 
             }
+            if (ACTION == "E" || ACTION == "A")
+            {
+                MCH.LM_REM = auditrem;
+            }
+            else if (ACTION == "V")
+            {
+                MCH.DEL_REM = auditrem;
+                MCH.LM_REM = M_CNTRL_HDR_TEMP[0].LM_REM;
+            }
             return MCH;
         }
-        public Models.T_CNTRL_HDR T_CONTROL_HDR(string DCODE, DateTime? DDATE, string DNO, string Auto_Number, string MCODE, string DPATTERN, string ACTION, string DATABASE, string glcd, string slcd, double docamt, string calauto)
+        public Models.T_CNTRL_HDR T_CONTROL_HDR(string DCODE, DateTime? DDATE, string DNO, string Auto_Number, string MCODE, string DPATTERN, string ACTION, string DATABASE, string glcd, string slcd, double docamt, string calauto, string auditrem)
         {
             var UNQSNO = getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), DATABASE);
@@ -863,6 +874,8 @@ namespace Improvar
                                         LM_USR_SIP = i.LM_USR_SIP,
                                         LM_USR_OS = i.LM_USR_OS,
                                         LM_USR_MNM = i.LM_USR_MNM,
+                                        LM_REM = i.LM_REM,
+                                        DEL_REM = i.DEL_REM,
                                     }).ToList();
 
             TCH.AUTONO = Auto_Number;
@@ -962,6 +975,15 @@ namespace Improvar
                 {
                     TCH.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                 }
+            }
+            if (ACTION == "E" || ACTION == "A")
+            {
+                TCH.LM_REM = auditrem;
+            }
+            else if (ACTION == "V")
+            {
+                TCH.DEL_REM = auditrem;
+                TCH.LM_REM = T_CNTRL_HDR_TEMP[0].LM_REM;
             }
             return TCH;
         }
@@ -1322,6 +1344,10 @@ namespace Improvar
                 VE.MENU_RIGHT = para[5];
 
                 VE.SearchValue = HttpContext.Current.Request.QueryString["searchValue"];
+                if (VE.SearchValue != null && VE.SearchValue.IndexOf('+') >= 0)
+                {
+                    VE.SearchValue = VE.SearchValue.Replace("+", "%2B");//encodeURIComponent('+')="%2B"
+                }
                 VE.Searchpannel_State = true;  //Open Search Pannel without help box 
                 VE.DefaultAction = queryString.Get("OP").ToString().Replace(" ", "+");
             }
@@ -1345,9 +1371,16 @@ namespace Improvar
                 VE.MENU_RIGHT = para[5];
 
                 VE.SearchValue = HttpContext.Current.Request.QueryString["searchValue"];
+                if (VE.SearchValue != null && VE.SearchValue.IndexOf('+') >= 0)
+                {
+                    VE.SearchValue = VE.SearchValue.Replace("+", "%2B");//encodeURIComponent('+')="%2B"
+                }
                 VE.Searchpannel_State = true;  //Open Search Pannel with out help box 
                 VE.DefaultAction = HttpContext.Current.Request.QueryString["OP"].ToString().Replace(" ", "+");
             }
+            //Modification Remarks Bind
+            VE.ListAuditRemarks = Dropdown_AuditRemarks();
+            //end Modification Remarks Bind
         }
         public Models.T_CNTRL_HDR T_CONTROL_HDR(string Auto_Number, string DATABASE, string Cancel_Remarks)
         {
@@ -3043,7 +3076,7 @@ namespace Improvar
             return newPattern;
         }
 
-        public Models.T_CNTRL_HDR Model_T_Cntrl_Hdr(ImprovarDB DB, string AUTONO, string DCODE, DateTime DOCDT, string DNO, string MCODE, string DPATTERN, string ACTION, string glcd = "", string slcd = "", double docamt = 0, string calauto = "", string modcd = "", string yrcd = "")
+        public Models.T_CNTRL_HDR Model_T_Cntrl_Hdr(ImprovarDB DB, string AUTONO, string DCODE, DateTime DOCDT, string DNO, string MCODE, string DPATTERN, string ACTION, string glcd = "", string slcd = "", double docamt = 0, string calauto = "", string modcd = "", string yrcd = "", string auditrem = "")
         {
             var UNQSNO = getQueryStringUNQSNO();
             MasterHelp MasterHelp = new MasterHelp();
@@ -3067,7 +3100,8 @@ namespace Improvar
                 sql += "lm_usr_lip='" + GetIp() + "', ";
                 sql += "lm_usr_sip='" + GetStaticIp() + "', ";
                 sql += "lm_usr_mnm='" + DetermineCompName(GetIp()) + "' ";
-                sql += "where autono=:autono ";
+                sql = sql + ", LM_REM=" + MasterHelp.filc(auditrem);
+                sql += " where autono=:autono ";
                 string sqld = "select docno, nvl(emd_no,0)+1 emd_no, mnthcd, doccd, vchrno, doconlyno ";
                 sqld += "from " + DB.CacheKey + ".t_cntrl_hdr where autono='" + AUTONO + "'";
                 DataTable tbl = MasterHelp.SQLquery(sqld);
@@ -3091,7 +3125,8 @@ namespace Improvar
                 sql += "del_usr_lip='" + GetIp() + "', ";
                 sql += "del_usr_sip='" + GetStaticIp() + "', ";
                 sql += "del_usr_mnm='" + DetermineCompName(GetIp()) + "' ";
-                sql += "where autono=:autono ";
+                sql = sql + ", DEL_REM=" + MasterHelp.filc(auditrem);
+                sql += " where autono=:autono ";
 
                 DB.Database.ExecuteSqlCommand(sql, new OracleParameter("autono", OracleDbType.Varchar2, 30, AUTONO, ParameterDirection.Input));
             }
@@ -3118,6 +3153,7 @@ namespace Improvar
                 TCH.USR_MNM = DetermineCompName(GetIp());
                 TCH.DTAG = "";
                 TCH.EMD_NO = 0;
+                TCH.LM_REM = auditrem;
             }
             TCH.AUTONO = AUTONO;
             TCH.GLCD = glcd;
@@ -3221,6 +3257,11 @@ namespace Improvar
                     VE.Check = "C";
                 }
             }
+
+            //Modification Remarks Bind
+            VE.ListAuditRemarks = Dropdown_AuditRemarks();
+            //end Modification Remarks Bind
+
             VE.IsChecked = false;
             VE.Search_nav = true;
             VE.Audit_nav = true;
@@ -3963,6 +4004,27 @@ namespace Improvar
                 }
             }
             return IR;
+        }
+        public List<Dropdown_AuditRemarks> Dropdown_AuditRemarks()
+        {
+            List<Dropdown_AuditRemarks> DDL = new List<Dropdown_AuditRemarks>();
+            Dropdown_AuditRemarks DDL2 = new Dropdown_AuditRemarks();
+            DDL2.text = "1. Wrong Entry";
+            DDL2.value = "1. Wrong Entry";
+            DDL.Add(DDL2);
+            Dropdown_AuditRemarks DDL3 = new Dropdown_AuditRemarks();
+            DDL3.text = "2. Mistake in Item Details";
+            DDL3.value = "2. Mistake in Item Details";
+            DDL.Add(DDL3);
+            Dropdown_AuditRemarks DDL1 = new Dropdown_AuditRemarks();
+            DDL1.text = "3. Mistake in Party";
+            DDL1.value = "3. Mistake in Party";
+            DDL.Add(DDL1);
+            Dropdown_AuditRemarks DDL4 = new Dropdown_AuditRemarks();
+            DDL4.text = "0. Any Other";
+            DDL4.value = "0. Any Other";
+            DDL.Add(DDL4);
+            return DDL;
         }
     }
 }

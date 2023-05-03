@@ -1627,7 +1627,8 @@ namespace Improvar.Controllers
                                     TJBILL.DNCNAMT = VE.T_JBILL.DNCNAMT;
                                     TJBILL.DNCNAMT1 = VE.T_JBILL.DNCNAMT1;
                                     TJBILL.TAXGRPCD = VE.T_JBILL.TAXGRPCD;
-                                    TCH_ITEM = Cn.T_CONTROL_HDR(TJBILL.DOCCD, TJBILL.DOCDT, TJBILL.DOCNO, TJBILL.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT), null);
+                                    //TCH_ITEM = Cn.T_CONTROL_HDR(TJBILL.DOCCD, TJBILL.DOCDT, TJBILL.DOCNO, TJBILL.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT), null);
+                                    TCH_ITEM = Cn.T_CONTROL_HDR(TJBILL.DOCCD, TJBILL.DOCDT, TJBILL.DOCNO, TJBILL.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT), null,VE.Audit_REM);
                                     //TCH_ITEM = Cn.Model_T_Cntrl_Hdr(DB, TJBILL.AUTONO, TJBILL.DOCCD, TJBILL.DOCDT.Value, TJBILL.DOCNO, Month, DOCPATTERN, VE.DefaultAction, null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT));
                                     TJB.Add(TJBILL);
                                     TCH.Add(TCH_ITEM);
@@ -1799,12 +1800,14 @@ namespace Improvar.Controllers
                                         TJBILL_DNCN.TAXGRPCD = VE.T_JBILL.TAXGRPCD;
                                         if (VE.T_JBILL.OTHAUTONO == null)
                                         {
-                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, "A", CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null);
+                                            //TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, "A", CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null);
+                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, "A", CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null,VE.Audit_REM);
                                             //TCH_DNCN = Cn.Model_T_Cntrl_Hdr(DB, TJBILL_DNCN.AUTONO, TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT.Value, TJBILL_DNCN.DOCNO, Month_DNCN, DNCNDOCPATTERN, "A", null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT));
                                         }
                                         else
                                         {
-                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null);
+                                            //TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null);
+                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null,VE.Audit_REM);
                                             //TCH_DNCN = Cn.Model_T_Cntrl_Hdr(DB, TJBILL_DNCN.AUTONO, TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT.Value, TJBILL_DNCN.DOCNO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT));
                                         }
                                         TJB.Add(TJBILL_DNCN);

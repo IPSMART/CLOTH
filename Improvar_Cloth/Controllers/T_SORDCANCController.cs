@@ -842,7 +842,8 @@ namespace Improvar.Controllers
                                 DB.SaveChanges();
                             }
 
-                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD,0, null);
+                            //TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD,0, null);
+                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD, 0, null,VE.Audit_REM);
 
 
                             if (VE.DefaultAction == "A")
@@ -937,6 +938,10 @@ namespace Improvar.Controllers
                         }
                         else if (VE.DefaultAction == "V")
                         {
+                           T_CNTRL_HDR TCH = Cn.T_CONTROL_HDR(VE.T_SORD_CANC.DOCCD, VE.T_SORD_CANC.DOCDT, VE.T_SORD_CANC.DOCNO, VE.T_SORD_CANC.AUTONO, VE.T_CNTRL_HDR.MNTHCD, "", VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, VE.T_SORD_CANC.SLCD, 0, null, VE.Audit_REM);
+                            DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
+                            DB.SaveChanges();
+
                             if (VE.DOC_CODE == "SOCAN")
                             {
                                 DB.T_SORD_CANC.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });

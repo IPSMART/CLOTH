@@ -1244,7 +1244,7 @@ namespace Improvar.Controllers
                     if (PSL == null)
                     {
                         var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.FinSchemaPrevYr(UNQSNO));
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
                         M_SUBLEG MSUBLEG_PREVYR = new M_SUBLEG();
@@ -1278,7 +1278,7 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", PSL.M_AUTONO, "E", CommVar.FinSchemaPrevYr(UNQSNO));
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", PSL.M_AUTONO, "E", CommVar.FinSchemaPrevYr(UNQSNO),VE.Audit_REM);
                         DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                         M_SUBLEG MSUBLEG_PREVYR = new M_SUBLEG();
                         MSUBLEG_PREVYR = SL; MSUBLEG_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;
@@ -1801,7 +1801,7 @@ namespace Improvar.Controllers
                                 }
                             }
                             //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", MSUBLEG.M_AUTONO, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
-                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", MSUBLEG.M_AUTONO, action, CommVar.FinSchema(UNQSNO));
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", MSUBLEG.M_AUTONO, action, CommVar.FinSchema(UNQSNO), VE.Audit_REM);
                             MCH.PKGLEGACYCD = VE.M_CNTRL_HDR.PKGLEGACYCD;
                             if (VE.DefaultAction == "A")
                             {
@@ -1850,7 +1850,7 @@ namespace Improvar.Controllers
                         else if (VE.DefaultAction == "V")
                         {
 
-                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", VE.M_SUBLEG.M_AUTONO, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", VE.M_SUBLEG.M_AUTONO, VE.DefaultAction, CommVar.FinSchema(UNQSNO), VE.Audit_REM);
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                             DB.SaveChanges();
 
@@ -1951,6 +1951,7 @@ namespace Improvar.Controllers
         public ActionResult Print(SubLedgerEntry VE)
         {
             ReportViewinHtml rvh = new ReportViewinHtml();
+            Cn.getQueryString(rvh);
             rvh.TEXTBOX1 = VE.M_SUBLEG.SLCD;
             rvh.TEXTBOX6 = VE.M_SUBLEG.SLNM;
             if (TempData["printparameter"] != null)

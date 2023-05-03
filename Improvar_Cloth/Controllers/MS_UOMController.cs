@@ -241,7 +241,7 @@ namespace Improvar.Controllers
                         MUOM.DECIMALS = VE.M_UOM.DECIMALS;
                         MUOM.GST_QNTYCONV = VE.M_UOM.GST_QNTYCONV;
                         MUOM.TAREWT = VE.M_UOM.TAREWT;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_UOM", MUOM.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_UOM", MUOM.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO), VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -270,7 +270,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_UOM", VE.M_UOM.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_UOM", VE.M_UOM.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO), VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         DB.M_UOM.Where(x => x.M_AUTONO == VE.M_UOM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });

@@ -312,6 +312,7 @@ namespace Improvar.Controllers
                             {
                                 MPrdTax.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
+                            MPrdTax.DTAG = "E";
                         }
                         //save M_PRODTAX
                         MPrdTax.PRODGRPCD = VE.M_PRODTAX.PRODGRPCD;
@@ -329,7 +330,7 @@ namespace Improvar.Controllers
 
 
                         //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_PRODTAX", MPrdTax.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_PRODTAX", MPrdTax.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -351,6 +352,7 @@ namespace Improvar.Controllers
                                 {
                                     M_PRODTAX MPRODTAX_obj = new M_PRODTAX();
                                     MPRODTAX_obj.EMD_NO = MPrdTax.EMD_NO;
+                                    MPRODTAX_obj.DTAG = MPrdTax.DTAG;
                                     MPRODTAX_obj.M_AUTONO = MPrdTax.M_AUTONO;
                                     MPRODTAX_obj.CLCD = MPrdTax.CLCD;
                                     MPRODTAX_obj.EFFDT = MPrdTax.EFFDT;
@@ -391,7 +393,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_PRODTAX", VE.M_PRODTAX.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_PRODTAX", VE.M_PRODTAX.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

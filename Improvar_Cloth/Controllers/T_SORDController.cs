@@ -991,7 +991,8 @@ namespace Improvar.Controllers
                                 dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc_dtl", TSORD.AUTONO, "E");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                             }
-                            dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TSORD.AUTONO, VE.DefaultAction, "S", Month, TSORD.DOCCD, DOCPATTERN, TSORD.DOCDT.retStr(), TSORD.EMD_NO.retShort(), TSORD.DOCNO, Convert.ToDouble(TSORD.DOCNO), null, null, null, TSORD.SLCD);
+                            //dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TSORD.AUTONO, VE.DefaultAction, "S", Month, TSORD.DOCCD, DOCPATTERN, TSORD.DOCDT.retStr(), TSORD.EMD_NO.retShort(), TSORD.DOCNO, Convert.ToDouble(TSORD.DOCNO), null, null, null, TSORD.SLCD);
+                            dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TSORD.AUTONO, VE.DefaultAction, "S", Month, TSORD.DOCCD, DOCPATTERN, TSORD.DOCDT.retStr(), TSORD.EMD_NO.retShort(), TSORD.DOCNO, Convert.ToDouble(TSORD.DOCNO), null, null, null, TSORD.SLCD,0,VE.Audit_REM);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             dbsql = MasterHelpFa.RetModeltoSql(TSORD, VE.DefaultAction);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -1113,9 +1114,10 @@ namespace Improvar.Controllers
 
                             dbsql = MasterHelpFa.TblUpdt("t_sord", VE.T_SORD.AUTONO, "D");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            
 
-                            dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_SORD.AUTONO, "D", "S", null, null, null, VE.T_SORD.DOCDT.retStr(), null, null, null);
+
+                            //dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_SORD.AUTONO, "D", "S", null, null, null, VE.T_SORD.DOCDT.retStr(), null, null, null);
+                            dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_SORD.AUTONO, "D", "S", null, null, null, VE.T_SORD.DOCDT.retStr(), null, null, null,null,null,null,null,0,VE.Audit_REM);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                             ModelState.Clear();

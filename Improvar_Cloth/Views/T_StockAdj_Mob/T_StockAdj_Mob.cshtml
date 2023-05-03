@@ -131,7 +131,8 @@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
-        <div class="form-horizontal">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<div class="form-horizontal">
             <div class="row">
                 <div class="col-md-4">
                     <div class="editor-label mobfont" style="margin-top: 6px;">

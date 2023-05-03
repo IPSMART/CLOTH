@@ -327,7 +327,8 @@ namespace Improvar.Controllers
                             {
                                 MGODF.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
-                            M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGODF.M_AUTONO, "E", CommVar.FinSchema(UNQSNO));
+                            MGODF.DTAG = "E";
+                            M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGODF.M_AUTONO, "E", CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                             DBF.Entry(MGODF).State = System.Data.Entity.EntityState.Modified;
                             DBF.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGODF.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DBF.M_CNTRL_LOCA.RemoveRange(DBF.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGODF.M_AUTONO));
@@ -339,7 +340,7 @@ namespace Improvar.Controllers
                             Autono = MGODF.M_AUTONO.retStr();
                             MGODF.EMD_NO = 0;
                             // Finance Control header 
-                            M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGODF.M_AUTONO, "A", CommVar.FinSchema(UNQSNO));
+                            M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGODF.M_AUTONO, "A", CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                             DBF.M_GODOWN.Add(MGODF);
                             DBF.M_CNTRL_HDR.Add(MCHF);
                         }
@@ -353,6 +354,7 @@ namespace Improvar.Controllers
                                     M_CNTRL_LOCA MCLF = new M_CNTRL_LOCA();
                                     MCLF.M_AUTONO = MGODF.M_AUTONO;
                                     MCLF.EMD_NO = MGODF.EMD_NO;
+                                    MCLF.DTAG = MGODF.DTAG;
                                     MCLF.CLCD = CommVar.ClientCode(UNQSNO);
                                     MCLF.COMPCD = VE.CompanyLocationName[i].COMPCD;
                                     MCLF.LOCCD = VE.CompanyLocationName[i].LOCCD;
@@ -383,7 +385,7 @@ namespace Improvar.Controllers
                         if (dt.Rows.Count > 0)
                         {
                             int Autono1 = dt.Rows[0]["M_AUTONO"].retInt();
-                            M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", Autono1, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                            M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", Autono1, VE.DefaultAction, CommVar.FinSchema(UNQSNO),VE.Audit_REM);
                             DBF.Entry(MCHF).State = System.Data.Entity.EntityState.Modified;
                             DBF.SaveChanges();
                             DBF.M_GODOWN.Where(x => x.M_AUTONO == Autono1).ToList().ForEach(x => { x.DTAG = "D"; });

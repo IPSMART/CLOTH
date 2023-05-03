@@ -280,6 +280,7 @@ namespace Improvar.Controllers
                             {
                                 MPTX.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
+                            MPTX.DTAG = "E";
                         }
                         if (VE.DefaultAction == "E")
                         {
@@ -296,6 +297,7 @@ namespace Improvar.Controllers
                                     USRACSDOCCD.USER_ID = USER;
                                     USRACSDOCCD.DOCCD = VE.MUSRACSDOCCD[i].DOCCD;
                                     USRACSDOCCD.EMD_NO = MPTX.EMD_NO;
+                                    USRACSDOCCD.DTAG = MPTX.DTAG;
                                     USRACSDOCCD.CLCD = CommVar.ClientCode(UNQSNO);
                                     USRACSDOCCD.SCHEMA_NAME = CommVar.CurSchema(UNQSNO);
                                     USRACSDOCCD.COMPCD = COMCODE;

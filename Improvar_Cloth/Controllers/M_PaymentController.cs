@@ -241,7 +241,7 @@ namespace Improvar.Controllers
                         MPAYMENT.PYMTNM = VE.M_PAYMENT.PYMTNM;
                         MPAYMENT.GLCD = VE.M_PAYMENT.GLCD;
                         MPAYMENT.PYMTTYPE = VE.M_PAYMENT.PYMTTYPE;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_PAYMENT", MPAYMENT.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_PAYMENT", MPAYMENT.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_PAYMENT.Add(MPAYMENT);
@@ -267,7 +267,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_PAYMENT", VE.M_PAYMENT.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_PAYMENT", VE.M_PAYMENT.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         DB.M_PAYMENT.Where(x => x.M_AUTONO == VE.M_PAYMENT.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });

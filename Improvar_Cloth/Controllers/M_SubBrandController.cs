@@ -325,7 +325,7 @@ namespace Improvar.Controllers
                         MSUBBRAND.SBRANDCD = VE.M_SUBBRAND.SBRANDCD.ToUpper();
                         MSUBBRAND.SBRANDNM = VE.M_SUBBRAND.SBRANDNM;
                         MSUBBRAND.MBRANDCD = VE.M_SUBBRAND.MBRANDCD;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBBRAND", MSUBBRAND.M_AUTONO.Value, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBBRAND", MSUBBRAND.M_AUTONO.Value, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -359,7 +359,7 @@ namespace Improvar.Controllers
                     else if (VE.DefaultAction == "V")
                     {
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBBRAND", VE.M_CNTRL_HDR.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBBRAND", VE.M_CNTRL_HDR.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

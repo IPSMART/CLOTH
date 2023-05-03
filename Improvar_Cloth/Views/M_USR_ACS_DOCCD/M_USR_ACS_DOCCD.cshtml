@@ -99,7 +99,8 @@
             <input type="hidden" id="urlnameDOCRIGHTS" value="@Url.Action("Get_Rights", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
-            <div class="row">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="row">
                 <div class="col-md-2">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Select User")

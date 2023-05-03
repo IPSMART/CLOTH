@@ -18,5 +18,7 @@ namespace Improvar.Models
         public string SLNO { get; set; }
         public string MODIFYDT { get; set; }
         public string USERID { get; set; }
+        public string DEL_REM { get; set; }
+        public string LM_REM { get; set; }
     }
 }

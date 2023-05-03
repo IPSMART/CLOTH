@@ -428,7 +428,8 @@
             @Html.HiddenFor(a => a.T_DO_CANC.DOCNO)
         }
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
-        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
             <div class="row">
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-md-5" style="margin-top: 6px;">

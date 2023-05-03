@@ -332,7 +332,7 @@ namespace Improvar.Controllers
                         Action = "A";
                     }
                     DB.M_LOCKDATA.RemoveRange(DB.M_LOCKDATA.Where(x => x.COMPCD == comcode && x.LOCCD == LOCCODE));
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_LOCKDATA", Autonumber, Action, CommVar.CurSchema(UNQSNO));
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_LOCKDATA", Autonumber, Action, CommVar.CurSchema(UNQSNO), "");
                     foreach (DateLockRight MRU in MR1)
                     {
                         M_LOCKDATA ML = new M_LOCKDATA();
@@ -577,11 +577,11 @@ namespace Improvar.Controllers
                         string Omenu = " <li><span class='tree_label'>" + "<img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<span title='" + mname + "' onclick=return&nbsp;setpermission('" + menu_row.ItemArray[0].ToString().Trim() + "'," + menu_row.ItemArray[2] + ");>" + mname + image + "</span>&nbsp;<span style='color:#ececec' class='default_label_date'>" + displayDT + "</span>" + "</span></li>";
                         while (true)
                         {
-                         var results1 =
-                            from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable()
-                            where row.Field<string>("MENU_ID") == menuid[0].ToString() && row.Field<Int16>("MENU_INDEX") == Convert.ToInt16(menuid[1])
-                            orderby row.Field<string>("MENU_ORDER_CODE")                          
-                            select row;
+                            var results1 =
+                               from row in Cn.ds.Tables["fill_mainmenu"].AsEnumerable()
+                               where row.Field<string>("MENU_ID") == menuid[0].ToString() && row.Field<Int16>("MENU_INDEX") == Convert.ToInt16(menuid[1])
+                               orderby row.Field<string>("MENU_ORDER_CODE")
+                               select row;
                             try
                             {
                                 if (!results1.Any())
@@ -752,7 +752,7 @@ namespace Improvar.Controllers
                             if (Autonumber == 0)
                             {
                                 Autonumber = Cn.M_AUTONO(scm);
-                                M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_LOCKDATA", Autonumber, "A", scm);
+                                M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_LOCKDATA", Autonumber, "A", scm, "");
                                 dbsql = masterHelp.RetModeltoSql(MCH, "A", scm);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                             }

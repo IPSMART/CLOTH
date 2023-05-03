@@ -274,6 +274,7 @@ namespace Improvar.Controllers
                             {
                                 USRGRPDTL.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
+                            USRGRPDTL.DTAG = "E";
                             DB.M_USR_ACS_GRPDTL.Where(x => x.M_AUTONO == VE.M_USR_ACS_GRPDTL.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.SaveChanges();
                             DB.M_USR_ACS_GRPDTL.RemoveRange(DB.M_USR_ACS_GRPDTL.Where(x => x.M_AUTONO == VE.M_USR_ACS_GRPDTL.M_AUTONO));
@@ -288,6 +289,7 @@ namespace Improvar.Controllers
                                 {
                                     M_USR_ACS_GRPDTL acsdtl = new M_USR_ACS_GRPDTL();
                                     acsdtl.EMD_NO = USRGRPDTL.EMD_NO;
+                                    acsdtl.DTAG = USRGRPDTL.DTAG;
                                     acsdtl.CLCD = USRGRPDTL.CLCD;
                                     acsdtl.M_AUTONO = USRGRPDTL.M_AUTONO;
                                     acsdtl.LINKUSER_ID = USRGRPDTL.LINKUSER_ID;
@@ -302,7 +304,7 @@ namespace Improvar.Controllers
                                 return Content("No Check Field Selected ");
                             }
                         }
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_USR_ACS_GRPDTL", USRGRPDTL.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_USR_ACS_GRPDTL", USRGRPDTL.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
@@ -331,7 +333,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_USR_ACS_GRPDTL", VE.M_USR_ACS_GRPDTL.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_USR_ACS_GRPDTL", VE.M_USR_ACS_GRPDTL.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

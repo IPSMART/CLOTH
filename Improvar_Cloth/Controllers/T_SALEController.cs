@@ -4959,7 +4959,8 @@ namespace Improvar.Controllers
                     TTXNOTH.MUTSLCD = VE.T_TXNOTH.MUTSLCD;
                     //----------------------------------------------------------//
 
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
+                    //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl(),VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = masterHelp.RetModeltoSql(TTXN, VE.DefaultAction);
@@ -5031,6 +5032,8 @@ namespace Improvar.Controllers
                         T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
                         TCHUNIQNO.CLCD = TTXN.CLCD;
                         TCHUNIQNO.AUTONO = TTXN.AUTONO;
+                        TCHUNIQNO.EMD_NO = TTXN.EMD_NO;
+                        TCHUNIQNO.DTAG = TTXN.DTAG;
                         TCHUNIQNO.UNIQNO = UNIQNO;
                         dbsql = masterHelp.RetModeltoSql(TCHUNIQNO);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -5047,7 +5050,8 @@ namespace Improvar.Controllers
                     if (blactpost == true || blgstpost == true)
                     {
                         Cn.Create_DOCCD(UNQSNO, "F", TTXN.DOCCD);
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
+                        //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl(),VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 0;
                         if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
@@ -6051,6 +6055,7 @@ namespace Improvar.Controllers
                             ////TVCHBLADJ1 start
                             T_VCH_BL_ADJ TVCHBLADJ1 = new T_VCH_BL_ADJ();
                             TVCHBLADJ1.EMD_NO = TTXN.EMD_NO;
+                            TVCHBLADJ1.DTAG = TTXN.DTAG;
                             TVCHBLADJ1.CLCD = TTXN.CLCD;
                             TVCHBLADJ1.AUTONO = TTXN.AUTONO;
                             TVCHBLADJ1.SLNO = 1;
@@ -6749,10 +6754,12 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                     if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI")
                     {
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
+                        //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null,null,null,null,null,VE.DISPBLAMT, VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                     }
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
+                    //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null,null,null,null,null,VE.DISPBLAMT, VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 

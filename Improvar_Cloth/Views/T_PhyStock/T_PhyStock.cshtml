@@ -745,7 +745,8 @@
         @Html.HiddenFor(a => a.TAXGRPCD, new { id = "TAXGRPCD" })
         @Html.HiddenFor(a => a.MTRLJOBCD, new { id = "MTRLJOBCD" })
         @Html.HiddenFor(a => a.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
-        <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         <input type="hidden" id="Defaultbar" value="Bar" />
         <input type="hidden" id="Defaultstyle" value="Style" />
         <div class="form-horizontal">

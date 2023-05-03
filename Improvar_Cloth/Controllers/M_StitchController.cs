@@ -573,7 +573,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_STCHGRP.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_STCHGRP.M_AUTONO));
                         }
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_STCHGRP", MFXGRP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_STCHGRP", MFXGRP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
@@ -611,6 +611,7 @@ namespace Improvar.Controllers
                                     string FLDCD = MFXGRP.STCHCD + (FLDCD_no).ToString("D4");
                                     M_STCHGRP_COMP MSTCHGRPCOMP = new M_STCHGRP_COMP();
                                     MSTCHGRPCOMP.EMD_NO = MFXGRP.EMD_NO;
+                                    MSTCHGRPCOMP.DTAG = MFXGRP.DTAG;
                                     MSTCHGRPCOMP.CLCD = MFXGRP.CLCD;
                                     MSTCHGRPCOMP.STCHCD = MFXGRP.STCHCD;
                                     //MSTCHGRPCOMP.FLDCD = VE.MSTCHGRPCOMP[i].FLDCD == null ? FLDCD : VE.MSTCHGRPCOMP[i].FLDCD;
@@ -673,7 +674,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_STCHGRP", VE.M_STCHGRP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_STCHGRP", VE.M_STCHGRP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         DB.M_STCHGRP.Where(x => x.M_AUTONO == VE.M_STCHGRP.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });

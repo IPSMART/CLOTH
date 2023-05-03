@@ -283,6 +283,7 @@
             <input type="hidden" id="btnDeleteLEVEL5" value="@Url.Action("DeleteRowLEVEL5", PageControllerName)" />
             <input type="hidden" id="urlauthhelp" value="@Url.Action("GetAUTHCDhelp", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_DOC_AUTH.M_AUTONO)
             <ul class="nav nav-tabs">

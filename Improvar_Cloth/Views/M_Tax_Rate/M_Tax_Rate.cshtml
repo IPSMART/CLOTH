@@ -138,7 +138,8 @@
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_PRODTAX.M_AUTONO)
-            <ul class="nav nav-tabs">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+  <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
             </ul>

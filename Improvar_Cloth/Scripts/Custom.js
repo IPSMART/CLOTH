@@ -28,6 +28,10 @@ function modeView() {
     $("textarea").attr("readonly", "readonly");
     $('.grid_title_box').prop('readonly', false)
     $(".grid_title_box").removeAttr('readonly');
+    $("#AUDITREMARKSLIST").css('pointer-events', 'auto');
+    $("#AUDITREMARKSLIST").css('background-color', '#ffffff');
+    $("#Audit_Remarks").attr("readonly", "readonly");
+    $("#Audit_Remarks").attr("placeholder", "Remarks...");
 }
 
 function modeEdit() {
@@ -91,7 +95,6 @@ function msgSuccess4(msgText) {
     $("#success4").show();
     $("#msgbody_success4").html(msgText);
     $("#close_success4").focus();
-    return false;
     return false;
 }
 function msgWarning(msgText) {
@@ -196,6 +199,7 @@ function unparkRecords(MNUDET, UNQSNO) {
 //Page Validation
 
 function pageValidation(id, MNUDET, UNQSNO) {
+    debugger;
     var myEle = document.getElementById("RemoveComma");
     if (myEle) {
         var RemoveField = document.getElementById("RemoveComma").value.split(',');
@@ -256,7 +260,12 @@ function pageValidation(id, MNUDET, UNQSNO) {
     }
 
     if (id == "D") {
-        var ui = delete1();
+        //var ui = delete1();
+        var ui = entryAudit();
+        return false;
+    }
+    else if (id == "E") {
+        var ui = entryAudit();
         return false;
     }
     else {
@@ -324,7 +333,6 @@ function deletePageData() {
             else if (result == "4") {
                 $("#WaitingMode").hide()
                 msgSuccess4("Deleted Successfully");
-                return false;
                 return false;
             }
             else {
@@ -1356,6 +1364,7 @@ function DocumentDateCHK(dateField, auto, current_date_auto_if_blank, disabledt)
         dateField.value = day + "/" + mon + "/" + yy;
     }
 }
+
 var message_value;
 function closeDiv(id, flag) {
     $(id).hide();
@@ -1516,9 +1525,9 @@ function CloseZoomTextBoxModal() {
     $("#" + ZoomTextBoxModalId).focus();
 }
 var hlpblurval = "";
-function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds, formdata) {
+function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formdata) {
     debugger;
-    if ($("#" + hlpfield).prop('readonly')) return true
+    if($("#" + hlpfield).prop('readonly')) return true
     const keyName = event.key;
     const keyType = event.type;
     var blurvalue = "";
@@ -1707,4 +1716,102 @@ function TooltipShow(e, id, str, fld) {
 }
 function TooltipHide() {
     $(".ToolFixed").hide();
+}
+function editPageData() {
+    debugger;
+    if (COUNTER_FOR_SAVE == 0) {
+        COUNTER_FOR_SAVE = 1;
+        $.ajax({
+            type: 'post',
+            url: $("#btnSave").val(),
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                result = result;
+                resultIndex = result.substring(0, 1);
+                if (resultIndex == "1") {
+                    $("#WaitingMode").hide();
+                    var strrel = result.split("~");
+                    if (strrel.length == 1) {
+                        var outr = strrel[0].substring(1);
+                        msgSuccess1("Save Successfully" + outr);
+                    }
+                    else {
+                        var outr = strrel[0].substring(1);
+                        msgSuccess1("Save Successfully" + outr);
+                        $("#SearchValue").val(strrel[1]);
+                    }
+                    return false;
+                }
+                else if (resultIndex == "2") {
+                    $("#WaitingMode").hide();
+                    msgSuccess2("Edited Successfully ");
+                    return false;
+                }
+                else {
+                    $("#WaitingMode").hide()
+                    COUNTER_FOR_SAVE = 0;
+                    msgWarning(result);
+                    return false;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide(); COUNTER_FOR_SAVE = 0;
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    else {
+        $("#WaitingMode").hide();
+    }
+}
+//Audit remarks
+function entryAudit() {
+    debugger;
+    document.getElementById("Audit_overlay").style.display = "block";
+    document.getElementById("Audit_Remarks").focus();
+    return false;
+}
+function Audit_record_save(Action) {
+    debugger;
+    if (Action == "" || Action == undefined) {
+        Action = $("#ReportAction").val();
+    }
+    var REMARKSLIST = $("#AUDITREMARKSLIST").val();
+    var rem = "";
+    if (REMARKSLIST == "0. Any Other") {
+        rem = document.getElementById("Audit_Remarks").value;
+    }
+    else {
+        rem = REMARKSLIST;
+    }
+    if (rem.trim() == "") {
+        msgInfo("Please Enter Remark !!");
+        message_value = "AUDITREMARKSLIST";
+        return false;
+    }
+    $("#Audit_REM").val(rem);
+
+    if (Action == "E") {
+        editPageData();
+    }
+    else {
+        deletePageData();
+    }
+}
+function Audit_Remark_close() {
+    document.getElementById("Audit_Remarks").value = "";
+    document.getElementById("Audit_overlay").style.display = "none";
+}
+function ChangeRemarks(id, rsnid) {
+    debugger;
+    var REMARKSLIST = $("#" + rsnid).val();
+    if (REMARKSLIST == "0. Any Other") {
+        $("#" + id).prop("readonly", false);
+    }
+    else {
+        $("#" + id).attr("readonly", "readonly");
+    }
+    $("#Audit_Remarks").val("");
 }

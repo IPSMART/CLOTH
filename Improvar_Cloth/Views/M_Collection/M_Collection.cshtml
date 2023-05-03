@@ -138,7 +138,8 @@
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_COLLECTION.M_AUTONO)
             @Html.HiddenFor(e => e.M_COLLECTION.CLCD)
-            <div class="row">
+             @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="row">
                 <div class="col-md-4">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Collection Code")

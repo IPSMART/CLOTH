@@ -332,7 +332,7 @@ namespace Improvar.Controllers
                         MSTKTYPE.SHORTNM = VE.M_STKTYPE.SHORTNM;
                         MSTKTYPE.FLAG1 = VE.M_STKTYPE.FLAG1;
                         if (VE.Checked==true) { MSTKTYPE.ISDEFAULT = "Y"; } else { MSTKTYPE.ISDEFAULT = null; }
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_STKTYPE", MSTKTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_STKTYPE", MSTKTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_STKTYPE.Add(MSTKTYPE);
@@ -359,7 +359,7 @@ namespace Improvar.Controllers
                     else if (VE.DefaultAction == "V")
                     {
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_STKTYPE", VE.M_STKTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_STKTYPE", VE.M_STKTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
 

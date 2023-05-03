@@ -12,7 +12,32 @@
     var PageControllerName = "Sys_StkTrnf";
 }
 <script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); 
+        $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+    });
+</script>
+<script>
     function Proceed(TAG) {
+        //SN FABRIC + BHURA = FIFO , BALE
+        //SACHI+ LAL + TRES = FINISH STOCK
+        //DIWANS HERITAGE =FINISH STOCK,PHYSICAL STOCK
+        if (document.getElementById("Checkbox5").checked == true) {
+            if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
+        }
+
+        if (document.getElementById("Checkbox9").checked == true) {
+            if (!emptyFieldCheck("Enter Doc Code", "DOCCD")) { return false; }
+            if (!emptyFieldCheck("Enter From Date", "FDT")) { return false; }
+            if (!emptyFieldCheck("Enter To Date", "TDT")) { return false; }
+            if (!emptyFieldCheck("Enter New Doc Date", "DOCDT")) { return false; }
+        }
+        if (document.getElementById("Checkbox6").checked == true) {
+            if (!emptyFieldCheck("Enter Doc Code", "DOCCD")) { return false; }
+            if (!emptyFieldCheck("Enter From Date", "FDT")) { return false; }
+            if (!emptyFieldCheck("Enter To Date", "TDT")) { return false; }
+        }
         $.ajax({
             type: 'POST',
             url: "@Url.Action("Sys_StkTrnf1", PageControllerName)",
@@ -30,14 +55,69 @@
     }
 </script>
 <script>
-    function FinStockChecked(id, id1,id2) {
+    function FinStockChecked(id, id1, id2) {
         var chk = document.getElementById(id).checked;
         if (chk == true) {
             document.getElementById(id1).checked = false;
-            document.getElementById(id2).checked = false;
+            if (id2 != '') {
+                document.getElementById(id2).checked = false;
+            }
         }
     }
+    function DivShowHide(checkid, divclass) {
+        if (document.getElementById(checkid).checked == true) {
+            $("." + divclass).show();
+            if (checkid == "Checkbox9") {
+                $(".divPDC1").show();
+            }
+            else if (checkid == "Checkbox6") {
+                $(".divPDC1").hide();
+            }
+        }
+        else {
+            $("." + divclass).hide();
+            if (checkid == "Checkbox9") {
+                $(".divPDC1").hide();
+            }
+        }
+    }
+    function SelectDOCCode(id) {
+        if (id == "") {
+            $("#DOCCD").val("");
+            $("#TEXTBOX1").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Code", PageControllerName)",
+                data: { val: id },
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#tempHDD").val(result);
+                    var findstr = $("#tempHDD").val();
+                    document.getElementById("DOCCD").value = returncolvalue(findstr, "DOCCD");
+                    document.getElementById("TEXTBOX1").value = returncolvalue(findstr, "DOCNM");
+                }
+                else {
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $("#DOCCD").val("");
+                    $("#TEXTBOX1").val("");
+                    $("#btnok").focus();
+                    $("#msgbody_info").html(result);
+                    message_value = "DOCCD";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    }
 </script>
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -95,24 +175,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" style="margin-top: 8px;">
-                    <div class="col-md-6">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Job")
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div class="row">
                     <div class="col-lg-2">
@@ -120,35 +183,123 @@
                             @Html.Label("", "Pending Job Transfer")
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-1">
                         <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox5)
+                            @Html.CheckBoxFor(model => model.Checkbox5, new { id = "Checkbox5", onclick = "DivShowHide(this.id,'divJob');" })
+                        </div>
+                    </div>
+                    <div class="divJob col-lg-2" style="width:auto;display:none">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Job")
+                        </div>
+                    </div>
+                    <div class="divJob col-lg-1" style="display:none">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
+                        </div>
+                    </div>
+                    <div class="divJob col-lg-3" style="display:none">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                   
-                            <p>
-                                <b> Note : </b>   Plese select Job Code For Pending Job Transfer
-
-                            </p>
-                        
-                    
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "PDC Date Change")
+                        </div>
                     </div>
-
-                    @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
-                    {  <div class="row" style="margin-top:10PX">
-                        <div class="col-lg-2">
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox9, new { id = "Checkbox9", onclick = "FinStockChecked(this.id,'Checkbox6','');DivShowHide(this.id,'divPDC');" })
                         </div>
-                        <div class="col-lg-3">
-                            <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
-                        </div>
-                    </div> }
-
+                    </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "PDC Transfer")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox6, new { id = "Checkbox6", onclick = "FinStockChecked(this.id,'Checkbox9','');DivShowHide(this.id,'divPDC');" })
+                        </div>
+                    </div>
+                </div>
+                <div class="divPDC row" style="display:none;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Doc Code")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOC_Code", PageControllerName)','DOCCD/TEXTBOX1','1/0','Select Document Type Details','DOCCD')" />
+                            @Html.EditorFor(model => model.DOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCCD", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','DOCCD/TEXTBOX1','1/0','Select Document Type Details','DOCCD');", onblur = "SelectDOCCode(this.value);", @placeholder = "Code", required = "required" } })
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX1", @TabIndex = -1, @placeholder = "Document Name", maxlength = 45, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="divPDC row" style="display:none;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="divPDC1 row" style="display:none;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "New Doc Date")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>
+                        <b> Note : </b>   Plese select Job Code For Pending Job Transfer
+                    </p>
+                </div>
+
+                @if (CommVar.NextYearSchema(Model.UNQSNO) == "")
+                    {  <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="button" value="BarNo Master Transfer" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
+                    </div>
+                </div> }
+
+            </div>
         </div>
     }
     <div class="container">

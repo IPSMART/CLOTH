@@ -783,7 +783,8 @@
         @Html.HiddenFor(a => a.SHOWSTKTYPE, new { id = "SHOWSTKTYPE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.COMMONUNIQBAR, new { id = "SYSCNFGCOMMONUNIQBAR" })
         @Html.HiddenFor(a => a.SHOWBLTYPE, new { id = "SHOWBLTYPE" })
-        <div class="form-horizontal">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
                 @Html.Partial("_FilteredSearch")

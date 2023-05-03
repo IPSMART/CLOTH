@@ -1401,7 +1401,8 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
-        <input type="hidden" id="SLCDlinkcd" value="D,C,O" />
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <input type="hidden" id="SLCDlinkcd" value="D,C,O" />
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {

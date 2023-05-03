@@ -326,7 +326,8 @@
             @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
             @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
             @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
-            <div class="row">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="row">
                 <div class="col-lg-8">
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-7">

@@ -832,6 +832,10 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
+                            else
+                            {
+                                DB.M_USR_ACS.RemoveRange(DB.M_USR_ACS.Where(x => x.USER_ID == user && x.COMPCD == i.comcd && x.LOCCD == i.loccd));
+                            }
                         }
 
 

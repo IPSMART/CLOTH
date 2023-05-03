@@ -2310,7 +2310,8 @@
         @Html.HiddenFor(a => a.T_TXN.BLAMT, new { id = "BLAMT" })
         @Html.HiddenFor(a => a.T_TXN.ROAMT, new { id = "ROAMT" })
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
-        <div class="form-horizontal">
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
                 @Html.Partial("_FilteredSearch")

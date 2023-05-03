@@ -821,6 +821,7 @@ namespace Improvar.Controllers
                             var dt = masterHelp.SQLquery(sql);
                             if (dt.Rows.Count > 0) { MAXEMDNO = dt.Rows[0]["EMD_NO"].retStr(); }
                             if (MAXEMDNO == "") { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO.retInt() + 1); }
+                            TBHDR.DTAG = "E";
                         }
 
                         TBHDR.AGCMNO = VE.T_STCHALT.AGCMNO;
@@ -865,7 +866,8 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null);
+                        //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null,null,0,VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = masterHelp.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -882,6 +884,8 @@ namespace Improvar.Controllers
                             {
                                 T_STCHALT_DTL TSTCHDTL = new T_STCHALT_DTL();
                                 TSTCHDTL.CLCD = TBHDR.CLCD;
+                                TSTCHDTL.EMD_NO = TBHDR.EMD_NO;
+                                TSTCHDTL.DTAG = TBHDR.DTAG;
                                 TSTCHDTL.AUTONO = TBHDR.AUTONO;
                                 TSTCHDTL.SLNO = Convert.ToByte(i + 1);
                                 TSTCHDTL.STCHCD = VE.TSTCHALT_MEASUREMENT[i].STCHCD;
@@ -895,6 +899,8 @@ namespace Improvar.Controllers
                                     {
                                         T_STCHALT_DTL_COMP TSTCHDTLCMP = new T_STCHALT_DTL_COMP();
                                         TSTCHDTLCMP.CLCD = TBHDR.CLCD;
+                                        TSTCHDTLCMP.DTAG = TBHDR.DTAG;
+                                        TSTCHDTLCMP.EMD_NO = TBHDR.EMD_NO;
                                         TSTCHDTLCMP.AUTONO = TBHDR.AUTONO;
                                         TSTCHDTLCMP.SLNO = TSTCHDTL.SLNO;
                                         TSTCHDTLCMP.FLDCD = VE.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDCD;
@@ -1001,7 +1007,8 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
 
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_STCHALT.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
+                        //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_STCHALT.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_STCHALT.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null,null,null,null,null,0,VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
                         ModelState.Clear();
