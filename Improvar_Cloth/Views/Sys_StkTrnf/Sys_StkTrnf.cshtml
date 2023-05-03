@@ -138,6 +138,16 @@
                             @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "FinStockChecked(this.id,'Checkbox7','Checkbox10');" })
                         </div>
                     </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Skip Negetive Stock")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox9)
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-2">
