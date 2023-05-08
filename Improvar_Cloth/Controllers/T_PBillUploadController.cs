@@ -502,8 +502,8 @@ namespace Improvar.Controllers
                         row["STATE_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BL")].Value.retStr();
                         row["GSTINPLANT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BQ")].Value.retStr();
                         row["NET_AMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BS")].Value.retStr();
-                        row["TCSPER"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BU")].Value.retStr();
-                        row["TCSAMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BV")].Value.retStr();
+                        row["TCSPER"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BU")].Value.retDbl();
+                        row["TCSAMT"] = workSheet.Cells[rowNum, CommFunc.GetColumnNumber("BV")].Value.retDbl();
                     }
                 }
 
