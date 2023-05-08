@@ -1769,6 +1769,7 @@ function editPageData() {
 //Audit remarks
 function entryAudit() {
     debugger;
+    $('#DivAudit').show();
     document.getElementById("Audit_overlay").style.display = "block";
     document.getElementById("Audit_Remarks").focus();
     return false;
@@ -1801,6 +1802,7 @@ function Audit_record_save(Action) {
     }
 }
 function Audit_Remark_close() {
+    $('#DivAudit').hide();
     document.getElementById("Audit_Remarks").value = "";
     document.getElementById("Audit_overlay").style.display = "none";
 }

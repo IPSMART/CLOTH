@@ -950,130 +950,134 @@
             }
         </div>
     </div>
-    <div id="Audit_overlay">
-        <div id="Audit_text">
-            <script type="text/javascript">
-                document.body.style.background="white";
-            </script>
-            <div style="padding:5px">
-                <p><b>Reason:</b></p>
-                @Html.DropDownListFor(model => model.AUDITREMARKSLIST, new SelectList(Model.ListAuditRemarks, "Value", "Text"), new { @class = "form-control", id = "AUDITREMARKSLIST", @onchange = "ChangeRemarks('Audit_Remarks','AUDITREMARKSLIST');" })
-                <input type="search" autofocus id="Audit_Remarks" maxlength="100" style="height:50px" readonly="readonly" placeholder="Remarks..." class="form-control" />
-                @if (Model.DefaultAction == "E")
-                {
-                    <p><strong>Note:</strong>Remarks should be proper for <b>Edit</b> the current record</p>
-                    <input type="button" class="btn btn-danger" value="Save" onclick="Audit_record_save('@Model.DefaultAction');" />
-                }
-                else
-                {
-                    <p><strong>Note:</strong>Remarks should be proper for <b>Delete</b> the current record</p>
-                    <input type="button" class="btn btn-danger" value="Delete" onclick="Audit_record_save('@Model.DefaultAction');" />
-                }
-                <input type="button" class="btn btn-info" value="Cancel" onclick="Audit_Remark_close();" />
-            </div>
-        </div>
-    </div>
-    <div id="CHK_overlay">
-        <div id="CHK_text">
-            @if (Model.IsChecked == true)
-            {
-                <div style="padding:5px;" id="UndoCheck" align="center">
-                    <input type="hidden" id="CHK_Remarks" />
-                    <p><strong>Are you sure to Unchecked this record?</strong></p>
-                    <input type="button" class="btn btn-success" value="Yes" onclick="SaveCheckAuthorisation('UnCheck');" />
-                    <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
-                    <script type="text/javascript">
-                        document.body.style.background="#dfefdf";
-                    </script>
-                </div>
-            }
-            else
-            {
-                <div style="padding:5px">
-                    <input type="search" id="CHK_Remarks" maxlength="100" style="height:50px" placeholder="Remarks for Cancelation..." class="form-control" />
-                    <p><strong>Note:</strong>Remarks should be proper for Check the current record</p>
-                    <input type="button" class="btn btn-success" value="OK" onclick="SaveCheckAuthorisation('Check');" />
-                    <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
-                </div>
-            }
-        </div>
-    </div>
-    <div id="Authorise_overlay">
-        <div id="Authorise_text">
-            <div style="padding:5px;" align="center">
-                <input type="search" id="Authorise_Remarks" maxlength="100" style="height:50px" placeholder="Remarks" class="form-control" />
-                @if (Model.AuthorisationStatus == "A")
-                {
-                    <p><strong id="AuthoriseCaption">Are you sure to Unauthorise this record?</strong></p>
-                    <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
-                    <script type="text/javascript">
-                        document.body.style.background="#c6e3c6";
-                    </script>
-                }
-                else if (Model.AuthorisationStatus == "N")
-                {
-                    <p><strong id="AuthoriseCaption">Are you sure to Authorised this record?</strong></p>
-                    <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
-                }
-                else
-                {
-                    <p><strong id="AuthoriseCaption">Add Remarks </strong></p>
-                    <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
-                    <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
-                }
-                <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
-            </div>
-        </div>
-    </div>
-    <div id="Msgdiv1" style="display:none">
+    <div id="DivAudit" style="display:none;">
         <div id="back_cover">
-            @Html.Partial("_MessageBox")
+            <div id="Audit_overlay">
+                <div id="Audit_text">
+                    <script type="text/javascript">
+                        document.body.style.background="white";
+                    </script>
+                    <div style="padding:5px">
+                        <p><b>Reason:</b></p>
+                        @Html.DropDownListFor(model => model.AUDITREMARKSLIST, new SelectList(Model.ListAuditRemarks, "Value", "Text"), new { @class = "form-control", id = "AUDITREMARKSLIST", @onchange = "ChangeRemarks('Audit_Remarks','AUDITREMARKSLIST');" })
+                        <input type="search" autofocus id="Audit_Remarks" maxlength="100" style="height:50px" readonly="readonly" placeholder="Remarks..." class="form-control" />
+                        @if (Model.DefaultAction == "E")
+                        {
+                            <p><strong>Note:</strong>Remarks should be proper for <b>Edit</b> the current record</p>
+                            <input type="button" class="btn btn-danger" value="Save" onclick="Audit_record_save('@Model.DefaultAction');" />
+                        }
+                        else
+                        {
+                            <p><strong>Note:</strong>Remarks should be proper for <b>Delete</b> the current record</p>
+                            <input type="button" class="btn btn-danger" value="Delete" onclick="Audit_record_save('@Model.DefaultAction');" />
+                        }
+                        <input type="button" class="btn btn-info" value="Cancel" onclick="Audit_Remark_close();" />
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <script>
-        function HideConfirmOk() {
-            $('#Msgdiv1').hide();
-            $('#confirm').hide();
-            deletePageData();
-            return false;
-        }
-        function HideConfirmCancel() {
-            $('#Msgdiv1').hide();
-            $('#confirm').hide();
-            return false;
-        }
-        function delete1() {
-            function ok() {
-                console.log('deleted');
-                HideConfirmOk();
+        </div>
+        <div id="CHK_overlay">
+            <div id="CHK_text">
+                @if (Model.IsChecked == true)
+            {
+                    <div style="padding:5px;" id="UndoCheck" align="center">
+                        <input type="hidden" id="CHK_Remarks" />
+                        <p><strong>Are you sure to Unchecked this record?</strong></p>
+                        <input type="button" class="btn btn-success" value="Yes" onclick="SaveCheckAuthorisation('UnCheck');" />
+                        <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
+                        <script type="text/javascript">
+                            document.body.style.background="#dfefdf";
+                        </script>
+                    </div>
+                }
+                else
+                {
+                    <div style="padding:5px">
+                        <input type="search" id="CHK_Remarks" maxlength="100" style="height:50px" placeholder="Remarks for Cancelation..." class="form-control" />
+                        <p><strong>Note:</strong>Remarks should be proper for Check the current record</p>
+                        <input type="button" class="btn btn-success" value="OK" onclick="SaveCheckAuthorisation('Check');" />
+                        <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="Authorise_overlay">
+            <div id="Authorise_text">
+                <div style="padding:5px;" align="center">
+                    <input type="search" id="Authorise_Remarks" maxlength="100" style="height:50px" placeholder="Remarks" class="form-control" />
+                    @if (Model.AuthorisationStatus == "A")
+                    {
+                        <p><strong id="AuthoriseCaption">Are you sure to Unauthorise this record?</strong></p>
+                        <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
+                        <script type="text/javascript">
+                            document.body.style.background="#c6e3c6";
+                        </script>
+                    }
+                    else if (Model.AuthorisationStatus == "N")
+                    {
+                        <p><strong id="AuthoriseCaption">Are you sure to Authorised this record?</strong></p>
+                        <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
+                    }
+                    else
+                    {
+                        <p><strong id="AuthoriseCaption">Add Remarks </strong></p>
+                        <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
+                        <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
+                    }
+                    <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
+                </div>
+            </div>
+        </div>
+        <div id="Msgdiv1" style="display:none">
+            <div id="back_cover">
+                @Html.Partial("_MessageBox")
+            </div>
+        </div>
+        <script>
+            function HideConfirmOk() {
+                $('#Msgdiv1').hide();
+                $('#confirm').hide();
+                deletePageData();
+                return false;
             }
-            function cancel() {
-                console.log('delete cancelled');
-                HideConfirmCancel();
+            function HideConfirmCancel() {
+                $('#Msgdiv1').hide();
+                $('#confirm').hide();
+                return false;
             }
-            ConfirmInDiv('Are you sure to delete?', ok, cancel);
-        }
-    </script>
-    @Scripts.Render("~/bundles/bootstrap?Ver=" + Module.ContentVersion)
-    @Scripts.Render("~/Scripts/datatables.js?Ver=" + Module.ContentVersion)
-    @Scripts.Render("~/bundles/jqueryui")
-    <script src="~/Scripts/jquery.mobile-events.js"></script>
-    <script>
-        $(function () {
-            $(".jqueryui-marker-datepicker").datepicker({
-                dateFormat: "dd/mm/yy",
-                changeYear: true,
-                showOn: "@Model.button",
-                maxDate: '@Model.maxdate',
-                minDate: '@Model.mindate'
-            }).css("display", "inline-block")
-            .next("button").button({
-                icons: { primary: "ui-icon-calendar" },
-                label: "Select date",
-                text: false
+            function delete1() {
+                function ok() {
+                    console.log('deleted');
+                    HideConfirmOk();
+                }
+                function cancel() {
+                    console.log('delete cancelled');
+                    HideConfirmCancel();
+                }
+                ConfirmInDiv('Are you sure to delete?', ok, cancel);
+            }
+        </script>
+        @Scripts.Render("~/bundles/bootstrap?Ver=" + Module.ContentVersion)
+        @Scripts.Render("~/Scripts/datatables.js?Ver=" + Module.ContentVersion)
+        @Scripts.Render("~/bundles/jqueryui")
+        <script src="~/Scripts/jquery.mobile-events.js"></script>
+        <script>
+            $(function () {
+                $(".jqueryui-marker-datepicker").datepicker({
+                    dateFormat: "dd/mm/yy",
+                    changeYear: true,
+                    showOn: "@Model.button",
+                    maxDate: '@Model.maxdate',
+                    minDate: '@Model.mindate'
+                }).css("display", "inline-block")
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Select date",
+                    text: false
+                });
             });
-        });
-    </script>
-    @RenderSection("scripts", required: false)
+        </script>
+        @RenderSection("scripts", required: false)
 </body>
 </html>

@@ -4009,17 +4009,21 @@ namespace Improvar
         {
             List<Dropdown_AuditRemarks> DDL = new List<Dropdown_AuditRemarks>();
             Dropdown_AuditRemarks DDL2 = new Dropdown_AuditRemarks();
-            DDL2.text = "1. Wrong Entry";
-            DDL2.value = "1. Wrong Entry";
+            DDL2.text = "1. Scheme/Rate Difference";
+            DDL2.value = "1. Scheme/Rate Difference";
             DDL.Add(DDL2);
             Dropdown_AuditRemarks DDL3 = new Dropdown_AuditRemarks();
-            DDL3.text = "2. Mistake in Item Details";
-            DDL3.value = "2. Mistake in Item Details";
+            DDL3.text = "2. Change in Item/Quantity";
+            DDL3.value = "2. Change in Item/Quantity";
             DDL.Add(DDL3);
             Dropdown_AuditRemarks DDL1 = new Dropdown_AuditRemarks();
-            DDL1.text = "3. Mistake in Party";
-            DDL1.value = "3. Mistake in Party";
+            DDL1.text = "3. Billwise Adjustment";
+            DDL1.value = "3. Billwise Adjustment";
             DDL.Add(DDL1);
+            Dropdown_AuditRemarks DDL5 = new Dropdown_AuditRemarks();
+            DDL5.text = "4. Account Head Corrections";
+            DDL5.value = "4. Account Head Corrections";
+            DDL.Add(DDL5);
             Dropdown_AuditRemarks DDL4 = new Dropdown_AuditRemarks();
             DDL4.text = "0. Any Other";
             DDL4.value = "0. Any Other";

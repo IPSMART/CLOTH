@@ -480,7 +480,7 @@ namespace Improvar.Controllers
                 return null;
             }
         }
-
+        
         public ActionResult ModifyLogDetail(string autono, string schema)
         { //called from every view Page
             try
@@ -522,10 +522,13 @@ namespace Improvar.Controllers
                 sql += " select 'AUTH'||decode(a.slno,1,'','-'||to_char(a.slno)) emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_auth a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
-                sql += " union " + Environment.NewLine;
-                sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem " + Environment.NewLine;
-                sql += " from " + dbnm + ".t_txnstatus a " + Environment.NewLine;
-                sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
+                if (Module.MODULE != "PAYROLL")
+                {
+                    sql += " union " + Environment.NewLine;
+                    sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem " + Environment.NewLine;
+                    sql += " from " + dbnm + ".t_txnstatus a " + Environment.NewLine;
+                    sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
+                }
                 sql += " ) a,  " + Environment.NewLine;
                 sql += " user_appl b where a.usr_id = b.user_id(+) " + Environment.NewLine;
                 sql += " order by usr_entdt desc " + Environment.NewLine;
@@ -543,7 +546,7 @@ namespace Improvar.Controllers
                     DTL.LM_REM = tbl.Rows[i]["LM_REM"].ToString();
                     if (DTL.LM_REM.retStr() != "" && DTL.LM_REM.retStr().Length > 3)
                     {
-                        if (DTL.LM_REM.retStr().Remove(3) == "1. " || DTL.LM_REM.retStr().Remove(3) == "2. " || DTL.LM_REM.retStr().Remove(3) == "3. ")
+                        if (DTL.LM_REM.retStr().Remove(3) == "1. " || DTL.LM_REM.retStr().Remove(3) == "2. " || DTL.LM_REM.retStr().Remove(3) == "3. " || DTL.LM_REM.retStr().Remove(3) == "4. ")
                         {
                             DTL.LM_REM = DTL.LM_REM.Substring(3);
                         }
