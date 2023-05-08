@@ -406,9 +406,9 @@ namespace Improvar.Controllers
                                         VE.GSTNO = subleg.GSTNO;
                                         VE.PSLCD = subleg.PSLCD;
                                         VE.PARTYCD = subleg.PARTYCD;
-                                        VE.TCSAPPL = subleg.TCSAPPL;
-                                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
-                                        VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
+                                        //VE.TCSAPPL = subleg.TCSAPPL;
+                                        //if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                                        //VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
                                         string panno = subleg.PANNO;
 
                                         string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
@@ -416,6 +416,10 @@ namespace Improvar.Controllers
                                         var party_data = salesfunc.GetSlcdDetails(TTXN.SLCD.retStr(), TTXN.DOCDT.retStr().Remove(10), "", DOCTAG, bltype);
                                         if (party_data != null && party_data.Rows.Count > 0)
                                         {
+                                            VE.TCSAPPL = party_data.Rows[0]["TCSAPPL"].retStr();
+                                            if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                                            VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
+
                                             string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
                                             VE.SLDISCDESC = (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
                                             TTXNOTH.TAXGRPCD = party_data.Rows[0]["TAXGRPCD"].retStr();
@@ -640,9 +644,9 @@ namespace Improvar.Controllers
                     VE.GSTNO = subleg.GSTNO;
                     VE.PSLCD = subleg.PSLCD;
                     VE.PARTYCD = subleg.PARTYCD;
-                    VE.TCSAPPL = subleg.TCSAPPL;
-                    if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
-                    VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
+                    //VE.TCSAPPL = subleg.TCSAPPL;
+                    //if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                    //VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
                     panno = subleg.PANNO;
 
                     string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
@@ -652,6 +656,10 @@ namespace Improvar.Controllers
                     {
                         string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
                         VE.SLDISCDESC = (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
+
+                        VE.TCSAPPL = party_data.Rows[0]["TCSAPPL"].retStr();
+                        if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                        VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
                     }
                 }
 
