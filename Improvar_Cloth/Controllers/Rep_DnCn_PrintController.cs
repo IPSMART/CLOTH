@@ -1585,6 +1585,15 @@ namespace Improvar.Controllers
                 sql += "a.autono=b.autono and a.autono=c.autono order by a.autono,a.slno ";
                 rsStkPrcDesc = masterHelp.SQLquery(sql);
 
+                //DataTable LinkDocnos;
+                //sql = "";
+                //sql = "select distinct cc.autono";
+                //sql += ",bb.docno ,to_char(bb.docdt, 'dd/mm/yyyy')docdt,cc.itcd,cc.slno from " + Scm1 + ".T_JBILLDTL cc, " + Scm1 + ".t_txn_linkno aa, " + Scm1 + ".t_cntrl_hdr bb ";
+                //sql += "where cc.autono = aa.autono and aa.linkautono = bb.autono";
+                //sql += " order by cc.autono,cc.slno";
+                //LinkDocnos = masterHelp.SQLquery(sql);
+
+
                 string blterms = "", inspoldesc = "", dealsin = "";
                 Int16 bankslno = 0;
                 sql = "select blterms, inspoldesc, dealsin, nvl(bankslno,0) bankslno from " + Scm1 + ".m_mgroup_spl where compcd='" + CommVar.Compcd(UNQSNO) + "' ";
@@ -1840,6 +1849,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("jobnm", typeof(string), "");
                 IR.Columns.Add("chlno", typeof(string), "");
                 IR.Columns.Add("chldt", typeof(string), "");
+                //IR.Columns.Add("chlno1", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2342,6 +2352,10 @@ namespace Improvar.Controllers
                             dr1["jobnm"] = tbl.Rows[i]["jobnm"].ToString();
                             dr1["chlno"] = tbl.Rows[i]["linkdocno"].ToString();
                             dr1["chldt"] = tbl.Rows[i]["linkdocdt"].ToString();
+                            //var itcdd= tbl.Rows[i]["itcd"].ToString();
+                            //var chalan_data = LinkDocnos.Select("autono='" + auto1 + "' and slno = " + tbl.Rows[i]["slno"].ToString()).ToList().CopyToDataTable();
+                            //var ss =(from DataRow dr in chalan_data.Rows select dr["docno"].retStr()).ToList();
+                            //dr1["chlno1"] = string.Join(",", ss).ToString();
 
                             dr1["revchrg"] = "N";
                             dr1["roamt"] = tbl.Rows[i]["roamt"] == DBNull.Value ? 0 : tbl.Rows[i]["roamt"].retDbl();
