@@ -1525,6 +1525,7 @@
     <Content Include="Views\Shared\_T_StockAdj_Mob_Main.cshtml" />
     <Content Include="Views\PhyStockPrint\PhyStockPrint.cshtml" />
     <Content Include="Views\Shared\_T_StockAdj_Popup.cshtml" />
+    <Content Include="Views\Shared\_M_FinProduct_Upload.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

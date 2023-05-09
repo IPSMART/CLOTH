@@ -24,6 +24,8 @@ namespace Improvar.ViewModels
         public string BARNO { get; set; }
         public string PURGLCD { get; set; }
         public string ErrMsg { get; set; }
+        public long M_AUTONO { get; set; }
+
     }
     public class DUpGrid
     {

@@ -13,6 +13,9 @@ using System.Web.Mvc;
 using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
 using Oracle.ManagedDataAccess.Client;
+using System.Web;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace Improvar.Controllers
 {
@@ -1850,7 +1853,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), VE.Audit_REM);
 
                         if (VE.DefaultAction == "A")
                         {
@@ -1964,7 +1967,7 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", VE.M_SITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),VE.Audit_REM);
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", VE.M_SITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), VE.Audit_REM);
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         string sbarno = getmasterbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
@@ -2047,10 +2050,20 @@ namespace Improvar.Controllers
 
         }
         [HttpPost]
-        public ActionResult M_FINProduct(FormCollection FC, ItemMasterEntry VE)
+        public ActionResult M_FINProduct(FormCollection FC, ItemMasterEntry VE, string Command = "")
         {
             try
             {
+                if (Command == "Download Template")
+                {
+                    string resp = DownloadTemplate(VE);
+                    return Content(resp);
+                }
+                else if (Command.Contains("Upload"))
+                {
+                    string resp = Item_Upload(VE, FC);
+                    return Content(resp);
+                }
                 //string scm1 = CommVar.CurSchema(UNQSNO).ToString();
                 //DataTable dt = new DataTable("Rep_BarcodeImage");
                 //dt.Columns.Add("BARNO", typeof(string));
@@ -2189,7 +2202,7 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-        public ActionResult SavePreviousYrData(ItemMasterEntry VE, FormCollection FC)
+        public dynamic SavePreviousYrData(ItemMasterEntry VE, FormCollection FC, string Tag = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             ImprovarDB DB_PREVYR = new ImprovarDB(Cn.GetConnectionString(), CommVar.LastYearSchema(UNQSNO));
@@ -2217,7 +2230,7 @@ namespace Improvar.Controllers
                     if (PSL == null)
                     {
                         var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.LastYearSchema(UNQSNO));
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", AUTONO_PREVYR, "A", CommVar.LastYearSchema(UNQSNO), VE.Audit_REM);
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
                         M_SITEM MSUBLEG_PREVYR = new M_SITEM();
@@ -2248,7 +2261,7 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO),VE.Audit_REM);
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", PSL.M_AUTONO.retInt(), "E", CommVar.LastYearSchema(UNQSNO), VE.Audit_REM);
                         DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                         DB_PREVYR.SaveChanges();
 
@@ -2334,7 +2347,10 @@ namespace Improvar.Controllers
                         ModelState.Clear();
                         transaction.Commit();
                     }
-
+                    if (Tag != "")
+                    {
+                        return "1";
+                    }
                     return Content("1");
                 }
 
@@ -2344,9 +2360,271 @@ namespace Improvar.Controllers
                     transaction.Rollback();
                     ModelState.Clear();
                     Cn.SaveException(ex, "");
+                    if (Tag != "")
+                    {
+                        return ex.Message + " " + ex.InnerException;
+                    }
                     return Content(ex.Message + " " + ex.InnerException);
                 }
             }
+        }
+        public string DownloadTemplate(ItemMasterEntry VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                string MNUP = VE.MENU_PARA; string nm = "";
+                switch (MNUP)
+                {
+                    case "F":
+                        nm = "Finish Product/Design"; break;
+                    case "C":
+                        nm = "Fabric Item"; break;
+                    case "A":
+                        nm = "Accessories / Other Items"; break;
+                    default: ViewBag.formname = ""; break;
+                }
+                //DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO RATE(Cp)    MRP PRATE   RP JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
+
+                string Excel_Header = "DESIGN" + "|" + "ITEM GROUP" + "|" + "ITEM NAME" + "|" + "UOM" + "|" + "HSN CODE" + "|" + "FAB ITNM"
+                    + "|" + "BARNO" + "|" + "RATE" + "|" + "MRP" + " |" + "PRATE" + "|" + "RP" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
+                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|";
+
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    string[] Header = Excel_Header.Split('|');
+                    for (int i = 0; i < Header.Length; i++)
+                    {
+                        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                    }
+                }
+                wsSheet1.Cells[1, 1, 1, 17].AutoFitColumns();
+
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + nm + ".xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
+                return "Download Sucessfull";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return ex.Message + ex.InnerException + "  ";
+            }
+        }
+        public string Item_Upload(ItemMasterEntry VE, FormCollection FC)
+        {
+
+            string msg = ""; string MESSAGE = "";
+            try
+            {
+                Cn.getQueryString(VE);
+                if (Request.Files.Count == 0) return "No File Selected";
+                HttpPostedFileBase file = Request.Files[0];
+                if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return ".xlsx file need to choose";
+                Stream stream = file.InputStream;
+                // Excel Columns: DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO RATE(Cp)    MRP PRATE   RP JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
+
+                DataTable dbfdt = new DataTable();
+                dbfdt.Columns.Add("Sl", typeof(int));
+                dbfdt.Columns.Add("DESIGN", typeof(string));
+                dbfdt.Columns.Add("ITEM GROUP", typeof(string));
+                dbfdt.Columns.Add("ITEM NAME", typeof(string));
+                dbfdt.Columns.Add("UOM", typeof(string));
+                dbfdt.Columns.Add("HSN CODE", typeof(string));
+                dbfdt.Columns.Add("FAB ITNM", typeof(string));
+                dbfdt.Columns.Add("BARNO", typeof(string));
+                dbfdt.Columns.Add("RATE", typeof(string));
+                dbfdt.Columns.Add("MRP", typeof(string));
+                dbfdt.Columns.Add("PRATE", typeof(string));
+                dbfdt.Columns.Add("RP", typeof(string));
+                dbfdt.Columns.Add("JOBPRATE", typeof(string));
+                dbfdt.Columns.Add("JOBSRATE", typeof(string));
+                dbfdt.Columns.Add("IGST", typeof(string));
+                dbfdt.Columns.Add("RNO", typeof(string));
+                dbfdt.Columns.Add("ITLEGACYCD", typeof(string));
+                dbfdt.Columns.Add("LEGACYCD", typeof(string));
+                using (var package = new ExcelPackage(stream))
+                {
+                    var currentSheet = package.Workbook.Worksheets;
+                    var workSheet = currentSheet.First();
+                    var noOfCol = workSheet.Dimension.End.Column;
+                    var noOfRow = workSheet.Dimension.End.Row;
+                    int rowNum = 2;
+                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+                    {
+                        if (workSheet.Cells[rowNum, 1].Value.retStr() != "")
+                        {
+                            DataRow dr = dbfdt.NewRow();
+                            dr["Sl"] = rowNum;
+                            var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
+                            for (int colnum = 1; colnum <= noOfCol; colnum++)
+                            {
+                                string colname = workSheet.Cells[1, colnum].Value.retStr().Trim();
+                                string colValue = workSheet.Cells[rowNum, colnum].Value.retStr().Trim();
+                                try
+                                {
+                                    if (colname == "") continue;
+                                    dr[colname] = colValue;
+                                }
+                                catch (ArgumentException ex)
+                                {
+                                    return "Wrong ColumnName:" + colname + " Error:" + ex.Message;
+                                }
+                            }
+                            dbfdt.Rows.Add(dr);
+                        }
+                    }
+                }
+
+                int excelrow = 1;
+                DateTime dt = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-365);
+                string effdt = dt.retDateStr();
+
+                foreach (DataRow oudr in dbfdt.Rows)
+                {
+                    string docno = "";
+                    ++excelrow; msg = "<br/><br/> Excelrow:" + excelrow + " ";
+                    string DESIGN = oudr["DESIGN"].retStr();
+                    string GRPNM = oudr["ITEM GROUP"].retStr();
+                    string ITNM = oudr["ITEM NAME"].retStr();
+                    string UOM = oudr["UOM"].retStr();
+                    string HSNCODE = oudr["HSN CODE"].retStr();
+                    string FABITNM = oudr["FAB ITNM"].retStr();
+                    string BARNO = oudr["BARNO"].retStr();
+                    double RATE = oudr["RATE"].retDbl();
+                    string MRP = oudr["MRP"].retStr();
+                    string PRATE = oudr["PRATE"].retStr();
+                    string RP = oudr["RP"].retStr();
+                    string JOBPRATE = oudr["JOBPRATE"].retStr();
+                    string JOBSRATE = oudr["JOBSRATE"].retStr();
+                    double IGST = oudr["IGST"].retDbl();
+                    string RNO = oudr["RNO"].retStr();
+                    string ITLEGACYCD = oudr["ITLEGACYCD"].retStr();
+                    string LEGACYCD = oudr["LEGACYCD"].retStr();
+
+                    string itgrptype = "";
+                    if (VE.MENU_PARA == "C")//Fabric Item
+                    {
+                        itgrptype = "C";
+
+                    }
+                    else if (VE.MENU_PARA == "F")//Finish Product/Design
+                    {
+                        itgrptype = "F";
+                    }
+                    else
+                    {
+                        itgrptype = "A";
+                    }
+                    bool flag = true;
+                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                    var query = (from c in DB.M_SITEM
+                                 where (c.STYLENO.Trim() == DESIGN)
+                                 select c);
+                    if (query.Any())
+                    {
+                        MESSAGE += msg + "Design (" + DESIGN + ") Number Already Exists : Please Enter a Different Design Number !!";
+                        flag = false;
+                    }
+
+                    var query1 = (from c in DB.M_GROUP
+                                  where (c.ITGRPNM.ToUpper() == GRPNM && c.ITGRPTYPE == itgrptype)
+                                  select c);
+                    if (!query1.Any())
+                    {
+                        MESSAGE += msg + "Please Create Group (" + GRPNM + ") Group Type : " + itgrptype;
+                        flag = false;
+                    }
+
+                    if (flag == true)
+                    {
+                        ItemDet ItemDet = new ItemDet();
+                        if (VE.MENU_PARA == "C")//Fabric Item
+                        {
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST);
+
+                        }
+                        else if (VE.MENU_PARA == "F")//Finish Product/Design
+                        {
+                            string fabitcd = "";
+                            if (FABITNM != "")
+                            {
+                                fabitcd = getFABITCD(FABITNM);
+                                if (fabitcd == "")
+                                {
+                                    MESSAGE += msg + "Please add Fabric Item:(" + FABITNM + ") ";
+                                    continue;
+                                }
+                            }
+
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST);
+                        }
+                        else//Accessories / Other Items
+                        {
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST);
+                        }
+                        if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
+                        {
+                            MESSAGE += msg + "Please add style:(" + DESIGN + ") at Item Master Manually because master transfer done in next year . ";
+                        }
+                        else if (ItemDet.ErrMsg.retStr() != "")
+                        {
+                            MESSAGE += msg + ItemDet.ErrMsg;
+                        }
+                        else
+                        {
+                            string msgrate = "";
+                            if (RATE != 0)
+                            {
+                                string tempmsg = salesfunc.CreatePricelist(ItemDet.BARNO, effdt, RATE, 0, 0);
+                                if (tempmsg != "ok") msgrate = "<br/>" + tempmsg;
+                            }
+                            string msgprev = "";
+                            if (msgrate == "" && CommVar.LastYearSchema(UNQSNO) != "")
+                            {
+                                VE.M_SITEM.ITCD = ItemDet.ITCD;
+                                VE.M_SITEM.M_AUTONO = ItemDet.M_AUTONO;
+                                VE.PRICES_EFFDT = effdt;
+                                string tempmsg = SavePreviousYrData(VE, FC, "Upload");
+                                if (tempmsg != "1") msgprev = "<br/>" + tempmsg;
+
+                            }
+                            MESSAGE += msg + "Success itcd :" + ItemDet.ITCD + " Design No : " + DESIGN + msgrate + msgprev;
+                        }
+                    }
+
+
+                }
+
+            }//try
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, msg);
+                return ex.Message + " at " + msg;
+            }
+            return "Excel Uploaded Successfully Current Year and last year !! <br/>" + MESSAGE;
+        }
+        private string getFABITCD(string fabitnm)
+        {
+            string sql = "select a.itcd from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM a," + CommVar.CurSchema(UNQSNO) + ".M_GROUP b  where a.ITGRPCD=b.ITGRPCD and b.ITGRPTYPE='C' ";
+            if (fabitnm != "") sql += " and upper(a.itnm)='" + fabitnm.Trim().ToUpper() + "'";
+            var dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["itcd"].ToString();
+            }
+            return "";
         }
 
     }

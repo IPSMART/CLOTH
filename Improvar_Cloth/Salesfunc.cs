@@ -2551,6 +2551,8 @@ namespace Improvar
                 ItemDet.ITCD = MSITEM.ITCD;
                 ItemDet.BARNO = TBATCHMST.BARNO;
                 ItemDet.PURGLCD = MGROUP.PURGLCD;
+                ItemDet.M_AUTONO = MSITEM.M_AUTONO;
+
                 OraCon.Dispose();
                 return ItemDet;
             }
