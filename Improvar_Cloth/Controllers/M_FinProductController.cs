@@ -2493,7 +2493,6 @@ namespace Improvar.Controllers
 
                 foreach (DataRow oudr in dbfdt.Rows)
                 {
-                    string docno = "";
                     ++excelrow; msg = "<br/><br/> Excelrow:" + excelrow + " ";
                     string DESIGN = oudr["DESIGN"].retStr();
                     string GRPNM = oudr["ITEM GROUP"].retStr();
