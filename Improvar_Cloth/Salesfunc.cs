@@ -58,20 +58,35 @@ namespace Improvar
             if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
             if (bltype.retStr() != "") sql += "and e.bltype in (" + bltype + ") ";
             sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper ";
-            if (CommVar.LastYearSchema(UNQSNO) != "")
+            for (int a = 0; a < 2; a++)
             {
-                sql += "union all ";
-                sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, listdiscper, ";
-                sql += "row_number() over(partition by b.slcd order by c.docdt desc) as rn ";
-                sql += "from " + CommVar.LastYearSchema(UNQSNO) + ".t_txndtl a, " + CommVar.LastYearSchema(UNQSNO) + ".t_txn b, " + CommVar.LastYearSchema(UNQSNO) + ".t_cntrl_hdr c, " + CommVar.FinSchemaPrevYr(UNQSNO) + ".m_subleg d, " + CommVar.LastYearSchema(UNQSNO) + ".t_txnoth e ";
-                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and listdiscper<>0 and b.autono=e.autono(+) and  ";
-                if (docdt != "") sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') and ";
-                //sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
-                sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
-                if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
-                if (bltype.retStr() != "") sql += "and e.bltype in (" + bltype + ") ";
-                sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper ";
+                string prevscm = "", prevscmf = "";
+                if (a == 0)
+                {
+                    prevscm = CommVar.LastYearSchema(UNQSNO);
+                    prevscmf = CommVar.FinSchemaPrevYr(UNQSNO);
+                }
+                else
+                {
+                    prevscm = PrevSchema(CommVar.LastYearSchema(UNQSNO));
+                    prevscmf = PrevSchema(CommVar.FinSchemaPrevYr(UNQSNO), "FIN_COMPANY");
+                }
+                if (prevscm.retStr() != "")
+                {
+                    sql += "union all ";
+                    sql += "select b.slcd, c.docdt, a.scmdiscrate, scmdisctype, listdiscper, ";
+                    sql += "row_number() over(partition by b.slcd order by c.docdt desc) as rn ";
+                    sql += "from " + prevscm + ".t_txndtl a, " + prevscm + ".t_txn b, " + prevscm + ".t_cntrl_hdr c, " + prevscmf + ".m_subleg d, " + prevscm + ".t_txnoth e ";
+                    sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.slcd = d.slcd(+) and listdiscper<>0 and b.autono=e.autono(+) and  ";
+                    if (docdt != "") sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') and ";
+                    //sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' and b.doctag in ('SB') ";
+                    sql += "c.compcd='" + COM + "' and d.slcd = '" + slcd + "' ";
+                    if (doctag.retStr() != "") sql += "and b.doctag in (" + doctag + ") ";
+                    if (bltype.retStr() != "") sql += "and e.bltype in (" + bltype + ") ";
+                    sql += "group by b.slcd, c.docdt, a.scmdiscrate,a.scmdisctype,a.listdiscper ";
+                }
             }
+
             sql += ") where rn = 1 ) y, ";
 
 
@@ -890,7 +905,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock=false)
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -2417,7 +2432,7 @@ namespace Improvar
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
                     //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),"");
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), "");
                     var dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -2533,7 +2548,7 @@ namespace Improvar
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
                     //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString(),"");
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), "");
                     var dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -2602,7 +2617,7 @@ namespace Improvar
                 return ex.Message;
             }
         }
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false,bool skipNegetivStock = false)
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false)
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
@@ -3043,7 +3058,7 @@ namespace Improvar
                         MSIZE.PRINT_SEQ = "0";
 
                         //M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString());
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString(),"");
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SIZE", MSIZE.M_AUTONO, "A", CommVar.CurSchema(UNQSNO).ToString(), "");
                         string dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                         var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3170,6 +3185,46 @@ namespace Improvar
 
             DataTable tbl = masterHelpFa.SQLquery(sql);
             return tbl;
+        }
+        public string PrevSchema(string CurrSchema, string comp_table = "")
+        {
+            try
+            {
+                if (comp_table == "")
+                {
+                    switch (Module.MODULE)
+                    {
+                        case "FINANCE":
+                            comp_table = "FIN_COMPANY";
+                            break;
+                        case "SALES":
+                            comp_table = "SD_COMPANY";
+                            break;
+                        case "PAYROLL":
+                            comp_table = "PAY_COMPANY";
+                            break;
+                        case "INVENTORY":
+                            comp_table = "INV_COMPANY";
+                            break;
+                    }
+                }
+                string sql = "select distinct PREV_SCHEMA from improvar." + comp_table + " ";
+                sql += "where SCHEMA_NAME = '" + CurrSchema + "' and compcd='" + CommVar.Compcd(UNQSNO) + "' and loccd ='" + CommVar.Loccd(UNQSNO) + "' ";
+                DataTable dt = masterHelpFa.SQLquery(sql);
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    return dt.Rows[0]["PREV_SCHEMA"].retStr();
+                }
+                else
+                {
+                    return "";
+                }
+
+            }
+            catch
+            {
+                return "";
+            }
         }
 
     }

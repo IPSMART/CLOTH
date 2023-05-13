@@ -936,7 +936,7 @@ namespace Improvar.Controllers
                 }
                 DataTable syscnfgdata = salesfunc.GetSyscnfgData(TXN.DOCDT.retDateStr());
                 var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
-               
+
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
@@ -3198,66 +3198,79 @@ namespace Improvar.Controllers
                 sql += "where x.prodgrpcd=y.prodgrpcd(+) and x.barno=z.barno(+) ";
 
                 #region lastyr data
-                if (CommVar.LastYearSchema(UNQSNO) != "")
+                for (int a = 0; a < 2; a++)
                 {
-                    string scm_prevyr = CommVar.LastYearSchema(UNQSNO), scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
-                    sql += "union all ";
-                    sql += "select x.SLNO,x.TXNSLNO,x.ITGRPCD,x.ITGRPNM,x.BARGENTYPE,x.MTRLJOBCD,x.MTRLJOBNM,x.MTBARCODE,x.ITCD,x.ITNM,x.UOMCD,x.STYLENO,x.PARTCD,x.PARTNM, ";
-                    sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
-                    sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
-                    sql += ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                    sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd from";
+                    string scm_prevyr = "", scmf_prevyr = "";
+                    if (a == 0)
+                    {
+                        scm_prevyr = CommVar.LastYearSchema(UNQSNO);
+                        scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+                    }
+                    else
+                    {
+                        scm_prevyr = salesfunc.PrevSchema(CommVar.LastYearSchema(UNQSNO));
+                        scmf_prevyr = salesfunc.PrevSchema(CommVar.FinSchemaPrevYr(UNQSNO), "FIN_COMPANY");
+                    }
+                    if (scm_prevyr.retStr() != "")
+                    {
+                        sql += "union all ";
+                        sql += "select x.SLNO,x.TXNSLNO,x.ITGRPCD,x.ITGRPNM,x.BARGENTYPE,x.MTRLJOBCD,x.MTRLJOBNM,x.MTBARCODE,x.ITCD,x.ITNM,x.UOMCD,x.STYLENO,x.PARTCD,x.PARTNM, ";
+                        sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
+                        sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
+                        sql += ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
+                        sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd from";
 
-                    sql += "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
-                    sql += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
-                    sql += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
-                    sql += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
-                    sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
-                    sql += ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK,v.agslcd,v.sagslcd ";
-                    //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
-                    sql += "from " + scm_prevyr + ".T_BATCHDTL i, " + scm_prevyr + ".T_BATCHMST j, " + scm_prevyr + ".M_SITEM k, " + scm_prevyr + ".M_SIZE l, " + scm_prevyr + ".M_COLOR m, ";
-                    sql += scm_prevyr + ".M_GROUP n," + scm_prevyr + ".M_MTRLJOBMST o," + scm_prevyr + ".M_PARTS p," + scm_prevyr + ".M_STKTYPE q," + scm_prevyr + ".T_CNTRL_HDR r ";
-                    sql += "," + scm_prevyr + ".T_TXNDTL s," + scm_prevyr + ".T_TXN t, " + scm_prevyr + ".M_SITEM u," + scm_prevyr + ".T_TXNOTH v ";
-                    sql += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-                    sql += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+) ";
-                    sql += "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+)and t.autono=v.autono(+) ";
-                    sql += "and t.doctag in('" + doctag + "')  ";
-                    if (R_DOCNO.retStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
-                    //if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
-                    if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
-                    if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
-                    if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
-                    sql += ")x, ";
+                        sql += "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
+                        sql += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
+                        sql += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
+                        sql += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
+                        sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                        sql += ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK,v.agslcd,v.sagslcd ";
+                        //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
+                        sql += "from " + scm_prevyr + ".T_BATCHDTL i, " + scm_prevyr + ".T_BATCHMST j, " + scm_prevyr + ".M_SITEM k, " + scm_prevyr + ".M_SIZE l, " + scm_prevyr + ".M_COLOR m, ";
+                        sql += scm_prevyr + ".M_GROUP n," + scm_prevyr + ".M_MTRLJOBMST o," + scm_prevyr + ".M_PARTS p," + scm_prevyr + ".M_STKTYPE q," + scm_prevyr + ".T_CNTRL_HDR r ";
+                        sql += "," + scm_prevyr + ".T_TXNDTL s," + scm_prevyr + ".T_TXN t, " + scm_prevyr + ".M_SITEM u," + scm_prevyr + ".T_TXNOTH v ";
+                        sql += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
+                        sql += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+) ";
+                        sql += "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+)and t.autono=v.autono(+) ";
+                        sql += "and t.doctag in('" + doctag + "')  ";
+                        if (R_DOCNO.retStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
+                        //if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
+                        if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
+                        if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
+                        if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
+                        sql += ")x, ";
 
-                    sql += "(select a.prodgrpcd, ";
-                    //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
-                    sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
-                    sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
-                    sql += "from ";
-                    sql += "(select prodgrpcd, effdt from ";
-                    sql += "(select a.prodgrpcd, a.effdt, ";
-                    sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
-                    sql += "from " + scm_prevyr + ".m_prodtax a ";
-                    if (TDT.retDateStr() != "") sql += "where a.effdt <= to_date('" + TDT + "','dd/mm/yyyy')  ";
-                    sql += ")where rn=1 ) a, " + scm_prevyr + ".m_prodtax b ";
-                    sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + TAXGRPCD + "' ";
-                    sql += "group by a.prodgrpcd ) y, ";
+                        sql += "(select a.prodgrpcd, ";
+                        //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+                        sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
+                        sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
+                        sql += "from ";
+                        sql += "(select prodgrpcd, effdt from ";
+                        sql += "(select a.prodgrpcd, a.effdt, ";
+                        sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
+                        sql += "from " + scm_prevyr + ".m_prodtax a ";
+                        if (TDT.retDateStr() != "") sql += "where a.effdt <= to_date('" + TDT + "','dd/mm/yyyy')  ";
+                        sql += ")where rn=1 ) a, " + scm_prevyr + ".m_prodtax b ";
+                        sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + TAXGRPCD + "' ";
+                        sql += "group by a.prodgrpcd ) y, ";
 
-                    sql += "(select a.barno, count(*) barimagecount,";
-                    sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
-                    sql += "within group (order by a.barno) as barimage from ";
-                    sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-                    sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-                    sql += "from " + scm_prevyr + ".t_batch_img_hdr a ";
-                    sql += "union ";
-                    sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-                    sql += "from " + scm_prevyr + ".t_batch_img_hdr_link a, " + scm_prevyr + ".t_batch_img_hdr b ";
-                    sql += "where a.mainbarno=b.barno(+) ) a, ";
-                    sql += "" + scm_prevyr + ".t_batch_img_hdr b ";
-                    sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
-                    sql += "group by a.barno ) z ";
+                        sql += "(select a.barno, count(*) barimagecount,";
+                        sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
+                        sql += "within group (order by a.barno) as barimage from ";
+                        sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+                        sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+                        sql += "from " + scm_prevyr + ".t_batch_img_hdr a ";
+                        sql += "union ";
+                        sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+                        sql += "from " + scm_prevyr + ".t_batch_img_hdr_link a, " + scm_prevyr + ".t_batch_img_hdr b ";
+                        sql += "where a.mainbarno=b.barno(+) ) a, ";
+                        sql += "" + scm_prevyr + ".t_batch_img_hdr b ";
+                        sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
+                        sql += "group by a.barno ) z ";
 
-                    sql += "where x.prodgrpcd=y.prodgrpcd(+) and x.barno=z.barno(+) ";
+                        sql += "where x.prodgrpcd=y.prodgrpcd(+) and x.barno=z.barno(+) ";
+                    }
                 }
                 #endregion
                 sql += ") a order by a.docdt, a.docno,a.txnslno ";
@@ -4303,8 +4316,8 @@ namespace Improvar.Controllers
                 string str = "", caption = "";
                 string scm = CommVar.CurSchema(UNQSNO);
                 string scmf = CommVar.FinSchema(UNQSNO);
-                string scm_prevyr = CommVar.LastYearSchema(UNQSNO);
-                string scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+                //string scm_prevyr = CommVar.LastYearSchema(UNQSNO);
+                //string scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
                 string sql = "";
                 if (Comesfrom == "A")
                 {
@@ -4313,11 +4326,25 @@ namespace Improvar.Controllers
 
                     sql += "select * from (select * from ( select a.autono,b.agslcd slcd,c.slnm from " + scm + ".t_txn a," + scm + ".t_txnoth b," + scmf + ".m_subleg c ";
                     sql += "where a.autono=b.autono(+) and b.agslcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.agslcd is not null ";
-                    if (CommVar.LastYearSchema(UNQSNO) != "")
+                    for (int a = 0; a < 2; a++)
                     {
-                        sql += "union all ";
-                        sql += "select a.autono,b.agslcd slcd,c.slnm from " + scm_prevyr + ".t_txn a," + scm_prevyr + ".t_txnoth b," + scmf_prevyr + ".m_subleg c ";
-                        sql += "where a.autono=b.autono(+) and b.agslcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.agslcd is not null ";
+                        string scm_prevyr = "", scmf_prevyr = "";
+                        if (a == 0)
+                        {
+                            scm_prevyr = CommVar.LastYearSchema(UNQSNO);
+                            scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+                        }
+                        else
+                        {
+                            scm_prevyr = salesfunc.PrevSchema(CommVar.LastYearSchema(UNQSNO));
+                            scmf_prevyr = salesfunc.PrevSchema(CommVar.FinSchemaPrevYr(UNQSNO), "FIN_COMPANY");
+                        }
+                        if (scm_prevyr.retStr() != "")
+                        {
+                            sql += "union all ";
+                            sql += "select a.autono,b.agslcd slcd,c.slnm from " + scm_prevyr + ".t_txn a," + scm_prevyr + ".t_txnoth b," + scmf_prevyr + ".m_subleg c ";
+                            sql += "where a.autono=b.autono(+) and b.agslcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.agslcd is not null ";
+                        }
                     }
                     sql += ")order by autono desc)  where rownum=1  ";
 
@@ -4330,11 +4357,25 @@ namespace Improvar.Controllers
 
                     sql += "select * from (select * from ( select a.autono,b.translcd slcd,c.slnm from " + scm + ".t_txn a," + scm + " .t_txntrans b," + scmf + ".m_subleg c ";
                     sql += "where a.autono=b.autono(+) and b.translcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.translcd is not null  ";
-                    if (CommVar.LastYearSchema(UNQSNO) != "")
+                    for (int a = 0; a < 2; a++)
                     {
-                        sql += "union all ";
-                        sql += "select a.autono,b.translcd slcd,c.slnm from " + scm_prevyr + ".t_txn a," + scm_prevyr + " .t_txntrans b," + scmf_prevyr + ".m_subleg c ";
-                        sql += "where a.autono=b.autono(+) and b.translcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.translcd is not null  ";
+                        string scm_prevyr = "", scmf_prevyr = "";
+                        if (a == 0)
+                        {
+                            scm_prevyr = CommVar.LastYearSchema(UNQSNO);
+                            scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+                        }
+                        else
+                        {
+                            scm_prevyr = salesfunc.PrevSchema(CommVar.LastYearSchema(UNQSNO));
+                            scmf_prevyr = salesfunc.PrevSchema(CommVar.FinSchemaPrevYr(UNQSNO), "FIN_COMPANY");
+                        }
+                        if (scm_prevyr.retStr() != "")
+                        {
+                            sql += "union all ";
+                            sql += "select a.autono,b.translcd slcd,c.slnm from " + scm_prevyr + ".t_txn a," + scm_prevyr + " .t_txntrans b," + scmf_prevyr + ".m_subleg c ";
+                            sql += "where a.autono=b.autono(+) and b.translcd=c.slcd(+) and a.slcd='" + Party + "' and a.doccd='" + Doccd + "' and  b.translcd is not null  ";
+                        }
                     }
                     sql += ")order by autono desc)  where rownum=1  ";
                     caption = "Transporter";
@@ -4679,7 +4720,7 @@ namespace Improvar.Controllers
                             {
                                 #region Negetive Stock Chking
                                 if (VE.MENU_PARA != "SR" && VE.MENU_PARA != "SBCMR" && VE.MENU_PARA != "PB" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.TBATCHDTL[i].QNTY != 0)
-                                { 
+                                {
                                     if (VE.TBATCHDTL[i].QNTY != 0)
                                     {
                                         var BALSTOCK = VE.TBATCHDTL[i].BALSTOCK.retDbl();
@@ -4694,8 +4735,8 @@ namespace Improvar.Controllers
                                             }
                                         }
                                     }
-                            }
-                                
+                                }
+
                                 #endregion
 
 
@@ -4968,7 +5009,7 @@ namespace Improvar.Controllers
                     //----------------------------------------------------------//
 
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl(),VE.Audit_REM);
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl(), VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = masterHelp.RetModeltoSql(TTXN, VE.DefaultAction);
@@ -5059,7 +5100,7 @@ namespace Improvar.Controllers
                     {
                         Cn.Create_DOCCD(UNQSNO, "F", TTXN.DOCCD);
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl(),VE.Audit_REM);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 0;
                         if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
@@ -5125,7 +5166,7 @@ namespace Improvar.Controllers
                         {
                             if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "")
                             {
-                             
+
 
                                 if (!(VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y"))
                                 {
@@ -6763,11 +6804,11 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI")
                     {
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null,null,null,null,null,VE.DISPBLAMT, VE.Audit_REM);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null, null, null, null, null, VE.DISPBLAMT, VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                     }
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null,null,null,null,null,VE.DISPBLAMT, VE.Audit_REM);
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null, null, null, null, null, VE.DISPBLAMT, VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 
