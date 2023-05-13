@@ -581,6 +581,7 @@ namespace Improvar.Controllers
                         DUGridlist.Add(dupgrid);
                         break;
                     }
+                    TMPVE.PSLCD = (from x in DBF.M_SUBLEG where x.SLCD == TTXN.SLCD select x.PSLCD).FirstOrDefault();
                     double igstper = oudr["INTEGR_TAX"].retDbl();
                     if (igstper == 0) { TTXNOTH.TAXGRPCD = "C001"; } else { TTXNOTH.TAXGRPCD = "I001"; }
                     TTXNOTH.PRCCD = "CP";
@@ -1479,6 +1480,7 @@ namespace Improvar.Controllers
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
                 TTXN.SLCD = VE.SLCD;
+                TMPVE.PSLCD = (from x in DBF.M_SUBLEG where x.SLCD == TTXN.SLCD select x.PSLCD).FirstOrDefault();
                 var stcode = VE.GSTNO.retStr().Substring(0, 2); bool igstappl = false;
                 if (stcode != "19") igstappl = true;
                 // freai j, pf=i,ins k
