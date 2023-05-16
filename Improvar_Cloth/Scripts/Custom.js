@@ -848,7 +848,7 @@ function OpenCheckRemarks() {
     document.getElementById("CHK_Remarks").focus();
 }
 function CHK_Remark_close() {
-    document.getElementById("CHK_Remarks").value = ""; 
+    document.getElementById("CHK_Remarks").value = "";
     document.getElementById("CHK_overlay").style.display = "none";
     document.getElementById("Authorise_overlay").style.display = "none";
 }
@@ -1373,20 +1373,38 @@ function closeDiv(id, flag) {
     if (flag == 1) {
         var servl = $("#SearchValue").val();
         var parkIDval = getQueryStringParameter("parkID");
+        var RemoveParamNm = getQueryStringParameter("RemoveParam");
+
         if (servl == "") {
-            if (typeof (parkIDval) == "undefined") {
+            if (typeof (RemoveParamNm) == "undefined" && typeof (parkIDval) == "undefined") {
                 location.reload();
             }
             else {
                 var crntLocation = document.location.href;
-                crntLocation = updateQueryStringParameter(crntLocation, "parkID", "");
+                crntLocation = decodeURIComponent(crntLocation);
+                if (typeof (parkIDval) !== "undefined") {
+                    crntLocation = updateQueryStringParameter(crntLocation, "parkID", "");
+                }
+                if (typeof (RemoveParamNm) !== "undefined") {
+                    var ViewLocation = crntLocation;
+
+                    var arrRemoveParamNm = RemoveParamNm.split("~");
+                    if (arrRemoveParamNm.length != null && arrRemoveParamNm.length > 0) {
+                        for (var i = 0; i <= arrRemoveParamNm.length - 1; i++) {
+                            var param = arrRemoveParamNm[i];
+                            var paramval = getQueryStringParameter(param);
+                            ViewLocation = ViewLocation.replace(param + "=" + paramval, "");
+                        }
+                    }
+                    ViewLocation = ViewLocation.replace("RemoveParam=" + RemoveParamNm, "");
+                    crntLocation = ViewLocation;
+                }
                 location.href = crntLocation;
             }
         }
         else {
             if (typeof (Storage) !== "undefined") {
                 var TEMPC = localStorage.getItem("ADDCONTROL");
-                var RemoveParamNm = getQueryStringParameter("RemoveParam");
                 if (TEMPC == "NOTAUTOADD") {
                     var crntLocation = document.location.href;
                     var ViewLocation = crntLocation.replace("op=A", "op=V");
@@ -1525,9 +1543,9 @@ function CloseZoomTextBoxModal() {
     $("#" + ZoomTextBoxModalId).focus();
 }
 var hlpblurval = "";
-function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formdata) {
+function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds, formdata) {
     debugger;
-    if($("#" + hlpfield).prop('readonly')) return true
+    if ($("#" + hlpfield).prop('readonly')) return true
     const keyName = event.key;
     const keyType = event.type;
     var blurvalue = "";
@@ -1771,7 +1789,7 @@ function entryAudit() {
     debugger;
     $('#DivAudit').show();
     document.getElementById("Audit_overlay").style.display = "block";
-    document.getElementById("Audit_Remarks").focus();
+    document.getElementById("AUDITREMARKSLIST").focus();
     return false;
 }
 function Audit_record_save(Action) {
@@ -1811,6 +1829,7 @@ function ChangeRemarks(id, rsnid) {
     var REMARKSLIST = $("#" + rsnid).val();
     if (REMARKSLIST == "0. Any Other") {
         $("#" + id).prop("readonly", false);
+        $("#" + id).focus();
     }
     else {
         $("#" + id).attr("readonly", "readonly");

@@ -116,16 +116,18 @@ namespace Improvar.Controllers
                                 T_PHYSTK_HDR TPHYSTKHDR = new T_PHYSTK_HDR();
                                 TPHYSTKHDR.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 TPHYSTKHDR.PRCCD = TempData["LASTPRCCD" + VE.MENU_PARA].retStr();
+                                string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
+
                                 TempData.Keep();
                                 string doccd = "";
                                 if (VE.DocumentType.Count() > 0)
                                 {
                                     doccd = VE.DocumentType.FirstOrDefault().value;
                                 }
-                                var T_PHYSTK_HDR = (from a in DB.T_PHYSTK_HDR where a.DOCCD == doccd select new { a.GOCD, a.PRCCD }).FirstOrDefault();
+                                var T_PHYSTK_HDR = (from a in DB.T_PHYSTK_HDR where a.DOCCD == doccd select new { a.GOCD, a.PRCCD, a.MERGEINDTL }).FirstOrDefault();
 
 
-                                if (TPHYSTKHDR.GOCD.retStr() == "")
+                                if (TPHYSTKHDR.GOCD.retStr() == "" && T_PHYSTK_HDR != null)
                                 {
                                     TPHYSTKHDR.GOCD = T_PHYSTK_HDR.GOCD;
                                 }
@@ -135,7 +137,7 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
 
-                                if (TPHYSTKHDR.PRCCD.retStr() == "")
+                                if (TPHYSTKHDR.PRCCD.retStr() == "" && T_PHYSTK_HDR != null)
                                 {
                                     TPHYSTKHDR.PRCCD = T_PHYSTK_HDR.PRCCD;
                                 }
@@ -145,7 +147,19 @@ namespace Improvar.Controllers
                                     VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == prccd).Select(b => b.PRCNM).FirstOrDefault();
                                 }
                                 VE.T_PHYSTK_HDR = TPHYSTKHDR;
-
+                                if (MERGEINDTL == "")
+                                {
+                                    if (T_PHYSTK_HDR != null)
+                                    {
+                                        MERGEINDTL = T_PHYSTK_HDR.MERGEINDTL;
+                                    }
+                                    if (MERGEINDTL == null || MERGEINDTL.retStr() == "")
+                                    {
+                                        VE.M_SYSCNFG = salesfunc.M_SYSCNFG(VE.T_CNTRL_HDR.DOCDT.retDateStr());
+                                        MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr();
+                                    }
+                                }
+                                VE.MERGEINDTL = MERGEINDTL.retStr() == "Y" ? true : false;
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
                                 UPL.DocumentType = Cn.DOC_TYPE();
@@ -230,6 +244,8 @@ namespace Improvar.Controllers
                 {
                     VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == TPH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
                 }
+                VE.MERGEINDTL = TPH.MERGEINDTL == "Y" ? true : false;
+
                 string scmf = CommVar.FinSchema(UNQSNO); string Scm = CommVar.CurSchema(UNQSNO);
                 //string sql = "";
                 //sql += " select a.prccd, a.prcnm ";
@@ -620,7 +636,7 @@ namespace Improvar.Controllers
 
                             TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_PHYSTK_HDR.GOCD;
                             TempData["LASTPRCCD" + VE.MENU_PARA] = VE.T_PHYSTK_HDR.PRCCD;
-
+                            TempData["LASTMERGEINDTL" + VE.MENU_PARA] = VE.MERGEINDTL == true ? "Y" : "N";
                         }
                         else
                         {
@@ -638,6 +654,8 @@ namespace Improvar.Controllers
                         TBHDR.GOCD = VE.T_PHYSTK_HDR.GOCD;
                         TBHDR.TREM = VE.T_PHYSTK_HDR.TREM;
                         TBHDR.PRCCD = VE.T_PHYSTK_HDR.PRCCD;
+                        TBHDR.MERGEINDTL = VE.MERGEINDTL == true ? "Y" : "N";
+
                         if (VE.DefaultAction == "E")
                         {
                             dbsql = MasterHelpFa.TblUpdt("T_PHYSTK", TBHDR.AUTONO, "E");
@@ -655,7 +673,7 @@ namespace Improvar.Controllers
 
                         //----------------------------------------------------------//
                         //dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl());
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl(),VE.Audit_REM);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -755,7 +773,7 @@ namespace Improvar.Controllers
 
 
                         //dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null,null,null,null,null, VE.T_CNTRL_HDR.DOCAMT.retDbl(), VE.Audit_REM);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null, null, null, null, null, VE.T_CNTRL_HDR.DOCAMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 

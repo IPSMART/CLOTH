@@ -289,13 +289,15 @@
         var BALEYR = $("#BALEYR").val();
         var LOCABIN = $("#LOCABIN").val();
         var ITREM = $("#ITREM").val();
-
+        var MERGEINDTL = document.getElementById("MERGEINDTL").checked;
         var slno = "";
-        var GridRowMain = $("#_T_PhyStock_GRID > tbody > tr").length;
-        for (j = 0; j <= GridRowMain - 1; j++) {
-            if (BARCODE == $("#B_BARNO_" + j).val() && retFloat(CUTLENGTH).toFixed(2) == retFloat($("#B_CUTLENGTH_" + j).val()).toFixed(2) && retFloat(RATE).toFixed(2) == retFloat($("#B_RATE_" + j).val()).toFixed(2)) {
-                slno = "B_SLNO_" + j;
+        if (MERGEINDTL == true) {
+            var GridRowMain = $("#_T_PhyStock_GRID > tbody > tr").length;
+            for (j = 0; j <= GridRowMain - 1; j++) {
+                if (BARCODE == $("#B_BARNO_" + j).val() && retFloat(CUTLENGTH).toFixed(2) == retFloat($("#B_CUTLENGTH_" + j).val()).toFixed(2) && retFloat(RATE).toFixed(2) == retFloat($("#B_RATE_" + j).val()).toFixed(2)) {
+                    slno = "B_SLNO_" + j;
 
+                }
             }
         }
         if (slno != "") {
@@ -883,6 +885,14 @@
                                 @Html.CheckBoxFor(model => model.AUTOADDROW, new { id = "AUTOADDROW" })
                             </div>
                         </div>
+                        <div class="col-md-1" style="width:auto;">
+                            <div class="editor-field" style="margin-top: 6px;">
+                                @Html.Label("", "Merge Same Item in Detail")
+                            </div>
+                        </div>
+                            <div class="DivMergeBarItem col-md-1" style="width:auto;margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.MERGEINDTL, new { id = "MERGEINDTL", @TabIndex = -1 })
+                            </div>
                     }
                 </div>
             </div>

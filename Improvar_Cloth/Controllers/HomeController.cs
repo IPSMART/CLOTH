@@ -480,7 +480,7 @@ namespace Improvar.Controllers
                 return null;
             }
         }
-        
+
         public ActionResult ModifyLogDetail(string autono, string schema)
         { //called from every view Page
             try
@@ -555,7 +555,7 @@ namespace Improvar.Controllers
                     DTL.DEL_REM = tbl.Rows[i]["DEL_REM"].ToString();
                     ModifyLogGrid.Add(DTL);
 
-                    if (tbl.Rows[i]["emd_no"].retDbl() == 0)
+                    if (tbl.Rows[i]["emd_no"].retStr() == "" || tbl.Rows[i]["emd_no"].retStr() == "0")
                     {
                         break;
                     }
