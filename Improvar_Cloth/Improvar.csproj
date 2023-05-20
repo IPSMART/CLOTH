@@ -721,6 +721,12 @@
       <DependentUpon>JobRecv.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\PrintBarcode_DIWH_Old.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintBarcode_DIWH_Old.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\Rep_JobBillWithItem.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1659,6 +1665,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>JobRecv.cs</LastGenOutput>
     </Content>
+    <EmbeddedResource Include="Report\PrintBarcode_DIWH_Old.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PrintBarcode_DIWH_Old.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\PrintBarcode_Tres_3X2_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode_Tres_3X2_Old.cs</LastGenOutput>

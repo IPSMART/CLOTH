@@ -92,6 +92,7 @@ namespace Improvar.Controllers
                                            PREFDT = dr["docdt"].retStr(),
                                            UOMCD = dr["uomcd"].retStr(),
                                            QNTY = dr["qnty"].retStr(),
+                                           CUTLENGTH = dr["CUTLENGTH"].retStr(),
                                            DOCPRFX = dr["docprfx"].retStr(),
                                            DOCONLYNO = dr["doconlyno"].retStr(),
                                            Checked = dr["barnos"].retDbl() == 0 ? false : true,
@@ -124,7 +125,7 @@ namespace Improvar.Controllers
             tblnm = (tphystk == true ? ".t_phystk" : tblmst == false ? ".t_batchdtl" : ".t_batchmst");
             sql = "";
 
-            sql += "select a.autono, x.barno, a.txnslno, a.qnty, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
+            sql += "select a.autono, x.barno, a.txnslno, a.qnty,a.CUTLENGTH, a.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , " + Environment.NewLine;
             sql += "x.pdesign, nvl(x.ourdesign,b.styleno) design, " + Environment.NewLine;
             sql += "nvl(m.cprate,x.rate) cprate, nvl(m.wprate,0) wprate, nvl(m.rprate,0) rprate, nvl(m.jobprate,0) jobprate, " + Environment.NewLine;
             //sql += "x.itrem, x.partcd, h.partnm, x.sizecd, x.colrcd, nvl(x.shade,g.colrnm) colrnm, " + Environment.NewLine;
@@ -136,7 +137,7 @@ namespace Improvar.Controllers
 
             sql += "( select " + (tblnm == ".t_batchmst" ? "'xx'" : "a.autono") + " autono, to_number(" + (tphystk == true ? "a.slno" : tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, " + Environment.NewLine;
             //sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
-            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos " + Environment.NewLine;
+            sql += "a.qnty,a.CUTLENGTH, a.rate, decode(nvl(a.nos,0),0,1,a.nos) barnos " + Environment.NewLine;
             sql += (tphystk == true ? ",''itrem" : ",a.itrem") + Environment.NewLine;
 
             sql += "from " + scm + tblnm + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c " + (tblnm == ".t_batchmst" ? "" : ", " + scm + ".t_cntrl_hdr d ") + Environment.NewLine;
@@ -194,7 +195,7 @@ namespace Improvar.Controllers
             //}
             //else
             //{
-                sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
+            sql += "where a.autono=c.autono(+) and a.autono=d.autono(+) and a.barno=x.barno(+) and " + Environment.NewLine;
             //}
             sql += "x.itcd=b.itcd(+) and b.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and d.doccd=k.doccd(+) and " + Environment.NewLine; //x.fabitcd=e.itcd(+)
             sql += "a.barno=m.barno(+) and " + Environment.NewLine;
@@ -276,7 +277,10 @@ namespace Improvar.Controllers
                 IR.Columns.Add("qnty", typeof(string));
                 IR.Columns.Add("fulldocdt", typeof(string));
                 IR.Columns.Add("doconlyno", typeof(string));
-
+                IR.Columns.Add("CUTLENGTH", typeof(string));
+                IR.Columns.Add("rate", typeof(string));
+                IR.Columns.Add("rate_paisa", typeof(string));
+                IR.Columns.Add("rate_code", typeof(string));
                 string FileName = "";
                 var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
                 if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
@@ -336,8 +340,27 @@ namespace Improvar.Controllers
                             dr["compnm"] = CommVar.CompName(UNQSNO);
                             dr["compcd"] = CommVar.Compcd(UNQSNO);
                             dr["qnty"] = VE.BarcodePrint[i].QNTY.retStr();
+                            dr["CUTLENGTH"] = VE.BarcodePrint[i].CUTLENGTH.retDbl().retStr();
                             dr["uom"] = VE.BarcodePrint[i].UOMCD.retStr();
                             dr["fulldocdt"] = VE.BarcodePrint[i].DOCDT.retDateStr();
+                            if (VE.RateType == "Wprate")
+                            {
+                                dr["rate"] = dr["wprate"];
+                                dr["rate_paisa"] = dr["wprate_paisa"];
+                                dr["rate_code"] = dr["wprate_code"];
+                            }
+                            else if (VE.RateType == "Cprate")
+                            {
+                                dr["rate"] = dr["cprate"];
+                                dr["rate_paisa"] = dr["cprate_paisa"];
+                                dr["rate_code"] = dr["cprate_code"];
+                            }
+                            else if (VE.RateType == "Rprate")
+                            {
+                                dr["rate"] = dr["rprate"];
+                                dr["rate_paisa"] = dr["rprate_paisa"];
+                                dr["rate_code"] = dr["rprate_code"];
+                            }
                             IR.Rows.Add(dr);
                         }
                     }

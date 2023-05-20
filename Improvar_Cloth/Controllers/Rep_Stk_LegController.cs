@@ -191,15 +191,15 @@ namespace Improvar.Controllers
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos " + Environment.NewLine;
                 sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, " + Environment.NewLine;
 
-                sql += "(select listagg(gonm, ',') within group (order by gonm) tgonm,autono " + Environment.NewLine;
-                sql += "from (select distinct a.gocd, a.autono, c.gonm " + Environment.NewLine;
+                sql += "(select listagg(gonm, ',') within group (order by gonm) tgonm,autono,slno " + Environment.NewLine;
+                sql += "from (select distinct a.gocd, a.autono, c.gonm,a.slno " + Environment.NewLine;
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) and a.stkdrcr = 'D' " + Environment.NewLine;
-                sql += "group by a.gocd, a.autono, c.gonm) " + Environment.NewLine;
-                sql += "group by autono) e, " + Environment.NewLine;
+                sql += "group by a.gocd, a.autono, c.gonm,a.slno) " + Environment.NewLine;
+                sql += "group by autono,slno) e, " + Environment.NewLine;
 
-                sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono " + Environment.NewLine;
-                sql += "from (select distinct b.gocd, b.autono, c.gonm " + Environment.NewLine;
-                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and b.gocd = c.gocd(+) " + Environment.NewLine;
+                sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono,slno " + Environment.NewLine;
+                sql += "from (select distinct a.gocd, b.autono, c.gonm,a.slno " + Environment.NewLine;
+                sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) " + Environment.NewLine;
                 if (MSYSCNFG.STKINCLPINV == "Y")
                 {
                     sql += " and a.stkdrcr in('C','0')" + Environment.NewLine;
@@ -210,8 +210,8 @@ namespace Improvar.Controllers
                     sql += " and a.stkdrcr = 'C' " + Environment.NewLine;
                 }
                 sql += " and a.stkdrcr = 'C' " + Environment.NewLine;
-                sql += "group by b.gocd, b.autono, c.gonm) " + Environment.NewLine;
-                sql += "group by autono) f, " + Environment.NewLine;
+                sql += "group by a.gocd, b.autono, c.gonm,a.slno) " + Environment.NewLine;
+                sql += "group by autono,slno) f, " + Environment.NewLine;
 
                 sql += "(select listagg(baleno, ',') within group (order by baleno) baleno,autono " + Environment.NewLine;
                 sql += "from (select distinct a.baleno, b.autono " + Environment.NewLine;
@@ -221,7 +221,7 @@ namespace Improvar.Controllers
 
 
                 sql += scm1 + ".m_sitem c, " + scmf + ".m_uom d " + Environment.NewLine;
-                sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and a.autono=g.autono(+) " + Environment.NewLine;
+                sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) and a.autono=e.autono(+) and a.slno=e.slno(+) and a.autono=f.autono(+) and a.slno=f.slno(+) and a.autono=g.autono(+) " + Environment.NewLine;
                 if (itgrpcd.retStr() != "") sql += "and c.itgrpcd in(" + itgrpcd + ") " + Environment.NewLine;
 
                 sql += "order by itnm, itcd, docdt, stkdrcr desc, autono ";

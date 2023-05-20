@@ -1201,7 +1201,8 @@ namespace Improvar.Controllers
                             }
                         }
                         #endregion
-                        if (VE.MENU_PARA == "CNV")
+                        //if (VE.MENU_PARA == "CNV")
+                        if (VE.MENU_PARA != "CNV")
                         {
                             if (IN_TOTAL_QNTY != OUT_TOTAL_QNTY)
                             {

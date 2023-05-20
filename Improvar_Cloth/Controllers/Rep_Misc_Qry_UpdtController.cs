@@ -335,7 +335,7 @@ namespace Improvar.Controllers
                     if (!string.IsNullOrEmpty(VE.ITCD2))
                     {
                         sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "' "
-                        + " where AUTONO in(" + autono + ") and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'  ";
+                        + " where AUTONO in(" + autono + ") and  ITCD= '" + VE.ITCD1 + "' and (BALENO='" + VE.BALENO1 + "' or BALENO is null) and BALEYR='" + VE.BALEYR1 + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         sql = "update " + schnm + ".T_BATCHMST set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
@@ -343,7 +343,7 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         sql = "update " + schnm + ".T_BATCHDTL set BARNO= '" + VE.NEWBARNO + "' "
-                        + " where AUTONO in (" + autono + ")  and BARNO='" + VE.OLDBARNO + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "' ";
+                        + " where AUTONO in (" + autono + ")  and BARNO='" + VE.OLDBARNO + "' and (BALENO='" + VE.BALENO1 + "' or BALENO is null) and BALEYR='" + VE.BALEYR1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }
                 }

@@ -50,5 +50,6 @@ namespace Improvar.Models
         public string DOCONLYNO { get; set; }
 
         public bool Checked { get; set; }
+        public string CUTLENGTH { get; set; }
     }
 }

@@ -1453,7 +1453,7 @@ namespace Improvar.Controllers
                 sqlc += "c.doccd = '" + doccd + "' and " + Environment.NewLine;
 
                 sql += " select a.autono, b.doctag, h.doccd, h.docno, h.docdt,b.pblno,b.pbldt,n.jobnm,cc.linkdocno,cc.linkdocdt, ''duedays,a.mtrljobcd, h.canc_rem,to_char(h.usr_entdt, 'HH24:MI') invisstime,'N' batchdlprint,  " + Environment.NewLine;
-                sql += " ''gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, " + Environment.NewLine;
+                sql += " ''gocd, ''gonm, ''goadd1, ''goadd2, ''goadd3, ''gophno, ''goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, " + Environment.NewLine;
                 //sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
                 sql += " nvl(x.nm,nvl(e.fullname, e.slnm)) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  " + Environment.NewLine;
                 sql += " e.gstno, e.panno, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
@@ -1556,7 +1556,7 @@ namespace Improvar.Controllers
                 
                 sql += " " + Scm1 + ".T_JBILLDTL z, " + Scm1 + ".T_JBILL b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g, " + Environment.NewLine;
                 //sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w  ";
-                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w, " + Scm1 + ".T_TXNMEMO x,  " + Scm1 + ".m_jobmst n  " + Environment.NewLine;
+                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w, " + Scm1 + ".T_TXNMEMO x,  " + Scm1 + ".m_jobmst n  " + Environment.NewLine;
                 sql += " where a.autono = z.autono(+) and a.slno = z.slno(+) and a.autono = b.autono and a.autono = c.autono(+) and a.autono = d.autono(+) and b.jobcd = n.jobcd(+) and " + Environment.NewLine;
                 sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and  " + Environment.NewLine;
                 sql += " d.agslcd = m.slcd(+) and l.fabitcd=t.itcd(+) and b.slcd=v.slcd(+)  and (v.compcd='" + COM + "' or v.compcd is null) and (v.loccd='" + LOC + "'  or v.loccd is null)  and v.courcd=w.slcd(+) and  " + Environment.NewLine;

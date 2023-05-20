@@ -43,6 +43,25 @@
                         @Html.DropDownListFor(model => model.Reptype, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
                     </div>
                 </div>
+                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
+                {
+                    <div class="col-md-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Rate")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.RateType, "Wprate", new { @checked = "checked" })  @Html.Label("Wprate")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.RateType, "Cprate")  @Html.Label("Cprate")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.RateType, "Rprate")  @Html.Label("Rprate")
+                        </label>
+                    </div>
+                }
             </div>
             <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
                  <div id="partialdivRemarks">

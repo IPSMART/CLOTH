@@ -616,7 +616,17 @@ namespace Improvar.Controllers
                 else VE.RoundOff = false;
                 VE.MERGEINDTL = TXN.MERGEINDTL == "Y" ? true : false;
                 TXNTRN = DB.T_TXNTRANS.Find(TXN.AUTONO);
+                if (TXNTRN == null)
+                {
+                    T_TXNTRANS tempTXNTRN = new T_TXNTRANS();
+                    TXNTRN = tempTXNTRN;
+                }
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
+                if (TXNOTH == null)
+                {
+                    T_TXNOTH tempTXNOTH = new T_TXNOTH();
+                    TXNOTH = tempTXNOTH;
+                }
                 TTXNEINV = DBF.T_TXNEINV.Find(TXN.AUTONO);
                 TTDS = DBF.T_TDSTXN.Where(m => m.AUTONO == TXN.AUTONO).FirstOrDefault();
                 VCHGST = (from x in DBF.T_VCH_GST where x.AUTONO == TXN.AUTONO select x).FirstOrDefault();
@@ -1229,7 +1239,7 @@ namespace Improvar.Controllers
                         string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
                         SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>"
                             + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>"
-                            + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
+                            + (tbl.Rows[j]["PREFDT"].retStr() == "" ? "" : tbl.Rows[j]["PREFDT"].retStr().Remove(10)) + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
                             + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
                             + "<td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                     }
