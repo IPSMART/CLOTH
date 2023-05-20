@@ -45,12 +45,12 @@
                 </div>
                 @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
                 {
-                    <div class="col-md-1">
+                    <div class="col-md-1" style="text-align:right;">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Rate")
+                            @Html.Label("", "Rate Type")
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8" style="border:5px groove;">
                         <label class="radio-inline">
                             @Html.RadioButtonFor(model => model.RateType, "Wprate", new { @checked = "checked" })  @Html.Label("Wprate")
                         </label>
