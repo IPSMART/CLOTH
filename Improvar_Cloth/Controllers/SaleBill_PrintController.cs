@@ -1667,7 +1667,7 @@ namespace Improvar.Controllers
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
 
-                            string[,] emlaryBody = new string[10, 2];
+                            string[,] emlaryBody = new string[9, 2];
                             if (VE.TEXTBOX5 != null)
                             {
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "", "", emlaryBody, attchmail, grpemailid);
@@ -3110,7 +3110,7 @@ namespace Improvar.Controllers
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
                             string template = CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Salebill.htm";
-                            string[,] emlaryBody = new string[10, 2];
+                            string[,] emlaryBody = new string[9, 2];
                             if (VE.TEXTBOX5 != null)
                             {
                                 emlaryBody[0, 0] = "{slnm}"; emlaryBody[0, 1] = slnm;
@@ -4459,7 +4459,7 @@ namespace Improvar.Controllers
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
 
-                            string[,] emlaryBody = new string[10, 2];
+                            string[,] emlaryBody = new string[9, 2];
                             if (VE.TEXTBOX5 != null)
                             {
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "", "", emlaryBody, attchmail, grpemailid);

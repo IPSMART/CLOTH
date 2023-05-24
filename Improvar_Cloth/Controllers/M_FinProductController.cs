@@ -2388,12 +2388,12 @@ namespace Improvar.Controllers
 
                 string Excel_Header = "DESIGN" + "|" + "ITEM GROUP" + "|" + "ITEM NAME" + "|" + "UOM" + "|" + "HSN CODE" + "|" + "FAB ITNM"
                     + "|" + "BARNO" + "|" + "RATE" + "|" + "MRP" + " |" + "PRATE" + "|" + "RP" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
-                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|";
+                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|";
 
                 ExcelPackage ExcelPkg = new ExcelPackage();
                 ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                using (ExcelRange Rng = wsSheet1.Cells["A1:Q1"])
+                using (ExcelRange Rng = wsSheet1.Cells["A1:S1"])
                 {
                     Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
@@ -2403,7 +2403,7 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[1, i + 1].Value = Header[i];
                     }
                 }
-                wsSheet1.Cells[1, 1, 1, 17].AutoFitColumns();
+                wsSheet1.Cells[1, 1, 1, 19].AutoFitColumns();
 
                 Response.Clear();
                 Response.ClearContent();
@@ -2454,6 +2454,8 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("RNO", typeof(string));
                 dbfdt.Columns.Add("ITLEGACYCD", typeof(string));
                 dbfdt.Columns.Add("LEGACYCD", typeof(string));
+                dbfdt.Columns.Add("Sales Ledger Code", typeof(string));
+                dbfdt.Columns.Add("Purchase Ledger Code", typeof(string));
                 using (var package = new ExcelPackage(stream))
                 {
                     var currentSheet = package.Workbook.Worksheets;
@@ -2510,7 +2512,8 @@ namespace Improvar.Controllers
                     double IGST = oudr["IGST"].retDbl();
                     string RNO = oudr["RNO"].retStr();
                     string ITLEGACYCD = oudr["ITLEGACYCD"].retStr();
-                    string LEGACYCD = oudr["LEGACYCD"].retStr();
+                    string SALGLCD = oudr["Sales Ledger Code"].retStr();
+                    string PURGLCD = oudr["Purchase Ledger Code"].retStr();
 
                     string itgrptype = "";
                     if (VE.MENU_PARA == "C")//Fabric Item
@@ -2537,21 +2540,21 @@ namespace Improvar.Controllers
                         flag = false;
                     }
 
-                    var query1 = (from c in DB.M_GROUP
-                                  where (c.ITGRPNM.ToUpper() == GRPNM && c.ITGRPTYPE == itgrptype)
-                                  select c);
-                    if (!query1.Any())
-                    {
-                        MESSAGE += msg + "Please Create Group (" + GRPNM + ") Group Type : " + itgrptype;
-                        flag = false;
-                    }
+                    //var query1 = (from c in DB.M_GROUP
+                    //              where (c.ITGRPNM.ToUpper() == GRPNM && c.ITGRPTYPE == itgrptype)
+                    //              select c);
+                    //if (!query1.Any())
+                    //{
+                    //    MESSAGE += msg + "Please Create Group (" + GRPNM + ") Group Type : " + itgrptype;
+                    //    flag = false;
+                    //}
 
                     if (flag == true)
                     {
                         ItemDet ItemDet = new ItemDet();
                         if (VE.MENU_PARA == "C")//Fabric Item
                         {
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD);
 
                         }
                         else if (VE.MENU_PARA == "F")//Finish Product/Design
@@ -2567,11 +2570,11 @@ namespace Improvar.Controllers
                                 }
                             }
 
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD);
                         }
                         else//Accessories / Other Items
                         {
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD);
                         }
                         if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {

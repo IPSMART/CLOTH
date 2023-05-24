@@ -2372,7 +2372,7 @@ namespace Improvar
             DataTable tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public M_GROUP CreateGroup(string grpnm, string ITGRPTYPE, string BARGENTYPE)
+        public M_GROUP CreateGroup(string grpnm, string ITGRPTYPE, string BARGENTYPE, bool create = false, string salglcd = "", string purglcd = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             M_GROUP MGROUP = new M_GROUP();
@@ -2385,7 +2385,7 @@ namespace Improvar
                 {
                     return tMGROU;
                 }
-                else
+                else if (create == false)
                 {
                     return null;
                 }
@@ -2416,7 +2416,15 @@ namespace Improvar
                     MGROUP.GRPBARCODE = (100).ToString("D3");
                 }
                 var fMGROU = DB.M_GROUP.FirstOrDefault();
-                if (fMGROU == null) Cn.SaveTextFile("Add a row in the Group master");
+                if (fMGROU == null)
+                {
+                    if (salglcd.retStr() != "" && purglcd != "")
+                    {
+                        MGROUP.SALGLCD = salglcd;
+                        MGROUP.PURGLCD = purglcd;
+                    }
+                    Cn.SaveTextFile("Add a row in the Group master");
+                }
                 else
                 {
                     MGROUP.SALGLCD = fMGROU.SALGLCD;
@@ -2448,7 +2456,7 @@ namespace Improvar
             OraCon.Dispose();
             return MGROUP;
         }
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0)
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             string DefaultAction = "A";
@@ -2480,7 +2488,7 @@ namespace Improvar
                 {
                     return ItemDet;
                 }
-                MGROUP = CreateGroup(grpnm, ITGRPTYPE, BARGENTYPE);
+                MGROUP = CreateGroup(grpnm, ITGRPTYPE, BARGENTYPE, creategrp, salglcd, purglcd);
                 if (MGROUP == null)
                 {
                     ItemDet.ErrMsg = "Please Create Group (" + grpnm + ") ";
