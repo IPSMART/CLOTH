@@ -110,7 +110,7 @@ namespace Improvar.Controllers
 
                     string lastdayofprvyear = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-1).retDateStr();
                     bool SkipNegetivStock = false;
-                    if (VE.Checkbox9 == true) SkipNegetivStock = true;
+                    if (VE.Checkbox10 == true) SkipNegetivStock = true;
 
                     #region Stock Transfer
                     DataTable tbltmp = new DataTable();
