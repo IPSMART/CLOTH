@@ -973,7 +973,7 @@ namespace Improvar.Controllers
 
                         //----------------------------------------------------------//
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, VE.RETDEBSLCD);
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, VE.RETDEBSLCD,TCH.DOCAMT,VE.Audit_REM);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, VE.RETDEBSLCD,VE.T_PYMT_AMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = masterHelp.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -1030,7 +1030,7 @@ namespace Improvar.Controllers
                         #region Adjustment
                         Cn.Create_DOCCD(UNQSNO, "F", TCH.DOCCD);
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "F", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TCH.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TCH.SLCD);
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "F", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TCH.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TCH.SLCD,TCH.DOCAMT,VE.Audit_REM);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "F", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TCH.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TCH.SLCD, VE.T_PYMT_AMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 0;
                         //if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
