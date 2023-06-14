@@ -44,27 +44,28 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
 
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                   
                     //string reptype = "SALEBILL";
                     switch (VE.MENU_PARA)
                     {
                         case "SBPCK":
-                            ViewBag.Title = "Packing Slip"; ViewBag.formname = "Packing Slip"; break;
+                            ViewBag.Title = "Packing Slip"; ViewBag.formname = "Packing Slip";break;
                         case "SB":
-                            ViewBag.Title = "Sales Bill (Agst Packing Slip)"; ViewBag.formname = "Sales Bill (Agst Packing Slip)"; break;
+                            ViewBag.Title = "Sales Bill (Agst Packing Slip)"; ViewBag.formname = "Sales Bill (Agst Packing Slip)";break;
                         case "SBDIR":
                             ViewBag.Title = "Sales Bill"; ViewBag.formname = "Sales Bill"; break;
                         case "SR":
                             ViewBag.Title = "Sales Return (SRM)"; ViewBag.formname = "Sales Return (SRM)"; break;
                         case "SBCM":
-                            ViewBag.Title = "Cash Memo"; ViewBag.formname = "Cash Memo"; break;
+                            ViewBag.Title = "Cash Memo"; ViewBag.formname = "Cash Memo";  break;
                         case "SBCMR":
-                            ViewBag.Title = "Cash Memo Return Note"; ViewBag.formname = "Cash Memo Return Note"; break;
+                            ViewBag.Title = "Cash Memo Return Note"; ViewBag.formname = "Cash Memo Return Note";  break;
                         case "SBEXP":
                             ViewBag.Title = "Sales Bill (Export)"; ViewBag.formname = "Sales Bill (Export)"; break;
                         case "PI":
-                            ViewBag.Title = "Proforma Invoice"; ViewBag.formname = "Proforma Invoice"; break;
+                            ViewBag.Title = "Proforma Invoice"; ViewBag.formname = "Proforma Invoice";  break;
                         case "PB":
-                            ViewBag.Title = "Purchase Bill"; ViewBag.formname = "Purchase Bill"; break;
+                            ViewBag.Title = "Purchase Bill"; ViewBag.formname = "Purchase Bill";  break;
                         case "PR":
                             ViewBag.Title = "Purchase Return (PRM)"; ViewBag.formname = "Purchase Return (PRM)"; break;
                         case "OP":
@@ -74,7 +75,7 @@ namespace Improvar.Controllers
                         case "SDN":
                             ViewBag.Title = "Sales D/N (w/o Qty)"; ViewBag.formname = "Sales D/N (w/o Qty)"; break;
                         case "PCN":
-                            ViewBag.Title = "Purchase C/N (w/o Qty)"; ViewBag.formname = "Purchase C/N (w/o Qty)"; break;
+                            ViewBag.Title = "Purchase C/N (w/o Qty)"; ViewBag.formname = "Purchase C/N (w/o Qty)";break;
                         case "PDN":
                             ViewBag.Title = "Purchase D/N (w/o Qty)"; ViewBag.formname = "Purchase D/N (w/o Qty)"; break;
                         case "OTH":
@@ -84,14 +85,14 @@ namespace Improvar.Controllers
                         case "PJIS":
                             ViewBag.Title = "Issue to Party after Job"; ViewBag.formname = "Issue to Party after Job"; break;
                         case "PJRT":
-                            ViewBag.Title = "Return to Party w/o Job"; ViewBag.formname = "Return to Party w/o Job"; break;
+                            ViewBag.Title = "Return to Party w/o Job"; ViewBag.formname = "Return to Party w/o Job";break;
                         case "PJBL":
                             ViewBag.Title = "Job Bill raised to Party"; ViewBag.formname = "Job Bill raised to Party"; break;
                         case "PJBR":
                             ViewBag.Title = "Job Bill Return to Party"; ViewBag.formname = "Job Bill Return to Party"; break;
                         case "SBPOS":
-                            ViewBag.Title = "Cash Sales"; ViewBag.formname = "Cash Sales"; ; break;
-                        default: ViewBag.Title = "Doc Print"; ViewBag.formname = "Doc Print"; break;
+                            ViewBag.Title = "Cash Sales"; ViewBag.formname = "Cash Sales"; break;
+                        default: ViewBag.Title = "Doc Print"; ViewBag.formname = "Doc Print";break;
                     }
                     string reptype = "SALEBILL";
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
@@ -179,7 +180,55 @@ namespace Improvar.Controllers
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-
+                string FileName = "";
+                switch (VE.MENU_PARA)
+                {
+                    case "SBPCK":
+                       FileName = "Packing_Slip"; break;
+                    case "SB":
+                       FileName = "Sales_Bill_Agst_Packing_Slip"; break;
+                    case "SBDIR":
+                      FileName = "Sales_Bill"; break;
+                    case "SR":
+                        FileName = "Sales_Return"; break;
+                    case "SBCM":
+                       FileName = "Cash_Memo"; break;
+                    case "SBCMR":
+                        FileName = "Cash_Memo_Return"; break;
+                    case "SBEXP":
+                        FileName = "Sales_Bill_Export"; break;
+                    case "PI":
+                        FileName = "Proforma_Invoice"; break;
+                    case "PB":
+                        FileName = "Purchase_Bill"; break;
+                    case "PR":
+                        FileName = "Purchase_Return"; break;
+                    case "OP":
+                       FileName = "Opening_Stock"; break;
+                    case "SCN":
+                         FileName = "Sales_C_N"; break;
+                    case "SDN":
+                        FileName = "Sales_D_N"; break;
+                    case "PCN":
+                        FileName = "Purchase_D_N"; break;
+                    case "PDN":
+                         FileName = "Purchase_D_N"; break;
+                    case "OTH":
+                        FileName = "Other_Product_Opening_Stk"; break;
+                    case "PJRC":
+                        FileName = "Receive_from Party_for_Job"; break;
+                    case "PJIS":
+                         FileName = "Issue_to_Party_after_Job"; break;
+                    case "PJRT":
+                       FileName = "Return_to_Party_w/o_Job"; break;
+                    case "PJBL":
+                        FileName = "Job_Bill_raised_to_Party"; break;
+                    case "PJBR":
+                        FileName = "Job_Bill_Return_to_Party"; break;
+                    case "SBPOS":
+                        FileName = "Cash_Sales"; break;
+                    default: FileName = "Doc_Print"; break;
+                }
                 var printemail = submitbutton.ToString();
                 string fdate = "", tdate = "";
                 if (VE.FDT != null)
@@ -233,11 +282,11 @@ namespace Improvar.Controllers
 
                 if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR")
                 {
-                    return ReportCashMemoPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm);
+                    return ReportCashMemoPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm, FileName);
                 }
                 else if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT")
                 {
-                    return ReportAltBillPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm);
+                    return ReportAltBillPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm, FileName);
                 }
                 else if (submitbutton == "Address Copy")
                 {
@@ -245,7 +294,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    return ReportSaleBillPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm);
+                    return ReportSaleBillPrint(VE, fdate, tdate, fdocno, tdocno, COM, LOC, yr_cd, slcd, doccd, prnemailid, maxR, blhead, gocd, grpemailid, Scm1, Scmf, scmI, copyno, rptname, printemail, docnm, FileName);
                 }
             }
             catch (Exception ex)
@@ -255,7 +304,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
+        public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm,string FileName)
         {
             try
             {
@@ -1716,7 +1765,32 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
                     if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                    if (printemail == "PDF")
+                    {
 
+                        Response.Buffer = false;
+                        Response.ClearContent();
+                        Response.ClearHeaders();
+                        Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        reportdocument.Close();
+                        reportdocument.Dispose(); GC.Collect();
+                        var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                        //path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
+                        FileName = FileName.retRepname();// + "-" + edocno;
+                        Response.ContentType = "application/pdf";
+                        Response.Charset = string.Empty;
+                        Response.Cache.SetCacheability(System.Web.HttpCacheability.Public);
+                        Response.AddHeader("Content-Disposition", string.Format("attachment;filename=" + FileName + ".pdf", "Collection"));
+                        byte[] bytes;
+                        using (var ms = new MemoryStream()) { stream.CopyTo(ms); bytes = ms.ToArray(); }
+                        Response.OutputStream.Write(bytes, 0, bytes.Length);
+                        Response.OutputStream.Flush();
+                        Response.OutputStream.Close();
+                        Response.End();
+                        return Content("Done");
+
+                    }
                     if (printemail == "Excel")
                     {
                         string path_Save = @"C:\improvar\" + doccd + VE.FDOCNO + ".xls";
@@ -1755,7 +1829,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ReportSaleBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
+        public ActionResult ReportSaleBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm,string FileName)
         {
             try
             {
@@ -3194,7 +3268,32 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
                     if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
-
+                    if (printemail == "PDF")
+                    {
+                       
+                        Response.Buffer = false;
+                        Response.ClearContent();
+                        Response.ClearHeaders();
+                        Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        reportdocument.Close();
+                        reportdocument.Dispose(); GC.Collect();
+                        var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                        //path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
+                        FileName = FileName.retRepname();// + "-" + edocno;
+                        Response.ContentType = "application/pdf";
+                        Response.Charset = string.Empty;
+                        Response.Cache.SetCacheability(System.Web.HttpCacheability.Public);
+                        Response.AddHeader("Content-Disposition", string.Format("attachment;filename=" + FileName + ".pdf", "Collection"));
+                        byte[] bytes;
+                        using (var ms = new MemoryStream()) { stream.CopyTo(ms); bytes = ms.ToArray(); }
+                        Response.OutputStream.Write(bytes, 0, bytes.Length);
+                        Response.OutputStream.Flush();
+                        Response.OutputStream.Close();
+                        Response.End();
+                        return Content("Done");
+                        
+                    }
                     if (printemail == "Excel")
                     {
                         string path_Save = @"C:\Ipsmart\" + doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
@@ -3242,7 +3341,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ReportAltBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
+        public ActionResult ReportAltBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm,string FileName)
         {
             try
             {
@@ -4507,7 +4606,32 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
+                    if (printemail == "PDF")
+                    {
 
+                        Response.Buffer = false;
+                        Response.ClearContent();
+                        Response.ClearHeaders();
+                        Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        reportdocument.Close();
+                        reportdocument.Dispose(); GC.Collect();
+                        var edocno = (Regex.Replace(billno, @"[^0-9a-zA-Z_]+", ""));
+                        //path_Save = path_Save + "\\" + doccd + "-" + edocno + ".pdf";
+                        FileName = FileName.retRepname();// + "-" + edocno;
+                        Response.ContentType = "application/pdf";
+                        Response.Charset = string.Empty;
+                        Response.Cache.SetCacheability(System.Web.HttpCacheability.Public);
+                        Response.AddHeader("Content-Disposition", string.Format("attachment;filename=" + FileName + ".pdf", "Collection"));
+                        byte[] bytes;
+                        using (var ms = new MemoryStream()) { stream.CopyTo(ms); bytes = ms.ToArray(); }
+                        Response.OutputStream.Write(bytes, 0, bytes.Length);
+                        Response.OutputStream.Flush();
+                        Response.OutputStream.Close();
+                        Response.End();
+                        return Content("Done");
+
+                    }
                     if (printemail == "Excel")
                     {
                         string path_Save = @"C:\improvar\" + doccd + VE.FDOCNO + ".xls";

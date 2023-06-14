@@ -529,6 +529,12 @@ namespace Improvar.Controllers
                     sql += " from " + dbnm + ".t_txnstatus a " + Environment.NewLine;
                     sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 }
+                sql += " union " + Environment.NewLine;
+                sql += " select 'Cancelled' emd_no,a.CANC_USR_ENTDT usr_entdt,a.CANC_USR_ID usr_id ,  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.canc_rem lm_rem,a.del_rem  " + Environment.NewLine;
+                sql += " from " + dbnm + ".t_cntrl_hdr a " + Environment.NewLine;
+                sql += " where a.autono in ('" + autono + "') and a.cancel='Y' " + Environment.NewLine;
+
                 sql += " ) a,  " + Environment.NewLine;
                 sql += " user_appl b where a.usr_id = b.user_id(+) " + Environment.NewLine;
                 sql += " order by usr_entdt desc " + Environment.NewLine;

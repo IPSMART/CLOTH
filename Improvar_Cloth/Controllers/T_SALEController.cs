@@ -283,6 +283,10 @@ namespace Improvar.Controllers
                                     TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 }
                                 TTXN.PARGLCD = TempData["LASTPARGLCD" + VE.MENU_PARA].retStr();
+                                TTXNOTH.PAYTERMS= TempData["LASTPAYTERMS" + VE.MENU_PARA].retStr();
+                                TTXNOTH.SELBY = TempData["LASTSELBY" + VE.MENU_PARA].retStr();
+                                TTXNOTH.PACKBY = TempData["LASTPACKBY" + VE.MENU_PARA].retStr();
+                                TTXNOTH.DEALBY = TempData["LASTDEALBY" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 string MERGEINDTL = TempData["LASTMERGEINDTL" + VE.MENU_PARA].retStr();
                                 string STKDRCR = TempData["LASTSTKDRCR" + VE.MENU_PARA].retStr();
@@ -1042,9 +1046,23 @@ namespace Improvar.Controllers
                 foreach (var v in VE.TTXNDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "";
+
+                    //if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
+                    //{
+                    //    var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                    //    if (DATA.Count() > 0)
+                    //    {
+                    //        DataTable stock_data = DATA.CopyToDataTable();
+                    //        if (stock_data != null && stock_data.Rows.Count > 0)
+                    //        {
+                    //            v.BALSTOCK = stock_data.Rows[0]["BALQNTY"].retDbl();
+                    //        }
+                    //    }
+                    //}
+
                     var tax_data = (from a in VE.TBATCHDTL
                                     where a.TXNSLNO == v.SLNO
-                                    select new { a.PRODGRPGSTPER, a.ALL_GSTPER, a.FABITCD, a.FABITNM, a.RATE, a.RECPROGSLNO }).FirstOrDefault();
+                                    select new { a.PRODGRPGSTPER, a.ALL_GSTPER, a.FABITCD, a.FABITNM, a.RATE, a.RECPROGSLNO,a.BALSTOCK,a.NEGSTOCK }).FirstOrDefault();
                     if (tax_data != null)
                     {
                         PRODGRPGSTPER = tax_data.PRODGRPGSTPER.retStr();
@@ -1052,6 +1070,7 @@ namespace Improvar.Controllers
                         v.FABITCD = tax_data.FABITCD.retStr();
                         v.FABITNM = tax_data.FABITNM.retStr();
                         v.RECPROGSLNO = tax_data.RECPROGSLNO.retShort();
+                        v.BALSTOCK = tax_data.BALSTOCK;
                     }
                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                     v.ALL_GSTPER = ALL_GSTPER;
@@ -1203,6 +1222,18 @@ namespace Improvar.Controllers
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
+            if(VE.MENU_PARA=="PI")
+            {
+                #region if PROFOMA used in sale bill then PROFOMA not able to uncancell. 
+                var CanRemChk = TCH.CANC_REM.retStr().Split("[]".ToCharArray());
+                if (CanRemChk.Count() > 1 && CanRemChk[1].retStr() != "")
+                { var docnoo = CanRemChk[1].retStr();
+                    var chkautono = DB.T_CNTRL_HDR.Where(a => a.DOCNO == docnoo).Select(b => b.AUTONO).ToList();
+                    if(chkautono!=null && chkautono.Count>0) VE.PI_tag = "Y";
+                }
+                #endregion
+            }
+
             return VE;
         }
         public ActionResult SearchPannelData(TransactionSaleEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT, string SRC_FLAG)
@@ -2131,6 +2162,7 @@ namespace Improvar.Controllers
                                   NOS = P.Sum(A => (A.UOM == "MTR" && A.NOS.retDbl() == 0) ? 1 : A.NOS),
                                   //NOS = P.Sum(A => A.NOS),
                                   QNTY = P.Sum(A => A.QNTY),
+                                  BALSTOCK = P.Sum(A => A.BALSTOCK),
                                   FLAGMTR = P.Sum(A => A.FLAGMTR),
                                   BLQNTY = P.Sum(A => A.BLQNTY),
                                   //BLQNTY = P.Key.BLQNTY,
@@ -2955,13 +2987,13 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult cancelRecords(TransactionSaleEntry VE, string par1)
+        public dynamic cancelRecords(TransactionSaleEntry VE, string par1)
         {
             try
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                Cn.getQueryString(VE);
+                //Cn.getQueryString(VE);
                 using (var transaction = DB.Database.BeginTransaction())
                 {
                     DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
@@ -4815,6 +4847,10 @@ namespace Improvar.Controllers
                         TempData["LASTSTKDRCR" + VE.MENU_PARA] = stkdrcr;
                         TempData["LASTBLTYPE" + VE.MENU_PARA] = VE.T_TXNOTH.BLTYPE;
                         TempData["LASTPARGLCD" + VE.MENU_PARA] = VE.T_TXN.PARGLCD;
+                        TempData["LASTPAYTERMS" + VE.MENU_PARA] = VE.T_TXNOTH.PAYTERMS;
+                        TempData["LASTSELBY" + VE.MENU_PARA] = VE.T_TXNOTH.SELBY;
+                        TempData["LASTPACKBY" + VE.MENU_PARA] = VE.T_TXNOTH.PACKBY;
+                        TempData["LASTDEALBY" + VE.MENU_PARA] = VE.T_TXNOTH.DEALBY; 
 
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
@@ -5381,7 +5417,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -6700,12 +6736,19 @@ namespace Improvar.Controllers
                     }
                     OraTrans.Commit();
                     //if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && VE.DefaultAction == "A") TempData["LoadFromExisting" + VE.MENU_PARA] = TTXN.AUTONO.retStr();
-                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "")//need to delete profma when salebill done from profma
+                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != ""  &&  CommVar.ModuleCode() != "SALESSAREE")//need to delete profoma when salebill done from profma
                     {
                         T_SALEController TSCntlr = new T_SALEController();
                         VE.DefaultAction = "V";
                         VE.MENU_PARA = "PI";
                         string deletemsg = (string)TSCntlr.SAVE(VE, "PI");
+                    }
+                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "" && CommVar.ModuleCode() == "SALESSAREE")//need to cancel profoma when salebill done
+                    {
+                        T_SALEController TSCntlr = new T_SALEController();
+                        VE.DefaultAction = "V";
+                        VE.MENU_PARA = "PI";
+                        var deletemsg = TSCntlr.cancelRecords(VE, "["+DOCPATTERN+"]"+"["+ TTXN.DOCDT.retDateStr()+"]");
                     }
                     goto dbsave;
                 }
@@ -6839,7 +6882,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -6847,7 +6890,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

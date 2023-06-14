@@ -122,6 +122,7 @@ function GetBarnoDetails(id, HelpFrom) {
                                     $("#RPPRICEGEN").val(returncolvalue(result, "RPPRICEGEN"));
                                     $("#WPPER").val(returncolvalue(result, "WPPER"));
                                     $("#RPPER").val(returncolvalue(result, "RPPER"));
+                                    if (MENU_PARA == "PB") $("#BALSTOCK").val(returncolvalue(result, "BALQNTY"));
                                 }
                                 if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && MENU_PARA != "PJRC") {
                                     $("#MTBARCODE").val(returncolvalue(result, "MTBARCODE"));

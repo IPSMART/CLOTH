@@ -213,5 +213,7 @@ namespace Improvar.Models
         public string LINKAUTONO { get; set; }
         public short? RECPROGSLNO { get; set; }
         public double? CONVQTYPUNIT { get; set; }
+        public string NEGSTOCK { get; set; }
+        public double? BALSTOCK { get; set; }
     }
 }

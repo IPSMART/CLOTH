@@ -339,9 +339,17 @@ namespace Improvar.Controllers
                             dr["sizecd"] = VE.BarcodePrint[i].SIZECD.retStr();
                             dr["compnm"] = CommVar.CompName(UNQSNO);
                             dr["compcd"] = CommVar.Compcd(UNQSNO);
-                            dr["qnty"] = VE.BarcodePrint[i].QNTY.retStr();
+                            if (VE.Checkbox1 == true && CommVar.ClientCode(UNQSNO) == "DIWH")
+                            {
+                                dr["qnty"] = VE.BarcodePrint[i].QNTY.retStr();
+                                dr["uom"] = VE.BarcodePrint[i].UOMCD.retStr();
+                            }
+                            if (CommVar.ClientCode(UNQSNO) != "DIWH")
+                            {
+                                dr["qnty"] = VE.BarcodePrint[i].QNTY.retStr();
+                                dr["uom"] = VE.BarcodePrint[i].UOMCD.retStr();
+                            }
                             dr["CUTLENGTH"] = VE.BarcodePrint[i].CUTLENGTH.retDbl().retStr();
-                            dr["uom"] = VE.BarcodePrint[i].UOMCD.retStr();
                             dr["fulldocdt"] = VE.BarcodePrint[i].DOCDT.retDateStr();
                             if (VE.RateType == "Wprate")
                             {

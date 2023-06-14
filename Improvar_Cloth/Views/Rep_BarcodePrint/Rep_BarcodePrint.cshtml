@@ -61,6 +61,14 @@
                             @Html.RadioButtonFor(model => model.RateType, "Rprate")  @Html.Label("Rprate")
                         </label>
                     </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Quantity/Pcs")
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="margin-top: 6px;">
+                        @Html.CheckBoxFor(model => model.Checkbox1)
+                    </div>
                 }
             </div>
             <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">

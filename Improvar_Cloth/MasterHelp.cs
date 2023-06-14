@@ -2304,7 +2304,7 @@ namespace Improvar
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             string doctag = ""; string CPRATE = "", CAPTION = ""; var hdr = "";
             doctag = menupara.retStr() == "SR" ? "SB" : menupara.retStr() == "PR" ? "PB" : "JB";
-            if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
+            if (menupara == "OP" || menupara == "OTH" || menupara == "PJRC")//menupara == "PB" || 
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar);
             }
@@ -3059,7 +3059,7 @@ namespace Improvar
                 string valsrch = val.ToUpper().Trim();
                 string sql = "";
                 sql += "select a.DOCNO,a.DOCDT,a.SLCD,b.AUTONO ,c.SLNM from " + scm + ".T_TXN a," + scm + ".T_CNTRL_HDR b,  ";
-                sql += scmf + ".M_SUBLEG c where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+)  and a.doctag ='PI' and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' ";
+                sql += scmf + ".M_SUBLEG c where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+)  and a.doctag ='PI' and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "'and nvl(b.cancel, 'N') = 'N' ";
                 if (valsrch.retStr() != "") sql += " and a.DOCNO = '" + valsrch + "' ";
                 sql += "  order by a.DOCNO,a.DOCDT ";
                 DataTable tbl = SQLquery(sql);

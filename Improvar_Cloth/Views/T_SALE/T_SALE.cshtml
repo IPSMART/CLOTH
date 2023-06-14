@@ -81,6 +81,7 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
+        debugger;
         if ("@Model.SHOWMTRLJOBCD" != "Y") {
             $("#divmtrljobcd").hide();
         }
@@ -100,6 +101,10 @@
             modeView();
             $("#update_page_slno").hide();
             $("#cancel_page_slno").hide();
+            if ('@Model.PI_tag' == "Y")
+            {
+                $("#floppy_remove_nav").hide();
+            }
 
         }
         else if ("@Model.DefaultAction" == "E") {
