@@ -2686,7 +2686,6 @@ namespace Improvar
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
             if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
             sql += ",a.stktype,a.stkdrcr " + Environment.NewLine;
-            if (skipNegetivStock == true) sql += " and nvl(qnty, 0)> 0 " + Environment.NewLine;
             sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
             if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
 
@@ -2694,7 +2693,15 @@ namespace Improvar
             str = "select  autono||TXNSLNO AUTONO,slno,doctag,stktype, conslcd, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, " + Environment.NewLine;//slno, autoslno
             str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (" + Environment.NewLine;
             str += sql + ") " + Environment.NewLine;
-            if (barno.retStr() != "") str += "where barno in (" + barno + ") " + Environment.NewLine;
+            if (barno.retStr() != "")
+            {
+                str += "where barno in (" + barno + ") " + Environment.NewLine;
+                if (skipNegetivStock == true) str += " and nvl(qnty, 0)> 0 " + Environment.NewLine;
+            }
+            else
+            {
+                if (skipNegetivStock == true) str += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
+            }
             DataTable rsIn = SQLquery(str);
 
             sql = "";
@@ -2709,11 +2716,12 @@ namespace Improvar
             sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
-            if (skipNegetivStock == true) sql += " and nvl(qnty, 0)> 0 " + Environment.NewLine;
             sql += "order by itcd " + Environment.NewLine;
 
             str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;
             str += sql + " )";
+            if (skipNegetivStock == true) str += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
+
             DataTable rsOut = SQLquery(str);
 
             var varGodown = rsIn.AsEnumerable().Union(rsOut.AsEnumerable()).OrderBy(d => d.Field<string>("GOCD")).Select(A => new
