@@ -1454,7 +1454,7 @@ namespace Improvar.Controllers
                 string cllfrm = data[0].retStr(); ;
                 string itgrpcd = data[1].retStr();
                 string docdt = data[2].retStr();
-                string GOCD = data[3].retStr();
+                string GOCD = data[3].retStr()==""?"": data[3].retStr().retSqlformat();
                 string BARNO = data[4].retStr();
                 string MTRLJOBCD = data[5].retStr();
                 string PRCCD = data[6].retStr();
@@ -1464,7 +1464,7 @@ namespace Improvar.Controllers
                 { BARNO = ""; val = ""; }
                 if (val.retStr() != "") { showonlycommonbar = false; }
                 //var str = masterHelp.ITCD_help(val, "", "");
-                var str = masterHelp.T_TXN_BARNO_help(val, "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "");
+                var str = masterHelp.T_TXN_BARNO_help(val.Trim(), "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "");
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
