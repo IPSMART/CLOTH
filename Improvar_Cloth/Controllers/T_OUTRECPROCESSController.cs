@@ -1451,6 +1451,18 @@ namespace Improvar.Controllers
             try
             {
                 var data = Code.Split(Convert.ToChar(Cn.GCS())); bool showonlycommonbar = true;
+                if(data[3].retStr() == "")
+                {
+                    return Content("Please Enter Godown");
+                }
+                else if (data[5].retStr() == "")
+                {
+                    return Content("Please Enter Mtrl Job Code");
+                }
+                else if (data[2].retStr() == "")
+                {
+                    return Content("Please Enter Document Date");
+                }
                 string cllfrm = data[0].retStr(); ;
                 string itgrpcd = data[1].retStr();
                 string docdt = data[2].retStr();
