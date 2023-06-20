@@ -2426,14 +2426,15 @@ namespace Improvar.Controllers
         public string Item_Upload(ItemMasterEntry VE, FormCollection FC)
         {
 
-            string msg = ""; string MESSAGE = "";
+            string msg = ""; string MESSAGE = "", strerrline = "";
+            Stream stream;
             try
             {
                 Cn.getQueryString(VE);
                 if (Request.Files.Count == 0) return "No File Selected";
                 HttpPostedFileBase file = Request.Files[0];
                 if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return ".xlsx file need to choose";
-                Stream stream = file.InputStream;
+                stream = file.InputStream;
                 // Excel Columns: DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO RATE(Cp)    MRP PRATE   RP JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
 
                 DataTable dbfdt = new DataTable();
@@ -2538,6 +2539,7 @@ namespace Improvar.Controllers
                     if (query1 != null)
                     {
                         MESSAGE += msg + "Barno (" + BARNO + ") Already Exists : Please Enter a Different Barno !!";
+                        strerrline += excelrow + ",";
                         continue;
                     }
                     var query = (from c in DB.M_SITEM
@@ -2552,6 +2554,7 @@ namespace Improvar.Controllers
                         if (VE.SkipDuplicateDesign == true)
                         {
                             MESSAGE += msg + "Design (" + DESIGN + ") Number Already Exists : Please Enter a Different Design Number !!";
+                            strerrline += excelrow + ",";
                             flag = false;
                         }
                         else
@@ -2578,6 +2581,7 @@ namespace Improvar.Controllers
                             else
                             {
                                 MESSAGE += msg + "Design (" + DESIGN + ") Number Already Exists for itgrptype = " + itgrptype + " : Please Enter a Different Design Number !!";
+                                strerrline += excelrow + ",";
                                 flag = false;
                             }
                         }
@@ -2609,6 +2613,7 @@ namespace Improvar.Controllers
                                 if (fabitcd == "")
                                 {
                                     MESSAGE += msg + "Please add Fabric Item:(" + FABITNM + ") ";
+                                    strerrline += excelrow + ",";
                                     continue;
                                 }
                             }
@@ -2622,10 +2627,12 @@ namespace Improvar.Controllers
                         if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
                             MESSAGE += msg + "Please add style:(" + DESIGN + ") at Item Master Manually because master transfer done in next year . ";
+                            strerrline += excelrow + ",";
                         }
                         else if (ItemDet.ErrMsg.retStr() != "")
                         {
                             MESSAGE += msg + ItemDet.ErrMsg;
+                            strerrline += excelrow + ",";
                         }
                         else
                         {
@@ -2658,7 +2665,45 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, msg);
                 return ex.Message + " at " + msg;
             }
-            return "Excel Uploaded Successfully Current Year and last year !! <br/>" + MESSAGE;
+            if (strerrline == "")
+            {
+                return "Excel Uploaded Successfully Current Year and last year !! <br/>" + MESSAGE;
+            }
+            else
+            {
+                using (var ExcelPkg = new ExcelPackage(stream))
+                {
+                    string[] errline = strerrline.Split(',');
+                    int rowNum = 2;
+                    var noOfRow = ExcelPkg.Workbook.Worksheets[1].Dimension.End.Row;
+                    for (rowNum = noOfRow; rowNum >= 2; rowNum--)
+                    {
+                        if (!errline.Contains(rowNum.retStr()))
+                        {
+                            ExcelPkg.Workbook.Worksheets[1].DeleteRow(rowNum, 1);
+                        }
+                    }
+                    ExcelPkg.Workbook.Worksheets.Add("sheet2");
+
+                    rowNum = 1;
+                    string[] arrerrmsg = MESSAGE.Split(new string[] { "<br/>" }, StringSplitOptions.None);
+                    foreach (var v in arrerrmsg)
+                    {
+                        ExcelPkg.Workbook.Worksheets[2].Cells[rowNum, 1].Value = v;
+                        rowNum++;
+                    }
+                    Response.Clear();
+                    Response.ClearContent();
+                    Response.Buffer = true;
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("Content-Disposition", "attachment; filename=FinProduct.xlsx");
+                    Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                    Response.Flush();
+                    Response.Close();
+                    Response.End();
+                    return "Excel Uploaded Successfully !!";
+                }
+            }
         }
         private string getFABITCD(string fabitnm)
         {
