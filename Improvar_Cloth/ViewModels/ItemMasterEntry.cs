@@ -45,5 +45,7 @@ namespace Improvar.ViewModels
         //public string M_SITEM_SIZE { get; set; }
         public string isPresentinLastYrSchema { get; set; }
         public bool FAVITEMChecked { get; set; }
+        public bool SkipDuplicateDesign { get; set; }
+
     }
 }

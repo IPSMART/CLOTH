@@ -25,7 +25,10 @@
             SetColor('Y');
             $("input[type='color']").css('pointer-events', 'none');
             $("input[type='file']").attr("disabled", false);
-            document.getElementById("UploadedFile").accept = ".xlsx";          
+            document.getElementById("UploadedFile").accept = ".xlsx";
+            document.getElementById("SkipDuplicateDesign").checked = true;
+            $("#SkipDuplicateDesign").css('pointer-events', 'auto');
+
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#ITCD").attr("readonly", "readonly");
@@ -1423,6 +1426,16 @@
                                 <div class="col-md-8" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 4px;">
                                         <input type="file" id="UploadedFile" name="UploadedFile" required accept=".xlsx" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Skip Duplicate Design")
+                                    </div>
+                                </div>
+                                <div class="col-md-1" >
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.CheckBoxFor(model => model.SkipDuplicateDesign, new { id = "SkipDuplicateDesign" })
                                     </div>
                                 </div>
                                 <div class="col-md-7" style="width:auto;">

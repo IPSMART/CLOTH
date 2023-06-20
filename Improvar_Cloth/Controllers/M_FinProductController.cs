@@ -16,6 +16,7 @@ using Oracle.ManagedDataAccess.Client;
 using System.Web;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using System.Text;
 
 namespace Improvar.Controllers
 {
@@ -2531,13 +2532,55 @@ namespace Improvar.Controllers
                     }
                     bool flag = true;
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                    var query = (from c in DB.M_SITEM
-                                 where (c.STYLENO.Trim() == DESIGN)
-                                 select c);
-                    if (query.Any())
+                    var query1 = (from c in DB.T_BATCHMST
+                                  where (c.BARNO.Trim() == BARNO)
+                                  select new { c.BARNO }).FirstOrDefault();
+                    if (query1 != null)
                     {
-                        MESSAGE += msg + "Design (" + DESIGN + ") Number Already Exists : Please Enter a Different Design Number !!";
-                        flag = false;
+                        MESSAGE += msg + "Barno (" + BARNO + ") Already Exists : Please Enter a Different Barno !!";
+                        continue;
+                    }
+                    var query = (from c in DB.M_SITEM
+                                 join d in DB.T_BATCHMST on c.ITCD equals d.ITCD into x
+                                 from d in x.DefaultIfEmpty()
+                                 join h in DB.M_GROUP on c.ITGRPCD equals h.ITGRPCD into y
+                                 from h in y.DefaultIfEmpty()
+                                 where (c.STYLENO.Trim() == DESIGN)
+                                 select new { c.ITCD, d.BARNO, h.ITGRPTYPE }).FirstOrDefault();
+                    if (query != null)
+                    {
+                        if (VE.SkipDuplicateDesign == true)
+                        {
+                            MESSAGE += msg + "Design (" + DESIGN + ") Number Already Exists : Please Enter a Different Design Number !!";
+                            flag = false;
+                        }
+                        else
+                        {
+                            if (query.ITGRPTYPE == itgrptype)
+                            {
+                                int len = DESIGN.Length;
+
+                                string sql = "select styleno from " + CommVar.CurSchema(UNQSNO) + ".m_sitem ";
+                                sql += "where SUBSTR( styleno,0," + len + ")='" + DESIGN + "' and REGEXP_LIKE(substr(styleno, " + (len + 1) + ",1),'^[a-zA-Z]') ";
+                                sql += "order by styleno desc";
+                                DataTable design = masterHelp.SQLquery(sql);
+                                if (design != null && design.Rows.Count > 0)
+                                {
+                                    var maxval = Encoding.ASCII.GetBytes(design.Rows[0]["styleno"].retStr().Substring(len, 1))[0];
+                                    var maxchar = Encoding.ASCII.GetString(BitConverter.GetBytes(maxval + 1), 0, 1);
+                                    DESIGN = DESIGN + maxchar;
+                                }
+                                else
+                                {
+                                    DESIGN = DESIGN + "A";
+                                }
+                            }
+                            else
+                            {
+                                MESSAGE += msg + "Design (" + DESIGN + ") Number Already Exists for itgrptype = " + itgrptype + " : Please Enter a Different Design Number !!";
+                                flag = false;
+                            }
+                        }
                     }
 
                     //var query1 = (from c in DB.M_GROUP
