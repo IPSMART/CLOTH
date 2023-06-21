@@ -2628,6 +2628,7 @@ namespace Improvar
         public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false)
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            var MSYSCNFG = M_SYSCNFG(tdt.retDateStr());
 
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string sql = "", sqlc = "";
@@ -2707,13 +2708,23 @@ namespace Improvar
             sql = "";
             sql += "select a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno itbarno, " + Environment.NewLine;
             sql += sqld;
-            sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, " + Environment.NewLine;
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty " + Environment.NewLine;
+            //sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, " + Environment.NewLine;
+            //sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty " + Environment.NewLine;
+            sql += "sum(case a.stkdrcr when 'D' then a.nos*-1 else a.nos end) nos, " + Environment.NewLine;
+            sql += "sum(case a.stkdrcr when 'D' then a.qnty*-1 else a.qnty end) qnty " + Environment.NewLine;
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
             if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') and " + Environment.NewLine;
-            sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+            //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+            if (MSYSCNFG.STKINCLPINV == "Y")
+            {
+                sql += "a.stkdrcr in ('D','C','0') ";
+            }
+            else
+            {
+                sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+            }
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
             sql += "order by itcd " + Environment.NewLine;
