@@ -516,9 +516,12 @@ namespace Improvar.Controllers
                         sqlc += "and a.autono=g.autono(+)  and d.slno = g.slno and ";
                         sqlc += "b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' and f.millnm in ('BALESTOCK') and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
-                        sqlc += "and g.baleno||g.baleyr not in (select a.baleno || a.baleyr from " + newschema + ".t_bale a," + newschema + ".t_cntrl_hdr b where a.autono = b.autono and b.yr_cd = '" + CommVar.YearCode(UNQSNO) + "') ";
+                        //sqlc += "and g.baleno||g.baleyr not in (select a.baleno || a.baleyr from " + newschema + ".t_bale a," + newschema + ".t_cntrl_hdr b where a.autono = b.autono and b.yr_cd = '" + CommVar.YearCode(UNQSNO) + "') ";
                         sqlc += "order by a.autono,d.slno ";
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
+
+                        sql = "alter table " + newschema + ".T_BALE disable constraint FKEY_T_BALE_BLSLNO";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                         string sqlc1 = "select distinct autono from (" + sqlc + ") ";
                         query = "delete from " + newschema + ".t_batchdtl where autono in (" + sqlc1 + ") ";
@@ -813,6 +816,8 @@ namespace Improvar.Controllers
                             }
                             if (i > maxR) break;
                         }
+                        sql = "alter table " + newschema + ".T_BALE enable constraint FKEY_T_BALE_BLSLNO";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }
                     #endregion
 
@@ -1610,7 +1615,7 @@ namespace Improvar.Controllers
                             autono = tbl.Rows[a]["autono"].retStr().retSqlformat();
                             string chqautono = tbl.Rows[a]["CHQRETAUTONO"].retStr().retSqlformat();
                             errorAutono = autono;
-                            
+
                             dbsql = "";
                             dbsql += " insert into " + newFinschema + ".T_CNTRL_HDR  ";
                             dbsql += "select * from " + oldFinschema + ".T_CNTRL_HDR ";
