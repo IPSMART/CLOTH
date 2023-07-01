@@ -283,7 +283,7 @@ namespace Improvar.Controllers
                                     TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 }
                                 TTXN.PARGLCD = TempData["LASTPARGLCD" + VE.MENU_PARA].retStr();
-                                TTXNOTH.PAYTERMS= TempData["LASTPAYTERMS" + VE.MENU_PARA].retStr();
+                                TTXNOTH.PAYTERMS = TempData["LASTPAYTERMS" + VE.MENU_PARA].retStr();
                                 TTXNOTH.SELBY = TempData["LASTSELBY" + VE.MENU_PARA].retStr();
                                 TTXNOTH.PACKBY = TempData["LASTPACKBY" + VE.MENU_PARA].retStr();
                                 TTXNOTH.DEALBY = TempData["LASTDEALBY" + VE.MENU_PARA].retStr();
@@ -339,7 +339,14 @@ namespace Improvar.Controllers
                                         { STKDRCR = Getstkdrcr.STKDRCR; }
                                     }
                                 }
-                                VE.STOCKHOLD = STKDRCR == "C" ? true : false;
+                                if (CommVar.ModuleCode() == "SALESCLOTH")
+                                {
+                                    VE.STOCKHOLD = true;
+                                }
+                                else
+                                {
+                                    VE.STOCKHOLD = STKDRCR == "C" ? true : false;
+                                }
 
                                 if (T_TXN != null)
                                 {
@@ -912,6 +919,7 @@ namespace Improvar.Controllers
                                   BLUOMCD = dr["CONVQTYPUNIT"].retStr() + " " + dr["BLUOMCD"].retStr(),
                                   CONVQTYPUNIT = dr["CONVQTYPUNIT"].retDbl(),
                                   FREESTK = dr["FREESTK"].retStr(),
+                                  STKDRCR = dr["STKDRCR"].retStr(),
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -935,6 +943,7 @@ namespace Improvar.Controllers
                 }
                 //fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
+                DataTable stockdata = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
@@ -942,7 +951,7 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
                     allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA, "", "", false, false, true, "", false);
-
+                    stockdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
                 }
                 else
                 {
@@ -1009,7 +1018,15 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-
+                    //if purchase stock det
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    {
+                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                        if (stkDATA != null)
+                        {
+                            v.BALSTOCK = stkDATA[0]["BALQNTY"].retDbl();
+                        }
+                    }
                     //var chk_child = ChildRecordCheck(TXN.AUTONO);  //modify by mithun
                     if (chk_child != "")
                     {
@@ -1062,7 +1079,7 @@ namespace Improvar.Controllers
 
                     var tax_data = (from a in VE.TBATCHDTL
                                     where a.TXNSLNO == v.SLNO
-                                    select new { a.PRODGRPGSTPER, a.ALL_GSTPER, a.FABITCD, a.FABITNM, a.RATE, a.RECPROGSLNO,a.BALSTOCK,a.NEGSTOCK }).FirstOrDefault();
+                                    select new { a.PRODGRPGSTPER, a.ALL_GSTPER, a.FABITCD, a.FABITNM, a.RATE, a.RECPROGSLNO, a.BALSTOCK, a.NEGSTOCK }).FirstOrDefault();
                     if (tax_data != null)
                     {
                         PRODGRPGSTPER = tax_data.PRODGRPGSTPER.retStr();
@@ -1222,14 +1239,15 @@ namespace Improvar.Controllers
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
-            if(VE.MENU_PARA=="PI")
+            if (VE.MENU_PARA == "PI")
             {
                 #region if PROFOMA used in sale bill then PROFOMA not able to uncancell. 
                 var CanRemChk = TCH.CANC_REM.retStr().Split("[]".ToCharArray());
                 if (CanRemChk.Count() > 1 && CanRemChk[1].retStr() != "")
-                { var docnoo = CanRemChk[1].retStr();
+                {
+                    var docnoo = CanRemChk[1].retStr();
                     var chkautono = DB.T_CNTRL_HDR.Where(a => a.DOCNO == docnoo).Select(b => b.AUTONO).ToList();
-                    if(chkautono!=null && chkautono.Count>0) VE.PI_tag = "Y";
+                    if (chkautono != null && chkautono.Count > 0) VE.PI_tag = "Y";
                 }
                 #endregion
             }
@@ -1944,6 +1962,17 @@ namespace Improvar.Controllers
                                     str = str.Replace(grppricegenstr.retStr(), syspricegenstr.retStr());
                                 }
                             }
+                        }
+                    }
+                    //if purchase stock det
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    {
+                        var stock_data = salesfunc.GetStock(DOCDT, GOCD, BARNO, "", "", AUTONO, "", "", PRCCD, TAXGRPCD, "", "", true, true, "", "", false, false, true, "", true);
+                        if (stock_data != null)
+                        {
+                            string grppricegenstr = "^BALQNTY=^" + str.retCompValue("BALQNTY") + Cn.GCS();
+                            string syspricegenstr = "^BALQNTY=^" + stock_data.Rows[0]["balqnty"] + Cn.GCS();
+                            str = str.Replace(grppricegenstr.retStr(), syspricegenstr.retStr());
                         }
                     }
                     return Content(str);
@@ -4850,7 +4879,7 @@ namespace Improvar.Controllers
                         TempData["LASTPAYTERMS" + VE.MENU_PARA] = VE.T_TXNOTH.PAYTERMS;
                         TempData["LASTSELBY" + VE.MENU_PARA] = VE.T_TXNOTH.SELBY;
                         TempData["LASTPACKBY" + VE.MENU_PARA] = VE.T_TXNOTH.PACKBY;
-                        TempData["LASTDEALBY" + VE.MENU_PARA] = VE.T_TXNOTH.DEALBY; 
+                        TempData["LASTDEALBY" + VE.MENU_PARA] = VE.T_TXNOTH.DEALBY;
 
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
@@ -5417,7 +5446,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "") { i++; goto batchdtlstart; }
@@ -6736,7 +6765,7 @@ namespace Improvar.Controllers
                     }
                     OraTrans.Commit();
                     //if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && VE.DefaultAction == "A") TempData["LoadFromExisting" + VE.MENU_PARA] = TTXN.AUTONO.retStr();
-                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != ""  &&  CommVar.ModuleCode() != "SALESSAREE")//need to delete profoma when salebill done from profma
+                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "" && CommVar.ModuleCode() != "SALESSAREE")//need to delete profoma when salebill done from profma
                     {
                         T_SALEController TSCntlr = new T_SALEController();
                         VE.DefaultAction = "V";
@@ -6748,7 +6777,7 @@ namespace Improvar.Controllers
                         T_SALEController TSCntlr = new T_SALEController();
                         VE.DefaultAction = "V";
                         VE.MENU_PARA = "PI";
-                        var deletemsg = TSCntlr.cancelRecords(VE, "["+DOCPATTERN+"]"+"["+ TTXN.DOCDT.retDateStr()+"]");
+                        var deletemsg = TSCntlr.cancelRecords(VE, "[" + DOCPATTERN + "]" + "[" + TTXN.DOCDT.retDateStr() + "]");
                     }
                     goto dbsave;
                 }
@@ -6882,7 +6911,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -6890,7 +6919,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

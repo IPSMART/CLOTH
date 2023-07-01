@@ -2347,7 +2347,7 @@ namespace Improvar.Controllers
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         //TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, null, "".retDbl(), null);
-                        TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, null, "".retDbl(), null,VE.Audit_REM);
+                        TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, null, "".retDbl(), null, VE.Audit_REM);
                     }
                     else
                     {
@@ -2547,17 +2547,19 @@ namespace Improvar.Controllers
                         {
                             if (VE.TsalePos_TBATCHDTL[i].SLNO != 0 && VE.TsalePos_TBATCHDTL[i].ITCD != null && VE.TsalePos_TBATCHDTL[i].QNTY != 0 && VE.TsalePos_TBATCHDTL[i].MTRLJOBCD != null && VE.TsalePos_TBATCHDTL[i].STKTYPE != null)
                             {
-                                if (VE.TsalePos_TBATCHDTL[i].IGSTAMT.retDbl() + VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl() + VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                bool free = false;//for sachi saree free item
+                                if (VE.TsalePos_TBATCHDTL[i].TXBLVAL.retDbl() == 0) free = true;
+                                if (VE.TsalePos_TBATCHDTL[i].IGSTAMT.retDbl() + VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl() + VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && free == false)
                                 {
                                     ContentFlg = "TAX amount not found Main Tab. Please add tax at slno " + VE.TsalePos_TBATCHDTL[i].SLNO;
                                     goto dbnotsave;
                                 }
-                                else if (VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl() == 0 && VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N")
+                                else if (VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl() == 0 && VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N" && free == false)
                                 {
                                     ContentFlg = "Cgst amount not found Main Tab. Please add tax at slno " + VE.TsalePos_TBATCHDTL[i].SLNO;
                                     goto dbnotsave;
                                 }
-                                else if (VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl() != 0 && VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                else if (VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl() != 0 && VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && free == false)
                                 {
                                     ContentFlg = "Sgst amount not found Main Tab. Please add tax at slno " + VE.TsalePos_TBATCHDTL[i].SLNO;
                                     goto dbnotsave;

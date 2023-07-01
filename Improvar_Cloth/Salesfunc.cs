@@ -1113,27 +1113,27 @@ namespace Improvar
                 sql += "( select gocd, mtrljobcd, stktype, barno, partcd, sum(balqnty) balqnty, sum(balnos) balnos from " + Environment.NewLine;
                 sql += "( " + Environment.NewLine;
                 sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, " + Environment.NewLine;
-                if (MSYSCNFG.STKINCLPINV == "Y")
-                {
-                    sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 when '0' then a.qnty*-1 end) balqnty, " + Environment.NewLine;
-                    sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 when '0' then a.qnty*-1 end) balnos " + Environment.NewLine;
-                }
-                else
-                {
-                    sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 end) balqnty, " + Environment.NewLine;
-                    sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 end) balnos " + Environment.NewLine;
-                }
+                //if (MSYSCNFG.STKINCLPINV == "Y")
+                //{
+                //    sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 when '0' then a.qnty*-1 end) balqnty, " + Environment.NewLine;
+                //    sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 when '0' then a.qnty*-1 end) balnos " + Environment.NewLine;
+                //}
+                //else
+                //{
+                sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 end) balqnty, " + Environment.NewLine;
+                sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 end) balnos " + Environment.NewLine;
+                //}
 
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + scm + ".t_bale g " + Environment.NewLine;
                 sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
-                if (MSYSCNFG.STKINCLPINV == "Y")
-                {
-                    sql += " and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
-                }
-                else {
-                    sql += " and a.stkdrcr in ('D','C') and " + Environment.NewLine;
-                }
+                //if (MSYSCNFG.STKINCLPINV == "Y")
+                //{
+                //    sql += " and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
+                //}
+                //else {
+                sql += " and a.stkdrcr in ('D','C') and " + Environment.NewLine;
+                //}
                 if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and " + Environment.NewLine;
                 if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and " + Environment.NewLine;
                 if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and " + Environment.NewLine;
@@ -1153,13 +1153,13 @@ namespace Improvar
                     sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                     sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and " + Environment.NewLine;
                     sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' " + Environment.NewLine;
-                    if (MSYSCNFG.STKINCLPINV == "Y")
-                    {
-                        sql += "and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
-                    }
-                    else {
-                        sql += "and a.stkdrcr in ('D','C') and " + Environment.NewLine;
-                    }
+                    //if (MSYSCNFG.STKINCLPINV == "Y")
+                    //{
+                    //    sql += "and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
+                    //}
+                    //else {
+                    sql += "and a.stkdrcr in ('D','C') and " + Environment.NewLine;
+                    //}
                     if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and " + Environment.NewLine;
                     if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
                     if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and " + Environment.NewLine;
@@ -2717,14 +2717,14 @@ namespace Improvar
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
             if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') and " + Environment.NewLine;
             //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
-            if (MSYSCNFG.STKINCLPINV == "Y")
-            {
-                sql += "a.stkdrcr in ('D','C','0') ";
-            }
-            else
-            {
-                sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
-            }
+            //if (MSYSCNFG.STKINCLPINV == "Y")
+            //{
+            //    sql += "a.stkdrcr in ('D','C','0') ";
+            //}
+            //else
+            //{
+            sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+            //}
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
             sql += "order by itcd " + Environment.NewLine;

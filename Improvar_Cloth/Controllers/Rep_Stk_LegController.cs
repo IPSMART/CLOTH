@@ -168,9 +168,14 @@ namespace Improvar.Controllers
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c," + scm1 + ".m_doctype d, " + Environment.NewLine;
                 sql += scmf + ".m_subleg i, " + scm1 + ".t_bale j " + Environment.NewLine;
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and b.slcd=i.slcd(+) and " + Environment.NewLine;
-                if (MSYSCNFG.STKINCLPINV == "Y")
-                { sql += "a.stkdrcr in ('D','C','0') "; }
-                else { sql += "a.stkdrcr in ('D','C') "; }
+                //if (MSYSCNFG.STKINCLPINV == "Y")
+                //{
+                //    sql += "a.stkdrcr in ('D','C','0') ";
+                //}
+                //else
+                //{
+                    sql += "a.stkdrcr in ('D','C') ";
+                //}
 
                 sql += "and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "' " + Environment.NewLine;
                 sql += "and a.autono = j.autono(+) and a.slno=j.slno(+) " + Environment.NewLine;
@@ -200,15 +205,15 @@ namespace Improvar.Controllers
                 sql += "(select listagg(gonm, ',') within group (order by gonm) fgonm,autono,slno " + Environment.NewLine;
                 sql += "from (select distinct a.gocd, b.autono, c.gonm,a.slno " + Environment.NewLine;
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) " + Environment.NewLine;
-                if (MSYSCNFG.STKINCLPINV == "Y")
-                {
-                    sql += " and a.stkdrcr in('C','0')" + Environment.NewLine;
+                //if (MSYSCNFG.STKINCLPINV == "Y")
+                //{
+                //    sql += " and a.stkdrcr in('C','0')" + Environment.NewLine;
 
-                }
-                else
-                {
+                //}
+                //else
+                //{
                     sql += " and a.stkdrcr = 'C' " + Environment.NewLine;
-                }
+                //}
                 sql += " and a.stkdrcr = 'C' " + Environment.NewLine;
                 sql += "group by a.gocd, b.autono, c.gonm,a.slno) " + Environment.NewLine;
                 sql += "group by autono,slno) f, " + Environment.NewLine;
@@ -424,7 +429,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("mtrljobcdvalue"))
                 {
                     if (selgonm != "") selgonm += "</br>";
-                    selgonm += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'","");
+                    selgonm += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
                 }
                 PV = HC.ShowReport(IR, repname, pghdr1, selgonm, true, true, "L", false);
 
