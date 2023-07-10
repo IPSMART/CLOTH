@@ -52,8 +52,8 @@
                                 <th class="" style="width: 81px;">Color Code</th>
                                 <th class="" style="width:100px;">Color Name</th>
                                 <th class="" style="width:107px;">Size</th>
-                                <th class="" style="width:111px;text-align:right;">Nos</th>
                                 <th class="" style="width:60px;text-align:right;">Cut Length</th>
+                                <th class="" style="width:111px;text-align:right;">Nos</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width:77px;">Shade</th>
                                 <th class="" style="">Remarks</th>
@@ -156,11 +156,12 @@
                                             @Html.HiddenFor(model => model.TPROGDTL[i].SZBARCODE, new { id = "P_SZBARCODE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateProgQnty('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
-                                        </td>
-                                        <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", onblur = "CalculateProgQnty('" + i + "');", @style = "text-align:right;" })
                                         </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateProgQnty('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
+                                        </td>
+
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateProgQnty('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
@@ -211,12 +212,12 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.P_T_NOS, new { htmlAttributes = new { id = "P_T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@ @*RATE*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.P_T_QNTY, new { htmlAttributes = new { id = "P_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
