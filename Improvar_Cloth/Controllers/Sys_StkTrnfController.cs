@@ -331,7 +331,7 @@ namespace Improvar.Controllers
                                 {
                                     var aa = "";
                                 }
-                                string itcd = tbl.Rows[i]["itcd"].retStr();
+                                //string itcd = tbl.Rows[i]["itcd"].retStr();
                                 string barno = tbl.Rows[i]["barno"].retStr();
                                 double iqty = 0; int inos = 0; Int32 chki = i;
                                 double slno = 0;
@@ -413,6 +413,7 @@ namespace Improvar.Controllers
                                 var aa1 = tbl.Rows[i]["autono"].ToString() + "/" + tbl.Rows[i]["slno"].retDbl() + "/" + tbl.Rows[i]["gocd"].ToString();
                                 while (tbl.Rows[i]["autono"].ToString() == oldautono && tbl.Rows[i]["slno"].retDbl() == slno && tbl.Rows[i]["gocd"].ToString() == godown)
                                 {
+                                    string itcd = tbl.Rows[i]["itcd"].retStr();
                                     errorAutono = tbl.Rows[i]["barno"].retStr();
                                     if (errorAutono == "11700190")
                                     {
