@@ -4114,10 +4114,10 @@ namespace Improvar.Controllers
         {
             Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
             string sql = "select x.autono,x.docno,x.docdt,x.itcd,x.itnm,x.styleno,x.itgrpcd,x.itgrpnm,x.qnty,x.uomcd,x.stktype, ";
-            sql += "x.barno,x.TXBLVAL,x.IGSTPER,x.CGSTPER,x.SGSTPER,x.CESSPER,x.SALGLCD,y.prodgrpgstper,x.HSNCODE from ";
+            sql += "x.barno,x.TXBLVAL,x.IGSTPER,x.CGSTPER,x.SGSTPER,x.CESSPER,x.SALGLCD,y.prodgrpgstper,x.HSNCODE,x.DISCTYPE,x.DISCRATE from ";
 
             sql += "(select a.autono,a.docno,a.docdt,b.itcd,e.itnm,e.styleno,e.prodgrpcd,e.itgrpcd,f.itgrpnm,b.qnty,e.uomcd,b.stktype, ";
-            sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER,f.SALGLCD,b.HSNCODE from  " + scm + ".T_TXN a, ";
+            sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER,f.SALGLCD,b.HSNCODE,b.DISCTYPE,b.DISCRATE from  " + scm + ".T_TXN a, ";
             sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f," + scm + ".M_DOCTYPE g ";
             sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) and a.doccd=g.doccd(+) ";
             //sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doccd in('" + R_DOCCD + "')  ";
@@ -4169,7 +4169,10 @@ namespace Improvar.Controllers
                                        UOM = dr["uomcd"].retStr(),
                                        PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
                                        GLCD = dr["SALGLCD"].retStr(),
-                                       HSNCODE = dr["HSNCODE"].retStr()
+                                       HSNCODE = dr["HSNCODE"].retStr(),
+                                       DISCTYPE = dr["DISCTYPE"].retStr(),
+                                       DISCRATE = dr["DISCRATE"].retDbl()
+
                                    }).ToList();
                 int slno = 0;
                 for (int p = 0; p <= VE.TTXNDTLPOPUP.Count - 1; p++)
@@ -4191,7 +4194,8 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE); ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 var _TTXNDTLPOPUP = VE.TTXNDTLPOPUP.Where(r => r.P_Checked == true).ToList(); int slno = 0, SERIAL = 0;
                 List<TsalePos_TBATCHDTL_RETURN> tsalePosReturnList = new List<TsalePos_TBATCHDTL_RETURN>();
-
+                VE.DISC_TYPE = masterHelp.DISC_TYPE();
+                VE.PCSActionList = masterHelp.PCSAction();
                 foreach (var row in _TTXNDTLPOPUP)
                 {
                     TsalePos_TBATCHDTL_RETURN tsalePos_TBATCHDTL_RETURN = new TsalePos_TBATCHDTL_RETURN();
@@ -4214,6 +4218,9 @@ namespace Improvar.Controllers
                     tsalePos_TBATCHDTL_RETURN.PRODGRPGSTPER = row.PRODGRPGSTPER.retStr();
                     tsalePos_TBATCHDTL_RETURN.GLCD = row.GLCD.retStr();
                     tsalePos_TBATCHDTL_RETURN.HSNCODE = row.HSNCODE.retStr();
+                    tsalePos_TBATCHDTL_RETURN.DISCTYPE = row.DISCTYPE.retStr();
+                    tsalePos_TBATCHDTL_RETURN.DISCTYPE_DESC = row.DISCTYPE.retStr() == "P" ? "%" : row.DISCTYPE.retStr() == "N" ? "Nos" : row.DISCTYPE.retStr() == "Q" ? "Qnty" : "Fixed";
+                    tsalePos_TBATCHDTL_RETURN.DISCRATE = row.DISCRATE.retDbl();
                     //tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
                     if (VE.TsalePos_TBATCHDTL_RETURN == null) VE.TsalePos_TBATCHDTL_RETURN = new List<TsalePos_TBATCHDTL_RETURN>();
                     VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);
@@ -4256,8 +4263,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
-            VE.DISC_TYPE = masterHelp.DISC_TYPE();
-            VE.PCSActionList = masterHelp.PCSAction();
+          
             VE.DefaultView = true;
             ModelState.Clear();
             return PartialView("_T_SALE_POS_RETURN", VE);

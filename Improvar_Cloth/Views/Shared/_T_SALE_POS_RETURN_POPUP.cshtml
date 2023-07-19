@@ -66,6 +66,8 @@
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].PRODGRPGSTPER, new { id = "P_PRODGRPGSTPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].GLCD, new { id = "P_GLCD_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].HSNCODE, new { id = "P_HSNCODE_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].DISCTYPE, new { id = "P_DISCTYPE_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].DISCRATE, new { id = "P_DISCRATE_" + i })
                                         </td>
                                         <td class="sticky-cell">
                                             @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -84,7 +86,7 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].ITCD, new { id = "P_ITCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                          
+
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTLPOPUP[i].ITSTYLE, new { id = "P_ITSTYLE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -92,30 +94,30 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTLPOPUP[i].QNTY, new { htmlattributes = new { id = "P_QNTY_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
-                                     
+
                                     </tr>
                                 }
                             }
                         </tbody>
                         @*<tfoot>
-                            <tr class="sticky-footer">
-                                <th class="sticky-cell"></th>
-                                <th class="sticky-cell" title="SL No."></th>
-                                <th title="Order No."></th>
-                                <th title="Order Date"></th>
-                                <th title="ItmGrp"></th>
-                                <th title="Item Design"></th>
-                                <th title="Color Name"></th>
-                                <th title="Size"></th>
-                                <th title="Order Qnty"></th>
-                                <th title="Bal. Qnty"></th>
-                                <th title="Current Adj. Qnty"></th>
-                                <th title="Item Code"></th>
-                                <th title="Color Code"></th>
-                                <th title="Party Design"></th>
-                                <th title="Rate"></th>
-                            </tr>
-                        </tfoot>*@
+                                <tr class="sticky-footer">
+                                    <th class="sticky-cell"></th>
+                                    <th class="sticky-cell" title="SL No."></th>
+                                    <th title="Order No."></th>
+                                    <th title="Order Date"></th>
+                                    <th title="ItmGrp"></th>
+                                    <th title="Item Design"></th>
+                                    <th title="Color Name"></th>
+                                    <th title="Size"></th>
+                                    <th title="Order Qnty"></th>
+                                    <th title="Bal. Qnty"></th>
+                                    <th title="Current Adj. Qnty"></th>
+                                    <th title="Item Code"></th>
+                                    <th title="Color Code"></th>
+                                    <th title="Party Design"></th>
+                                    <th title="Rate"></th>
+                                </tr>
+                            </tfoot>*@
 
                     </table>
                 </div>
@@ -126,8 +128,8 @@
     <div class="row" style="padding:5px;text-align:center;">
         <input type="hidden" id="pendorderpopup" />
         <input type="button" class="btn btn-success" id="btnSelectTTXNDTLDetails" value="Select" style="padding: 2px 5px 2px 5px;" onclick="SelectTTXNDTLDetails();" />
-       
-       
+
+
         <input type="button" class="btn btn-danger" id="btnCancelTTXNDTLDetails" value="Close" style="padding: 2px 5px 2px 5px;" onclick="CloseTTXNDTLDetails();" />
     </div>
 </div>

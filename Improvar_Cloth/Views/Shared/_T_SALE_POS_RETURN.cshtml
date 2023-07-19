@@ -247,7 +247,7 @@
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE_DESC, new { id = "R_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                 @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE, new { id = "R_DISCTYPE_" + i })*@
-                                            @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor select_3d ", id = "R_DISCTYPE_" + i, @onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_RETURN_GRID');" })
+                                            @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text",Model.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE), new { @class = "atextBoxFor select_3d ", id = "R_DISCTYPE_" + i, @onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_RETURN_GRID');" })
 
                                         </td>
 

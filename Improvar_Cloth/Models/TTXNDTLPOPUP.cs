@@ -37,5 +37,9 @@ namespace Improvar.Models
         public double? SCMDISCRATE { get; set; }
         public string GLCD { get; set; }
         public string HSNCODE { get; set; }
+        public double DISCRATE { get; set; }
+        public string DISCTYPE { get; set; }
+
+
     }
 }
