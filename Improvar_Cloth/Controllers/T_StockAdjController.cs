@@ -325,7 +325,7 @@ namespace Improvar.Controllers
             }
             return VE;
         }
-        public ActionResult SearchPannelData(TransactionSaleEntry VE)
+        public ActionResult SearchPannelData(StockAdjustmentsConversionEntry VE)
         {
             try
             {
@@ -710,7 +710,7 @@ namespace Improvar.Controllers
                         TTXNOTH.DOCREM = VE.T_TXNOTH.DOCREM;
 
                         //dbsql = Master_Help.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
-                        dbsql = Master_Help.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD,0,VE.Audit_REM);
+                        dbsql = Master_Help.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, 0, VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = Master_Help.RetModeltoSql(TTXN, VE.DefaultAction);
@@ -1204,7 +1204,7 @@ namespace Improvar.Controllers
                         //if (VE.MENU_PARA == "CNV")
                         if (VE.MENU_PARA != "CNV")
                         {
-                            if (IN_TOTAL_QNTY != OUT_TOTAL_QNTY)
+                            if (IN_TOTAL_QNTY.toRound(3).retDbl() != OUT_TOTAL_QNTY.toRound(3).retDbl())
                             {
                                 OraTrans.Rollback();
                                 OraTrans.Dispose();
@@ -1303,7 +1303,7 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         //dbsql = Master_Help.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
-                        dbsql = Master_Help.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null,null,null,null,null,0,VE.Audit_REM);
+                        dbsql = Master_Help.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null, null, null, null, null, 0, VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
                         ModelState.Clear();
@@ -1475,6 +1475,45 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             return PartialView("_T_StockAdj_OUT_TAB", VE);
         }
-
+        public ActionResult ParkRecord(FormCollection FC, StockAdjustmentsConversionEntry stream)
+        {
+            try
+            {
+                Cn.getQueryString(stream);
+                if (stream.T_TXN.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_TXN.DOCCD.retStr();
+                }
+                string MNUDET = stream.MENU_DETAILS;
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
+                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
+                ID = ID.Replace(" ", "_");
+                string Userid = Session["UR_ID"].ToString();
+                INI Handel_ini = new INI();
+                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                string JR = javaScriptSerializer.Serialize(stream);
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                return Content("1");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+        }
+        public string RetrivePark(string value)
+        {
+            try
+            {
+                string url = Master_Help.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.StockAdjustmentsConversionEntry");
+                return url;
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return ex.Message;
+            }
+        }
     }
 }
