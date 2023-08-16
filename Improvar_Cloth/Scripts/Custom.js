@@ -1811,6 +1811,8 @@ function Audit_record_save(Action) {
         return false;
     }
     $("#Audit_REM").val(rem);
+    $('#DivAudit').hide();
+    document.getElementById("Audit_overlay").style.display = "none";
 
     if (Action == "E") {
         editPageData();
