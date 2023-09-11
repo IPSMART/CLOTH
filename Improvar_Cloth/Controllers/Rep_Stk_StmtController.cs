@@ -154,6 +154,7 @@ namespace Improvar.Controllers
 
                 string mtrljobcd = "'FS'";
                 if (FC.AllKeys.Contains("mtrljobcdvalue")) mtrljobcd = CommFunc.retSqlformat(FC["mtrljobcdvalue"].ToString());
+                string rateon = FC["rateon"].retStr();
 
                 string prcd = VE.PRCCD;
                 if (selgocd == "" && summary == "G")
@@ -181,6 +182,7 @@ namespace Improvar.Controllers
                 string qdsp = "n,16," + qdeci.ToString();
                 bool ignoreitems = VE.Checkbox2;
                 DataTable tbl = new DataTable();
+                DataTable fifotbl = new DataTable();
                 if (summary == "F")
                 {
                     //tbl = Salesfunc.GetStockFifo("FIFO", asdt, "", "", selitgrpcd, "", selgocd, true, "", false, "", "", "", "", "CP");
@@ -191,6 +193,10 @@ namespace Improvar.Controllers
                 {
                     //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
                     tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
+                }
+                if (rateon == "FIFO")
+                {
+                    fifotbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", true, "", "", "", "", VE.Checkbox9);
                 }
                 if (tbl != null && tbl.Rows.Count > 0 && Onlynegativestock == true)
                 {
@@ -207,12 +213,12 @@ namespace Improvar.Controllers
                 if (summary == "D" || (summary == "F" && repon == "D"))
                 {
                     //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
-                    return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, summary);
+                    return Details(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, summary, rateon, fifotbl);
                 }
                 else if (summary == "S" || (summary == "F" && repon == "S"))
                 {
                     //DataTable tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP");
-                    return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems, summary);
+                    return Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems, summary, rateon, fifotbl);
                 }
                 else if (summary == "G")
                 {
@@ -235,7 +241,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-        public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, string summary)
+        public ActionResult Details(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, string summary, string rateon, DataTable fifotbl)
         {
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
@@ -281,10 +287,27 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
                         IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                         IR.Rows[rNo]["qnty"] = tbl.Rows[i]["balqnty"].ToString();
-                        IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                        IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
                         iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
-                        iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        if (rateon == "FIFO")
+                        {
+                            if (fifotbl != null && fifotbl.Rows.Count > 0)
+                            {
+                                var fifort = (from DataRow a in fifotbl.Rows where a["itcd"].retStr() == stritcd select a["rate"]).FirstOrDefault();
+                                IR.Rows[rNo]["rate"] = fifort.retDbl();
+                                IR.Rows[rNo]["amt"] = (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                iamt = iamt + (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            }
+                        }
+                        else
+                        {
+                            IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                            IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        }
+                        //IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                        //IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        //iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
+                        //iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
                         i++;
                         if (i > maxR) break;
                     }
@@ -328,7 +351,7 @@ namespace Improvar.Controllers
             TempData[repname + "xxx"] = IR;
             return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
         }
-        public ActionResult Summary(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, bool ignoreitems, string summary)
+        public ActionResult Summary(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, bool ignoreitems, string summary, string rateon, DataTable fifotbl)
         {
             Models.PrintViewer PV = new Models.PrintViewer();
             HtmlConverter HC = new HtmlConverter();
@@ -442,7 +465,21 @@ namespace Improvar.Controllers
                             days = TSdys.Days;
                         }
 
-                        double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        //double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString());
+                        double _amt = 0;
+                        if (rateon == "FIFO")
+                        {
+                            if (fifotbl != null && fifotbl.Rows.Count > 0)
+                            {
+                                var fifort = (from DataRow a in fifotbl.Rows where a["itcd"].retStr() == stritcd select a["rate"]).FirstOrDefault();
+                                _amt = (fifort.retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                            }
+                        }
+                        else
+                        {
+                            _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        }
                         if (ageingperiod > 0)
                         {
                             if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + _qty; due1Amt = due1Amt + _amt; }
@@ -683,7 +720,7 @@ namespace Improvar.Controllers
 
                 string query = "select a.barno, e.itcd, e.fabitcd, a.doctag, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                 query += "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(c.rate, 0) clrate, ";
-                query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode   from ";
+                query += "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,e.hsncode,f.styleno||' '||f.itnm itstyle   from ";
 
                 query += "(select a.barno, 'OP' doctag, sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty, ";
                 query += "sum(case a.stkdrcr when 'D' then nvl(a.txblval, 0) else nvl(a.txblval, 0) * -1 end) txblval, ";
@@ -964,7 +1001,13 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slno"] = islno;
                                     if (VE.Checkbox4 == true) IR.Rows[rNo]["barno"] = summarybarcode.Rows[i - 1]["barno"].ToString();
                                     if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
-                                    IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
+                                    if (VE.Checkbox11 == true)
+                                    {
+                                        IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["itstyle"].ToString();
+                                    }
+                                    else {
+                                        IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
+                                    }
                                     if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
                                     IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();
                                     IR.Rows[rNo]["opqty"] = opqty;
