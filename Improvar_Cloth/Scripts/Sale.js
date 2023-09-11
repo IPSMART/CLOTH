@@ -2491,7 +2491,8 @@ function AddBarCodeGrid() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
-    if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    //if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    if ((MENU_PARA == "PR" || MENU_PARA == "SR") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
         $('#PARTY_HELP').hide();
     }
@@ -3097,66 +3098,76 @@ function GetPartyDetails(id) {
                 else {
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
-                        $("#SLCD").val(returncolvalue(result, "slcd"));
-                        $("#SLNM").val(returncolvalue(result, "slnm"));
-                        $("#SLAREA").val(returncolvalue(result, "slarea"));
-                        $("#GSTNO").val(returncolvalue(result, "gstno"));
-                        $("#SLDISCDESC").val(returncolvalue(result, "SLDISCDESC"));
-                        $("#TAXGRPCD").val(returncolvalue(result, "TAXGRPCD"));
-                        $("#PRCCD").val(returncolvalue(result, "PRCCD"));
-                        $("#PRCNM").val(returncolvalue(result, "PRCNM"));
-                        $("#AGSLCD").val(returncolvalue(result, "AGSLCD"));
-                        $("#AGSLNM").val(returncolvalue(result, "AGSLNM"));
-                        $("#DUEDAYS").val(returncolvalue(result, "crdays"));
-                        $("#PSLCD").val(returncolvalue(result, "PSLCD"));
-                        $("#PARTYCD").val(returncolvalue(result, "PARTYCD"));
-                        $("#TRANSLCD").val(returncolvalue(result, "TRSLCD"));
-                        $("#TRANSLNM").val(returncolvalue(result, "TRSLNM"));
-                        //tcs
-                        $("#TCSCODE").val(returncolvalue(result, "TCSCODE"));
-                        $("#TDSNM").val(returncolvalue(result, "TCSNM"));
-                        $("#TCSPER").val(returncolvalue(result, "TCSPER"));
-                        $("#TDSLIMIT").val(returncolvalue(result, "TDSLIMIT"));
-                        $("#TDSCALCON").val(returncolvalue(result, "TDSCALCON"));
-                        $("#AMT").val(returncolvalue(result, "AMT"));
-                        $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
-                        $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
                         debugger;
-                        if (ClientCode == "DIWH" && MENU_PARA == "SBDIR") {
+                        var value = modify_check_taxgrpcd(returncolvalue(result, "TAXGRPCD"), returncolvalue(result, "PRCCD"));
+                        if (value == "false") {
+                            $("#SLCD").val(returncolvalue(result, "slcd"));
+                            $("#SLNM").val(returncolvalue(result, "slnm"));
+                            $("#SLAREA").val(returncolvalue(result, "slarea"));
+                            $("#GSTNO").val(returncolvalue(result, "gstno"));
+                            $("#SLDISCDESC").val(returncolvalue(result, "SLDISCDESC"));
+                            $("#TAXGRPCD").val(returncolvalue(result, "TAXGRPCD"));
+                            $("#PRCCD").val(returncolvalue(result, "PRCCD"));
+                            $("#PRCNM").val(returncolvalue(result, "PRCNM"));
+                            $("#AGSLCD").val(returncolvalue(result, "AGSLCD"));
+                            $("#AGSLNM").val(returncolvalue(result, "AGSLNM"));
+                            $("#DUEDAYS").val(returncolvalue(result, "crdays"));
+                            $("#PSLCD").val(returncolvalue(result, "PSLCD"));
+                            $("#PARTYCD").val(returncolvalue(result, "PARTYCD"));
+                            $("#TRANSLCD").val(returncolvalue(result, "TRSLCD"));
+                            $("#TRANSLNM").val(returncolvalue(result, "TRSLNM"));
+                            //tcs
+                            $("#TCSCODE").val(returncolvalue(result, "TCSCODE"));
+                            $("#TDSNM").val(returncolvalue(result, "TCSNM"));
+                            $("#TCSPER").val(returncolvalue(result, "TCSPER"));
+                            $("#TDSLIMIT").val(returncolvalue(result, "TDSLIMIT"));
+                            $("#TDSCALCON").val(returncolvalue(result, "TDSCALCON"));
+                            $("#AMT").val(returncolvalue(result, "AMT"));
+                            $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
+                            $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
                             debugger;
-                            $("#PARGLCD").val(returncolvalue(result, "PARGLCD"));
-                            $("#PARGLNM").val(returncolvalue(result, "PARGLNM"));
-                        }
-                        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-                            if (retStr(returncolvalue(result, "TCSAPPL")) == "Y") {
-                                document.getElementById("TCSAUTOCAL").checked = true;
+                            if (ClientCode == "DIWH" && MENU_PARA == "SBDIR") {
+                                debugger;
+                                $("#PARGLCD").val(returncolvalue(result, "PARGLCD"));
+                                $("#PARGLNM").val(returncolvalue(result, "PARGLNM"));
+                            }
+                            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+                                if (retStr(returncolvalue(result, "TCSAPPL")) == "Y") {
+                                    document.getElementById("TCSAUTOCAL").checked = true;
+                                }
+                                else {
+                                    document.getElementById("TCSAUTOCAL").checked = false;
+                                }
+                            }
+                            BillAmountCalculate();//fill value of tcson
+                            //
+                            if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
+                                $("li").removeClass("active").addClass("");
+                                $(".nav-tabs li:first-child").addClass('active');
+                                $(".tab-content div").removeClass("active");
+                                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                                $("#PREFNO").focus();
                             }
                             else {
-                                document.getElementById("TCSAUTOCAL").checked = false;
+                                $("li").removeClass("active").addClass("");
+                                $(".nav-tabs li:nth-child(2)").addClass('active');
+                                //below set the  child sequence
+                                $(".tab-content div").removeClass("active");
+                                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                                if ($("#MNTNBARNO").val() == "Y") {
+                                    $("#BARCODE").focus();
+                                }
+                                else {
+                                    $("#STYLENO").focus();
+                                }
+
                             }
-                        }
-                        BillAmountCalculate();//fill value of tcson
-                        //
-                        if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {
-                            $("li").removeClass("active").addClass("");
-                            $(".nav-tabs li:first-child").addClass('active');
-                            $(".tab-content div").removeClass("active");
-                            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                            $("#PREFNO").focus();
                         }
                         else {
-                            $("li").removeClass("active").addClass("");
-                            $(".nav-tabs li:nth-child(2)").addClass('active');
-                            //below set the  child sequence
-                            $(".tab-content div").removeClass("active");
-                            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                            if ($("#MNTNBARNO").val() == "Y") {
-                                $("#BARCODE").focus();
-                            }
-                            else {
-                                $("#STYLENO").focus();
-                            }
-
+                            var Last_SLCD = $("#Last_SLCD").val();
+                            $("#SLCD").val(Last_SLCD);
+                            $("#SLCD").blur();
+                            msgInfo("Previous Tax Group and Current Tax Group not match");
                         }
                     }
                     else {
@@ -4151,7 +4162,8 @@ function Sale_SelectTTXNDTLDetails() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
-    if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    //if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    if ((MENU_PARA == "PR" || MENU_PARA == "SR") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
         $('#PARTY_HELP').hide();
     }
@@ -4509,7 +4521,8 @@ function GetBaleData() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
-    if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    //if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
+    if ((MENU_PARA == "PR" || MENU_PARA == "SR") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
         $('#PARTY_HELP').hide();
     }
@@ -4937,7 +4950,7 @@ function UpdateBillSlno() {
                 }
                 slno++;
             }
-           
+
         }
     }
     HasChangeBarSale();
@@ -4963,6 +4976,23 @@ function SelectSameBale(index) {
     }
 
     $("#WaitingMode").hide();
+}
+function modify_check_taxgrpcd(TAXGRPCD, PRCCD) {
+    debugger;
+    var Last_TAXGRPCD = $("#Last_TAXGRPCD").val();
+    var Last_PRCCD = $("#Last_PRCCD").val();
+    var SLCD = $("#SLCD").val();
+    var Last_SLCD = $("#Last_SLCD").val();
+    var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    if (Last_TAXGRPCD != "" && Last_PRCCD != "" && GridRowMain != 0 && (Last_TAXGRPCD != TAXGRPCD || Last_PRCCD != PRCCD)) {
+        return "true";
+    }
+    else {
+        $("#Last_TAXGRPCD").val(TAXGRPCD);
+        $("#Last_SLCD").val(SLCD);
+        $("#Last_PRCCD").val(PRCCD);
+        return "false";
+    }
 }
 
 
