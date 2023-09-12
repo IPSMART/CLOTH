@@ -638,6 +638,8 @@ namespace Improvar.Controllers
                     T_TXNOTH tempTXNOTH = new T_TXNOTH();
                     TXNOTH = tempTXNOTH;
                 }
+                VE.Last_TAXGRPCD = TXNOTH.TAXGRPCD;
+                VE.Last_PRCCD = TXNOTH.PRCCD;
                 TTXNEINV = DBF.T_TXNEINV.Find(TXN.AUTONO);
                 TTDS = DBF.T_TDSTXN.Where(m => m.AUTONO == TXN.AUTONO).FirstOrDefault();
                 VCHGST = (from x in DBF.T_VCH_GST where x.AUTONO == TXN.AUTONO select x).FirstOrDefault();
@@ -659,6 +661,7 @@ namespace Improvar.Controllers
                 if (TXN.SLCD.retStr() != "")
                 {
                     string slcd = TXN.SLCD;
+                    VE.Last_SLCD = slcd;
                     var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
                     VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
@@ -4585,6 +4588,11 @@ namespace Improvar.Controllers
                 }
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
+                    if ((VE.Last_TAXGRPCD.retStr() != VE.T_TXNOTH.TAXGRPCD.retStr()) || (VE.Last_PRCCD.retStr() != VE.T_TXNOTH.PRCCD.retStr()))
+                    {
+                        ContentFlg = "Entry Can't Save ! Previous Tax Group/Price and Current Tax Group/Price not match ";
+                        goto dbnotsave;
+                    }
                     var subleg = (from a in DBF1.M_SUBLEG where a.SLCD == VE.T_TXN.SLCD select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO, a.PARTYCD, a.REGMOBILE, a.ADD1, a.ADD2, a.ADD3, a.ADD4, a.ADD5, a.ADD6, a.ADD7 }).FirstOrDefault();
 
                     if (VE.MENU_PARA == "SBPOS")
@@ -5788,24 +5796,29 @@ namespace Improvar.Controllers
 
                     if (VE.TTXNAMT != null)
                     {
+                        bool taxcheck = true;
+                        if (VE.MENU_PARA == "PB" && CommVar.ClientCode(UNQSNO) == "SNFP") taxcheck = false;
                         for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
                         {
                             if (VE.TTXNAMT[i].SLNO != 0 && VE.TTXNAMT[i].AMTCD != null && VE.TTXNAMT[i].AMT != 0)
                             {
-                                if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                if (taxcheck == true)
                                 {
-                                    ContentFlg = "TAX amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
-                                    goto dbnotsave;
-                                }
-                                else if (VE.TTXNAMT[i].CGSTAMT.retDbl() == 0 && VE.TTXNAMT[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N")
-                                {
-                                    ContentFlg = "Cgst amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
-                                    goto dbnotsave;
-                                }
-                                else if (VE.TTXNAMT[i].CGSTAMT.retDbl() != 0 && VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
-                                {
-                                    ContentFlg = "Sgst amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
-                                    goto dbnotsave;
+                                    if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                    {
+                                        ContentFlg = "TAX amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
+                                        goto dbnotsave;
+                                    }
+                                    else if (VE.TTXNAMT[i].CGSTAMT.retDbl() == 0 && VE.TTXNAMT[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N")
+                                    {
+                                        ContentFlg = "Cgst amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
+                                        goto dbnotsave;
+                                    }
+                                    else if (VE.TTXNAMT[i].CGSTAMT.retDbl() != 0 && VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                    {
+                                        ContentFlg = "Sgst amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
+                                        goto dbnotsave;
+                                    }
                                 }
                                 T_TXNAMT TTXNAMT = new T_TXNAMT();
                                 TTXNAMT.AUTONO = TTXN.AUTONO;
