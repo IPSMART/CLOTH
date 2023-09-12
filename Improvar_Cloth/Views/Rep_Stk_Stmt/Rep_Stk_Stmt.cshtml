@@ -20,6 +20,8 @@
 <script>
     $(function () {
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#TEXTBOX4").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
         $("#TextBox5").change(function () {
             $("#rowd1").hide();
             $("#rowd2").hide();
@@ -63,15 +65,25 @@
         }
         if (val == "F") {
             $(".repdet").show();
+            $(".repdett").show();
         } else {
             $(".repdet").hide();
+            $(".repdett").hide();
+            $(".repdet_phystk").hide();
         }
-
+        if (val == "P") {
+            $(".repdet").show();
+            $(".repdet_phystk").show();
+        } else {
+            $(".repdet").hide();
+            $(".repdet_phystk").hide();
+        }
         if (val != "F") {
             $(".ratedet").show();
         } else {
             $(".ratedet").hide();
         }
+     
     }
 </script>
 @using (Html.BeginForm())
@@ -188,6 +200,28 @@
                             <div class="col-lg-4">
                                 <div class="editor-field">
                                     @Html.DropDownListFor(model => model.TEXTBOX3, new SelectList(Model.DropDown_list2, "Value", "Text", Model.TEXTBOX3), new { @class = "form-control", id = "TEXTBOX3", onchange = "SummaryBarcodeChange();" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="repdet_phystk row" style="margin-top:10PX;">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 4px;">
+                                    @Html.Label("", "From Date")
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top: 4px;">
+                                    @Html.Label("", "To Date")
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX4", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
                                 </div>
                             </div>
                         </div>
@@ -330,6 +364,7 @@
                                     </div>
                                 </div>
                             </div>*@
+                       
                         <div class="repdet row" style="margin-top:10PX">
                             <div class="col-lg-2">
                                 @*<div class="editor-field" style="margin-top: 4px;">
@@ -376,7 +411,7 @@
                                 <td style="border:1px groove;">Include Balewise Stock</td>
                                 <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox7, new { Style = "width:18px;height:18px;" })</td>
                             </tr>
-                            <tr class="repdet">
+                            <tr class="repdett">
                                 <td style="border:1px groove;">If negative stock then rate will come from master</td>
                                 <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox9, new { Style = "width:18px;height:18px;" })</td>
                             </tr>

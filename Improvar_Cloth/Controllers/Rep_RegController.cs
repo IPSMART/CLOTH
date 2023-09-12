@@ -334,6 +334,7 @@ namespace Improvar.Controllers
                     if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
                 }
                 sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
+               if(txntag =="'PI'" && VE.Checkbox11==true) sql += "and b.cancel is null " + Environment.NewLine;
                 sql += " ) a,  " + Environment.NewLine;
 
                 sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;

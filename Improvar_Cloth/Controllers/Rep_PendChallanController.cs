@@ -167,6 +167,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Chl;Date");
                 HC.GetPrintHeader(IR, "slcd", "string", "c,10", "Party;Code");
                 HC.GetPrintHeader(IR, "slnm", "string", "c,30", "Party;Name");
+                HC.GetPrintHeader(IR, "prefno", "string", "c,30", "Party;Bill No.");
                 if (VE.TEXTBOX2 == "Details")
                 {
                     HC.GetPrintHeader(IR, "itnm", "string", "c,40", "Item Name;[Style No] ");
@@ -190,6 +191,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                             IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
                             IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
                             if (VE.TEXTBOX2 == "Details")
                             {
                                 IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString() + " [ " + tbl.Rows[i]["styleno"].ToString() + " ] ";

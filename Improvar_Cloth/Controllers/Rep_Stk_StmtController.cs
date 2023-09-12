@@ -76,8 +76,14 @@ namespace Improvar.Controllers
                     dropobj5.value = "F";
                     dropobj5.text = "Stock Statement(FIFO)";
                     drplst.Add(dropobj5);
+                    DropDown_list2 dropobj6 = new DropDown_list2();
+                    dropobj6.value = "P";
+                    dropobj6.text = "Physical Stock Statement";
+                    drplst.Add(dropobj6);
                     VE.DropDown_list2 = drplst;
                     VE.TDT = CommVar.CurrDate(UNQSNO);
+                    VE.FDT = CommVar.CurrDate(UNQSNO);
+                    VE.TEXTBOX4 = CommVar.CurrDate(UNQSNO);
                     VE.PRCCD = "CP"; VE.PRCNM = "CP";
 
                     string SCHEMA = CommVar.CurSchema(UNQSNO);
@@ -138,6 +144,8 @@ namespace Improvar.Controllers
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO);
                 string asdt = VE.TDT.retDateStr();
                 string calctype = VE.TEXTBOX2;
+                string tdt = VE.TEXTBOX4.retDateStr();
+                string fdt = VE.FDT.retDateStr();
 
                 //   string calmethod = (from x in VE.DropDown_list1 where x.value == calctype select x.text).SingleOrDefault();
 
@@ -187,6 +195,10 @@ namespace Improvar.Controllers
                     //tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
                     tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
                 }
+               else if (summary == "P")
+                {
+                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7,false,true,false,fdt);
+                }
                 else
                 {
                     //tbl = Salesfunc.GetStock(asdt, selgocd, "", selitcd, "FS".retSqlformat(), "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7);
@@ -222,6 +234,19 @@ namespace Improvar.Controllers
                 else if (summary == "B")
                 {
                     return SummaryWise_Barcode(FC, VE, COM, LOC, asdt, prcd, selitgrpcd, selgocd, selitcd);
+                }
+                else if (summary == "P")
+                {
+                    if(repon=="D")
+                    {
+                        return PhysicalStock_Detail(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, summary);
+                    }
+                    else
+                    {
+                        return PhysicalStock_Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems, summary);
+
+                    }
+                   
                 }
                 else
                 {
@@ -1147,6 +1172,297 @@ namespace Improvar.Controllers
             string repname = "Stock_Val" + System.DateTime.Now;
 
             pghdr1 = "Stock Valuation(Barcode Wise Summary) as on " + ASDT;
+            string pghdr2 = "";
+            if (FC.AllKeys.Contains("mtrljobcdvalue"))
+            {
+                pghdr2 += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+            }
+            PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
+
+            TempData[repname] = PV;
+            TempData[repname + "xxx"] = IR;
+            return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+        }
+        public ActionResult PhysicalStock_Detail(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, string summary)
+        {
+            Models.PrintViewer PV = new Models.PrintViewer();
+            HtmlConverter HC = new HtmlConverter();
+            DataTable IR = new DataTable("");
+            Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
+
+            HC.RepStart(IR);
+            HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Doc Date");
+            HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
+            HC.GetPrintHeader(IR, "gonm", "string", "c,40", "Godown");
+            HC.GetPrintHeader(IR, "prccd", "string", "c,40", "Price Code");
+            HC.GetPrintHeader(IR, "barno", "string", "c,40", "Bar No.");
+            HC.GetPrintHeader(IR, "cutlength", "double", "n,10,2", "Length");
+            HC.GetPrintHeader(IR, "nos", "double", "n,10,2", "Nos");
+            HC.GetPrintHeader(IR, "qnty", "double", QDSP, "Bal.Qnty");
+            HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Av.Rate");
+            HC.GetPrintHeader(IR, "amt", "double", "n,14,2", "Stock Value");
+
+            maxR = tbl.Rows.Count - 1;
+
+            string strbrgrpcd = "", stritcd = "";
+            double gamt = 0, gqnty = 0;
+            i = 0;
+            while (i <= maxR)
+            {
+                strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
+
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+
+                double bamt = 0, tqnty = 0;
+                while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
+                {
+                    stritcd = tbl.Rows[i]["itcd"].ToString();
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + stritcd + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString();
+                    IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    double iqnty = 0, iamt = 0;
+                    while (tbl.Rows[i]["itcd"].ToString() == stritcd)
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"];
+                        IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().retDateStr();
+                        IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].ToString();
+                        IR.Rows[rNo]["prccd"] = tbl.Rows[i]["prccd"].ToString();
+                        IR.Rows[rNo]["barno"] = tbl.Rows[i]["barno"].ToString();
+                        IR.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"].retDbl();
+                        IR.Rows[rNo]["nos"] = tbl.Rows[i]["balnos"].retDbl();
+                        IR.Rows[rNo]["qnty"] = tbl.Rows[i]["balqnty"].retDbl();
+                        IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                        IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
+                        iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                        i++;
+                        if (i > maxR) break;
+                    }
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["gonm"] = "Total of " + tbl.Rows[i - 1]["itstyle"].ToString();
+                    IR.Rows[rNo]["qnty"] = iqnty;
+                    IR.Rows[rNo]["amt"] = iamt;
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+
+                    bamt = bamt + iamt;
+                    tqnty = tqnty + iqnty;
+                    if (i > maxR) break;
+                }
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["gonm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
+                IR.Rows[rNo]["amt"] = bamt;
+                //IR.Rows[rNo]["qnty"] = tqnty;
+                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                gamt = gamt + bamt;
+                gqnty = gqnty + tqnty;
+                //i++;
+                if (i > maxR) break;
+            }
+            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+            IR.Rows[rNo]["gonm"] = "Grand Total";
+            IR.Rows[rNo]["amt"] = gamt;
+            IR.Rows[rNo]["qnty"] = gqnty;
+            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+
+            string pghdr1 = "";
+            string repname = "Stock_Val" + System.DateTime.Now;
+            pghdr1 = "Physical Stock Valuation[Detail] from " + VE.FDT.retDateStr() + " to" + VE.TEXTBOX4.retDateStr();
+            string pghdr2 = "";
+            if (FC.AllKeys.Contains("mtrljobcdvalue"))
+            {
+                pghdr2 += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+            }
+            PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
+
+            TempData[repname] = PV;
+            TempData[repname + "xxx"] = IR;
+            return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+        }
+        public ActionResult PhysicalStock_Summary(FormCollection FC, ReportViewinHtml VE, DataTable tbl, string COM, string LOC, string ASDT, string PRCCD, string QDSP, bool ignoreitems, string summary)
+        {
+            Models.PrintViewer PV = new Models.PrintViewer();
+            HtmlConverter HC = new HtmlConverter();
+            DataTable IR = new DataTable("");
+            Int32 rNo = 0, maxR = 0, maxB = 0, i = 0;
+
+            string days_aging = VE.TEXTBOX5; // Days aging value
+            string days1 = "0", days2 = "0", days3 = "0";
+            if (days_aging == null)
+            {
+            }
+            else if (days_aging == "1")
+            {
+                days1 = FC["days1"];
+            }
+            else if (days_aging == "2")
+            {
+                days1 = FC["days1"];
+                days2 = FC["days2"];
+            }
+            else if (days_aging == "3")
+            {
+                days1 = FC["days1"];
+                days2 = FC["days2"];
+                days3 = FC["days3"];
+            }
+
+            long duedays1, duedays2, duedays3, duedays4, duedays5 = 0;
+            long ageingperiod = 0;
+            duedays1 = Convert.ToInt64(days1); duedays2 = Convert.ToInt64(days2); duedays3 = Convert.ToInt64(days3);
+            ageingperiod = Convert.ToInt64(days_aging);
+
+            long due1fDys = 0, due1tDys = 0, due2fDys = 0, due2tDys = 0, due3fDys = 0, due3tDys = 0, due4fDys = 0, due4tDys = 0;
+            if (ageingperiod != 0)
+            {
+                ageingperiod = ageingperiod + 1;
+
+                if (ageingperiod >= 1) due1fDys = 0; due1tDys = duedays1;
+                if (ageingperiod >= 2) due2fDys = due1tDys + 1; due2tDys = duedays2;
+                if (ageingperiod >= 3) due3fDys = due2tDys + 1; due3tDys = duedays3;
+                if (ageingperiod >= 4) due4fDys = due3tDys + 1; due4tDys = 0;
+
+                //define last ageing column
+                if (ageingperiod == 2) due2tDys = 99999;
+                if (ageingperiod == 3) due3tDys = 99999;
+                if (ageingperiod == 4) due4tDys = 99999;
+            }
+            double gdue1Amt = 0, gdue2Amt = 0, gdue3Amt = 0, gdue4Amt = 0;
+            double gdue1Qty = 0, gdue2Qty = 0, gdue3Qty = 0, gdue4Qty = 0;
+            double bdue1Amt = 0, bdue2Amt = 0, bdue3Amt = 0, bdue4Amt = 0;
+            double bdue1Qty = 0, bdue2Qty = 0, bdue3Qty = 0, bdue4Qty = 0;
+            double due1Amt = 0, due2Amt = 0, due3Amt = 0, due4Amt = 0;
+            double due1Qty = 0, due2Qty = 0, due3Qty = 0, due4Qty = 0;
+
+
+            HC.RepStart(IR, 3);
+            HC.GetPrintHeader(IR, "slno", "long", "n,4", "Sl#");
+            HC.GetPrintHeader(IR, "itcd", "string", "c,10", "itcd");
+            HC.GetPrintHeader(IR, "itnm", "string", "c,40", "Item Name");
+            HC.GetPrintHeader(IR, "barcode", "string", "c,40", "Bar No.");
+            HC.GetPrintHeader(IR, "uomnm", "string", "c,5", "uom");
+            HC.GetPrintHeader(IR, "qnty", "double", QDSP, "Stk.Qnty");
+            HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Av.Rate");
+            HC.GetPrintHeader(IR, "amt", "double", "n,14,2", "Stock Value");
+          
+            maxR = tbl.Rows.Count - 1;
+            DataView dv = new DataView(tbl);
+            dv.Sort = "itgrpcd, itcd ASC";
+            tbl = dv.ToTable();
+
+            string strbrgrpcd = "", stritcd = "";
+            double gamt = 0, gqnty = 0;
+            i = 0;
+            Int32 islno = 0;
+            gdue1Amt = 0; gdue2Amt = 0; gdue3Amt = 0; gdue4Amt = 0;
+            gdue1Qty = 0; gdue2Qty = 0; gdue3Qty = 0; gdue4Qty = 0;
+            while (i <= maxR)
+            {
+                strbrgrpcd = tbl.Rows[i]["itgrpcd"].ToString();
+                if (ignoreitems == false)
+                {
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + strbrgrpcd + "  " + " </span>" + tbl.Rows[i]["itgrpnm"].ToString();
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                }
+
+                double bamt = 0, bqnty = 0;
+                if (ignoreitems == false) islno = 0;
+                bdue1Amt = 0; bdue2Amt = 0; bdue3Amt = 0; bdue4Amt = 0;
+                bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0;
+                while (tbl.Rows[i]["itgrpcd"].ToString() == strbrgrpcd)
+                {
+                    stritcd = tbl.Rows[i]["itcd"].ToString();
+                    double iqnty = 0, iamt = 0;
+                    due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
+                    due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
+                    while (tbl.Rows[i]["itcd"].ToString() == stritcd)
+                    {
+                        double days = 0;
+                        TimeSpan TSdys;
+                        if (tbl.Rows[i]["docdt"] == DBNull.Value) days = 0;
+                        else
+                        {
+                            TSdys = Convert.ToDateTime(ASDT) - Convert.ToDateTime(tbl.Rows[i]["docdt"]);
+                            days = TSdys.Days;
+                        }
+
+                        double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                      
+                        iqnty = iqnty + _qty;
+                        iamt = iamt + _amt;
+                        i++;
+                        if (i > maxR) break;
+                    }
+                    if (Math.Round(iqnty, 6) != 0)
+                    {
+                        double avrt = 0;
+                        if (iqnty != 0) avrt = iamt / iqnty;
+                        if (ignoreitems == false)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            islno++;
+                            IR.Rows[rNo]["slno"] = islno;
+                            IR.Rows[rNo]["barcode"] = tbl.Rows[i - 1]["barno"].ToString();
+                            IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].ToString();
+                            IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itstyle"].ToString();
+                            IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
+                            IR.Rows[rNo]["qnty"] = iqnty;
+                            IR.Rows[rNo]["rate"] = avrt;
+                            IR.Rows[rNo]["amt"] = iamt;
+
+                            
+                        }
+                        bdue1Qty = bdue1Qty + due1Qty; bdue1Amt = bdue1Amt + due1Amt;
+                        bdue2Qty = bdue2Qty + due2Qty; bdue2Amt = bdue2Amt + due2Amt;
+                        bdue3Qty = bdue3Qty + due3Qty; bdue3Amt = bdue3Amt + due3Amt;
+                        bdue4Qty = bdue4Qty + due4Qty; bdue4Amt = bdue4Amt + due4Amt;
+                        bamt = bamt + iamt;
+                        bqnty = bqnty + iqnty;
+                    }
+
+                    if (i > maxR) break;
+                }
+                if (ignoreitems == false)
+                {
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["itnm"] = "Total of " + tbl.Rows[i - 1]["itgrpnm"].ToString();
+                    IR.Rows[rNo]["amt"] = bamt;
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                }
+                else
+                {
+                    if (bqnty != 0)
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        islno++;
+                        IR.Rows[rNo]["slno"] = islno;
+                        IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itgrpcd"].ToString();
+                        IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itgrpnm"].ToString();
+                        IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
+                        IR.Rows[rNo]["qnty"] = bqnty;
+                        IR.Rows[rNo]["amt"] = bamt;
+                    }
+                }
+               
+                gamt = gamt + bamt;
+                gqnty = gqnty + bqnty;
+                //i++;
+                if (i > maxR) break;
+            }
+            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+            IR.Rows[rNo]["itnm"] = "Grand Total";
+            IR.Rows[rNo]["amt"] = gamt;
+            IR.Rows[rNo]["qnty"] = gqnty;
+            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+          
+
+            string pghdr1 = "";
+            string repname = "Stock_Val" + System.DateTime.Now;
+            pghdr1 = "Physical Stock Valuation[Summary] from " + VE.FDT.retDateStr() + " to" + VE.TEXTBOX4.retDateStr();
             string pghdr2 = "";
             if (FC.AllKeys.Contains("mtrljobcdvalue"))
             {

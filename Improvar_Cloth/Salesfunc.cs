@@ -905,7 +905,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false)
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false,string fdt="")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -999,6 +999,8 @@ namespace Improvar
                 sql += "select b.gocd, a.mtrljobcd, 'F' stktype, a.barno, c.itcd, a.partcd, c.colrcd, c.sizecd, a.shade, a.cutlength, a.dia, sum(nvl(a.qnty,0)) balqnty, sum(nvl(a.nos,0)) balnos from  " + Environment.NewLine;
                 sql += "" + scm + ".T_PHYSTK a ," + scm + ".T_PHYSTK_HDR b ," + scm + ".t_batchmst c " + Environment.NewLine;
                 sql += "where a.autono = b.autono and A.BARNO = c.barno " + Environment.NewLine;
+                if (fdt != "") sql += "and b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
+                if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
                 sql += "group by b.gocd, a.mtrljobcd, a.barno, c.itcd, a.partcd, c.colrcd, c.sizecd, a.shade, a.cutlength, a.dia  " + Environment.NewLine;
 
                 sql += ") a, " + Environment.NewLine;
@@ -1072,7 +1074,8 @@ namespace Improvar
                     }
                     else
                     {
-                        sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
+                        //sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
+                        sql += " d.styleno in( '" + stylelike.Replace("'", "") + "') and " + Environment.NewLine;
                     }
                 }
 
@@ -1085,6 +1088,7 @@ namespace Improvar
                 sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
+              
             }
             else
             {
@@ -1246,7 +1250,8 @@ namespace Improvar
                     }
                     else
                     {
-                        sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
+                       // sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
+                        sql += " d.styleno in( '" + stylelike.Replace("'", "") + "') and " + Environment.NewLine;
                     }
                 }
                 //if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
