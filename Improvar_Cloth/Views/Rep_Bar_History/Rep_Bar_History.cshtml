@@ -49,7 +49,7 @@
     }
 </script>
 <script>
-    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD, DOCDT, TAXGRPCD, GOCD, PRCCD, ALLMTRLJOBCD,HelpFrom) {
+    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, PARTCD, DOCDT, TAXGRPCD, GOCD, PRCCD, ALLMTRLJOBCD, HelpFrom) {
         debugger;
         var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
         var PARTCD = document.getElementById(PARTCD.id).value;
@@ -58,8 +58,10 @@
         var GOCD = document.getElementById(GOCD.id).value;
         var PRCCD = document.getElementById(PRCCD.id).value;
         var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value;
+        var BAR_NO = document.getElementById(BARNO.id).value;
+
         //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
-        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD+ String.fromCharCode(181) + HelpFrom
+        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BAR_NO;
         if (id == "") {
             $("#" + BARNO.id).val("");
             $("#STYLENO").val("");
@@ -73,82 +75,104 @@
                 data: $('form').serialize() + "&val=" + id + "&Code=" + Code,
                 success: function (result) {
                     //var MSG = result.indexOf('#helpDIV');
-                    if (result != "") {
-                        $("#WaitingMode").hide();
-                        var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-                        document.getElementById("BARCODE").value = returncolvalue(res[0], "BARNO");
-                        document.getElementById("BAR_CODE").value = returncolvalue(res[0], "BARNO");
-                        document.getElementById("ITGRPCD").value = returncolvalue(res[0], "ITGRPCD");
-                        document.getElementById("ITGRPNM").value = returncolvalue(res[0], "ITGRPNM");
-                        document.getElementById("FABITCD").value = returncolvalue(res[0], "FABITCD");
-                        document.getElementById("FABITNM").value = returncolvalue(res[0], "FABITNM");
-                        document.getElementById("ITCD").value = returncolvalue(res[0], "ITCD");
-                        document.getElementById("ITNM").value = returncolvalue(res[0], "ITNM");
-                        document.getElementById("DESIGN").value = returncolvalue(res[0], "STYLENO");
-                        document.getElementById("UOMCD").value = returncolvalue(res[0], "UOMCD");
-                        document.getElementById("SLCD").value = returncolvalue(res[0], "SLCD");
-                        document.getElementById("SLNM").value = returncolvalue(res[0], "SLNM");
-                        document.getElementById("DISTRICT").value = returncolvalue(res[0], "DISTRICT");
-                        document.getElementById("GSTNO").value = returncolvalue(res[0], "GSTNO");
-                        document.getElementById("PDESIGN").value = returncolvalue(res[0], "PDESIGN");
-                        document.getElementById("COLRCD").value = returncolvalue(res[0], "COLRCD");
-                        document.getElementById("COLRNM").value = returncolvalue(res[0], "COLRNM");
-                        document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
-                        document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
-                        document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
-                        document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
-                        document.getElementById("STYLENO").value = returncolvalue(res[0], "STYLENO");
-
-                        if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
-                            $("#PDESIGN").prop('readonly', false);
-                            $("#divPDESIGN").show();
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("STYLENO,BARCODE");
+                        if (HelpFrom == "Bar")
+                        {
+                            $('#SearchFldValue').val("BARCODE");
                         }
                         else {
-                            $("#PDESIGN").attr('readonly', 'readonly');
-                            $("#divPDESIGN").hide();
+                            $('#SearchFldValue').val("STYLENO");
                         }
-                        var TINQTY = returncolvalue(res[0], "TOTALIN");
-                        var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
-                        if (TINQTY == "") { TINQTY = parseFloat(0); } else { TINQTY = parseFloat(TINQTY) }
-                        if (TOUTQTY == "") { TOUTQTY = parseFloat(0); } else { TOUTQTY = parseFloat(TOUTQTY) }
-                        document.getElementById("TOTALIN").value = parseFloat(TINQTY).toFixed(2);
-                        document.getElementById("TOTALOUT").value = parseFloat(TOUTQTY).toFixed(2);
-                        document.getElementById("TOTINOUT").value = (parseFloat(TINQTY) - parseFloat(TOUTQTY)).toFixed(2)
-                        $("#partialdivHISTORY").show();
-                        $("#partialdivHISTORY").animate({ marginTop: '0px' }, 50);
-                        $("#partialdivHISTORY").html(res[1]);
-                        $("#partialdivPRICE").show();
-                        $("#partialdivPRICE").animate({ marginTop: '0px' }, 50);
-                        $("#partialdivPRICE").html(res[2]);
-                        $("#MTRLJOBCD").val("");
-                        hlpblurval = id;
-                        document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
-                        FillImageModal();
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val("BARCODE/MTRLJOBCD/PARTCD/GOCD/STYLENO");
+                        $('#ReferanceColumn').val("0/2/5/7/3");
+                        $('#helpDIV_Header').html("Bar Code Details");
 
-                        $("#" + BARNO.id).val("");
-                        $("#STYLENO").val("");
-                        if (HelpFrom == "Bar") {
-                            $("#BARCODE").focus();
-                        }
-                        else{
-                            $("#STYLENO").focus();
-                        }
                     }
                     else {
-                        if (HelpFrom == "Bar") {
-                            msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
-                            $("#" + BARNO.id).val("");
-                            $("#STYLENO").val("");
-                            message_value = BARNO.id;
-                        }
-                        else{
-                            msgInfo("Invalid Design No./Item ! Please Enter a Valid Design No./Item !!");
-                            $("#STYLENO").val("");
-                            $("#" + BARNO.id).val("");
-                            message_value = "STYLENO";
-                        }
+                        var MSG = result.indexOf("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                        if (MSG >= 0) {
+                            $("#WaitingMode").hide();
+                            var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                            document.getElementById("BARCODE").value = returncolvalue(res[0], "BARNO");
+                            document.getElementById("BAR_CODE").value = returncolvalue(res[0], "BARNO");
+                            document.getElementById("ITGRPCD").value = returncolvalue(res[0], "ITGRPCD");
+                            document.getElementById("ITGRPNM").value = returncolvalue(res[0], "ITGRPNM");
+                            document.getElementById("FABITCD").value = returncolvalue(res[0], "FABITCD");
+                            document.getElementById("FABITNM").value = returncolvalue(res[0], "FABITNM");
+                            document.getElementById("ITCD").value = returncolvalue(res[0], "ITCD");
+                            document.getElementById("ITNM").value = returncolvalue(res[0], "ITNM");
+                            document.getElementById("DESIGN").value = returncolvalue(res[0], "STYLENO");
+                            document.getElementById("UOMCD").value = returncolvalue(res[0], "UOMCD");
+                            document.getElementById("SLCD").value = returncolvalue(res[0], "SLCD");
+                            document.getElementById("SLNM").value = returncolvalue(res[0], "SLNM");
+                            document.getElementById("DISTRICT").value = returncolvalue(res[0], "DISTRICT");
+                            document.getElementById("GSTNO").value = returncolvalue(res[0], "GSTNO");
+                            document.getElementById("PDESIGN").value = returncolvalue(res[0], "PDESIGN");
+                            document.getElementById("COLRCD").value = returncolvalue(res[0], "COLRCD");
+                            document.getElementById("COLRNM").value = returncolvalue(res[0], "COLRNM");
+                            document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
+                            document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
+                            document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
+                            document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
+                            document.getElementById("STYLENO").value = returncolvalue(res[0], "STYLENO");
 
+                            if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
+                                $("#PDESIGN").prop('readonly', false);
+                                $("#divPDESIGN").show();
+                            }
+                            else {
+                                $("#PDESIGN").attr('readonly', 'readonly');
+                                $("#divPDESIGN").hide();
+                            }
+                            var TINQTY = returncolvalue(res[0], "TOTALIN");
+                            var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
+                            if (TINQTY == "") { TINQTY = parseFloat(0); } else { TINQTY = parseFloat(TINQTY) }
+                            if (TOUTQTY == "") { TOUTQTY = parseFloat(0); } else { TOUTQTY = parseFloat(TOUTQTY) }
+                            document.getElementById("TOTALIN").value = parseFloat(TINQTY).toFixed(2);
+                            document.getElementById("TOTALOUT").value = parseFloat(TOUTQTY).toFixed(2);
+                            document.getElementById("TOTINOUT").value = (parseFloat(TINQTY) - parseFloat(TOUTQTY)).toFixed(2)
+                            $("#partialdivHISTORY").show();
+                            $("#partialdivHISTORY").animate({ marginTop: '0px' }, 50);
+                            $("#partialdivHISTORY").html(res[1]);
+                            $("#partialdivPRICE").show();
+                            $("#partialdivPRICE").animate({ marginTop: '0px' }, 50);
+                            $("#partialdivPRICE").html(res[2]);
+                            $("#MTRLJOBCD").val("");
+                            hlpblurval = id;
+                            document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
+                            FillImageModal();
+
+                            $("#" + BARNO.id).val("");
+                            $("#STYLENO").val("");
+                            if (HelpFrom == "Bar") {
+                                $("#BARCODE").focus();
+                            }
+                            else {
+                                $("#STYLENO").focus();
+                            }
+                        }
+                        else {
+                            if (HelpFrom == "Bar") {
+                                $('#helpDIV').html("");
+                                msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
+                                $("#" + BARNO.id).val("");
+                                $("#STYLENO").val("");
+                                message_value = BARNO.id;
+                            }
+                            else {
+                                $('#helpDIV').html("");
+                                msgInfo("Invalid Design No./Item ! Please Enter a Valid Design No./Item !!");
+                                $("#STYLENO").val("");
+                                $("#" + BARNO.id).val("");
+                                message_value = "STYLENO";
+                            }
+
+                        }
                     }
+                    $("#WaitingMode").hide();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -423,102 +447,102 @@
             </div>
         </div>
     </div>
-        <div class="row">
-            <div class="col-md-1">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Group")
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
-
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Fabric")
-                </div>
-            </div>
-            <div class="col-md-5" style="width:auto;">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", @placeholder = "FABITCD", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
-            </div>
-            <div class="col-md-4"></div>
-            <div class="col-lg-1" id="divmtrljobcd">
-                <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
-                    <table id="exampleMTRL" border="1" style="width: auto;">
-                        @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
-                        {
-                            <tr>
-                                <td align="center">
-                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
-                                </td>
-                                <td align="center">
-                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                    @Html.DisplayFor(model => STRC)
-                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
-                                </td>
-                                <td align="center">
-                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                    @Html.DisplayFor(model => STRC1)
-                                </td>
-                            </tr>
-                                        }
-                    </table>
-                </div>
-                @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="col-md-1">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Item")
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @placeholder = "ITCD", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "ITNM", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Design")
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <div class="editor-field" style="margin-top: 6px;">
-                    @Html.Label("", "Uom ")
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "UOMCD", @readonly = "readonly", @TabIndex = -1 } })
-                </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Group")
             </div>
         </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
+
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Fabric")
+            </div>
+        </div>
+        <div class="col-md-5" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", @placeholder = "FABITCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-lg-1" id="divmtrljobcd">
+            <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
+                <table id="exampleMTRL" border="1" style="width: auto;">
+                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
+                    {
+                        <tr>
+                            <td align="center">
+                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
+                            </td>
+                            <td align="center">
+                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                @Html.DisplayFor(model => STRC)
+                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
+                            </td>
+                            <td align="center">
+                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                @Html.DisplayFor(model => STRC1)
+                            </td>
+                        </tr>
+                                    }
+                </table>
+            </div>
+            @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Item")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @placeholder = "ITCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "ITNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Design")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Uom ")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "UOMCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+    </div>
         <div class="row">
             <div class="col-md-1">
                 <div class="editor-field" style="margin-top: 6px;">
@@ -637,58 +661,58 @@
                                 <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
 
             </div>*@
-                                        <div class="row">
-                                            <div class="col-lg-3">
-                                                <div class="row">
-                                                    <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
-                                                        @Html.Label("", "BarCode Image")
-                                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
+                                                    @Html.Label("", "BarCode Image")
                                                 </div>
-                                                @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-                                                <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
-                                                    <div id="myCarousel" class="carousel" data-ride="carousel">
-                                                        <div class="carousel-inner" id="div_carousel_inner">
-                                                            <div class="item active">
-                                                                <img src="" alt="Los Angeles" style="width:100%;">
-                                                            </div>
-                                                            <div class="item">
-                                                                <img src="" alt="Chicago" style="width:100%;">
-                                                            </div>
+                                            </div>
+                                            @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+                                            <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                                                <div id="myCarousel" class="carousel" data-ride="carousel">
+                                                    <div class="carousel-inner" id="div_carousel_inner">
+                                                        <div class="item active">
+                                                            <img src="" alt="Los Angeles" style="width:100%;">
                                                         </div>
-                                                        <!-- Left and right controls -->
-                                                        <a class="left  carousel-control arrow-left" id="prev">
-                                                            <span class="glyphicon glyphicon-chevron-left"></span>
-                                                        </a>
-                                                        <a class="right  carousel-control arrow-right" id="next">
-                                                            <span class="glyphicon glyphicon-chevron-right"></span>
-                                                        </a>
+                                                        <div class="item">
+                                                            <img src="" alt="Chicago" style="width:100%;">
+                                                        </div>
                                                     </div>
+                                                    <!-- Left and right controls -->
+                                                    <a class="left  carousel-control arrow-left" id="prev">
+                                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                                    </a>
+                                                    <a class="right  carousel-control arrow-right" id="next">
+                                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                                    </a>
                                                 </div>
-
                                             </div>
-                                            <div class="PopUp_Backround">
-                                                <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                                                    @Html.Partial("_Rep_Bar_History_AddNewBarno")
-                                                </div>
-                                                <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                                                    @Html.Partial("_Rep_Bar_History_AddNewPrice")
-                                                </div>
+
+                                        </div>
+                                        <div class="PopUp_Backround">
+                                            <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                                                @Html.Partial("_Rep_Bar_History_AddNewBarno")
+                                            </div>
+                                            <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                                                @Html.Partial("_Rep_Bar_History_AddNewPrice")
                                             </div>
                                         </div>
-                                        @*<div class="row" style="margin-top:20PX">
-                                                <div class="col-lg-6">
-                                                    <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
-
-                                                </div>
-                                            </div>*@
-                                        @*<div class="row" style="background-color:#c4b9b9;width:100%">
-                                            <div id="PartialdivEWBILL">*@
-                                        @*@Html.Partial("_Rep_Bar_History")*@
-                                        @*</div>
-                                            </div>*@
-                                        <div class="container">
-                                            <div id="helpDIV">
+                                    </div>
+                                    @*<div class="row" style="margin-top:20PX">
+                                            <div class="col-lg-6">
+                                                <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
 
                                             </div>
+                                        </div>*@
+                                    @*<div class="row" style="background-color:#c4b9b9;width:100%">
+                                        <div id="PartialdivEWBILL">*@
+                                    @*@Html.Partial("_Rep_Bar_History")*@
+                                    @*</div>
+                                        </div>*@
+                                    <div class="container">
+                                        <div id="helpDIV">
+
                                         </div>
-                                        }
+                                    </div>
+                                    }

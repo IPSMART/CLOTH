@@ -827,6 +827,7 @@ namespace Improvar.Controllers
                 summarybarcode.Columns.Add("balqty", typeof(double), "");
                 summarybarcode.Columns.Add("balval", typeof(double), "");
                 summarybarcode.Columns.Add("itfabitcd", typeof(string), "");
+                summarybarcode.Columns.Add("itstyle", typeof(string), "");
 
                 while (i <= maxR)
                 {
@@ -933,6 +934,7 @@ namespace Improvar.Controllers
 
                         summarybarcode.Rows[rNo]["balqty"] = balqty;
                         summarybarcode.Rows[rNo]["balval"] = balval;
+                        summarybarcode.Rows[rNo]["itstyle"] = tbl1.Rows[i]["itstyle"].retStr();
                     }
                     i++;
                     if (i > maxR) break;
@@ -1028,10 +1030,10 @@ namespace Improvar.Controllers
                                     if (VE.Checkbox8 == true) IR.Rows[rNo]["hsncode"] = summarybarcode.Rows[i - 1]["hsncode"].ToString();
                                     if (VE.Checkbox11 == true)
                                     {
-                                        IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["itstyle"].ToString();
+                                        IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["itstyle"].ToString();
                                     }
                                     else {
-                                        IR.Rows[rNo]["itnm"] = tbl1.Rows[i - 1]["fabitnm"].ToString();
+                                        IR.Rows[rNo]["itnm"] = summarybarcode.Rows[i - 1]["fabitnm"].ToString();
                                     }
                                     if (VE.Checkbox3 == true) IR.Rows[rNo]["styleno"] = summarybarcode.Rows[i - 1]["styleno"].ToString();
                                     IR.Rows[rNo]["uomnm"] = summarybarcode.Rows[i - 1]["uomcd"].ToString();

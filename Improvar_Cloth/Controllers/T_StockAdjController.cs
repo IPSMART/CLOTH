@@ -1202,7 +1202,7 @@ namespace Improvar.Controllers
                         }
                         #endregion
                         //if (VE.MENU_PARA == "CNV")
-                        if (VE.MENU_PARA != "CNV")
+                        if (VE.MENU_PARA != "CNV" && VE.MENU_PARA != "ADJ")
                         {
                             if (IN_TOTAL_QNTY.toRound(3).retDbl() != OUT_TOTAL_QNTY.toRound(3).retDbl())
                             {

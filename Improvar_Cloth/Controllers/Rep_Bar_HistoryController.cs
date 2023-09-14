@@ -95,8 +95,13 @@ namespace Improvar.Controllers
                 string PRCCD = data[5].retStr() == "" ? "WP" : data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
-
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD,"", exactbarno);
+                string bar_no = "";
+                if (val.retStr() != "")
+                {
+                    bar_no = data[8].retStr() == "" ? "" : data[8].retStr().retSqlformat();
+                }
+                //string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD,"", exactbarno);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", bar_no);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -140,18 +145,18 @@ namespace Improvar.Controllers
                                                  SLNO = dr["SLNO"].retShort(),
                                                  AUTONO = dr["AUTONO"].retStr(),
                                                  DOCDT = dr["DOCDT"].retDateStr(),
-                                                 DOCNO = dr["cancel"].retStr() == "N" ? dr["DOCNO"].retStr(): dr["DOCNO"].retStr()+ " (Record Cancelled)",
+                                                 DOCNO = dr["cancel"].retStr() == "N" ? dr["DOCNO"].retStr() : dr["DOCNO"].retStr() + " (Record Cancelled)",
                                                  PREFNO = dr["PREFNO"].retStr(),
                                                  SLNM = dr["doccd"].retStr() == "SCM" ? dr["RTDEBCD"].retStr() == "" ? "" : dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
                                                  LOCNM = dr["LOCANM"].retStr(),
-                                                 NOS = dr["cancel"].retStr()=="N"?dr["NOS"].retDbl():0,
-                                                 RATE = dr["cancel"].retStr() == "N" ? dr["RATE"].retDbl():0,
+                                                 NOS = dr["cancel"].retStr() == "N" ? dr["NOS"].retDbl() : 0,
+                                                 RATE = dr["cancel"].retStr() == "N" ? dr["RATE"].retDbl() : 0,
                                                  STKDRCR = dr["STKDRCR"].retStr(),
-                                                 QNTY = dr["cancel"].retStr() == "N" ? dr["QNTY"].retDbl():0,
+                                                 QNTY = dr["cancel"].retStr() == "N" ? dr["QNTY"].retDbl() : 0,
                                                  DOCNM = dr["DOCNM"].retStr(),
-                                                 DISCPER = dr["cancel"].retStr() == "N" ? (dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr()):0.retStr(),
-                                                 INQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl()):0,
-                                                 OUTQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl()):0,
+                                                 DISCPER = dr["cancel"].retStr() == "N" ? (dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr()) : 0.retStr(),
+                                                 INQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl()) : 0,
+                                                 OUTQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl()) : 0,
                                              }).Distinct().ToList();
                         //}).OrderBy(a => a.SLNO).Distinct().ToList();
 
@@ -256,15 +261,15 @@ namespace Improvar.Controllers
                 {
                     wsSheet1.Cells[i + 2, 1].Value = barcdhistory.Rows[i]["SLNO"].retShort();
                     wsSheet1.Cells[i + 2, 2].Value = barcdhistory.Rows[i]["DOCDT"].retDateStr();
-                    wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["DOCNO"].retStr(): barcdhistory.Rows[i]["DOCNO"].retStr() + " (Record Cancelled)";
+                    wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["DOCNO"].retStr() : barcdhistory.Rows[i]["DOCNO"].retStr() + " (Record Cancelled)";
                     wsSheet1.Cells[i + 2, 4].Value = barcdhistory.Rows[i]["PREFNO"].retStr();
                     wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
                     wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
                     wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
                     //var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
                     //var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    InQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0):0;
-                    OutQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0):0;
+                    InQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0) : 0;
+                    OutQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0) : 0;
                     //if (inqty != null)
                     //{
                     //    InQty = inqty.QNTY.retDbl();
@@ -277,12 +282,12 @@ namespace Improvar.Controllers
                     //}
                     //else { OutQty = 0; }
                     wsSheet1.Cells[i + 2, 9].Value = OutQty;
-                    wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl():0;
-                    wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["RATE"].retDbl():0;
-                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr()):0.retStr();
+                    wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl() : 0;
+                    wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["RATE"].retDbl() : 0;
+                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr()) : 0.retStr();
                     TINQTY = TINQTY + InQty;
                     TOUTQTY = TOUTQTY + OutQty;
-                    TNOS = TNOS + barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl():0;
+                    TNOS = TNOS + barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl() : 0;
                     exlrowno++;
                 }
                 wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;

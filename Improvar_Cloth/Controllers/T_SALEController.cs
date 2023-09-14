@@ -1025,7 +1025,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
-                        if (stkDATA != null)
+                        if (stkDATA != null && stkDATA.Count() > 0)
                         {
                             v.BALSTOCK = stkDATA[0]["BALQNTY"].retDbl();
                         }
@@ -3201,7 +3201,7 @@ namespace Improvar.Controllers
         public ActionResult GetTTXNDTLDetails(TransactionSaleEntry VE, string FDT, string TDT, string R_DOCNO, string R_BARNO, string TAXGRPCD, string SLCD, string datachng)
         {
             DataTable dt = new DataTable();
-            dt = (DataTable)TempData["TXNDTLDetails" + VE.MENU_PARA]; TempData.Keep();
+            //dt = (DataTable)TempData["TXNDTLDetails" + VE.MENU_PARA]; TempData.Keep();
             if (datachng == "Y" || dt == null || dt.Rows.Count == 0)
             {
                 Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
@@ -5251,7 +5251,11 @@ namespace Improvar.Controllers
                             {
 
 
-                                if (!(VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y"))
+                                //if (!(VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y"))
+                                bool taxchking = true;
+                                if (VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y") taxchking = false;
+                                if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT") taxchking = false;
+                                if (taxchking == true)
                                 {
                                     if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
                                     {
@@ -6707,10 +6711,11 @@ namespace Improvar.Controllers
 
 
                                 var txndata = ITEMDT.AsEnumerable().Where(a => a.Field<string>("BALENO").retStr() != "")
-                                                                .GroupBy(g => new { itcd = g["itcd"] })
+                                                                .GroupBy(g => new { itcd = g["itcd"], BALENO = g["BALENO"] })
                                                                 .Select(g => new
                                                                 {
                                                                     ITCD = g.Key.itcd.retStr(),
+                                                                    BALENO = g.Key.BALENO.retStr(),
                                                                     QNTY = g.Sum(r => r.Field<double>("qnty")),
                                                                 }).ToList();
                                 if (txndata != null && txndata.Count > 0)
@@ -6718,12 +6723,13 @@ namespace Improvar.Controllers
                                     for (int i = 0; i <= txndata.Count - 1; i++)
                                     {
                                         string ITEM = txndata[i].ITCD;
+                                        string BALE_NO = txndata[i].BALENO;
 
                                         string QNTY = ""; double STOCK_QNTY = 0; double SHORTAGE_QNTY = 0; double saleqnty = 0;
 
                                         var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
-                                                              .Where(g => g.Field<string>("itcd") == ITEM)
-                                                                  .GroupBy(g => new { itcd = g["itcd"] })
+                                                              .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("BALENO") == BALE_NO)
+                                                                  .GroupBy(g => new { itcd = g["itcd"], BALENO = g["BALENO"] })
                                                                    .Select(g =>
                                                                    {
                                                                        var row = ITEM_STOCK_DATA.NewRow();
@@ -6748,7 +6754,7 @@ namespace Improvar.Controllers
                                         {
                                             ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - saleqnty.retDbl();
 
-                                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Item/Link Item : " + txndata[i].ITCD + " , Entered Quantity : " + saleqnty + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
+                                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Item/Link Item : " + txndata[i].ITCD + " , Baleno : " + txndata[i].BALENO + " , Bale Stock Quantity : " + QNTY + " , Entered Quantity : " + saleqnty + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
                                         }
                                     }
 
