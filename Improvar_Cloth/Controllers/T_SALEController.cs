@@ -434,11 +434,13 @@ namespace Improvar.Controllers
                                             string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
                                             VE.SLDISCDESC = (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10)));
                                             TTXNOTH.TAXGRPCD = party_data.Rows[0]["TAXGRPCD"].retStr();
+                                            VE.Last_TAXGRPCD = TTXNOTH.TAXGRPCD;
                                             TTXNOTH.PRCCD = party_data.Rows[0]["PRCCD"].retStr();
                                             if (TTXNOTH.PRCCD.retStr() != "")
                                             {
                                                 VE.PRCNM = DBF.M_PRCLST.Where(a => a.PRCCD == TTXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
                                             }
+                                            VE.Last_PRCCD = TTXNOTH.PRCCD;
                                         }
                                         TTXNMEMO.NM = VE.SLNM;
                                         TTXNMEMO.MOBILE = subleg.REGMOBILE.retStr();
