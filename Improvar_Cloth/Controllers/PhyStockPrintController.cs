@@ -121,6 +121,7 @@ namespace Improvar.Controllers
                 string ReportType = VE.TEXTBOX3;
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 string yr_cd = CommVar.YearCode(UNQSNO);
+                string prccd = "WP";
 
                 DataTable tbl = new DataTable();
                 string chk = "a.barno||a.cutlength||a.rate";
@@ -129,7 +130,7 @@ namespace Improvar.Controllers
                     chk = "a.autono";
                 }
                 string sql = "select " + chk + " chkfld, a.docno,a.docdt,a.autoslno,a.autono,c.itcd,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr, " + Environment.NewLine;
-                sql += "a.baleno,c.styleno||' '||c.itnm itstyle,c.styleno,d.gonm,d.prcnm,a.trem,a.usr_id " + Environment.NewLine;
+                sql += "a.baleno,c.styleno||' '||c.itnm itstyle,c.styleno,d.gonm,d.prcnm,a.trem,a.usr_id,x1.rate wprate,x2.rate rprate,x3.rate cprate,c.itnm " + Environment.NewLine;
 
                 sql += "from  ( " + Environment.NewLine;
                 sql += "select d.docno,d.docdt,a.autono||a.slno autoslno,a.autono,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr,a.baleno,b.gocd,b.prccd,b.trem,d.usr_id " + Environment.NewLine;
@@ -144,8 +145,33 @@ namespace Improvar.Controllers
                 if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   " + Environment.NewLine;
                 sql += ") a, " + Environment.NewLine;
 
+                for (int x = 0; x <= 2; x++)
+                {
+                    string sqlals = "";
+                    switch (x)
+                    {
+                        case 0:
+                            sqlals = "x1"; break;
+                        case 1:
+                            prccd = "RP"; sqlals = "x2"; break;
+                        case 2:
+                            prccd = "CP"; sqlals = "x3"; break;
+
+                    }
+                    sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
+                    sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                    sql += "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                    sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                    sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdate + "','dd/mm/yyyy') ) " + Environment.NewLine;
+                    sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
+                    sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                    sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
+                    sql += ") " + sqlals;
+                    sql += ", ";
+                }
+
                 sql += "" + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scmf + ".m_godown d," + scmf + ".m_uom e, " + scmf + ".M_PRCLST d " + Environment.NewLine;
-                sql += "where a.barno=b.barno and b.itcd=c.itcd(+) and a.gocd=d.gocd(+) and c.uomcd=e.uomcd(+) and a.prccd=d.prccd(+) " + Environment.NewLine;
+                sql += "where a.barno=b.barno and b.itcd=c.itcd(+) and a.gocd=d.gocd(+) and c.uomcd=e.uomcd(+) and a.prccd=d.prccd(+)  and a.barno=x1.barno(+) and a.barno=x2.barno(+) and a.barno=x3.barno(+) " + Environment.NewLine;
                 if (ReportType == "Date Wise Summary")
                 {
                     sql += "order by a.docdt,a.barno,c.styleno||' '||c.itnm,a.cutlength,a.rate ";
@@ -180,14 +206,26 @@ namespace Improvar.Controllers
                         }
                         HC.GetPrintHeader(IR, "barno", "string", "c,25", "Bar No.");
                         HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Style No.");
+                        if (ReportType == "Date Wise Summary")
+                        {
+                            HC.GetPrintHeader(IR, "itnm", "string", "c,25", "Item Name");
+                        }
                         HC.GetPrintHeader(IR, "cutlength", "double", "c,6,2", "Length");
                         HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
                         HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
                         HC.GetPrintHeader(IR, "rate", "double", "c,14,2", "Rate");
+                        if (ReportType == "Date Wise Summary")
+                        {
+                            HC.GetPrintHeader(IR, "cprate", "double", "c,14,2", "CP Rate");
+                        }
                         if (ReportType == "Details")
                         {
                             HC.GetPrintHeader(IR, "stktype", "string", "c,12", "Stock Type");
                             HC.GetPrintHeader(IR, "itrem", "string", "c,15", "Item Remarks");
+                        }
+                        if (ReportType == "Date Wise Summary")
+                        {
+                            HC.GetPrintHeader(IR, "trem", "string", "c,25", "Remarks");
                         }
                     }
                     else
@@ -240,10 +278,18 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["prcnm"] = tbl.Rows[i]["prcnm"].retStr();
                                     IR.Rows[rNo]["barno"] = tbl.Rows[i]["barno"].retStr();
                                     IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
+                                    if (ReportType == "Date Wise Summary")
+                                    {
+                                        IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].retStr();
+                                    }
                                     IR.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"].retDbl();
                                     IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
                                     IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                                     IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                                    if (ReportType == "Date Wise Summary")
+                                    {
+                                        IR.Rows[rNo]["cprate"] = tbl.Rows[i]["cprate"].retDbl();
+                                    }
                                     IR.Rows[rNo]["stktype"] = tbl.Rows[i]["stktype"].retStr();
                                     IR.Rows[rNo]["itrem"] = tbl.Rows[i]["itrem"].retStr();
                                 }
@@ -260,10 +306,16 @@ namespace Improvar.Controllers
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["barno"] = tbl.Rows[i - 1]["barno"].retStr();
                                 IR.Rows[rNo]["itstyle"] = tbl.Rows[i - 1]["itstyle"].retStr();
+                                IR.Rows[rNo]["itnm"] = tbl.Rows[i-1]["itnm"].retStr();
                                 IR.Rows[rNo]["cutlength"] = tbl.Rows[i - 1]["cutlength"].retDbl();
                                 IR.Rows[rNo]["nos"] = nos;
                                 IR.Rows[rNo]["qnty"] = qnty;
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i - 1]["rate"].retDbl();
+                                if (ReportType == "Date Wise Summary")
+                                {
+                                    IR.Rows[rNo]["cprate"] = tbl.Rows[i - 1]["cprate"].retDbl();
+                                }
+                                IR.Rows[rNo]["trem"] = tbl.Rows[i - 1]["trem"].retStr();
                             }
                             if (ReportType == "Super Summary")
                             {
