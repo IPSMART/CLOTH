@@ -88,6 +88,31 @@
     });
 </script>
 <script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled) <span style='font-size: small;'>" + Model.T_CNTRL_HDR.CANC_REM + "</span>";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }

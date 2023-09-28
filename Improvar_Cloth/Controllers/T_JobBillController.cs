@@ -1564,7 +1564,7 @@ namespace Improvar.Controllers
                                         if (VE.T_JBILL.CRDAYS != null) ddys = Convert.ToDouble(VE.T_JBILL.CRDAYS);
                                         if (VE.T_JBILL.DUEDT == null) VE.T_JBILL.DUEDT = VE.T_JBILL.DUECALCON == "P" ? Convert.ToDateTime(VE.T_JBILL.PBLDT).AddDays(ddys) : Convert.ToDateTime(VE.T_JBILL.DOCDT).AddDays(ddys);
                                     }
-                                    TJBILL = FillJB(VE, out Ddate, VE.T_JBILL.DOCCD, out DOCPATTERN, out auto_no, out Month, "J",VE.M_SLIP_NO);
+                                    TJBILL = FillJB(VE, out Ddate, VE.T_JBILL.DOCCD, out DOCPATTERN, out auto_no, out Month, "J", VE.M_SLIP_NO);
                                     if (VE.DefaultAction == "E")
                                     {
                                         if (VE.MENU_PARA == "JB")
@@ -1628,7 +1628,7 @@ namespace Improvar.Controllers
                                     TJBILL.DNCNAMT1 = VE.T_JBILL.DNCNAMT1;
                                     TJBILL.TAXGRPCD = VE.T_JBILL.TAXGRPCD;
                                     //TCH_ITEM = Cn.T_CONTROL_HDR(TJBILL.DOCCD, TJBILL.DOCDT, TJBILL.DOCNO, TJBILL.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT), null);
-                                    TCH_ITEM = Cn.T_CONTROL_HDR(TJBILL.DOCCD, TJBILL.DOCDT, TJBILL.DOCNO, TJBILL.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT), null,VE.Audit_REM);
+                                    TCH_ITEM = Cn.T_CONTROL_HDR(TJBILL.DOCCD, TJBILL.DOCDT, TJBILL.DOCNO, TJBILL.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT), null, VE.Audit_REM);
                                     //TCH_ITEM = Cn.Model_T_Cntrl_Hdr(DB, TJBILL.AUTONO, TJBILL.DOCCD, TJBILL.DOCDT.Value, TJBILL.DOCNO, Month, DOCPATTERN, VE.DefaultAction, null, TJBILL.SLCD, Convert.ToDouble(VE.T_JBILL.BLAMT));
                                     TJB.Add(TJBILL);
                                     TCH.Add(TCH_ITEM);
@@ -1801,13 +1801,13 @@ namespace Improvar.Controllers
                                         if (VE.T_JBILL.OTHAUTONO == null)
                                         {
                                             //TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, "A", CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null);
-                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, "A", CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null,VE.Audit_REM);
+                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, "A", CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null, VE.Audit_REM);
                                             //TCH_DNCN = Cn.Model_T_Cntrl_Hdr(DB, TJBILL_DNCN.AUTONO, TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT.Value, TJBILL_DNCN.DOCNO, Month_DNCN, DNCNDOCPATTERN, "A", null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT));
                                         }
                                         else
                                         {
                                             //TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null);
-                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null,VE.Audit_REM);
+                                            TCH_DNCN = Cn.T_CONTROL_HDR(TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT, TJBILL_DNCN.DOCNO, TJBILL_DNCN.AUTONO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null, VE.Audit_REM);
                                             //TCH_DNCN = Cn.Model_T_Cntrl_Hdr(DB, TJBILL_DNCN.AUTONO, TJBILL_DNCN.DOCCD, TJBILL_DNCN.DOCDT.Value, TJBILL_DNCN.DOCNO, Month_DNCN, DNCNDOCPATTERN, VE.DefaultAction, null, TJBILL_DNCN.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT));
                                         }
                                         TJB.Add(TJBILL_DNCN);
@@ -2219,8 +2219,9 @@ namespace Improvar.Controllers
                                             {
 
                                                 isl = isl + 1;
-                                                dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), cr, gstpostcd[gt], null,
-                                                        gstpostamt[gt], strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, dbqty, 0, 0, postdt);
+                                                //dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), cr, gstpostcd[gt], null,
+                                                dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), cr, gstpostcd[gt], sslcd,
+                                                gstpostamt[gt], strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, dbqty, 0, 0, postdt);
                                                 OraCmd.CommandText = dbsql;
                                                 OraCmd.ExecuteNonQuery();
                                                 if (cr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
@@ -2248,8 +2249,9 @@ namespace Improvar.Controllers
                                                 if (gstpostamt[gt] != 0)
                                                 {
                                                     isl = isl + 1;
-                                                    dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), dr, gstpostcd[gt], null,
-                                                            gstpostamt[gt], strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, dbqty, 0, 0, postdt);
+                                                    //dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), dr, gstpostcd[gt], null,
+                                                    dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), dr, gstpostcd[gt], sslcd,
+                                                    gstpostamt[gt], strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, dbqty, 0, 0, postdt);
                                                     OraCmd.CommandText = dbsql;
                                                     OraCmd.ExecuteNonQuery();
                                                     if (dr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
@@ -2285,8 +2287,9 @@ namespace Improvar.Controllers
                                             if (dbamt < 0) dbamt = dbamt * -1;
 
                                             isl = isl + 1;
-                                            dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), adrcr, tbl.Rows[0]["rogl"].ToString(), null,
-                                                    dbamt, strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, 0, 0, 0);
+                                            //dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), adrcr, tbl.Rows[0]["rogl"].ToString(), null,
+                                            dbsql = Master_Help.InsVch_Det(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(isl), adrcr, tbl.Rows[0]["rogl"].ToString(), sslcd,
+                                            dbamt, strrem, tbl.Rows[0]["parglcd"].ToString(), TJB[j].SLCD, 0, 0, 0);
                                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                             if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
                                             else dbCrAmt = dbCrAmt + dbamt;
@@ -2574,7 +2577,7 @@ namespace Improvar.Controllers
                             {
                                 return Content(ContentFlg);
                             }
-                        dbnotsave:;
+                            dbnotsave:;
                             transaction.Rollback();
                             OraTrans.Rollback();
                             OraCon.Dispose();
