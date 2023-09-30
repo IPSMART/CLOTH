@@ -4590,7 +4590,7 @@ namespace Improvar.Controllers
                 }
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
-                    if ((VE.Last_TAXGRPCD.retStr() != VE.T_TXNOTH.TAXGRPCD.retStr()) || (VE.Last_PRCCD.retStr() != VE.T_TXNOTH.PRCCD.retStr()))
+                    if (((VE.Last_TAXGRPCD.retStr() != VE.T_TXNOTH.TAXGRPCD.retStr()) || (VE.Last_PRCCD.retStr() != VE.T_TXNOTH.PRCCD.retStr())) && othr_para == "")
                     {
                         ContentFlg = "Entry Can't Save ! Previous Tax Group/Price and Current Tax Group/Price not match ";
                         goto dbnotsave;
