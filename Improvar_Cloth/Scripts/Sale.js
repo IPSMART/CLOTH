@@ -2491,6 +2491,10 @@ function AddBarCodeGrid() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
+    if (DefaultAction == "A" && MENU_PARA == "SR" && !$('#GOCD').is('[readonly]')) {
+        $('#GOCD').attr('readonly', 'readonly');
+        $('#gocd_help').hide();
+    }
     //if (((MENU_PARA == "PR" || MENU_PARA == "SR" || MENU_PARA == "SBDIR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
     if ((MENU_PARA == "PR" || MENU_PARA == "SR") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
@@ -4162,6 +4166,10 @@ function Sale_SelectTTXNDTLDetails() {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }
+    if (DefaultAction == "A"  && MENU_PARA == "SR" && !$('#GOCD').is('[readonly]')) {
+        $('#GOCD').attr('readonly', 'readonly');
+        $('#gocd_help').hide();
+    }
     //if (((MENU_PARA == "PR" || MENU_PARA == "SR") && DefaultAction == "A") && !$('#SLCD').is('[readonly]')) {
     if ((MENU_PARA == "PR" || MENU_PARA == "SR") && !$('#SLCD').is('[readonly]')) {
         $('#SLCD').attr('readonly', 'readonly');
@@ -4518,6 +4526,10 @@ function GetBaleData() {
     var MENU_PARA = $("#MENU_PARA").val();
 
     if (DefaultAction == "A" && MNTNBALE == "Y" && MENU_PARA == "SBDIR" && !$('#GOCD').is('[readonly]')) {
+        $('#GOCD').attr('readonly', 'readonly');
+        $('#gocd_help').hide();
+    }
+    if (DefaultAction == "A" && MENU_PARA == "SR" && !$('#GOCD').is('[readonly]')) {
         $('#GOCD').attr('readonly', 'readonly');
         $('#gocd_help').hide();
     }

@@ -3241,6 +3241,8 @@ namespace Improvar.Controllers
                 if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
                 if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
                 if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
+                if (VE.T_TXN.GOCD.retStr() != "") sql += "and t.gocd = '" + VE.T_TXN.GOCD + "' ";
+
                 sql += ")x, ";
 
                 sql += "(select a.prodgrpcd, ";
@@ -3315,6 +3317,7 @@ namespace Improvar.Controllers
                         if (TDT.retDateStr() != "") sql += " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
                         if (R_BARNO.retStr() != "") sql += "and i.barno = '" + R_BARNO + "' ";
                         if (SLCD.retStr() != "") sql += "and t.slcd = '" + SLCD + "' ";
+                        if (VE.T_TXN.GOCD.retStr() != "") sql += "and t.gocd = '" + VE.T_TXN.GOCD + "' ";
                         sql += ")x, ";
 
                         sql += "(select a.prodgrpcd, ";
@@ -3403,7 +3406,8 @@ namespace Improvar.Controllers
             try
             {
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                DataTable dt = (DataTable)TempData["TXNDTLDetails" + VE.MENU_PARA]; TempData.Keep();
+                DataTable dt = (DataTable)TempData["TXNDTLDetails" + VE.MENU_PARA]; //TempData.Keep();
+                TempData["TXNDTLDetails" + VE.MENU_PARA] = null;
                 var selectedautoslno = VE.TTXNDTLPOPUP.Where(r => r.P_Checked == true).Select(a => a.AUTONO + a.BARNO).Distinct().ToList();
 
                 var TBATCHDTL = (from DataRow dr in dt.Rows
