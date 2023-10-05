@@ -493,7 +493,8 @@ namespace Improvar.Controllers
                         if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
 
                         if ((dtlsumm != "C") || (dtlsumm == "C" && VE.Checkbox10 == true)) HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
-                        if (dtlsumm != "C") HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
+                        //if (dtlsumm != "C") HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
+                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                     }
                     if (dtlsumm != "C") HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
                     if (SeparateAchead)
@@ -679,7 +680,8 @@ namespace Improvar.Controllers
                             if (tbl.Rows[i]["cancel"].ToString() != "Y")
                             {
                                 if ((dtlsumm != "C") || (dtlsumm == "C" && VE.Checkbox10 == true)) dr["nos"] = bnos;
-                                if (dtlsumm != "C") dr["qnty"] = bqnty;
+                                //if (dtlsumm != "C") dr["qnty"] = bqnty;
+                                 dr["qnty"] = bqnty;
                                 if (SeparateAchead == true)
                                 {
                                     foreach (DataRow amtdr in amtDT.Rows)
@@ -788,7 +790,8 @@ namespace Improvar.Controllers
                     if (itmdtl == true) { IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;"; }
                     else { IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 3px solid;"; }
                     if (itmdtl == false && ((dtlsumm != "C") || (dtlsumm == "C" && VE.Checkbox10 == true))) IR.Rows[rNo]["nos"] = tnos;
-                    if (itmdtl == false && dtlsumm != "C") IR.Rows[rNo]["qnty"] = tqnty;
+                    //if (itmdtl == false && dtlsumm != "C") IR.Rows[rNo]["qnty"] = tqnty;
+                    if (itmdtl == false) IR.Rows[rNo]["qnty"] = tqnty;
                     if (dtlsumm != "C") IR.Rows[rNo]["amt"] = tbasamt;
                     if (dtlsumm != "C") IR.Rows[rNo]["disc1"] = tdisc1;
                     if (dtlsumm != "C") IR.Rows[rNo]["disc2"] = tdisc2;
