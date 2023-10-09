@@ -144,6 +144,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "To Pay")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @Html.EditorFor(model => model.TEXTBOX11, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX11", @placeholder = "To Pay" } })
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10px;">
 
                     @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR" && Model.MENU_PARA != "ST" && Model.MENU_PARA != "AT")

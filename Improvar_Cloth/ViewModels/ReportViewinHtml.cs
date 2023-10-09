@@ -98,6 +98,7 @@ namespace Improvar.ViewModels
         public string BARNO { get; set; }
         public string Translnm { get; set; }
         public string JOBNM { get; set; }
+        public string TEXTBOX11 { get; set; }
         
 
     }

@@ -1,0 +1,389 @@
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using Improvar.Models;
+using Improvar.ViewModels;
+using System.Data;
+
+namespace Improvar.Controllers
+{
+    public class Rep_MIS_SaleStkController : Controller
+    {
+        // GET: Rep_MIS_SaleStk
+        public static string[,] headerArray;
+        Connection Cn = new Connection();
+        MasterHelp MasterHelp = new MasterHelp();
+        Salesfunc Salesfunc = new Salesfunc();
+        DropDownHelp DropDownHelp = new DropDownHelp();
+        string UNQSNO = CommVar.getQueryStringUNQSNO();
+        // GET: Rep_MIS_SaleStk
+        public ActionResult Rep_MIS_SaleStk()
+        {
+            try
+            {
+                if (Session["UR_ID"] == null)
+                {
+                    return RedirectToAction("Login", "Login");
+                }
+                else
+                {
+
+                    ReportViewinHtml VE = new ReportViewinHtml();
+                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    ViewBag.formname = " MIS Sales Stock";
+                    //VE.DropDown_list = (from i in DB.M_GROUP where (selgrpcd.Contains(i.ITGRPCD)) select new DropDown_list() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
+                    //VE.DropDown_list1 = (from i in DB.M_ITEMPLIST
+                    //                     join j in DB.T_BATCHMST on i.ITMPRCCD equals j.ITMPRCCD
+                    //                     where (selgrpcd.Contains(i.ITGRPCD))
+                    //                     select new DropDown_list1()
+                    //                     { value = i.ITMPRCCD, text = i.PRCDESC }).Distinct().OrderBy(s => s.text).ToList();
+                    //VE.DropDown_list_text = (from i in items select new DropDown_list_text() { value = i.value, text1 = i.text1 + " [" + i.text3 + "]" }).OrderBy(s => s.text1).ToList();
+                    VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
+                    VE.Itgrpnm = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
+                    VE.DropDown_list2 = (from i in DBF.M_GODOWN
+                                         select new DropDown_list2()
+                                         {
+                                             value = i.GOCD,
+                                             text = i.GONM
+                                         }).Distinct().OrderBy(s => s.text).ToList();
+
+                    VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
+                    VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
+
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection();
+                    VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+                    
+                    VE.DefaultView = true;
+                    VE.FDT = CommVar.FinStartDate(UNQSNO);
+                    VE.TDT = CommVar.CurrDate(UNQSNO);
+                    VE.Checkbox2 = true;
+                    return View(VE);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        [HttpPost]
+        public ActionResult Rep_MIS_SaleStk(FormCollection FC, ReportViewinHtml VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string fdt = VE.FDT.retDateStr();
+                string tdt = VE.TDT.retDateStr();
+
+                string itgrpcd = "";
+                string rateqntybag = "B";
+                //if (FC["RATEQNTYBAG"].ToString() == "BAGS") rateqntybag = "B";
+                //else rateqntybag = "Q";
+
+                string query = ""; string query1 = "";
+
+                string mfdt = "01" + fdt.Substring(2, 8);
+                string yfdt = "01/01" + fdt.Substring(5, 5);
+
+                Int32 i = 0;
+                Int32 maxR = 0;
+                string chkval, chkval1 = "";
+                string selitcd = "", plist = "", selgocd = "", selgonm = "", LOCCD = "", party = "";
+
+                if (FC.AllKeys.Contains("Godown"))
+                {
+                    selgocd = FC["Godown"].ToString().retSqlformat();
+                }
+                if (FC.AllKeys.Contains("slcdvalue"))
+                {
+                    party = FC["slcdvalue"].ToString().retSqlformat();
+                }
+                
+                if (FC.AllKeys.Contains("itcdvalue"))  //'ITEM'
+                {
+                    selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
+                }
+                if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
+                string mtrljobcd = "'FS'";
+                string prccd = "WP";
+
+                bool showbatch = true;
+                var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
+                string sql = "";
+
+
+                sql += Environment.NewLine + "select a.doccd,a.doctag, a.docdt,a.stkdrcr,a.itcd,s.styleno, ";
+                sql += Environment.NewLine + "a.qnty,b.prccd, b.effdt, b.rate wprate, q.rate rprate from ";
+
+                sql += Environment.NewLine + " (select  b.doccd, b.doctag, c.docdt, a.stkdrcr, a.itcd, ";
+                sql += Environment.NewLine + " sum(nvl(a.qnty, 0)) qnty ";
+                sql += Environment.NewLine + " from "+ scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d, ";
+                sql += Environment.NewLine + "" + scmf + ".m_subleg i ";
+                sql += Environment.NewLine + "where a.autono = b.autono(+) and a.autono = c.autono(+) and c.doccd = d.doccd(+) and b.slcd = i.slcd(+) and ";
+
+                sql += Environment.NewLine + "nvl(c.cancel, 'N') = 'N' and c.compcd = '"+COM+"' and c.loccd='" + LOC + "'";
+                sql += Environment.NewLine + "and c.docdt >= to_date('"+fdt+"', 'dd/mm/yyyy') ";
+                sql += Environment.NewLine + " and c.docdt <= to_date('"+tdt+"', 'dd/mm/yyyy') ";
+                sql += Environment.NewLine + " and a.mtrljobcd in ("+ mtrljobcd + ") ";
+                sql += Environment.NewLine + " group by b.doccd, b.doctag, c.docdt, a.stkdrcr, a.itcd) a, ";
+
+                for (int x = 0; x <= 1; x++)
+                {
+                    string sqlals = "";
+                    switch (x)
+                    {
+                        case 0:
+                            sqlals = "b"; break;
+                        case 1:
+                            prccd = "RP"; sqlals = "q"; break;
+
+                    }
+                    sql += Environment.NewLine + "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
+                    sql += Environment.NewLine + "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
+                    sql += Environment.NewLine+ "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                    sql += Environment.NewLine+ "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                    sql += Environment.NewLine+ "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
+                    sql += Environment.NewLine+ "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
+                    sql += Environment.NewLine+ "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                    sql += Environment.NewLine+ ") a where prccd='" + prccd + "' " + Environment.NewLine;
+                    sql += Environment.NewLine+ ") " + sqlals;
+                    if (x != 2) sql += ", ";
+                }
+                sql += Environment.NewLine + "" + scm + ".m_sitem s ";
+                sql += Environment.NewLine+"where a.itcd = b.itcd(+) and a.itcd = q.itcd(+)and a.itcd = s.itcd(+) ";
+                sql += "order by styleno, docdt ";
+                DataTable tbl = MasterHelp.SQLquery(sql);
+                DataTable Docdesc = new DataTable("doccd");
+
+                if (tbl.Rows.Count == 0)
+                {
+                    return RedirectToAction("NoRecords", "RPTViewer");
+                }
+
+                DataTable IR = new DataTable("mstrep");
+
+                Models.PrintViewer PV = new Models.PrintViewer();
+                HtmlConverter HC = new HtmlConverter();
+                string qdsp = "";
+                //if (rateqntybag == "B") qdsp = "n,12";
+                //qdsp = "n,12,4";
+                qdsp = "n,12,2";
+                string[] DOCCOLS = new string[] { "doccd", "docnm" };
+                Docdesc = tbl.DefaultView.ToTable(true, DOCCOLS);
+                Docdesc.Columns.Add("docqty", typeof(double));
+                //HC.RepStart(IR, 3);
+                HC.RepStart(IR, 2);
+                HC.GetPrintHeader(IR, "styleno", "string", "c,16", "Article");
+                HC.GetPrintHeader(IR, "purrate", "double", "n,10,2", "Pur Rate");
+                HC.GetPrintHeader(IR, "openingqnty", "double", "n,10,2", "Opening");
+                foreach (DataRow dr in Docdesc.Rows)
+                {
+                    HC.GetPrintHeader(IR, dr["doccd"].ToString(), "double", "n,14,3", dr["docnm"].ToString());
+                }
+                HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock");
+
+                HC.GetPrintHeader(IR, "qntyin", "double", qdsp, "Qnty (In)");
+                if (VE.Checkbox1 == true)
+                {
+                    HC.GetPrintHeader(IR, "amtin", "double", "n,12,2", "Amt (In)");
+                }
+                HC.GetPrintHeader(IR, "qntyout", "double", qdsp, "Qnty (Out)");
+                if (VE.Checkbox1 == true)
+                {
+                    HC.GetPrintHeader(IR, "amtout", "double", "n,12,2", "Amt (Out)");
+                }
+                HC.GetPrintHeader(IR, "balqnty", "double", qdsp, "Bal Qnty");
+                //if (showbatch == true) HC.GetPrintHeader(IR, "batchno", "string", "c,30", "Batchnos");
+
+                double iop = 0, idr = 0, icr = 0, icls = 0, idramt = 0, icramt = 0;
+                double top = 0, tdr = 0, tcr = 0, tcls = 0, tdramt = 0, tcramt = 0, tblqty = 0;
+                double dbqty = 0, dbamt = 0;
+
+                top = 0; tdr = 0; tcr = 0; tcls = 0;
+
+                Int32 rNo = 0;
+
+                // Report begins
+                i = 0; maxR = tbl.Rows.Count - 1;
+
+                while (i <= maxR)
+                {
+                    chkval = tbl.Rows[i]["itcd"].ToString();
+                    iop = 0; idr = 0; icr = 0; icls = 0; idramt = 0; icramt = 0;
+
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["itcd1"].ToString() + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString();
+                    IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    while (tbl.Rows[i]["itcd"].ToString() == chkval)
+                    {
+                        double bqnty = 0, bnos = 0, bval = 0, bamt = 0;
+                        while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) < Convert.ToDateTime(fdt))
+                        {
+                            //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
+                            dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
+
+                            if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
+                            {
+                                bnos = bnos + tbl.Rows[i]["nos"].retDbl();
+                                bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl();
+                                iop = iop + dbqty;
+                            }
+                            else if (tbl.Rows[i]["stkdrcr"].ToString() == "C")
+                            {
+                                bnos = bnos - tbl.Rows[i]["nos"].retDbl();
+                                bqnty = bqnty - tbl.Rows[i]["qnty"].retDbl();
+                                iop = iop - dbqty;
+                            }
+                            i = i + 1;
+                            if (i > maxR) break;
+                        }
+                        if (iop != 0)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["docdt"] = fdt;
+                            IR.Rows[rNo]["slnm"] = "Opening";
+                            IR.Rows[rNo]["balqnty"] = iop;
+                            if (iop < 0) icr = iop * -1;
+                            else idr = iop;
+                            icls = iop;
+                        }
+                        if (i > maxR)
+                        {
+                            break;
+                        }
+                        while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
+                        {
+                            //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
+                            dbqty = tbl.Rows[i]["qnty"].retDbl();
+                            dbamt = tbl.Rows[i]["txblval"].retDbl();
+
+                            //string pdocno = tbl.Rows[i]["pblno"].ToString();
+                            //if (pdocno == "") pdocno = tbl.Rows[i]["docno"].ToString();
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Substring(0, 10);
+                            IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
+                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
+                            string gonm = tbl.Rows[i]["stkdrcr"].ToString() == "D" ? ("To Godown : " + tbl.Rows[i]["tgonm"].ToString()) : ("From Godown : " + tbl.Rows[i]["fgonm"].ToString());
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].retStr() == "" ? tbl.Rows[i]["docnm"] + " [" + gonm + "]" : tbl.Rows[i]["slnm"] + " [" + tbl.Rows[i]["gstno"] + " " + tbl.Rows[i]["district"] + "]";
+                            //if (showbatch == true) IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchnos"];
+                            IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                            IR.Rows[rNo]["pageslno"] = tbl.Rows[i]["pageslno"].ToString();
+                            if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
+                            {
+                                IR.Rows[rNo]["qntyin"] = dbqty;
+                                if (VE.Checkbox1 == true)
+                                {
+                                    IR.Rows[rNo]["amtin"] = dbamt;
+                                }
+                                idr = idr + dbqty; idramt = idramt + dbamt;
+                            }
+                            else
+                            {
+                                IR.Rows[rNo]["qntyout"] = dbqty;
+                                if (VE.Checkbox1 == true)
+                                {
+                                    IR.Rows[rNo]["amtout"] = dbamt;
+                                }
+                                icr = icr + dbqty; icramt = icramt + dbamt;
+                            }
+                            icls = idr - icr;
+                            IR.Rows[rNo]["balqnty"] = icls;
+                            tblqty = tblqty + icls;
+                            i = i + 1;
+                            if (i > maxR) break;
+                        }
+
+                        if (i > maxR) break;
+                    }
+
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["dammy"] = "";
+                    IR.Rows[rNo]["slnm"] = "Totals (" + tbl.Rows[i - 1]["styleno"] + tbl.Rows[i - 1]["itnm"] + ")";
+                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                    IR.Rows[rNo]["qntyin"] = idr;
+                    if (VE.Checkbox1 == true)
+                    {
+                        IR.Rows[rNo]["amtin"] = idramt;
+                    }
+                    IR.Rows[rNo]["qntyout"] = icr;
+                    if (VE.Checkbox1 == true)
+                    {
+                        IR.Rows[rNo]["amtout"] = icramt;
+                    }
+                    //IR.Rows[rNo]["balqnty"] = icls;
+                    //IR.Rows[rNo]["balqnty"] = tblqty;
+                    IR.Rows[rNo]["balqnty"] = idr - icr;
+
+                    top = top + iop;
+                    tdr = tdr + idr; tdramt = tdramt + idramt;
+                    tcr = tcr + icr; tcramt = tcramt + icramt;
+                    tcls = tcls + icls;
+                }
+
+                // Create Blank line
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["dammy"] = " ";
+                IR.Rows[rNo]["flag"] = " height:14px; ";
+
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["dammy"] = "";
+                IR.Rows[rNo]["slnm"] = "Grand Totals";
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                IR.Rows[rNo]["qntyin"] = tdr;
+                if (VE.Checkbox1 == true)
+                {
+                    IR.Rows[rNo]["amtin"] = tdramt;
+                }
+                IR.Rows[rNo]["qntyout"] = tcr;
+                if (VE.Checkbox1 == true)
+                {
+                    IR.Rows[rNo]["amtout"] = tcramt;
+                }
+                IR.Rows[rNo]["balqnty"] = tdr - tcr;
+
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                string jobnm = DB.M_JOBMST.Find(VE.MENU_PARA)?.JOBNM;
+                string pghdr1 = "";
+                string repname = jobnm + "_Stk_Leg";
+                pghdr1 = jobnm + " Stock Ledger from " + fdt + " to " + tdt;
+                if (selgocd != "")
+                {
+                    selgonm = "Godown: " + string.Join(",", (from a in DBF.M_GODOWN where (selgocd.Contains(a.GOCD)) select a.GONM).ToList()).retSqlformat();
+                }
+                if (FC.AllKeys.Contains("mtrljobcdvalue"))
+                {
+                    if (selgonm != "") selgonm += "</br>";
+                    selgonm += "Material Job: " + CommFunc.retSqlformat(FC["mtrljobcdtext"].ToString()).Replace("*", ",").Replace("'", "");
+                }
+                PV = HC.ShowReport(IR, repname, pghdr1, selgonm, true, true, "L", false);
+
+                TempData[repname] = PV;
+                TempData[repname + "xxx"] = IR;
+                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+        }
+
+        public ActionResult PrintReport()
+        {
+            try
+            {
+                return RedirectToAction("ResponsivePrintViewer", "RPTViewer");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+    }
+}

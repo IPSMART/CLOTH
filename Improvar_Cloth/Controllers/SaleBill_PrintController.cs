@@ -4795,6 +4795,7 @@ namespace Improvar.Controllers
                 string query = "";
                 #region
                 string sqlc = "";
+                var a = CommVar.ClientCode(UNQSNO);
                 sqlc += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + yr_cd + "' and " + Environment.NewLine;
                 if (docnos.retStr() == "")
                 {
@@ -4969,6 +4970,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("compphno", typeof(string));
                 IR.Columns.Add("compemail", typeof(string));
                 IR.Columns.Add("compgstno", typeof(string));
+                IR.Columns.Add("topay", typeof(string));
 
                 Int32 i = 0, rNo = 0; maxR = tbl.Rows.Count - 1;
                 while (i <= maxR)
@@ -4977,6 +4979,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"];
                     //IR.Rows[rNo]["othnm"] = VE.TEXTBOX2;
                     IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"];
+                    IR.Rows[rNo]["topay"] = VE.TEXTBOX11; ;
                     if (tbl.Rows[i]["othadd1"].ToString() != "")
                     {
                         IR.Rows[rNo]["slnm"] = tbl.Rows[i]["othnm"] == DBNull.Value ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["othnm"].ToString();

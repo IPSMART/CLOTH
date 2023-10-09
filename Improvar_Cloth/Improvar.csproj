@@ -299,6 +299,7 @@
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_Job_LedgerController.cs" />
     <Compile Include="Controllers\Rep_Misc_Qry_UpdtController.cs" />
+    <Compile Include="Controllers\Rep_MIS_SaleStkController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_PartyStmtController.cs" />
     <Compile Include="Controllers\Rep_PendChallanController.cs" />
@@ -1538,6 +1539,7 @@
     <Content Include="Views\PhyStockPrint\PhyStockPrint.cshtml" />
     <Content Include="Views\Shared\_T_StockAdj_Popup.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_Upload.cshtml" />
+    <Content Include="Views\Rep_MIS_SaleStk\Rep_MIS_SaleStk.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
