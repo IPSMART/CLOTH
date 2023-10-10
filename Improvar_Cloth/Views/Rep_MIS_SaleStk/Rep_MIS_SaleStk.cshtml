@@ -40,6 +40,29 @@
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
     });
 </script>
+<script>
+    $(function () {
+       
+        $("#TextBox5").change(function () {
+            $("#rowd1").hide();
+            $("#rowd2").hide();
+            $("#rowd3").hide();
+            if ($("#TextBox5").val() == "1") {
+                $("#rowd1").show();
+            }
+            else if ($("#TextBox5").val() == "2") {
+                $("#rowd1").show();
+                $("#rowd2").show();
+            }
+            else if ($("#TextBox5").val() == "3") {
+                $("#rowd1").show();
+                $("#rowd2").show();
+                $("#rowd3").show();
+            }
+        });
+       
+    });
+</script>
 @{
     var PageControllerName = "Rep_Stk_Leg";
 }
@@ -53,18 +76,6 @@
             <input type="hidden" id="urlLoadItemCode" value="@Url.Action("LoadItemCode", PageControllerName)" />
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
 
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Item Group")
-                            @*<b style="color:Red;">*</b>*@
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        @*@Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1), new { @class = " form-control" })*@
-                        @(new HtmlString(Model.Itgrpnm))
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -89,27 +100,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:6px">
-                            @Html.Label("", "Godown")
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <select id="Godown" name="Godown" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
-                            <optgroup label="Godown">
-                                @foreach (var i in Model.DropDown_list2)
-                                {
-                                    <option value="@i.value">
-                                        @i.text
-                                    </option>
-                                }
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>
-
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
@@ -118,6 +108,54 @@
                     </div>
                     <div class="col-md-6">
                         @(new HtmlString(Model.Itnm))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Stock ageing")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            @Html.EditorFor(model => model.TEXTBOX5, new { htmlAttributes = new { @class = "form-control", autocomplete = "off", id = "TextBox5", min = 0, Max = 3, type = "number" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="rowd1" style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Days Range 1")
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            <input type="text" name="days1" id="days1" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="rowd2" style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Days Range 2")
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            <input type="text" name="days2" id="days2" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="rowd3" style="display:none">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Days Range 3")
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            <input type="text" id="days3" name="days3" class="form-control" />
+                        </div>
                     </div>
                 </div>
                 <div class="row" style="margin-top:10PX">
