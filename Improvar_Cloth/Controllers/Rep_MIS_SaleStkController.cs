@@ -54,7 +54,7 @@ namespace Improvar.Controllers
 
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection();
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-                    
+
                     VE.DefaultView = true;
                     VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
@@ -102,7 +102,7 @@ namespace Improvar.Controllers
                 {
                     party = FC["slcdvalue"].ToString().retSqlformat();
                 }
-                
+
                 if (FC.AllKeys.Contains("itcdvalue"))  //'ITEM'
                 {
                     selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
@@ -121,14 +121,14 @@ namespace Improvar.Controllers
 
                 sql += Environment.NewLine + " (select  b.doccd, b.doctag, c.docdt, a.stkdrcr, a.itcd, ";
                 sql += Environment.NewLine + " sum(case a.stkdrcr when 'D' then a.qnty else a.qnty * -1 end) qnty,d.docnm ";
-                sql += Environment.NewLine + " from "+ scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d, ";
+                sql += Environment.NewLine + " from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d, ";
                 sql += Environment.NewLine + "" + scmf + ".m_subleg i ";
                 sql += Environment.NewLine + "where a.autono = b.autono(+) and a.autono = c.autono(+) and c.doccd = d.doccd(+) and b.slcd = i.slcd(+) and ";
 
-                sql += Environment.NewLine + "nvl(c.cancel, 'N') = 'N' and c.compcd = '"+COM+"' and c.loccd='" + LOC + "'";
-               // sql += Environment.NewLine + "and c.docdt >= to_date('"+fdt+"', 'dd/mm/yyyy') ";
-                sql += Environment.NewLine + " and c.docdt <= to_date('"+tdt+"', 'dd/mm/yyyy') ";
-                sql += Environment.NewLine + " and a.mtrljobcd in ("+ mtrljobcd + ") ";
+                sql += Environment.NewLine + "nvl(c.cancel, 'N') = 'N' and c.compcd = '" + COM + "' and c.loccd='" + LOC + "'";
+                // sql += Environment.NewLine + "and c.docdt >= to_date('"+fdt+"', 'dd/mm/yyyy') ";
+                sql += Environment.NewLine + " and c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+                sql += Environment.NewLine + " and a.mtrljobcd in (" + mtrljobcd + ") ";
                 sql += Environment.NewLine + " group by b.doccd, b.doctag, c.docdt, a.stkdrcr, a.itcd,d.docnm) a, ";
 
                 for (int x = 0; x <= 1; x++)
@@ -144,19 +144,19 @@ namespace Improvar.Controllers
                     }
                     sql += Environment.NewLine + "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from " + Environment.NewLine;
                     sql += Environment.NewLine + "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from " + Environment.NewLine;
-                    sql += Environment.NewLine+ "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
-                    sql += Environment.NewLine+ "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
-                    sql += Environment.NewLine+ "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
-                    sql += Environment.NewLine+ "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
-                    sql += Environment.NewLine+ "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
-                    sql += Environment.NewLine+ ") a where prccd='" + prccd + "' " + Environment.NewLine;
-                    sql += Environment.NewLine+ ") " + sqlals;
+                    sql += Environment.NewLine + "(select a.barno, a.prccd, a.effdt, " + Environment.NewLine;
+                    sql += Environment.NewLine + "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn " + Environment.NewLine;
+                    sql += Environment.NewLine + "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) " + Environment.NewLine;
+                    sql += Environment.NewLine + "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c " + Environment.NewLine;
+                    sql += Environment.NewLine + "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
+                    sql += Environment.NewLine + ") a where prccd='" + prccd + "' " + Environment.NewLine;
+                    sql += Environment.NewLine + ") " + sqlals;
                     if (x != 2) sql += ", ";
                 }
                 sql += Environment.NewLine + "" + scm + ".m_sitem s ";
-                sql += Environment.NewLine+"where a.itcd = b.itcd(+) and a.itcd = q.itcd(+)and a.itcd = s.itcd(+) ";
-                if (selitcd != "") sql += Environment.NewLine + "and a.itcd in("+ selitcd + ") ";
-                 sql += "order by styleno, docdt ";
+                sql += Environment.NewLine + "where a.itcd = b.itcd(+) and a.itcd = q.itcd(+)and a.itcd = s.itcd(+) ";
+                if (selitcd != "") sql += Environment.NewLine + "and a.itcd in(" + selitcd + ") ";
+                sql += "order by styleno,doctag,docdt ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 DataTable Docdesc = new DataTable("doccd");
 
@@ -198,8 +198,8 @@ namespace Improvar.Controllers
                     ageingperiod = ageingperiod + 1;
 
                     if (ageingperiod >= 1) due1fDys = 0; due1tDys = duedays1;
-                    if (ageingperiod >= 2) due2fDys = due1tDys + 1; due2tDys = duedays2;
-                    if (ageingperiod >= 3) due3fDys = due2tDys + 1; due3tDys = duedays3;
+                    if (ageingperiod >= 2) due2fDys = due1tDys; due2tDys = duedays2;
+                    if (ageingperiod >= 3) due3fDys = due2tDys; due3tDys = duedays3;
                     if (ageingperiod >= 4) due4fDys = due3tDys + 1; due4tDys = 0;
 
                     //define last ageing column
@@ -221,8 +221,8 @@ namespace Improvar.Controllers
                 Docdesc = tbl.DefaultView.ToTable(true, DOCCOLS);
                 Docdesc = Docdesc.Select("doctag not in('OP','PI')").CopyToDataTable();
                 Docdesc.Columns.Add("docqty", typeof(double));
-                HC.RepStart(IR, 3);
-                //HC.RepStart(IR, 2);
+                if (ageingperiod != 0) { HC.RepStart(IR, 3); } else { HC.RepStart(IR, 2); }
+
                 HC.GetPrintHeader(IR, "styleno", "string", "c,16", "Article");
                 HC.GetPrintHeader(IR, "purrate", "double", "n,10,2", "Pur Rate");
                 HC.GetPrintHeader(IR, "openingqnty", "double", "n,10,2", "Opening");
@@ -230,9 +230,9 @@ namespace Improvar.Controllers
                 {
                     //if((dr["doctag"].ToString() + dr["doccd"].ToString()!="OPSFOST")  && (dr["doctag"].ToString() + dr["doccd"].ToString() != "PISPROF"))
                     //{
-                        HC.GetPrintHeader(IR, dr["doctag"].ToString() + dr["doccd"].ToString(), "double", "n,14,3", dr["docnm"].ToString());
+                    HC.GetPrintHeader(IR, dr["doctag"].ToString() + dr["doccd"].ToString(), "double", "n,14,3", dr["docnm"].ToString());
                     //}
-                   
+
                 }
                 HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock");
                 if (ageingperiod >= 1) HC.GetPrintHeader(IR, "stk1qty", "double", "n,14,3", "<= " + due1tDys.ToString() + ";Qty");
@@ -269,24 +269,22 @@ namespace Improvar.Controllers
                     }
                     due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
                     due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
+                    bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0;
                     string lstInDt = "", lstOutDt = "";
                     while (tbl.Rows[i]["itcd"].ToString() == chkval)
                     {
                         double bqnty = 0, bnos = 0, bval = 0, bamt = 0;
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) < Convert.ToDateTime(fdt))
                         {
-                            //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
                             dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
 
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
                             {
-                               // bnos = bnos + tbl.Rows[i]["nos"].retDbl();
                                 bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl();
                                 iop = iop + dbqty;
                             }
                             else if (tbl.Rows[i]["stkdrcr"].ToString() == "C")
                             {
-                               // bnos = bnos - tbl.Rows[i]["nos"].retDbl();
                                 bqnty = bqnty - tbl.Rows[i]["qnty"].retDbl();
                                 iop = iop - dbqty;
                             }
@@ -295,10 +293,6 @@ namespace Improvar.Controllers
                         }
                         if (iop != 0)
                         {
-                           // IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                           // IR.Rows[rNo]["docdt"] = fdt;
-                           // IR.Rows[rNo]["slnm"] = "Opening";
-                          //  IR.Rows[rNo]["balqnty"] = iop;
                             if (iop < 0) icr = iop * -1;
                             else idr = iop;
                             icls = iop;
@@ -307,181 +301,120 @@ namespace Improvar.Controllers
                         {
                             break;
                         }
+                        due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
                         double opqnty = 0; double opvalue = 0; double othersqnty = 0; double othersvalue = 0; double pbqnty = 0; double pbvalue = 0; double sbqnty = 0; double sbcmqnty = 0; double sbsskqnty = 0; double sbsrcmqnty = 0; double convqnty = 0; double sbvalue = 0; double srqnty = 0; double srvalue = 0; double prqnty = 0; double prvalue = 0; double tiqnty = 0; double tivalue = 0; double toqnty = 0; double tovalue = 0;
-                        lstInDt = ""; lstOutDt="";
+                        //lstInDt = ""; lstOutDt = "";
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["openingqnty"] = iop;
+                        IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
+                        IR.Rows[rNo]["purrate"] = tbl.Rows[i]["wprate"].retDbl();
+                        double stkqnty = iop;
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                         {
-                            //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                            DOCTAG = tbl.Rows[i]["doctag"].ToString()+ tbl.Rows[i]["doccd"].ToString();
-
-                            lstInDt = (from DataRow dr in tbl.Rows where dr["itcd"].retStr() == chkval && dr["doctag"].retStr() == "PB" select dr["docdt"].retDateStr()).Max();
-                            lstOutDt = (from DataRow dr in tbl.Rows where dr["itcd"].retStr() == chkval && dr["doctag"].retStr() == "SB" select dr["docdt"].retDateStr()).Max();
-
-                            foreach (DataRow amtdr in Docdesc.Rows)
+                            DOCTAG = tbl.Rows[i]["doctag"].ToString() + tbl.Rows[i]["doccd"].ToString();
+                            double qnty = 0; string doctag_ = tbl.Rows[i]["doctag"].ToString();
+                            while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt) && tbl.Rows[i]["doctag"].ToString() + tbl.Rows[i]["doccd"].ToString() == DOCTAG)
                             {
-                                if (DOCTAG == amtdr["doctag"].retStr()+ amtdr["doccd"].retStr())
+                                if (doctag_ == "PB")
                                 {
-                                   
-                                    if (DOCTAG == "PBSSPBL")
+                                    qnty += tbl.Rows[i]["qnty"].retDbl();
+                                    stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                    lstInDt = tbl.Rows[i]["docdt"].retDateStr();
+                                }
+                                else if (doctag_ == "PR")
+                                {
+                                    qnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                    stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                    lstOutDt = tbl.Rows[i]["docdt"].retDateStr();
+                                }
+
+                                else if (doctag_ == "SB" || doctag_ == "SR")
+                                {
+
+
+                                    if (doctag_ == "SB")
                                     {
-                                        pbqnty += tbl.Rows[i]["qnty"].retDbl();
-                                        amtdr["docqty"] = pbqnty;
-                                    }
-                                    else if (DOCTAG == "PRSSPRM")
-                                    {
-                                        prqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                        amtdr["docqty"] = prqnty;
-                                    }
-                                   
-                                    else if (DOCTAG == "SBSSD" || DOCTAG == "SBSSBCM" || DOCTAG == "SBSSSK"  || DOCTAG == "SBSSRCM" || DOCTAG == "SRSRET")
-                                    {
-                                        
-
-                                        if (DOCTAG == "SBSSD")
+                                        if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
                                         {
-                                            if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
-                                            {
-                                                sbqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                amtdr["docqty"] = sbqnty;
-
-                                            }
-                                            else
-                                            {
-                                                sbqnty += tbl.Rows[i]["qnty"].retDbl();
-                                                amtdr["docqty"] = sbqnty;
-
-                                               
-                                            }
-                                            
-
-                                        }
-                                        else if(DOCTAG == "SBSSBCM")
-                                        {
-                                            if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
-                                            {
-                                                sbcmqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                amtdr["docqty"] = sbcmqnty;
-
-                                            }
-                                            else
-                                            {
-                                                sbcmqnty += tbl.Rows[i]["qnty"].retDbl();
-                                                amtdr["docqty"] = sbcmqnty;
-
-
-                                            }
-                                        }
-                                        else if(DOCTAG == "SBSSSK")
-                                        {
-                                            if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
-                                            {
-                                                sbsskqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                amtdr["docqty"] = sbsskqnty;
-
-                                            }
-                                            else
-                                            {
-                                                sbsskqnty += tbl.Rows[i]["qnty"].retDbl();
-                                                amtdr["docqty"] = sbsskqnty;
-
-
-                                            }
-                                        }
-                                        else if (DOCTAG == "SBSSRCM")
-                                        {
-                                            if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
-                                            {
-                                                sbsrcmqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                amtdr["docqty"] = sbsrcmqnty;
-
-                                            }
-                                            else
-                                            {
-                                                sbsrcmqnty += tbl.Rows[i]["qnty"].retDbl();
-                                                amtdr["docqty"] = sbsrcmqnty;
-
-
-                                            }
+                                            qnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                            stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            lstOutDt = tbl.Rows[i]["docdt"].retDateStr();
                                         }
                                         else
                                         {
-                                            srqnty += tbl.Rows[i]["qnty"].retDbl();
-                                            amtdr["docqty"] = srqnty;
-                                        }
-                                    }
-                                    else if (DOCTAG == "CNSSTCN")
-                                    {
-                                         if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
-                                            {
-                                                convqnty += tbl.Rows[i]["qnty"].retDbl() * -1;
-                                                amtdr["docqty"] = convqnty;
+                                            qnty += tbl.Rows[i]["qnty"].retDbl();
+                                            stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                            lstInDt = tbl.Rows[i]["docdt"].retDateStr();
 
-                                            }
-                                            else
-                                            {
-                                            convqnty += tbl.Rows[i]["qnty"].retDbl();
-                                                amtdr["docqty"] = convqnty;
-                                            }
+                                        }
+
                                     }
-                                    //else if (DOCTAG == "OPSFOST")
-                                    //{ }
                                     else
                                     {
-                                        othersqnty += tbl.Rows[i]["qnty"].retDbl();
-                                        amtdr["docqty"] = othersqnty;
-                                       
+                                        qnty += tbl.Rows[i]["qnty"].retDbl();
+                                        stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                        lstInDt = tbl.Rows[i]["docdt"].retDateStr();
                                     }
-                                   
-                                   
                                 }
+                                else if (doctag_ == "CN")
+                                {
+                                    if (tbl.Rows[i]["stkdrcr"].retStr() == "C")
+                                    {
+                                        qnty += tbl.Rows[i]["qnty"].retDbl() * -1;
+                                        stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                        lstOutDt = tbl.Rows[i]["docdt"].retDateStr();
+                                    }
+                                    else
+                                    {
+                                        qnty += tbl.Rows[i]["qnty"].retDbl();
+                                        stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                        lstInDt = tbl.Rows[i]["docdt"].retDateStr();
+                                    }
+                                }
+                                else if (doctag_ == "OP")
+                                { }
+                                else if (doctag_ == "PI")
+                                { }
+                                else
+                                {
+                                    qnty += tbl.Rows[i]["qnty"].retDbl();
+                                    stkqnty += tbl.Rows[i]["qnty"].retDbl();
+                                    lstInDt = tbl.Rows[i]["docdt"].retDateStr();
+                                }
+                                icls = idr - icr;
+                                i = i + 1;
+                                if (i > maxR) break;
                             }
-                          
-                        
-                            icls = idr - icr;
-                           // IR.Rows[rNo]["balqnty"] = icls;
-                          //  tblqty = tblqty + icls;
-                            i = i + 1;
+                            if (doctag_ != "OP" && doctag_ != "PI") IR.Rows[rNo][DOCTAG] = qnty;
+                            if (ageingperiod > 0)
+                            {
+                                if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + stkqnty; }
+                                else if (days <= due2tDys && due2tDys != 0) { due2Qty = due2Qty + stkqnty; }
+                                else if (days <= due3tDys && due3tDys != 0) { due3Qty = due3Qty + stkqnty; }
+                                else { due4Qty = due4Qty + stkqnty; }
+                            }
                             if (i > maxR) break;
                         }
-                        tblqty=(iop + pbqnty + tiqnty + srqnty + othersqnty) - (prqnty + toqnty + sbqnty+ sbcmqnty+ sbsskqnty+ sbsrcmqnty + convqnty);
+                        IR.Rows[rNo]["stockqnty"] = stkqnty;
+                        IR.Rows[rNo]["indt"] = lstInDt;
+                        IR.Rows[rNo]["outdt"] = lstOutDt;
                         if (ageingperiod > 0)
                         {
-                            if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + tblqty; }
-                            else if (days <= due2tDys && due2tDys != 0) { due2Qty = due2Qty + tblqty;}
-                            else if (days <= due3tDys && due3tDys != 0) { due3Qty = due3Qty + tblqty;}
-                            else { due4Qty = due4Qty + tblqty;}
+                            if (due1Qty != 0) { IR.Rows[rNo]["stk1qty"] = due1Qty; }
+                            if (due2Qty != 0) { IR.Rows[rNo]["stk2qty"] = due2Qty; }
+                            if (due3Qty != 0) { IR.Rows[rNo]["stk3qty"] = due3Qty; }
+                            if (due4Qty != 0) { IR.Rows[rNo]["stk4qty"] = due4Qty; }
                         }
+                        //tblqty = (iop + pbqnty + tiqnty + srqnty + othersqnty) - (prqnty + toqnty + sbqnty + sbcmqnty + sbsskqnty + sbsrcmqnty + convqnty);
+
 
                         if (i > maxR) break;
                     }
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["openingqnty"] = iop;
-                    IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
-                    IR.Rows[rNo]["purrate"] = tbl.Rows[i - 1]["wprate"].retDbl();
-                    IR.Rows[rNo]["indt"] = lstInDt;
-                    IR.Rows[rNo]["outdt"] = lstOutDt;
-                    foreach (DataRow amtdr in Docdesc.Rows)
-                    {
-                        IR.Rows[rNo][amtdr["doctag"].ToString()+ amtdr["doccd"].ToString()] = amtdr["docqty"].retDbl();
-                       // tqty += amtdr["goqty"].retDbl();
-
-                    }
-                    IR.Rows[rNo]["stockqnty"] = tblqty;
-                    if (ageingperiod > 0)
-                    {
-                        if (due1Qty != 0) { IR.Rows[rNo]["stk1qty"] = due1Qty; }
-                        if (due2Qty != 0) { IR.Rows[rNo]["stk2qty"] = due2Qty;}
-                        if (due3Qty != 0) { IR.Rows[rNo]["stk3qty"] = due3Qty;}
-                        if (due4Qty != 0) { IR.Rows[rNo]["stk4qty"] = due4Qty;}
-                    }
-                    //IR.Rows[rNo]["balqnty"] = icls;
-                    //IR.Rows[rNo]["balqnty"] = tblqty;
-                    // IR.Rows[rNo]["balqnty"] = idr - icr;
-
-                    //top = top + iop;
-                    //tdr = tdr + idr; tdramt = tdramt + idramt;
-                    //tcr = tcr + icr; tcramt = tcramt + icramt;
-                    //tcls = tcls + icls;
+                    bdue1Qty = bdue1Qty + due1Qty; 
+                    bdue2Qty = bdue2Qty + due2Qty;
+                    bdue3Qty = bdue3Qty + due3Qty;
+                    bdue4Qty = bdue4Qty + due4Qty;
+                    if (i > maxR) break;
                 }
 
                 // Create Blank line
@@ -493,26 +426,22 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["dammy"] = "";
                 IR.Rows[rNo]["styleno"] = "Grand Totals";
                 IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                IR.Rows[rNo]["openingqnty"] = IR.AsEnumerable().Where(a => a.Field<double?>("openingqnty").retDbl() !=0).Sum(b => b.Field<double?>("openingqnty")==null?0: b.Field<double?>("openingqnty"));
+                IR.Rows[rNo]["openingqnty"] = IR.AsEnumerable().Where(a => a.Field<double?>("openingqnty").retDbl() != 0).Sum(b => b.Field<double?>("openingqnty") == null ? 0 : b.Field<double?>("openingqnty"));
                 IR.Rows[rNo]["stockqnty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stockqnty").retDbl() != 0).Sum(b => b.Field<double?>("stockqnty") == null ? 0 : b.Field<double?>("stockqnty"));
                 if (ageingperiod > 0)
                 {
-                    IR.Rows[rNo]["stk1qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk1qty").retDbl() != 0).Sum(b => b.Field<double?>("stk1qty") == null ? 0 : b.Field<double?>("stk1qty"));
-                    IR.Rows[rNo]["stk2qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk2qty").retDbl() != 0).Sum(b => b.Field<double?>("stk2qty") == null ? 0 : b.Field<double?>("stk2qty"));
-                    IR.Rows[rNo]["stk3qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk3qty").retDbl() != 0).Sum(b => b.Field<double?>("stk3qty") == null ? 0 : b.Field<double?>("stk3qty"));
-                    IR.Rows[rNo]["stk4qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk4qty").retDbl() != 0).Sum(b => b.Field<double?>("stk4qty") == null ? 0 : b.Field<double?>("stk4qty"));
-                    
-                }
+                    if (bdue1Qty != 0)IR.Rows[rNo]["stk1qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk1qty").retDbl() != 0).Sum(b => b.Field<double?>("stk1qty") == null ? 0 : b.Field<double?>("stk1qty"));
+                    if (bdue2Qty != 0) IR.Rows[rNo]["stk2qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk2qty").retDbl() != 0).Sum(b => b.Field<double?>("stk2qty") == null ? 0 : b.Field<double?>("stk2qty"));
+                    if (bdue3Qty != 0) IR.Rows[rNo]["stk3qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk3qty").retDbl() != 0).Sum(b => b.Field<double?>("stk3qty") == null ? 0 : b.Field<double?>("stk3qty"));
+                    if (bdue4Qty != 0) IR.Rows[rNo]["stk4qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk4qty").retDbl() != 0).Sum(b => b.Field<double?>("stk4qty") == null ? 0 : b.Field<double?>("stk4qty"));
 
-                for (int k = 6; k <= IR.Columns.Count - 4; k++)
+                }
+                var collength = 5;
+                if (ageingperiod > 0) collength = 9;
+                for (int k = 6; k <= IR.Columns.Count - collength; k++)
                 {
                     IR.Rows[rNo][IR.Columns[k].ColumnName] = IR.AsEnumerable().Sum(g => g.Field<double?>(IR.Columns[k].ColumnName).retDbl());
                 }
-                //  IR.Rows[rNo]["qntyin"] = tdr;
-
-                //  IR.Rows[rNo]["qntyout"] = tcr;
-
-                // IR.Rows[rNo]["balqnty"] = tdr - tcr;
 
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string jobnm = DB.M_JOBMST.Find(VE.MENU_PARA)?.JOBNM;
