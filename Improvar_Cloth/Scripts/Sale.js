@@ -3171,7 +3171,7 @@ function GetPartyDetails(id) {
                             var Last_SLCD = $("#Last_SLCD").val();
                             $("#SLCD").val(Last_SLCD);
                             $("#SLCD").blur();
-                            msgInfo("Previous Tax Group and Current Tax Group not match");
+                            msgInfo("Previous Tax Group/Price and Current Tax Group/Price not match");
                         }
                     }
                     else {
