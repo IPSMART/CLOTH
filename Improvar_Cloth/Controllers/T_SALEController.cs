@@ -4077,7 +4077,7 @@ namespace Improvar.Controllers
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) " + Environment.NewLine;
                 str1 += "and i.autono=s.autono and i.txnslno=s.slno and i.autono=u.autono(+) and i.txnslno=u.slno(+) and i.baleno=u.baleno(+) and i.autono=v.autono " + Environment.NewLine;
                 str1 += "and i.AUTONO in (" + AUTONO + ") and i.BALENO='" + VE.BALENO_HELP + "' and i.GOCD='" + VE.T_TXN.GOCD + "' " + Environment.NewLine;
-                str1 += "and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' " + Environment.NewLine;
+                str1 += "and i.SLNO > 100 and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' " + Environment.NewLine;
                 str1 += "group by i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, " + Environment.NewLine;
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.RATE,i.DISCRATE, " + Environment.NewLine;
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.LOCABIN,i.BALEYR " + Environment.NewLine;
