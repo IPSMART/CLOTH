@@ -1972,7 +1972,7 @@ namespace Improvar.Controllers
                     //if purchase stock det
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
-                        var stock_data = salesfunc.GetStock(DOCDT, GOCD, BARNO, "", "", AUTONO, "", "", PRCCD, TAXGRPCD, "", "", true, true, "", "", false, false, true, "", true);
+                        var stock_data = salesfunc.GetStock(DOCDT, GOCD, BARNO, "", MTRLJOBCD, AUTONO, "", barnoOrStyle, PRCCD, TAXGRPCD, "", "", true, true, "", "", false, false, exactbarno, "", true);
                         if (stock_data != null)
                         {
                             string grppricegenstr = "^BALQNTY=^" + str.retCompValue("BALQNTY") + Cn.GCS();
