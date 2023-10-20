@@ -115,7 +115,9 @@ namespace Improvar.Controllers
                 var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
                 string sql = "";
 
-
+                sql += Environment.NewLine + "select a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,a.styleno, ";
+                sql += Environment.NewLine + "sum(a.qnty)qnty,a.prccd, a.effdt, sum(a.wprate) wprate, sum(a.rprate)rprate ";
+                sql += Environment.NewLine + "FROM( ";
                 sql += Environment.NewLine + "select a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,s.styleno, ";
                 sql += Environment.NewLine + "a.qnty,b.prccd, b.effdt, b.rate wprate, q.rate rprate from ";
 
@@ -126,7 +128,7 @@ namespace Improvar.Controllers
                 sql += Environment.NewLine + "where a.autono = b.autono(+) and a.autono = c.autono(+) and c.doccd = d.doccd(+) and b.slcd = i.slcd(+) and ";
 
                 sql += Environment.NewLine + "nvl(c.cancel, 'N') = 'N' and c.compcd = '" + COM + "' and c.loccd='" + LOC + "'";
-                // sql += Environment.NewLine + "and c.docdt >= to_date('"+fdt+"', 'dd/mm/yyyy') ";
+                // sql += Environment.NewLine + "and c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
                 sql += Environment.NewLine + " and c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
                 sql += Environment.NewLine + " and a.mtrljobcd in (" + mtrljobcd + ") ";
                 sql += Environment.NewLine + " group by b.doccd, b.doctag, c.docdt, a.stkdrcr, a.itcd,d.docnm) a, ";
@@ -156,7 +158,9 @@ namespace Improvar.Controllers
                 sql += Environment.NewLine + "" + scm + ".m_sitem s ";
                 sql += Environment.NewLine + "where a.itcd = b.itcd(+) and a.itcd = q.itcd(+)and a.itcd = s.itcd(+) ";
                 if (selitcd != "") sql += Environment.NewLine + "and a.itcd in(" + selitcd + ") ";
-                sql += "order by styleno,doctag,docdt ";
+                sql += Environment.NewLine + "order by styleno,doctag,docdt ";
+                sql += Environment.NewLine + " )a group by a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,a.styleno, a.prccd, a.effdt ";
+                sql += Environment.NewLine + "order by a.styleno,a.doccd,a.doctag,a.docdt ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 DataTable Docdesc = new DataTable("doccd");
 
@@ -304,15 +308,27 @@ namespace Improvar.Controllers
                         due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
                         double opqnty = 0; double opvalue = 0; double othersqnty = 0; double othersvalue = 0; double pbqnty = 0; double pbvalue = 0; double sbqnty = 0; double sbcmqnty = 0; double sbsskqnty = 0; double sbsrcmqnty = 0; double convqnty = 0; double sbvalue = 0; double srqnty = 0; double srvalue = 0; double prqnty = 0; double prvalue = 0; double tiqnty = 0; double tivalue = 0; double toqnty = 0; double tovalue = 0;
                         //lstInDt = ""; lstOutDt = "";
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["openingqnty"] = iop;
-                        IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
-                        IR.Rows[rNo]["purrate"] = tbl.Rows[i]["wprate"].retDbl();
+                        if (iop != 0)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["openingqnty"] = iop;
+                            IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
+                            IR.Rows[rNo]["purrate"] = tbl.Rows[i - 1]["wprate"].retDbl();
+                        }
                         double stkqnty = iop;
+                        double cnt = 0;
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                         {
+                            if (iop == 0 && cnt == 0)
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
+                                IR.Rows[rNo]["purrate"] = tbl.Rows[i]["wprate"].retDbl();
+                            }
+                            cnt++;
                             DOCTAG = tbl.Rows[i]["doctag"].ToString() + tbl.Rows[i]["doccd"].ToString();
                             double qnty = 0; string doctag_ = tbl.Rows[i]["doctag"].ToString();
+
                             while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt) && tbl.Rows[i]["doctag"].ToString() + tbl.Rows[i]["doccd"].ToString() == DOCTAG)
                             {
                                 if (doctag_ == "PB")
@@ -410,7 +426,7 @@ namespace Improvar.Controllers
 
                         if (i > maxR) break;
                     }
-                    bdue1Qty = bdue1Qty + due1Qty; 
+                    bdue1Qty = bdue1Qty + due1Qty;
                     bdue2Qty = bdue2Qty + due2Qty;
                     bdue3Qty = bdue3Qty + due3Qty;
                     bdue4Qty = bdue4Qty + due4Qty;
@@ -430,7 +446,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["stockqnty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stockqnty").retDbl() != 0).Sum(b => b.Field<double?>("stockqnty") == null ? 0 : b.Field<double?>("stockqnty"));
                 if (ageingperiod > 0)
                 {
-                    if (bdue1Qty != 0)IR.Rows[rNo]["stk1qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk1qty").retDbl() != 0).Sum(b => b.Field<double?>("stk1qty") == null ? 0 : b.Field<double?>("stk1qty"));
+                    if (bdue1Qty != 0) IR.Rows[rNo]["stk1qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk1qty").retDbl() != 0).Sum(b => b.Field<double?>("stk1qty") == null ? 0 : b.Field<double?>("stk1qty"));
                     if (bdue2Qty != 0) IR.Rows[rNo]["stk2qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk2qty").retDbl() != 0).Sum(b => b.Field<double?>("stk2qty") == null ? 0 : b.Field<double?>("stk2qty"));
                     if (bdue3Qty != 0) IR.Rows[rNo]["stk3qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk3qty").retDbl() != 0).Sum(b => b.Field<double?>("stk3qty") == null ? 0 : b.Field<double?>("stk3qty"));
                     if (bdue4Qty != 0) IR.Rows[rNo]["stk4qty"] = IR.AsEnumerable().Where(a => a.Field<double?>("stk4qty").retDbl() != 0).Sum(b => b.Field<double?>("stk4qty") == null ? 0 : b.Field<double?>("stk4qty"));

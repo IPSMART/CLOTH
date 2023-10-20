@@ -953,10 +953,58 @@ namespace Improvar.Controllers
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
+                string BARNO_ = "", ITCD_="", ITGRPCD_="";
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
-                    allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA, "", "", false, false, true, "", false);
-                    stockdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+                    if (BARNO.Length > 1000)
+                    {
+                        BARNO_ = "";
+                        
+                    }
+                    else
+                    {
+                        BARNO_ = BARNO;
+                    }
+                    if (ITCD.Length > 1000)
+                    {
+                        ITCD_ = "";
+                    }
+                    else
+                    {
+                        ITCD_ = ITCD;
+                    }
+                    if (ITGRPCD.Length > 1000)
+                    {
+                        ITGRPCD_ = "";
+                    }
+                    else
+                    {
+                        ITGRPCD_ = ITGRPCD;
+
+                    }
+
+                    allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(),BARNO_, ITCD_.retStr(), "", "", ITGRPCD_, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA, "", "", false, false, true, "", false);
+                    stockdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(),BARNO_, ITCD_.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD_, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, true, "", true);
+
+                     
+                    if (BARNO.Length > 1000)
+                    {
+                        allprodgrpgstper_data = (from DataRow dr in allprodgrpgstper_data.Rows where BARNO.Contains(dr["barno"].retStr()) select dr).ToList().CopyToDataTable();
+                        stockdata = (from DataRow dr in stockdata.Rows where BARNO.Contains(dr["barno"].retStr()) select dr).ToList().CopyToDataTable();
+                    }
+                    if (ITCD.Length > 1000)
+                    {
+                        allprodgrpgstper_data = (from DataRow dr in allprodgrpgstper_data.Rows where ITCD.Contains(dr["itcd"].retStr()) select dr).ToList().CopyToDataTable();
+                        stockdata = (from DataRow dr in stockdata.Rows where ITCD.Contains(dr["itcd"].retStr()) select dr).ToList().CopyToDataTable();
+                    }
+                    if (ITGRPCD.Length > 1000)
+                    {
+                        allprodgrpgstper_data = (from DataRow dr in allprodgrpgstper_data.Rows where ITGRPCD.Contains(dr["itgrpcd"].retStr()) select dr).ToList().CopyToDataTable();
+                        stockdata = (from DataRow dr in stockdata.Rows where ITGRPCD.Contains(dr["itgrpcd"].retStr()) select dr).ToList().CopyToDataTable();
+                    }
+
+
+
                 }
                 else
                 {
