@@ -4120,12 +4120,12 @@ namespace Improvar.Controllers
                 str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,nvl(s.BLUOMCD,k.CONVUOMCD)BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,u.BLSLNO,k.CONVQTYPUNIT,i.BLQNTY " + Environment.NewLine;
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, " + Environment.NewLine;
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r " + Environment.NewLine;
-                str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t, " + Scm + ".T_BALE u," + Scm + ".T_CNTRL_HDR v " + Environment.NewLine;
+                str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t, " + Scm + ".T_BALE u," + Scm + ".T_CNTRL_HDR v," + Scm + ".t_txn w " + Environment.NewLine;
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) " + Environment.NewLine;
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) " + Environment.NewLine;
-                str1 += "and i.autono=s.autono and i.txnslno=s.slno and i.autono=u.autono(+) and i.txnslno=u.slno(+) and i.baleno=u.baleno(+) and i.autono=v.autono " + Environment.NewLine;
+                str1 += "and i.autono=s.autono and i.txnslno=s.slno and i.autono=u.autono(+) and i.txnslno=u.slno(+) and i.baleno=u.baleno(+) and i.autono=v.autono and s.autono=w.autono " + Environment.NewLine;
                 str1 += "and i.AUTONO in (" + AUTONO + ") and i.BALENO='" + VE.BALENO_HELP + "' and i.GOCD='" + VE.T_TXN.GOCD + "' " + Environment.NewLine;
-                str1 += "and i.SLNO > 100 and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' " + Environment.NewLine;
+                str1 += "and i.SLNO <= 1000 and nvl(v.cancel, 'N') = 'N' and w.doctag not in ('SB','SR') " + Environment.NewLine;
                 str1 += "group by i.AUTONO,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, " + Environment.NewLine;
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.RATE,i.DISCRATE, " + Environment.NewLine;
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.LOCABIN,i.BALEYR " + Environment.NewLine;
