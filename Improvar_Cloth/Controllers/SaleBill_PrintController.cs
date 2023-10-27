@@ -44,28 +44,28 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
 
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                   
+
                     //string reptype = "SALEBILL";
                     switch (VE.MENU_PARA)
                     {
                         case "SBPCK":
-                            ViewBag.Title = "Packing Slip"; ViewBag.formname = "Packing Slip";break;
+                            ViewBag.Title = "Packing Slip"; ViewBag.formname = "Packing Slip"; break;
                         case "SB":
-                            ViewBag.Title = "Sales Bill (Agst Packing Slip)"; ViewBag.formname = "Sales Bill (Agst Packing Slip)";break;
+                            ViewBag.Title = "Sales Bill (Agst Packing Slip)"; ViewBag.formname = "Sales Bill (Agst Packing Slip)"; break;
                         case "SBDIR":
                             ViewBag.Title = "Sales Bill"; ViewBag.formname = "Sales Bill"; break;
                         case "SR":
                             ViewBag.Title = "Sales Return (SRM)"; ViewBag.formname = "Sales Return (SRM)"; break;
                         case "SBCM":
-                            ViewBag.Title = "Cash Memo"; ViewBag.formname = "Cash Memo";  break;
+                            ViewBag.Title = "Cash Memo"; ViewBag.formname = "Cash Memo"; break;
                         case "SBCMR":
-                            ViewBag.Title = "Cash Memo Return Note"; ViewBag.formname = "Cash Memo Return Note";  break;
+                            ViewBag.Title = "Cash Memo Return Note"; ViewBag.formname = "Cash Memo Return Note"; break;
                         case "SBEXP":
                             ViewBag.Title = "Sales Bill (Export)"; ViewBag.formname = "Sales Bill (Export)"; break;
                         case "PI":
-                            ViewBag.Title = "Proforma Invoice"; ViewBag.formname = "Proforma Invoice";  break;
+                            ViewBag.Title = "Proforma Invoice"; ViewBag.formname = "Proforma Invoice"; break;
                         case "PB":
-                            ViewBag.Title = "Purchase Bill"; ViewBag.formname = "Purchase Bill";  break;
+                            ViewBag.Title = "Purchase Bill"; ViewBag.formname = "Purchase Bill"; break;
                         case "PR":
                             ViewBag.Title = "Purchase Return (PRM)"; ViewBag.formname = "Purchase Return (PRM)"; break;
                         case "OP":
@@ -75,7 +75,7 @@ namespace Improvar.Controllers
                         case "SDN":
                             ViewBag.Title = "Sales D/N (w/o Qty)"; ViewBag.formname = "Sales D/N (w/o Qty)"; break;
                         case "PCN":
-                            ViewBag.Title = "Purchase C/N (w/o Qty)"; ViewBag.formname = "Purchase C/N (w/o Qty)";break;
+                            ViewBag.Title = "Purchase C/N (w/o Qty)"; ViewBag.formname = "Purchase C/N (w/o Qty)"; break;
                         case "PDN":
                             ViewBag.Title = "Purchase D/N (w/o Qty)"; ViewBag.formname = "Purchase D/N (w/o Qty)"; break;
                         case "OTH":
@@ -85,14 +85,14 @@ namespace Improvar.Controllers
                         case "PJIS":
                             ViewBag.Title = "Issue to Party after Job"; ViewBag.formname = "Issue to Party after Job"; break;
                         case "PJRT":
-                            ViewBag.Title = "Return to Party w/o Job"; ViewBag.formname = "Return to Party w/o Job";break;
+                            ViewBag.Title = "Return to Party w/o Job"; ViewBag.formname = "Return to Party w/o Job"; break;
                         case "PJBL":
                             ViewBag.Title = "Job Bill raised to Party"; ViewBag.formname = "Job Bill raised to Party"; break;
                         case "PJBR":
                             ViewBag.Title = "Job Bill Return to Party"; ViewBag.formname = "Job Bill Return to Party"; break;
                         case "SBPOS":
                             ViewBag.Title = "Cash Sales"; ViewBag.formname = "Cash Sales"; break;
-                        default: ViewBag.Title = "Doc Print"; ViewBag.formname = "Doc Print";break;
+                        default: ViewBag.Title = "Doc Print"; ViewBag.formname = "Doc Print"; break;
                     }
                     string reptype = "SALEBILL";
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
@@ -120,7 +120,7 @@ namespace Improvar.Controllers
 
                     if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR" || VE.MENU_PARA == "ST" || VE.MENU_PARA == "AT")
                     {
-                        VE.TEXTBOX10 = CommVar.ClientCode(UNQSNO) == "SNFP"|| CommVar.ClientCode(UNQSNO) == "DIWH" ? "1" : "2";
+                        VE.TEXTBOX10 = CommVar.ClientCode(UNQSNO) == "SNFP" || CommVar.ClientCode(UNQSNO) == "DIWH" ? "1" : "2";
                     }
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
@@ -129,7 +129,7 @@ namespace Improvar.Controllers
                     if (CommVar.ClientCode(UNQSNO) == "DIWH")
                     {
                         VE.Checkbox3 = true;
-             
+
                     }
                     //VE.Checkbox10 = true;
                     //VE.Checkbox11 = true;
@@ -184,15 +184,15 @@ namespace Improvar.Controllers
                 switch (VE.MENU_PARA)
                 {
                     case "SBPCK":
-                       FileName = "Packing_Slip"; break;
+                        FileName = "Packing_Slip"; break;
                     case "SB":
-                       FileName = "Sales_Bill_Agst_Packing_Slip"; break;
+                        FileName = "Sales_Bill_Agst_Packing_Slip"; break;
                     case "SBDIR":
-                      FileName = "Sales_Bill"; break;
+                        FileName = "Sales_Bill"; break;
                     case "SR":
                         FileName = "Sales_Return"; break;
                     case "SBCM":
-                       FileName = "Cash_Memo"; break;
+                        FileName = "Cash_Memo"; break;
                     case "SBCMR":
                         FileName = "Cash_Memo_Return"; break;
                     case "SBEXP":
@@ -204,23 +204,23 @@ namespace Improvar.Controllers
                     case "PR":
                         FileName = "Purchase_Return"; break;
                     case "OP":
-                       FileName = "Opening_Stock"; break;
+                        FileName = "Opening_Stock"; break;
                     case "SCN":
-                         FileName = "Sales_C_N"; break;
+                        FileName = "Sales_C_N"; break;
                     case "SDN":
                         FileName = "Sales_D_N"; break;
                     case "PCN":
                         FileName = "Purchase_D_N"; break;
                     case "PDN":
-                         FileName = "Purchase_D_N"; break;
+                        FileName = "Purchase_D_N"; break;
                     case "OTH":
                         FileName = "Other_Product_Opening_Stk"; break;
                     case "PJRC":
                         FileName = "Receive_from Party_for_Job"; break;
                     case "PJIS":
-                         FileName = "Issue_to_Party_after_Job"; break;
+                        FileName = "Issue_to_Party_after_Job"; break;
                     case "PJRT":
-                       FileName = "Return_to_Party_w/o_Job"; break;
+                        FileName = "Return_to_Party_w/o_Job"; break;
                     case "PJBL":
                         FileName = "Job_Bill_raised_to_Party"; break;
                     case "PJBR":
@@ -304,7 +304,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm,string FileName)
+        public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm, string FileName)
         {
             try
             {
@@ -912,7 +912,7 @@ namespace Improvar.Controllers
                                 SLMSLNM = string.Join(",", (from DataRow dr in dtslm.Rows where dr["autono"].retStr() == auto1 select dr["slnm"].retStr()).Distinct());
                             }
                             DataRow dr1 = IR.NewRow();
-                        docstart:
+                            docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -966,8 +966,8 @@ namespace Improvar.Controllers
                                 {
                                     dr1["sladd3"] = "Ph. # " + tbl.Rows[i]["mobile"].ToString();
                                 }
-                              
-                                }
+
+                            }
                             else
                             {
                                 #region   //if gstslnm found
@@ -1279,10 +1279,10 @@ namespace Improvar.Controllers
                             if (netpaybleamt.retDbl() > 0)
                             { dr1["netpaybledesc"] = "Net Due Payble Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
                             else if (menupara == "SBCM") { dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
-                                else if (menupara == "SBCMR") { dr1["netpaybledesc"] = "Net Advance Less Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
-                              //  else { dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
-                                //dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat();
-                          
+                            else if (menupara == "SBCMR") { dr1["netpaybledesc"] = "Net Advance Less Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
+                            //  else { dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
+                            //dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat();
+
 
 
 
@@ -1290,7 +1290,8 @@ namespace Improvar.Controllers
 
 
                             else
-                            { dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat();
+                            {
+                                dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat();
                             }
 
                             dr1["user_id"] = tbl.Rows[i]["usr_id"].ToString();
@@ -1610,7 +1611,7 @@ namespace Improvar.Controllers
                 if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                                                  /* if (VE.maxdate == "CHALLAN")*/
-               // blhead = "CASH MEMO";
+                                                 // blhead = "CASH MEMO";
 
                 if (menupara == "SBCM") { blhead = "CASH MEMO"; }
                 else if (menupara == "SBCMR") { blhead = "CASH MEMO RETURN/CREDIT NOTE"; }
@@ -1829,7 +1830,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ReportSaleBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm,string FileName)
+        public ActionResult ReportSaleBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm, string FileName)
         {
             try
             {
@@ -1888,7 +1889,7 @@ namespace Improvar.Controllers
                 sql += "(case when h.docdt >= to_date('01/07/2021','dd/mm/yyyy') and nvl(s.einvappl,'N')='Y' and e.gstno is null then 'Y' else 'N' end)B2C, ";
                 //sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,y.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  " + Environment.NewLine;
-                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile from " + Environment.NewLine;
+                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,b.PREFNO,b.PREFdt from " + Environment.NewLine;
 
                 //sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,''pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  " + Environment.NewLine;
@@ -2235,6 +2236,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("name", typeof(string), "");
                 IR.Columns.Add("COURCD", typeof(string), "");
                 IR.Columns.Add("COURNM", typeof(string), "");
+                IR.Columns.Add("PREFNO", typeof(string), "");
+                IR.Columns.Add("PREFdt", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2717,6 +2720,8 @@ namespace Improvar.Controllers
 
                             dr1["porefno"] = tbl.Rows[i]["porefno"].ToString();
                             dr1["porefdt"] = tbl.Rows[i]["porefdt"] == DBNull.Value ? "" : tbl.Rows[i]["porefdt"].retDateStr();
+                            dr1["PREFNO"] = tbl.Rows[i]["PREFNO"].ToString();
+                            dr1["PREFdt"] = tbl.Rows[i]["PREFdt"].retDateStr();
                             dr1["trslcd"] = tbl.Rows[i]["trslcd"].ToString();
                             dr1["trslnm"] = tbl.Rows[i]["trslnm"].ToString();
                             dr1["trsladd1"] = tbl.Rows[i]["trsladd1"].ToString();
@@ -3270,7 +3275,7 @@ namespace Improvar.Controllers
                     if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
                     if (printemail == "PDF")
                     {
-                       
+
                         Response.Buffer = false;
                         Response.ClearContent();
                         Response.ClearHeaders();
@@ -3292,7 +3297,7 @@ namespace Improvar.Controllers
                         Response.OutputStream.Close();
                         Response.End();
                         return Content("Done");
-                        
+
                     }
                     if (printemail == "Excel")
                     {
@@ -3341,7 +3346,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ReportAltBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm,string FileName)
+        public ActionResult ReportAltBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm, string FileName)
         {
             try
             {
