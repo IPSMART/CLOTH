@@ -412,8 +412,8 @@ namespace Improvar.Controllers
                             if (i > maxR) break;
                         }
                         IR.Rows[rNo]["stockqnty"] = stkqnty;
-                        IR.Rows[rNo]["indt"] = lstInDt;
-                        IR.Rows[rNo]["outdt"] = lstOutDt;
+                        IR.Rows[rNo]["indt"] = (from DataRow dr in tbl.Rows where dr["itcd"].retStr() == chkval && dr["stkdrcr"].retStr() == "D" select dr["docdt"]).Max().retDateStr();//   lstInDt;
+                        IR.Rows[rNo]["outdt"] = (from DataRow dr in tbl.Rows where dr["itcd"].retStr() == chkval && dr["stkdrcr"].retStr() == "C" select dr["docdt"]).Max().retDateStr(); //lstOutDt;
                         if (ageingperiod > 0)
                         {
                             if (due1Qty != 0) { IR.Rows[rNo]["stk1qty"] = due1Qty; }
