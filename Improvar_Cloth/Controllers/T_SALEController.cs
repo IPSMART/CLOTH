@@ -6165,7 +6165,7 @@ namespace Improvar.Controllers
                             strvtype = "BL";
                         }
                         strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
                         {
                             strblno = TTXN.PREFNO;
                             strbldt = TTXN.PREFDT.ToString();
