@@ -1074,8 +1074,8 @@ namespace Improvar
                     }
                     else
                     {
-                        sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
-                        //sql += " d.styleno in( '" + stylelike.Replace("'", "") + "') and " + Environment.NewLine;
+                        sql += " (replace(d.styleno, '''', '') like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
+                        //sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
                     }
                 }
 
@@ -1250,7 +1250,7 @@ namespace Improvar
                     }
                     else
                     {
-                        sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
+                        sql += " (replace(d.styleno, '''', '') like '%" + stylelike.Replace("'", "") + "%') and " + Environment.NewLine;
                         //sql += " d.styleno in( '" + stylelike.Replace("'", "") + "') and " + Environment.NewLine;
                     }
                 }
@@ -1474,7 +1474,8 @@ namespace Improvar
                 }
                 else
                 {
-                    sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%' or d.styleno||' '||d.itnm like '%" + stylelike.Replace("'", "") + "%') and ";
+                    //sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%' or d.styleno||' '||d.itnm like '%" + stylelike.Replace("'", "") + "%') and ";
+                    sql += " (replace(d.styleno,'''','')  like '%" + stylelike.Replace("'", "") + "%' or replace(d.styleno,'''','') ||' '||d.itnm like '%" + stylelike.Replace("'", "") + "%') and ";
                 }
             }
 
