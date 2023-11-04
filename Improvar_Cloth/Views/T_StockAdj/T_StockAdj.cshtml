@@ -75,7 +75,7 @@
     }
 </script>
 <script>
-    if ("@Model.DefaultAction" == "A") {
+    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
         $(function () { $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' }); });
     }
 </script>

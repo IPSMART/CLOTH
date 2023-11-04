@@ -267,6 +267,22 @@ namespace Improvar.Controllers
                                 }).ToList();
 
                 VE.IN_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
+                if (VE.MENU_PARA != "WAS")
+                {
+                    if (VE.TBATCHDTL.Count == 0 && VE.DefaultAction == "E")
+                    {
+                        List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
+                        for (int i = 1000; i < 1020; i++)
+                        {
+                            TBATCHDTL IN = new TBATCHDTL();
+                            IN.SLNO = Convert.ToInt16(i + 1);
+                            //IN.DropDown_list2 = Master_Help.STOCK_TYPE();
+                            TBATCHDTL.Add(IN);
+                        }
+                        VE.TBATCHDTL = TBATCHDTL;
+                    }
+                }
+                   
                 #endregion
 
                 #region OUT TAB DATA
@@ -309,6 +325,21 @@ namespace Improvar.Controllers
                                     }).ToList();
 
                 VE.OUT_T_QNTY = VE.TBATCHDTL_OUT.Sum(a => a.QNTY).retDbl();
+                if (VE.MENU_PARA != "WAS")
+                {
+                    if (VE.TBATCHDTL_OUT.Count == 0 && VE.DefaultAction=="E")
+                    {
+                        List<TBATCHDTL> TBATCHDTL_OUT = new List<TBATCHDTL>();
+                        for (int i = 0; i < 20; i++)
+                        {
+                            TBATCHDTL OUT = new TBATCHDTL();
+                            OUT.SLNO = Convert.ToInt16(i + 1);
+                            //OUT.DropDown_list2 = Master_Help.STOCK_TYPE();
+                            TBATCHDTL_OUT.Add(OUT);
+                        }
+                        VE.TBATCHDTL_OUT = TBATCHDTL_OUT;
+                    }
+                }
                 #endregion
 
                 if (sll.CANCEL == "Y")
@@ -1213,7 +1244,8 @@ namespace Improvar.Controllers
                                 return Content("Total Quantity of Out Tab and Total Quantity of In Tab Doesn't Match, Total Quantity must be Equal ! Please Maintain the Ratio !!");
                             }
                         }
-                             GRIDDATA();
+                        #region STOCK CHECKING for Out tab
+                        GRIDDATA();
                             if (VE.TBATCHDTL_OUT != null && VE.TBATCHDTL_OUT.Count > 0)
                             {
                                 for (int i = 0; i <= VE.TBATCHDTL_OUT.Count - 1; i++)
@@ -1231,7 +1263,7 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
-                        #region STOCK CHECKING for Out tab
+                       
                         string GCS = Cn.GCS();
                             var ITCDList = (from Z in VE.TBATCHDTL_OUT where Z.ITCD.retStr() != "" select Z.ITCD).Distinct().ToArray();
                             var ITCD = ITCDList.retSqlfromStrarray(); //+ (linkitcd.Count() > 0 ? "," + linkitcd.retSqlfromStrarray() : "");
@@ -1244,7 +1276,8 @@ namespace Improvar.Controllers
                             {
                              var barno = string.Join("", BARNO.Split(Convert.ToChar(Cn.GCS())));
                             DataTable ITEM_STOCK_DATA = new DataTable();
-                            ITEM_STOCK_DATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), barno, ITCD, MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "","",true,true,"","",false,false,true,"",true);
+                            var docdt = CommVar.CurrDate(UNQSNO);
+                            ITEM_STOCK_DATA = salesfunc.GetStock(docdt.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), barno, ITCD, MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "","",true,true,"","",false,false,true,"",true);
                            
                             string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
 
