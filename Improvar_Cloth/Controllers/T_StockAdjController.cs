@@ -18,6 +18,7 @@ namespace Improvar.Controllers
         T_TXN sl; T_TXNOTH OTH; T_CNTRL_HDR sll; T_CNTRL_HDR_REM TCHR;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         Salesfunc salesfunc = new Salesfunc();
+        DataTable ITEMDT = new DataTable();
         // GET: T_StockAdj
         public ActionResult T_StockAdj(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "")
         {
@@ -625,6 +626,7 @@ namespace Improvar.Controllers
             string dberrmsg = "";
             OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
             OraCmd.Transaction = OraTrans;
+            string ContentFlg = "";
 
             try
             {
@@ -1211,13 +1213,103 @@ namespace Improvar.Controllers
                                 return Content("Total Quantity of Out Tab and Total Quantity of In Tab Doesn't Match, Total Quantity must be Equal ! Please Maintain the Ratio !!");
                             }
                         }
+                             GRIDDATA();
+                            if (VE.TBATCHDTL_OUT != null && VE.TBATCHDTL_OUT.Count > 0)
+                            {
+                                for (int i = 0; i <= VE.TBATCHDTL_OUT.Count - 1; i++)
+                                {
+                                    if (VE.TBATCHDTL_OUT[i].ITCD.retStr() != "")
+                                    {
 
+
+                                        DataRow ROWDATA = ITEMDT.NewRow();
+                                        ROWDATA["ITCD"] = VE.TBATCHDTL_OUT[i].ITCD.retStr();
+                                        ROWDATA["BARNO"] = VE.TBATCHDTL_OUT[i].BARNO.retStr();
+                                        ROWDATA["QNTY"] = VE.TBATCHDTL_OUT[i].QNTY.retDbl();
+                                        ITEMDT.Rows.Add(ROWDATA);
+
+                                    }
+                                }
+                            }
+                        #region STOCK CHECKING for Out tab
+                        string GCS = Cn.GCS();
+                            var ITCDList = (from Z in VE.TBATCHDTL_OUT where Z.ITCD.retStr() != "" select Z.ITCD).Distinct().ToArray();
+                            var ITCD = ITCDList.retSqlfromStrarray(); //+ (linkitcd.Count() > 0 ? "," + linkitcd.retSqlfromStrarray() : "");
+                            string BARNO = (from a in VE.TBATCHDTL_OUT select a.BARNO).Distinct().ToArray().retSqlfromStrarray();
+                            string ITGRPCD = (from a in VE.TBATCHDTL_OUT select a.ITGRPCD).Distinct().ToArray().retSqlfromStrarray();
+                            string MTRLJOBCD = (from a in VE.TBATCHDTL_OUT select a.MTRLJOBCD).Distinct().ToArray().retSqlfromStrarray();
+                            var stocktype = string.Join(",", (from Z in VE.TBATCHDTL where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
+                            var BALENO = (from a in VE.TBATCHDTL where a.BALENO != null select a.BALENO + GCS + a.BALEYR).Distinct().ToArray().retSqlfromStrarray();
+                            if (BARNO.retStr() != "")
+                            {
+                             var barno = string.Join("", BARNO.Split(Convert.ToChar(Cn.GCS())));
+                            DataTable ITEM_STOCK_DATA = new DataTable();
+                            ITEM_STOCK_DATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), barno, ITCD, MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "","",true,true,"","",false,false,true,"",true);
+                           
+                            string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
+
+
+                                var txndata = ITEMDT.AsEnumerable().Where(a => a.Field<string>("BARNO").retStr() != "")
+                                                                .GroupBy(g => new { itcd = g["itcd"], BARNO = g["BARNO"] })
+                                                                .Select(g => new
+                                                                {
+                                                                    ITCD = g.Key.itcd.retStr(),
+                                                                    BARNO = g.Key.BARNO.retStr(),
+                                                                    QNTY = g.Sum(r => r.Field<double>("qnty")),
+                                                                }).ToList();
+                                if (txndata != null && txndata.Count > 0)
+                                {
+                                    for (int i = 0; i <= txndata.Count - 1; i++)
+                                    {
+                                        string ITEM = txndata[i].ITCD;
+                                        string BAR_NO = txndata[i].BARNO;
+
+                                        string QNTY = ""; double STOCK_QNTY = 0; double SHORTAGE_QNTY = 0; double saleqnty = 0;
+
+                                        var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
+                                                              .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("BARNO") == BAR_NO)
+                                                                  .GroupBy(g => new { itcd = g["itcd"], BALENO = g["BARNO"] })
+                                                                   .Select(g =>
+                                                                   {
+                                                                       var row = ITEM_STOCK_DATA.NewRow();
+                                                                       row["balqnty"] = g.Sum(r => r.Field<decimal>("balqnty"));
+                                                                       return row;
+                                                                   });
+                                        if (vQNTY != null && vQNTY.Count() > 0)
+                                        {
+                                            var vQNTY1 = vQNTY.CopyToDataTable();
+                                            QNTY = vQNTY1.Rows[0]["balqnty"].retStr();
+                                            STOCK_QNTY = QNTY.retDbl();
+
+                                            saleqnty = txndata[i].QNTY.retDbl();
+                                            STOCK_QNTY = STOCK_QNTY - saleqnty.retDbl();
+                                        }
+
+
+
+                                        if (STOCK_QNTY < 0)
+                                        {
+                                            ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - saleqnty.retDbl();
+
+                                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Item/Link Item : " + txndata[i].ITCD + " , BARNO : " + txndata[i].BARNO + " , Bar Stock Quantity : " + QNTY + " , Entered Quantity : " + saleqnty + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
+                                        }
+                                    }
+
+                                }
+                                if (ERROR_MESSAGE.Length > 0)
+                                {
+                                dberrmsg = "Entry Can't Save ! Stock Not Available for Following :-</br></br>" + ERROR_MESSAGE + "";
+                                    goto dbnotsave;
+                                }
+
+                            }
+                        #endregion
 
                         DB.SaveChanges();
                         ModelState.Clear();
                         OraTrans.Commit();
                         OraTrans.Dispose();
-                        string ContentFlg = "";
+                        ContentFlg = "";
                         if (VE.DefaultAction == "A")
                         {
                             ContentFlg = "1" + "<br/><br/>Voucher Number : " + TTXN.DOCCD + TTXN.DOCNO + "~" + TTXN.AUTONO;
@@ -1514,6 +1606,13 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return ex.Message;
             }
+        }
+        private void GRIDDATA()
+        {
+            ITEMDT.Columns.Add("ITCD", typeof(string));
+            ITEMDT.Columns.Add("BARNO", typeof(string));
+            ITEMDT.Columns.Add("QNTY", typeof(double));
+
         }
     }
 }
