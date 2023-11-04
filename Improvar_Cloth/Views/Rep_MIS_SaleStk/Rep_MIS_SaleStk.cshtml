@@ -111,6 +111,28 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-lg-2" style="width:auto">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Only negative stock")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            @Html.CheckBoxFor(model => model.Checkbox1, new { Style = "width:18px;height:18px;" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Skip negative stock")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            @Html.CheckBoxFor(model => model.Checkbox2, new { Style = "width:18px;height:18px;" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Stock ageing")

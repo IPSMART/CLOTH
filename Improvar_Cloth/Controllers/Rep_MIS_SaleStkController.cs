@@ -58,7 +58,7 @@ namespace Improvar.Controllers
                     VE.DefaultView = true;
                     VE.FDT = CommVar.FinStartDate(UNQSNO);
                     VE.TDT = CommVar.CurrDate(UNQSNO);
-                    VE.Checkbox2 = true;
+                    //VE.Checkbox2 = true;
                     return View(VE);
                 }
             }
@@ -108,13 +108,17 @@ namespace Improvar.Controllers
                     selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
                 }
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
+                bool Onlynegativestock = VE.Checkbox1;
+                bool Skipnegativestock = VE.Checkbox2;
                 string mtrljobcd = "'FS'";
                 string prccd = "WP";
 
                 bool showbatch = true;
                 var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
                 string sql = "";
-
+                sql += Environment.NewLine + " select doccd, doctag, docnm, docdt, stkdrcr, itcd, styleno, ";
+sql += Environment.NewLine + "nvl(qnty, 0)qnty,prccd,effdt, wprate,rprate ";
+sql += Environment.NewLine + "from( ";
                 sql += Environment.NewLine + "select a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,a.styleno, ";
                 sql += Environment.NewLine + "sum(a.qnty)qnty,a.prccd, a.effdt, sum(a.wprate) wprate, sum(a.rprate)rprate ";
                 sql += Environment.NewLine + "FROM( ";
@@ -160,8 +164,11 @@ namespace Improvar.Controllers
                 if (selitcd != "") sql += Environment.NewLine + "and a.itcd in(" + selitcd + ") ";
                 sql += Environment.NewLine + "order by styleno,doctag,docdt ";
                 sql += Environment.NewLine + " )a group by a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,a.styleno, a.prccd, a.effdt ";
-                sql += Environment.NewLine + "order by a.styleno,a.doccd,a.doctag,a.docdt ";
+                sql += Environment.NewLine + "order by a.styleno,a.doccd,a.doctag,a.docdt) ";
+                //if (Skipnegativestock == true) sql += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
+                //if (Onlynegativestock == true) sql += " where nvl(qnty, 0)< 0 " + Environment.NewLine;
                 DataTable tbl = MasterHelp.SQLquery(sql);
+
                 DataTable Docdesc = new DataTable("doccd");
 
                 if (tbl.Rows.Count == 0)
@@ -238,7 +245,7 @@ namespace Improvar.Controllers
                     //}
 
                 }
-                HC.GetPrintHeader(IR, "stockqnty", "double", "n,10,2", "Stock");
+                HC.GetPrintHeader(IR, "stockqnty", "double", "n,15,2", "Stock");
                 if (ageingperiod >= 1) HC.GetPrintHeader(IR, "stk1qty", "double", "n,14,3", "<= " + due1tDys.ToString() + ";Qty");
                 if (ageingperiod >= 2) HC.GetPrintHeader(IR, "stk2qty", "double", "n,14,3", due2fDys.ToString() + " to " + due2tDys.ToString() + ";Qty");
                 if (ageingperiod >= 3) HC.GetPrintHeader(IR, "stk3qty", "double", "n,14,3", due3fDys.ToString() + " to " + due3tDys.ToString() + ";Qty");
@@ -274,7 +281,7 @@ namespace Improvar.Controllers
                     due1Amt = 0; due2Amt = 0; due3Amt = 0; due4Amt = 0;
                     due1Qty = 0; due2Qty = 0; due3Qty = 0; due4Qty = 0;
                     bdue1Qty = 0; bdue2Qty = 0; bdue3Qty = 0; bdue4Qty = 0;
-                    string lstInDt = "", lstOutDt = "";
+                    string lstInDt = "", lstOutDt = ""; double stkqnty = 0;
                     while (tbl.Rows[i]["itcd"].ToString() == chkval)
                     {
                         double bqnty = 0, bnos = 0, bval = 0, bamt = 0;
@@ -315,7 +322,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
                             IR.Rows[rNo]["purrate"] = tbl.Rows[i - 1]["wprate"].retDbl();
                         }
-                        double stkqnty = iop;
+                        stkqnty = iop;
                         double cnt = 0;
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                         {
@@ -422,9 +429,24 @@ namespace Improvar.Controllers
                             if (due4Qty != 0) { IR.Rows[rNo]["stk4qty"] = due4Qty; }
                         }
                         //tblqty = (iop + pbqnty + tiqnty + srqnty + othersqnty) - (prqnty + toqnty + sbqnty + sbcmqnty + sbsskqnty + sbsrcmqnty + convqnty);
-
+                   
 
                         if (i > maxR) break;
+                    }
+                    if (stkqnty < 0 && Skipnegativestock==true)
+                    {
+
+                        IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                    }
+                    else if (stkqnty > 0 && Onlynegativestock == true)
+                    {
+
+                        IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
+                    }
+                    else if (stkqnty == 0)
+                    {
+
+                        IR.Rows.RemoveAt(IR.Rows.Count - 1); IR.AcceptChanges();
                     }
                     bdue1Qty = bdue1Qty + due1Qty;
                     bdue2Qty = bdue2Qty + due2Qty;
@@ -432,6 +454,7 @@ namespace Improvar.Controllers
                     bdue4Qty = bdue4Qty + due4Qty;
                     if (i > maxR) break;
                 }
+               
 
                 // Create Blank line
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
