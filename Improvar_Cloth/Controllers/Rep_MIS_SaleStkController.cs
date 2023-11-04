@@ -116,9 +116,6 @@ namespace Improvar.Controllers
                 bool showbatch = true;
                 var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
                 string sql = "";
-                sql += Environment.NewLine + " select doccd, doctag, docnm, docdt, stkdrcr, itcd, styleno, ";
-sql += Environment.NewLine + "nvl(qnty, 0)qnty,prccd,effdt, wprate,rprate ";
-sql += Environment.NewLine + "from( ";
                 sql += Environment.NewLine + "select a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,a.styleno, ";
                 sql += Environment.NewLine + "sum(a.qnty)qnty,a.prccd, a.effdt, sum(a.wprate) wprate, sum(a.rprate)rprate ";
                 sql += Environment.NewLine + "FROM( ";
@@ -164,9 +161,7 @@ sql += Environment.NewLine + "from( ";
                 if (selitcd != "") sql += Environment.NewLine + "and a.itcd in(" + selitcd + ") ";
                 sql += Environment.NewLine + "order by styleno,doctag,docdt ";
                 sql += Environment.NewLine + " )a group by a.doccd,a.doctag,a.docnm, a.docdt,a.stkdrcr,a.itcd,a.styleno, a.prccd, a.effdt ";
-                sql += Environment.NewLine + "order by a.styleno,a.doccd,a.doctag,a.docdt) ";
-                //if (Skipnegativestock == true) sql += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
-                //if (Onlynegativestock == true) sql += " where nvl(qnty, 0)< 0 " + Environment.NewLine;
+                sql += Environment.NewLine + "order by a.styleno,a.doccd,a.doctag,a.docdt ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
 
                 DataTable Docdesc = new DataTable("doccd");
