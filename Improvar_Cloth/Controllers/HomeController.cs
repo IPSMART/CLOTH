@@ -371,15 +371,32 @@ namespace Improvar.Controllers
                     DataTable rstmp = masterHelp.SQLquery(sql);
                     if (rstmp.Rows.Count > 0 && rstmp.Rows[0]["colnm"].retStr() != "")
                     {
-                        sql = "";
-                        //sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
-                        sql += " select " + rstmp.Rows[0]["colnm"] + ",a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
-                        sql += "  from  " + DatabaseSchemaName + ".M_SYSCNFG a, " + tbl.Rows[0]["fin_schema"].ToString() + ".M_RETDEB b, " + DatabaseSchemaName + ".M_SUBLEG_SDDTL c, " + DatabaseSchemaName + ".m_subleg_com d, " + tbl.Rows[0]["fin_schema"].ToString() + ".m_prclst e ";
-                        sql += " where a.RTDEBCD=b.RTDEBCD and a.retdebslcd=d.slcd(+) and ";
-                        sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + VE.COMPCD + "' and c.loccd='" + VE.LOCCD + "' and d.prccd=e.prccd(+) ";
+                        if (CommVar.ModuleCode() == "SALESJEWEL")
+                        {
+                            sql = "";
+                            //sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
+                            sql += " select " + rstmp.Rows[0]["colnm"] + ",b.rtdebnm, b.mobile,C.TAXGRPCD,b.city,b.add1,b.add2,b.add3  ";
+                            sql += "  from  " + DatabaseSchemaName + ".M_SYSCNFG a, " + tbl.Rows[0]["fin_schema"].ToString() + ".M_RETDEB b, " + DatabaseSchemaName + ".M_SUBLEG_SDDTL c, " + DatabaseSchemaName + ".m_subleg_com d ";
+                            sql += " where a.RTDEBCD=b.RTDEBCD(+) and a.retdebslcd=d.slcd(+) and ";
+                            sql += "a.retdebslcd=C.SLCD(+) and a.compcd='" + VE.COMPCD + "' and a.loccd='" + VE.LOCCD + "'  ";
+                            sql += "and (c.compcd='" + VE.COMPCD + "' or c.compcd is null) and (c.loccd='" + VE.LOCCD + "' or c.loccd is null)  ";
+                        }
+                        else if (CommVar.ModuleCode() == "SALESSAREE" || CommVar.ModuleCode() == "SALESCLOTH")
+                        {
+                            sql = "";
+                            //sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
+                            sql += " select " + rstmp.Rows[0]["colnm"] + ",a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
+                            sql += "  from  " + DatabaseSchemaName + ".M_SYSCNFG a, " + tbl.Rows[0]["fin_schema"].ToString() + ".M_RETDEB b, " + DatabaseSchemaName + ".M_SUBLEG_SDDTL c, " + DatabaseSchemaName + ".m_subleg_com d, " + tbl.Rows[0]["fin_schema"].ToString() + ".m_prclst e ";
+                            sql += " where a.RTDEBCD=b.RTDEBCD and a.retdebslcd=d.slcd(+) and ";
+                            sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + VE.COMPCD + "' and c.loccd='" + VE.LOCCD + "' and d.prccd=e.prccd(+) ";
+                        }
+                        else
+                        {
+                            sql = "";
+                            sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
+                        }
                         rstmp = masterHelp.SQLquery(sql);
-
-                        Session.Add("M_SYSCNFG", rstmp);
+                        Session.Add("M_SYSCNFG" + UNIQUESESSION, rstmp);
                     }
                     Response.BufferOutput = true;
                     return RedirectToAction("multiVu", "Multiviewer", new { US = Cn.Encrypt_URL(UNIQUESESSION) });
@@ -491,52 +508,49 @@ namespace Improvar.Controllers
                 {
                     dbnm = schema;
                 }
-                //if (schema == "FIN")
-                //{
-                //    dbnm = CommVar.FinSchema(UNQSNO);
-                //}
+
 
                 DataTable tbl;
                 string sql = "";
-                sql += " select a.emd_no, a.usr_entdt, nvl(b.user_name,a.usr_id) usr_id,lm_rem,del_rem from (" + Environment.NewLine;
+                sql += " select a.emd_no, a.usr_entdt, nvl(b.user_name,a.usr_id) usr_id,a.lm_rem,a.del_rem,c.autono trnautono from (" + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,a.autono autonum  " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_hdrt a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 sql += " union  " + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,a.autono autonum " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_hdr a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,to_char(a.m_autono) autonum  " + Environment.NewLine;
                 sql += " from " + dbnm + ".m_cntrl_hdrt a " + Environment.NewLine;
                 sql += " where to_char(a.m_autono) in ('" + autono + "') " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,to_char(a.m_autono) autonum  " + Environment.NewLine;
                 sql += " from " + dbnm + ".m_cntrl_hdr a " + Environment.NewLine;
                 sql += " where to_char(a.m_autono) in ('" + autono + "') " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
-                sql += " select 'AUTH'||decode(a.slno,1,'','-'||to_char(a.slno)) emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem " + Environment.NewLine;
+                sql += " select 'AUTH'||decode(a.slno,1,'','-'||to_char(a.slno)) emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_auth a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 if (Module.MODULE != "PAYROLL")
                 {
                     sql += " union " + Environment.NewLine;
-                    sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem " + Environment.NewLine;
+                    sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum " + Environment.NewLine;
                     sql += " from " + dbnm + ".t_txnstatus a " + Environment.NewLine;
                     sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 }
                 sql += " union " + Environment.NewLine;
                 sql += " select 'Cancelled' emd_no,a.CANC_USR_ENTDT usr_entdt,a.CANC_USR_ID usr_id ,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.canc_rem lm_rem,a.del_rem  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.canc_rem lm_rem,a.del_rem,a.autono autonum  " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_hdr a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') and a.cancel='Y' " + Environment.NewLine;
 
                 sql += " ) a,  " + Environment.NewLine;
-                sql += " user_appl b where a.usr_id = b.user_id(+) " + Environment.NewLine;
+                sql += " user_appl b," + dbnm + ".t_cntrl_hdr c where a.usr_id = b.user_id(+) and a.autonum=c.autono(+) " + Environment.NewLine;
                 sql += " order by usr_entdt desc " + Environment.NewLine;
                 tbl = masterHelp.SQLquery(sql);
                 ModifyLog VE = new ModifyLog();
@@ -550,15 +564,19 @@ namespace Improvar.Controllers
                     DTL.USERID = tbl.Rows[i]["usr_id"].ToString();
                     DTL.MODIFYDT = tbl.Rows[i]["usr_entdt"].ToString();
                     DTL.LM_REM = tbl.Rows[i]["LM_REM"].ToString();
+                    DTL.AUTONO = autono;
+                    DTL.SCHEMA = schema;
+                    DTL.EMDNO = tbl.Rows[i]["emd_no"].ToString();
                     if (DTL.LM_REM.retStr() != "" && DTL.LM_REM.retStr().Length > 3)
                     {
-                        if (DTL.LM_REM.retStr().Remove(3) == "1. " || DTL.LM_REM.retStr().Remove(3) == "2. " || DTL.LM_REM.retStr().Remove(3) == "3. " || DTL.LM_REM.retStr().Remove(3) == "4. ")
+                        if (DTL.LM_REM.retStr().Remove(3) == "1. " || DTL.LM_REM.retStr().Remove(3) == "2. " || DTL.LM_REM.retStr().Remove(3) == "3. " || DTL.LM_REM.retStr().Remove(3) == "4. " || DTL.LM_REM.retStr().Remove(3) == "5. " || DTL.LM_REM.retStr().Remove(3) == "6. ")
                         {
                             DTL.LM_REM = DTL.LM_REM.Substring(3);
                         }
                     }
 
                     DTL.DEL_REM = tbl.Rows[i]["DEL_REM"].ToString();
+                    VE.showlink = tbl.Rows[i]["trnautono"].retStr() == "" ? false : true;
                     ModifyLogGrid.Add(DTL);
 
                     if (tbl.Rows[i]["emd_no"].retStr() == "" || tbl.Rows[i]["emd_no"].retStr() == "0")
@@ -568,15 +586,6 @@ namespace Improvar.Controllers
                 }
                 VE.ModifyLogGrid = ModifyLogGrid;
 
-                //VE.ModifyLogGrid = (from DataRow dr in tbl.Rows
-                //                    select new ModifyLogGrid()
-                //                    {
-                //                        SLNO = (dr["emd_no"].ToString() == "" || dr["emd_no"].ToString() == "0") ? "Original" : dr["emd_no"].ToString(),
-                //                        USERID = dr["usr_id"].ToString(),
-                //                        MODIFYDT = dr["usr_entdt"].ToString(),
-                //                        LM_REM = dr["LM_REM"].ToString(),
-                //                        DEL_REM = dr["DEL_REM"].ToString(),
-                //                    }).ToList();
 
                 ModelState.Clear();
                 return PartialView("_ModifyLog", VE);

@@ -3006,7 +3006,7 @@ namespace Improvar
         {
             try
             {
-                var dtconfig = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
+                var dtconfig = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG" + CommVar.getQueryStringUNQSNO()];
                 if (effdt.retStr() != "")
                 {
                     var dt = (from DataRow dr in dtconfig.Rows
@@ -3046,7 +3046,7 @@ namespace Improvar
 
             //DataTable syscnfgdt = masterHelpFa.SQLquery(sql);
 
-            var syscnfgdt = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
+            var syscnfgdt = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG" + CommVar.getQueryStringUNQSNO()];
             var dt = (from DataRow dr in syscnfgdt.Rows
                       orderby dr["effdt"] descending
                       where Convert.ToDateTime(dr["effdt"]) <= Convert.ToDateTime(EFFDT)

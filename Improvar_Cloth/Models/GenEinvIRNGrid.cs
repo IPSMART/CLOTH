@@ -25,6 +25,7 @@ namespace Improvar.Models
         public string EWB { get; set; }
         public string TRANSLNM { get; set; }
         public string LORRYNO { get; set; }
+        public string DISTANCE { get; set; }
 
     }
 

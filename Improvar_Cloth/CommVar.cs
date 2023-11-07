@@ -1,5 +1,6 @@
 ﻿using Improvar.Models;
 using System;
+using System.Configuration;
 using System.Linq;
 
 namespace Improvar
@@ -120,6 +121,18 @@ namespace Improvar
             {
                 return "";
             }
+        }
+        public static string LastYearCode(string unqsno)
+        {
+            try
+            {
+                string yrcd = (Convert.ToInt16(CommVar.YearCode(unqsno)) - 1).ToString();
+                return yrcd;
+            }
+            catch
+            {
+            }
+            return "";
         }
         public static string CurSchema(string unqsno)
         {
@@ -347,6 +360,7 @@ namespace Improvar
                 case "LB": rtval = "Last Year Bal"; break;
                 case "CR": rtval = "Chq.Rtd."; break;
                 case "PV": rtval = "Prov.Vchr."; break;
+                case "DS": rtval = "Del-Credere"; break;
                 default: rtval = "Voucher"; break;
             }
             string pb_val = "";
@@ -405,7 +419,7 @@ namespace Improvar
                 return "";
             }
         }
-       
+
         public static string NextYearSchema(string unqsno)
         {
             try
@@ -462,8 +476,13 @@ namespace Improvar
         {
             try
             {
-                var configDT = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
-                string DESIGNPATH = configDT.Rows[0]["DESIGNPATH"].retStr();
+                string DESIGNPATH = @ConfigurationManager.AppSettings["DESIGNPATH"].retStr();
+                if (DESIGNPATH == "")
+                {
+                    var configDT = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG" + getQueryStringUNQSNO()];
+                    DESIGNPATH = configDT.Rows[0]["DESIGNPATH"].retStr();
+                }
+
                 string path = @"\\ipsmart-ibm\C\IPSMART";
                 if (DESIGNPATH != "" && System.IO.Directory.Exists(DESIGNPATH))
                 {

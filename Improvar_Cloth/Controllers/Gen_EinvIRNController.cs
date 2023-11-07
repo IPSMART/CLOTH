@@ -263,7 +263,23 @@ namespace Improvar.Controllers
 
                 sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO);
-                sql = "select distinct a.autono,a.invtypecd, f.regntype, f.gstno, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm) slnm, sum(a.blamt) blamt, e.translcd, f.slnm translnm, e.lorryno ";
+
+                //sql = "select distinct a.autono,a.invtypecd, f.regntype, f.gstno, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm) slnm, sum(a.blamt) blamt, e.translcd, f.slnm translnm, e.lorryno ";
+                //sql += "from " + scmf + ".t_vch_gst a, " + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f ";
+                //sql += "where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.translcd=f.slcd(+) and a.autono=e.autono(+) and ";
+                //sql += "a.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and a.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
+                //sql += "nvl(a.gstregntype,b.regntype) in ('R','C','U') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N' and ";
+                //sql += "a.autono not in (select autono from " + scmf + ".t_txneinv) and d.modcd='" + Module.MODCD + "' and ";
+                //sql += "a.autono not in (select distinct autono from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_doc_pass) and ";
+                //sql += "d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "' and ( (b.gstno is null and a.invtypecd not in ('01') or b.gstno is not null ) )  ";
+                //sql += "group by a.autono, a.invtypecd, f.regntype, f.gstno,c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm), e.translcd, f.slnm, e.lorryno ";
+                //sql += "order by docdt,autono ";
+
+                sql = "select distinct a.autono,a.invtypecd, a.regntype, a.gstno, a.doctype, a.loccd, a.docno, a.docdt, a.slcd, a.slnm, sum(a.blamt) blamt, a.translcd,  ";
+                sql += "a.translnm, a.lorryno,a.distance from( ";
+
+                sql += "select distinct a.autono,a.invtypecd, f.regntype, f.gstno, c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm) slnm, a.blamt, e.translcd, f.slnm translnm, e.lorryno, ";
+                sql += "nvl((select distinct distance from " + scmf + ".m_subleg_locoth where slcd=nvl(a.conslcd,a.pcode) and compcd||loccd=d.compcd||d.loccd and nvl(distance,0) <> 0),0) distance ";
                 sql += "from " + scmf + ".t_vch_gst a, " + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f ";
                 sql += "where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.translcd=f.slcd(+) and a.autono=e.autono(+) and ";
                 sql += "a.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and a.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
@@ -271,7 +287,8 @@ namespace Improvar.Controllers
                 sql += "a.autono not in (select autono from " + scmf + ".t_txneinv) and d.modcd='" + Module.MODCD + "' and ";
                 sql += "a.autono not in (select distinct autono from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_doc_pass) and ";
                 sql += "d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "' and ( (b.gstno is null and a.invtypecd not in ('01') or b.gstno is not null ) )  ";
-                sql += "group by a.autono, a.invtypecd, f.regntype, f.gstno,c.doctype, d.loccd, d.docno, d.docdt, b.slcd, nvl(a.gstslnm,b.slnm), e.translcd, f.slnm, e.lorryno ";
+                sql += ")a ";
+                sql += "group by a.autono, a.invtypecd, a.regntype,a.gstno,a.doctype, a.loccd, a.docno, a.docdt, a.slcd,a.slnm, a.translcd, a.translnm, a.lorryno,a.distance ";
                 sql += "order by docdt,autono ";
                 DataTable txn = masterHelp.SQLquery(sql);
                 VE.GenEinvIRNGrid = (from DataRow dr in txn.Rows
@@ -284,7 +301,8 @@ namespace Improvar.Controllers
                                          SLNM = dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]",
                                          BLAMT = dr["BLAMT"].retDbl(),
                                          TRANSLNM = dr["TRANSLCD"].retStr() == "" ? "" : dr["TRANSLNM"].retStr(),
-                                         LORRYNO = dr["LORRYNO"].retStr()
+                                         LORRYNO = dr["LORRYNO"].retStr(),
+                                         DISTANCE = dr["DISTANCE"].ToString()
                                      }).OrderBy(a => a.BLDT).Distinct().ToList();
                 int slno = 1;
                 for (int p = 0; p <= VE.GenEinvIRNGrid.Count - 1; p++)
@@ -327,6 +345,7 @@ namespace Improvar.Controllers
                 for (int gridindex = 0; gridindex < VE.GenEinvIRNGrid.Count; gridindex++)
                 {
                     string autono = VE.GenEinvIRNGrid[gridindex].AUTONO;
+                    string slcd = "";
                     if (VE.GenEinvIRNGrid[gridindex].Checked == true)
                     {
 
@@ -370,7 +389,7 @@ namespace Improvar.Controllers
                         sql += "nvl((select sum(blamt) blamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, ";
                         sql += "nvl((select sum(roamt) roamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(roamt,0) <> 0),0) roamt,  ";
                         sql += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
-                        sql += "a.igstamt, a.cgstamt, a.sgstamt, a.cessamt , a.othramt ";
+                        sql += "a.igstamt, a.cgstamt, a.sgstamt, a.cessamt , a.othramt,nvl(a.conslcd, a.pcode)slcd  ";
                         sql += "from " + fdbnm + ".t_vch_gst a, " + fdbnm + ".t_cntrl_hdr b, " + fdbnm + ".t_txnewb c, " + fdbnm + ".m_subleg d, ";
                         sql += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, " + fdbnm + ".m_uom j, improvar.ms_state k, improvar.ms_gstuom l, ";
                         sql += fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
@@ -396,6 +415,7 @@ namespace Improvar.Controllers
                         double igstamt = 0, sgstamt = 0, cgstamt = 0, cessamt = 0, roamt = 0, blamt = 0, tottxablamt = 0;
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
+                            if (i == 0) slcd = dt.Rows[i]["slcd"].retStr();
                             docDtls = new DocDtls();
                             if (dt.Rows[i]["dncnsalpur"].retStr() == "SD") { docDtls.Typ = "DBN"; }
                             else if (dt.Rows[i]["dncnsalpur"].retStr() == "SC") { docDtls.Typ = "CRN"; }
@@ -502,8 +522,8 @@ namespace Improvar.Controllers
                             itemlst.Unit = dt.Rows[i]["guomcd"].retStr();
                             itemlst.UnitPrice = dt.Rows[i]["rate"].retDbl().toRound(3);
                             itemlst.TotAmt = (dt.Rows[i]["basamt"].retDbl() + (dt.Rows[i]["discamt"].retDbl() < 0 ? dt.Rows[i]["discamt"].retDbl() * -1 : 0)).toRound();
-                            itemlst.Discount = (dt.Rows[i]["discamt"].retDbl() < 0?0:dt.Rows[i]["discamt"].retDbl()).toRound();
-                            itemlst.PreTaxVal = dt.Rows[i]["txablamt"].retDbl() ;
+                            itemlst.Discount = (dt.Rows[i]["discamt"].retDbl() < 0 ? 0 : dt.Rows[i]["discamt"].retDbl()).toRound();
+                            itemlst.PreTaxVal = dt.Rows[i]["txablamt"].retDbl();
                             itemlst.AssAmt = dt.Rows[i]["txablamt"].retDbl();
                             tottxablamt += dt.Rows[i]["txablamt"].retDbl();
                             itemlst.GstRt = dt.Rows[i]["cgstper"].retDbl() + dt.Rows[i]["sgstper"].retDbl() + dt.Rows[i]["igstper"].retDbl();
@@ -536,7 +556,9 @@ namespace Improvar.Controllers
                             //EwbDtls
                             ewbDtls.Transid = dt.Rows[i]["trgst"].retStr() == "" ? null : dt.Rows[i]["trgst"].retStr();
                             ewbDtls.Transname = dt.Rows[i]["trslnm"].retStr() == "" ? null : dt.Rows[i]["trslnm"].retStr();
-                            ewbDtls.Distance = dt.Rows[i]["distance"].retInt();// 
+                            ewbDtls.Distance = VE.GenEinvIRNGrid[gridindex].DISTANCE.retInt();
+
+                            //ewbDtls.Distance = dt.Rows[i]["distance"].retInt();// 
                             //ewbDtls.Transdocno = dt.Rows[i]["lrno"].retStr() == "" ? null : dt.Rows[i]["lrno"].retStr();// 
                             //ewbDtls.TransdocDt = dt.Rows[i]["lrdt"].retStr() == "" ? null : dt.Rows[i]["lrdt"].retDateStr();// ;
                             //ewbDtls.Vehno = (dt.Rows[i]["lorryno"].retStr() == "" && dt.Rows[i]["lorryno"].retStr().Length < 4) ? null : dt.Rows[i]["lorryno"].retStr();// ;
@@ -652,6 +674,9 @@ namespace Improvar.Controllers
                                         masterHelp.SQLNonQuery(sql);
                                         VE.GenEinvIRNGrid[gridindex].EWB = adqrRespGenIRN.result.EwbNo.ToString();
                                     }
+                                    sql = "update " + CommVar.FinSchema(UNQSNO) + ".M_SUBLEG_LOCOTH set DISTANCE='" + VE.GenEinvIRNGrid[gridindex].DISTANCE.retInt() + "' where slcd='" + slcd + "' and LOCCD ='" + LOC + "' and COMPCD ='" + COM + "'";
+                                    masterHelp.SQLNonQuery(sql);
+
                                     if (adqrRespGenIRN.info != null && adqrRespGenIRN.info.Count > 0 && adqrRespGenIRN.info[0].Desc != null)
                                     {
                                         foreach (var inf in adqrRespGenIRN.info)
