@@ -541,7 +541,7 @@ namespace Improvar.Controllers
                     sql += " union " + Environment.NewLine;
                     sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum " + Environment.NewLine;
                     sql += " from " + dbnm + ".t_txnstatus a " + Environment.NewLine;
-                    sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
+                    sql += " where a.autono in ('" + autono + "') and a.ststype <> 'A' " + Environment.NewLine;
                 }
                 sql += " union " + Environment.NewLine;
                 sql += " select 'Cancelled' emd_no,a.CANC_USR_ENTDT usr_entdt,a.CANC_USR_ID usr_id ,  " + Environment.NewLine;

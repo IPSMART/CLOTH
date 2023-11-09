@@ -3477,156 +3477,157 @@ namespace Improvar
             string dbsql = "";
             string[] dbsql1;
 
+            ImprovarDB DB = new ImprovarDB(GetConnectionString(), CommVar.CurSchema(UNQSNO));
             ImprovarDB DB1 = new ImprovarDB(GetConnectionString(), CommVar.CurSchema(UNQSNO));
             using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                try
+
+                OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
+                string USER = HttpContext.Current.Session["UR_ID"].ToString();
+
+                string lastStatus = DB1.T_TXNSTATUS.Where(x => x.AUTONO == AUTONO).FirstOrDefault()?.STSTYPE;
+                T_TXNSTATUS TTXNSTATUS = new T_TXNSTATUS();
+                T_CNTRL_AUTH CNTRLAUTH = new T_CNTRL_AUTH();
+                if (Approved == true || UnApproved == true || Cancel == true)
                 {
-                    OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
-                    string USER = HttpContext.Current.Session["UR_ID"].ToString();
-
-                    string lastStatus = DB1.T_TXNSTATUS.Where(x => x.AUTONO == AUTONO).FirstOrDefault()?.STSTYPE;
-                    T_TXNSTATUS TTXNSTATUS = new T_TXNSTATUS();
-                    T_CNTRL_AUTH CNTRLAUTH = new T_CNTRL_AUTH();
-                    if (Approved == true || UnApproved == true || Cancel == true)
+                    if (UnApproved == true)
                     {
-                        if (UnApproved == true)
-                        {
-                            dbsql = masterHelp.TblUpdt("T_CNTRL_AUTH", AUTONO, "D");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                        }
-                        else
-                        {
-                            dbsql = masterHelp.TblUpdt("T_CNTRL_AUTH", AUTONO, "E");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                        }
-                        dbsql = masterHelp.TblUpdt("T_TXNSTATUS", AUTONO, "E");
+                        dbsql = masterHelp.TblUpdt("T_CNTRL_AUTH", AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                        //T_TXNSTATUS
-
-                        TTXNSTATUS.EMD_NO = Convert.ToInt16(EMD_NO);
-                        TTXNSTATUS.CLCD = CommVar.ClientCode(UNQSNO);
-                        TTXNSTATUS.AUTONO = AUTONO;
-                        if (Approved == true)
-                        {
-                            TTXNSTATUS.STSTYPE = "A";
-                        }
-                        else if (UnApproved == true)
-                        {
-                            TTXNSTATUS.STSTYPE = "N";
-                        }
-                        else if (Cancel == true)
-                        {
-                            TTXNSTATUS.STSTYPE = "C";
-                        }
-                        TTXNSTATUS.FLAG1 = FLAG1;
-
-                        TTXNSTATUS.USR_ID = USER;
-                        TTXNSTATUS.USR_ENTDT = System.DateTime.Now;
-                        TTXNSTATUS.USR_LIP = GetIp();
-                        TTXNSTATUS.USR_SIP = GetIp();
-                        TTXNSTATUS.USR_OS = null;
-                        TTXNSTATUS.USR_MNM = DetermineCompName(GetIp());
-                        TTXNSTATUS.STSREM = AUTH_REM;
-
-                        dbsql = masterHelp.RetModeltoSql(TTXNSTATUS);
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        //
-                        if (UnApproved != true)
-                        {
-                            CNTRLAUTH.AUTONO = AUTONO;
-                            CNTRLAUTH.SLNO = SLNO;
-                            CNTRLAUTH.EMD_NO = EMD_NO;
-                            CNTRLAUTH.CLCD = CommVar.ClientCode(UNQSNO);
-                            CNTRLAUTH.PASS_LEVEL = PASS_LEVEL;
-                            CNTRLAUTH.AUTH_REM = AUTH_REM;
-
-                            if (Approved == true)
-                            {
-                                CNTRLAUTH.DOCPASSED = "Y";
-                            }
-                            else if (UnApproved == true)
-                            {
-                                CNTRLAUTH.DOCPASSED = "N";
-                            }
-                            else if (Cancel == true)
-                            {
-                                CNTRLAUTH.DOCPASSED = "C";
-                            }
-
-                            CNTRLAUTH.USR_ID = USER;
-                            CNTRLAUTH.USR_ENTDT = System.DateTime.Now;
-                            CNTRLAUTH.USR_LIP = GetIp();
-                            CNTRLAUTH.USR_SIP = GetIp();
-                            CNTRLAUTH.USR_OS = null;
-                            CNTRLAUTH.USR_MNM = DetermineCompName(GetIp());
-
-                            dbsql = masterHelp.RetModeltoSql(CNTRLAUTH);
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        }
-
-                        dbsql = masterHelp.TblUpdt("T_CNTRL_DOC_PASS", AUTONO, "E", "", "pass_level = '" + PASS_LEVEL + "'");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    }
-                    if (Approved == true || UnApproved == true)
-                    {
-                        if (lastStatus.retStr() == "A" && UnApproved == true)
-                        {
-
-                            var T_CNTRL_DOC_PASS_DATA = DB1.T_CNTRL_DOC_PASS.Where(x => x.AUTONO == AUTONO && x.PASS_LEVEL == PASS_LEVEL).ToList();
-                            if (T_CNTRL_DOC_PASS_DATA.Count() == 0)
-                            {
-                                var TCDP_DATA = T_CONTROL_DOC_PASS(DOCCD, DOCAMT, EMD_NO, AUTONO, CommVar.CurSchema(UNQSNO));
-                                if (TCDP_DATA.Item1.Count != 0)
-                                {
-                                    for (int tr = 0; tr <= TCDP_DATA.Item1.Count - 1; tr++)
-                                    {
-                                        dbsql = masterHelp.RetModeltoSql(TCDP_DATA.Item1[tr]);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
-
-                                }
-                            }
-                        }
-                        else if (UnApproved == true)
-                        {
-                            dbsql = masterHelp.TblUpdt("T_CNTRL_AUTH", AUTONO, "E");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        }
                     }
                     else
                     {
-                        T_CNTRL_HDR TCH = new T_CNTRL_HDR();
-                        if (Cancel == true)
-                        {
-                            TCH = T_CONTROL_HDR(AUTONO, CommVar.CurSchema(UNQSNO), AUTH_REM);
-                        }
-                        else
-                        {
-                            TCH = T_CONTROL_HDR(AUTONO, CommVar.CurSchema(UNQSNO));
-                        }
+                        dbsql = masterHelp.TblUpdt("T_CNTRL_AUTH", AUTONO, "E");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                        dbsql = masterHelp.RetModeltoSql(TCH, "E");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
+                    dbsql = masterHelp.TblUpdt("T_TXNSTATUS", AUTONO, "E");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                    OraTrans.Commit();
-                    OraCon.Close();
-                    OraCon.Dispose();
+                    //T_TXNSTATUS
+
+                    TTXNSTATUS.EMD_NO = Convert.ToInt16(EMD_NO);
+                    TTXNSTATUS.CLCD = CommVar.ClientCode(UNQSNO);
+                    TTXNSTATUS.AUTONO = AUTONO;
+                    if (Approved == true)
+                    {
+                        TTXNSTATUS.STSTYPE = "A";
+                    }
+                    else if (UnApproved == true)
+                    {
+                        TTXNSTATUS.STSTYPE = "N";
+                    }
+                    else if (Cancel == true)
+                    {
+                        TTXNSTATUS.STSTYPE = "C";
+                    }
+                    TTXNSTATUS.FLAG1 = FLAG1;
+
+                    TTXNSTATUS.USR_ID = USER;
+                    TTXNSTATUS.USR_ENTDT = System.DateTime.Now;
+                    TTXNSTATUS.USR_LIP = GetIp();
+                    TTXNSTATUS.USR_SIP = GetIp();
+                    TTXNSTATUS.USR_OS = null;
+                    TTXNSTATUS.USR_MNM = DetermineCompName(GetIp());
+                    TTXNSTATUS.STSREM = AUTH_REM;
+
+                    DB.T_TXNSTATUS.Add(TTXNSTATUS);
+                    //dbsql = masterHelp.RetModeltoSql(TTXNSTATUS);
+                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //
+                    if (UnApproved != true)
+                    {
+                        CNTRLAUTH.AUTONO = AUTONO;
+                        CNTRLAUTH.SLNO = SLNO;
+                        CNTRLAUTH.EMD_NO = EMD_NO;
+                        CNTRLAUTH.CLCD = CommVar.ClientCode(UNQSNO);
+                        CNTRLAUTH.PASS_LEVEL = PASS_LEVEL;
+                        CNTRLAUTH.AUTH_REM = AUTH_REM;
+
+                        if (Approved == true)
+                        {
+                            CNTRLAUTH.DOCPASSED = "Y";
+                        }
+                        else if (UnApproved == true)
+                        {
+                            CNTRLAUTH.DOCPASSED = "N";
+                        }
+                        else if (Cancel == true)
+                        {
+                            CNTRLAUTH.DOCPASSED = "C";
+                        }
+
+                        CNTRLAUTH.USR_ID = USER;
+                        CNTRLAUTH.USR_ENTDT = System.DateTime.Now;
+                        CNTRLAUTH.USR_LIP = GetIp();
+                        CNTRLAUTH.USR_SIP = GetIp();
+                        CNTRLAUTH.USR_OS = null;
+                        CNTRLAUTH.USR_MNM = DetermineCompName(GetIp());
+
+                        DB.T_CNTRL_AUTH.Add(CNTRLAUTH);
+                        //dbsql = masterHelp.RetModeltoSql(CNTRLAUTH);
+                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    }
+                    if (UnApproved != true)
+                    {
+                        dbsql = masterHelp.TblUpdt("T_CNTRL_DOC_PASS", AUTONO, "E", "", " AUTONO='" + AUTONO + "' AND pass_level = '" + PASS_LEVEL + "'");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    }
                 }
-                catch (Exception ex)
+                if (UnApproved == true)
                 {
-                    OraTrans.Rollback();
-                    OraCon.Close();
-                    OraCon.Dispose();
-                    SaveException(ex, "");
+                    //if (lastStatus.retStr() == "A" && UnApproved == true)
+                    //{
+
+                    var T_CNTRL_DOC_PASS_DATA = DB1.T_CNTRL_DOC_PASS.Where(x => x.AUTONO == AUTONO && x.PASS_LEVEL == PASS_LEVEL).ToList();
+                    if (T_CNTRL_DOC_PASS_DATA.Count() == 0)
+                    {
+                        var TCDP_DATA = T_CONTROL_DOC_PASS(DOCCD, DOCAMT, EMD_NO, AUTONO, CommVar.CurSchema(UNQSNO), "", PASS_LEVEL);
+                        if (TCDP_DATA.Item1.Count != 0)
+                        {
+                            DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA.Item1);
+
+                            //for (int tr = 0; tr <= TCDP_DATA.Item1.Count - 1; tr++)
+                            //{
+                            //    dbsql = masterHelp.RetModeltoSql(TCDP_DATA.Item1[tr]);
+                            //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            //}
+
+                        }
+                    }
+                    //}
+                    //else if (UnApproved == true)
+                    //{
+                    dbsql = masterHelp.TblUpdt("T_CNTRL_AUTH", AUTONO, "E");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    //}
                 }
+                else
+                {
+                    T_CNTRL_HDR TCH = new T_CNTRL_HDR();
+                    if (Cancel == true)
+                    {
+                        TCH = T_CONTROL_HDR(AUTONO, CommVar.CurSchema(UNQSNO), AUTH_REM);
+                    }
+                    else
+                    {
+                        TCH = T_CONTROL_HDR(AUTONO, CommVar.CurSchema(UNQSNO));
+                    }
+                    DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
+
+                    //dbsql = masterHelp.RetModeltoSql(TCH, "E");
+                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                }
+                DB.SaveChanges();
+                OraTrans.Commit();
+                OraCon.Close();
+                OraCon.Dispose();
+
             }
 
         }
+
         public Models.M_CNTRL_HDR_REM GetMasterReamrks(string schema, long AutoNO)
         {
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), schema);
