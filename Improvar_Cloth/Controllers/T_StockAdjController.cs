@@ -282,13 +282,13 @@ namespace Improvar.Controllers
                         VE.TBATCHDTL = TBATCHDTL;
                     }
                 }
-                   
+
                 #endregion
 
                 #region OUT TAB DATA
                 str = "";
                 str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,i.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
-                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.autono adjautono ";
+                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.autono adjautono,nvl(k.NEGSTOCK,l.NEGSTOCK)NEGSTOCK ";
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p," + Scm + ".T_MOBDTL q ";
                 str += "where  i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) and i.autono=q.adjautono(+) and i.barno=q.barno(+) ";
@@ -322,12 +322,13 @@ namespace Improvar.Controllers
                                         MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
                                         MTBARCODE = dr["MTBARCODE"].retStr(),
                                         ADJAUTONO = dr["adjautono"].retStr(),
+                                        NEGSTOCK = dr["NEGSTOCK"].retStr(),
                                     }).ToList();
 
                 VE.OUT_T_QNTY = VE.TBATCHDTL_OUT.Sum(a => a.QNTY).retDbl();
                 if (VE.MENU_PARA != "WAS")
                 {
-                    if (VE.TBATCHDTL_OUT.Count == 0 && VE.DefaultAction=="E")
+                    if (VE.TBATCHDTL_OUT.Count == 0 && VE.DefaultAction == "E")
                     {
                         List<TBATCHDTL> TBATCHDTL_OUT = new List<TBATCHDTL>();
                         for (int i = 0; i < 20; i++)
@@ -1246,96 +1247,99 @@ namespace Improvar.Controllers
                         }
                         #region STOCK CHECKING for Out tab
                         GRIDDATA();
-                            if (VE.TBATCHDTL_OUT != null && VE.TBATCHDTL_OUT.Count > 0)
+                        if (VE.TBATCHDTL_OUT != null && VE.TBATCHDTL_OUT.Count > 0)
+                        {
+                            for (int i = 0; i <= VE.TBATCHDTL_OUT.Count - 1; i++)
                             {
-                                for (int i = 0; i <= VE.TBATCHDTL_OUT.Count - 1; i++)
+                                if (VE.TBATCHDTL_OUT[i].ITCD.retStr() != "")
                                 {
-                                    if (VE.TBATCHDTL_OUT[i].ITCD.retStr() != "")
-                                    {
 
 
-                                        DataRow ROWDATA = ITEMDT.NewRow();
-                                        ROWDATA["ITCD"] = VE.TBATCHDTL_OUT[i].ITCD.retStr();
-                                        ROWDATA["BARNO"] = VE.TBATCHDTL_OUT[i].BARNO.retStr();
-                                        ROWDATA["QNTY"] = VE.TBATCHDTL_OUT[i].QNTY.retDbl();
-                                        ITEMDT.Rows.Add(ROWDATA);
+                                    DataRow ROWDATA = ITEMDT.NewRow();
+                                    ROWDATA["ITCD"] = VE.TBATCHDTL_OUT[i].ITCD.retStr();
+                                    ROWDATA["BARNO"] = VE.TBATCHDTL_OUT[i].BARNO.retStr();
+                                    ROWDATA["QNTY"] = VE.TBATCHDTL_OUT[i].QNTY.retDbl();
+                                    ROWDATA["NEGSTOCK"] = VE.TBATCHDTL_OUT[i].NEGSTOCK.retStr();
+                                    ITEMDT.Rows.Add(ROWDATA);
 
-                                    }
                                 }
                             }
-                       
+                        }
+
                         string GCS = Cn.GCS();
-                            var ITCDList = (from Z in VE.TBATCHDTL_OUT where Z.ITCD.retStr() != "" select Z.ITCD).Distinct().ToArray();
-                            var ITCD = ITCDList.retSqlfromStrarray(); //+ (linkitcd.Count() > 0 ? "," + linkitcd.retSqlfromStrarray() : "");
-                            string BARNO = (from a in VE.TBATCHDTL_OUT select a.BARNO).Distinct().ToArray().retSqlfromStrarray();
-                            string ITGRPCD = (from a in VE.TBATCHDTL_OUT select a.ITGRPCD).Distinct().ToArray().retSqlfromStrarray();
-                            string MTRLJOBCD = (from a in VE.TBATCHDTL_OUT select a.MTRLJOBCD).Distinct().ToArray().retSqlfromStrarray();
-                            var stocktype = string.Join(",", (from Z in VE.TBATCHDTL where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
-                            var BALENO = (from a in VE.TBATCHDTL where a.BALENO != null select a.BALENO + GCS + a.BALEYR).Distinct().ToArray().retSqlfromStrarray();
-                            if (BARNO.retStr() != "")
-                            {
-                             var barno = string.Join("", BARNO.Split(Convert.ToChar(Cn.GCS())));
+                        var ITCDList = (from Z in VE.TBATCHDTL_OUT where Z.ITCD.retStr() != "" select Z.ITCD).Distinct().ToArray();
+                        var ITCD = ITCDList.retSqlfromStrarray(); //+ (linkitcd.Count() > 0 ? "," + linkitcd.retSqlfromStrarray() : "");
+                        string BARNO = (from a in VE.TBATCHDTL_OUT select a.BARNO).Distinct().ToArray().retSqlfromStrarray();
+                        string ITGRPCD = (from a in VE.TBATCHDTL_OUT select a.ITGRPCD).Distinct().ToArray().retSqlfromStrarray();
+                        string MTRLJOBCD = (from a in VE.TBATCHDTL_OUT select a.MTRLJOBCD).Distinct().ToArray().retSqlfromStrarray();
+                        var stocktype = string.Join(",", (from Z in VE.TBATCHDTL where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
+                        var BALENO = (from a in VE.TBATCHDTL where a.BALENO != null select a.BALENO + GCS + a.BALEYR).Distinct().ToArray().retSqlfromStrarray();
+                        if (BARNO.retStr() != "")
+                        {
+                            var barno = string.Join("", BARNO.Split(Convert.ToChar(Cn.GCS())));
                             DataTable ITEM_STOCK_DATA = new DataTable();
                             var docdt = CommVar.CurrDate(UNQSNO);
-                            ITEM_STOCK_DATA = salesfunc.GetStock(docdt.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), barno, ITCD, MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "","",true,true,"","",false,false,true,"",true);
-                           
+                            ITEM_STOCK_DATA = salesfunc.GetStock(docdt.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), barno, ITCD, MTRLJOBCD, VE.DefaultAction == "E" ? TTXN.AUTONO.retSqlformat() : "", ITGRPCD, "", "WP", "C001", "", "", true, true, "", "", false, false, true, "", true);
+
                             string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
 
 
-                                var txndata = ITEMDT.AsEnumerable().Where(a => a.Field<string>("BARNO").retStr() != "")
-                                                                .GroupBy(g => new { itcd = g["itcd"], BARNO = g["BARNO"] })
-                                                                .Select(g => new
-                                                                {
-                                                                    ITCD = g.Key.itcd.retStr(),
-                                                                    BARNO = g.Key.BARNO.retStr(),
-                                                                    QNTY = g.Sum(r => r.Field<double>("qnty")),
-                                                                }).ToList();
-                                if (txndata != null && txndata.Count > 0)
+                            var txndata = ITEMDT.AsEnumerable().Where(a => a.Field<string>("BARNO").retStr() != "")
+                                                            .GroupBy(g => new { itcd = g["itcd"], BARNO = g["BARNO"], NEGSTOCK = g["NEGSTOCK"] })
+                                                            .Select(g => new
+                                                            {
+                                                                ITCD = g.Key.itcd.retStr(),
+                                                                BARNO = g.Key.BARNO.retStr(),
+                                                                NEGSTOCK = g.Key.NEGSTOCK.retStr(),
+                                                                QNTY = g.Sum(r => r.Field<double>("qnty")),
+                                                            }).ToList();
+                            if (txndata != null && txndata.Count > 0)
+                            {
+                                for (int i = 0; i <= txndata.Count - 1; i++)
                                 {
-                                    for (int i = 0; i <= txndata.Count - 1; i++)
+                                    string ITEM = txndata[i].ITCD;
+                                    string BAR_NO = txndata[i].BARNO;
+                                    string NEGSTOCK = txndata[i].NEGSTOCK;
+
+                                    string QNTY = ""; double STOCK_QNTY = 0; double SHORTAGE_QNTY = 0; double saleqnty = 0;
+
+                                    var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
+                                                          .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("BARNO") == BAR_NO)
+                                                              .GroupBy(g => new { itcd = g["itcd"], BALENO = g["BARNO"] })
+                                                               .Select(g =>
+                                                               {
+                                                                   var row = ITEM_STOCK_DATA.NewRow();
+                                                                   row["balqnty"] = g.Sum(r => r.Field<decimal>("balqnty"));
+                                                                   return row;
+                                                               });
+                                    if (vQNTY != null && vQNTY.Count() > 0)
                                     {
-                                        string ITEM = txndata[i].ITCD;
-                                        string BAR_NO = txndata[i].BARNO;
+                                        var vQNTY1 = vQNTY.CopyToDataTable();
+                                        QNTY = vQNTY1.Rows[0]["balqnty"].retStr();
+                                        STOCK_QNTY = QNTY.retDbl();
 
-                                        string QNTY = ""; double STOCK_QNTY = 0; double SHORTAGE_QNTY = 0; double saleqnty = 0;
-
-                                        var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
-                                                              .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("BARNO") == BAR_NO)
-                                                                  .GroupBy(g => new { itcd = g["itcd"], BALENO = g["BARNO"] })
-                                                                   .Select(g =>
-                                                                   {
-                                                                       var row = ITEM_STOCK_DATA.NewRow();
-                                                                       row["balqnty"] = g.Sum(r => r.Field<decimal>("balqnty"));
-                                                                       return row;
-                                                                   });
-                                        if (vQNTY != null && vQNTY.Count() > 0)
-                                        {
-                                            var vQNTY1 = vQNTY.CopyToDataTable();
-                                            QNTY = vQNTY1.Rows[0]["balqnty"].retStr();
-                                            STOCK_QNTY = QNTY.retDbl();
-
-                                            saleqnty = txndata[i].QNTY.retDbl();
-                                            STOCK_QNTY = STOCK_QNTY - saleqnty.retDbl();
-                                        }
-
-
-
-                                        if (STOCK_QNTY < 0)
-                                        {
-                                            ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - saleqnty.retDbl();
-
-                                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Item/Link Item : " + txndata[i].ITCD + " , BARNO : " + txndata[i].BARNO + " , Bar Stock Quantity : " + QNTY + " , Entered Quantity : " + saleqnty + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
-                                        }
+                                        saleqnty = txndata[i].QNTY.retDbl();
+                                        STOCK_QNTY = STOCK_QNTY - saleqnty.retDbl();
                                     }
 
-                                }
-                                if (ERROR_MESSAGE.Length > 0)
-                                {
-                                dberrmsg = "Entry Can't Save ! Stock Not Available for Following :-</br></br>" + ERROR_MESSAGE + "";
-                                    goto dbnotsave;
+
+
+                                    if (STOCK_QNTY < 0 && NEGSTOCK != "Y")
+                                    {
+                                        ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - saleqnty.retDbl();
+
+                                        ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Item/Link Item : " + txndata[i].ITCD + " , BARNO : " + txndata[i].BARNO + " , Bar Stock Quantity : " + QNTY + " , Entered Quantity : " + saleqnty + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
+                                    }
                                 }
 
                             }
+                            if (ERROR_MESSAGE.Length > 0)
+                            {
+                                dberrmsg = "Entry Can't Save ! Stock Not Available for Following :-</br></br>" + ERROR_MESSAGE + "";
+                                goto dbnotsave;
+                            }
+
+                        }
                         #endregion
 
                         DB.SaveChanges();
@@ -1645,6 +1649,7 @@ namespace Improvar.Controllers
             ITEMDT.Columns.Add("ITCD", typeof(string));
             ITEMDT.Columns.Add("BARNO", typeof(string));
             ITEMDT.Columns.Add("QNTY", typeof(double));
+            ITEMDT.Columns.Add("NEGSTOCK", typeof(string));
 
         }
     }
