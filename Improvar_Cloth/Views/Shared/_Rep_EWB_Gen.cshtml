@@ -44,7 +44,8 @@
                         @Html.CheckBoxFor(model => model.EWAYBILL[i].Checked, new { @id = "Checked_" + i })
                         @Html.HiddenFor(model => model.EWAYBILL[i].DOCCD)
                         @Html.HiddenFor(model => model.EWAYBILL[i].AUTONO)
-                    </td>
+                        @Html.HiddenFor(model => model.EWAYBILL[i].MODCD)
+</td>
                     <td class="grid_td">
                         @Html.TextBoxFor(model => Model.EWAYBILL[i].SLNO, new { @class = " atextBoxFor ", style = "margin-left: 0px;", @TabIndex = -1, @readonly = "readonly" })
                     </td>

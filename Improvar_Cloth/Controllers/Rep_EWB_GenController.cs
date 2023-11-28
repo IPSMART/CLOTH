@@ -18,7 +18,7 @@ namespace Improvar.Controllers
 {
     public class Rep_EWB_GenController : Controller
     {
-        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI,MTSL";
+        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI,MTSL,OKTI,OYDI,OFPI,ODYI,OBLI,OCTI,OPRI,OSTI,OEMI,OJWI,OWAI,OIRI,FREC,SCHI,ODYI,OPRI,OEMI,OJWI,OSTI,OIRI";
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
         AdaequareGSP adaequareGSP = new AdaequareGSP();
@@ -78,12 +78,13 @@ namespace Improvar.Controllers
                         doccd = doccd.Substring(0, doccd.Length - 1);
                     }
                 }
+                string modcd = Module.MODCD;
                 DataTable tbl;
                 string trntable = "", crslcd = "";
                 if (Module.MODCD == "F") { trntable = "T_TXNewb"; crslcd = "translcd"; } else { trntable = "t_txntrans"; crslcd = "crslcd"; }
                 string query = "";
-                query += " select distinct a.autono, a.doccd, a.docno, a.docdt,a.slcd, a.slnm, a.district, a.distance,sum(a.blamt) blamt, a.trslnm, a.lorryno, a.lrno, a.lrdt,a.irnno from ";
-                query += "(select a.autono, b.doccd, b.docno, b.docdt, d.slcd, d.slnm, d.district, nvl(g.distance, 0) distance, a.blamt, e.slnm trslnm, c.lorryno, c.lrno, c.lrdt, i.irnno ";
+                query += " select distinct a.autono, a.doccd, a.docno, a.docdt,a.slcd, a.slnm, a.district, a.distance,sum(a.blamt) blamt, a.trslnm, a.lorryno, a.lrno, a.lrdt,a.irnno,a.modcd from ";
+                query += "(select a.autono, b.doccd, b.docno, b.docdt, d.slcd, d.slnm, d.district, nvl(g.distance, 0) distance, a.blamt, e.slnm trslnm, c.lorryno, c.lrno, c.lrdt, i.irnno,'F' modcd ";
                 query += "from " + fdbnm + ".t_vch_gst a,  " + dbnm + ".t_cntrl_hdr b,  " + dbnm + "." + trntable + " c, " + fdbnm + ".m_subleg d, " + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, ";
                 query += "" + fdbnm + ".m_subleg_locoth g,  " + dbnm + ".m_doctype h, " + fdbnm + ".T_TXNeinv i ";
                 query += "where a.autono = b.autono and a.autono = c.autono(+) and nvl(a.conslcd, a.pcode) = d.slcd(+) and nvl(c.translcd, c." + crslcd + ") = e.slcd(+) and nvl(b.cancel, 'N') = 'N' and b.compcd ='" + comp + "' ";
@@ -91,7 +92,28 @@ namespace Improvar.Controllers
                 if (doccd != "") query += " and b.doccd in (" + doccd + ")  ";
                 query += "and d.slcd = g.slcd(+) and a.autono = i.AUTONO(+) and b.docdt >= to_date('" + VE.DATEFROM + "', 'dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "', 'dd/mm/yyyy') ";
                 query += "and a.doccd = h.doccd and h.dOCTYPE in(" + doctype.retSqlformat() + ")  ";
-                query += ") a group by a.autono, a.doccd, a.docno, a.docdt,a.slcd, a.slnm, a.district, a.distance, a.trslnm, a.lorryno, a.lrno, a.lrdt,a.irnno ";
+                if (modcd != "F")
+                {
+                    query += "union all ";
+                    query += "select a.autono, b.doccd, b.docno, b.docdt, d.slcd, d.slnm, d.district, nvl(g.distance, 0) distance, a.blamt, e.slnm trslnm, c.lorryno, c.lrno, c.lrdt, i.irnno,b.modcd ";
+                    query += "from " + dbnm + ".t_vch_gst a,  " + dbnm + ".t_cntrl_hdr b,  " + dbnm + "." + trntable + " c, " + fdbnm + ".m_subleg d, " + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, ";
+                    query += "" + fdbnm + ".m_subleg_locoth g,  " + dbnm + ".m_doctype h, " + fdbnm + ".T_TXNeinv i ";
+                    query += "where a.autono = b.autono and a.autono = c.autono(+) and nvl(a.conslcd, a.pcode) = d.slcd(+) and nvl(c.translcd, c." + crslcd + ") = e.slcd(+) and nvl(b.cancel, 'N') = 'N' and b.compcd ='" + comp + "' ";
+                    query += "and b.loccd = '" + loc + "' and b.compcd || b.loccd = f.compcd || f.loccd and trim(c.ewaybillno) is null and(b.loccd = g.loccd or g.loccd is null) and(b.compcd = g.compcd or g.compcd is null) ";
+                    if (doccd != "") query += " and b.doccd in (" + doccd + ")  ";
+                    query += "and d.slcd = g.slcd(+) and a.autono = i.AUTONO(+) and b.docdt >= to_date('" + VE.DATEFROM + "', 'dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "', 'dd/mm/yyyy') ";
+                    query += "and a.doccd = h.doccd and h.dOCTYPE in(" + doctype.retSqlformat() + ")  ";
+                    query += "and a.autono not in ";
+                    query += "(select a.autono from " + fdbnm + ".t_vch_gst a,  " + dbnm + ".t_cntrl_hdr b,  " + dbnm + "." + trntable + " c, " + fdbnm + ".m_subleg d, " + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, ";
+                    query += "" + fdbnm + ".m_subleg_locoth g,  " + dbnm + ".m_doctype h, " + fdbnm + ".T_TXNeinv i ";
+                    query += "where a.autono = b.autono and a.autono = c.autono(+) and nvl(a.conslcd, a.pcode) = d.slcd(+) and nvl(c.translcd, c." + crslcd + ") = e.slcd(+) and nvl(b.cancel, 'N') = 'N' and b.compcd ='" + comp + "' ";
+                    query += "and b.loccd = '" + loc + "' and b.compcd || b.loccd = f.compcd || f.loccd and trim(c.ewaybillno) is null and(b.loccd = g.loccd or g.loccd is null) and(b.compcd = g.compcd or g.compcd is null) ";
+                    if (doccd != "") query += " and b.doccd in (" + doccd + ")  ";
+                    query += "and d.slcd = g.slcd(+) and a.autono = i.AUTONO(+) and b.docdt >= to_date('" + VE.DATEFROM + "', 'dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "', 'dd/mm/yyyy') ";
+                    query += "and a.doccd = h.doccd and h.dOCTYPE in(" + doctype.retSqlformat() + ") ) ";
+                }
+
+                query += ") a group by a.autono, a.doccd, a.docno, a.docdt,a.slcd, a.slnm, a.district, a.distance, a.trslnm, a.lorryno, a.lrno, a.lrdt,a.irnno,a.modcd ";
                 query += "order by docdt, lrno, docno ";
                 tbl = masterHelp.SQLquery(query);
                 VE.EWAYBILL = (from DataRow dr in tbl.Rows
@@ -111,6 +133,7 @@ namespace Improvar.Controllers
                                    LRNO = dr["LRNO"].ToString(),
                                    LORRYNOEXIST = (dr["LORRYNO"] == DBNull.Value ? false : true),
                                    IRNNO = dr["IRNNO"].ToString(),
+                                   MODCD = dr["MODCD"].ToString(),
                                }).ToList();
                 for (int i = 0; i < VE.EWAYBILL.Count; i++)
                 {
@@ -261,6 +284,8 @@ namespace Improvar.Controllers
                     }
                 }
                 //var no_bill = PJSON.Select(e => e.AUTONO).Distinct().ToArray();
+                string scm = "";
+               
                 foreach (var slctrow in VE.EWAYBILL)
                 {
                     string jsonstr = "";
@@ -375,12 +400,26 @@ namespace Improvar.Controllers
                             AdqrRespGENEWAYBILL adqrRespGENEWAYBILL = adaequareGSP.AdqrGenEwayBill(jsonstr);
                             if (adqrRespGENEWAYBILL != null && adqrRespGENEWAYBILL.success == true)
                             {
+                                switch (slctrow.MODCD)
+                                {
+                                    case "F":
+                                        scm = CommVar.FinSchema(UNQSNO); break;
+                                    case "I":
+                                        scm = CommVar.InvSchema(UNQSNO); break;
+                                    case "S":
+                                        scm = CommVar.SaleSchema(UNQSNO); break;
+                                    case "P":
+                                        scm = CommVar.PaySchema(UNQSNO); break;
+                                }
                                 string sql = "";//TO_DATE('" + fdt + "', 'DD/MM/YYYY')
                                 sql = "Update " + CommVar.SaleSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo + "' where autono='" + slctrow.AUTONO + "'";
                                 masterHelp.SQLNonQuery(sql);
-                                sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo
-                                    + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.ewayBillDate + "','dd/mm/yyyy hh:mi:ss AM'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.validUpto + "','dd/mm/yyyy hh:mi:ss AM')"
-                                    + " where autono='" + slctrow.AUTONO + "'";
+                                //sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo
+                                //    + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.ewayBillDate + "','dd/mm/yyyy hh:mi:ss AM'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.validUpto + "','dd/mm/yyyy hh:mi:ss AM')"
+                                //    + " where autono='" + slctrow.AUTONO + "'";
+                                sql = "Update " + scm + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo
+                                   + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.ewayBillDate + "','dd/mm/yyyy hh:mi:ss AM'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.validUpto + "','dd/mm/yyyy hh:mi:ss AM')"
+                                   + " where autono='" + slctrow.AUTONO + "'";
                                 masterHelp.SQLNonQuery(sql);
                                 slctrow.message = "" + adqrRespGENEWAYBILL.message;
                                 slctrow.EWBNO = "" + adqrRespGENEWAYBILL.result.ewayBillNo;
@@ -439,12 +478,26 @@ namespace Improvar.Controllers
                         }
                         if (adqrRespGENEWAYBILL != null && adqrRespGENEWAYBILL.success == true)
                         {
+                            switch (slctrow.MODCD)
+                            {
+                                case "F":
+                                    scm = CommVar.FinSchema(UNQSNO); break;
+                                case "I":
+                                    scm = CommVar.InvSchema(UNQSNO); break;
+                                case "S":
+                                    scm = CommVar.SaleSchema(UNQSNO); break;
+                                case "P":
+                                    scm = CommVar.PaySchema(UNQSNO); break;
+                            }
                             string sql = "";//TO_DATE('" + fdt + "', 'DD/MM/YYYY')
                             sql = "Update " + CommVar.SaleSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo + "' where autono='" + slctrow.AUTONO + "'";
                             masterHelp.SQLNonQuery(sql);
-                            sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo
-                                + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss')"
-                                + " where autono='" + slctrow.AUTONO + "'";
+                            sql = "Update " + scm + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo
+                                 + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss')"
+                                 + " where autono='" + slctrow.AUTONO + "'";
+                            //sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo
+                            //    + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss')"
+                            //    + " where autono='" + slctrow.AUTONO + "'";
                             masterHelp.SQLNonQuery(sql);
                             slctrow.message = "" + adqrRespGENEWAYBILL.message;
                             slctrow.EWBNO = "" + adqrRespGENEWAYBILL.result.EwbNo;
@@ -576,7 +629,7 @@ namespace Improvar.Controllers
                     prejson.SLNO = Convert.ToInt16(i + 1);
                     prejson.AUTONO = tbl.Rows[i]["AUTONO"].ToString();
                     prejson.Supply_Type = "O"; //a (Outward)
-                    if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB"|| tbl.Rows[i]["doctype"].ToString() == "TRFI")
+                    if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB" || tbl.Rows[i]["doctype"].ToString() == "TRFI")
                     {
                         prejson.SubSupply_Type = "5"; //b (OWN USE)
                         prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)
@@ -643,11 +696,6 @@ namespace Improvar.Controllers
                     else
                     {
                         prejson.trgst = tbl.Rows[i]["trgst"].ToString();//an
-                    }
-                    if (prejson.trgst == "")
-                    {
-                        prejson.trgst = null;
-                        prejson.trslnm = null;
                     }
                     prejson.lrno = tbl.Rows[i]["lrno"].ToString();//ao 
                     if (tbl.Rows[i]["lrdt"].ToString() == "" && tbl.Rows[i]["lrno"].ToString() != "")

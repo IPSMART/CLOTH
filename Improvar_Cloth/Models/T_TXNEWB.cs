@@ -33,8 +33,16 @@ namespace Improvar.Models
 
         public DateTime? LRDT { get; set; }
 
-        [StringLength(16)]
+        [StringLength(200)]
         public string LORRYNO { get; set; }
+
+        [StringLength(1)]
+        public string SUPLTYPE { get; set; }
+
+        public byte? SUBTYPE { get; set; }
+
+        [StringLength(3)]
+        public string DOCTYPE { get; set; }
 
         [StringLength(2)]
         public string TRANSMODE { get; set; }
@@ -53,6 +61,7 @@ namespace Improvar.Models
 
         [StringLength(6)]
         public string GOCD { get; set; }
+
         [StringLength(4)]
         public string REASONCD { get; set; }
 

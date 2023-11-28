@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("T_VCH_GST")]
     public partial class T_VCH_GST
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -33,7 +33,7 @@ namespace Improvar.Models
         [Required]
         [StringLength(6)]
         public string DOCNO { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
         public DateTime? DOCDT { get; set; }
 
         [Key]
@@ -51,14 +51,20 @@ namespace Improvar.Models
 
         [StringLength(20)]
         public string BLNO { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
         public DateTime? BLDT { get; set; }
 
         [StringLength(10)]
         public string HSNCODE { get; set; }
 
-        [StringLength(100)]
+        [StringLength(300)]
         public string ITNM { get; set; }
+
+        public double? RATE { get; set; }
+
+        public double? BASAMT { get; set; }
+
+        public double? DISCAMT { get; set; }
 
         public double? AMT { get; set; }
 
@@ -88,7 +94,7 @@ namespace Improvar.Models
 
         [StringLength(30)]
         public string AGSTDOCNO { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
         public DateTime? AGSTDOCDT { get; set; }
 
         [StringLength(1)]
@@ -114,7 +120,7 @@ namespace Improvar.Models
 
         [StringLength(16)]
         public string SHIPDOCNO { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
         public DateTime? SHIPDOCDT { get; set; }
 
         [StringLength(6)]
@@ -151,21 +157,15 @@ namespace Improvar.Models
 
         [StringLength(16)]
         public string LUTNO { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
         public DateTime? LUTDT { get; set; }
 
         public double? TCSPER { get; set; }
 
         public double? TCSAMT { get; set; }
 
-        //[StringLength(1)]
-        //public string PROFINV { get; set; }
-
         [StringLength(8)]
         public string DELVSLCD { get; set; }
-
-        [StringLength(6)]
-        public string GOCD { get; set; }
 
         [StringLength(200)]
         public string ITEMEXTDESC { get; set; }
@@ -187,17 +187,15 @@ namespace Improvar.Models
         [StringLength(7)]
         public string GSTSLPIN { get; set; }
 
-        public double? BASAMT { get; set; }
-
-        public double? DISCAMT { get; set; }
-
-        public double? RATE { get; set; }
         [StringLength(1)]
         public string PINV { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime? PREFDT { get; set; }
+
+        [StringLength(6)]
+        public string GOCD { get; set; }
 
         [StringLength(30)]
         public string PREFNO { get; set; }
+
+        public DateTime? PREFDT { get; set; }
     }
 }

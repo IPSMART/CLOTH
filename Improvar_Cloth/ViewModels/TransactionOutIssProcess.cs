@@ -192,5 +192,9 @@ namespace Improvar.ViewModels
         public double? CUTLENGTH { get; set; }
         public string RECPROGITCD { get; set; }
         public string RECPROGITSTYLE { get; set; }
+        public T_TXNEWB T_TXNEWB { get; set; }
+        public List<VECHLTYPE> VECHLTYPE { get; set; }
+        public List<TRANSMODE> TRANSMODE { get; set; }
+        public string TransporterName { get; set; }
     }
 }

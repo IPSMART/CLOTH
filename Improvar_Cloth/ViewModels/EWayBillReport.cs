@@ -40,6 +40,7 @@ namespace Improvar.ViewModels
         public string message { get; set; }
         public string EWBNO { get; set; }
         public string IRNNO { get; set; }
+        public string MODCD { get; set; }
 
     }
 }
