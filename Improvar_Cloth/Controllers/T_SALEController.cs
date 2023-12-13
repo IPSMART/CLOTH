@@ -6224,12 +6224,12 @@ namespace Improvar.Controllers
                         }
                         strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
                         //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR")
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" )
                         {
                             strblno = TTXN.PREFNO;
                             strbldt = TTXN.PREFDT.ToString();
                         }
-                        else if (VE.MENU_PARA == "SR")
+                        else if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
                         {
                             if (TTXN.PREFNO.retStr() != "")
                             {
