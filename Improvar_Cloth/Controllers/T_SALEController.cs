@@ -3446,8 +3446,8 @@ namespace Improvar.Controllers
                             sql += Environment.NewLine + "union all";
                         }
                         sql += Environment.NewLine + "select nvl(a.qnty,0)qnty,nvl(a.nos,0)nos,nvl(b.CUTLENGTH,0)CUTLENGTH,a.AGDOCNO,a.AGDOCDT,a.itcd,b.barno from ";
-                        sql += Environment.NewLine + scm_prevyr + ".t_txndtl a," + scm_prevyr + ".T_BATCHDTL b ," + scm_prevyr + ".t_txn c ";
-                        sql += Environment.NewLine + "where a.autono=b.autono and a.slno=b.txnslno and a.autono=c.autono and c.doctag in('" + retdoctag + "') ";
+                        sql += Environment.NewLine + scm_prevyr + ".t_txndtl a," + scm_prevyr + ".T_BATCHDTL b ," + scm_prevyr + ".t_txn c," + scm_prevyr + ".t_cntrl_hdr d ";
+                        sql += Environment.NewLine + "where a.autono=b.autono and a.slno=b.txnslno and a.autono=c.autono and c.autono=d.autono(+) and nvl(d.cancel,'N')='N' and c.doctag in('" + retdoctag + "') ";
 
                     }
                 }
