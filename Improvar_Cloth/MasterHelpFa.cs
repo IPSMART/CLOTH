@@ -2330,6 +2330,10 @@ namespace Improvar
 
             if (comptbl.Rows[0]["panno"].ToString() != "") compstat = "PAN # " + comptbl.Rows[0]["panno"].ToString() + " ";
             if (comptbl.Rows[0]["cinno"].ToString() != "") compstat = compstat + "CIN # " + comptbl.Rows[0]["cinno"].ToString() + " ";
+            if (comptbl.Rows[0]["tanno"].ToString() != "") compstat += "TAN # " + comptbl.Rows[0]["tanno"].ToString() + " ";
+            if (comptbl.Rows[0]["statno_1"].ToString() != "") compstat += comptbl.Rows[0]["statno_1"].ToString() + " ";
+            if (comptbl.Rows[0]["statno_2"].ToString() != "") compstat += comptbl.Rows[0]["statno_2"].ToString() + " ";
+            if (comptbl.Rows[0]["statno_3"].ToString() != "") compstat += comptbl.Rows[0]["statno_3"].ToString() + " ";
 
             locastat = "GST # " + comptbl.Rows[0]["gstno"].ToString();
             if (fssailicno != "") locastat = locastat + "   FSSAI LICENCE # " + fssailicno;
@@ -2360,11 +2364,12 @@ namespace Improvar
         {
             string sql = "", scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (loccd.retStr() != "") LOC = loccd;
-            sql += "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
+            sql += "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno,a.tanno, b.cinno, b.propname, ";
             sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
             sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
             sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std,a.phno2std, ";
-            sql += "a.gstno, a.phno1, a.phno2, a.regemailid ";
+            sql += "a.gstno, a.phno1, a.phno2, a.regemailid, ";
+            sql += "a.statno_1, a.statno_2, a.statno_3 ";
             sql += "from " + scmf + ".m_loca a, " + scmf + ".m_comp b ";
             sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
             DataTable tbl = SQLquery(sql);
