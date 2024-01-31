@@ -188,7 +188,7 @@ namespace Improvar.Models
 
         public long M_AUTONO { get; set; }
 
-        [StringLength(4)]
+        [StringLength(20)]
         public string PARTYGRP { get; set; }
 
         [StringLength(50)]
@@ -252,5 +252,9 @@ namespace Improvar.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PANDT { get; set; }
         public string AUTOREMINDEROFF { get; set; }
+        [StringLength(1)]
+        public string BLWSONACT { get; set; }
+        [StringLength(30)]
+        public string MSMENO { get; set; }
     }
 }

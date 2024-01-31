@@ -30,6 +30,7 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<Database_Combo3> Database_Combo3 { get; set; }
+        public List<Database_Combo4> Database_Combo4 { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<DropDown_list> DropDown_list { get; set; }
         public string isPresentinLastYrSchema { get; set; }
@@ -39,7 +40,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list2> DropDown_list2 { get; set; }
         public List<DropDown_list3> DropDown_list3 { get; set; }
         public bool AUTOREMINDEROFF { get; set; }
-
+        public bool BLWSONACT_Checked { get; set; }
 
     }
 }

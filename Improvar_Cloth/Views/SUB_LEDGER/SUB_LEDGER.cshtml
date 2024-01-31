@@ -13,6 +13,41 @@
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#SRC_FLAG").attr("readonly", false);
+
+            $("input[type='file']").attr("disabled", false);
+            document.getElementById("UploadedFile").accept = ".xlsx";
+            $('#btnExtractFile').click(function () {
+                debugger;
+                if (window.FormData !== undefined) {
+                    var fileUpload = $("#UploadedFile").get(0);
+                    var files = fileUpload.files;
+                    var fileData = new FormData();
+                    for (var i = 0; i < files.length; i++) {
+                        fileData.append(files[i].name, files[i]);
+                    }
+                    //fileData.append('username', ‘Manas’);
+                    $.ajax({
+                        url: "@Url.Action("SUB_LEDGER_Upload", PageControllerName)",
+                        type: "POST",
+                        beforesend: $("#WaitingMode").show(),
+                        contentType: false, // Not to set any content header
+                        processData: false, // Not to process data
+                        data: fileData,
+                        success: function (result) {
+                            $("#WaitingMode").hide();
+                            msgSuccess1(result);
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            $("#WaitingMode").hide();
+                            msgError(XMLHttpRequest.responseText);
+                            $("body span h1").remove(); $("#msgbody_error style").remove();
+                        }
+                    });
+                }
+                else {
+                    alert("File/FormData not found.");
+                }
+            });
         }
         else if ("@Model.DefaultAction" == "E") {
             $("#doctype").attr("disabled", "true");
@@ -58,7 +93,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-     
+
         if (!emptyFieldCheck("Select Location/City", "DISTRICT")) {
             message_value = "DISTRICT";
             $("li").removeClass("active").addClass("");
@@ -161,43 +196,43 @@
     $(document).keyup(function (event) {
         debugger;
         var KeyID = (window.event) ? event.keyCode : e.keyCode;
-       
-            if (event.altKey && KeyID == 77) {//for Alt+M (Standard code tab)
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:first-child").addClass('active');
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                $("#PSLCD").focus();
 
-            }
-            if (event.altKey && KeyID == 82) {//for Alt+R (Statutory code tab)
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(2)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                $("#PANNO").focus();
+        if (event.altKey && KeyID == 77) {//for Alt+M (Standard code tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $("#PSLCD").focus();
 
-            }
-            if (event.altKey && KeyID == 73) {//for Alt+I (Communication code tab)
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(3)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                $("#M_SUBLEG_GPSLAT").focus();
+        }
+        if (event.altKey && KeyID == 82) {//for Alt+R (Statutory code tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(2)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $("#PANNO").focus();
 
-            }
-            if (event.altKey && KeyID == 72) {//for Alt+H (Other Address tab)
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(4)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                $("#OTHADD1").focus();
-            }
-            if ("@Model.DefaultAction" == "V")
-            {if (event.altKey && KeyID == 74) {//for Alt+J (Full Address tab)
+        }
+        if (event.altKey && KeyID == 73) {//for Alt+I (Communication code tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $("#M_SUBLEG_GPSLAT").focus();
+
+        }
+        if (event.altKey && KeyID == 72) {//for Alt+H (Other Address tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(4)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $("#OTHADD1").focus();
+        }
+        if ("@Model.DefaultAction" == "V") {
+            if (event.altKey && KeyID == 74) {//for Alt+J (Full Address tab)
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(5)").addClass('active');
                 //below set the  child sequence
@@ -205,83 +240,83 @@
                 $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 $("#M_SUBLEG_ADD1").focus();
             }
-                if (event.altKey && KeyID == 66) {//for Alt+B (Bank code tab)
-                    $("li").removeClass("active").addClass("");
-                    $(".nav-tabs li:nth-child(6)").addClass('active');
-                    //below set the  child sequence
-                    $(".tab-content div").removeClass("active");
-                    $(".tab-content div:nth-child(6)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    var GridRowMain = $("#examplebank > tbody > tr").length;
-                    if (GridRowMain > 0) {
-                        $("#IFSCCODE_0").select().focus();
+            if (event.altKey && KeyID == 66) {//for Alt+B (Bank code tab)
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(6)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(6)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRowMain = $("#examplebank > tbody > tr").length;
+                if (GridRowMain > 0) {
+                    $("#IFSCCODE_0").select().focus();
 
-                    }
                 }
-                if (event.altKey && KeyID == 84) {//for Alt+T (TDS details tab)
-                    $("li").removeClass("active").addClass("");
-                    $(".nav-tabs li:nth-child(7)").addClass('active');
-                    //below set the  child sequence
-                    $(".tab-content div").removeClass("active");
-                    $(".tab-content div:nth-child(7)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    var GridRowMain = $("#examplesubledgeComp > tbody > tr").length;
-                    if (GridRowMain > 0) {
-                        $("#COMPCD_0").select().focus();
+            }
+            if (event.altKey && KeyID == 84) {//for Alt+T (TDS details tab)
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(7)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(7)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRowMain = $("#examplesubledgeComp > tbody > tr").length;
+                if (GridRowMain > 0) {
+                    $("#COMPCD_0").select().focus();
 
-                    }
                 }
-                if (event.altKey && KeyID == 79) {//for Alt+O (Other tab)
-                    $("li").removeClass("active").addClass("");
-                    $(".nav-tabs li:nth-child(9)").addClass('active');
-                    //below set the  child sequence
-                    $(".tab-content div").removeClass("active");
-                    $(".tab-content div:nth-child(9)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    var GridRowMain = $("#examplesubledgeOther > tbody > tr").length;
-                    if (GridRowMain > 0) {
-                        $("#DISTANCE_0").select().focus();
+            }
+            if (event.altKey && KeyID == 79) {//for Alt+O (Other tab)
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(9)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(9)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRowMain = $("#examplesubledgeOther > tbody > tr").length;
+                if (GridRowMain > 0) {
+                    $("#DISTANCE_0").select().focus();
 
-                    }
                 }
-            } 
+            }
+        }
         else {
-             if (event.altKey && KeyID == 66) {//for Alt+B (Bank code tab)
-                 $("li").removeClass("active").addClass("");
-                 $(".nav-tabs li:nth-child(5)").addClass('active');
-                 //below set the  child sequence
-                 $(".tab-content div").removeClass("active");
-                 $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                 var GridRowMain = $("#examplebank > tbody > tr").length;
-                 if (GridRowMain > 0) {
-                     $("#IFSCCODE_0").select().focus();
+            if (event.altKey && KeyID == 66) {//for Alt+B (Bank code tab)
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(5)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRowMain = $("#examplebank > tbody > tr").length;
+                if (GridRowMain > 0) {
+                    $("#IFSCCODE_0").select().focus();
 
-                 }
-             }
-             if (event.altKey && KeyID == 84) {//for Alt+T (TDS details tab)
-                 $("li").removeClass("active").addClass("");
-                 $(".nav-tabs li:nth-child(6)").addClass('active');
-                 //below set the  child sequence
-                 $(".tab-content div").removeClass("active");
-                 $(".tab-content div:nth-child(6)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                 var GridRowMain = $("#examplesubledgeComp > tbody > tr").length;
-                 if (GridRowMain > 0) {
-                     $("#COMPCD_0").select().focus();
+                }
+            }
+            if (event.altKey && KeyID == 84) {//for Alt+T (TDS details tab)
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(6)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(6)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRowMain = $("#examplesubledgeComp > tbody > tr").length;
+                if (GridRowMain > 0) {
+                    $("#COMPCD_0").select().focus();
 
-                 }
-             }
-             if (event.altKey && KeyID == 79) {//for Alt+O (Other tab)
-                 $("li").removeClass("active").addClass("");
-                 $(".nav-tabs li:nth-child(8)").addClass('active');
-                 //below set the  child sequence
-                 $(".tab-content div").removeClass("active");
-                 $(".tab-content div:nth-child(8)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                 var GridRowMain = $("#examplesubledgeOther > tbody > tr").length;
-                 if (GridRowMain > 0) {
-                     $("#DISTANCE_0").select().focus();
+                }
+            }
+            if (event.altKey && KeyID == 79) {//for Alt+O (Other tab)
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(8)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(8)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRowMain = $("#examplesubledgeOther > tbody > tr").length;
+                if (GridRowMain > 0) {
+                    $("#DISTANCE_0").select().focus();
 
-                 }
-             }
-         }
-        
-         });
+                }
+            }
+        }
+
+    });
 </script>
 <script>
     @{
@@ -297,7 +332,7 @@
     }
     function ModifyLogDetails() {
         if ("@Model.DefaultAction" == "V") {
-            ModifyLogDtl(@mldauto,'@CommVar.FinSchema(Model.UNQSNO)');
+            ModifyLogDtl(@mldauto);
         }
     }
 </script>
@@ -821,7 +856,7 @@
                     document.getElementById("PIN").value = result.AddrPncd;
                     //document.getElementById("REGNTYPE").value = "R"; //result.TxpType;
                     var REGNTYPE = result.TxpType;
-                    document.getElementById("REGNTYPE").value = REGNTYPE == "COM" ? "C" : "R"; 
+                    document.getElementById("REGNTYPE").value = REGNTYPE == "COM" ? "C" : "R";
                     document.getElementById("COUNTRY").value = "INDIA"; //result.TxpType;
                 } else {
                     msgInfo(result.message);
@@ -956,7 +991,7 @@
                 </li>
                 <li> <a data-toggle="tab" href="#Other">Other(O)</a> </li>
                 <li>
-                    <a a data-toggle="tab" href="#Documents"accesskey="U">Documents(U)</a>
+                    <a a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a>
                 </li>
             </ul>
             <div class="tab-content">
@@ -1002,6 +1037,19 @@
                             }
 
                         </div>
+                        @if (Model.DefaultAction == "V")
+                        {
+                            <div class="col-md-8">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    <input type="file" id="UploadedFile" name="UploadedFile" required accept=".xlsx" />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    <input id="btnExtractFile" type="button" value="Upload" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                                </div>
+                            </div>
+                        }
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -1011,7 +1059,7 @@
                         </div>
                         <div class="col-md-7">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.GSTNO, new { htmlAttributes = new { @class = "form-control", Id = "GSTNO", @style = "text-transform:uppercase",onkeyup = "toUpper(this)", maxlength = 15, @placeholder = "GST No." } })
+                                @Html.EditorFor(model => model.M_SUBLEG.GSTNO, new { htmlAttributes = new { @class = "form-control", Id = "GSTNO", @style = "text-transform:uppercase", onkeyup = "toUpper(this)", maxlength = 15, @placeholder = "GST No." } })
                             </div>
                         </div>
                         <div class="col-sm-1">
@@ -1061,8 +1109,8 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -1075,7 +1123,28 @@
 
                             </div>
                         </div>
+
+                        @if (CommVar.UserType() == "A")
+                        {
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Group belongs to")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.PARTYGRP, new { htmlAttributes = new { @class = "form-control", id = "PARTYGRP", @placeholder = "Group belongs to", maxlength = 20, @list = "PARTYGRPlist" } })
+                                    <datalist id="PARTYGRPlist">
+                                        @foreach (var jg in Model.Database_Combo4)
+                                        {
+                                            <option value="@jg.FIELD_VALUE" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                        }
                     </div>
+
                     <div class="row" id="address">
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -1207,7 +1276,7 @@
                                 </datalist>
                             </div>
                         </div>
-                        <div class="col-md-2"style="width:auto">
+                        <div class="col-md-2" style="width:auto">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Pin Code")
                                 <b style="color:Red;">*</b>
@@ -1279,44 +1348,6 @@
                     </div>
                     <div class="row">
 
-                        @*<div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Party Group")
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    <select id="prtygrp" name="prtygrp" class="form-control">
-                                        <option value="0" selected="selected">====Select Party Group====</option>
-                                        @foreach (var i in Model.PartyGroup)
-                                        {
-                                            if (Model.DefaultAction == "A")
-                                            {
-                                                <option value="@i.PARTYCD">@i.PARTYNM</option>
-                                            }
-                                            else
-                                            {
-                                                if (Model.M_SUBLEG == null)
-                                                {
-                                                    <option value="@i.PARTYCD">@i.PARTYNM</option>
-                                                }
-                                                else
-                                                {
-                                                    if (Model.M_SUBLEG.PARTYGRP == i.PARTYCD)
-                                                    {
-                                                        <option value="@i.PARTYCD" selected="selected">@i.PARTYNM</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@i.PARTYCD">@i.PARTYNM</option>
-                                                    }
-                                                }
-
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            </div>*@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -1541,26 +1572,26 @@
                         </div>
                         <div class="col-md-3">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.PANDT, new { htmlAttributes = new { @class = "form-control",id= "PANDT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                @Html.EditorFor(model => model.M_SUBLEG.PANDT, new { htmlAttributes = new { @class = "form-control", id = "PANDT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                             </div>
                         </div>
-                        @if(Model.DefaultAction!="V")
-                        { 
-                        <div class="col-md-6">
-                            <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "IncomeTax Excel File")
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="col-md-6">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "IncomeTax Excel File")
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="editor-field" style="margin-top: 4px;">
-                                <input type="file" class="form-control" id="file" name="file" />
+                            <div class="col-md-8">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    <input type="file" class="form-control" id="file" name="file" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="editor-field">
-                                <button type="button" class="btn btn-primary" style="margin-top: 4px;padding: 2px 5px 2px 5px;" onclick="UploadIncomeTaxFiles('this.value');">Import</button>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    <button type="button" class="btn btn-primary" style="margin-top: 4px;padding: 2px 5px 2px 5px;" onclick="UploadIncomeTaxFiles('this.value');">Import</button>
+                                </div>
                             </div>
-                        </div>
                         }
                     </div>
                     <div class="row">
@@ -1608,6 +1639,16 @@
                         <div class="col-md-7">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SUBLEG.CINNO, new { htmlAttributes = new { @class = "form-control", @style = "text-transform:uppercase", maxlength = 25, @placeholder = "CIN No." } })
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "MSME No.")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBLEG.MSMENO, new { htmlAttributes = new { @class = "form-control", @style = "text-transform:uppercase", @onkeyup = "toUpper(this);", maxlength = 30, @placeholder = "MSME No." } })
                             </div>
                         </div>
                     </div>
@@ -1777,8 +1818,18 @@
                                 @Html.DropDownListFor(model => model.M_SUBLEG.TOT194Q, new SelectList(Model.DropDown_list2, "Value", "Text"), new { @class = "form-control", @id = "TOT194Q" })
                             </div>
                         </div>
+                        <div class="col-md-7" style="width:auto">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Bill Wise Adj. disable")
+                            </div>
+                        </div>
+                        <div class="col-md-1" style="margin-top: 6px;">
+                            <div class="editor-field">
+                                @Html.CheckBoxFor(model => model.BLWSONACT_Checked)
+                            </div>
                         </div>
                     </div>
+                </div>
                 <div id="Communication" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row">
                         <div class="col-md-3">
@@ -1923,6 +1974,7 @@
                                 @Html.CheckBoxFor(model => model.AUTOREMINDEROFF)
                             </div>
                         </div>
+
                         <div class="col-md-2">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Whatsapp No.")
@@ -2035,98 +2087,98 @@
                 </div>
                 @if (Model.DefaultAction == "V")
                 {
-                <div id="FullAddress" class="tab-pane fade" style="margin-top: 10px;">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 1")
+                    <div id="FullAddress" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 1")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD1, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD1, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 2")
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 2")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD2, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD2, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 3")
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 3")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD3, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD3, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 4")
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 4")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD4, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD4, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 5")
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 5")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD5, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD5, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 6")
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 6")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD6, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD6, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Address Line 7")
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Address Line 7")
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SUBLEG.ADD7, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.ADD7, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
                 }
 
