@@ -99,7 +99,8 @@ namespace Improvar.ViewModels
         public string Translnm { get; set; }
         public string JOBNM { get; set; }
         public string TEXTBOX11 { get; set; }
-        
+        public string TEXTBOX12 { get; set; }
+
 
     }
 }

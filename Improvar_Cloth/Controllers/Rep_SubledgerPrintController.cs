@@ -70,6 +70,26 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetSubLedgerDetails(string val, string code)
+        {
+            try
+            {
+                var str = MasterHelp.SLCD_help(val, code);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         [HttpPost]
         public ActionResult Rep_SubledgerPrint(FormCollection FC, ReportViewinHtml VE)
         {
@@ -202,7 +222,9 @@ namespace Improvar.Controllers
                     IR.Columns.Add("compadd7", typeof(string));
                     IR.Columns.Add("compphno", typeof(string));
                     IR.Columns.Add("compemail", typeof(string));
-
+                    IR.Columns.Add("docno", typeof(string));
+                    IR.Columns.Add("translnm", typeof(string));
+                    
                     Int32 i = 0, rNo = 0, maxR = tbl.Rows.Count - 1;
                     while (i <= maxR)
                     {
@@ -229,6 +251,8 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["compadd7"] = tblComp.Rows[0]["add7"];
                         IR.Rows[rNo]["compphno"] = tblComp.Rows[0]["regmobile"] == DBNull.Value ? "" : "Ph. " + tblComp.Rows[0]["regmobile"];
                         IR.Rows[rNo]["compemail"] = tblComp.Rows[0]["regemailid"] == DBNull.Value ? "" : "Email : " + tblComp.Rows[0]["regemailid"];
+                        if(VE.TEXTBOX6.retStr()!="") IR.Rows[rNo]["translnm"] = VE.TEXTBOX6.retStr();
+                        IR.Rows[rNo]["docno"] = "";
                         i++;
                     }
 

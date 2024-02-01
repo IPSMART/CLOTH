@@ -216,6 +216,22 @@
                 </div>
                 }
                 <div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Address Copy")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX12, "Buyer", new { @checked = "checked" })  @Html.Label("Buyer")
+                            
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX12, "Consignee")  @Html.Label("Consignee")
+                        </label>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
                     <div class="col-LG-10">

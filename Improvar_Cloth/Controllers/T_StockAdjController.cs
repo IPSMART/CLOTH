@@ -1291,7 +1291,7 @@ namespace Improvar.Controllers
                                                                 ITCD = g.Key.itcd.retStr(),
                                                                 BARNO = g.Key.BARNO.retStr(),
                                                                 NEGSTOCK = g.Key.NEGSTOCK.retStr(),
-                                                                QNTY = g.Sum(r => r.Field<double>("qnty")),
+                                                                QNTY = g.Sum(r => r.Field<double>("qnty").retDbl()),
                                                             }).ToList();
                             if (txndata != null && txndata.Count > 0)
                             {
@@ -1309,7 +1309,7 @@ namespace Improvar.Controllers
                                                                .Select(g =>
                                                                {
                                                                    var row = ITEM_STOCK_DATA.NewRow();
-                                                                   row["balqnty"] = g.Sum(r => r.Field<decimal>("balqnty"));
+                                                                   row["balqnty"] = g.Sum(r => r.Field<decimal?>("balqnty") == null ? 0 : r.Field<decimal>("balqnty"));
                                                                    return row;
                                                                });
                                     if (vQNTY != null && vQNTY.Count() > 0)

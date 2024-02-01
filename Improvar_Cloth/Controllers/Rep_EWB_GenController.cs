@@ -634,6 +634,11 @@ namespace Improvar.Controllers
                         prejson.SubSupply_Type = "5"; //b (OWN USE)
                         prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)
                     }
+                    else if(tbl.Rows[i]["doctype"].ToString()== "SPRM")
+                    {
+                        prejson.SubSupply_Type = "8"; // b(OTHERS)
+                        prejson.Doctype = "OTH"; //c (OTHERS)
+                    }
                     else
                     {
                         prejson.SubSupply_Type = "1"; // b(Supply)
