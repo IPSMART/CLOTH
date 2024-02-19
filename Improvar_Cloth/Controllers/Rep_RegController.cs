@@ -349,12 +349,13 @@ namespace Improvar.Controllers
                 sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
                 sql += "select a.autono,";
-                if (txntag == "SB" || txntag == "PR") { sql += "'C'"; } else { sql += "'D'"; }
+                //if (txntag == "SB" || txntag == "PR") { sql += "'C'"; } else { sql += "'D'"; }
+                sql += "(case when d.doctype in ('SBILD','SPSLP','SBCM','SBPOS','SBCMR','SPRM') then 'C' else 'D' end ) " + Environment.NewLine;
                 sql += " stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
                 sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
                 sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
-                sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b " + Environment.NewLine;
-                sql += " where a.amtcd = b.amtcd " + Environment.NewLine;
+                sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b, " + scm1 + ".t_cntrl_hdr c, " + scm1 + ".m_doctype d " + Environment.NewLine;
+                sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
                 sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
                 sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
                 sql += "" + scmf + ".m_subleg m " + Environment.NewLine;
