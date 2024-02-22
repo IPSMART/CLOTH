@@ -905,7 +905,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false,string fdt="")
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false, string fdt = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1088,7 +1088,7 @@ namespace Improvar
                 sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
-              
+
             }
             else
             {
@@ -2606,20 +2606,29 @@ namespace Improvar
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    MIP.PRCCD = "CP";
-                    MIP.RATE = CPRate;
-                    var dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
-                    var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    MIP.PRCCD = "WP";
-                    MIP.RATE = WPRate;
-                    dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    MIP.PRCCD = "RP";
-                    MIP.RATE = RPRate;
-                    dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    string dbsql = "";
+                    string[] dbsql1;
+                    if (CPRate.retDbl() != 0)
+                    {
+                        MIP.PRCCD = "CP";
+                        MIP.RATE = CPRate;
+                        dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    }
+                    if (WPRate.retDbl() != 0)
+                    {
+                        MIP.PRCCD = "WP";
+                        MIP.RATE = WPRate;
+                        dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    }
+                    if (RPRate.retDbl() != 0)
+                    {
+                        MIP.PRCCD = "RP";
+                        MIP.RATE = RPRate;
+                        dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    }
                     OraTrans.Commit();
                 }
                 OraCon.Dispose();
