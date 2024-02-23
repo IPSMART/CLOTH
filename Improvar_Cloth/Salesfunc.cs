@@ -2462,7 +2462,7 @@ namespace Improvar
             OraCon.Dispose();
             return MGROUP;
         }
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "")
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "",string CONVUOMCD="")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             string DefaultAction = "A";
@@ -2528,6 +2528,7 @@ namespace Improvar
                 MSITEM.HSNCODE = HSNCODE;
                 MSITEM.FABITCD = FABITCD;
                 MSITEM.NEGSTOCK = MGROUP.NEGSTOCK;
+                MSITEM.CONVUOMCD = CONVUOMCD;
                 //var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
                 //MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
                 var MPRODGRP = GetProdgrpcd(MGROUP.ITGRPCD);

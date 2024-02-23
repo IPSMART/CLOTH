@@ -2385,16 +2385,16 @@ namespace Improvar.Controllers
                         nm = "Accessories / Other Items"; break;
                     default: ViewBag.formname = ""; break;
                 }
-                //DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO RATE(Cp)    MRP PRATE   RP JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
+                //DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO WPRATE    MRP CPRATE   RPRATE JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
 
                 string Excel_Header = "DESIGN" + "|" + "ITEM GROUP" + "|" + "ITEM NAME" + "|" + "UOM" + "|" + "HSN CODE" + "|" + "FAB ITNM"
-                    + "|" + "BARNO" + "|" + "RATE" + "|" + "MRP" + " |" + "PRATE" + "|" + "RP" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
-                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|";
+                    + "|" + "BARNO" + "|" + "WPRATE" + "|" + "MRP" + " |" + "CPRATE" + "|" + "RPRATE" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
+                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|" + "Bill_UOM" + "|";
 
                 ExcelPackage ExcelPkg = new ExcelPackage();
                 ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                using (ExcelRange Rng = wsSheet1.Cells["A1:S1"])
+                using (ExcelRange Rng = wsSheet1.Cells["A1:T1"])
                 {
                     Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
@@ -2404,7 +2404,7 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[1, i + 1].Value = Header[i];
                     }
                 }
-                wsSheet1.Cells[1, 1, 1, 19].AutoFitColumns();
+                wsSheet1.Cells[1, 1, 1, 20].AutoFitColumns();
 
                 Response.Clear();
                 Response.ClearContent();
@@ -2435,7 +2435,7 @@ namespace Improvar.Controllers
                 HttpPostedFileBase file = Request.Files[0];
                 if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return ".xlsx file need to choose";
                 stream = file.InputStream;
-                // Excel Columns: DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO RATE(Cp)    MRP PRATE   RP JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
+                // Excel Columns: DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO WPRATE    MRP CPRATE   RPRATE JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD Bill_UOM
 
                 DataTable dbfdt = new DataTable();
                 dbfdt.Columns.Add("Sl", typeof(int));
@@ -2446,10 +2446,10 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("HSN CODE", typeof(string));
                 dbfdt.Columns.Add("FAB ITNM", typeof(string));
                 dbfdt.Columns.Add("BARNO", typeof(string));
-                dbfdt.Columns.Add("RATE", typeof(string));
+                dbfdt.Columns.Add("WPRATE", typeof(string));
                 dbfdt.Columns.Add("MRP", typeof(string));
-                dbfdt.Columns.Add("PRATE", typeof(string));
-                dbfdt.Columns.Add("RP", typeof(string));
+                dbfdt.Columns.Add("CPRATE", typeof(string));
+                dbfdt.Columns.Add("RPRATE", typeof(string));
                 dbfdt.Columns.Add("JOBPRATE", typeof(string));
                 dbfdt.Columns.Add("JOBSRATE", typeof(string));
                 dbfdt.Columns.Add("IGST", typeof(string));
@@ -2458,6 +2458,7 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("LEGACYCD", typeof(string));
                 dbfdt.Columns.Add("Sales Ledger Code", typeof(string));
                 dbfdt.Columns.Add("Purchase Ledger Code", typeof(string));
+                dbfdt.Columns.Add("Bill_UOM", typeof(string));
                 using (var package = new ExcelPackage(stream))
                 {
                     var currentSheet = package.Workbook.Worksheets;
@@ -2505,10 +2506,10 @@ namespace Improvar.Controllers
                     string HSNCODE = oudr["HSN CODE"].retStr();
                     string FABITNM = oudr["FAB ITNM"].retStr();
                     string BARNO = oudr["BARNO"].retStr();
-                    double RATE = oudr["RATE"].retDbl();
-                    string MRP = oudr["MRP"].retStr();
-                    string PRATE = oudr["PRATE"].retStr();
-                    string RP = oudr["RP"].retStr();
+                    double WPRATE = oudr["WPRATE"].retDbl();
+                    double MRP = oudr["MRP"].retDbl();
+                    double CPRATE = oudr["CPRATE"].retDbl();
+                    double RPRATE = oudr["RPRATE"].retDbl();
                     string JOBPRATE = oudr["JOBPRATE"].retStr();
                     string JOBSRATE = oudr["JOBSRATE"].retStr();
                     double IGST = oudr["IGST"].retDbl();
@@ -2516,6 +2517,7 @@ namespace Improvar.Controllers
                     string ITLEGACYCD = oudr["ITLEGACYCD"].retStr();
                     string SALGLCD = oudr["Sales Ledger Code"].retStr();
                     string PURGLCD = oudr["Purchase Ledger Code"].retStr();
+                    string Bill_UOM = oudr["Bill_UOM"].retStr();
 
                     string itgrptype = "";
                     if (VE.MENU_PARA == "C")//Fabric Item
@@ -2601,7 +2603,7 @@ namespace Improvar.Controllers
                         ItemDet ItemDet = new ItemDet();
                         if (VE.MENU_PARA == "C")//Fabric Item
                         {
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM);
 
                         }
                         else if (VE.MENU_PARA == "F")//Finish Product/Design
@@ -2618,11 +2620,11 @@ namespace Improvar.Controllers
                                 }
                             }
 
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM);
                         }
                         else//Accessories / Other Items
                         {
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM);
                         }
                         if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
@@ -2637,9 +2639,9 @@ namespace Improvar.Controllers
                         else
                         {
                             string msgrate = "";
-                            if (RATE != 0)
+                            if (CPRATE + WPRATE + RPRATE != 0)
                             {
-                                string tempmsg = salesfunc.CreatePricelist(ItemDet.BARNO, effdt, RATE, 0, 0);
+                                string tempmsg = salesfunc.CreatePricelist(ItemDet.BARNO, effdt, CPRATE, WPRATE, RPRATE);
                                 if (tempmsg != "ok") msgrate = "<br/>" + tempmsg;
                             }
                             string msgprev = "";

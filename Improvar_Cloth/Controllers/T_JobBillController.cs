@@ -644,7 +644,7 @@ namespace Improvar.Controllers
 
             var query = (from c in DB.T_JBILL
                          join d in DB.T_CNTRL_HDR on c.AUTONO equals d.AUTONO
-                         where (c.PBLNO == BILL_NO && c.SLCD == SUPPLIER && c.AUTONO != AUTO_NO && d.COMPCD == COM_CD)
+                         where (c.PBLNO == BILL_NO && c.SLCD == SUPPLIER && c.AUTONO != AUTO_NO && d.COMPCD == COM_CD && d.CANCEL != "Y")
                          select c);
             if (query.Any())
             {
