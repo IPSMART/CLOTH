@@ -228,7 +228,7 @@ namespace Improvar.Controllers
                     DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".M_CNTRL_HDR in  row share mode");
                     string scmf = CommVar.FinSchema(UNQSNO);
                     string qry = "select * from " + scmf + ".M_GODOWN a ," + scmf + ".M_CNTRL_LOCA c ";
-                    qry += "where  a.M_AUTONO=c.M_AUTONO(+) and a.GOCD='" + VE.M_GODOWN.GOCD + "' ";
+                    qry += "where  a.M_AUTONO=c.M_AUTONO(+) and a.GOCD='" + VE.M_GODOWN.GOCD.ToUpper().Trim() + "' ";
                     DataTable dt = Master_Help.SQLquery(qry);
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
@@ -302,7 +302,7 @@ namespace Improvar.Controllers
                         #region //Finance Posting
                         M_GODOWN MGODF = new M_GODOWN();
                         MGODF.CLCD = CommVar.ClientCode(UNQSNO);
-                        MGODF.GOCD = VE.M_GODOWN.GOCD.ToUpper();
+                        MGODF.GOCD = VE.M_GODOWN.GOCD.ToUpper().Trim();
                         MGODF.GONM = VE.M_GODOWN.GONM;
                         MGODF.GOADD1 = VE.M_GODOWN.GOADD1;
                         MGODF.GOADD2 = VE.M_GODOWN.GOADD2;
