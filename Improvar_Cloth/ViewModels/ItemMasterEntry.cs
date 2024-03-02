@@ -46,6 +46,7 @@ namespace Improvar.ViewModels
         public string isPresentinLastYrSchema { get; set; }
         public bool FAVITEMChecked { get; set; }
         public bool SkipDuplicateDesign { get; set; }
+        public bool PreviousYrUpload { get; set; }
 
     }
 }

@@ -2494,7 +2494,7 @@ namespace Improvar.Controllers
 
                 int excelrow = 1;
                 DateTime dt = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-365);
-                string effdt = dt.retDateStr();
+                string effdt =VE.PreviousYrUpload==true? dt.retDateStr() : System.DateTime.Now.retDateStr();
 
                 foreach (DataRow oudr in dbfdt.Rows)
                 {
@@ -2645,7 +2645,7 @@ namespace Improvar.Controllers
                                 if (tempmsg != "ok") msgrate = "<br/>" + tempmsg;
                             }
                             string msgprev = "";
-                            if (msgrate == "" && CommVar.LastYearSchema(UNQSNO) != "")
+                            if (msgrate == "" && CommVar.LastYearSchema(UNQSNO) != "" && VE.PreviousYrUpload == true)
                             {
                                 VE.M_SITEM.ITCD = ItemDet.ITCD;
                                 VE.M_SITEM.M_AUTONO = ItemDet.M_AUTONO;
@@ -2667,9 +2667,13 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, msg);
                 return ex.Message + " at " + msg;
             }
-            if (strerrline == "")
+            if (strerrline == "" && CommVar.LastYearSchema(UNQSNO) != "" && VE.PreviousYrUpload == true)
             {
                 return "Excel Uploaded Successfully Current Year and last year !! <br/>" + MESSAGE;
+            }
+            else if (strerrline == "" && CommVar.LastYearSchema(UNQSNO) == "" && VE.PreviousYrUpload == false)
+            {
+                return "Excel Uploaded Successfully Current Year !! <br/>" + MESSAGE;
             }
             else
             {

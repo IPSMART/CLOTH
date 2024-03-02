@@ -28,6 +28,7 @@
             document.getElementById("UploadedFile").accept = ".xlsx";
             document.getElementById("SkipDuplicateDesign").checked = true;
             $("#SkipDuplicateDesign").css('pointer-events', 'auto');
+            $("#PreviousYrUpload").css('pointer-events', 'auto');
 
         }
         else if ("@Model.DefaultAction" == "E") {
@@ -1436,6 +1437,16 @@
                                 <div class="col-md-1" >
                                     <div class="editor-field" style="margin-top:6px;">
                                         @Html.CheckBoxFor(model => model.SkipDuplicateDesign, new { id = "SkipDuplicateDesign" })
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Upload to Previous Year")
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.CheckBoxFor(model => model.PreviousYrUpload, new { id = "PreviousYrUpload" })
                                     </div>
                                 </div>
                                 <div class="col-md-7" style="width:auto;">
