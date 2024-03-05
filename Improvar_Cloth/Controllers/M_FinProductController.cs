@@ -2389,12 +2389,12 @@ namespace Improvar.Controllers
 
                 string Excel_Header = "DESIGN" + "|" + "ITEM GROUP" + "|" + "ITEM NAME" + "|" + "UOM" + "|" + "HSN CODE" + "|" + "FAB ITNM"
                     + "|" + "BARNO" + "|" + "WPRATE" + "|" + "MRP" + " |" + "CPRATE" + "|" + "RPRATE" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
-                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|" + "Bill_UOM" + "|";
+                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|" + "Bill_UOM" + "|" + "Effective Date";
 
                 ExcelPackage ExcelPkg = new ExcelPackage();
                 ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                using (ExcelRange Rng = wsSheet1.Cells["A1:T1"])
+                using (ExcelRange Rng = wsSheet1.Cells["A1:U1"])
                 {
                     Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
@@ -2404,7 +2404,7 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[1, i + 1].Value = Header[i];
                     }
                 }
-                wsSheet1.Cells[1, 1, 1, 20].AutoFitColumns();
+                wsSheet1.Cells[1, 1, 1, 21].AutoFitColumns();
 
                 Response.Clear();
                 Response.ClearContent();
@@ -2459,6 +2459,7 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("Sales Ledger Code", typeof(string));
                 dbfdt.Columns.Add("Purchase Ledger Code", typeof(string));
                 dbfdt.Columns.Add("Bill_UOM", typeof(string));
+                dbfdt.Columns.Add("Effective Date", typeof(string));
                 using (var package = new ExcelPackage(stream))
                 {
                     var currentSheet = package.Workbook.Worksheets;
@@ -2494,7 +2495,7 @@ namespace Improvar.Controllers
 
                 int excelrow = 1;
                 DateTime dt = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-365);
-                string effdt =VE.PreviousYrUpload==true? dt.retDateStr() : System.DateTime.Now.retDateStr();
+               // string effdt =VE.PreviousYrUpload==true? dt.retDateStr() : System.DateTime.Now.retDateStr();
 
                 foreach (DataRow oudr in dbfdt.Rows)
                 {
@@ -2518,6 +2519,7 @@ namespace Improvar.Controllers
                     string SALGLCD = oudr["Sales Ledger Code"].retStr();
                     string PURGLCD = oudr["Purchase Ledger Code"].retStr();
                     string Bill_UOM = oudr["Bill_UOM"].retStr();
+                    string EFFDT = oudr["Effective Date"].retDateStr();
 
                     string itgrptype = "";
                     if (VE.MENU_PARA == "C")//Fabric Item
@@ -2600,6 +2602,12 @@ namespace Improvar.Controllers
 
                     if (flag == true)
                     {
+                        if (CPRATE + WPRATE + RPRATE != 0 && EFFDT == "")
+                        {
+                            MESSAGE += msg + "Please add Effective Date for style:(" + DESIGN + ")";
+                            strerrline += excelrow + ",";
+                            continue;
+                        }
                         ItemDet ItemDet = new ItemDet();
                         if (VE.MENU_PARA == "C")//Fabric Item
                         {
@@ -2641,7 +2649,7 @@ namespace Improvar.Controllers
                             string msgrate = "";
                             if (CPRATE + WPRATE + RPRATE != 0)
                             {
-                                string tempmsg = salesfunc.CreatePricelist(ItemDet.BARNO, effdt, CPRATE, WPRATE, RPRATE);
+                                string tempmsg = salesfunc.CreatePricelist(ItemDet.BARNO, EFFDT, CPRATE, WPRATE, RPRATE);
                                 if (tempmsg != "ok") msgrate = "<br/>" + tempmsg;
                             }
                             string msgprev = "";
@@ -2649,7 +2657,7 @@ namespace Improvar.Controllers
                             {
                                 VE.M_SITEM.ITCD = ItemDet.ITCD;
                                 VE.M_SITEM.M_AUTONO = ItemDet.M_AUTONO;
-                                VE.PRICES_EFFDT = effdt;
+                                VE.PRICES_EFFDT = EFFDT;
                                 string tempmsg = SavePreviousYrData(VE, FC, "Upload");
                                 if (tempmsg != "1") msgprev = "<br/>" + tempmsg;
 
