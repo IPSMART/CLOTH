@@ -168,7 +168,9 @@ namespace Improvar.Controllers
                         sql += "b.itcd cd, nvl(b.styleno,b.itnm) nm, b.prodgrpcd snm, ";
                     }
                     sql += "b.stkdrcr,b.styleno, b.uomnm, b.decimals, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
-                    sql += "b.batchno,b.stktype,b.shade from ";
+                    sql += "b.batchno,b.stktype,b.shade ";
+                    if (VE.Checkbox8 == true && repon == "P" && reptype != "SS") sql += ",b.hsncode ";
+                    sql += "from ";
                     sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, ";
                     sql += " a.prefno, a.prefdt, ";
                     sql += "a.slcd, c.slnm,a.conslcd,f.slnm conslnm,c.shortnm ";
@@ -192,12 +194,14 @@ namespace Improvar.Controllers
                     //sql += "sum((case nvl(d.txnslno,0) when 0 then a.amt-nvl(a.scmdiscamt,0)-nvl(a.tddiscamt,0)-nvl(a.discamt,0)" + taxfld + " when 1 then a.amt-nvl(a.scmdiscamt,0)-nvl(a.tddiscamt,0)-nvl(a.discamt,0)" + taxfld + " end)) basamt, ";
                     sql += "sum(a.txblval" + taxfld + ") basamt, ";
                     sql += "sum((case nvl(d.txnslno,0) when 0 then nvl(a.othramt,0) when 1 then nvl(a.othramt,0) end )) othramt,a.stktype, f.class1cd,g.slcd||nvl(f.class1cd,' ') slcdclass1cd,d.shade ";
+                    if (VE.Checkbox8 == true && repon == "P" && reptype != "SS") sql += ",a.hsncode ";
                     sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
                     sql += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e , " + scm1 + ".m_group f," + scm1 + ".t_txn g ";
                     sql += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.txnslno(+) and  ";
                     sql += "d.autono=e.autono(+) and b.itgrpcd=f.itgrpcd(+) and a.autono=g.autono(+) ";
                     sql += "group by a.autono, a.slno, a.itcd, b.prodgrpcd,b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals,a.stktype, f.class1cd,g.slcd||nvl(f.class1cd,' '),d.shade ";
                     //sql += "a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0) , nvl(a.othramt,0) ";
+                    if (VE.Checkbox8 == true && repon == "P" && reptype != "SS") sql += ",a.hsncode ";
                     sql += ") b, ";
 
                     sql += "(select a.grpcd, a.parentcd, c.slcdgrpnm||'  '||b.slcdgrpnm parentnm, ";
@@ -239,7 +243,7 @@ namespace Improvar.Controllers
 
                 if (FC["Reptype".ToString()] == "D")
                 {
-                    return ReportDtl(tbl, reptype, repon, RateQntyBAg, "", VE.Checkbox2, VE.Checkbox6, VE.Checkbox7);
+                    return ReportDtl(tbl, reptype, repon, RateQntyBAg, "", VE.Checkbox2, VE.Checkbox6, VE.Checkbox7, VE.Checkbox8);
                 }
                 else if (reptype == "G")
                 {
@@ -249,7 +253,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    return ReportSumm(tbl, reptype, repon, RateQntyBAg, "", VE.Checkbox6, VE.Checkbox7);
+                    return ReportSumm(tbl, reptype, repon, RateQntyBAg, "", VE.Checkbox6, VE.Checkbox7, VE.Checkbox8);
                 }
             }
             catch (Exception ex)
@@ -258,7 +262,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-        public ActionResult ReportDtl(DataTable tbl, string reptype, string repon, string rateqntybag, string pghdr, bool batchprint, bool monthtotal,bool PrintShade=false)
+        public ActionResult ReportDtl(DataTable tbl, string reptype, string repon, string rateqntybag, string pghdr, bool batchprint, bool monthtotal, bool PrintShade = false, bool PrintHsn = false)
         {
             try
             {
@@ -286,7 +290,8 @@ namespace Improvar.Controllers
 
                 HC.GetPrintHeader(IR, "cd", "string", "c,10", "Code");
                 HC.GetPrintHeader(IR, "nm", "string", "c,35", dsp1 + " Name");
-               if(PrintShade==true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "shade", "string", "c,15", "Shade");
+                if (PrintShade == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "shade", "string", "c,15", "Shade");
+                if (PrintHsn == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "hsncode", "string", "c,15", "HSN Code");
                 HC.GetPrintHeader(IR, "conslnm", "string", "c,35", "Consignee Name");
                 HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Document Date");
                 HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No");
@@ -354,6 +359,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i]["ocd"].ToString();
                                 IR.Rows[rNo]["nm"] = tbl.Rows[i]["onm"].ToString();
                                 if (PrintShade == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["shade"] = tbl.Rows[i]["shade"].ToString();
+                                if (PrintHsn == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
                                 //IR.Rows[rNo]["conslnm"] = tbl.Rows[i]["conslnm"].ToString()+"["+ tbl.Rows[i]["conslcd"].ToString()+"]";
                                 if (tbl.Rows[i]["conslcd"].ToString() != "")
                                 {
@@ -443,7 +449,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ReportSumm(DataTable tbl, string reptype, string repon, string rateqntybag, string pghdr, bool monthtotal, bool PrintShade = false)
+        public ActionResult ReportSumm(DataTable tbl, string reptype, string repon, string rateqntybag, string pghdr, bool monthtotal, bool PrintShade = false, bool PrintHsn = false)
         {
             try
             {
@@ -474,6 +480,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "cd", "string", "c,10", "Code");
                 HC.GetPrintHeader(IR, "nm", "string", "c,35", dsp1 + " Name");
                 if (PrintShade == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "shade", "string", "c,15", "Shade");
+                if (PrintHsn == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "hsncode", "string", "c,15", "HSN Code");
                 HC.GetPrintHeader(IR, "conslnm", "string", "c,35", "Consignee Name");
                 //if (reptype != "SS") { HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No."); }
                 //HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No.");
@@ -556,6 +563,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i - 1]["ocd"].ToString();
                                 IR.Rows[rNo]["nm"] = tbl.Rows[i - 1]["onm"].ToString();
                                 if (PrintShade == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["shade"] = tbl.Rows[i - 1]["shade"].ToString();
+                                if (PrintHsn == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["hsncode"] = tbl.Rows[i - 1]["hsncode"].ToString();
                                 if (tbl.Rows[i - 1]["conslcd"].ToString() != "")
                                 {
                                     IR.Rows[rNo]["conslnm"] = tbl.Rows[i - 1]["conslnm"].ToString() + "[" + tbl.Rows[i - 1]["conslcd"].ToString() + "]";
