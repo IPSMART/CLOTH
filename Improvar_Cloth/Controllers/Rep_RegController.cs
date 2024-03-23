@@ -195,7 +195,7 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_Reg(FormCollection FC, ReportViewinHtml VE)
         {
-            
+
             try
             {
                 //ReportViewinHtml VE = new ReportViewinHtml();
@@ -301,17 +301,37 @@ namespace Improvar.Controllers
                 // }
 
                 string sql = "";
+                sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
+                sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
+                if (dtlsumm == "E")
+                {
+                    sql += "(case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)roamt, " + Environment.NewLine;
+                    sql += "(case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)tcsamt, " + Environment.NewLine;
+                    sql += "(case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)blamt, " + Environment.NewLine;
+                }
+                else
+                {
+                    sql += "a.roamt,a.blamt,a.tcsamt, " + Environment.NewLine;
+                }
+                sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
+                sql += "a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, a.nos, " + Environment.NewLine;
+                sql += "a.qnty, a.rate, a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL,a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
+                sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt, a.igstper, a.igstamt, a.cgstper, " + Environment.NewLine;
+                sql += "a.cgstamt,a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.NETAMT,a.sgstper,a.gstper,a.gstamt,a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype  " + Environment.NewLine;
+                sql += "from ( " + Environment.NewLine;
+
+
                 sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, " + Environment.NewLine;
                 sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
                 sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
-                sql += "   b.slno,b.stkdrcr, b.itcd, " + Environment.NewLine;
+                sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
                 //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 sql += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
                 sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
                 //query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
-                sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype  " + Environment.NewLine;
-
+                sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
+                sql += "row_number() over(partition by a.autono order by b.slno)rn " + Environment.NewLine;
                 sql += " from ( " + Environment.NewLine;
                 sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
                 sql += "b.docdt, " + Environment.NewLine;
@@ -334,7 +354,7 @@ namespace Improvar.Controllers
                     if (tdt != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   " + Environment.NewLine;
                 }
                 sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
-               if(txntag =="'PI'" && VE.Checkbox11==true) sql += "and b.cancel is null " + Environment.NewLine;
+                if (txntag == "'PI'" && VE.Checkbox11 == true) sql += "and b.cancel is null " + Environment.NewLine;
                 sql += " ) a,  " + Environment.NewLine;
 
                 sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
@@ -358,15 +378,16 @@ namespace Improvar.Controllers
                 sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
                 sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
                 sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
-                sql += "" + scmf + ".m_subleg m " + Environment.NewLine;
+                sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o " + Environment.NewLine;
                 sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
-                sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+)  " + Environment.NewLine;
+                sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) " + Environment.NewLine;
                 if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
                 if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
                 if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
                 if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+                sql += ") a " + Environment.NewLine;
                 sql += "order by ";
                 if (repsorton == "partywise") { sql += "slcd,a.prefdt,prefno,a.docdt,docno" + Environment.NewLine; }
                 else if (repsorton == "bldt") { sql += "a.prefdt,prefno" + Environment.NewLine; }
@@ -377,9 +398,15 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    sql += " , docno, igstper, cgstper, sgstper ";
+                    if (dtlsumm == "E")
+                    {
+                        sql += " , docno,slno, igstper, cgstper, sgstper ";
+                    }
+                    else {
+                        sql += " , docno, igstper, cgstper, sgstper ";
+                    }
                 }
-
+               
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0)
                 {
@@ -539,7 +566,7 @@ namespace Improvar.Controllers
                     while (i <= maxR)
                     {
                         auto1 = tbl.Rows[i]["autono"].ToString();
-                        if(auto1== "2022DIWHKOLKSSRET00000000411")
+                        if (auto1 == "2022DIWHKOLKSSRET00000000411")
                         {
 
                         }
@@ -682,7 +709,7 @@ namespace Improvar.Controllers
                             {
                                 if ((dtlsumm != "C") || (dtlsumm == "C" && VE.Checkbox10 == true)) dr["nos"] = bnos;
                                 //if (dtlsumm != "C") dr["qnty"] = bqnty;
-                                 dr["qnty"] = bqnty;
+                                dr["qnty"] = bqnty;
                                 if (SeparateAchead == true)
                                 {
                                     foreach (DataRow amtdr in amtDT.Rows)
@@ -734,7 +761,7 @@ namespace Improvar.Controllers
                                 { mult = -1; }
                                 else if (tbl.Rows[i]["doctag"].retStr() == "PB" && tbl.Rows[i]["stkdrcr"].retStr() == "C")
                                 { mult = -1; }
-                               else if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
+                                else if (VE.TEXTBOX8.retStr() != "" && (tbl.Rows[i]["doctag"].retStr() == "SR" || tbl.Rows[i]["doctag"].retStr() == "PR"))
                                 { mult = -1; }
                                 ino = ino + 1;
                                 DataRow dr = IR.NewRow();
@@ -817,10 +844,10 @@ namespace Improvar.Controllers
                                         {
                                             var row = IR.NewRow();
                                             row["uomcd"] = g.Key;
-                                            row["qnty"]= g.Sum(r => r.Field<double?>("qnty") == null ? 0 : r.Field<double>("qnty"));
+                                            row["qnty"] = g.Sum(r => r.Field<double?>("qnty") == null ? 0 : r.Field<double>("qnty"));
                                             row["nos"] = g.Sum(r => r.Field<double?>("nos") == null ? 0 : r.Field<double>("nos"));
                                             //row["qnty"] = g.Sum(r => r.Field<double>("qnty").retDbl());
-                                           // row["nos"] = g.Sum(r => r.Field<double>("nos").retDbl());
+                                            // row["nos"] = g.Sum(r => r.Field<double>("nos").retDbl());
                                             return row;
                                         }).CopyToDataTable();
                         // int j = 0;
@@ -917,6 +944,7 @@ namespace Improvar.Controllers
                 ColumnNameObj.TCSAMT = true;
                 ColumnNameObj.BLAMT = true;
                 ColumnNameObj.SLNO = true;
+                ColumnNameObj.ITGRPNM = true;
                 ColumnNameObj.ITCD = true;
                 ColumnNameObj.ITNM = true;
                 ColumnNameObj.ITSTYLE = true;
@@ -986,6 +1014,7 @@ namespace Improvar.Controllers
                 Handel_ini.IniWriteValue(SectionNm, "TCSAMT", ColumnNameObj.TCSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
                 Handel_ini.IniWriteValue(SectionNm, "BLAMT", ColumnNameObj.BLAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
                 Handel_ini.IniWriteValue(SectionNm, "SLNO", ColumnNameObj.SLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                Handel_ini.IniWriteValue(SectionNm, "ITGRPNM", ColumnNameObj.ITGRPNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
                 Handel_ini.IniWriteValue(SectionNm, "ITCD", ColumnNameObj.ITCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
                 Handel_ini.IniWriteValue(SectionNm, "ITNM", ColumnNameObj.ITNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
                 Handel_ini.IniWriteValue(SectionNm, "ITSTYLE", ColumnNameObj.ITSTYLE.ToString(), Server.MapPath("~/Ipsmart.ini"));
@@ -1119,6 +1148,10 @@ namespace Improvar.Controllers
                 bool SLNO = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "SLNO", Server.MapPath("~/Ipsmart.ini")));
                 ColumnNameObj.SLNO = SLNO;
                 columnnm += SLNO == true ? "SLNO," : "";
+
+                bool ITGRPNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITGRPNM", Server.MapPath("~/Ipsmart.ini")));
+                ColumnNameObj.ITGRPNM = ITGRPNM;
+                columnnm += ITGRPNM == true ? "ITGRPNM," : "";
 
                 bool ITCD = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITCD", Server.MapPath("~/Ipsmart.ini")));
                 ColumnNameObj.ITCD = ITCD;
@@ -1355,6 +1388,7 @@ namespace Improvar.Controllers
             colnm.TCSAMT = VE.ColumnName[0].TCSAMT;
             colnm.BLAMT = VE.ColumnName[0].BLAMT;
             colnm.SLNO = VE.ColumnName[0].SLNO;
+            colnm.ITGRPNM = VE.ColumnName[0].ITGRPNM;
             colnm.ITCD = VE.ColumnName[0].ITCD;
             colnm.ITNM = VE.ColumnName[0].ITNM;
             colnm.ITSTYLE = VE.ColumnName[0].ITSTYLE;
@@ -1478,6 +1512,7 @@ namespace Improvar.Controllers
                     ColumnNameObj.TCSAMT = VE.ColumnName[0].TCSAMT;
                     ColumnNameObj.BLAMT = VE.ColumnName[0].BLAMT;
                     ColumnNameObj.SLNO = VE.ColumnName[0].SLNO;
+                    ColumnNameObj.ITGRPNM = VE.ColumnName[0].ITGRPNM;
                     ColumnNameObj.ITCD = VE.ColumnName[0].ITCD;
                     ColumnNameObj.ITNM = VE.ColumnName[0].ITNM;
                     ColumnNameObj.ITSTYLE = VE.ColumnName[0].ITSTYLE;
@@ -1547,6 +1582,7 @@ namespace Improvar.Controllers
                     Handel_ini.IniWriteValue(SectionNm, "TCSAMT", ColumnNameObj.TCSAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
                     Handel_ini.IniWriteValue(SectionNm, "BLAMT", ColumnNameObj.BLAMT.ToString(), Server.MapPath("~/Ipsmart.ini"));
                     Handel_ini.IniWriteValue(SectionNm, "SLNO", ColumnNameObj.SLNO.ToString(), Server.MapPath("~/Ipsmart.ini"));
+                    Handel_ini.IniWriteValue(SectionNm, "ITGRPNM", ColumnNameObj.ITGRPNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
                     Handel_ini.IniWriteValue(SectionNm, "ITCD", ColumnNameObj.ITCD.ToString(), Server.MapPath("~/Ipsmart.ini"));
                     Handel_ini.IniWriteValue(SectionNm, "ITNM", ColumnNameObj.ITNM.ToString(), Server.MapPath("~/Ipsmart.ini"));
                     Handel_ini.IniWriteValue(SectionNm, "ITSTYLE", ColumnNameObj.ITSTYLE.ToString(), Server.MapPath("~/Ipsmart.ini"));

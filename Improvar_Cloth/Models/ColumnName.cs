@@ -27,6 +27,7 @@ namespace Improvar.Models
         public bool TCSAMT { get; set; }
         public bool BLAMT { get; set; }
         public bool SLNO { get; set; }
+        public bool ITGRPNM { get; set; }
         public bool ITCD { get; set; }
         public bool ITNM { get; set; }
         public bool ITSTYLE { get; set; }
