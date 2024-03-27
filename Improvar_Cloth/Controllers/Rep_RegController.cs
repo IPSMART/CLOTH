@@ -305,19 +305,60 @@ namespace Improvar.Controllers
                 sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
                 if (dtlsumm == "E")
                 {
-                    sql += "(case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)roamt, " + Environment.NewLine;
-                    sql += "(case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)tcsamt, " + Environment.NewLine;
-                    sql += "(case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)blamt, " + Environment.NewLine;
+                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
+                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)end) tcsamt, " + Environment.NewLine;
+                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)end) blamt, " + Environment.NewLine;
+                    //sql += "(case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)roamt, " + Environment.NewLine;
+                    //sql += "(case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)tcsamt, " + Environment.NewLine;
+                    //sql += "(case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)blamt, " + Environment.NewLine;
                 }
                 else
                 {
                     sql += "a.roamt,a.blamt,a.tcsamt, " + Environment.NewLine;
                 }
                 sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
-                sql += "a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, a.nos, " + Environment.NewLine;
-                sql += "a.qnty, a.rate, a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL,a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
-                sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt, a.igstper, a.igstamt, a.cgstper, " + Environment.NewLine;
-                sql += "a.cgstamt,a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.NETAMT,a.sgstper,a.gstper,a.gstamt,a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype  " + Environment.NewLine;
+                sql += "a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, " + Environment.NewLine;
+                if (dtlsumm == "E")
+                {
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.nos, 0) * -1 else nvl(a.nos, 0) end)nos," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.qnty, 0) * -1 else nvl(a.qnty, 0) end)qnty," + Environment.NewLine;
+                }
+                else {
+                    sql += " a.nos, a.qnty," + Environment.NewLine;
+                }
+                sql += " a.rate, " + Environment.NewLine;
+                if (dtlsumm == "E")
+                {
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.amt, 0) * -1 else nvl(a.amt, 0) end)amt," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.scmdiscamt, 0) * -1 else nvl(a.scmdiscamt, 0) end)scmdiscamt," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.tddiscamt, 0) * -1 else nvl(a.tddiscamt, 0) end)tddiscamt," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.discamt, 0) * -1 else nvl(a.discamt, 0) end)discamt," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.TXBLVAL, 0) * -1 else nvl(a.TXBLVAL, 0) end)TXBLVAL," + Environment.NewLine;
+                }
+                else
+                {
+                    sql += " a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
+
+                }
+                sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
+                sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt," + Environment.NewLine;
+                if (dtlsumm == "E")
+                {
+                    sql += "  a.igstper,(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.igstamt, 0) * -1 else nvl(a.igstamt, 0) end)igstamt,a.cgstper," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cgstamt, 0) * -1 else nvl(a.cgstamt, 0) end)cgstamt,a.sgstper," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.sgstamt, 0) * -1 else nvl(a.sgstamt, 0) end)sgstamt,a.cessper," + Environment.NewLine;
+                    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cessamt, 0) * -1 else nvl(a.sgstamt, 0) end)cessamt," + Environment.NewLine;
+                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.blqnty, 0)*-1 else nvl(a.blqnty, 0) end)blqnty," + Environment.NewLine;
+                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.NETAMT, 0)*-1 else nvl(a.NETAMT, 0) end)NETAMT,a.gstper," + Environment.NewLine;
+                    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.gstamt, 0)*-1 else nvl(a.gstamt, 0) end)gstamt," + Environment.NewLine;
+                }
+                else
+                {
+                    sql += "a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,a.cessper,a.cessamt,a.blqnty,a.NETAMT,a.gstper,a.gstamt," + Environment.NewLine;
+                }
+
+
+                sql += "a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype  " + Environment.NewLine;
                 sql += "from ( " + Environment.NewLine;
 
 
@@ -406,7 +447,7 @@ namespace Improvar.Controllers
                         sql += " , docno, igstper, cgstper, sgstper ";
                     }
                 }
-               
+
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0)
                 {
