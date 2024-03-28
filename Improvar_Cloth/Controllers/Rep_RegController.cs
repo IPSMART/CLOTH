@@ -362,8 +362,8 @@ namespace Improvar.Controllers
                 sql += "from ( " + Environment.NewLine;
 
 
-                sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,h.agslcd, " + Environment.NewLine;
-                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+                sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,a.docdt tchdocdt,h.agslcd, " + Environment.NewLine;
+                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
                 sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
                 sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
                 //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
@@ -429,10 +429,14 @@ namespace Improvar.Controllers
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
                 sql += ") a " + Environment.NewLine;
+                if (dtlsumm == "E")
+                {
+                    sql += "where nvl(a.cancel,'N')='N' " + Environment.NewLine;
+                }
                 sql += "order by ";
-                if (repsorton == "partywise") { sql += "slcd,a.prefdt,prefno,a.docdt,docno" + Environment.NewLine; }
-                else if (repsorton == "bldt") { sql += "a.prefdt,prefno" + Environment.NewLine; }
-                else { sql += "a.docdt"; }
+                if (repsorton == "partywise") { sql += "slcd,a.prefdate,prefno,a.tchdocdt,docno" + Environment.NewLine; }
+                else if (repsorton == "bldt") { sql += "a.prefdate,prefno" + Environment.NewLine; }
+                else { sql += "a.tchdocdt"; }
                 if (itmdtl == true)
                 {
                     sql += " , docno, slno ";
@@ -463,7 +467,7 @@ namespace Improvar.Controllers
                     {
                         DataView dv = new DataView(tbl);
                         string[] COL = colnm.Split(',').ToArray();
-                        tbl = dv.ToTable(true, COL);
+                        tbl = dv.ToTable(false, COL);
                     }
                     DataTable[] exdt = new DataTable[1];
                     exdt[0] = tbl;
@@ -1190,7 +1194,12 @@ namespace Improvar.Controllers
                 ColumnNameObj.SLNO = SLNO;
                 columnnm += SLNO == true ? "SLNO," : "";
 
-                bool ITGRPNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITGRPNM", Server.MapPath("~/Ipsmart.ini")));
+                var tempITGRPNM = Handel_Ini.IniReadValue(SectionNm, "ITGRPNM", Server.MapPath("~/Ipsmart.ini"));
+                bool ITGRPNM = false;
+                if (tempITGRPNM.retStr() != "")
+                {
+                    ITGRPNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "ITGRPNM", Server.MapPath("~/Ipsmart.ini")));
+                }
                 ColumnNameObj.ITGRPNM = ITGRPNM;
                 columnnm += ITGRPNM == true ? "ITGRPNM," : "";
 
