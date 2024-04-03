@@ -1309,6 +1309,11 @@ namespace Improvar.Controllers
 
                             while (PendingJobDT.Rows[i]["progautono"].retStr() == progautono)
                             {
+                                errorAutono = progautono;
+                                if (errorAutono == "2023DIWHKOLKSSOEMI0000000469")
+                                {
+                                    var aa = "";
+                                }
                                 Int32 progslno = PendingJobDT.Rows[i]["progslno"].retInt();
                                 Int32 txnslno = PendingJobDT.Rows[i]["txnslno"].retInt();
                                 string itcd = PendingJobDT.Rows[i]["itcd"].ToString();
@@ -1331,12 +1336,14 @@ namespace Improvar.Controllers
 
                                     #region Checking with transactios
 
-                                    sql = "select autono from " + newschema + ".T_PROGDTL where progautono='" + progautono + "' and progslno=" + progslno + " ";
+                                    //sql = "select autono from " + newschema + ".T_PROGDTL where progautono='" + progautono + "' and progslno=" + progslno + " ";
+                                    sql = "select autono from " + newschema + ".T_PROGDTL where progautono='" + progautono + "' and progslno=" + progslno + " and AUTONO='" + progautono + "' and SLNO=" + progslno + " ";//out autono coming error
                                     OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
                                     if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
                                     if (recoexist == false)
                                     {
-                                        var TPROGDTLL = vTPROGDTLL.Where(m => m.PROGAUTONO == progautono && m.PROGSLNO == progslno).FirstOrDefault();
+                                        //var TPROGDTLL = vTPROGDTLL.Where(m => m.PROGAUTONO == progautono && m.PROGSLNO == progslno).FirstOrDefault();
+                                        var TPROGDTLL = vTPROGDTLL.Where(m => m.PROGAUTONO == progautono && m.PROGSLNO == progslno && m.AUTONO == progautono && m.SLNO == progslno).FirstOrDefault();
                                         if (TPROGDTLL != null)
                                         {
                                             TPROGDTLL.QNTY = PendingJobDT.Rows[i]["balqnty"].retDbl();
