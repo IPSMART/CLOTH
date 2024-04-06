@@ -159,21 +159,21 @@ namespace Improvar.Controllers
                     else sql += "a.prefno docno, ";
                     if (repon == "P")
                     {
-                        sql += "a.slcd cd, a.slnm nm, a.shortnm snm,a.conslcd,a.conslnm conslnm, ";
+                        sql += "a.slcd cd, a.slnm nm,a.gstno, a.shortnm snm,a.conslcd,a.conslnm conslnm, ";
                         sql += "b.itcd ocd, nvl(b.styleno,b.itnm) onm, b.styleno osnm, ";
                     }
                     else
                     {
-                        sql += "a.slcd ocd, a.slnm onm, a.shortnm osnm,a.conslcd,a.conslnm conslnm, ";
+                        sql += "a.slcd ocd, a.slnm onm,a.gstno, a.shortnm osnm,a.conslcd,a.conslnm conslnm, ";
                         sql += "b.itcd cd, nvl(b.styleno,b.itnm) nm, b.prodgrpcd snm, ";
                     }
                     sql += "b.stkdrcr,b.styleno, b.uomnm, b.decimals, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
-                    sql += "b.batchno,b.stktype,b.shade ";
+                    sql += "b.batchno,b.stktype,b.shade,b.baleno ";
                     if (VE.Checkbox8 == true && repon == "P" && reptype != "SS") sql += ",b.hsncode ";
                     sql += "from ";
                     sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, ";
                     sql += " a.prefno, a.prefdt, ";
-                    sql += "a.slcd, c.slnm,a.conslcd,f.slnm conslnm,c.shortnm ";
+                    sql += "a.slcd, c.slnm,c.gstno,a.conslcd,f.slnm conslnm,c.shortnm ";
                     sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c," + scmf + ".m_subleg f ";
                     sql += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.conslcd=f.slcd(+) and ";
                     //a.itgrpcd=e.itgrpcd(+) and ";
@@ -188,6 +188,7 @@ namespace Improvar.Controllers
                     sql += "select a.autono, a.slno, a.itcd,b.prodgrpcd, b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals, ";
                     sql += "sum(nvl(d.nos,a.nos)) nos, sum(nvl(d.qnty,a.qnty)) qnty, ";
                     sql += "listagg(e.batchno,',') within group (order by d.autono, d.slno) batchno, ";
+                    sql += "listagg(d.baleno,',') within group (order by d.autono, d.slno) baleno, ";
                     //sql += "a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0) basamt, nvl(a.othramt,0) othramt ";
                     //sql += "sum(decode(nvl(d.rslno,0),1,a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0),0)) basamt, ";
                     //sql += "sum(decode(nvl(d.rslno,0),1,nvl(a.othramt,0),0)) othramt ";
@@ -243,7 +244,7 @@ namespace Improvar.Controllers
 
                 if (FC["Reptype".ToString()] == "D")
                 {
-                    return ReportDtl(tbl, reptype, repon, RateQntyBAg, "", VE.Checkbox2, VE.Checkbox6, VE.Checkbox7, VE.Checkbox8);
+                    return ReportDtl(tbl, reptype, repon, RateQntyBAg, "", VE.Checkbox2, VE.Checkbox6, VE.Checkbox7, VE.Checkbox8, VE.Checkbox9);
                 }
                 else if (reptype == "G")
                 {
@@ -262,7 +263,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-        public ActionResult ReportDtl(DataTable tbl, string reptype, string repon, string rateqntybag, string pghdr, bool batchprint, bool monthtotal, bool PrintShade = false, bool PrintHsn = false)
+        public ActionResult ReportDtl(DataTable tbl, string reptype, string repon, string rateqntybag, string pghdr, bool batchprint, bool monthtotal, bool PrintShade = false, bool PrintHsn = false, bool PrintBale = false)
         {
             try
             {
@@ -290,11 +291,13 @@ namespace Improvar.Controllers
 
                 HC.GetPrintHeader(IR, "cd", "string", "c,10", "Code");
                 HC.GetPrintHeader(IR, "nm", "string", "c,35", dsp1 + " Name");
+                HC.GetPrintHeader(IR, "gstno", "string", "c,35", "GST No.");
                 if (PrintShade == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "shade", "string", "c,15", "Shade");
                 if (PrintHsn == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "hsncode", "string", "c,15", "HSN Code");
                 HC.GetPrintHeader(IR, "conslnm", "string", "c,35", "Consignee Name");
                 HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Document Date");
                 HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No");
+                if (PrintBale == true) HC.GetPrintHeader(IR, "baleno", "string", "c,35", "Bale");
                 HC.GetPrintHeader(IR, "snm", "string", "c,15", "prodgrpcd");
                 //HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
 
@@ -324,6 +327,7 @@ namespace Improvar.Controllers
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["cd"] = tbl.Rows[i]["cd"].ToString();
                     IR.Rows[rNo]["nm"] = tbl.Rows[i]["nm"].ToString();
+                    if (repon == "P") IR.Rows[rNo]["gstno"] = tbl.Rows[i]["gstno"].ToString();
                     IR.Rows[rNo]["snm"] = tbl.Rows[i]["snm"].ToString();
                     IR.Rows[rNo]["celldesign"] = "cd=font-weight:bold;font-size:13px;^nm=font-weight:bold;font-size:13px;^snm=font-weight:bold;font-size:13px; ";
                     while (tbl.Rows[i]["cd"].ToString() == chkval)
@@ -358,6 +362,7 @@ namespace Improvar.Controllers
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i]["ocd"].ToString();
                                 IR.Rows[rNo]["nm"] = tbl.Rows[i]["onm"].ToString();
+                                if (repon == "I") IR.Rows[rNo]["gstno"] = tbl.Rows[i]["gstno"].ToString();
                                 if (PrintShade == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["shade"] = tbl.Rows[i]["shade"].ToString();
                                 if (PrintHsn == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
                                 //IR.Rows[rNo]["conslnm"] = tbl.Rows[i]["conslnm"].ToString()+"["+ tbl.Rows[i]["conslcd"].ToString()+"]";
@@ -367,6 +372,7 @@ namespace Improvar.Controllers
                                 }
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
+                                if (PrintBale == true) IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].ToString();
                                 IR.Rows[rNo]["snm"] = tbl.Rows[i]["osnm"].ToString();
                                 //if (showpacksize == true) IR.Rows[rNo]["packsize"] = Convert.ToDouble(tbl.Rows[i]["packsize"]);
                                 IR.Rows[rNo]["uom"] = tbl.Rows[i]["uomnm"].ToString();
@@ -479,6 +485,7 @@ namespace Improvar.Controllers
 
                 HC.GetPrintHeader(IR, "cd", "string", "c,10", "Code");
                 HC.GetPrintHeader(IR, "nm", "string", "c,35", dsp1 + " Name");
+                HC.GetPrintHeader(IR, "gstno", "string", "c,35", "GST No.");
                 if (PrintShade == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "shade", "string", "c,15", "Shade");
                 if (PrintHsn == true && repon == "P" && reptype != "SS") HC.GetPrintHeader(IR, "hsncode", "string", "c,15", "HSN Code");
                 HC.GetPrintHeader(IR, "conslnm", "string", "c,35", "Consignee Name");
@@ -513,6 +520,7 @@ namespace Improvar.Controllers
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["cd"] = tbl.Rows[i]["cd"].ToString();
                         IR.Rows[rNo]["nm"] = tbl.Rows[i]["nm"].ToString();
+                        if (repon == "P") IR.Rows[rNo]["gstno"] = tbl.Rows[i]["gstno"].ToString();
                         IR.Rows[rNo]["snm"] = tbl.Rows[i]["snm"].ToString();
                         IR.Rows[rNo]["celldesign"] = "cd=font-weight:bold;font-size:13px;^nm=font-weight:bold;font-size:13px;^snm=font-weight:bold;font-size:13px; ";
                     }
@@ -562,6 +570,7 @@ namespace Improvar.Controllers
 
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i - 1]["ocd"].ToString();
                                 IR.Rows[rNo]["nm"] = tbl.Rows[i - 1]["onm"].ToString();
+                                if (repon == "I") IR.Rows[rNo]["gstno"] = tbl.Rows[i - 1]["gstno"].ToString();
                                 if (PrintShade == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["shade"] = tbl.Rows[i - 1]["shade"].ToString();
                                 if (PrintHsn == true && repon == "P" && reptype != "SS") IR.Rows[rNo]["hsncode"] = tbl.Rows[i - 1]["hsncode"].ToString();
                                 if (tbl.Rows[i - 1]["conslcd"].ToString() != "")
@@ -614,6 +623,7 @@ namespace Improvar.Controllers
                         {
                             IR.Rows[rNo]["cd"] = tbl.Rows[i - 1]["cd"].ToString();
                             IR.Rows[rNo]["nm"] = tbl.Rows[i - 1]["nm"].ToString();
+                            if (repon == "P") IR.Rows[rNo]["gstno"] = tbl.Rows[i - 1]["gstno"].ToString();
                             IR.Rows[rNo]["snm"] = tbl.Rows[i - 1]["snm"].ToString();
                         }
                         IR.Rows[rNo]["qnty"] = qty;
