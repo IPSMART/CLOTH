@@ -1652,5 +1652,36 @@ namespace Improvar.Controllers
             ITEMDT.Columns.Add("NEGSTOCK", typeof(string));
 
         }
+        public ActionResult cancelRecords(StockAdjustmentsConversionEntry VE, string par1)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                //Cn.getQueryString(VE);
+                using (var transaction = DB.Database.BeginTransaction())
+                {
+                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
+                    T_CNTRL_HDR TCH = new T_CNTRL_HDR();
+                    if (par1 == "*#*")
+                    {
+                        TCH = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.CurSchema(UNQSNO).ToString());
+                    }
+                    else
+                    {
+                        TCH = Cn.T_CONTROL_HDR(VE.T_TXN.AUTONO, CommVar.CurSchema(UNQSNO).ToString(), par1);
+                    }
+                    DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
+                    DB.SaveChanges();
+                    transaction.Commit();
+                }
+                return Content("1");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
     }
 }
