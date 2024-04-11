@@ -369,7 +369,7 @@ namespace Improvar.Controllers
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
                 string sql = "";
 
-                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.gocd, c.gonm ";
+                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.gocd, c.gonm,nvl(b.cancel,'N')cancel ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_godown c ";
                 sql += "where a.autono=b.autono and a.gocd=c.gocd(+) and b.doccd in (" + doccd + ") and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
@@ -380,7 +380,12 @@ namespace Improvar.Controllers
                 var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown Name" + Cn.GCS() + "AUTO NO";
                 for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "] </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                    string x = "";
+                    if (tbl.Rows[j]["cancel"].retStr() =="Y")
+                    {
+                        x= " <b>(CANCEL)</b>";
+                    }
+                    SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"]  + "</b> [" + tbl.Rows[j]["doccd"]  + "]" + x + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "] </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                 }
                 return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "3", "3"));
             }
