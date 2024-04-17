@@ -373,7 +373,12 @@
             $("#T_BARCODE").focus();
         }
 
-
+        if ($("#MNTNBARNO").val() == "Y") {
+            $("#BARCODE").focus();
+        }
+        else {
+            $("#STYLENO").focus();
+        }
 
 
     }
@@ -748,6 +753,8 @@
         @Html.HiddenFor(a => a.MTRLJOBCD, new { id = "MTRLJOBCD" })
         @Html.HiddenFor(a => a.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
         @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
+
  <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         <input type="hidden" id="Defaultbar" value="Bar" />
         <input type="hidden" id="Defaultstyle" value="Style" />
