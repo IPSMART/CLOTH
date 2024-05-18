@@ -1757,6 +1757,89 @@ namespace Improvar.Controllers
 
                     #endregion
 
+                    //#region LR No & LR Date Transfer
+
+                    //if (VE.Checkbox12 == true)
+                    //{
+                    //    var schnm = CommVar.CurSchema(UNQSNO);
+                    //    var fschnm = CommVar.FinSchema(UNQSNO);
+                    //    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    //    sql = "select a.LRNO,a.LRDT, a.autono from " + oldschema + ". t_txntrans a where autono in (select autono from  " + schnm + ".t_cntrl_hdr)";
+                    //    DataTable data = masterHelp.SQLquery(sql);
+                        
+                    //    DataTable tbl1 = Salesfunc.getPendRecfromMutia("", "", "", "", "", "", true);
+                    //    DataTable tbl2 = Salesfunc.getPendBiltytoIssue("");
+           
+                    //    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    //    ImprovarDB DB2 = new ImprovarDB(Cn.GetConnectionString(), CommVar.SaleSchema(UNQSNO));
+
+
+                    //    for (int j = 0; j <= data.Rows.Count - 1; j++)
+                    //    {
+                    //        string LRNO = data.Rows[j]["LRNO"].retStr();
+                    //        string LRDT = data.Rows[j]["LRDT"].retStr();
+                    //        string AUTONO = data.Rows[j]["Autono"].retStr();
+                    //        if (data.Rows[j]["Autono"].retStr() == "2023SNFPKOLKSSSPBL2403000189")
+                    //        {
+                    //            var aa = "";
+                    //        }
+
+                    //        //update to t_txntrans//
+                    //        var ttxantrans_data = DB2.T_TXNTRANS.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    //        if (ttxantrans_data != null && ttxantrans_data.Count > 0)
+                    //        {
+                    //            sql = "update " + schnm + ". t_txntrans set LRNO ='" + LRNO + "', ";
+                    //            sql += " LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy')";
+                    //            sql += " where AUTONO='" + AUTONO + "'  ";
+                    //            OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    //        }
+
+
+                    //        //update to T_TXNEWB//
+                    //        var txnweb_data = DB1.T_TXNEWB.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    //        if (txnweb_data != null && txnweb_data.Count > 0)
+                    //        {
+                    //            sql = "update " + fschnm + ". T_TXNEWB set LRNO ='" + LRNO + "', ";
+                    //            sql += " LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy')";
+                    //            sql += " where AUTONO='" + AUTONO + "'  ";
+                    //            OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    //        }
+
+
+
+                    //        //update to T_VCH_BL//
+                    //        var tvchbl_data = DB1.T_VCH_BL.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    //        if (tvchbl_data != null && tvchbl_data.Count > 0)
+                    //        {
+                    //            sql = "update " + fschnm + ". T_VCH_BL set LRNO ='" + LRNO + "',LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    //            sql += " where AUTONO='" + AUTONO + "'  ";
+                    //            OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    //        }
+
+
+                    //        //update to T_BALE//
+                    //        var tbale_data = DB2.T_BALE.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    //        if (tbale_data != null && tbale_data.Count > 0)
+                    //        {
+                    //            sql = "update " + schnm + ". T_BALE set LRNO ='" + LRNO + "',LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    //            sql += " where AUTONO='" + AUTONO + "'  ";
+                    //            OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    //        }
+                    //    }
+
+                    //}
+
+
+
+
+
+
+
+
+
+
+                    //#endregion
 
 
                     ModelState.Clear();

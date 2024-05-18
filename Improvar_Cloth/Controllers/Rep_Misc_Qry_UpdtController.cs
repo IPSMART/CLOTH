@@ -14,6 +14,7 @@ namespace Improvar.Controllers
         // GET: Rep_Misc_Qry_Updt
         Connection Cn = new Connection();
         MasterHelp MasterHelp = new MasterHelp();
+        Salesfunc Salesfunc = new Salesfunc();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         public ActionResult Rep_Misc_Qry_Updt()
         {
@@ -34,6 +35,7 @@ namespace Improvar.Controllers
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change BaleNo", text = "Change Bale No." });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change PREFNO && PREFDT", text = "Change PartyBill No. && PartyBill Dt." });
                     CHNGSTYL.Add(new DropDown_list1 { value = "Change Opening Rate", text = "Change Opening Rate" });
+                    CHNGSTYL.Add(new DropDown_list1 { value = "Change LRNo && LRDate", text = "Change LRNo && LRDate" });
                     VE.DropDown_list1 = CHNGSTYL;
                     VE.NEWPREFDT = Cn.getCurrentDate(VE.mindate);
                     VE.TEXTBOX1 = Session["LASTUPDATE"].retStr();
@@ -174,6 +176,99 @@ namespace Improvar.Controllers
                 return Content(str);
             }
         }
+        public ActionResult GetDOCNO2(string val, string Code)
+        {
+            try
+            {
+                if (val.retStr() == "")
+                {
+                    Code = "";
+                }
+                DataTable tbl = GetPurDet(val, Code);
+                if (val.retStr() == "" || tbl.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["DOCNO"] + "</td><td>" + tbl.Rows[i]["DOCDT"].retDateStr() + "</td><td>" + tbl.Rows[i]["SLCD"] + "</td><td>" + tbl.Rows[i]["SLNM"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td><td>" + tbl.Rows[i]["prefno"] + "</td><td>" + tbl.Rows[i]["prefdt"] + "</td></tr>");
+                    }
+                    var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Party Code" + Cn.GCS() + "Party Name" + Cn.GCS() + "Autono" + Cn.GCS() + "PBill No" + Cn.GCS() + "PBill Date";
+                    return PartialView("_Help2", MasterHelp.Generate_help(hdr, SB.ToString(), "4"));
+                }
+                else
+                {
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = MasterHelp.ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Document No. ! Please Select / Enter a Valid Document No. !!";
+                    }
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message + " " + ex.InnerException);
+            }
+        }
+        private DataTable GetPurDet(string docno, string autono)
+        {
+            string scm = CommVar.CurSchema(UNQSNO);
+            string fcm = CommVar.FinSchema(UNQSNO);
+
+
+            var COMPCD = CommVar.Compcd(UNQSNO);
+            var LOCCD = CommVar.Loccd(UNQSNO);
+            string valsrch = docno.ToUpper().Trim();
+            string sql = "";
+            sql += "select distinct b.DOCNO,to_char(b.DOCDT,'dd/mm/yyyy') DOCDT,a.SLCD,a.AUTONO ,c.SLNM,d.LRNO,to_char(d.LRDT,'dd/mm/yyyy') LRDT,a.PREFNO,to_char(a.PREFDT,'dd/mm/yyyy') PREFDT from " + scm + ".T_TXN a, " + scm + ".T_CNTRL_HDR b,  ";
+            sql += fcm + ".M_SUBLEG c, " + scm + ".T_TXNTRANS d, " + scm + ".m_doctype e where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+) and a.AUTONO=d.AUTONO and b.doccd=e.doccd(+) and d.LRNO is not null and d.LRDT is not null and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' and e.doctype in ('SPBL') ";
+            if (valsrch.retStr() != "") sql += " and upper(b.DOCNO) = '" + valsrch + "' ";
+            if (autono.retStr() != "") sql += " and (b.autono) = '" + autono + "' ";
+            sql += "  order by DOCNO,DOCDT ";
+            DataTable tbl1 = MasterHelp.SQLquery(sql);
+
+            string doctype = "'BLTG'";
+            var dt1 = Salesfunc.GetBaleHistory("", "", "", doctype);
+            if (dt1 != null && dt1.Rows.Count > 0)
+            {
+                string[] autonum = (from DataRow dr in dt1.Rows select dr["blautono"].retStr()).ToArray();
+                var tt = (from DataRow a in tbl1.Rows where !autonum.Contains(a["autono"]) select a);
+                if (tt.Count() > 0)
+                {
+                    tbl1 = tt.CopyToDataTable();
+                }
+                else
+                {
+                    tbl1 = tbl1.Clone();
+                }
+            }
+
+            sql = "";
+            sql += "select a.autono,b.docno,b.docdt,c.docnm,a.blautono ";
+            sql += "from " + scm + ".T_BALE a,  " + scm + ".t_cntrl_hdr b,  " + scm + ".m_doctype c ";
+            sql += "where a.autono = B.AUTONO and b.doccd = c.DOCCD and nvl(b.cancel,'N') = 'N'  and a.blautono <> a.autono  ";
+
+            DataTable dt = MasterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                string[] autonum = (from DataRow dr in dt.Rows select dr["blautono"].retStr()).ToArray();
+                var tt = (from DataRow b in tbl1.Rows where !autonum.Contains(b["autono"]) select b);
+                if (tt.Count() > 0)
+                {
+                    tbl1 = tt.CopyToDataTable();
+                }
+                else
+                {
+                    tbl1 = tbl1.Clone();
+                }
+            }
+            return tbl1;
+        }
+
         public ActionResult GetOPDOCNO(string val, string code)
         {
             try
@@ -396,6 +491,70 @@ namespace Improvar.Controllers
                    + " where AUTONO='" + VE.BLAUTONO2 + "' and PAGENO='" + VE.OLDPAGENO.retStr() + "' and PAGESLNO='" + VE.OLDPAGESLNO.retStr() + "'  and BALENO='" + VE.BALENO2 + "' and BALEYR='" + VE.BALEYR2 + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                 }
+
+
+                if (VE.TEXTBOX1 == "Change LRNo && LRDate")
+                {
+
+
+
+
+                    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    ImprovarDB DB2 = new ImprovarDB(Cn.GetConnectionString(), CommVar.SaleSchema(UNQSNO));
+
+                    string AUTONO = VE.BLAUTONO7.retStr();
+                    string LRNO = VE.NEWLRNO.retStr();
+                    string LRDT = VE.NEWLRDT.retDateStr();
+
+
+
+                    //update to t_txntrans//
+                    var ttxantrans_data = DB2.T_TXNTRANS.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    if (ttxantrans_data != null && ttxantrans_data.Count > 0)
+                    {
+                        sql = "update " + schnm + ". t_txntrans set LRNO ='" + LRNO + "', ";
+                        sql += " LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy')";
+                        sql += " where AUTONO='" + AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+
+                    //update to T_TXNEWB//
+                    var txnweb_data = DB1.T_TXNEWB.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    if (txnweb_data != null && txnweb_data.Count > 0)
+                    {
+                        sql = "update " + schnmf + ". T_TXNEWB set LRNO ='" + LRNO + "', ";
+                        sql += " LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy')";
+                        sql += " where AUTONO='" + AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+
+
+                    //update to T_VCH_BL//
+                    var tvchbl_data = DB1.T_VCH_BL.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    if (tvchbl_data != null && tvchbl_data.Count > 0)
+                    {
+                        sql = "update " + schnmf + ". T_VCH_BL set LRNO ='" + LRNO + "',LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                        sql += " where AUTONO='" + AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+
+                    //update to T_BALE//
+                    var tbale_data = DB2.T_BALE.Where(a => a.AUTONO == AUTONO).Select(b => b.AUTONO).ToList();
+                    if (tbale_data != null && tbale_data.Count > 0)
+                    {
+                        sql = "update " + schnm + ". T_BALE set LRNO ='" + LRNO + "',LRDT =to_date('" + LRDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                        sql += " where AUTONO='" + AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+
+                }
+
+
+
+
                 Session["LASTUPDATE"] = VE.TEXTBOX1;
                 ModelState.Clear();
                 OraTrans.Commit();

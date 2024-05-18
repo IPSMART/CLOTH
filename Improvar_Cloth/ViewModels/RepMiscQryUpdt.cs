@@ -79,5 +79,18 @@ namespace Improvar.ViewModels
         public string BARNO { get; set; }
         public string STYLENO { get; set; }
         public string BALENO { get; set; }
+
+
+
+        public DateTime? NEWLRDT { get; set; }
+        public string NEWLRNO { get; set; }
+        public DateTime? OLDLRDT { get; set; }
+        public string OLDLRNO { get; set; }
+        public string BLAUTONO7 { get; set; }
+        public string SLNM7 { get; set; }
+        public string SLCD7 { get; set; }
+        public DateTime? DOCDT7 { get; set; }
+        public string DOCNO7 { get; set; }
+
     }
 }

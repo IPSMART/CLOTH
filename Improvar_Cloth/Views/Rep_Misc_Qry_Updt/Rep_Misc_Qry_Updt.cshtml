@@ -21,6 +21,7 @@
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#NEWPREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#NEWLRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     });
 </script>
 <script>
@@ -54,6 +55,11 @@
                 return false;
             }
         }
+        else if (val == "Change LRNo && LRDate") {
+            if (!emptyFieldCheck("Select/Enter Document No.", "DOCNO7")) { return false; }
+            if (!emptyFieldCheck("Select/Enter New Party Bill No.", "NEWLRNO")) { return false; }
+            if (!emptyFieldCheck("Select/Enter New Party Bill Date", "NEWLRDT")) { return false; }
+        }
         else {
             if (!emptyFieldCheck("Select/Enter Bale No.", "BALENO2")) { return false; }
             if (!emptyFieldCheck("Select/Enter New Page No.", "NEWPAGENO")) { return false; }
@@ -86,19 +92,22 @@
         debugger;
         var val = ($("#TEXTBOX1").find(":selected").val());
         if (val == "Change Style") {
-            $("#1stdiv").show(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").hide();
+            $("#1stdiv").show(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").hide();$("#6thdiv").hide();
         }
         else if (val == "Change BaleNo") {
-            $("#2nddiv").hide(); $("#1stdiv").hide(); $("#3rddiv").show(); $("#4thdiv").hide();$("#5thdiv").hide();
+            $("#2nddiv").hide(); $("#1stdiv").hide(); $("#3rddiv").show(); $("#4thdiv").hide();$("#5thdiv").hide();$("#6thdiv").hide();
         }
         else if (val == "Change PREFNO && PREFDT") {
-            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").show();$("#5thdiv").hide();
+            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").show();$("#5thdiv").hide();$("#6thdiv").hide();
         }
         else if (val == "Change Opening Rate") {
-            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").show();
+            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").show();$("#6thdiv").hide();
+        }
+        else if (val == "Change LRNo && LRDate") {
+            $("#1stdiv").hide(); $("#2nddiv").hide(); $("#3rddiv").hide(); $("#4thdiv").hide(); $("#5thdiv").hide();$("#6thdiv").show();
         }
         else {
-            $("#1stdiv").hide(); $("#3rddiv").hide(); $("#2nddiv").show(); $("#4thdiv").hide();$("#5thdiv").hide();
+            $("#1stdiv").hide(); $("#3rddiv").hide(); $("#2nddiv").show(); $("#4thdiv").hide();$("#5thdiv").hide();$("#6thdiv").hide();
         }
     }
 </script>
@@ -619,6 +628,111 @@
                     </div>
                 </div>
             </div>
+
+
+
+
+            <div id="6thdiv">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCNO7, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO7", onkeydown = "GetHelpBlur('" + @Url.Action("GetDOCNO2", PageControllerName) + "','Document Details','DOCNO7','DOCNO7=DOCNO=0/DOCDT7=DOCDT=1/SLCD7=SLCD=2/SLNM7=SLNM=3/BLAUTONO7=AUTONO=4/OLDLRNO=LRNO/OLDLRDT=LRDT/NEWLRNO=LRNO/NEWLRDT=LRDT','BLAUTONO7')", onblur = "GetHelpBlur('" + @Url.Action("GetDOCNO2", PageControllerName) + "','Document Details','DOCNO7','DOCNO7=DOCNO=0/DOCDT7=DOCDT=1/SLCD7=SLCD=2/SLNM7=SLNM=3/BLAUTONO7=AUTONO=4/OLDLRNO=LRNO/OLDLRDT=LRDT/NEWLRNO=LRNO/NEWLRDT=LRDT', 'BLAUTONO7');", @placeholder = "Code", maxlength = 30 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetDOCNO2", PageControllerName)','Proforma Details','DOCNO7','DOCNO7=DOCNO=0/DOCDT7=DOCDT=1/SLCD7=SLCD=2/SLNM7=SLNM=3/BLAUTONO7=AUTONO=4/OLDLRNO=LRNO/OLDLRDT=LRDT/NEWLRNO=LRNO/NEWLRDT=LRDT','BLAUTONO7')" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 6px;">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCDT7, new { htmlAttributes = new { @class = "form-control", id = "DOCDT7", maxlength = 10, @placeholder = "dd/mm/yyyy", @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Supplier Code")
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 6px;">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLCD7, new { htmlAttributes = new { @class = "form-control", id = "SLCD7", maxlength = 20, @title = "Only for View", @placeholder = "Supplier Code", @readonly = "readonly", @TabIndex = -1 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top:6px;">
+                            @Html.Label("", "Supplier Name")
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="margin-top: 6px;">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM7, new { htmlAttributes = new { @class = "form-control", id = "SLNM7", maxlength = 10, @title = "Only for View", @placeholder = "Supplier Name", @readonly = "readonly", @TabIndex = -1 } })
+                            @Html.HiddenFor(model => model.BLAUTONO7, new { id = "BLAUTONO7" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Old Party LR No.")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.OLDLRNO, new { htmlAttributes = new { @class = "form-control", id = "OLDLRNO", maxlength = 20, @placeholder = "Old Party LR No", @TabIndex = -1, @readonly = "readonly" } })
+
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Old Party LR Date")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.OLDLRDT, new { htmlAttributes = new { @class = "form-control", id = "OLDLRDT", maxlength = 20, @placeholder = "dd/mm/yyyy", @TabIndex = -1, @readonly = "readonly" } })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "New Party LR No.")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.NEWLRNO, new { htmlAttributes = new { @class = "form-control", id = "NEWLRNO", maxlength = 20, @placeholder = "New Party LR No", onblur = "CheckBillNumber();" } })
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "New Party LR Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.NEWLRDT, new { htmlAttributes = new { @class = "form-control", id = "NEWLRDT", onchange = "DocdtChange(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 20 } })
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
             <div class="row" style="margin-top:10PX">
                 <div class="col-md-5">
                 </div>
