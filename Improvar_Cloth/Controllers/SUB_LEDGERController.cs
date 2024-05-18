@@ -1242,7 +1242,9 @@ namespace Improvar.Controllers
                     var SCONT = (from j in DB.M_SUBLEG_CONT where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
                     var SIFSC = (from j in DB.M_SUBLEG_IFSC where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
                     var STAX = (from j in DB.M_SUBLEG_TAX where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
-                    var SLOCOTH = (from j in DB.M_SUBLEG_LOCOTH where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
+                    //var SLOCOTH = (from j in DB.M_SUBLEG_LOCOTH where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
+                    string[] loca = (from i in DB_PREVYR_temp.M_LOCA select i.LOCCD + i.COMPCD).ToArray();
+                    var SLOCOTH = (from j in DB.M_SUBLEG_LOCOTH where (j.SLCD == VE.M_SUBLEG.SLCD) && loca.Contains(j.LOCCD + j.COMPCD) select j).ToList();
 
                     if (PSL == null)
                     {

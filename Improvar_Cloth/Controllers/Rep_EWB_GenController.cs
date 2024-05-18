@@ -18,7 +18,7 @@ namespace Improvar.Controllers
 {
     public class Rep_EWB_GenController : Controller
     {
-        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI,MTSL,OKTI,OYDI,OFPI,ODYI,OBLI,OCTI,OPRI,OSTI,OEMI,OJWI,OWAI,OIRI,FREC,SCHI,ODYI,OPRI,OEMI,OJWI,OSTI,OIRI";
+        string CS = null; string doctype = "SRET,PRET,SBILL,STRFO,SOTH,SBILD,TRWB,SPRM,TRFI,MTSL,OKTI,OYDI,OFPI,ODYI,OBLI,OCTI,OPRI,OSTI,OEMI,OJWI,OWAI,OIRI,FREC,SCHI,ODYI,OPRI,OEMI,OJWI,OSTI,OIRI,OJISS,IJISS,ISTKO";
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
         AdaequareGSP adaequareGSP = new AdaequareGSP();
@@ -104,13 +104,7 @@ namespace Improvar.Controllers
                     query += "and d.slcd = g.slcd(+) and a.autono = i.AUTONO(+) and b.docdt >= to_date('" + VE.DATEFROM + "', 'dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "', 'dd/mm/yyyy') ";
                     query += "and a.doccd = h.doccd and h.dOCTYPE in(" + doctype.retSqlformat() + ")  ";
                     query += "and a.autono not in ";
-                    query += "(select a.autono from " + fdbnm + ".t_vch_gst a,  " + dbnm + ".t_cntrl_hdr b,  " + dbnm + "." + trntable + " c, " + fdbnm + ".m_subleg d, " + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, ";
-                    query += "" + fdbnm + ".m_subleg_locoth g,  " + dbnm + ".m_doctype h, " + fdbnm + ".T_TXNeinv i ";
-                    query += "where a.autono = b.autono and a.autono = c.autono(+) and nvl(a.conslcd, a.pcode) = d.slcd(+) and nvl(c.translcd, c." + crslcd + ") = e.slcd(+) and nvl(b.cancel, 'N') = 'N' and b.compcd ='" + comp + "' ";
-                    query += "and b.loccd = '" + loc + "' and b.compcd || b.loccd = f.compcd || f.loccd and trim(c.ewaybillno) is null and(b.loccd = g.loccd or g.loccd is null) and(b.compcd = g.compcd or g.compcd is null) ";
-                    if (doccd != "") query += " and b.doccd in (" + doccd + ")  ";
-                    query += "and d.slcd = g.slcd(+) and a.autono = i.AUTONO(+) and b.docdt >= to_date('" + VE.DATEFROM + "', 'dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "', 'dd/mm/yyyy') ";
-                    query += "and a.doccd = h.doccd and h.dOCTYPE in(" + doctype.retSqlformat() + ") ) ";
+                    query += "(select a.autono from " + fdbnm + ".t_vch_gst a ) ";
                 }
 
                 query += ") a group by a.autono, a.doccd, a.docno, a.docdt,a.slcd, a.slnm, a.district, a.distance, a.trslnm, a.lorryno, a.lrno, a.lrdt,a.irnno,a.modcd ";
@@ -285,7 +279,7 @@ namespace Improvar.Controllers
                 }
                 //var no_bill = PJSON.Select(e => e.AUTONO).Distinct().ToArray();
                 string scm = "";
-               
+
                 foreach (var slctrow in VE.EWAYBILL)
                 {
                     string jsonstr = "";
@@ -412,7 +406,8 @@ namespace Improvar.Controllers
                                         scm = CommVar.PaySchema(UNQSNO); break;
                                 }
                                 string sql = "";//TO_DATE('" + fdt + "', 'DD/MM/YYYY')
-                                sql = "Update " + CommVar.SaleSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo + "' where autono='" + slctrow.AUTONO + "'";
+                                                //sql = "Update " + CommVar.SaleSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo + "' where autono='" + slctrow.AUTONO + "'";
+                                sql = "Update " + CommVar.CurSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo + "' where autono='" + slctrow.AUTONO + "'";
                                 masterHelp.SQLNonQuery(sql);
                                 //sql = "Update " + CommVar.FinSchema(UNQSNO) + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.ewayBillNo
                                 //    + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.ewayBillDate + "','dd/mm/yyyy hh:mi:ss AM'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.validUpto + "','dd/mm/yyyy hh:mi:ss AM')"
@@ -490,7 +485,8 @@ namespace Improvar.Controllers
                                     scm = CommVar.PaySchema(UNQSNO); break;
                             }
                             string sql = "";//TO_DATE('" + fdt + "', 'DD/MM/YYYY')
-                            sql = "Update " + CommVar.SaleSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo + "' where autono='" + slctrow.AUTONO + "'";
+                                            //sql = "Update " + CommVar.SaleSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo + "' where autono='" + slctrow.AUTONO + "'";
+                            sql = "Update " + CommVar.CurSchema(UNQSNO) + ".T_TXNTRANS set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo + "' where autono='" + slctrow.AUTONO + "'";
                             masterHelp.SQLNonQuery(sql);
                             sql = "Update " + scm + ".T_TXNewb set EWAYBILLNO='" + adqrRespGENEWAYBILL.result.EwbNo
                                  + "',EWAYBILLDT=TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss'),EWAYBILLVALID= TO_DATE('" + adqrRespGENEWAYBILL.result.EwbDt + "','yyyy-mm-dd hh24:mi:ss')"
@@ -525,11 +521,10 @@ namespace Improvar.Controllers
             {
                 #region get data
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string dbnm = CommVar.CurSchema(UNQSNO);
                 string fdbnm = CommVar.FinSchema(UNQSNO);
                 string comp = CommVar.Compcd(UNQSNO);
                 string loc = CommVar.Loccd(UNQSNO);
-                string aauto = "";
+                string aauto = "", modcd = "";
                 bool flag = false;
                 for (int j = 0; j < VE.EWAYBILL.Count; j++)
                 {
@@ -538,7 +533,8 @@ namespace Improvar.Controllers
                         if (VE.EWAYBILL[j].LORRYNOEXIST == false && VE.EWAYBILL[j].LORRYNO.retStr() != "")
                         {
                             string sql = "";
-                            sql = "update " + CommVar.SaleSchema(UNQSNO) + ".t_txntrans set lorryno='" + VE.EWAYBILL[j].LORRYNO + "' ";
+                            //sql = "update " + CommVar.SaleSchema(UNQSNO) + ".t_txntrans set lorryno='" + VE.EWAYBILL[j].LORRYNO + "' ";
+                            sql = "update " + CommVar.CurSchema(UNQSNO) + ".t_txntrans set lorryno='" + VE.EWAYBILL[j].LORRYNO + "' ";
                             sql += "where autono='" + VE.EWAYBILL[j].AUTONO + "' ";
                             masterHelp.SQLNonQuery(sql);
                         }
@@ -565,9 +561,8 @@ namespace Improvar.Controllers
                     PJSON.ForEach(e => e.message = "No row selected.Please select row.");
                     return PJSON;
                 }
-                if (aauto != "") aauto = aauto.Substring(1);
+                #endregion
                 DataTable rsComp;
-                DataTable tbl;
                 string query = "";
 
                 query = "select a.locnm slnm, a.gstno, a.add1||' '||a.add2 add1, a.add3||' '||a.add4 add2, a.district, a.pin, b.compnm,a.statecd, upper(c.statenm) statenm ";
@@ -575,153 +570,177 @@ namespace Improvar.Controllers
                 query += "where a.compcd=b.compcd and a.statecd=c.statecd(+) and ";
                 query += "a.compcd='" + comp + "' and a.loccd='" + loc + "' ";
                 rsComp = masterHelp.SQLquery(query);
-                string trntable = "", crslcd = "";
-                if (Module.MODCD == "F") { trntable = "T_TXNewb"; crslcd = "translcd"; } else { trntable = "t_txntrans"; crslcd = "crslcd"; }
-                query = "";
-                query += "select a.autono, b.doccd,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,";
-                query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) add1, decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) add2, d.district, nvl(d.othaddpin,d.pin) pin, ";
-                query += "d.statecd, upper(k.statenm) statenm, translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno, p.add1||' '||p.add2 badd1, ";
-                query += "p.add3||' '||p.add4 badd2, p.district bdistrict, p.pin bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, ";
-                query += "e.slnm trslnm, e.gstno trgst, e.cenno trcen, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
-                if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' ') itnm, a.slno, "; else query += "'' itnm, 1 slno, ";
-                query += "a.hsncode, l.guomcd, l.guomnm, nvl(m.distance,0) distance, ";
-                query += "o.goadd1||' '||o.goadd2 goadd1, o.goadd3 goadd2, o.district godistrict, o.pin gopin, ";
-                query += "sum(decode(nvl(j.gst_qntyconv,0),0,1,j.gst_qntyconv)*a.qnty) qnty, sum(a.amt) amt, ";
-                query += "nvl((select sum(blamt) blamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, ";
-                query += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
-                query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt ";
-                query += "from " + fdbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + dbnm + "." + trntable + " c, " + fdbnm + ".m_subleg d, ";
-                query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f,  " + fdbnm + ".m_doctype g," + fdbnm + ".m_uom j, ms_state k, ms_gstuom l, ";
-                query += fdbnm + ".m_subleg_locoth m, " + fdbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "ms_state q ";
-                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c." + crslcd + ")=e.slcd(+) and b.doccd=g.doccd and ";
-                query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
-                query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and ";
-                query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is null and ";
-                if (aauto != "") query += "a.autono in(" + aauto + ") and ";
-                query += "b.docdt >= to_date('" + VE.DATEFROM + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "','dd/mm/yyyy') ";
-                query += "group by a.autono, b.doccd,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), ";
-                query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) , decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) , nvl(d.othaddpin,d.pin) , ";
-                query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, p.add1||' '||p.add2, ";
-                query += "p.add3||' '||p.add4, p.district, p.pin, p.statecd, upper(q.statenm), ";
-                query += "e.slnm, e.gstno, e.cenno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
-                if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' '), a.slno, "; else query += "'', 1, ";
-                query += "a.hsncode,l.guomcd, l.guomnm, nvl(m.distance,0), ";
-                query += "o.goadd1||' '||o.goadd2, o.goadd3, o.district, o.pin ";
-                query += "order by blno, bldt, autono, slno ";
-                tbl = masterHelp.SQLquery(query);
-                if (tbl == null)
-                {
-                    PJSON.ForEach(e => e.message = "No record Found.");
-                    return PJSON;
-                }
-                #endregion
-                #region ewaybill preparation starts     
-                int i = 0;
-                var rno = 4;
-                string TtlTax = "";
-                while (i < tbl.Rows.Count)
-                {
-                    bool bltoshipto = false;
-                    if (tbl.Rows[i]["bgstno"].ToString() != tbl.Rows[i]["gstno"].ToString()) bltoshipto = true;
-                    Prepare_JSON prejson = new Prepare_JSON();
-                    TtlTax = tbl.Rows[i]["sgstper"].ToString() + '+' + tbl.Rows[i]["cgstper"].ToString() + '+' + tbl.Rows[i]["igstper"].ToString() + '+' + tbl.Rows[i]["cessper"].ToString() + "+0";
-                    //Wsheet.Cells[rno, 1].Value = tbl.Rows[i]["autono"];
-                    prejson.SLNO = Convert.ToInt16(i + 1);
-                    prejson.AUTONO = tbl.Rows[i]["AUTONO"].ToString();
-                    prejson.Supply_Type = "O"; //a (Outward)
-                    if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB" || tbl.Rows[i]["doctype"].ToString() == "TRFI")
-                    {
-                        prejson.SubSupply_Type = "5"; //b (OWN USE)
-                        prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)
-                    }
-                    else if(tbl.Rows[i]["doctype"].ToString()== "SPRM")
-                    {
-                        prejson.SubSupply_Type = "8"; // b(OTHERS)
-                        prejson.Doctype = "OTH"; //c (OTHERS)
-                    }
-                    else
-                    {
-                        prejson.SubSupply_Type = "1"; // b(Supply)
-                        prejson.Doctype = "INV"; //c (Tax Invoice)
-                    }
-                    prejson.blno = tbl.Rows[i]["blno"].ToString();//d
-                    prejson.bldt = Convert.ToDateTime(tbl.Rows[i]["bldt"]);//e
-                    prejson.Transaction_Type = (bltoshipto == true ? "2" : "1");//f
-                    prejson.compnm = rsComp.Rows[0]["compnm"].ToString();//g
-                    prejson.frmgstno = rsComp.Rows[0]["gstno"].ToString();//h
-                    if (VE.Checkbox1 == true && tbl.Rows[i]["goadd1"].ToString().Trim() != "") // (loc == "KOLK" && comp == "CHEM")
-                    {
-                        prejson.frmadd1 = tbl.Rows[i]["goadd1"].ToString();//i
-                        prejson.frmadd2 = tbl.Rows[i]["goadd2"].ToString();//j
-                        prejson.frmdistrict = tbl.Rows[i]["godistrict"].ToString();//k
-                        prejson.frmpin = tbl.Rows[i]["gopin"].ToString();//l
-                    }
-                    else
-                    {
-                        prejson.frmadd1 = rsComp.Rows[0]["add1"].ToString();//i
-                        prejson.frmadd2 = rsComp.Rows[0]["add2"].ToString();//j
-                        prejson.frmdistrict = rsComp.Rows[0]["district"].ToString();//k
-                        prejson.frmpin = rsComp.Rows[0]["pin"].ToString();//l
-                    }
-                    prejson.frmstatecd = rsComp.Rows[0]["statecd"].ToString();//m
-                    prejson.disptchfrmstatecd = rsComp.Rows[0]["statecd"].ToString();//n
-                    prejson.slnm = (bltoshipto == true ? tbl.Rows[i]["bslnm"].ToString() : tbl.Rows[i]["slnm"].ToString());//o
-                    prejson.togstno = tbl.Rows[i]["bgstno"].ToString(); //p
-                    prejson.toadd1 = (bltoshipto == true ? tbl.Rows[i]["badd1"].ToString() : tbl.Rows[i]["add1"].ToString());
-                    prejson.toadd2 = (bltoshipto == true ? tbl.Rows[i]["badd2"].ToString() : tbl.Rows[i]["add2"].ToString());
-                    prejson.todistrict = (bltoshipto == true ? tbl.Rows[i]["bdistrict"].ToString() : tbl.Rows[i]["district"].ToString());//s
-                    prejson.shiptopin = tbl.Rows[i]["pin"].ToString();//t
-                    prejson.billtostcd = tbl.Rows[i]["bstatecd"].ToString();//u
-                    prejson.shiptostcd = tbl.Rows[i]["statecd"].ToString();//v
-                    prejson.itnm = tbl.Rows[i]["itnm"].ToString();//w
-                    prejson.itdscp = tbl.Rows[i]["itnm"].ToString();//x
-                    prejson.hsncode = tbl.Rows[i]["hsncode"].ToString();//y
-                    prejson.guomcd = tbl.Rows[i]["guomcd"].ToString();//z
-                    prejson.qnty = tbl.Rows[i]["qnty"].retDbl();//aa
-                    prejson.amt = tbl.Rows[i]["amt"].retDbl();//ab
-                    prejson.TtlTax = TtlTax;//ac
-                    prejson.sgstper = tbl.Rows[i]["sgstper"].retDbl();//json
-                    prejson.cgstper = tbl.Rows[i]["cgstper"].retDbl();//json
-                    prejson.igstper = tbl.Rows[i]["igstper"].retDbl();//json
-                    prejson.cessper = tbl.Rows[i]["cessper"].retDbl();//json
-                    prejson.cgstamt = tbl.Rows[i]["cgstamt"].retDbl();//ad
-                    prejson.sgstamt = tbl.Rows[i]["sgstamt"].retDbl();//ae
-                    prejson.igstamt = tbl.Rows[i]["igstamt"].retDbl();//af
-                    prejson.cessamt = tbl.Rows[i]["cessamt"].retDbl();//ag                           
-                    prejson.cess_non_advol = 0;//ah cess non advol
-                    prejson.othramt = tbl.Rows[i]["othramt"].retDbl();//ah others
-                    prejson.transMode = "1";//ah
-                    prejson.invamt = tbl.Rows[i]["blamt"].retDbl();
-                    prejson.distance = tbl.Rows[i]["distance"].retInt();
-                    prejson.trslnm = tbl.Rows[i]["trslnm"].ToString();//am
-                    if (tbl.Rows[i]["trcen"].retStr() != "")
-                    {
-                        prejson.trgst = tbl.Rows[i]["trcen"].ToString();//an
-                    }
-                    else
-                    {
-                        prejson.trgst = tbl.Rows[i]["trgst"].ToString();//an
-                    }
-                    prejson.lrno = tbl.Rows[i]["lrno"].ToString();//ao 
-                    if (tbl.Rows[i]["lrdt"].ToString() == "" && tbl.Rows[i]["lrno"].ToString() != "")
-                    {
-                        PJSON.ForEach(e => e.message = "LR DATE NOT FOUND AT DOCNO=" + prejson.blno + ",ITEM NAME=" + prejson.itnm + "<BR/> <H3>Please put 'lr date' at the invoice</H3>");
-                        return PJSON;
-                    }
-                    else
-                    {
-                        prejson.lrdt = tbl.Rows[i]["lrdt"] == DBNull.Value ? "" : tbl.Rows[i]["lrdt"].ToString().Substring(0, 10);//ap
-                    }
-                    prejson.Vehicle_No = tbl.Rows[i]["lorryno"].ToString();//ap
-                    prejson.Vehile_Type = "R";//aq
 
-                    PJSON.Add(prejson);
-                    i = i + 1;
-                    rno = rno + 1;
-                }//while
-                PJSON.ForEach(e => e.message = "");
-                #endregion
+                for (int j = 0; j < VE.EWAYBILL.Count; j++)
+                {
+                    if (VE.EWAYBILL[j].Checked == true)
+                    {
+
+                        aauto = VE.EWAYBILL[j].AUTONO.retSqlformat();
+
+                        DataTable tbl;
+                        query = "";
+                        string dbnm = CommVar.CurSchema(UNQSNO);
+                        string trntable = "", crslcd = "";
+                        if (Module.MODCD == "F") { trntable = "T_TXNewb"; crslcd = "translcd"; } else { trntable = "t_txntrans"; crslcd = "crslcd"; }
+                        dbnm = VE.EWAYBILL[j].MODCD == "F" ? CommVar.FinSchema(UNQSNO) : CommVar.CurSchema(UNQSNO);
+
+                        query = "";
+                        query += "select a.autono, b.doccd,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,";
+                        query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) add1, decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) add2, d.district, nvl(d.othaddpin,d.pin) pin, ";
+                        query += "d.statecd, upper(k.statenm) statenm, translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno, p.add1||' '||p.add2 badd1, ";
+                        query += "p.add3||' '||p.add4 badd2, p.district bdistrict, p.pin bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, ";
+                        query += "e.slnm trslnm, e.gstno trgst, e.cenno trcen, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
+                        if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' ') itnm, a.slno, "; else query += "'' itnm, 1 slno, ";
+                        query += "a.hsncode, l.guomcd, l.guomnm, nvl(m.distance,0) distance, ";
+                        query += "o.goadd1||' '||o.goadd2 goadd1, o.goadd3 goadd2, o.district godistrict, o.pin gopin,n.SUPLTYPE,n.DOCTYPE EWB_DOCTYPE,n.subtype, ";
+                        query += "sum(decode(nvl(j.gst_qntyconv,0),0,1,j.gst_qntyconv)*a.qnty) qnty, sum(a.amt) amt, ";
+                        query += "nvl((select sum(blamt) blamt from " + dbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, ";
+                        query += "nvl((select sum(tcsamt) tcsamt from " + dbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
+                        query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt ";
+                        query += "from " + dbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + CommVar.CurSchema(UNQSNO) + "." + trntable + " c, " + fdbnm + ".m_subleg d, ";
+                        query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f,  " + dbnm + ".m_doctype g," + fdbnm + ".m_uom j, ms_state k, ms_gstuom l, ";
+                        query += fdbnm + ".m_subleg_locoth m, " + dbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "ms_state q ";
+                        query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c." + crslcd + ")=e.slcd(+) and b.doccd=g.doccd and ";
+                        query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
+                        query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and ";
+                        query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is null and ";
+                        if (aauto != "") query += "a.autono in(" + aauto + ") and ";
+                        query += "b.docdt >= to_date('" + VE.DATEFROM + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "','dd/mm/yyyy') ";
+                        query += "group by a.autono, b.doccd,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), ";
+                        query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) , decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) , nvl(d.othaddpin,d.pin) , ";
+                        query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, p.add1||' '||p.add2, ";
+                        query += "p.add3||' '||p.add4, p.district, p.pin, p.statecd, upper(q.statenm), ";
+                        query += "e.slnm, e.gstno, e.cenno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
+                        if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' '), a.slno, "; else query += "'', 1, ";
+                        query += "a.hsncode,l.guomcd, l.guomnm, nvl(m.distance,0), ";
+                        query += "o.goadd1||' '||o.goadd2, o.goadd3, o.district, o.pin,n.SUPLTYPE,n.DOCTYPE,n.subtype ";
+                        query += "order by blno, bldt, autono, slno ";
+                        tbl = masterHelp.SQLquery(query);
+                        if (tbl == null)
+                        {
+                            PJSON.ForEach(e => e.message = "No record Found.");
+                            return PJSON;
+                        }
+
+                        #region ewaybill preparation starts     
+                        int i = 0;
+                        var rno = 4;
+                        string TtlTax = "";
+                        while (i < tbl.Rows.Count)
+                        {
+                            bool bltoshipto = false;
+                            if (tbl.Rows[i]["bgstno"].ToString() != tbl.Rows[i]["gstno"].ToString()) bltoshipto = true;
+                            Prepare_JSON prejson = new Prepare_JSON();
+                            TtlTax = tbl.Rows[i]["sgstper"].ToString() + '+' + tbl.Rows[i]["cgstper"].ToString() + '+' + tbl.Rows[i]["igstper"].ToString() + '+' + tbl.Rows[i]["cessper"].ToString() + "+0";
+                            //Wsheet.Cells[rno, 1].Value = tbl.Rows[i]["autono"];
+                            prejson.SLNO = Convert.ToInt16(i + 1);
+                            prejson.AUTONO = tbl.Rows[i]["AUTONO"].ToString();
+                            if (tbl.Rows[i]["SUPLTYPE"].retStr() == "")
+                            {
+                                prejson.Supply_Type = "O"; //a (Outward)
+                                if (tbl.Rows[i]["doctype"].ToString() == "STRFO" || tbl.Rows[i]["doctype"].ToString() == "TRWB" || tbl.Rows[i]["doctype"].ToString() == "TRFI")
+                                {
+                                    prejson.SubSupply_Type = "5"; //b (OWN USE)
+                                    prejson.Doctype = "CHL"; //c (DELIVERY CHALLAN)
+                                }
+                                else
+                                {
+                                    prejson.SubSupply_Type = "1"; // b(Supply)
+                                    prejson.Doctype = "INV"; //c (Tax Invoice)
+                                }
+                            }
+                            else
+                            {
+                                prejson.Supply_Type = tbl.Rows[i]["SUPLTYPE"].ToString();
+                                prejson.SubSupply_Type = tbl.Rows[i]["SUBTYPE"].ToString();
+                                prejson.Doctype = tbl.Rows[i]["EWB_DOCTYPE"].ToString();
+
+                            }
+                            prejson.blno = tbl.Rows[i]["blno"].ToString();//d
+                            prejson.bldt = Convert.ToDateTime(tbl.Rows[i]["bldt"]);//e
+                            prejson.Transaction_Type = (bltoshipto == true ? "2" : "1");//f
+                            prejson.compnm = rsComp.Rows[0]["compnm"].ToString();//g
+                            prejson.frmgstno = rsComp.Rows[0]["gstno"].ToString();//h
+                            if (VE.Checkbox1 == true && tbl.Rows[i]["goadd1"].ToString().Trim() != "") // (loc == "KOLK" && comp == "CHEM")
+                            {
+                                prejson.frmadd1 = tbl.Rows[i]["goadd1"].ToString();//i
+                                prejson.frmadd2 = tbl.Rows[i]["goadd2"].ToString();//j
+                                prejson.frmdistrict = tbl.Rows[i]["godistrict"].ToString();//k
+                                prejson.frmpin = tbl.Rows[i]["gopin"].ToString();//l
+                            }
+                            else
+                            {
+                                prejson.frmadd1 = rsComp.Rows[0]["add1"].ToString();//i
+                                prejson.frmadd2 = rsComp.Rows[0]["add2"].ToString();//j
+                                prejson.frmdistrict = rsComp.Rows[0]["district"].ToString();//k
+                                prejson.frmpin = rsComp.Rows[0]["pin"].ToString();//l
+                            }
+                            prejson.frmstatecd = rsComp.Rows[0]["statecd"].ToString();//m
+                            prejson.disptchfrmstatecd = rsComp.Rows[0]["statecd"].ToString();//n
+                            prejson.slnm = (bltoshipto == true ? tbl.Rows[i]["bslnm"].ToString() : tbl.Rows[i]["slnm"].ToString());//o
+                            prejson.togstno = tbl.Rows[i]["bgstno"].ToString() == "" ? "URP" : tbl.Rows[i]["bgstno"].ToString(); //p
+                                                                                                                                 //prejson.togstno = tbl.Rows[i]["bgstno"].ToString() == "" ? "UPR" : tbl.Rows[i]["bgstno"].ToString(); //p
+                            prejson.toadd1 = (bltoshipto == true ? tbl.Rows[i]["badd1"].ToString() : tbl.Rows[i]["add1"].ToString());
+                            prejson.toadd2 = (bltoshipto == true ? tbl.Rows[i]["badd2"].ToString() : tbl.Rows[i]["add2"].ToString());
+                            prejson.todistrict = (bltoshipto == true ? tbl.Rows[i]["bdistrict"].ToString() : tbl.Rows[i]["district"].ToString());//s
+                            prejson.shiptopin = tbl.Rows[i]["pin"].ToString();//t
+                            prejson.billtostcd = tbl.Rows[i]["bstatecd"].ToString();//u
+                            prejson.shiptostcd = tbl.Rows[i]["statecd"].ToString();//v
+                            prejson.itnm = tbl.Rows[i]["itnm"].ToString();//w
+                            prejson.itdscp = tbl.Rows[i]["itnm"].ToString();//x
+                            prejson.hsncode = tbl.Rows[i]["hsncode"].ToString();//y
+                            prejson.guomcd = tbl.Rows[i]["guomcd"].ToString();//z
+                            prejson.qnty = tbl.Rows[i]["qnty"].retDbl();//aa
+                            prejson.amt = tbl.Rows[i]["amt"].retDbl();//ab
+                            prejson.TtlTax = TtlTax;//ac
+                            prejson.sgstper = tbl.Rows[i]["sgstper"].retDbl();//json
+                            prejson.cgstper = tbl.Rows[i]["cgstper"].retDbl();//json
+                            prejson.igstper = tbl.Rows[i]["igstper"].retDbl();//json
+                            prejson.cessper = tbl.Rows[i]["cessper"].retDbl();//json
+                            prejson.cgstamt = tbl.Rows[i]["cgstamt"].retDbl();//ad
+                            prejson.sgstamt = tbl.Rows[i]["sgstamt"].retDbl();//ae
+                            prejson.igstamt = tbl.Rows[i]["igstamt"].retDbl();//af
+                            prejson.cessamt = tbl.Rows[i]["cessamt"].retDbl();//ag                           
+                            prejson.cess_non_advol = 0;//ah cess non advol
+                            prejson.othramt = tbl.Rows[i]["othramt"].retDbl();//ah others
+                            prejson.transMode = "1";//ah
+                            prejson.invamt = tbl.Rows[i]["blamt"].retDbl();
+                            prejson.distance = tbl.Rows[i]["distance"].retInt();
+                            prejson.trslnm = tbl.Rows[i]["trslnm"].ToString();//am
+                            if (tbl.Rows[i]["trcen"].retStr() != "")
+                            {
+                                prejson.trgst = tbl.Rows[i]["trcen"].ToString();//an
+                            }
+                            else
+                            {
+                                prejson.trgst = tbl.Rows[i]["trgst"].ToString();//an
+                            }
+                            prejson.lrno = tbl.Rows[i]["lrno"].ToString();//ao 
+                            if (tbl.Rows[i]["lrdt"].ToString() == "" && tbl.Rows[i]["lrno"].ToString() != "")
+                            {
+                                PJSON.ForEach(e => e.message = "LR DATE NOT FOUND AT DOCNO=" + prejson.blno + ",ITEM NAME=" + prejson.itnm + "<BR/> <H3>Please put 'lr date' at the invoice</H3>");
+                                return PJSON;
+                            }
+                            else
+                            {
+                                prejson.lrdt = tbl.Rows[i]["lrdt"] == DBNull.Value ? "" : tbl.Rows[i]["lrdt"].ToString().Substring(0, 10);//ap
+                            }
+                            prejson.Vehicle_No = tbl.Rows[i]["lorryno"].ToString();//ap
+                            prejson.Vehile_Type = "R";//aq
+
+                            PJSON.Add(prejson);
+                            i = i + 1;
+                            rno = rno + 1;
+                        }//while
+                        PJSON.ForEach(e => e.message = "");
+                        #endregion
+                    }
+                }
             }
+
+
+
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
