@@ -1,0 +1,115 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "Sale Purchase Report";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function inputhelp(id, id1, id2) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString().substr(0, 10));
+        $("#" + id2.id).val(str[2].toString().substr(0, 10));
+    }
+</script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+    });
+</script>
+@{
+    var PageControllerName = "Rep_SalPur";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+
+            <input type="hidden" id="Weekurl" value="@Url.Action("GetWeekhelp", PageControllerName)" />
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Group")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1), new { @class = " form-control" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.FDT, new { @class = "form-control ", id = "FDT", Required = "Required", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.TDT, new { @class = "form-control ", id = "TDT", Required = "Required", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Show Report (fifo)")
+
+                        </div>
+                    </div>
+                    <div class="col-md-1" style="width:auto;">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            @Html.CheckBoxFor(model => model.Checkbox1)
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Rep Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <input type="radio" name="Reptype" value="details" checked />Details &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="Reptype" value="sumpar" />Summary (Party) &nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="Reptype" value="summitm" />Summary (Item)
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}

@@ -311,6 +311,7 @@
     <Compile Include="Controllers\Rep_Rate_QueryController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_SalesManController.cs" />
+    <Compile Include="Controllers\Rep_SalPurController.cs" />
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
@@ -1540,6 +1541,7 @@
     <Content Include="Views\Shared\_T_StockAdj_Popup.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_Upload.cshtml" />
     <Content Include="Views\Rep_MIS_SaleStk\Rep_MIS_SaleStk.cshtml" />
+    <Content Include="Views\Rep_SalPur\Rep_SalPur.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
