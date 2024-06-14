@@ -30,6 +30,9 @@ namespace Improvar.Controllers
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
 
+                    VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
+                    VE.Itgrpnm = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
+
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
 
@@ -61,7 +64,7 @@ namespace Improvar.Controllers
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string fdt = FC["FDT"].retDateStr(), tdt = FC["TDT"].retDateStr();
-                string itgrpcd = "'" + VE.TEXTBOX1 + "'";
+                string itgrpcd = "";
                 string reptype = FC["reptype"].ToString();
                 string sql = "";
                 string txntag = "'SB','SR'";
@@ -78,8 +81,9 @@ namespace Improvar.Controllers
                 {
                     party = FC["slcdvalue"].ToString().retSqlformat();
                 }
+                if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
 
-                tblpur = Sales_func.GenStocktblwithVal("FIFO", Convert.ToDateTime(fdt).AddDays(-1).retDateStr(), "", "", "",selitcd, "", true, "", false, "", "", "", "", false,false, tdt);
+                tblpur = Sales_func.GenStocktblwithVal("FIFO", Convert.ToDateTime(fdt).AddDays(-1).retDateStr(), "", "", itgrpcd,selitcd,"", true, "", false, "", "", "", "", false,false, tdt);
 
                 sql = "";
                 sql += "select a.autono, a.doctag, a.docno, a.docdt, a.slcd, a.slnm, a.slno, a.itcd,a.ITGRPCD,a.itgrpnm,a.STYLENO, a.itnm, a.uomnm, a.batchautono, a.batchno,a.barno, " + Environment.NewLine; ;
