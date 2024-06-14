@@ -2641,7 +2641,7 @@ namespace Improvar
                 return ex.Message;
             }
         }
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false)
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt="")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             var MSYSCNFG = M_SYSCNFG(tdt.retDateStr());
@@ -2676,7 +2676,15 @@ namespace Improvar
 
             sqlc = "";
             sqlc += "where a.autono=b.autono and nvl(b.cancel,'N') = 'N' and a.autono=c.autono(+) and a.barno=h.barno(+) and " + Environment.NewLine;
-            if (tdt.retStr() != "") sqlc += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and " + Environment.NewLine;
+            //if (indatadocdt != "")
+            //{
+            //     sqlc += "b.docdt <= to_date('" + indatadocdt + "','dd/mm/yyyy') and " + Environment.NewLine;
+            //}
+            //else
+            //{
+            //    if (tdt.retStr() != "") sqlc += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and " + Environment.NewLine;
+            //}
+
             sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and " + Environment.NewLine;
             if (LOCCD != "") { sqlc += " b.loccd in (" + LOCCD + ") and " + Environment.NewLine; } else { sqlc += " b.loccd='" + LOC + "' and " + Environment.NewLine; }
             if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and " + Environment.NewLine;
@@ -2696,6 +2704,14 @@ namespace Improvar
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e," + scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
             sql += sqlc;
+            if (indatadocdt != "")
+            {
+                sql += "and b.docdt <= to_date('" + indatadocdt + "','dd/mm/yyyy') " + Environment.NewLine;
+            }
+            else
+            {
+                if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+            }
             if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
             sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
@@ -2741,6 +2757,7 @@ namespace Improvar
             //{
             sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             //}
+            if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
             sql += sqldgrp;
             sql += "order by itcd " + Environment.NewLine;
