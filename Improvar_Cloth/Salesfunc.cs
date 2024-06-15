@@ -2815,6 +2815,7 @@ namespace Improvar
             rsStock.Columns.Add("gonm", typeof(string), "");
             rsStock.Columns.Add("itstyle", typeof(string), "");
             rsStock.Columns.Add("stktype", typeof(string), "");
+            rsStock.Columns.Add("outqnty", typeof(double), "");
 
             #endregion
 
@@ -2942,6 +2943,7 @@ namespace Improvar
                                     //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                                     //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                     //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+                                    rsStock.Rows[rNo]["outqnty"] = 0;
                                 }
                             }
                             i++;
@@ -2984,6 +2986,7 @@ namespace Improvar
                                 //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                                 //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                 //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+                                rsStock.Rows[rNo]["outqnty"] = 0;
                             }
                         }
                         if (summary == true)
@@ -3020,6 +3023,7 @@ namespace Improvar
                             //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                             //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                             //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+                            rsStock.Rows[rNo]["outqnty"] = 0;
                         }
                     }
                     ig++;
