@@ -2713,7 +2713,7 @@ namespace Improvar
                 if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
             }
             if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
-            sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR') and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
+            sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and (c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno >1000 )) and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
             sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
@@ -2747,7 +2747,8 @@ namespace Improvar
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
-            if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR') and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') and " + Environment.NewLine;
+            if (skipStkTrnf == true) sql += "(c.doctag not in ('PB','OP','PD','JR')  or (c.doctag in ('AD') and a.slno <=1000 ) )and "; else sql += "(c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno <=1000 ) ) and " + Environment.NewLine;
+           
             //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             //if (MSYSCNFG.STKINCLPINV == "Y")
             //{

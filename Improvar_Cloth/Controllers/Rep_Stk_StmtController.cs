@@ -855,7 +855,7 @@ namespace Improvar.Controllers
 
                     netstktrans = tbl1.Rows[i]["doctag"].retStr() == "ST" ? tbl1.Rows[i]["qnty"].retDbl() : 0;
 
-                    netadj = (tbl1.Rows[i]["doctag"].retStr() == "SC") || (tbl1.Rows[i]["doctag"].retStr() == "SA") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
+                    netadj = (tbl1.Rows[i]["doctag"].retStr() == "SC") || (tbl1.Rows[i]["doctag"].retStr() == "SA") || (tbl1.Rows[i]["doctag"].retStr() == "AD") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
 
                     balqty = opqty.retDbl() + netpur.retDbl() + karqty.retDbl() - netsale.retDbl() - approval.retDbl() + netstktrans.retDbl() + netadj.retDbl();
 
