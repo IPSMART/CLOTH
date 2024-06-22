@@ -2462,7 +2462,7 @@ namespace Improvar
             OraCon.Dispose();
             return MGROUP;
         }
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "",string CONVUOMCD="")
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "", string CONVUOMCD = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             string DefaultAction = "A";
@@ -2641,7 +2641,7 @@ namespace Improvar
                 return ex.Message;
             }
         }
-        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt="")
+        public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt = "")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             var MSYSCNFG = M_SYSCNFG(tdt.retDateStr());
@@ -2748,7 +2748,7 @@ namespace Improvar
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
             if (skipStkTrnf == true) sql += "(c.doctag not in ('PB','OP','PD','JR')  or (c.doctag in ('AD') and a.slno <=1000 ) )and "; else sql += "(c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno <=1000 ) ) and " + Environment.NewLine;
-           
+
             //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             //if (MSYSCNFG.STKINCLPINV == "Y")
             //{
@@ -2817,7 +2817,9 @@ namespace Improvar
             rsStock.Columns.Add("itstyle", typeof(string), "");
             rsStock.Columns.Add("stktype", typeof(string), "");
             rsStock.Columns.Add("outqnty", typeof(double), "");
-
+            rsStock.Columns.Add("documentdt", typeof(DateTime), "");
+            rsStock.Columns.Add("lastprate", typeof(double), "");
+            rsStock.Columns.Add("lastpdocno", typeof(string), "");
             #endregion
 
             double balqty = 0, outqty = 0, avrate = 0, stkamt = 0, outnos = 0, balnos = 0;
@@ -2849,6 +2851,9 @@ namespace Improvar
                         itrecofound = true;
                     }
                     double lastinrt = (from DataRow dr in tbl1.Rows select dr["rate"]).LastOrDefault().retDbl();
+                    string[] indoctag = { "SR", "AD" };
+                    string lastpdocno = (from DataRow dr in tbl1.Rows where !indoctag.Contains(dr["doctag"].retStr()) select dr["docno"]).LastOrDefault().retStr();
+                    double lastprt = (from DataRow dr in tbl1.Rows where !indoctag.Contains(dr["doctag"].retStr()) select dr["rate"]).LastOrDefault().retDbl();
 
                     outqty = 0; outnos = 0;
                     var tbl2 = rsOut.Select(data);
@@ -2907,6 +2912,7 @@ namespace Improvar
                                     //rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
                                     rsStock.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"];
                                     rsStock.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"];
+                                    rsStock.Rows[rNo]["documentdt"] = Convert.ToDateTime(tbl1.Rows[i]["docdt"].retStr());
                                     rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
                                     rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
                                     rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
@@ -2945,6 +2951,8 @@ namespace Improvar
                                     //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                     //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                                     rsStock.Rows[rNo]["outqnty"] = 0;
+                                    rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
+                                    rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
                                 }
                             }
                             i++;
@@ -2988,6 +2996,8 @@ namespace Improvar
                                 //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                 //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                                 rsStock.Rows[rNo]["outqnty"] = 0;
+                                rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
+                                rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
                             }
                         }
                         if (summary == true)
@@ -3025,6 +3035,8 @@ namespace Improvar
                             //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                             //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                             rsStock.Rows[rNo]["outqnty"] = 0;
+                            rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
+                            rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
                         }
                     }
                     ig++;

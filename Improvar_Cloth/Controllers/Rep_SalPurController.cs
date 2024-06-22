@@ -83,7 +83,9 @@ namespace Improvar.Controllers
                 }
                 if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
 
-                tblpur = Sales_func.GenStocktblwithVal("FIFO", Convert.ToDateTime(fdt).AddDays(-1).retDateStr(), "", "", itgrpcd, selitcd, "", true, "", false, "", "", "", "", false, false, tdt);
+                string finsdt = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-1).retDateStr();
+                tblpur = Sales_func.GenStocktblwithVal("FIFO", finsdt, "", "", itgrpcd, selitcd, "", true, "", false, "", "", "", "", false, false, tdt);
+                //tblpur = Sales_func.GenStocktblwithVal("FIFO", Convert.ToDateTime(fdt).AddDays(-1).retDateStr(), "", "", itgrpcd, selitcd, "", true, "", false, "", "", "", "", false, false, tdt);
 
                 sql = "";
                 sql += "select a.autono, a.doctag, a.docno, a.docdt, a.slcd, a.slnm, a.slno, a.itcd,a.ITGRPCD,a.itgrpnm,a.STYLENO, a.itnm, a.uomnm, a.batchautono, a.batchno,a.barno, " + Environment.NewLine; ;
@@ -100,7 +102,7 @@ namespace Improvar.Controllers
                 sql += "f.uomcd=h.uomcd(+) and  a.barno=i.barno(+) and i.autono=j.autono(+) and i.autono=l.autono(+) and f.itgrpcd=k.itgrpcd(+) and " + Environment.NewLine; ;
                 sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' and " + Environment.NewLine; ;
                 sql += "c.doctag in (" + txntag + ") and  ";
-                sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  " + Environment.NewLine; ;
+                //sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  " + Environment.NewLine; ;
                 sql += "c.slcd=e.slcd and b.itcd=f.itcd(+) " + Environment.NewLine;
                 if (itgrpcd.retStr() != "") sql += "and f.itgrpcd in (" + itgrpcd + ") " + Environment.NewLine;
                 sql += ") a, " + Environment.NewLine; ;
@@ -117,20 +119,9 @@ namespace Improvar.Controllers
 
                 sql += "group by a.autono, a.doctag, a.docno, a.docdt, a.slcd, a.slnm, a.slno, a.itcd,a.ITGRPCD,a.itgrpnm,a.STYLENO, a.itnm, a.uomnm, a.batchautono, a.batchno,a.barno, " + Environment.NewLine; ;
                 sql += "a.itnm||' '||a.STYLENO , " + Environment.NewLine; ;
-                sql += "a.pblno, a.pdocdt, a.prate,a.rate  " + Environment.NewLine; ;
-                if (reptype == "details")
-                {
-                    sql += "order by docdt, docno " + Environment.NewLine;
-                }
-                else if (reptype == "sumpar")
-                {
-                    sql += "order by slcd,slnm " + Environment.NewLine;
-                }
-                else
-                {
-                    sql += "order by a.itcd,a.itnm,a.STYLENO " + Environment.NewLine;
+                sql += "a.pblno, a.pdocdt, a.prate,a.rate  " + Environment.NewLine;
+                sql += "order by docdt, docno,a.itcd,a.barno " + Environment.NewLine;
 
-                }
                 rsTbl = MasterHelp.SQLquery(sql);
 
                 if (rsTbl.Rows.Count == 0)
@@ -141,7 +132,7 @@ namespace Improvar.Controllers
                 DataTable fixRs = new DataTable("stock");
                 fixRs.Columns.Add("AUTONO", typeof(string), "");
                 fixRs.Columns.Add("docno", typeof(string), "");
-                fixRs.Columns.Add("docdt", typeof(string), "");
+                fixRs.Columns.Add("docdt", typeof(DateTime), "");
                 fixRs.Columns.Add("slcd", typeof(string), "");
                 fixRs.Columns.Add("slnm", typeof(string), "");
                 fixRs.Columns.Add("ITGRPNM", typeof(string), "");
@@ -160,35 +151,49 @@ namespace Improvar.Controllers
                 maxR = rsTbl.Rows.Count - 1;
                 while (i <= maxR)
                 {
+                    int mult = 1;
+                    if (rsTbl.Rows[i]["doctag"].ToString() == "SR" || rsTbl.Rows[i]["doctag"].ToString() == "AD")
+                    {
+                        mult = -1;
+                    }
                     if (rsTbl.Rows[i]["docno"].retStr() == "SNSRN/0104")
                     {
                         var xx = "";
                     }
                     string itcd = rsTbl.Rows[i]["itcd"].retStr();
                     string barno = rsTbl.Rows[i]["barno"].retStr();
-                    double salBalqnty = rsTbl.Rows[i]["qnty"].retDbl();
+                    double salBalqnty = rsTbl.Rows[i]["qnty"].retDbl() * mult;
                     double balqnty = 0;
                     double salCostAmt = 0;
                     string purdocno = "";
-                    var temppur = tblpur.Select("itcd='" + itcd + "' and barno='" + barno + "' and balqnty <> outqnty");
+
+                    var temppur = tblpur.Select("itcd='" + itcd + "' and barno='" + barno + "' and balqnty <> outqnty", "documentdt,itcd,barno asc");
                     if (temppur.Count() > 0)
                     {
                         for (int j = 0; j <= temppur.Count() - 1; j++)
                         {
-                            balqnty = temppur[j]["balqnty"].retDbl() - temppur[j]["outqnty"].retDbl();
+
+                            balqnty = (temppur[j]["balqnty"].retDbl() - temppur[j]["outqnty"].retDbl()).toRound(3);
+                            double rt = temppur[j]["rate"].retDbl();
+                            string docno = temppur[j]["docno"].retStr();
+                            if (rsTbl.Rows[i]["doctag"].ToString() == "SR" || rsTbl.Rows[i]["doctag"].ToString() == "AD")
+                            {
+                                rt = temppur[j]["lastprate"].retDbl();
+                                docno = temppur[j]["lastpdocno"].retStr();
+                            }
                             if (salBalqnty <= balqnty)
                             {
-                                salCostAmt = salCostAmt + (salBalqnty * temppur[j]["rate"].retDbl()).toRound(2);
-                                temppur[j]["outqnty"] = temppur[j]["outqnty"].retDbl() + salBalqnty;
+                                salCostAmt = (salCostAmt + (salBalqnty * rt).toRound(2)).toRound();
+                                temppur[j]["outqnty"] = (temppur[j]["outqnty"].retDbl() + salBalqnty).toRound(3);
                                 salBalqnty = 0;
-                                purdocno += temppur[j]["docno"].retStr() + ",";
+                                purdocno += docno + ",";
                             }
                             else
                             {
-                                salCostAmt = salCostAmt + (balqnty * temppur[j]["rate"].retDbl()).toRound(2);
-                                salBalqnty = salBalqnty - balqnty;
+                                salCostAmt = (salCostAmt + (balqnty * rt).toRound(2)).toRound();
+                                salBalqnty = (salBalqnty - balqnty).toRound(3);
                                 temppur[j]["outqnty"] = temppur[j]["balqnty"].retDbl();
-                                purdocno += temppur[j]["docno"].retStr() + ",";
+                                purdocno += docno + ",";
                             }
                             if (salBalqnty <= 0) break;
                         }
@@ -197,22 +202,24 @@ namespace Improvar.Controllers
                     {
                         purdocno = purdocno.Substring(0, purdocno.Length - 1);
                     }
+
                     fixRs.Rows.Add(""); rNo = fixRs.Rows.Count - 1;
                     fixRs.Rows[rNo]["docno"] = rsTbl.Rows[i]["docno"];
-                    fixRs.Rows[rNo]["docdt"] = rsTbl.Rows[i]["docdt"].retDateStr();
+                    fixRs.Rows[rNo]["docdt"] = Convert.ToDateTime(rsTbl.Rows[i]["docdt"].retDateStr());
                     fixRs.Rows[rNo]["slcd"] = rsTbl.Rows[i]["slcd"];
                     fixRs.Rows[rNo]["slnm"] = rsTbl.Rows[i]["slnm"];
                     fixRs.Rows[rNo]["ITGRPNM"] = rsTbl.Rows[i]["ITGRPNM"];
                     fixRs.Rows[rNo]["itcd"] = rsTbl.Rows[i]["itcd"];
                     fixRs.Rows[rNo]["itstyle"] = rsTbl.Rows[i]["itstyle"];
                     fixRs.Rows[rNo]["uom"] = rsTbl.Rows[i]["uomnm"];
-                    fixRs.Rows[rNo]["qnty"] = rsTbl.Rows[i]["qnty"].retDbl();
+                    fixRs.Rows[rNo]["qnty"] = rsTbl.Rows[i]["qnty"].retDbl() * mult;
                     fixRs.Rows[rNo]["srate"] = rsTbl.Rows[i]["rate"].retDbl();
-                    fixRs.Rows[rNo]["samt"] = rsTbl.Rows[i]["btxblval"].retDbl();
-                    fixRs.Rows[rNo]["prate"] = rsTbl.Rows[i]["qnty"].retDbl() == 0 ? 0 : (salCostAmt / rsTbl.Rows[i]["qnty"].retDbl()).toRound();
+                    fixRs.Rows[rNo]["samt"] = rsTbl.Rows[i]["btxblval"].retDbl() * mult;
+                    fixRs.Rows[rNo]["prate"] = rsTbl.Rows[i]["qnty"].retDbl() == 0 ? 0 : (Math.Abs(salCostAmt) / rsTbl.Rows[i]["qnty"].retDbl()).toRound();
                     fixRs.Rows[rNo]["pamt"] = salCostAmt;
-                    Double diffamt = rsTbl.Rows[i]["btxblval"].retDbl() - salCostAmt;
-                    if (rsTbl.Rows[i]["doctag"].ToString() == "SR") diffamt = (rsTbl.Rows[i]["btxblval"].retDbl() * -1) - salCostAmt;
+                    Double diffamt = (rsTbl.Rows[i]["btxblval"].retDbl() * mult) - salCostAmt;
+                    //Double diffamt = rsTbl.Rows[i]["btxblval"].retDbl() - salCostAmt;
+                    //if (rsTbl.Rows[i]["doctag"].ToString() == "SR") diffamt = (rsTbl.Rows[i]["btxblval"].retDbl() * -1) - salCostAmt;
                     fixRs.Rows[rNo]["diffamt"] = diffamt;
                     fixRs.Rows[rNo]["pblno"] = purdocno;
 
@@ -233,7 +240,30 @@ namespace Improvar.Controllers
                         fixRs = fixRs.Clone();
                     }
                 }
-
+                if (fdt.retStr() != "")
+                {
+                    var temp = fixRs.Select($"docdt >= '" + fdt + "'");
+                    if (temp.Count() > 0)
+                    {
+                        fixRs = temp.CopyToDataTable();
+                    }
+                    else
+                    {
+                        fixRs = fixRs.Clone();
+                    }
+                }
+                if (tdt.retStr() != "")
+                {
+                    var temp = fixRs.Select($"docdt <= '" + tdt + "'");
+                    if (temp.Count() > 0)
+                    {
+                        fixRs = temp.CopyToDataTable();
+                    }
+                    else
+                    {
+                        fixRs = fixRs.Clone();
+                    }
+                }
 
                 DataTable IR = new DataTable("mstrep");
                 PrintViewer PV = new PrintViewer();
@@ -241,6 +271,10 @@ namespace Improvar.Controllers
 
                 if (reptype == "details")
                 {
+                    DataView dv = new DataView(fixRs);
+                    dv.Sort = "docdt,docno";
+                    fixRs = dv.ToTable();
+
                     HC.RepStart(IR, 3);
                     HC.GetPrintHeader(IR, "docno", "string", "c,30", "Doc No");
                     HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Doc Date");
@@ -303,6 +337,18 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    if (reptype == "sumpar")
+                    {
+                        DataView dv = new DataView(fixRs);
+                        dv.Sort = "slcd,slnm";
+                        fixRs = dv.ToTable();
+                    }
+                    else
+                    {
+                        DataView dv = new DataView(fixRs);
+                        dv.Sort = "itcd,itstyle";
+                        fixRs = dv.ToTable();
+                    }
                     HC.RepStart(IR, 3);
                     if (reptype == "sumpar")
                     {
