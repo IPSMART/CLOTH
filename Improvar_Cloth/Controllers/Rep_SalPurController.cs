@@ -217,7 +217,7 @@ namespace Improvar.Controllers
                     fixRs.Rows[rNo]["samt"] = rsTbl.Rows[i]["btxblval"].retDbl() * mult;
                     fixRs.Rows[rNo]["prate"] = rsTbl.Rows[i]["qnty"].retDbl() == 0 ? 0 : (Math.Abs(salCostAmt) / rsTbl.Rows[i]["qnty"].retDbl()).toRound();
                     fixRs.Rows[rNo]["pamt"] = salCostAmt;
-                    Double diffamt = (rsTbl.Rows[i]["btxblval"].retDbl() * mult) - salCostAmt;
+                    Double diffamt = salCostAmt == 0 ? 0 : ((rsTbl.Rows[i]["btxblval"].retDbl() * mult) - salCostAmt).toRound();
                     //Double diffamt = rsTbl.Rows[i]["btxblval"].retDbl() - salCostAmt;
                     //if (rsTbl.Rows[i]["doctag"].ToString() == "SR") diffamt = (rsTbl.Rows[i]["btxblval"].retDbl() * -1) - salCostAmt;
                     fixRs.Rows[rNo]["diffamt"] = diffamt;
