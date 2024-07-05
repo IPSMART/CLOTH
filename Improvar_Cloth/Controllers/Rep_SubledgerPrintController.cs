@@ -251,7 +251,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["compadd7"] = tblComp.Rows[0]["add7"];
                         IR.Rows[rNo]["compphno"] = tblComp.Rows[0]["regmobile"] == DBNull.Value ? "" : "Ph. " + tblComp.Rows[0]["regmobile"];
                         IR.Rows[rNo]["compemail"] = tblComp.Rows[0]["regemailid"] == DBNull.Value ? "" : "Email : " + tblComp.Rows[0]["regemailid"];
-                        if(VE.TEXTBOX6.retStr()!="") IR.Rows[rNo]["translnm"] = VE.TEXTBOX6.retStr();
+                        if(VE.TEXTBOX7.retStr()!="") IR.Rows[rNo]["translnm"] = VE.TEXTBOX7.retStr();
                         IR.Rows[rNo]["docno"] = "";
                         i++;
                     }
