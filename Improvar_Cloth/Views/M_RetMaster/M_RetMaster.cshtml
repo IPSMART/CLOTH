@@ -446,7 +446,7 @@
 
                             </div>
                         </div>
-                        <div class="col-sm-1">
+                        <div class="col-md-8">
                             @if (Model.DefaultAction == "V")
                             {
                                 if (Model.isPresentinLastYrSchema == "")
@@ -460,8 +460,15 @@
                             }
 
                         </div>
+                        <div class="col-md-9">
+                            @if (Model.DefaultAction == "V")
+                            {
+                                <button type="submit" id="downexcel" style="padding-left:1px;padding-right:1px" value="downexcel" name="button" class="btn btn-info btn-sm">Download Excel</button>
 
-                    </div>
+                            }
+                       </div>
+                        </div>
+
                     <div class="row">
                         <div class="col-md-4">
                             <div class="editor-label" style="margin-top: 6px;">

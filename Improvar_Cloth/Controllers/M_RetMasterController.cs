@@ -613,69 +613,97 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult M_RetMaster(FormCollection FC, RetailDebtorMasterEntry VE)
+        public ActionResult M_RetMaster(FormCollection FC, RetailDebtorMasterEntry VE,string button)
         {
             try
             {
-                string dbname = CommVar.FinSchema(UNQSNO).ToString();
-
-                string query = "select a.RTDEBCD, a.RTDEBNM,a.MOBILE,a.CITY,a.PIN,a.STATE,a.COUNTRY ";
-                query = query + " from " + dbname + ".M_RETDEB a, " + dbname + ".m_cntrl_hdr c ";
-                query = query + "where  a.m_autono=c.m_autono(+) and nvl(c.inactive_tag,'N') = 'N'  and a.RTDEBCD ='" + VE.M_RETDEB.RTDEBCD + "' ";
-                query = query + "order by RTDEBCD, a.RTDEBNM";
-
-                CS = Cn.GetConnectionString();
-
-                Cn.con = new OracleConnection(CS);
-                if ((Cn.ds.Tables["mst_rep"] == null) == false)
+                if(button=="downexcel")
                 {
-                    Cn.ds.Tables["mst_rep"].Clear();
-                }
-                if (Cn.con.State == ConnectionState.Closed)
-                {
-                    Cn.con.Open();
-                }
-                string str = query;
-                Cn.com = new OracleCommand(str, Cn.con);
-                Cn.da.SelectCommand = Cn.com;
-                bool bu = Convert.ToBoolean(Cn.da.Fill(Cn.ds, "mst_rep"));
-                Cn.con.Close();
-                var record = Master_Help.SQLquery(query);
-                if (bu)
-                {
-                    DataTable IR = new DataTable("mstrep");
+                    string dbname = CommVar.FinSchema(UNQSNO).ToString();
 
-                    Models.PrintViewer PV = new Models.PrintViewer();
-                    HtmlConverter HC = new HtmlConverter();
+                    string query = "select a.RTDEBCD Code,a.MOBILE Mobile_No,a.ALTNO Alternate_No,(case when a.sex='M' then 'Male' when a.sex='F' then 'Female' when a.sex='T' then 'Transgender' else '' end) Sex,a.RTDEBNM Name,a.AREA Area,a.CITY City,a.PIN Pin, ";
+                    query = query + "to_char(a.DOB,'dd/mm/yyyy') Birthday,to_char(a.DOW,'dd/mm/yyyy') Wedding_Anniversary,a.EMAIL Email_Id,a.ADD1||a.ADD2||a.ADD3 Address,a.STATECD State_Code,a.STATE State_Name,a.COUNTRY Country, ";
+                    query = query + "a.REFRTDEBCD Ref_Retail_Code,c.RTDEBNM Ref_Retail_Name,a.REFSLCD Ref_Ledger_Code,d.slnm Ref_Ledger_Name,d.GSTNO Ref_Ledger_GST ";
+                    query = query + " from " + dbname + ".M_RETDEB a, " + dbname + ".m_cntrl_hdr b, " + dbname + ".M_RETDEB c, " + dbname + ".M_SUBLEG d ";
+                    query = query + "where  a.m_autono=b.m_autono(+) and a.REFRTDEBCD=c.RTDEBCD(+) and a.REFSLCD=d.slcd(+)  ";
+                    query = query + "order by a.RTDEBCD, a.RTDEBNM";
 
-                    HC.RepStart(IR, 2);
-                    HC.GetPrintHeader(IR, "RTDEBNM", "string", "c,20", "Name");
-                    HC.GetPrintHeader(IR, "RTDEBCD", "string", "c,7", "Code");
-                    HC.GetPrintHeader(IR, "MOBILE", "string", "c,10", "Mobile No.");
-                    HC.GetPrintHeader(IR, "CITY", "string", "c,10", "City");
-                    HC.GetPrintHeader(IR, "PIN", "string", "c,10", "Pin Code");
-                    HC.GetPrintHeader(IR, "STATE", "string", "c,10", "State");
-                    HC.GetPrintHeader(IR, "COUNTRY", "string", "c,10", "Country");
-
-                    for (int i = 0; i <= Cn.ds.Tables["mst_rep"].Rows.Count - 1; i++)
+                    DataTable dt = Master_Help.SQLquery(query);
+                    if (dt.Rows.Count == 0)
                     {
-                        DataRow dr = IR.NewRow();
-                        dr["RTDEBNM"] = Cn.ds.Tables["mst_rep"].Rows[i]["RTDEBNM"];
-                        dr["RTDEBCD"] = Cn.ds.Tables["mst_rep"].Rows[i]["RTDEBCD"];
-                        dr["MOBILE"] = Cn.ds.Tables["mst_rep"].Rows[i]["MOBILE"];
-                        dr["CITY"] = Cn.ds.Tables["mst_rep"].Rows[i]["CITY"];
-                        dr["PIN"] = Cn.ds.Tables["mst_rep"].Rows[i]["PIN"];
-                        dr["STATE"] = Cn.ds.Tables["mst_rep"].Rows[i]["STATE"];
-                        dr["COUNTRY"] = Cn.ds.Tables["mst_rep"].Rows[i]["COUNTRY"];
-                        dr["Flag"] = " class='grid_td'";
-                        IR.Rows.Add(dr);
+                        return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
                     }
-                    string pghdr1 = "";
-                    string repname = CommFunc.retRepname("Retail Debtor Master Details");
-                    pghdr1 = "Retail Debtor Master Details";
-                    PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
-                    return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
 
+                    DataTable[] exdt = new DataTable[1];
+                    exdt[0] = dt;
+                    string[] sheetname = new string[1];
+                    sheetname[0] = "Sheet1";
+                    Master_Help.ExcelfromDataTables(exdt, sheetname, "Retail Debtor Master", false, "Retail Debtor", false);
+                    return Content("Downloded");
+
+                }
+                else
+                {
+                    string dbname = CommVar.FinSchema(UNQSNO).ToString();
+
+                    string query = "select a.RTDEBCD, a.RTDEBNM,a.MOBILE,a.CITY,a.PIN,a.STATE,a.COUNTRY ";
+                    query = query + " from " + dbname + ".M_RETDEB a, " + dbname + ".m_cntrl_hdr c ";
+                    query = query + "where  a.m_autono=c.m_autono(+) and nvl(c.inactive_tag,'N') = 'N'  and a.RTDEBCD ='" + VE.M_RETDEB.RTDEBCD + "' ";
+                    query = query + "order by RTDEBCD, a.RTDEBNM";
+
+                    CS = Cn.GetConnectionString();
+
+                    Cn.con = new OracleConnection(CS);
+                    if ((Cn.ds.Tables["mst_rep"] == null) == false)
+                    {
+                        Cn.ds.Tables["mst_rep"].Clear();
+                    }
+                    if (Cn.con.State == ConnectionState.Closed)
+                    {
+                        Cn.con.Open();
+                    }
+                    string str = query;
+                    Cn.com = new OracleCommand(str, Cn.con);
+                    Cn.da.SelectCommand = Cn.com;
+                    bool bu = Convert.ToBoolean(Cn.da.Fill(Cn.ds, "mst_rep"));
+                    Cn.con.Close();
+                    var record = Master_Help.SQLquery(query);
+                    if (bu)
+                    {
+                        DataTable IR = new DataTable("mstrep");
+
+                        Models.PrintViewer PV = new Models.PrintViewer();
+                        HtmlConverter HC = new HtmlConverter();
+
+                        HC.RepStart(IR, 2);
+                        HC.GetPrintHeader(IR, "RTDEBNM", "string", "c,20", "Name");
+                        HC.GetPrintHeader(IR, "RTDEBCD", "string", "c,7", "Code");
+                        HC.GetPrintHeader(IR, "MOBILE", "string", "c,10", "Mobile No.");
+                        HC.GetPrintHeader(IR, "CITY", "string", "c,10", "City");
+                        HC.GetPrintHeader(IR, "PIN", "string", "c,10", "Pin Code");
+                        HC.GetPrintHeader(IR, "STATE", "string", "c,10", "State");
+                        HC.GetPrintHeader(IR, "COUNTRY", "string", "c,10", "Country");
+
+                        for (int i = 0; i <= Cn.ds.Tables["mst_rep"].Rows.Count - 1; i++)
+                        {
+                            DataRow dr = IR.NewRow();
+                            dr["RTDEBNM"] = Cn.ds.Tables["mst_rep"].Rows[i]["RTDEBNM"];
+                            dr["RTDEBCD"] = Cn.ds.Tables["mst_rep"].Rows[i]["RTDEBCD"];
+                            dr["MOBILE"] = Cn.ds.Tables["mst_rep"].Rows[i]["MOBILE"];
+                            dr["CITY"] = Cn.ds.Tables["mst_rep"].Rows[i]["CITY"];
+                            dr["PIN"] = Cn.ds.Tables["mst_rep"].Rows[i]["PIN"];
+                            dr["STATE"] = Cn.ds.Tables["mst_rep"].Rows[i]["STATE"];
+                            dr["COUNTRY"] = Cn.ds.Tables["mst_rep"].Rows[i]["COUNTRY"];
+                            dr["Flag"] = " class='grid_td'";
+                            IR.Rows.Add(dr);
+                        }
+                        string pghdr1 = "";
+                        string repname = CommFunc.retRepname("Retail Debtor Master Details");
+                        pghdr1 = "Retail Debtor Master Details";
+                        PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                        return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
+
+                    }
                 }
             }
             catch (Exception ex)
