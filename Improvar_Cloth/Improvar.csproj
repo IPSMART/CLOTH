@@ -681,6 +681,12 @@
       <DependentUpon>CashMemo_DIWH.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\CashMemo_Rops.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CashMemo_Rops.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\CashMemo_Sachi.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1678,6 +1684,10 @@
     <Content Include="Report\Order.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Order.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\CashMemo_Rops.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CashMemo_Rops.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_DIWH_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

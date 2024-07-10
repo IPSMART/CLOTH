@@ -319,7 +319,9 @@ namespace Improvar.Controllers
                             //VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
                         VE.SHOWBLTYPE = VE.BL_TYPE.Count > 0 ? "Y" : "N";
-                        VE.MergeItem = (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1) ? false : true;
+                        var MSYSCNFG1 = salesfunc.M_SYSCNFG(VE.T_TXN?.DOCDT.retDateStr());
+                        VE.MergeItem = MSYSCNFG1.MERGEINDTL.retStr() == "Y" ? true : false;
+                        // VE.MergeItem = (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1) ? false : true;
                     }
                     else
                     {
@@ -2164,26 +2166,26 @@ namespace Improvar.Controllers
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
                     DataTable syscnfgdt = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
-                    if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
-                    {
-                        if (VE.T_TXNMEMO.NM.retStr() == "")
-                        {
-                            VE.T_TXNMEMO.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
-                        }
-                        if (VE.T_TXNMEMO.MOBILE.retStr() == "")
-                        {
-                            VE.T_TXNMEMO.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
-                        }
-                        if (VE.T_TXNMEMO.ADDR.retStr() == "")
-                        {
-                            var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
-                            VE.T_TXNMEMO.ADDR = addrs;
-                        }
-                        if (VE.T_TXNMEMO.CITY.retStr() == "")
-                        {
-                            VE.T_TXNMEMO.CITY = syscnfgdt.Rows[0]["city"].retStr();
-                        }
-                    }
+                    //if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                    //{
+                    //    if (VE.T_TXNMEMO.NM.retStr() == "")
+                    //    {
+                    //        VE.T_TXNMEMO.NM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                    //    }
+                    //    if (VE.T_TXNMEMO.MOBILE.retStr() == "")
+                    //    {
+                    //        VE.T_TXNMEMO.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                    //    }
+                    //    if (VE.T_TXNMEMO.ADDR.retStr() == "")
+                    //    {
+                    //        var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                    //        VE.T_TXNMEMO.ADDR = addrs;
+                    //    }
+                    //    if (VE.T_TXNMEMO.CITY.retStr() == "")
+                    //    {
+                    //        VE.T_TXNMEMO.CITY = syscnfgdt.Rows[0]["city"].retStr();
+                    //    }
+                    //}
 
                     T_TXN TTXN = new T_TXN();
                     T_TXNMEMO TTXNMEMO = new T_TXNMEMO();
@@ -2457,7 +2459,7 @@ namespace Improvar.Controllers
                     TTXNMEMO.TTAG = TTXN.TTAG;
                     TTXNMEMO.AUTONO = TTXN.AUTONO;
                     TTXNMEMO.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
-                    TTXNMEMO.NM = VE.T_TXNMEMO.NM;
+                    TTXNMEMO.NM = VE.T_TXNMEMO.NM.retStr();
                     TTXNMEMO.MOBILE = VE.T_TXNMEMO.MOBILE;
                     TTXNMEMO.CITY = VE.T_TXNMEMO.CITY;
                     TTXNMEMO.ADDR = VE.T_TXNMEMO.ADDR;
@@ -4263,7 +4265,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
-          
+
             VE.DefaultView = true;
             ModelState.Clear();
             return PartialView("_T_SALE_POS_RETURN", VE);

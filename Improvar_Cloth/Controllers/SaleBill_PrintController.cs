@@ -732,7 +732,8 @@ namespace Improvar.Controllers
                                 rsTmp = MasterHelpFa.SQLquery(sql);
                                 if (rsTmp.Rows.Count > 0) totalosamt = totalosamt + Convert.ToDouble(rsTmp.Rows[0]["blamt"] == DBNull.Value ? 0 : rsTmp.Rows[0]["blamt"]);
                             }
-                            string qry = "select sum(a.amt) payamt from " + Scm1 + ".T_TXNPYMT a where a.autono= '" + auto1 + "'  ";
+                            string qry = "select sum(a.amt) payamt,c.PYMTNM from " + Scm1 + ".T_TXNPYMT a," + Scm1 + ".m_payment c where  a.PYMTCD=c.PYMTCD and a.autono= '" + auto1 + "'  ";
+                            qry += "group by c.PYMTNM  ";
 
                             DataTable ptmy = masterHelp.SQLquery(qry);
                             if (ptmy.Rows.Count > 0) payamt = ptmy.Rows[0]["payamt"].retDbl();
@@ -770,12 +771,21 @@ namespace Improvar.Controllers
                                     tpamt = k.TPAMT.retDbl();
                                 }
                             }
-                            if (tpaymt != 0)
+                            //if (tpaymt != 0)
+                            //{
+                            //    //if (tpaymt != 0) { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
+                            //    if (menupara == "SBCM") { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
+                            //    else if (menupara == "SBCMR") { dtldsc += "Less Cash Paid" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
+                            //    //dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat();
+                            //}
+                            if (ptmy != null && ptmy.Rows.Count > 0)
                             {
-                                //if (tpaymt != 0) { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
-                                if (menupara == "SBCM") { dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
-                                else if (menupara == "SBCMR") { dtldsc += "Less Cash Paid" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat(); }
-                                //dtldsc += "Less Cash Received" + "~"; dtlamt += Convert.ToDouble(tpaymt).ToINRFormat();
+                                for (int a = 0; a < ptmy.Rows.Count; a++)
+                                {
+                                    if (menupara == "SBCM") { dtldsc += "Less " + ptmy.Rows[a]["PYMTNM"].retStr() + " Received" + "~"; dtlamt += Convert.ToDouble(ptmy.Rows[a]["payamt"].retDbl()).ToINRFormat(); }
+                                    else if (menupara == "SBCMR") { dtldsc += "Less " + ptmy.Rows[a]["PYMTNM"].retStr() + " Paid" + "~"; dtlamt += Convert.ToDouble(ptmy.Rows[a]["payamt"].retDbl()).ToINRFormat(); }
+
+                                }
                             }
                             var HSN_DATA = (from a in DBF.T_VCH_GST
                                             where a.AUTONO == auto1
@@ -4953,7 +4963,7 @@ namespace Improvar.Controllers
                 #endregion
                 DataView dv = new DataView(tblinv);
                 //string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO" };               
-                string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO", "othnm", "othadd1", "othadd2", "othadd3", "othadd4", "othaddpin", "OTHADDEMAIL","cslcd","cpartycd","cslnm","csladd1","csladd2","csladd3","csladd4","csladd5","csladd6","csladd7","cgstno","cpanno" };
+                string[] COL = new string[] { "slcd", "slnm", "sladd1", "sladd2", "sladd3", "sladd4", "sladd5", "sladd6", "sladd7", "phno", "regemailid", "gstno", "trslnm", "docno", "EWAYBILLNO", "othnm", "othadd1", "othadd2", "othadd3", "othadd4", "othaddpin", "OTHADDEMAIL", "cslcd", "cpartycd", "cslnm", "csladd1", "csladd2", "csladd3", "csladd4", "csladd5", "csladd6", "csladd7", "cgstno", "cpanno" };
                 DataTable tbl = dv.ToTable(true, COL);
 
                 sql = "select a.compcd, a.compnm, b.add1, b.add2,  b.add3, b.add4, b.add5, b.add6, b.add7, ";
@@ -5004,35 +5014,35 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["topay"] = VE.TEXTBOX11; ;
                     if (VE.TEXTBOX12.retStr() == "Buyer")
                     {
-                    IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"];
-                    //IR.Rows[rNo]["othnm"] = VE.TEXTBOX2;
-                    IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"];
-                  
-                    if (tbl.Rows[i]["othadd1"].ToString() != "")
-                    {
-                        IR.Rows[rNo]["slnm"] = tbl.Rows[i]["othnm"] == DBNull.Value ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["othnm"].ToString();
-                        IR.Rows[rNo]["sladd1"] = tbl.Rows[i]["othadd1"];
-                        IR.Rows[rNo]["sladd2"] = tbl.Rows[i]["othadd2"];
-                        IR.Rows[rNo]["sladd3"] = tbl.Rows[i]["othadd3"];
-                        IR.Rows[rNo]["sladd4"] = tbl.Rows[i]["othadd4"];
-                        if (tbl.Rows[i]["othaddpin"].retStr() != "") IR.Rows[rNo]["sladd5"] = "Pin#" + tbl.Rows[i]["othaddpin"];
-                        IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["OTHADDEMAIL"];
+                        IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"];
+                        //IR.Rows[rNo]["othnm"] = VE.TEXTBOX2;
+                        IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"];
+
+                        if (tbl.Rows[i]["othadd1"].ToString() != "")
+                        {
+                            IR.Rows[rNo]["slnm"] = tbl.Rows[i]["othnm"] == DBNull.Value ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["othnm"].ToString();
+                            IR.Rows[rNo]["sladd1"] = tbl.Rows[i]["othadd1"];
+                            IR.Rows[rNo]["sladd2"] = tbl.Rows[i]["othadd2"];
+                            IR.Rows[rNo]["sladd3"] = tbl.Rows[i]["othadd3"];
+                            IR.Rows[rNo]["sladd4"] = tbl.Rows[i]["othadd4"];
+                            if (tbl.Rows[i]["othaddpin"].retStr() != "") IR.Rows[rNo]["sladd5"] = "Pin#" + tbl.Rows[i]["othaddpin"];
+                            IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["OTHADDEMAIL"];
 
 
-                    }
-                    else
-                    {
-                        IR.Rows[rNo]["sladd1"] = tbl.Rows[i]["sladd1"];
-                        IR.Rows[rNo]["sladd2"] = tbl.Rows[i]["sladd2"];
-                        IR.Rows[rNo]["sladd3"] = tbl.Rows[i]["sladd3"];
-                        IR.Rows[rNo]["sladd4"] = tbl.Rows[i]["sladd4"];
-                        IR.Rows[rNo]["sladd5"] = tbl.Rows[i]["sladd5"];
-                        IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["sladd6"];
-                        IR.Rows[rNo]["sladd7"] = tbl.Rows[i]["sladd7"];
-                        IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
-                        IR.Rows[rNo]["slemail"] = tbl.Rows[i]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
-                    }
-                    IR.Rows[rNo]["slgstno"] = tbl.Rows[i]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[i]["gstno"];
+                        }
+                        else
+                        {
+                            IR.Rows[rNo]["sladd1"] = tbl.Rows[i]["sladd1"];
+                            IR.Rows[rNo]["sladd2"] = tbl.Rows[i]["sladd2"];
+                            IR.Rows[rNo]["sladd3"] = tbl.Rows[i]["sladd3"];
+                            IR.Rows[rNo]["sladd4"] = tbl.Rows[i]["sladd4"];
+                            IR.Rows[rNo]["sladd5"] = tbl.Rows[i]["sladd5"];
+                            IR.Rows[rNo]["sladd6"] = tbl.Rows[i]["sladd6"];
+                            IR.Rows[rNo]["sladd7"] = tbl.Rows[i]["sladd7"];
+                            IR.Rows[rNo]["slphno"] = tbl.Rows[i]["phno"] == DBNull.Value ? "" : "Ph. " + tbl.Rows[i]["phno"];
+                            IR.Rows[rNo]["slemail"] = tbl.Rows[i]["regemailid"] == DBNull.Value ? "" : "Email : " + tbl.Rows[i]["regemailid"];
+                        }
+                        IR.Rows[rNo]["slgstno"] = tbl.Rows[i]["gstno"] == DBNull.Value ? "" : "GSTIN : " + tbl.Rows[i]["gstno"];
                     }
                     else
                     {

@@ -1645,7 +1645,7 @@ namespace Improvar
             string sql = "", valsrch = "";
             if (val != null) valsrch = val.ToUpper().Trim();
             sql = "";
-            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR ";
+            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR,city ";
             sql += "from " + scmf + ".M_RETDEB a, " + scmf + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
             if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' ) ";
@@ -1656,9 +1656,9 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td><td>" + tbl.Rows[i]["MOBILE"] + " </td></tr>");
                 }
-                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
+                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code" + Cn.GCS() + "Mobile No.";
                 return Generate_help(hdr, SB.ToString(), "");
             }
             else
