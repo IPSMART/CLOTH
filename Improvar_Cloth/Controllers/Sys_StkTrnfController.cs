@@ -37,6 +37,9 @@ namespace Improvar.Controllers
 
                     VE.DropDown_list = (from i in DB.M_GROUP where (selgrpcd.Contains(i.ITGRPCD)) select new DropDown_list() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
 
+                    VE.DropDown_list_ITGRP = (from i in DB.M_GROUP select new DropDown_list_ITGRP() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
+                    VE.Itgrpnm = masterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
+
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -48,7 +51,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public ActionResult Sys_StkTrnf1(ReportViewinHtml VE, string Tag)
+        public ActionResult Sys_StkTrnf1(ReportViewinHtml VE, string Tag, FormCollection FC)
         {
             string retmsg = "", oldschema = "", oldFinschema = "", newschema = "", newFinschema = "", yrcd = CommVar.YearCode(UNQSNO);
             yrcd = (Convert.ToDecimal(yrcd) - 1).ToString();
@@ -65,11 +68,11 @@ namespace Improvar.Controllers
             }
             else
             {
-                retmsg = Stock_Transfer(VE.TEXTBOX1, oldschema, oldFinschema, newschema, newFinschema, VE);
+                retmsg = Stock_Transfer(VE.TEXTBOX1, oldschema, oldFinschema, newschema, newFinschema, VE, FC);
             }
             return Content(retmsg);
         }
-        public string Stock_Transfer(string itgrpcd, string oldschema, string oldFinschema, string newschema, string newFinschema, ReportViewinHtml VE)
+        public string Stock_Transfer(string itgrpcd, string oldschema, string oldFinschema, string newschema, string newFinschema, ReportViewinHtml VE, FormCollection FC)
         {
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf1 = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
             yrcd = (Convert.ToDecimal(yrcd) - 1).ToString();
@@ -113,6 +116,9 @@ namespace Improvar.Controllers
                     if (VE.Checkbox4 == true) SkipNegetivStock = true;
 
                     #region Stock Transfer
+                    string selitgrpcd = "";
+                    if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
+
                     DataTable tbltmp = new DataTable();
 
                     bool batchwise = true;
@@ -128,7 +134,7 @@ namespace Improvar.Controllers
                         if (VE.Checkbox7 == true)
                         {
                             //tbl = Salesfunc.GetStockFifo("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, scmf1, "", "CP");
-                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", "", "", gocd, false, "", false, "", scm1, "", scmf1, false, SkipNegetivStock);
+                            tbl = Salesfunc.GenStocktblwithVal("FIFO", lastdayofprvyear, "", "", selitgrpcd, "", gocd, false, "", false, "", scm1, "", scmf1, false, SkipNegetivStock);
                         }
                         else if (VE.Checkbox10 == true)
                         {
@@ -147,11 +153,13 @@ namespace Improvar.Controllers
                         maxR = tbl.Rows.Count - 1;
 
                         sqlc = "select distinct a.autono from " + newschema + ".t_txn a, " + newschema + ".t_cntrl_hdr b, " + newschema + ".m_doctype c, " + newschema + ".t_txndtl d , ";
-                        sqlc += newschema + ".m_sitem e, " + newschema + ".t_batchdtl f ";
+                        sqlc += newschema + ".m_sitem e, " + newschema + ".t_batchdtl f, " + newschema + ".m_group g ";
                         sqlc += "where b.doccd=c.doccd(+) and a.autono=b.autono(+) and a.autono=d.autono and d.itcd=e.itcd and d.autono=f.autono(+) and d.slno=f.txnslno(+) and ";
                         //sqlc += "(b.yr_cd < '" + CommVar.YearCode(UNQSNO) + "' or c.doctype in ('FOSTK')) and ";
-                        sqlc += "f.millnm in ('OPSTOCK') and ";
+                        sqlc += "e.itgrpcd=g.itgrpcd(+) and f.millnm in ('OPSTOCK') and ";
                         sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' ";
+                        if (selitgrpcd.retStr() != "") sql += "and g.itgrpcd in (" + selitgrpcd + ") " + Environment.NewLine;
+
                         DataTable tbldel = masterHelp.SQLquery(sqlc);
 
                         query = "delete from " + newschema + ".t_batchdtl where autono in (" + sqlc + ") ";
@@ -1767,10 +1775,10 @@ namespace Improvar.Controllers
 
                     //    sql = "select a.LRNO,a.LRDT, a.autono from " + oldschema + ". t_txntrans a where autono in (select autono from  " + schnm + ".t_cntrl_hdr)";
                     //    DataTable data = masterHelp.SQLquery(sql);
-                        
+
                     //    DataTable tbl1 = Salesfunc.getPendRecfromMutia("", "", "", "", "", "", true);
                     //    DataTable tbl2 = Salesfunc.getPendBiltytoIssue("");
-           
+
                     //    ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     //    ImprovarDB DB2 = new ImprovarDB(Cn.GetConnectionString(), CommVar.SaleSchema(UNQSNO));
 

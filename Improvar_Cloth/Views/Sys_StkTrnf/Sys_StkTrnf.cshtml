@@ -14,7 +14,7 @@
 <script>
     $(function () {
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
-        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); 
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
     });
 </script>
@@ -91,30 +91,30 @@
                 type: 'GET',
                 url: "@Url.Action("GetDOC_Code", PageControllerName)",
                 data: { val: id },
-            success: function (result) {
-                var MSG = result.indexOf(String.fromCharCode(181));
-                if (MSG >= 0) {
-                    $("#tempHDD").val(result);
-                    var findstr = $("#tempHDD").val();
-                    document.getElementById("DOCCD").value = returncolvalue(findstr, "DOCCD");
-                    document.getElementById("TEXTBOX1").value = returncolvalue(findstr, "DOCNM");
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById("DOCCD").value = returncolvalue(findstr, "DOCCD");
+                        document.getElementById("TEXTBOX1").value = returncolvalue(findstr, "DOCNM");
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#DOCCD").val("");
+                        $("#TEXTBOX1").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = "DOCCD";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
                 }
-                else {
-                    $("#Msgdiv1").show();
-                    $("#info").show();
-                    $("#DOCCD").val("");
-                    $("#TEXTBOX1").val("");
-                    $("#btnok").focus();
-                    $("#msgbody_info").html(result);
-                    message_value = "DOCCD";
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
+            });
+        }
     }
 </script>
 
@@ -126,66 +126,86 @@
             @Html.HiddenFor(s => s.DefaultAction)
 
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
-
-                <div class="row">
+                @*<div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Finish Stock from Prev.Year")
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Item Group")
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "FinStockChecked(this.id,'Checkbox7','Checkbox10');" })
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Itgrpnm))
+                    </div>
+                </div>*@
+                 @if (CommVar.ClientCode(Model.UNQSNO) == "SACH" || CommVar.ClientCode(Model.UNQSNO) == "LALF" || CommVar.ClientCode(Model.UNQSNO) == "TRES" || CommVar.ClientCode(Model.UNQSNO) == "DIWH")
+                {
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Finish Stock from Prev.Year")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox2, new { id = "Checkbox2", onclick = "FinStockChecked(this.id,'Checkbox7','Checkbox10');" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Skip Negetive Stock")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox4)
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Skip Negetive Stock")
+                }
+                @if (CommVar.ClientCode(Model.UNQSNO) == "SNFP" || CommVar.ClientCode(Model.UNQSNO) == "BNBH")
+                {
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Finish Stock from Prev.Year (Fifo)")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox7, new { id = "Checkbox7", onclick = "FinStockChecked(this.id,'Checkbox2','Checkbox10');" })
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox4)
+                }
+                @if (CommVar.ClientCode(Model.UNQSNO) == "DIWH")
+                {
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Physical Stock Transfer")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox10, new { id = "Checkbox10", onclick = "FinStockChecked(this.id,'Checkbox2','Checkbox7');" })
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Finish Stock from Prev.Year (Fifo)")
+                }
+                @if (CommVar.ClientCode(Model.UNQSNO) == "SNFP" || CommVar.ClientCode(Model.UNQSNO) == "BNBH")
+                {
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Bale Stock Transfer")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox8)
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox7, new { id = "Checkbox7", onclick = "FinStockChecked(this.id,'Checkbox2','Checkbox10');" })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Physical Stock Transfer")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox10, new { id = "Checkbox10", onclick = "FinStockChecked(this.id,'Checkbox2','Checkbox7');" })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Bale Stock Transfer")
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox8)
-                        </div>
-                    </div>
-                </div>
-                
+                }
 
                 <div class="row">
                     <div class="col-lg-2">
@@ -243,17 +263,17 @@
 
 
                 @*<div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label">
-                            @Html.Label("", "Transfer LR No & LR Date")
+                        <div class="col-lg-2">
+                            <div class="editor-label">
+                                @Html.Label("", "Transfer LR No & LR Date")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 1px;">
-                            @Html.CheckBoxFor(model => model.Checkbox12, new { id = "Checkbox12" })
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 1px;">
+                                @Html.CheckBoxFor(model => model.Checkbox12, new { id = "Checkbox12" })
+                            </div>
                         </div>
-                    </div>
-                </div>*@
+                    </div>*@
 
 
 

@@ -1085,7 +1085,8 @@ namespace Improvar
                 sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and " + Environment.NewLine;
                 sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) and a.gocd=m.gocd(+) and h.autono=p.autono(+) " + Environment.NewLine;
                 if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  " + Environment.NewLine;
-                sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
+                //sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
+                sql += "and d.m_autono=o.m_autono(+) " + Environment.NewLine;
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
 
@@ -1262,7 +1263,8 @@ namespace Improvar
                 sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and " + Environment.NewLine;
                 sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) and a.gocd=m.gocd(+) and h.autono=p.autono(+) " + Environment.NewLine;
                 if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  " + Environment.NewLine;
-                sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
+                //sql += "and d.m_autono=o.m_autono(+) and nvl(o.inactive_tag,'N')='N' " + Environment.NewLine;
+                sql += "and d.m_autono=o.m_autono(+)  " + Environment.NewLine;
                 //if(MSYSCNFG.STKINCLPINV=="Y")  sql += "and p.doctag not in('PI')";
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
@@ -2462,7 +2464,7 @@ namespace Improvar
             OraCon.Dispose();
             return MGROUP;
         }
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "", string CONVUOMCD = "")
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE, string ITNM, string DOCDT = "", string TAXGRPCD = "", double GSTPER = 0, bool creategrp = false, string salglcd = "", string purglcd = "", string CONVUOMCD = "", string NEGSTOCK = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             string DefaultAction = "A";
@@ -2527,7 +2529,14 @@ namespace Improvar
                 MSITEM.UOMCD = UOM;
                 MSITEM.HSNCODE = HSNCODE;
                 MSITEM.FABITCD = FABITCD;
-                MSITEM.NEGSTOCK = MGROUP.NEGSTOCK;
+                if (NEGSTOCK.retStr() == "Y")
+                {
+                    MSITEM.NEGSTOCK = NEGSTOCK;
+                }
+                else
+                {
+                    MSITEM.NEGSTOCK = MGROUP.NEGSTOCK;
+                }
                 MSITEM.CONVUOMCD = CONVUOMCD;
                 //var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
                 //MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
@@ -2641,6 +2650,410 @@ namespace Improvar
                 return ex.Message;
             }
         }
+        //public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt = "")
+        //{
+        //    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+        //    var MSYSCNFG = M_SYSCNFG(tdt.retDateStr());
+
+        //    string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+        //    string sql = "", sqlc = "";
+        //    if (curschema.retStr() != "") scm = curschema;
+        //    if (finschema.retStr() != "") scmf = finschema;
+
+        //    sql = "";
+        //    sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype " + Environment.NewLine;
+        //    sql += "from " + scm + ".m_sitem a, " + scm + ".m_group c, " + scmf + ".m_uom d, " + scm + ".m_sitem q, " + Environment.NewLine;
+        //    sql += scm + ".t_batchdtl y, " + scm + ".t_batchmst z, " + scm + ".m_mtrljobmst e " + Environment.NewLine;
+        //    sql += "where z.itcd=a.itcd(+) and z.barno=y.barno(+) and a.itgrpcd=c.itgrpcd(+) and z.fabitcd=q.itcd(+) and " + Environment.NewLine;
+        //    if (mtrljobcd.retStr() != "") sql += "y.mtrljobcd in (" + mtrljobcd + ") and " + Environment.NewLine;
+        //    if (itgrpcd.retStr() != "") sql += "c.itgrpcd in (" + itgrpcd + ") and " + Environment.NewLine;
+        //    if (selitcd.retStr() != "") sql += "a.itcd in (" + selitcd + ") and " + Environment.NewLine;
+        //    if (unselitcd.retStr() != "") sql += "a.itcd not in (" + unselitcd + ") and " + Environment.NewLine;
+        //    if (barno.retStr() != "") sql += "z.barno in (" + barno + ") and " + Environment.NewLine;
+        //    sql += "a.uomcd=d.uomcd(+) and y.mtrljobcd=e.mtrljobcd(+) " + Environment.NewLine;
+        //    sql += "order by mtrljobnm, mtrljobcd, itgrpnm, itgrpcd, itnm, itcd, styleno, barno " + Environment.NewLine;
+        //    DataTable rsitem = SQLquery(sql);
+
+        //    string sqld = "", sqldgrp = "";
+        //    if (gocd.retStr() != "") { sqld += "a.gocd, "; sqldgrp = ", a.gocd " + Environment.NewLine; }
+        //    else
+        //    {
+        //        sqld += "'' gocd, "; sqldgrp = ", ''" + Environment.NewLine;
+        //    }
+        //    skipStkTrnf = false;
+        //    if (gocd != "") skipStkTrnf = false;
+
+        //    sqlc = "";
+        //    sqlc += "where a.autono=b.autono and nvl(b.cancel,'N') = 'N' and a.autono=c.autono(+) and a.barno=h.barno(+) and " + Environment.NewLine;
+        //    //if (indatadocdt != "")
+        //    //{
+        //    //     sqlc += "b.docdt <= to_date('" + indatadocdt + "','dd/mm/yyyy') and " + Environment.NewLine;
+        //    //}
+        //    //else
+        //    //{
+        //    //    if (tdt.retStr() != "") sqlc += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and " + Environment.NewLine;
+        //    //}
+
+        //    sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and " + Environment.NewLine;
+        //    if (LOCCD != "") { sqlc += " b.loccd in (" + LOCCD + ") and " + Environment.NewLine; } else { sqlc += " b.loccd='" + LOC + "' and " + Environment.NewLine; }
+        //    if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and " + Environment.NewLine;
+        //    if (gocd.retStr() != "") sqlc += "a.gocd in (" + gocd + ") and " + Environment.NewLine;
+        //    if (selitcd.retStr() != "") sqlc += "d.itcd in (" + selitcd + ") and " + Environment.NewLine;
+        //    if (unselitcd.retStr() != "") sqlc += "d.itcd not in (" + unselitcd + ") and " + Environment.NewLine;
+        //    if (itgrpcd.retStr() != "") sqlc += "d.itgrpcd in (" + itgrpcd + ") and " + Environment.NewLine;
+        //    if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and " + Environment.NewLine;
+        //    sqlc += "h.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) " + Environment.NewLine;
+
+        //    sql = "";
+        //    sql += "select  a.autono,A.TXNSLNO,a.slno, c.doctag,a.stktype, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, substr(nvl(c.prefno,b.docno),16) blno, nvl(c.prefdt,b.docdt) bldt, " + Environment.NewLine; //a.slno, a.autono||a.slno autoslno
+        //    sql += "a.mtrljobcd, h.itcd, a.barno, h.pdesign, a.mtrljobcd||h.itcd||a.barno itbarno, a.rate,  " + Environment.NewLine; /*nvl(a.txblval,0) + nvl(a.mtrlcost,0) + nvl(a.othramt,0) netamt, "; */
+        //    sql += sqld;
+        //    sql += "nvl(f.txblval,0) + nvl(f.othramt,0) netamt, " + Environment.NewLine;
+        //    sql += "sum(case a.stkdrcr when 'D' then a.qnty else a.qnty*-1 end) qnty, sum(case a.stkdrcr when 'D' then a.nos else a.nos*-1 end) nos, a.stkdrcr " + Environment.NewLine;//"a.qnty, a.nos ";
+        //    sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scmf + ".m_subleg g, " + scm + ".t_batchmst h, " + Environment.NewLine;
+        //    sql += scm + ".m_sitem d, " + scm + ".m_group e," + scm + ".t_txndtl f, " + scm + ".t_bale g " + Environment.NewLine;
+        //    sql += sqlc;
+        //    if (indatadocdt != "")
+        //    {
+        //        sql += "and b.docdt <= to_date('" + indatadocdt + "','dd/mm/yyyy') " + Environment.NewLine;
+        //    }
+        //    else
+        //    {
+        //        if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+        //    }
+        //    if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
+        //    sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and (c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno >1000 )) and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
+        //    sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
+        //    sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
+        //    sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
+        //    if (gocd.retStr() != "") sql += ",a.gocd " + Environment.NewLine;
+        //    sql += ",a.stktype,a.stkdrcr " + Environment.NewLine;
+        //    sql += "order by itcd, docdt, autono " + Environment.NewLine; //slno
+        //    if (calctype == "LIFO") sql += "desc " + Environment.NewLine;
+
+        //    string str = "";
+        //    str = "select  autono||TXNSLNO AUTONO,slno,doctag,stktype, conslcd, slcd, slnm, doccd, docdt, docno, blno, bldt, gocd, " + Environment.NewLine;//slno, autoslno
+        //    str += "mtrljobcd, itcd, barno, itbarno, pdesign, rate, netamt, itbarno||gocd itgocd, nvl(nos,0) nos, nvl(qnty,0) qnty from (" + Environment.NewLine;
+        //    str += sql + ") " + Environment.NewLine;
+        //    if (barno.retStr() != "")
+        //    {
+        //        str += "where barno in (" + barno + ") " + Environment.NewLine;
+        //        if (skipNegetivStock == true) str += " and nvl(qnty, 0)> 0 " + Environment.NewLine;
+        //    }
+        //    else
+        //    {
+        //        if (skipNegetivStock == true) str += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
+        //    }
+        //    DataTable rsIn = SQLquery(str);
+
+        //    sql = "";
+        //    sql += "select a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno itbarno, " + Environment.NewLine;
+        //    sql += sqld;
+        //    //sql += "sum(case a.stkdrcr when 'C' then a.nos else a.nos*-1 end) nos, " + Environment.NewLine;
+        //    //sql += "sum(case a.stkdrcr when 'C' then a.qnty else a.qnty*-1 end) qnty " + Environment.NewLine;
+        //    sql += "sum(case a.stkdrcr when 'D' then a.nos*-1 else a.nos end) nos, " + Environment.NewLine;
+        //    sql += "sum(case a.stkdrcr when 'D' then a.qnty*-1 else a.qnty end) qnty " + Environment.NewLine;
+        //    sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
+        //    sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
+        //    sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
+        //    if (skipStkTrnf == true) sql += "(c.doctag not in ('PB','OP','PD','JR')  or (c.doctag in ('AD') and a.slno <=1000 ) )and "; else sql += "(c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno <=1000 ) ) and " + Environment.NewLine;
+
+        //    //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+        //    //if (MSYSCNFG.STKINCLPINV == "Y")
+        //    //{
+        //    //    sql += "a.stkdrcr in ('D','C','0') ";
+        //    //}
+        //    //else
+        //    //{
+        //    sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+        //    //}
+        //    if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+        //    sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
+        //    sql += sqldgrp;
+        //    sql += "order by itcd " + Environment.NewLine;
+
+        //    str = "select mtrljobcd, itcd, barno, gocd, itbarno||gocd itgocd, nvl(qnty,0) qnty,nvl(nos,0) nos from (" + Environment.NewLine;
+        //    str += sql + " )";
+        //    if (skipNegetivStock == true) str += " where nvl(qnty, 0)> 0 " + Environment.NewLine;
+
+        //    DataTable rsOut = SQLquery(str);
+
+        //    var varGodown = rsIn.AsEnumerable().Union(rsOut.AsEnumerable()).OrderBy(d => d.Field<string>("GOCD")).Select(A => new
+        //    {
+        //        GOCD = A["GOCD"].ToString(),
+        //    }).DistinctBy(s => s.GOCD).ToList().Select(q => new
+        //    {
+        //        GOCD = q.GOCD,
+        //        GONM = (from W in DBF.M_GODOWN where W.GOCD == q.GOCD select W.GONM).SingleOrDefault()
+        //    }).ToList();
+
+        //    #region //Create Datatable rsstock
+        //    DataTable rsStock = new DataTable("stock");
+        //    rsStock.Columns.Add("mtrljobcd", typeof(string), "");
+        //    //rsStock.Columns.Add("mtrljobnm", typeof(string), "");
+        //    rsStock.Columns.Add("doctag", typeof(string), "");
+        //    rsStock.Columns.Add("conslcd", typeof(string), "");
+        //    rsStock.Columns.Add("autono", typeof(string), "");
+        //    rsStock.Columns.Add("slno", typeof(string), "");
+        //    //rsStock.Columns.Add("autoslno", typeof(string), "");
+        //    //rsStock.Columns.Add("doccd", typeof(string), "");
+        //    rsStock.Columns.Add("docno", typeof(string), "");
+        //    rsStock.Columns.Add("docdt", typeof(string), "");
+        //    rsStock.Columns.Add("prefno", typeof(string), "");
+        //    rsStock.Columns.Add("prefdt", typeof(string), "");
+        //    rsStock.Columns.Add("slcd", typeof(string), "");
+        //    rsStock.Columns.Add("slnm", typeof(string), "");
+        //    rsStock.Columns.Add("itcd", typeof(string), "");
+        //    //rsStock.Columns.Add("itnm", typeof(string), "");
+        //    rsStock.Columns.Add("barno", typeof(string), "");
+        //    //rsStock.Columns.Add("styleno", typeof(string), "");
+        //    //rsStock.Columns.Add("pdesign", typeof(string), "");
+        //    //rsStock.Columns.Add("nos", typeof(double), "");
+        //    rsStock.Columns.Add("balqnty", typeof(double), "");
+        //    rsStock.Columns.Add("balnos", typeof(double), "");
+        //    //rsStock.Columns.Add("basrate", typeof(double), "");
+        //    rsStock.Columns.Add("rate", typeof(double), "");
+        //    rsStock.Columns.Add("amt", typeof(double), "");
+        //    rsStock.Columns.Add("itgrpcd", typeof(string), "");
+        //    rsStock.Columns.Add("itgrpnm", typeof(string), "");
+        //    //rsStock.Columns.Add("fabitcd", typeof(string), "");
+        //    //rsStock.Columns.Add("fabitnm", typeof(string), "");
+        //    rsStock.Columns.Add("uomcd", typeof(string), "");
+        //    rsStock.Columns.Add("uomnm", typeof(string), "");
+        //    //rsStock.Columns.Add("decimals", typeof(double), "");
+        //    rsStock.Columns.Add("gocd", typeof(string), "");
+        //    rsStock.Columns.Add("gonm", typeof(string), "");
+        //    rsStock.Columns.Add("itstyle", typeof(string), "");
+        //    rsStock.Columns.Add("stktype", typeof(string), "");
+        //    rsStock.Columns.Add("outqnty", typeof(double), "");
+        //    rsStock.Columns.Add("documentdt", typeof(DateTime), "");
+        //    rsStock.Columns.Add("lastprate", typeof(double), "");
+        //    rsStock.Columns.Add("lastpdocno", typeof(string), "");
+        //    #endregion
+
+        //    double balqty = 0, outqty = 0, avrate = 0, stkamt = 0, outnos = 0, balnos = 0;
+        //    string strmtrljobcd = "", strbarno = "", stritcd = "", strgocd = "";
+        //    Int32 i = 0, rNo = 0, it = 0, ig = 0;
+        //    int maxR = rsitem.Rows.Count - 1;
+        //    while (it <= rsitem.Rows.Count - 1)
+        //    {
+        //        strbarno = rsitem.Rows[it]["barno"].ToString();
+        //        stritcd = rsitem.Rows[it]["itcd"].ToString();
+        //        strmtrljobcd = rsitem.Rows[it]["mtrljobcd"].ToString();
+
+        //        ig = 0;
+        //        double isqty = 0, isamt = 0, israte = 0, isnos = 0;
+        //        while (ig <= varGodown.Count - 1)
+        //        {
+        //            strgocd = varGodown[ig].GOCD;
+        //            string data = "itgocd = '" + strmtrljobcd + stritcd + strbarno + strgocd + "'";
+        //            if (stritcd == "F10001769" && strmtrljobcd == "FS" && strbarno == "10001769" && strgocd == "38G")
+        //            {
+        //            }
+        //            var var1 = rsIn.Select(data);
+        //            bool itrecofound = false;
+        //            isqty = 0; isamt = 0; israte = 0; isnos = 0;
+        //            DataTable tbl1 = new DataTable();
+        //            if (var1 != null && var1.Count() > 0)
+        //            {
+        //                tbl1 = var1.CopyToDataTable();
+        //                itrecofound = true;
+        //            }
+        //            double lastinrt = (from DataRow dr in tbl1.Rows select dr["rate"]).LastOrDefault().retDbl();
+        //            string[] indoctag = { "SR", "AD" };
+        //            string lastpdocno = (from DataRow dr in tbl1.Rows where !indoctag.Contains(dr["doctag"].retStr()) select dr["docno"]).LastOrDefault().retStr();
+        //            double lastprt = (from DataRow dr in tbl1.Rows where !indoctag.Contains(dr["doctag"].retStr()) select dr["rate"]).LastOrDefault().retDbl();
+
+        //            outqty = 0; outnos = 0;
+        //            var tbl2 = rsOut.Select(data);
+        //            if (tbl2 != null)
+        //            {
+        //                if (tbl2.Count() != 0)
+        //                { outqty = Convert.ToDouble(tbl2[0]["qnty"]); outnos = Convert.ToDouble(tbl2[0]["nos"]); }
+        //            }
+        //            if (outqty != 0) itrecofound = true;
+
+        //            if (itrecofound == true)
+        //            {
+        //                balqty = outqty; balnos = outqty;
+        //                bool recoins = true;
+        //                maxR = tbl1.Rows.Count - 1;
+        //                i = 0;
+        //                while (i <= maxR)
+        //                {
+        //                    double chkqty = Math.Round(Convert.ToDouble(tbl1.Rows[i]["qnty"]), 6);
+        //                    double chknos = Math.Round(Convert.ToDouble(tbl1.Rows[i]["nos"]), 6);
+        //                    balqty = Math.Round(balqty, 6);
+        //                    balnos = Math.Round(balnos, 6);
+        //                    if (chkqty > balqty)
+        //                    {
+        //                        chkqty = chkqty - balqty;
+        //                        balqty = 0;
+        //                        recoins = true;
+        //                    }
+        //                    else
+        //                    {
+        //                        balqty = balqty - chkqty; recoins = false;
+        //                    }
+        //                    if (chknos > balnos)
+        //                    {
+        //                        chknos = chknos - balnos;
+        //                        balnos = 0;
+        //                    }
+        //                    else
+        //                    {
+        //                        balnos = balnos - chknos;
+        //                    }
+        //                    if (recoins == true)
+        //                    {
+        //                        isqty = isqty + chkqty;
+        //                        isnos = isnos + chknos;
+        //                        double amtcal = Convert.ToDouble(tbl1.Rows[i]["netamt"]);
+        //                        avrate = (amtcal / Convert.ToDouble(tbl1.Rows[i]["qnty"])).toRound(6);
+        //                        stkamt = (chkqty * avrate).toRound();
+        //                        isamt = isamt + stkamt;
+        //                        if (summary == false)
+        //                        {
+        //                            rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
+        //                            rsStock.Rows[rNo]["autono"] = tbl1.Rows[i]["autono"];
+        //                            rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
+        //                            //rsStock.Rows[rNo]["autoslno"] = tbl1.Rows[i]["autoslno"];
+        //                            //rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
+        //                            rsStock.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"];
+        //                            rsStock.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"];
+        //                            rsStock.Rows[rNo]["documentdt"] = Convert.ToDateTime(tbl1.Rows[i]["docdt"].retStr());
+        //                            rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
+        //                            rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
+        //                            rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
+        //                            rsStock.Rows[rNo]["stktype"] = tbl1.Rows[i]["stktype"];
+        //                            rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
+        //                            rsStock.Rows[rNo]["slcd"] = tbl1.Rows[i]["slcd"];
+        //                            rsStock.Rows[rNo]["slnm"] = tbl1.Rows[i]["slnm"];
+        //                            //rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
+        //                            rsStock.Rows[rNo]["balqnty"] = chkqty;
+        //                            rsStock.Rows[rNo]["balnos"] = chknos;
+        //                            if (isqty < 0 && negstkrtfrmmaster == true)
+        //                            {
+        //                                rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
+        //                            }
+        //                            else
+        //                            {
+        //                                rsStock.Rows[rNo]["rate"] = avrate;
+        //                            }
+        //                            rsStock.Rows[rNo]["amt"] = stkamt;
+        //                            rsStock.Rows[rNo]["itcd"] = stritcd;
+        //                            //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
+        //                            rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
+        //                            rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
+        //                            rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
+        //                            //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
+        //                            //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
+        //                            rsStock.Rows[rNo]["gocd"] = strgocd;
+        //                            rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
+
+        //                            rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+        //                            rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+        //                            //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+        //                            //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
+        //                            rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+        //                            //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
+        //                            //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
+        //                            //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+        //                            rsStock.Rows[rNo]["outqnty"] = 0;
+        //                            rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
+        //                            rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
+        //                        }
+        //                    }
+        //                    i++;
+        //                }
+        //                if (balqty != 0)
+        //                {
+        //                    isqty = isqty - balqty;
+        //                    isnos = isnos - balnos;
+        //                    if (summary == false)
+        //                    {
+        //                        rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
+        //                        //rsStock.Rows[rNo]["slno"] = 1;
+        //                        rsStock.Rows[rNo]["itcd"] = stritcd;
+        //                        //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
+        //                        rsStock.Rows[rNo]["balqnty"] = balqty * -1;
+        //                        rsStock.Rows[rNo]["balnos"] = balnos * -1;
+        //                        if (isqty < 0 && negstkrtfrmmaster == true)
+        //                        {
+        //                            rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
+        //                        }
+        //                        else
+        //                        {
+        //                            rsStock.Rows[rNo]["rate"] = 0;
+        //                        }
+        //                        rsStock.Rows[rNo]["amt"] = 0;
+        //                        rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
+        //                        rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
+        //                        rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
+        //                        //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
+        //                        //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
+        //                        rsStock.Rows[rNo]["gocd"] = strgocd;
+        //                        rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
+
+        //                        rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+        //                        rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+        //                        //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+        //                        //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
+        //                        rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+        //                        rsStock.Rows[rNo]["stktype"] = rsitem.Rows[it]["stktype"];
+        //                        //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
+        //                        //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
+        //                        //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+        //                        rsStock.Rows[rNo]["outqnty"] = 0;
+        //                        rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
+        //                        rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
+        //                    }
+        //                }
+        //                if (summary == true)
+        //                {
+        //                    rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
+        //                    //rsStock.Rows[rNo]["slno"] = 1;
+        //                    rsStock.Rows[rNo]["itcd"] = stritcd;
+        //                    //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
+        //                    rsStock.Rows[rNo]["balqnty"] = isqty;
+        //                    rsStock.Rows[rNo]["balnos"] = isnos;
+        //                    if (isqty < 0 && negstkrtfrmmaster == true)
+        //                    {
+        //                        rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
+        //                    }
+        //                    else
+        //                    {
+        //                        rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
+        //                    }
+        //                    rsStock.Rows[rNo]["amt"] = isamt;
+        //                    rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
+        //                    rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
+        //                    rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
+        //                    //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
+        //                    //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
+        //                    rsStock.Rows[rNo]["gocd"] = strgocd;
+        //                    rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
+
+        //                    rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
+        //                    rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
+        //                    //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
+        //                    //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
+        //                    rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
+        //                    rsStock.Rows[rNo]["stktype"] = rsitem.Rows[it]["stktype"];
+        //                    //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
+        //                    //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
+        //                    //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
+        //                    rsStock.Rows[rNo]["outqnty"] = 0;
+        //                    rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
+        //                    rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
+        //                }
+        //            }
+        //            ig++;
+        //        }
+        //        it++;
+        //    }
+        //    return rsStock;
+        //}
         public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string barno = "", string mtrljobcd = "", string itgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string curschema = "", string LOCCD = "", string finschema = "", bool negstkrtfrmmaster = false, bool skipNegetivStock = false, string indatadocdt = "")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -2650,7 +3063,11 @@ namespace Improvar
             string sql = "", sqlc = "";
             if (curschema.retStr() != "") scm = curschema;
             if (finschema.retStr() != "") scmf = finschema;
-
+            DateTime FinStartDate = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO));
+            if (curschema.retStr() != "")
+            {
+                FinStartDate = Convert.ToDateTime(FinStartDate.retDateStr().Substring(0, 6) + (Convert.ToDecimal(CommVar.YearCode(UNQSNO).retStr()) - 1).ToString());
+            }
             sql = "";
             sql += "select distinct y.mtrljobcd, e.mtrljobnm, z.barno, a.itcd, a.itnm, a.styleno,a.styleno||' '||a.itnm itstyle, z.pdesign, z.ourdesign, a.uomcd, a.itgrpcd, c.itgrpnm, d.uomnm, d.decimals, z.fabitcd, q.itnm fabitnm,y.stktype " + Environment.NewLine;
             sql += "from " + scm + ".m_sitem a, " + scm + ".m_group c, " + scmf + ".m_uom d, " + scm + ".m_sitem q, " + Environment.NewLine;
@@ -2713,7 +3130,8 @@ namespace Improvar
                 if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
             }
             if (skipStkTrnf == true) sql += "and c.doctag not in ('SI','SO') " + Environment.NewLine;
-            sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and (c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno >1000 )) and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
+            //sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and (c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno >1000 )) and c.slcd=g.slcd(+) and a.stkdrcr in ('D','C') " + Environment.NewLine;
+            sql += "and a.autono = f.autono(+) and a.txnslno = f.slno(+) and c.doctag in ('PB','OP','PD','JR','SI','KH','TR','SR','AD') and c.slcd=g.slcd(+) and a.stkdrcr in ('D') " + Environment.NewLine;
             sql += "and a.autono = g.autono(+) and a.txnslno=g.slno(+) and g.autono is null " + Environment.NewLine;
             sql += "group by a.autono, A.TXNSLNO,a.slno, c.doctag, conslcd, c.slcd, g.slnm, b.doccd, b.docdt, b.docno, " + Environment.NewLine;
             sql += "c.prefno,b.docno, c.prefdt,b.docdt,a.mtrljobcd, h.itcd, a.barno, h.pdesign,a.rate,nvl(f.txblval,0) + nvl(f.othramt,0) " + Environment.NewLine;
@@ -2747,7 +3165,8 @@ namespace Improvar
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".t_batchmst h, " + scm + ".t_bale g, " + Environment.NewLine;
             sql += scm + ".m_sitem d, " + scm + ".m_group e " + Environment.NewLine;
             sql += sqlc + " and a.autono=g.autono(+) and a.txnslno=g.slno(+) and g.autono is null and ";
-            if (skipStkTrnf == true) sql += "(c.doctag not in ('PB','OP','PD','JR')  or (c.doctag in ('AD') and a.slno <=1000 ) )and "; else sql += "(c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') or (c.doctag in ('AD') and a.slno <=1000 ) ) and " + Environment.NewLine;
+            //if (skipStkTrnf == true) sql += "(c.doctag not in ('PB','OP','PD','JR')  and (c.doctag in ('AD') and a.slno <=1000 ) )and "; else sql += "(c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR') and (c.doctag in ('AD') and a.slno <=1000 ) ) and " + Environment.NewLine;
+            ////if (skipStkTrnf == true) sql += "c.doctag not in ('PB','OP','PD','JR')  and "; else sql += "c.doctag not in ('PB','OP','PD','JR','SI','KH','TR','SR')  and " + Environment.NewLine;
 
             //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
             //if (MSYSCNFG.STKINCLPINV == "Y")
@@ -2756,7 +3175,8 @@ namespace Improvar
             //}
             //else
             //{
-            sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+            //sql += "a.stkdrcr in ('D','C') " + Environment.NewLine;
+            sql += "a.stkdrcr in ('C') " + Environment.NewLine;
             //}
             if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
             sql += "group by a.mtrljobcd, a.barno, h.itcd, a.mtrljobcd||h.itcd||a.barno " + Environment.NewLine;
@@ -2834,6 +3254,8 @@ namespace Improvar
 
                 ig = 0;
                 double isqty = 0, isamt = 0, israte = 0, isnos = 0;
+                string doctag = "";
+                DateTime docdt = System.DateTime.Now.Date;
                 while (ig <= varGodown.Count - 1)
                 {
                     strgocd = varGodown[ig].GOCD;
@@ -2844,6 +3266,8 @@ namespace Improvar
                     var var1 = rsIn.Select(data);
                     bool itrecofound = false;
                     isqty = 0; isamt = 0; israte = 0; isnos = 0;
+                    doctag = "";
+                    docdt = System.DateTime.Now.Date;
                     DataTable tbl1 = new DataTable();
                     if (var1 != null && var1.Count() > 0)
                     {
@@ -2897,87 +3321,53 @@ namespace Improvar
                             }
                             if (recoins == true)
                             {
+                                doctag = tbl1.Rows[i]["doctag"].retStr();
+                                docdt = Convert.ToDateTime(tbl1.Rows[i]["docdt"].retStr());
                                 isqty = isqty + chkqty;
                                 isnos = isnos + chknos;
                                 double amtcal = Convert.ToDouble(tbl1.Rows[i]["netamt"]);
                                 avrate = (amtcal / Convert.ToDouble(tbl1.Rows[i]["qnty"])).toRound(6);
+                                if ((doctag == "SR" || doctag == "AD") && docdt >= FinStartDate)
+                                {
+                                    avrate = lastprt;
+                                }
                                 stkamt = (chkqty * avrate).toRound();
                                 isamt = isamt + stkamt;
-                                if (summary == false)
-                                {
-                                    rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                                    rsStock.Rows[rNo]["autono"] = tbl1.Rows[i]["autono"];
-                                    rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
-                                    //rsStock.Rows[rNo]["autoslno"] = tbl1.Rows[i]["autoslno"];
-                                    //rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
-                                    rsStock.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"];
-                                    rsStock.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"];
-                                    rsStock.Rows[rNo]["documentdt"] = Convert.ToDateTime(tbl1.Rows[i]["docdt"].retStr());
-                                    rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
-                                    rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
-                                    rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
-                                    rsStock.Rows[rNo]["stktype"] = tbl1.Rows[i]["stktype"];
-                                    rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
-                                    rsStock.Rows[rNo]["slcd"] = tbl1.Rows[i]["slcd"];
-                                    rsStock.Rows[rNo]["slnm"] = tbl1.Rows[i]["slnm"];
-                                    //rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
-                                    rsStock.Rows[rNo]["balqnty"] = chkqty;
-                                    rsStock.Rows[rNo]["balnos"] = chknos;
-                                    if (isqty < 0 && negstkrtfrmmaster == true)
-                                    {
-                                        rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
-                                    }
-                                    else
-                                    {
-                                        rsStock.Rows[rNo]["rate"] = avrate;
-                                    }
-                                    rsStock.Rows[rNo]["amt"] = stkamt;
-                                    rsStock.Rows[rNo]["itcd"] = stritcd;
-                                    //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
-                                    rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
-                                    rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
-                                    rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
-                                    //rsStock.Rows[rNo]["uomnm"] = rsitem.Rows[it]["uomnm"];
-                                    //rsStock.Rows[rNo]["decimals"] = rsitem.Rows[it]["decimals"];
-                                    rsStock.Rows[rNo]["gocd"] = strgocd;
-                                    rsStock.Rows[rNo]["gonm"] = varGodown[ig].GONM;
 
-                                    rsStock.Rows[rNo]["barno"] = rsitem.Rows[it]["barno"];
-                                    rsStock.Rows[rNo]["mtrljobcd"] = rsitem.Rows[it]["mtrljobcd"];
-                                    //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
-                                    //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
-                                    rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
-                                    //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
-                                    //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
-                                    //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
-                                    rsStock.Rows[rNo]["outqnty"] = 0;
-                                    rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
-                                    rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
-                                }
-                            }
-                            i++;
-                        }
-                        if (balqty != 0)
-                        {
-                            isqty = isqty - balqty;
-                            isnos = isnos - balnos;
-                            if (summary == false)
-                            {
+
                                 rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
-                                //rsStock.Rows[rNo]["slno"] = 1;
-                                rsStock.Rows[rNo]["itcd"] = stritcd;
-                                //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
-                                rsStock.Rows[rNo]["balqnty"] = balqty * -1;
-                                rsStock.Rows[rNo]["balnos"] = balnos * -1;
-                                if (isqty < 0 && negstkrtfrmmaster == true)
+                                rsStock.Rows[rNo]["autono"] = tbl1.Rows[i]["autono"];
+                                rsStock.Rows[rNo]["slno"] = tbl1.Rows[i]["slno"];
+                                //rsStock.Rows[rNo]["autoslno"] = tbl1.Rows[i]["autoslno"];
+                                //rsStock.Rows[rNo]["doccd"] = tbl1.Rows[i]["doccd"];
+                                rsStock.Rows[rNo]["docno"] = tbl1.Rows[i]["docno"];
+                                rsStock.Rows[rNo]["docdt"] = tbl1.Rows[i]["docdt"];
+                                rsStock.Rows[rNo]["documentdt"] = Convert.ToDateTime(tbl1.Rows[i]["docdt"].retStr());
+                                rsStock.Rows[rNo]["prefno"] = tbl1.Rows[i]["blno"];
+                                rsStock.Rows[rNo]["prefdt"] = tbl1.Rows[i]["bldt"];
+                                rsStock.Rows[rNo]["doctag"] = tbl1.Rows[i]["doctag"];
+                                rsStock.Rows[rNo]["stktype"] = tbl1.Rows[i]["stktype"];
+                                rsStock.Rows[rNo]["conslcd"] = tbl1.Rows[i]["conslcd"];
+                                rsStock.Rows[rNo]["slcd"] = tbl1.Rows[i]["slcd"];
+                                rsStock.Rows[rNo]["slnm"] = tbl1.Rows[i]["slnm"];
+                                //rsStock.Rows[rNo]["basrate"] = tbl1.Rows[i]["rate"];
+                                rsStock.Rows[rNo]["balqnty"] = chkqty;
+                                rsStock.Rows[rNo]["balnos"] = chknos;
+                                if ((tbl1.Rows[i]["doctag"].retStr() == "SR" || tbl1.Rows[i]["doctag"].retStr() == "AD") && docdt >= FinStartDate)
+                                {
+                                    rsStock.Rows[rNo]["rate"] = lastprt;
+                                }
+                                else if (isqty < 0 && negstkrtfrmmaster == true)
                                 {
                                     rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
                                 }
                                 else
                                 {
-                                    rsStock.Rows[rNo]["rate"] = 0;
+                                    rsStock.Rows[rNo]["rate"] = avrate;
                                 }
-                                rsStock.Rows[rNo]["amt"] = 0;
+                                rsStock.Rows[rNo]["amt"] = stkamt;
+                                rsStock.Rows[rNo]["itcd"] = stritcd;
+                                //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"];
                                 rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                                 rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                                 rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
@@ -2991,32 +3381,36 @@ namespace Improvar
                                 //rsStock.Rows[rNo]["mtrljobnm"] = rsitem.Rows[it]["mtrljobnm"];
                                 //rsStock.Rows[rNo]["styleno"] = rsitem.Rows[it]["styleno"];
                                 rsStock.Rows[rNo]["itstyle"] = rsitem.Rows[it]["itstyle"];
-                                rsStock.Rows[rNo]["stktype"] = rsitem.Rows[it]["stktype"];
                                 //rsStock.Rows[rNo]["fabitcd"] = rsitem.Rows[it]["fabitcd"];
                                 //rsStock.Rows[rNo]["fabitnm"] = rsitem.Rows[it]["fabitnm"];
                                 //rsStock.Rows[rNo]["pdesign"] = (rsitem.Rows[it]["ourdesign"].retStr() == "" ? "" : rsitem.Rows[it]["ourdesign"].retStr() + "/") + rsitem.Rows[it]["pdesign"].retStr();
                                 rsStock.Rows[rNo]["outqnty"] = 0;
                                 rsStock.Rows[rNo]["lastprate"] = lastprt.toRound(4);
                                 rsStock.Rows[rNo]["lastpdocno"] = lastpdocno;
+
                             }
+                            i++;
                         }
-                        if (summary == true)
+                        if (balqty != 0)
                         {
+                            isqty = isqty - balqty;
+                            isnos = isnos - balnos;
+
                             rsStock.Rows.Add(""); rNo = rsStock.Rows.Count - 1;
                             //rsStock.Rows[rNo]["slno"] = 1;
                             rsStock.Rows[rNo]["itcd"] = stritcd;
                             //rsStock.Rows[rNo]["itnm"] = rsitem.Rows[it]["itnm"]; ;
-                            rsStock.Rows[rNo]["balqnty"] = isqty;
-                            rsStock.Rows[rNo]["balnos"] = isnos;
+                            rsStock.Rows[rNo]["balqnty"] = balqty * -1;
+                            rsStock.Rows[rNo]["balnos"] = balnos * -1;
                             if (isqty < 0 && negstkrtfrmmaster == true)
                             {
                                 rsStock.Rows[rNo]["rate"] = lastinrt.toRound(4);
                             }
                             else
                             {
-                                rsStock.Rows[rNo]["rate"] = (isqty == 0 ? 0 : (isamt / isqty).toRound(4));
+                                rsStock.Rows[rNo]["rate"] = 0;
                             }
-                            rsStock.Rows[rNo]["amt"] = isamt;
+                            rsStock.Rows[rNo]["amt"] = 0;
                             rsStock.Rows[rNo]["itgrpcd"] = rsitem.Rows[it]["itgrpcd"];
                             rsStock.Rows[rNo]["itgrpnm"] = rsitem.Rows[it]["itgrpnm"];
                             rsStock.Rows[rNo]["uomcd"] = rsitem.Rows[it]["uomcd"];
@@ -3043,6 +3437,51 @@ namespace Improvar
                 }
                 it++;
             }
+
+            if (summary == true)
+            {
+                if (rsStock != null && rsStock.Rows.Count > 0)
+                {
+                    rsStock = rsStock.AsEnumerable().GroupBy(r => new
+                    {
+                        itcd = r["itcd"],
+                        itgrpcd = r["itgrpcd"],
+                        itgrpnm = r["itgrpnm"],
+                        uomcd = r["uomcd"],
+                        gocd = r["gocd"],
+                        gonm = r["gonm"],
+                        barno = r["barno"],
+                        mtrljobcd = r["mtrljobcd"],
+                        itstyle = r["itstyle"],
+                        stktype = r["stktype"],
+                    })
+          .Select(g =>
+          {
+              var row = rsStock.NewRow();
+              row["itcd"] = g.Key.itcd;
+              row["itgrpcd"] = g.Key.itgrpcd;
+              row["itgrpnm"] = g.Key.itgrpnm;
+              row["uomcd"] = g.Key.uomcd;
+              row["gocd"] = g.Key.gocd;
+              row["gonm"] = g.Key.gonm;
+              row["barno"] = g.Key.barno;
+              row["mtrljobcd"] = g.Key.mtrljobcd;
+              row["itstyle"] = g.Key.itstyle;
+              row["stktype"] = g.Key.stktype;
+              row["balqnty"] = g.Sum(r => r.Field<double>("balqnty")).toRound(6);
+              row["balnos"] = g.Sum(r => r.Field<double>("balnos"));
+              row["amt"] = g.Sum(r => r.Field<double>("amt")).toRound(2);
+              row["rate"] = g.Sum(r => r.Field<double>("balqnty")) == 0 ? 0 : (g.Sum(r => r.Field<double>("amt")).toRound(2) / g.Sum(r => r.Field<double>("balqnty")).toRound(6)).toRound(4);
+              row["outqnty"] = g.Sum(r => r.Field<double>("outqnty"));
+              row["lastprate"] = g.Select(r => r.Field<double>("lastprate")).FirstOrDefault();
+              row["lastpdocno"] = string.Join(",", g.Select(r => r.Field<string>("lastpdocno")));
+              return row;
+
+          }).CopyToDataTable();
+
+                }
+            }
+
             return rsStock;
         }
 

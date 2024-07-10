@@ -2389,12 +2389,12 @@ namespace Improvar.Controllers
 
                 string Excel_Header = "DESIGN" + "|" + "ITEM GROUP" + "|" + "ITEM NAME" + "|" + "UOM" + "|" + "HSN CODE" + "|" + "FAB ITNM"
                     + "|" + "BARNO" + "|" + "WPRATE" + "|" + "MRP" + " |" + "CPRATE" + "|" + "RPRATE" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
-                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|" + "Bill_UOM" + "|" + "Effective Date";
+                    + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|" + "Bill_UOM" + "|" + "Effective Date" + "|" + "Allow Negetive Stock(Y/N)";
 
                 ExcelPackage ExcelPkg = new ExcelPackage();
                 ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                using (ExcelRange Rng = wsSheet1.Cells["A1:U1"])
+                using (ExcelRange Rng = wsSheet1.Cells["A1:V1"])
                 {
                     Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
@@ -2404,7 +2404,7 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[1, i + 1].Value = Header[i];
                     }
                 }
-                wsSheet1.Cells[1, 1, 1, 21].AutoFitColumns();
+                wsSheet1.Cells[1, 1, 1, 22].AutoFitColumns();
 
                 Response.Clear();
                 Response.ClearContent();
@@ -2460,6 +2460,8 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("Purchase Ledger Code", typeof(string));
                 dbfdt.Columns.Add("Bill_UOM", typeof(string));
                 dbfdt.Columns.Add("Effective Date", typeof(string));
+                dbfdt.Columns.Add("Allow Negetive Stock(Y/N)", typeof(string));
+
                 using (var package = new ExcelPackage(stream))
                 {
                     var currentSheet = package.Workbook.Worksheets;
@@ -2495,7 +2497,7 @@ namespace Improvar.Controllers
 
                 int excelrow = 1;
                 DateTime dt = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-365);
-               // string effdt =VE.PreviousYrUpload==true? dt.retDateStr() : System.DateTime.Now.retDateStr();
+                // string effdt =VE.PreviousYrUpload==true? dt.retDateStr() : System.DateTime.Now.retDateStr();
 
                 foreach (DataRow oudr in dbfdt.Rows)
                 {
@@ -2520,6 +2522,7 @@ namespace Improvar.Controllers
                     string PURGLCD = oudr["Purchase Ledger Code"].retStr();
                     string Bill_UOM = oudr["Bill_UOM"].retStr();
                     string EFFDT = oudr["Effective Date"].retDateStr();
+                    string Negetive_Stock = oudr["Allow Negetive Stock(Y/N)"].retStr().ToUpper();
 
                     string itgrptype = "";
                     if (VE.MENU_PARA == "C")//Fabric Item
@@ -2608,10 +2611,16 @@ namespace Improvar.Controllers
                             strerrline += excelrow + ",";
                             continue;
                         }
+                        if (Negetive_Stock != "" && Negetive_Stock != "Y" && Negetive_Stock != "N")
+                        {
+                            MESSAGE += msg + "Allow Negetive Stock Should be (Y/N/blank) for style:(" + DESIGN + ")";
+                            strerrline += excelrow + ",";
+                            continue;
+                        }
                         ItemDet ItemDet = new ItemDet();
                         if (VE.MENU_PARA == "C")//Fabric Item
                         {
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM, Negetive_Stock);
 
                         }
                         else if (VE.MENU_PARA == "F")//Finish Product/Design
@@ -2628,11 +2637,11 @@ namespace Improvar.Controllers
                                 }
                             }
 
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, fabitcd, BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM, Negetive_Stock);
                         }
                         else//Accessories / Other Items
                         {
-                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM);
+                            ItemDet = salesfunc.CreateItem(DESIGN, UOM, GRPNM, HSNCODE, "", BARNO, itgrptype, "", ITNM, "", "", IGST, true, SALGLCD, PURGLCD, Bill_UOM, Negetive_Stock);
                         }
                         if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
@@ -2679,7 +2688,11 @@ namespace Improvar.Controllers
             {
                 return "Excel Uploaded Successfully Current Year and last year !! <br/>" + MESSAGE;
             }
-            else if (strerrline == "" && CommVar.LastYearSchema(UNQSNO) == "" && VE.PreviousYrUpload == false)
+            //else if (strerrline == "" && CommVar.LastYearSchema(UNQSNO) == "" && VE.PreviousYrUpload == false)
+            //{
+            //    return "Excel Uploaded Successfully Current Year !! <br/>" + MESSAGE;
+            //}
+            else if (strerrline == "" && VE.PreviousYrUpload == false)
             {
                 return "Excel Uploaded Successfully Current Year !! <br/>" + MESSAGE;
             }

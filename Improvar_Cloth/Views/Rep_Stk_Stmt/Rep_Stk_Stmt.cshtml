@@ -50,41 +50,85 @@
         });
     });
 </script>
-<script>
-    function SummaryBarcodeChange() {
-        debugger;
+@*<script>
+        function SummaryBarcodeChange() {
+            debugger;
 
-        var val = ($("#TEXTBOX3").find(":selected").val());
-        if (val == "B") {
-            $("#summeryBarcode").show();
-            $(".summeryBarcode1").show();
+            var val = ($("#TEXTBOX3").find(":selected").val());
+            if (val == "B") {
+                $("#summeryBarcode").show();
+                $(".summeryBarcode1").show();
+            }
+            else {
+                $("#summeryBarcode").hide();
+                $(".summeryBarcode1").hide();
+            }
+            if (val == "F") {
+                $(".repdet").show();
+                $(".repdett").show();
+            } else {
+                $(".repdet").hide();
+                $(".repdett").hide();
+                $(".repdet_phystk").hide();
+            }
+            if (val == "P") {
+                $(".repdet").show();
+                $(".repdet_phystk").show();
+            } else {
+                $(".repdet").hide();
+                $(".repdet_phystk").hide();
+            }
+            if (val != "F") {
+                $(".ratedet").show();
+            } else {
+                $(".ratedet").hide();
+            }
+
         }
-        else {
-            $("#summeryBarcode").hide();
-            $(".summeryBarcode1").hide();
+    </script>*@
+<script>
+        function SummaryBarcodeChange() {
+            debugger;
+
+            var val = ($("#TEXTBOX3").find(":selected").val());
+            if (val == "B") {
+                $("#summeryBarcode").show();
+                $(".summeryBarcode1").show();
+
+                $(".repdet").hide();
+                $(".repdett").hide();
+                $(".repdet_phystk").hide();
+                $(".ratedet").hide();
+            }
+          else  if (val == "F") {
+                $(".repdet").show();
+                $(".repdett").show();
+
+                $("#summeryBarcode").hide();
+                $(".summeryBarcode1").hide();
+                $(".repdet_phystk").hide();
+                $(".ratedet").hide();
+            } 
+          else if (val == "P") {
+                $(".repdet").show();
+                $(".repdet_phystk").show();
+
+                $("#summeryBarcode").hide();
+                $(".summeryBarcode1").hide();
+                $(".repdett").hide();
+                $(".ratedet").hide();
+            } 
+          else if (val != "F") {
+              $(".ratedet").show();
+
+              $("#summeryBarcode").hide();
+              $(".summeryBarcode1").hide();
+              $(".repdet").hide();
+              $(".repdett").hide();
+              $(".repdet_phystk").hide();
+            }
+
         }
-        if (val == "F") {
-            $(".repdet").show();
-            $(".repdett").show();
-        } else {
-            $(".repdet").hide();
-            $(".repdett").hide();
-            $(".repdet_phystk").hide();
-        }
-        if (val == "P") {
-            $(".repdet").show();
-            $(".repdet_phystk").show();
-        } else {
-            $(".repdet").hide();
-            $(".repdet_phystk").hide();
-        }
-        if (val != "F") {
-            $(".ratedet").show();
-        } else {
-            $(".ratedet").hide();
-        }
-     
-    }
 </script>
 @using (Html.BeginForm())
 {
@@ -364,7 +408,7 @@
                                     </div>
                                 </div>
                             </div>*@
-                       
+
                         <div class="repdet row" style="margin-top:10PX">
                             <div class="col-lg-2">
                                 @*<div class="editor-field" style="margin-top: 4px;">

@@ -178,7 +178,7 @@ namespace Improvar.Controllers
                             string docno = temppur[j]["docno"].retStr();
                             if (rsTbl.Rows[i]["doctag"].ToString() == "SR" || rsTbl.Rows[i]["doctag"].ToString() == "AD")
                             {
-                                rt = temppur[j]["lastprate"].retDbl();
+                                //rt = temppur[j]["lastprate"].retDbl();
                                 docno = temppur[j]["lastpdocno"].retStr();
                             }
                             if (salBalqnty <= balqnty)
