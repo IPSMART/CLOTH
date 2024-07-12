@@ -767,8 +767,7 @@ namespace Improvar.Controllers
                                     tpaymt = k.TPAMT.retDbl();
                                     tqnty = tqnty + Convert.ToDouble(k.TQNTY);
                                     tnos = tnos + Convert.ToDouble(k.TNOS);
-                                    tamt = tamt + Convert.ToDouble(k.TAMT);
-                                    tpamt = k.TPAMT.retDbl();
+                                    //tamt = tamt + Convert.ToDouble(k.TAMT);
                                 }
                             }
                             //if (tpaymt != 0)
@@ -782,8 +781,9 @@ namespace Improvar.Controllers
                             {
                                 for (int a = 0; a < ptmy.Rows.Count; a++)
                                 {
-                                    if (menupara == "SBCM") { dtldsc += "Less " + ptmy.Rows[a]["PYMTNM"].retStr() + " Received" + "~"; dtlamt += Convert.ToDouble(ptmy.Rows[a]["payamt"].retDbl()).ToINRFormat(); }
-                                    else if (menupara == "SBCMR") { dtldsc += "Less " + ptmy.Rows[a]["PYMTNM"].retStr() + " Paid" + "~"; dtlamt += Convert.ToDouble(ptmy.Rows[a]["payamt"].retDbl()).ToINRFormat(); }
+                                    if (menupara == "SBCM") { dtldsc += "Less " + ptmy.Rows[a]["PYMTNM"].retStr() + " Received" + "~"; dtlamt += Convert.ToDouble(ptmy.Rows[a]["payamt"].retDbl()).ToINRFormat() + "~"; }
+                                    else if (menupara == "SBCMR") { dtldsc += "Less " + ptmy.Rows[a]["PYMTNM"].retStr() + " Paid" + "~"; dtlamt += Convert.ToDouble(ptmy.Rows[a]["payamt"].retDbl()).ToINRFormat() + "~"; }
+                                    tpamt += ptmy.Rows[a]["payamt"].retDbl();
 
                                 }
                             }

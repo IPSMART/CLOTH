@@ -1648,7 +1648,7 @@ namespace Improvar
             sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR,city ";
             sql += "from " + scmf + ".M_RETDEB a, " + scmf + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
-            if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' ) ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' or a.MOBILE='" + valsrch + "') ";
             sql += "order by a.RTDEBCD,a.RTDEBNM";
             DataTable tbl = SQLquery(sql);
             if (val.retStr() == "" || tbl.Rows.Count > 1)
