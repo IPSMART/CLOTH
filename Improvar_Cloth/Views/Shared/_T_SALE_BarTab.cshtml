@@ -74,7 +74,7 @@
                                 }
                                 <th class="" style="width:71px;">Item Code</th>
                                 <th class="" style="width:160px;">Item Design</th>
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                 {
                                 <th class="" style="width:160px;">Pdesign</th>
                                 }
@@ -115,18 +115,18 @@
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
                                 <th class="" style="width:50px;">UOM</th>
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
                                 {
                                 <th class="" style="width:50px;text-align:right;">Bill Qnty</th>
                                 @*<th class="" style="width:50px;text-align:right;">Bill UOM</th>*@
                                 }
-                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
                                 <th class="" style="width:80px;text-align:right;">List Price</th>
                                 <th class="" style="width:80px;text-align:right;">List Disc Per</th>
                                 }
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                                 {
                                 <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
                                 <th class="" style="width:80px;text-align:right;">Retail Rate</th>
@@ -148,13 +148,13 @@
                                 }
                                 }
 
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                 {
                                 <th class="" style="width:136px;">Order No.</th>
                                 <th class="" style="width:50px;">Or Sl</th>
                                 <th class="" style="width:102px;">Order Date</th>
                                 }
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                 {
                                 <th class="" style="width:135px;">Pcs.Type/CTG</th>
                                 }
@@ -164,9 +164,9 @@
                                 <th class="">Image Upload</th>
 
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                                {
-                                if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
-                                {
+                                            {
+                                if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" ) && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
+                                                {
                                 <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:84px;">Copy Row</th>
                                 }
                                 <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:40px;">Rate Hist</th>
@@ -180,9 +180,9 @@
                         </thead>
                         <tbody>
                             @if (Model.TBATCHDTL != null)
-                            {
-                            for (int i = 0; i <= Model.TBATCHDTL.Count - 1; i++)
-                            {
+                                {
+                                    for (int i = 0; i <= Model.TBATCHDTL.Count - 1; i++)
+                                    {
                             <tr style="font-size:12px; font-weight:bold;">
                                 <td class="sticky-cell">
                                     @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1,@onclick="SelectSameBale("+i+")" })
@@ -195,12 +195,12 @@
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
                                     }
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].BALEYR, new { id = "B_BALEYR_" + i })
-                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR")
                                     {
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].OURDESIGN, new { id = "B_OURDESIGN_" + i })
                                     @*@Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })*@
                                     }
-                                    @if (Model.MENU_PARA != "PB" & Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PR" && Model.M_SYSCNFG.MNTNOURDESIGN != "Y")
+                                    @if (Model.MENU_PARA != "PB" && Model.MENU_PARA != "REC" & Model.MENU_PARA != "OP" && Model.MENU_PARA != "OTH" && Model.MENU_PARA != "PJRC" && Model.MENU_PARA != "PR" && Model.M_SYSCNFG.MNTNOURDESIGN != "Y")
                                     {
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
                                     }
@@ -217,7 +217,7 @@
                                     {
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i })
                                     }
-                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER != "Y")
+                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER != "Y")
                                     {
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].WPRATE, new { id = "B_WPRATE_" + i })
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].WPPRICEGEN, new { id = "B_WPPRICEGEN_" + i })
@@ -251,7 +251,7 @@
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
                                     }
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].BLUOMCD, new { id = "B_BLUOMCD_" + i })
-                                    @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP" && Model.MENU_PARA != "PI" && Model.MENU_PARA != "SBPOS")
+                                    @if (Model.MENU_PARA != "SBPCK" && Model.MENU_PARA != "SB" && Model.MENU_PARA != "SBDIR" && Model.MENU_PARA != "ISS" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "SBEXP" && Model.MENU_PARA != "PI" && Model.MENU_PARA != "SBPOS")
                                     {
                                     @*@Html.HiddenFor(model => model.TBATCHDTL[i].BLUOMCD, new { id = "B_BLUOMCD_" + i })*@
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].BLQNTY, new { id = "B_BLQNTY_" + i })
@@ -310,7 +310,7 @@
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].ITNM, new { id = "B_ITNM_" + i })
                                 </td>
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                 {
                                 <td class="">
                                     @Html.EditorFor(model => model.TBATCHDTL[i].PDESIGN, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_PDESIGN_", @placeholder = "pdesign", @title = "Pdesign" } })
@@ -327,7 +327,7 @@
                                 @if (Model.M_SYSCNFG.MNTNBALE == "Y")
                                 {
                                 <td class="">
-                                    @if (Model.MENU_PARA == "SBDIR")
+                                    @if (Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS")
                                     {
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].BALENO, new { htmlattributes = new { id = "B_BALENO_" + i, @class = " atextBoxFor", maxlength = 30, onblur = "HasChangeBarSale();", @TabIndex = -1, @readonly = "readonly" } })
                                     }
@@ -386,7 +386,7 @@
                                 <td class="PJBLDiv">
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
                                 </td>
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SBPOS")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SBPOS")
                                 {
                                 <td class="PJBLDiv">
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, autocomplete = "off", @TabIndex = -1, @readonly = "readonly" } })
@@ -403,7 +403,7 @@
                                 <td class="">
                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
                                 {
                                 <td class="PJBLDiv">
                                     @if (Model.TBATCHDTL[i].CONVQTYPUNIT.retDbl() == 0)
@@ -419,7 +419,7 @@
                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].BLUOMCD, new { id = "B_BLUOMCD_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                 </td>*@
                                 }
-                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
                                 <td class="">
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].LISTPRICE, new { htmlAttributes = new { id = "B_LISTPRICE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#B_');HasChangeBarSale();" } })
@@ -446,7 +446,7 @@
                                 </td>
                                 }
 
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                                 {
                                 <td class="">
                                     @if (Model.Delete == "D")
@@ -512,7 +512,7 @@
 
 
 
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                 {
                                 <td class="">
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
@@ -525,7 +525,7 @@
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDOCDT, new { htmlAttributes = new { id = "B_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                 </td>
                                 }
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                 {
                                 <td class="">
                                     @*@Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })*@
@@ -548,7 +548,7 @@
                                     }
                                 </td>
                                 <td class="">
-                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && (Model.T_TXN.BARGENTYPE == "E" || Model.TBATCHDTL[i].BARGENTYPE == "E"))
+                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && (Model.T_TXN.BARGENTYPE == "E" || Model.TBATCHDTL[i].BARGENTYPE == "E"))
                                     {
                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i, @class = " atextBoxFor ", maxlength = 25 })
                                     }
@@ -560,7 +560,7 @@
                                     <input type="button" onclick="T_Sale_FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="TBATCHDTL[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.TBATCHDTL[i].BarImagesCount" />
                                 </td>
                                 <td class="">
-                                    @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.T_TXN != null && (Model.TBATCHDTL[i].BARGENTYPE == "E" || Model.T_TXN.BARGENTYPE == "E"))
+                                    @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.T_TXN != null && (Model.TBATCHDTL[i].BARGENTYPE == "E" || Model.T_TXN.BARGENTYPE == "E"))
                                     {
                                     <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px" id="UploadBarnoImage_@i">
                                     }
@@ -572,7 +572,7 @@
                                 </td>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
-                                if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
+                                if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC") && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
                                 {
                                 <td class="sticky-cell-opposite" style="right:84px;">
                                     @Html.EditorFor(model => Model.TBATCHDTL[i].NOOFROWCOPY, new { htmlAttributes = new { id = "B_NOOFROWCOPY_" + i, @class = " atextBoxFor", @onkeypress = "return numericOnly(this,0);", onkeydown = "CopyRow(" + i + ")" } })
@@ -613,8 +613,8 @@
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>design*@
                                 @if (Model.SHOWMTRLJOBCD == "Y")
                                 {
-                                if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC"))
-                                {
+                                    if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC"))
+                                    {
                                 <td>
                                     @if (Model.SHOWMTRLJOBCD == "Y")
                                     {
@@ -633,7 +633,7 @@
                                 }
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC" || Model.MENU_PARA == "PR") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*pdesign*@
                                 }
@@ -685,19 +685,19 @@
                                     @Html.EditorFor(model => Model.B_T_QNTY, new { htmlAttributes = new { id = "B_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 }
 
-                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -719,13 +719,13 @@
                                 }
                                 }
 
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
-                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
@@ -736,9 +736,9 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                                {
-                                if (Model.MENU_PARA == "PB" && Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
-                                {
+                                        {
+                                            if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" )&& Model.M_SYSCNFG.COMMONUNIQBAR == "E" && Model.DefaultAction == "A")
+                                            {
                                 <td class="sticky-cell-opposite" style="right:84px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 <td class="sticky-cell-opposite" style="right:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*rate hist*@

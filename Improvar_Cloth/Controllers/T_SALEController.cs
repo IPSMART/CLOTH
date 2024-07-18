@@ -52,7 +52,7 @@ namespace Improvar.Controllers
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
                     VE.INVTYPE_list = masterHelp.INVTYPE_list();
                     VE.LOW_TDS_list = masterHelp.LOW_TDS_list();
-                    VE.EXPCD_list = masterHelp.EXPCD_list((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? "P" : "S");
+                    VE.EXPCD_list = masterHelp.EXPCD_list((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? "P" : "S");
                     VE.Reverse_Charge = masterHelp.REV_CHRG();
                     VE.Database_Combo1 = (from n in DB.T_TXNOTH
                                           select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
@@ -75,7 +75,7 @@ namespace Improvar.Controllers
                     {
                         foreach (var v in VE.DropDown_list_MTRLJOBCD)
                         {
-                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                             {
                                 if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL" || v.MTRLJOBCD == "DY")
                                 {
@@ -232,7 +232,7 @@ namespace Improvar.Controllers
                             VE.M_SYSCNFG = MSYSCNFG;
                             if (loadOrder.retStr().Length > 1)
                             {
-                                if (VE.MENU_PARA != "SBDIR")
+                                if (VE.MENU_PARA != "SBDIR" && VE.MENU_PARA != "ISS")
                                 {
                                     VE.T_TXN.AUTONO = "";
                                 }
@@ -255,7 +255,7 @@ namespace Improvar.Controllers
                                 }
                                 Cn.getdocmaxmindate(TTXN.DOCCD, "", VE.DefaultAction, "", VE);
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
-                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                 {
                                     TTXN.PREFDT = Cn.getCurrentDate(VE.mindate);
                                 }
@@ -275,7 +275,7 @@ namespace Improvar.Controllers
                                              where a.DOCCD == doccd1 && b.LOCCD == LOC && b.COMPCD == COM
                                              orderby a.AUTONO descending
                                              select a).FirstOrDefault();
-                                if (CommVar.ClientCode(UNQSNO) == "SNFP" && VE.MENU_PARA == "SBDIR")
+                                if (CommVar.ClientCode(UNQSNO) == "SNFP" && (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS"))
                                 {
                                     TTXN.GOCD = "SHOP";
                                 }
@@ -383,7 +383,7 @@ namespace Improvar.Controllers
                                         VE.JOBEXPGLCD = M_JOBMST.EXPGLCD;
                                     }
                                 }
-                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PR")
                                 {
                                     TTXN.BARGENTYPE = VE.M_SYSCNFG.COMMONUNIQBAR.retStr() == "E" ? "E" : "C";
                                 }
@@ -459,7 +459,7 @@ namespace Improvar.Controllers
                                 VE.T_TXN = TTXN;
                                 //VE.MERGEINDTL = VE.M_SYSCNFG.MERGEINDTL.retStr() == "Y" ? true : false;
                                 //T_TXNOTH TXNOTH = new T_TXNOTH();
-                                if (VE.MENU_PARA == "SBDIR" && CommVar.ClientCode(UNQSNO) == "BNBH") TTXNOTH.PAYTERMS = "NETT CASH, NO LESS";
+                                if ((VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS") && CommVar.ClientCode(UNQSNO) == "BNBH") TTXNOTH.PAYTERMS = "NETT CASH, NO LESS";
                                 VE.T_TXNOTH = TTXNOTH;
                                 if ((VE.MENU_PARA == "PR") && (CommVar.ClientCode(UNQSNO) == "SACH" || CommVar.ClientCode(UNQSNO) == "LALF"))
                                 { VE.ReturnAdjustwithBill = true; }
@@ -510,7 +510,7 @@ namespace Improvar.Controllers
                                          join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
                                          where b.INACTIVE_TAG == "N"
                                          select new { a.MTRLJOBCD, a.MTRLJOBNM, a.MTBARCODE }).ToList();
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                         {
                             if (mtrljobcd.Count() == 1)
                             {
@@ -597,6 +597,9 @@ namespace Improvar.Controllers
             dt.Rows.Add("PJBL", "Job Bill raised to Party", "SALGLCD", "", "", "", "", "", "D", "JB");
             dt.Rows.Add("PJBR", "Job Bill Return to Party", "SALGLCD", "", "", "", "", "", "D", "JQ");
             dt.Rows.Add("SBPOS", "Cash Sales", "SALGLCD", "", "", "", "", "", "D", "SB");
+            dt.Rows.Add("ISS", "Stock Transfer Issue", "SALGLCD", "", "", "", "", "", "D", "SB");//sales
+            dt.Rows.Add("REC", "Stock Transfer Receive", "PURGLCD", "", "", "", "", "", "C", "PB");//purchase
+
             var dr = dt.Select("MENUPARA='" + MENU_PARA + "'");
             if (dr != null && dr.Count() > 0) return dr.CopyToDataTable(); else return dt;
         }
@@ -813,15 +816,15 @@ namespace Improvar.Controllers
                                     BALEYR = dr["BALEYR"].retStr(),
                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
                                     GLCD = dr["GLCD"].retStr(),
-                                    WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
-                                    RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
+                                    WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
+                                    RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
                                     ORDAUTONO = dr["ORDAUTONO"].retStr(),
                                     ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
                                     ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                     ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
-                                    WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
-                                    RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
+                                    WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
+                                    RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
                                     AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR") ? dr["AGDOCNO"].retStr() : "",
                                     AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
                                     LISTPRICE = dr["LISTPRICE"].retDbl(),
@@ -851,7 +854,7 @@ namespace Improvar.Controllers
                 //    { count = count + 1; latbaleno = salebalno; }
                 //}
                 //VE.TOTBALENO = count.retDbl();
-                if (VE.MENU_PARA == "PB" && VE.DefaultAction == "V")
+                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC") && VE.DefaultAction == "V")
                 {
                     VE.TOTBALENO = (from j in VE.TBATCHDTL where j.BALENO.retStr() != "" select j.BALENO).Distinct().Count().retDbl();
                 }
@@ -954,7 +957,7 @@ namespace Improvar.Controllers
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 string BARNO_ = "", ITCD_="", ITGRPCD_="";
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
                     if (BARNO.Length > 1000)
                     {
@@ -1072,7 +1075,7 @@ namespace Improvar.Controllers
                         }
                     }
                     //if purchase stock det
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
                         if (stkDATA != null && stkDATA.Count() > 0)
@@ -1084,10 +1087,10 @@ namespace Improvar.Controllers
                     if (chk_child != "")
                     {
                         v.ChildData = "Y";
-                        if (VE.MENU_PARA == "PB") VE.ChildData = "child record found";
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC") VE.ChildData = "child record found";
                     }
 
-                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (syscnfgdata != null && syscnfgdata.Rows.Count > 0))
+                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (syscnfgdata != null && syscnfgdata.Rows.Count > 0))
                     {
 
                         if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "" || v.WPPER.retDbl() == 0 || v.RPPER.retDbl() == 0)
@@ -1173,7 +1176,7 @@ namespace Improvar.Controllers
                     }
                 }
                 string S_P = "";
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") { S_P = "P"; } else { S_P = "S"; }
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") { S_P = "P"; } else { S_P = "S"; }
                 string sql = "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, a.amtdesc, ";
                 sql += "b.glcd, a.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, ";
                 sql += "a.cgstper, a.cgstamt,a.cessper, a.cessamt, a.dutyper, a.dutyamt ";
@@ -1332,7 +1335,7 @@ namespace Improvar.Controllers
                 DataTable tbl = masterHelp.SQLquery(sql);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
                     var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "Bill Amt"
                         + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
@@ -1376,7 +1379,7 @@ namespace Improvar.Controllers
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 string linktdscode = "'Y','Z'";
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") linktdscode = "'X'";
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") linktdscode = "'X'";
                 if (TAG.retStr() == "") return Content("Enter Document Date");
                 if (val == null)
                 {
@@ -1483,7 +1486,7 @@ namespace Improvar.Controllers
                                 {
                                     linktdscode = linktdscode.retStr() == "" ? "'Y'" : linktdscode.retStr().retSqlformat();
 
-                                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") linktdscode = "'X'";
+                                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") linktdscode = "'X'";
                                     var tdsdt = getTDS(code_data[1], val, linktdscode);
                                     if (tdsdt != null && tdsdt.Rows.Count > 0)
                                     {
@@ -1513,7 +1516,7 @@ namespace Improvar.Controllers
                                     str = str.ReplaceHelpStr("PRCCD", "CP");
                                     str = str.ReplaceHelpStr("PRCNM", "CP");
                                 }
-                                if (CommVar.ClientCode(UNQSNO) == "DIWH" && VE.MENU_PARA == "SBDIR")
+                                if (CommVar.ClientCode(UNQSNO) == "DIWH" && (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS"))
                                 {
                                     string sql = "select a.PARGLCD,c.glnm PARGLNM from " + CommVar.CurSchema(UNQSNO) + ".t_txn a," + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b," + CommVar.FinSchema(UNQSNO) + ".m_genleg c ";
                                     sql += "where a.autono=b.autono and a.PARGLCD=c.glcd and  a.DOCCD = '" + doccd + "' and b.LOCCD = '" + CommVar.Loccd(UNQSNO) + "' and b.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and a.slcd ='" + val + "' ";
@@ -1556,7 +1559,7 @@ namespace Improvar.Controllers
             {
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
-                string SkipGocd = (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR") ? "'TR'" : "";
+                string SkipGocd = (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SR") ? "'TR'" : "";
                 var str = masterHelp.GOCD_help(val, SkipGocd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -1612,7 +1615,7 @@ namespace Improvar.Controllers
                     glcd = str.retCompValue(MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr());
                     str += "^GLCD=^" + glcd + Cn.GCS();
                     //pricegen
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         string WPPRICEGEN = str.retCompValue("WPPRICEGEN");
                         string RPPRICEGEN = str.retCompValue("RPPRICEGEN");
@@ -1726,7 +1729,7 @@ namespace Improvar.Controllers
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "", BARIMAGE = "";
                     string glcd = "";
                     DataTable tax_data = new DataTable();
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), val.retStr().retSqlformat(), MTRLJOBCD.retStr(), "", ITGRPCD, "", PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
@@ -1901,7 +1904,7 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE); string str = ""; bool showonlycommonbar = true;
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 //if new barcode generate then commonbarcode=E transaction barcode comes on blure only. (For Lal Fashion) change by Neha
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
                     if (val.retStr() != "") { showonlycommonbar = false; }
                 }
@@ -1935,7 +1938,7 @@ namespace Improvar.Controllers
                 else
                 {
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
-                    if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "PI")
+                    if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "PI")
                     {
                         if (str.retCompValue("PRODGRPGSTPER").retStr() == "")
                         {
@@ -1967,7 +1970,7 @@ namespace Improvar.Controllers
                     }// end Image section
 
                     //pricegen
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         string WPPRICEGEN = str.retCompValue("WPPRICEGEN");
                         string RPPRICEGEN = str.retCompValue("RPPRICEGEN");
@@ -2018,7 +2021,7 @@ namespace Improvar.Controllers
                         }
                     }
                     //if purchase stock det
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         var stock_data = salesfunc.GetStock(DOCDT, GOCD, BARNO, "", MTRLJOBCD, AUTONO, "", barnoOrStyle, PRCCD, TAXGRPCD, "", "", true, true, "", "", false, false, exactbarno, "", true);
                         if (stock_data != null)
@@ -2374,7 +2377,7 @@ namespace Improvar.Controllers
                 string sql = "", scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 Cn.getQueryString(VE);
                 string S_P = "";
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") { S_P = "P"; } else { S_P = "S"; }
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") { S_P = "P"; } else { S_P = "S"; }
 
                 sql = "";
                 sql += "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, ";
@@ -2522,7 +2525,7 @@ namespace Improvar.Controllers
                                        }).ToList();
                     string ITCDLIST = VE.PENDINGORDER.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
 
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         PRODGRPDATA = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
                     }
@@ -2579,7 +2582,7 @@ namespace Improvar.Controllers
                                     Cn.CopyImage(FROMpath, TOPATH);
                                 }
                             }
-                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                             {
                                 VE.PENDINGORDER[p].WPPRICEGEN = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("WPPRICEGEN")).FirstOrDefault();
                                 VE.PENDINGORDER[p].RPPRICEGEN = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("RPPRICEGEN")).FirstOrDefault();
@@ -2715,7 +2718,7 @@ namespace Improvar.Controllers
 
                         }
                     }
-                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.TBATCHDTL[i].BARGENTYPE == "E" || VE.T_TXN.BARGENTYPE == "E"))
+                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.TBATCHDTL[i].BARGENTYPE == "E" || VE.T_TXN.BARGENTYPE == "E"))
                     {
                         VE.TBATCHDTL[i].BarImages = "";
                         VE.TBATCHDTL[i].BarImagesCount = "";
@@ -3962,15 +3965,15 @@ namespace Improvar.Controllers
                                     BALEYR = dr["BALEYR"].retStr(),
                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
                                     GLCD = (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR") ? VE.JOBEXPGLCD : dr[MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr()].retStr(),
-                                    WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
-                                    RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
+                                    WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
+                                    RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
                                     ORDAUTONO = dr["ORDAUTONO"].retStr(),
                                     ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
                                     ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                     ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
-                                    WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
-                                    RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
+                                    WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
+                                    RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
                                     AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
                                     AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
                                     LISTPRICE = dr["LISTPRICE"].retDbl(),
@@ -4037,7 +4040,7 @@ namespace Improvar.Controllers
                 ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                 {
                     allprodgrpgstper_data = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
@@ -4091,7 +4094,7 @@ namespace Improvar.Controllers
                         }
                     }
 
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
 
                         if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "" || v.WPPER.retDbl() == 0 || v.RPPER.retDbl() == 0)
@@ -4242,15 +4245,15 @@ namespace Improvar.Controllers
                                          BALEYR = dr["BALEYR"].retStr(),
                                          BARGENTYPE = dr["BARGENTYPE"].retStr(),
                                          GLCD = dr[MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].retStr()].retStr(),
-                                         WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
-                                         RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
+                                         WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPRATE"].retDbl() : (double?)null,
+                                         RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPRATE"].retDbl() : (double?)null,
                                          ITREM = dr["ITREM"].retStr(),
                                          ORDAUTONO = dr["ORDAUTONO"].retStr(),
                                          ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
                                          ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                          ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
-                                         WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
-                                         RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
+                                         WPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["WPPRICEGEN"].retStr() : "",
+                                         RPPRICEGEN = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") ? dr["RPPRICEGEN"].retStr() : "",
                                          AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
                                          AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
                                          LISTPRICE = dr["LISTPRICE"].retDbl(),
@@ -4293,7 +4296,7 @@ namespace Improvar.Controllers
                     ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                     string PRCCD = VE.T_TXNOTH.PRCCD.retStr() == "" ? "WP" : VE.T_TXNOTH.PRCCD.retStr();
                     string TAXGRPCD = VE.T_TXNOTH.TAXGRPCD.retStr() == "" ? "C001" : VE.T_TXNOTH.TAXGRPCD.retStr();
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         allprodgrpgstper_data = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
@@ -4346,11 +4349,11 @@ namespace Improvar.Controllers
                                             Cn.CopyImage(FROMpath, TOPATH);
                                         }
                                     }
-                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "SBPOS")
+                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" ||  VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "SBPOS")
                                     {
                                         v.RATE = tax_data.Rows[0]["RATE"].retDbl();
                                     }
-                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "SBPOS") && MSYSCNFG.MNTNLISTPRICE == "Y")
+                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" ||  VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "SBPOS") && MSYSCNFG.MNTNLISTPRICE == "Y")
                                     {
                                         v.LISTPRICE = tax_data.Rows[0]["RATE"].retDbl();
                                     }
@@ -4358,7 +4361,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                         {
 
                             if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "" || v.WPPER.retDbl() == 0 || v.RPPER.retDbl() == 0)
@@ -4648,7 +4651,7 @@ namespace Improvar.Controllers
                     minhsnlen = compdt.Rows[0]["minhsnlen"].retInt();
                 }
                 DataTable baledata = new DataTable();
-                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "PJBR") && balenocount > 0)
+                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "PJBR") && balenocount > 0)
                 {
                     var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToArray().retSqlfromStrarray();
                     string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen,baleno from " + scm1 + ".t_bale where baleno in (" + baleno + ") ";
@@ -4657,7 +4660,7 @@ namespace Improvar.Controllers
 
                 DataTable baledatas = new DataTable();
                 DataTable lr_det = new DataTable();
-                if ((VE.MENU_PARA == "PB") && balenocount > 0)
+                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC") && balenocount > 0)
                 {
                     var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToArray().retSqlfromStrarray();
                     string str = "select a.autono,b.docno,a.baleno from " + scm1 + ".T_BATCHDTL a," + scm1 + ".t_cntrl_hdr b where a.autono=b.autono and b.doccd='" + VE.T_TXN.DOCCD + "' and baleno in (" + baleno + ") ";
@@ -4734,7 +4737,7 @@ namespace Improvar.Controllers
                         }
                     }
                     string PIAUTONO = "";
-                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A")
+                    if ((VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS") && VE.DefaultAction == "A")
                     {
                         PIAUTONO = VE.T_TXN.AUTONO;
                     }
@@ -4821,6 +4824,8 @@ namespace Improvar.Controllers
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SBDIR":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
+                        case "ISS":
+                            stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
                         case "SR":
                             stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SC"; strrem = "SRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "SBCM":
@@ -4833,6 +4838,8 @@ namespace Improvar.Controllers
                             stkdrcr = VE.STOCKHOLD == true ? "C" : "0"; blactpost = false; blgstpost = false; break;
                         case "PB":
                             stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
+                        case "REC":
+                            stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "REC"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "PR":
                             stkdrcr = "C"; parglcd = "purdebglcd"; trcd = "PD"; strrem = "PRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "OP":
@@ -4874,12 +4881,12 @@ namespace Improvar.Controllers
 
                     sql = "select b.rogl, b.tcsgl,b.TCSPURGLCD, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
                     sql += "'" + prodglcd.retStr() + "' prodglcd, ";
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     else sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
                     //if (slcdpara == "PB" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
                     if (othr_para.retStr() != "")
                     {
-                        if (slcdpara == "PB" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
+                        if (slcdpara == "PB" || VE.MENU_PARA == "REC" || slcdpara == "OP" || slcdpara == "OTH" || VE.MENU_PARA == "PJRC") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
                     }
                     else
                     {
@@ -4910,7 +4917,7 @@ namespace Improvar.Controllers
                             if (VE.TBATCHDTL[i].SLNO != 0 && VE.TBATCHDTL[i].ITCD != null)
                             {
                                 #region Negetive Stock Chking
-                                if (VE.MENU_PARA != "SR" && VE.MENU_PARA != "SBCMR" && VE.MENU_PARA != "PB" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.TBATCHDTL[i].QNTY != 0)
+                                if (VE.MENU_PARA != "SR" && VE.MENU_PARA != "SBCMR" && VE.MENU_PARA != "PB" && VE.MENU_PARA != "REC" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.TBATCHDTL[i].QNTY != 0)
                                 {
                                     if (VE.TBATCHDTL[i].QNTY != 0)
                                     {
@@ -4982,7 +4989,7 @@ namespace Improvar.Controllers
                             TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         }
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
-                        if (DOCPATTERN.retStr().Length > 16 && (VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR"))
+                        if (DOCPATTERN.retStr().Length > 16 && (VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS"))
                         {
                             ContentFlg = "Document No. length should be less than 16.change from Document type master "; goto dbnotsave;
                         }
@@ -5071,7 +5078,7 @@ namespace Improvar.Controllers
                         {
                             if (!VE.TBATCHDTL.Where(s => s.BARNO == v.BARNO && s.SLNO == v.SLNO).Any())
                             {
-                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                 {
                                     dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR_LINK", "", "E", "", "barno='" + v.BARNO + "'");
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
@@ -5390,7 +5397,7 @@ namespace Improvar.Controllers
                                         goto dbnotsave;
                                     }
                                 }
-                                if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "PI")
+                                if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "PI")
                                 {
                                     if (VE.TTXNDTL[i].PRODGRPGSTPER.retStr() == "")
                                     {
@@ -5523,7 +5530,7 @@ namespace Improvar.Controllers
                                     TBALE.DRCR = TTXNDTL.STKDRCR;
                                     TBALE.GOCD = TTXN.GOCD;
                                     TBALE.BALENO = TTXNDTL.BALENO;
-                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS") && baledata.Rows.Count > 0)
+                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS"  || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS") && baledata.Rows.Count > 0)
                                     {
                                         string baleno = VE.TTXNDTL[i].BALENO.retStr();
                                         var data = baledata.Select("baleno = '" + baleno + "' and blslno = " + VE.TTXNDTL[i].RECPROGSLNO + "");
@@ -5625,7 +5632,7 @@ namespace Improvar.Controllers
                                 //    }
                                 //}
                                 string Action = "A", SqlCondition = "";
-                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
+                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     if (VE.TBATCHDTL[i].COMMONUNIQBAR.retStr() != "E")
                                     {
@@ -5698,7 +5705,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTHRAMT;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
                                     TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
-                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                     {
                                         TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                         TBATCHMST.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
@@ -5712,7 +5719,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.MILLNM = VE.TBATCHDTL[i].MILLNM;
                                     TBATCHMST.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
                                     TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
-                                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
+                                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
                                     {
                                         TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
                                         TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
@@ -5723,7 +5730,7 @@ namespace Improvar.Controllers
                                     if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E")
                                     {
                                         TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
-                                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                         {
                                             TBATCHMST.OURDESIGN = VE.TBATCHDTL[i].OURDESIGN;
                                         }
@@ -5733,7 +5740,7 @@ namespace Improvar.Controllers
 
                                     if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E")
                                     {
-                                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                         {
                                             if (VE.TBATCHDTL[i].BarImages.retStr() != "")
                                             {
@@ -5778,7 +5785,7 @@ namespace Improvar.Controllers
 
 
                                 //add price
-                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") && pricedataexist == false)
+                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") && pricedataexist == false)
                                 {
                                     T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
                                     TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
@@ -5877,7 +5884,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.CUTLENGTH = VE.TBATCHDTL[i].CUTLENGTH;
                                 TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
 
-                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && MSYSCNFG.MNTNPCSTYPE == "Y")
+                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && MSYSCNFG.MNTNPCSTYPE == "Y")
                                 {
                                     TBATCHDTL.PCSTYPE = VE.TBATCHDTL[i].PCSTYPE;
                                 }
@@ -5904,7 +5911,7 @@ namespace Improvar.Controllers
                     {
                         ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
-                    if ((VE.MENU_PARA == "PB") && VE.T_TXN.PREFNO == null)
+                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC") && VE.T_TXN.PREFNO == null)
                     {
                         ContentFlg = "Purchase Bill No not entered"; goto dbnotsave;
                     }
@@ -5913,7 +5920,7 @@ namespace Improvar.Controllers
                     if (VE.TTXNAMT != null)
                     {
                         bool taxcheck = true;
-                        if (VE.MENU_PARA == "PB" && CommVar.ClientCode(UNQSNO) == "SNFP") taxcheck = false;
+                        if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC") && CommVar.ClientCode(UNQSNO) == "SNFP") taxcheck = false;
                         for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
                         {
                             if (VE.TTXNAMT[i].SLNO != 0 && VE.TTXNAMT[i].AMTCD != null && VE.TTXNAMT[i].AMT != 0)
@@ -6053,7 +6060,7 @@ namespace Improvar.Controllers
                     double itamt = 0;
                     if (blactpost == true)
                     {
-                        if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PJBR") salpur = "S";
+                        if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PJBR") salpur = "S";
                         else salpur = "P";
                         string prodrem = strrem; expglcd = "";
                         if (VE.TTXNDTL != null)
@@ -6170,7 +6177,7 @@ namespace Improvar.Controllers
                         {
                             string adrcr = cr;
                             //TCSPURGLCD
-                            var TCSGLCD = VE.MENU_PARA == "PB" ? tbl.Rows[0]["TCSPURGLCD"].ToString() : tbl.Rows[0]["tcsgl"].ToString();
+                            var TCSGLCD = VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" ? tbl.Rows[0]["TCSPURGLCD"].ToString() : tbl.Rows[0]["tcsgl"].ToString();
                             isl = isl + 1;
                             dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, TCSGLCD, sslcd,
                                     dbamt, strrem, tbl.Rows[0]["parglcd"].ToString(), TTXN.SLCD, 0, 0, 0);
@@ -6225,7 +6232,7 @@ namespace Improvar.Controllers
                         }
                         strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
                         //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" )
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" )
                         {
                             strblno = TTXN.PREFNO;
                             strbldt = TTXN.PREFDT.ToString();
@@ -6424,7 +6431,7 @@ namespace Improvar.Controllers
                                     TVCHGST.DRCR = cr;
                                     TVCHGST.QNTY = (VE.TTXNDTL[i].BLQNTY.retDbl() == 0 ? VE.TTXNDTL[i].QNTY.retDbl() : VE.TTXNDTL[i].BLQNTY.retDbl());
                                     string BLUOMCD = "";
-                                    if (VE.TTXNDTL[i].BLUOMCD.retStr() != "" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PI" || VE.MENU_PARA == "SBPOS"))
+                                    if (VE.TTXNDTL[i].BLUOMCD.retStr() != "" && (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PI" || VE.MENU_PARA == "SBPOS"))
                                     {
                                         BLUOMCD = Regex.Replace(VE.TTXNDTL[i].BLUOMCD, @"[^A-Z]+", String.Empty);
                                         BLUOMCD = BLUOMCD.Trim();
@@ -6773,7 +6780,7 @@ namespace Improvar.Controllers
                     #endregion
 
                     #region STOCK CHECKING
-                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS"))
+                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS"))
                     {
                         bool stockcheck = true;
                         if (VE.MENU_PARA == "PI") stockcheck = false;
@@ -6910,14 +6917,14 @@ namespace Improvar.Controllers
                     }
                     OraTrans.Commit();
                     //if ((VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR") && VE.DefaultAction == "A") TempData["LoadFromExisting" + VE.MENU_PARA] = TTXN.AUTONO.retStr();
-                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "" && CommVar.ModuleCode() != "SALESSAREE")//need to delete profoma when salebill done from profma
+                    if ((VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS") && VE.DefaultAction == "A" && PIAUTONO.retStr() != "" && CommVar.ModuleCode() != "SALESSAREE")//need to delete profoma when salebill done from profma
                     {
                         T_SALEController TSCntlr = new T_SALEController();
                         VE.DefaultAction = "V";
                         VE.MENU_PARA = "PI";
                         string deletemsg = (string)TSCntlr.SAVE(VE, "PI");
                     }
-                    if (VE.MENU_PARA == "SBDIR" && VE.DefaultAction == "A" && PIAUTONO.retStr() != "" && CommVar.ModuleCode() == "SALESSAREE")//need to cancel profoma when salebill done
+                    if ((VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS") && VE.DefaultAction == "A" && PIAUTONO.retStr() != "" && CommVar.ModuleCode() == "SALESSAREE")//need to cancel profoma when salebill done
                     {
                         T_SALEController TSCntlr = new T_SALEController();
                         VE.DefaultAction = "V";
@@ -6932,7 +6939,7 @@ namespace Improvar.Controllers
                     dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         dbsql = masterHelp.TblUpdt("t_batchmst_price", VE.T_TXN.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -6946,7 +6953,7 @@ namespace Improvar.Controllers
                             {
                                 ContentFlg = "We cant delete this Bill. Transaction found at " + IsTransactionFound; goto dbnotsave;
                             }
-                            else if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && IsTransactionFound == "")
+                            else if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC") && IsTransactionFound == "")
                             {
                                 dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "D", "", "barno='" + v.BARNO + "'");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
@@ -7194,9 +7201,9 @@ namespace Improvar.Controllers
             string scm = CommVar.CurSchema(UNQSNO);
             string fcm = CommVar.FinSchema(UNQSNO);
 
-            if (VE.MENU_PARA == "PB")
+            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC")
             {
-                string doctype = VE.MENU_PARA == "PB" ? "'BLTG'" : "";
+                string doctype = VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" ? "'BLTG'" : "";
                 var dt1 = salesfunc.GetBaleHistory("", "", "", doctype);
                 if (dt1 != null && dt1.Rows.Count > 0)
                 {
