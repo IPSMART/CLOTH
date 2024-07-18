@@ -2701,5 +2701,45 @@ namespace Improvar
                 }
             }
         }
+        public string COMPCDLOCCD_help(string val, string loccd, string SkipCompcd = "", string SkipCompLoccd = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+            sql = "";
+            sql += "select a.LOCCD,a.LOCNM,a.compcd,c.compnm ";
+            sql += "from " + scm + ".M_LOCA a, " + scm + ".M_CNTRL_HDR b, " + scm + ".m_comp c ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and a.compcd=c.compcd and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.compcd) = '" + valsrch + "' ) ";
+            if (loccd.retStr() != "") sql += "and a.loccd = '" + loccd + "'  ";
+            if (SkipCompcd.retStr() != "") sql += "and a.compcd  not in ( '" + SkipCompcd + "')  ";
+            if (SkipCompLoccd.retStr() != "") sql += "and a.compcd||a.loccd  not in ( '" + SkipCompLoccd + "')  ";
+            sql += "order by a.compcd,c.compnm,a.LOCCD,a.LOCNM ";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["compnm"] + "</td><td>" + tbl.Rows[i]["compcd"] + " </td><td>" + tbl.Rows[i]["locnm"] + "</td><td>" + tbl.Rows[i]["loccd"] + " </td></tr>");
+                }
+                var hdr = "Company Name" + Cn.GCS() + "Company Code" + Cn.GCS() + "Location Code" + Cn.GCS() + "Location Name";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Company Code ! Please Select / Enter a Valid Company Code !!";
+                }
+            }
+        }
+
     }
 }

@@ -1767,7 +1767,7 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string sql = "";
-            string valsrch = val.ToUpper().Trim();
+            string valsrch = val.retStr().ToUpper().Trim();
 
             sql = "";
             sql += "select a.GOCD,a.GONM,a.FLAG1 ";
@@ -3243,7 +3243,49 @@ namespace Improvar
             }
             return GRPCD;
         }
-
+        public string PENDINGSALES_T_STKTRNFISS_help(string DOCTYPE, string val, string AUTONO = "", string MODCD = "")
+        {
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO);
+            string fscm = CommVar.FinSchema(UNQSNO);
+            string loc = CommVar.Loccd(UNQSNO);
+            string com = CommVar.Compcd(UNQSNO);
+            string scmi = CommVar.InvSchema(UNQSNO);
+            string sql = "select i.DOCNO,i.doconlyno, i.DOCDT, i.AUTONO,k.sloccd,l.locnm slocnm,k.scompcd,n.compnm scompnm,k.toloccd,m.locnm tlocnm,k.tocompcd,o.compnm tcompnm ";
+            sql += "from " + scm + ".T_CNTRL_HDR i," + scm + ".T_STKTRNF k," + fscm + ".m_loca l," + fscm + ".m_loca m, " + fscm + ".m_comp n," + fscm + ".m_comp o," + scm + ".T_txn p," + scm + ".m_doctype q ";
+            sql += "where i.AUTONO = k.AUTONO(+) and k.sloccd=l.loccd(+) and k.scompcd=l.compcd and k.scompcd=n.compcd and k.toloccd=m.loccd(+) and k.tocompcd=m.compcd and k.tocompcd=o.compcd and i.autono=p.autono and i.doccd=q.doccd(+) and nvl(i.CANCEL, 'N') <> 'Y' and ";
+            sql += "q.doctype in( " + DOCTYPE + ") and k.tocompcd='" + com + "' and k.toloccd='" + loc + "' ";
+            sql += "and i.AUTONO not in (select distinct nvl(OTHAUTONO,'N') from " + scm + ".T_STKTRNF) ";
+            if (val.retStr() != "") sql += "and i.doconlyno = '" + val + "'";
+            if (AUTONO.retStr() != "") sql += "and i.AUTONO = '" + AUTONO + "'";
+            var query = SQLquery(sql);
+            if (val == null)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                if (query != null)
+                {
+                    for (int i = 0; i <= query.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query.Rows[i]["doconlyno"].retStr() + "</td><td>" + query.Rows[i]["DOCDT"].retStr().retDateStr() + "</td><td> " + query.Rows[i]["AUTONO"].retStr() + "</td><td> " + query.Rows[i]["scompnm"].retStr() + "</td><td> " + query.Rows[i]["slocnm"].retStr() + "</td><td> " + query.Rows[i]["tcompnm"].retStr() + "</td><td> " + query.Rows[i]["tlocnm"].retStr() + "</td></tr>");
+                    }
+                }
+                var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Autono" + Cn.GCS() + "From Company" + Cn.GCS() + "From Location" + Cn.GCS() + "To Company" + Cn.GCS() + "To Location";
+                return Generate_help(hdr, SB.ToString(), "2");
+            }
+            else
+            {
+                if (query != null && query.Rows.Count > 0)
+                {
+                    string str = "";
+                    str = ToReturnFieldValues("", query);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Issue No. ! Please Select / Enter a Valid Issue No. !!";
+                }
+            }
+        }
 
     }
 }
