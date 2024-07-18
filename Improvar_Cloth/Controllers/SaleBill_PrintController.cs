@@ -347,7 +347,7 @@ namespace Improvar.Controllers
                 sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,   " + Environment.NewLine;
                 sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,   " + Environment.NewLine;
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,   " + Environment.NewLine;
-                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno from   " + Environment.NewLine;
+                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno,s.docrem tchdocrem from   " + Environment.NewLine;
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,   " + Environment.NewLine;
@@ -378,10 +378,10 @@ namespace Improvar.Controllers
                 sql += " ) a,   " + Environment.NewLine;
 
                 sql += " " + Scm1 + ".t_txndtl z, " + Scm1 + ".t_txn b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g,   " + Environment.NewLine;
-                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m, " + Scm1 + ".T_TXNMEMO n," + Scmf + ".M_RETDEB o ," + Scmf + ".T_VCH_GST p  " + Environment.NewLine;
+                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m, " + Scm1 + ".T_TXNMEMO n," + Scmf + ".M_RETDEB o ," + Scmf + ".T_VCH_GST p," + Scm1 + ".T_CNTRL_HDR_REM s  " + Environment.NewLine;
                 sql += " where a.autono = z.autono(+) and a.slno = z.slno(+) and a.autono = b.autono and a.autono = c.autono(+) and a.autono = d.autono(+) and   " + Environment.NewLine;
                 sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and   " + Environment.NewLine;
-                sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+)  and b.autono = n.autono and n.RTDEBCD=o.RTDEBCD and b.autono=p.autono and  " + Environment.NewLine;
+                sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+)  and b.autono = n.autono and n.RTDEBCD=o.RTDEBCD and b.autono=p.autono and h.autono=s.autono(+) and  " + Environment.NewLine;
                 if (slcd.retStr() != "") sql += " b.slcd in (" + slcd + ") and  " + Environment.NewLine;
                 sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c   " + Environment.NewLine;
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+)  and c.autono is null and b.doccd = '" + doccd + "' )    " + Environment.NewLine;
@@ -626,6 +626,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("SLMSLNM", typeof(string), "");
                 IR.Columns.Add("incl_disc", typeof(double), "");
                 IR.Columns.Add("barno", typeof(string), "");
+                IR.Columns.Add("tchdocrem", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -1274,6 +1275,7 @@ namespace Improvar.Controllers
                             dr1["docth"] = tbl.Rows[i]["docth"];
                             //dr1["nopkgs"] = tbl.Rows[i]["nopkgs"];
                             dr1["blremarks"] = blrem;
+                            dr1["tchdocrem"] = tbl.Rows[i]["tchdocrem"].ToString();
 
 
                             //Bank Detals
@@ -1536,6 +1538,7 @@ namespace Improvar.Controllers
                                         dr1["autono"] = auto1 + copymode;
                                         dr1["copymode"] = copymode;
                                         dr1["docno"] = tbl.Rows[i]["docno"].ToString();
+                                        dr1["tchdocrem"] = tbl.Rows[i]["tchdocrem"].ToString();
 
                                         if (CommVar.ClientCode(UNQSNO) == "RATN")
                                         {
@@ -1573,6 +1576,7 @@ namespace Improvar.Controllers
                                     dr1["autono"] = auto1 + copymode;
                                     dr1["copymode"] = copymode;
                                     dr1["docno"] = tbl.Rows[i]["docno"].ToString();
+                                    dr1["tchdocrem"] = tbl.Rows[i]["tchdocrem"].ToString();
 
                                     dr1["itnm"] = "Total";
                                     if (CommVar.ClientCode(UNQSNO) == "RATN") dr1["itdesc"] = "Total";

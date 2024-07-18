@@ -1548,6 +1548,8 @@
     <Content Include="Views\Shared\_M_FinProduct_Upload.cshtml" />
     <Content Include="Views\Rep_MIS_SaleStk\Rep_MIS_SaleStk.cshtml" />
     <Content Include="Views\Rep_SalPur\Rep_SalPur.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_OrderAdvancePopup.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_OrderAdvance.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

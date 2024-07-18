@@ -1,0 +1,107 @@
+﻿@model Improvar.ViewModels.TransactionSalePosEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('tbl_AdvanceList'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+            $(".pytinsdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+    });
+</script>
+
+@*<div style="transform: translate(0%, 0%);z-index: 1100;background-color:#c4b9b9;border:5px groove;width: 1200px;">*@
+<div style="width: 605px;overflow-y:auto;background-color:#c4b9b9;border:5px groove;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
+                {
+                    <input type="text" id="AddRowsPYMT" name="AddRowsPYMT" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                    @*<img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRow('AddRowsPYMT', 'tbl_AdvanceList')" />*@
+                    <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow('tbl_AdvanceList')" />
+                }
+                <div class="col-md-8">
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'tbl_AdvanceList');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
+                    <b> Party Order Advance Details</b>
+                </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;OVERFLOW-X: hidden;max-height:291px;">
+                    <table id="tbl_AdvanceList" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 27px;text-align:center;">SL No.</th>
+                                <th class="">Order No.</th>
+                                <th class="" style="width:85px;">Order Date</th>
+                                <th class="" style="width:100px;text-align:right;">Adv. Amount</th>
+                                <th class="" style="width:100px;text-align:right;">Prv. Adv. Amount</th>
+                                <th class="" style="width:100px;text-align:right;">Adj. Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl_AdvanceList_tbody">
+                            @if (Model.AdvanceList != null)
+                            {
+                                for (int i = 0; i <= Model.AdvanceList.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.AdvanceList[i].Checked, new { id = "Adv_chkid_" + i, @TabIndex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AdvanceList[i].SLNO, new { id = "Adv_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AdvanceList[i].ADVDOCNO, new { id = "Adv_ADVDOCNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AdvanceList[i].ADVDOCDT, new { id = "Adv_ADVDOCDT_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.AdvanceList[i].ADVAUTONO, new { id = "Adv_ADVAUTONO_" + i })
+                                            @Html.HiddenFor(model => model.AdvanceList[i].BALADVAMT, new { id = "Adv_BALADVAMT_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AdvanceList[i].ADVAMT, "{0:0.00}", new { id = "Adv_ADVAMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AdvanceList[i].PRVADJAMT, "{0:0.00}", new { id = "Adv_PRVADJAMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AdvanceList[i].ADJAMT, "{0:0.00}", new { id = "Adv_ADJAMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "ChkAdvance(" + i + ");", maxlength = 14 })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot id="tbl_AdvanceList_tfoot">
+                            <tr class="sticky-footer">
+                                <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTADVAMT, "{0:0.00}", new { htmlAttributes = new { id = "TOTADVAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTPRVADJAMT, "{0:0.00}", new { htmlAttributes = new { id = "TOTPRVADJAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTADJAMT, "{0:0.00}", new { htmlAttributes = new { id = "TOTADJAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

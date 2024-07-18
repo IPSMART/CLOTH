@@ -11,6 +11,8 @@
             ViewBag.Title = "Cash Memo"; break;
         case "SBCMR":
             ViewBag.Title = "Cash Memo Credit Note"; break;
+        case "CADV":
+            ViewBag.Title = "Party Order Advance"; break;
         default: ViewBag.Title = ""; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -37,6 +39,17 @@
             $("#Return_LI4").addClass("active");
             $("#ReturnTab").removeClass("tab-pane fade");
             $("#ReturnTab").addClass("tab-pane fade in active");
+        }
+        else if ("@Model.MENU_PARA" == "CADV") {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(1)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(1)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            var GridRowMain = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+            if (GridRowMain > 0) {
+                $("#SLMSLCD_0").select().focus();
+            }
         }
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
@@ -194,6 +207,10 @@
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
             $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            if ("@Model.MENU_PARA" != "CADV") {
+                $("#FROMDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+                $("#TODT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            }
         }
     });
 </script>
@@ -525,6 +542,120 @@
         window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
     }
 </script>
+<script>
+    function GetOrderAdvance() {
+        debugger;
+        if ("@Model.DefaultAction" != "V") {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("GetOrderAdvance", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    if (result == 0) { return msgWarning("Record not Found!"); }
+                    $("#popupPadv").html(result);
+                    totaladv();
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function CloseOrderAdvancePopup() {
+        var chk = false;
+        var GridRow = $("#tbl_PopupAdvanceList > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if (document.getElementById("PAdv_chkid_" + i).checked) { chk = true; break; }
+        }
+        if (chk == false) {
+            msgInfo("Please Choose Order no !")
+            return false;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("SelectOrderAdvance", PageControllerName)",
+            data: $('form').serialize(),
+            beforesend: $("#WaitingMode").show(),
+            success: function (result) {
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                var MSG = res[0].indexOf('tbl_AdvanceList');
+                var MSG1 = res[1].indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#partialdivOrderAdvance").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivOrderAdvance").html(res[0]);
+                    CalculateTotal();
+                    $("#popupPadv").html('');
+                }
+                else {
+                    msgInfo(res[0]);
+                }
+                if (MSG1 >= 0) {
+                    $("#NM").val(returncolvalue(res[1], "NM"));
+                    $("#MOBNO").val(returncolvalue(res[1], "MOBILE"));
+                    $("#ADDR_").val(returncolvalue(res[1], "ADDR"));
+                    $("#CITY_").val(returncolvalue(res[1], "CITY"));
+                }
+
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+        //$("#WORKNO").focus();
+        return false;
+    }
+    function CancelPopupOrderAdvance() {
+        $('#popupPadv').html("");
+    }
+    function totaladv() {
+        debugger;
+        var totamt = 0;
+        var GridRowMain = $("#tbl_PopupAdvanceList > tbody > tr").length;
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            if (document.getElementById("PAdv_chkid_" + i).checked == true) {
+                totamt += retFloat($("#PAdv_BALADVAMT_" + i).val());
+            }
+        }
+        $("#TOTBALAMT").val(totamt.toFixed(2));
+    }
+</script>
+<script>
+    function ChkAdvance(i) {
+        var BALADVAMT = retFloat($("#Adv_BALADVAMT_" + i).val());
+        var ADJAMT = retFloat($("#Adv_ADJAMT_" + i).val());
+        if (ADJAMT > BALADVAMT) {
+            msgWarning("Adj. Amount should not grater than Adv. Amount at slno " + $("#Adv_SLNO_" + i).val());
+            message_value = "Adv_ADJAMT_" + i;
+            return false;
+        }
+        else {
+            CalculateTotal();
+        }
+    }
+    function SetAllCheckBoxesFilterPADV(obj, tablename, RowCheckID, FILTER_ID) {
+        SetAllCheckBoxesFilter(obj, tablename, RowCheckID, FILTER_ID);
+        totaladv();
+    }
+    function totaladv() {
+        debugger;
+        var totamt = 0;
+        var GridRowMain = $("#tbl_PopupAdvanceList > tbody > tr").length;
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            if (document.getElementById("PAdv_chkid_" + i).checked == true) {
+                totamt += retFloat($("#PAdv_BALADVAMT_" + i).val());
+            }
+        }
+        $("#TOTBALAMT").val(totamt.toFixed(2));
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -561,6 +692,10 @@
         <input type="hidden" id="MTRLJOBCD" value="" />
         <input type="hidden" id="Defaultbar" value="Bar" />
         <input type="hidden" id="Defaultstyle" value="Style" />
+        <input type="hidden" id="partygenleglinkcd" value="D,C" />
+        <input type="hidden" id="partygenlegcap" value="Party Gen.Leder" />
+        <input type="hidden" id="expgenleglinkcd" value="O" />
+        <input type="hidden" id="expgenlegcap" value="Gen.Ledger *" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
@@ -1027,22 +1162,33 @@
                 </div>*@
 
         </div>
+        <div class="row">
+            <div>
+                <div id="popupPadv" class="row" style="margin-top: 11px;top:25%;bottom:25%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                </div>
+            </div>
+        </div>
         <div class="row" style="margin-top:5px;">
             <ul class="nav nav-tabs">
-                @if (Model.MENU_PARA != "SBCMR")
+@if (Model.MENU_PARA != "CADV")
+{
+                if (Model.MENU_PARA != "SBCMR")
                 {
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
                 }
                 @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
                 <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab">Return(J)</a></li>
                 <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
+}
                 <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
                 <li id="Party_LI" class=""><a data-toggle="tab" href="#Party">Party(K)</a></li>
                 <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
                 <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
             </ul>
             <div class="tab-content">
-                @if (Model.MENU_PARA != "SBCMR")
+@if (Model.MENU_PARA != "CADV")
+{
+                if (Model.MENU_PARA != "SBCMR")
                 {
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                         <div class="row">
@@ -1255,6 +1401,7 @@
                         </div>
                     </div>
                 </div>
+                }
                 <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div>
@@ -1263,6 +1410,36 @@
                                 </div>
                             </div>
                         </div>*@
+                    @if (Model.MENU_PARA != "CADV" && Model.DefaultAction != "V")
+                    {
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "From Date")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.FROMDT, new { htmlAttributes = new { @class = "form-control", id = "FROMDT", maxlength = 10, @placeholder = "From Date", autocomplete = "off" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "To Date")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TODT, new { htmlAttributes = new { @class = "form-control", id = "TODT", maxlength = 10, @placeholder = "To Date", autocomplete = "off" } })
+                                </div>
+                            </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field" style="margin-top: 2px;">
+                                        <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Party Order Advance " onclick="GetOrderAdvance()" />
+                                    </div>
+                                </div>
+                        </div>
+                    }
                     <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                         <div>
                             <div id="partialdivPayment" style="margin-top:0px;">
@@ -1270,6 +1447,57 @@
                             </div>
                         </div>
                     </div>
+                    @if (Model.MENU_PARA != "CADV")
+                    {
+                        <div class="row" style="margin-top: 11px;width:fit-content;">
+                            <div class="col-lg-9">
+                                <div>
+                                    <div id="partialdivOrderAdvance" style="margin-top:0px;">
+                                        @Html.Partial("_T_SALE_POS_OrderAdvance")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Party Gen.Leder ")                                   
+                                        <b style="color:red"><sup>*</sup></b>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.PARGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','Party Gen.Leder Details','PARGLCD','PARGLCD=GLCD=1/PARGLNM=GLNM=0','partygenleglinkcd/partygenlegcap')", onblur = "GetHelpBlur('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','Party Gen.Leder Details','PARGLCD','PARGLCD=GLCD=1/PARGLNM=GLNM=0','partygenleglinkcd/partygenlegcap');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','Party Gen.Leder Details','PARGLCD','PARGLCD=GLCD=1/PARGLNM=GLNM=0','partygenleglinkcd/partygenlegcap')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PARGLNM, new { htmlAttributes = new { @class = "form-control", id = "PARGLNM", @TabIndex = -1, @placeholder = "Party Gen.Leder Name", maxlength = 45, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Exp. Gen.Ledger")
+                                        <b style="color:red"><sup>*</sup></b>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.GLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','Exp. Gen.Ledger Details','GLCD','GLCD=GLCD=1/GLNM=GLNM=0','expgenleglinkcd/expgenlegcap')", onblur = "GetHelpBlur('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','Exp. Gen.Ledger Details','GLCD','GLCD=GLCD=1/GLNM=GLNM=0','expgenleglinkcd/expgenlegcap');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','Exp. Gen.Ledger Details','GLCD','GLCD=GLCD=1/GLNM=GLNM=0','expgenleglinkcd/expgenlegcap')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.GLNM, new { htmlAttributes = new { @class = "form-control", id = "GLNM", @TabIndex = -1, @placeholder = "Exp. Gen.Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
                 <div id="Party" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
 

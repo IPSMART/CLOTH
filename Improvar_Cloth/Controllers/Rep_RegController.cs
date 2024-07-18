@@ -457,9 +457,18 @@ namespace Improvar.Controllers
                 {
                     return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
                 }
-                string query2 = " select b.amt payamt,b.autono from " + scm1 + ".t_txnpymt b ";
+                //string query2 = " select b.amt payamt,b.autono from " + scm1 + ".t_txnpymt b ";
+                string query2 = " select b.amt payamt,b.autono,(case when b.PYMTCD='AD' then b.PYMTCD else c.PYMTTYPE end )PYMTTYPE ";
+                query2 += "from " + scm1 + ".t_txnpymt b," + scm1 + ".M_PAYMENT c ";
+                query2 += "where b.PYMTCD=c.PYMTCD(+) ";
                 var paymentDt = MasterHelp.SQLquery(query2);
-
+                DataTable masterpaymt = new DataTable();
+                if (paymentDt != null && paymentDt.Rows.Count > 0)
+                {
+                    DataView dv = new DataView(paymentDt);
+                    string[] COL = { "PYMTTYPE" };
+                    masterpaymt = dv.ToTable(true, COL);
+                }
                 if (dtlsumm == "E")
                 {
                     string colnm = ShowAllColumn(VE, "ExcelHeader");
@@ -590,7 +599,16 @@ namespace Improvar.Controllers
                     if (dtlsumm != "C") HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
                     HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
                     HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
-                    if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "payamt", "double", "n,12,2", ";Payment");
+                    //if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "payamt", "double", "n,12,2", ";Payment");
+                    if (VE.TEXTBOX1 == "Sales Cash Memo")
+                    {
+                        for (int a = 0; a <= masterpaymt.Rows.Count - 1; a++)
+                        {
+                            string PYMTTYPE = masterpaymt.Rows[a]["PYMTTYPE"].retStr();
+                            string PYMTTYPENM = GetPaymentType(PYMTTYPE);
+                            HC.GetPrintHeader(IR, PYMTTYPE, "double", "n,12,2", PYMTTYPENM);
+                        }
+                    }
 
                     HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
                     if (itmdtl == true && MSYSCNFG.MNTNBALE == "Y") HC.GetPrintHeader(IR, "baleno", "string", "c,15", "Bale. ;No");
@@ -734,17 +752,30 @@ namespace Improvar.Controllers
                                     { mult = -1; }
                                     dr["tcsamt"] = tbl.Rows[i]["tcsamt"].retDbl() * mult;
                                     dr["roamt"] = tbl.Rows[i]["roamt"].retDbl() * mult;
-                                    var a = (from DataRow dr1 in paymentDt.Rows
-                                             where auto1 == dr1["autono"].retStr()
-                                             select new { payamt = dr1["payamt"].retDbl() }).ToList();
-                                    if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = a.Sum(b => b.payamt).retDbl();
+                                    //var a = (from DataRow dr1 in paymentDt.Rows
+                                    //         where auto1 == dr1["autono"].retStr()
+                                    //         select new { payamt = dr1["payamt"].retDbl() }).ToList();
+                                    //if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = a.Sum(b => b.payamt).retDbl();
+
+                                    if (VE.TEXTBOX1 == "Sales Cash Memo")
+                                    {
+                                        for (int a = 0; a <= masterpaymt.Rows.Count - 1; a++)
+                                        {
+                                            string PYMTTYPE = masterpaymt.Rows[a]["PYMTTYPE"].retStr();
+                                            string PYMTTYPENM = GetPaymentType(PYMTTYPE);
+                                            dr[PYMTTYPE] = (from DataRow dr1 in paymentDt.Rows
+                                                            where dr1["autono"].retStr() == auto1 && dr1["PYMTTYPE"].retStr() == PYMTTYPE
+                                                            select dr1["payamt"].retDbl()).Sum();
+                                        }
+                                    }
+
                                     dr["blamt"] = tbl.Rows[i]["blamt"].retDbl() * mult;
                                     dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
                                     dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
                                     ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl() * mult;
                                     troamt = troamt + tbl.Rows[i]["roamt"].retDbl() * mult;
                                     tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl() * mult;
-                                    if (VE.TEXTBOX1 == "Sales Cash Memo") tpayamt = tpayamt + a.Sum(b => b.payamt).retDbl();
+                                    //if (VE.TEXTBOX1 == "Sales Cash Memo") tpayamt = tpayamt + a.Sum(b => b.payamt).retDbl();
                                     //tpayamt = tpayamt + tbl.Rows[i]["payamt"].retDbl();
                                 }
 
@@ -876,7 +907,16 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["tcsamt"] = ttcsamt;
                     IR.Rows[rNo]["roamt"] = troamt;
                     IR.Rows[rNo]["blamt"] = tblamt;
-                    if (VE.TEXTBOX1 == "Sales Cash Memo") IR.Rows[rNo]["payamt"] = tpayamt;
+                    //if (VE.TEXTBOX1 == "Sales Cash Memo") IR.Rows[rNo]["payamt"] = tpayamt;
+                    if (VE.TEXTBOX1 == "Sales Cash Memo")
+                    {
+                        for (int a = 0; a <= masterpaymt.Rows.Count - 1; a++)
+                        {
+                            string PYMTTYPE = masterpaymt.Rows[a]["PYMTTYPE"].retStr();
+                            IR.Rows[rNo][PYMTTYPE] = IR.AsEnumerable().Sum(g => g.Field<double?>(PYMTTYPE).retDbl());
+
+                        }
+                    }
                     if (itmdtl == true && tbqnty != 0)
                     {
                         IR.Rows[rNo]["blqnty"] = tbqnty;
@@ -1803,5 +1843,29 @@ namespace Improvar.Controllers
 
         //    return Content(retmsg);
         //}
+
+        private string GetPaymentType(string PYMTTYPE)
+        {
+            string PYMTTYPENM = "";
+            switch (PYMTTYPE)
+            {
+                case "C":
+                    PYMTTYPENM = "Cash;Rec"; break;
+                case "R":
+                    PYMTTYPENM = "Card;Pay"; break;
+                case "B":
+                    PYMTTYPENM = "Bank"; break;
+                case "U":
+                    PYMTTYPENM = "UPI"; break;
+                case "V":
+                    PYMTTYPENM = "Voucher"; break;
+                case "O":
+                    PYMTTYPENM = "Others"; break;
+                case "AD":
+                    PYMTTYPENM = "Adv;Adj"; break;
+                default: PYMTTYPENM = ""; break;
+            }
+            return PYMTTYPENM;
+        }
     }
 }

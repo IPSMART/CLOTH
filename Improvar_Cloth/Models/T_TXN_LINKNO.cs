@@ -33,5 +33,7 @@ namespace Improvar.Models
 
         [StringLength(30)]
         public string ISSAUTONO { get; set; }
+        public double? AMT { get; set; }
+
     }
 }
