@@ -54,5 +54,24 @@ namespace Improvar.Models
 
         [StringLength(100)]
         public string RECREM { get; set; }
+
+        [Required]
+        [StringLength(4)]
+        public string TOCOMPCD { get; set; }
+
+        [Required]
+        [StringLength(4)]
+        public string TOLOCCD { get; set; }
+
+        [Required]
+        [StringLength(6)]
+        public string TOGOCD { get; set; }
+
+        [StringLength(4)]
+        public string SCOMPCD { get; set; }
+
+        [StringLength(30)]
+        public string OTHAUTONO { get; set; }
+
     }
 }

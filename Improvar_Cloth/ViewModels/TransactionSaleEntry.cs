@@ -297,7 +297,7 @@ namespace Improvar.ViewModels
         public string PI_tag { get; set; }
         public string Last_TAXGRPCD { get; set; }
         public string Last_PRCCD { get; set; }
-
-
+        public string TCOMPNM { get; set; }
+        public string SCOMPNM { get; set; }
     }
 }

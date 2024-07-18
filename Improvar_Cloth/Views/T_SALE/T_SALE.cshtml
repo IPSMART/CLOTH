@@ -292,6 +292,11 @@
             message_value = "LRNO";
             return false;
         }
+        if ("@Model.MENU_PARA" == "ISS" || "@Model.MENU_PARA" == "REC") {
+            if (!emptyFieldCheck("Please Select / Enter From Godown", "SGOCD")) { return false; }
+            if (!emptyFieldCheck("Please Select / Enter To Cmpany Code", "TOCOMPCD")) { return false; }
+            if (!emptyFieldCheck("Please Select / Enter To Godown", "TOGOCD")) { return false; }
+        }
         //}
         //AMT TAB HSN CHECK
         if ("@Model.MENU_PARA" == "SCN" || "@Model.MENU_PARA" == "SDN" || "@Model.MENU_PARA" == "PCN" || "@Model.MENU_PARA" == "PDN") {
@@ -630,6 +635,48 @@
         }
     });
 </script>
+<script>
+    function SelectStkIssue(val, docno, autono) {
+        if ("@Model.DefaultAction" == "V") { return false; }
+        if (val == "") {
+            $("#" + docno.id).val("");
+            $("#" + autono.id).val("");
+        }
+        else {
+            var doccd = $('#DOCCD').val();
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetStkIssue", PageControllerName)",
+                data: { val: val, Code: doccd, Autono: $("#" + autono.id).val() },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var findstr = result;
+                        document.getElementById("DOCNO").value = returncolvalue(findstr, "DOCNO");
+                        document.getElementById("OTHAUTONO").value = returncolvalue(findstr, "AUTONO");
+                    }
+                    else {
+                        msgInfo(result);
+                        message_value = docno.id;
+                    }
+                }
+            });
+        }
+    }
+
+    function ReloadWithData2() {
+        debugger;
+        var searchValue = $('#OTHAUTONO').val();
+        var searchValue1 = $('#DOCNO').val();
+        var url = window.location.href;
+        var key1 = "searchValue";
+        url = updateQueryStringParameter(url, key1, searchValue);
+        url = updateQueryStringParameter(url, "loadOrder", searchValue1);
+        url = updateQueryStringParameter(url, "RemoveParam", "loadOrder~searchValue");
+        window.location = url;
+    }
+</script>
+
 @section Scripts {
     <script>
         function ReloadWithDataPI() {
@@ -665,7 +712,7 @@
             url = updateQueryStringParameter(url, "RemoveParam", "loadOrder~searchValue");
             window.location = url;
         }
-    </script>
+</script>
 }
 @*<script>
         function DocumentDateChng(fld) {
@@ -847,6 +894,21 @@
                         <div class="col-md-3">
                             <div class="editor-field" style="margin-top: 3px;">
                                 <input type="button" class="btn-sm" value="Get Proforma" style="padding:0px" onclick="ReloadWithDataPI()" />
+                            </div>
+                        </div>
+                    }
+
+                    else if (Model.DefaultAction == "A" && Model.MENU_PARA == "REC")
+                    {
+                        <div class="Recvdiv col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeyup = "GetHelp_WithId('" + @Url.Action("GetStkIssue", PageControllerName) + "','DOCNO/OTHAUTONO','0/2','Document Details','DOCNO','DOCCD')", onblur = "SelectStkIssue(this.value,DOCNO,OTHAUTONO);", @placeholder = "Code", maxlength = 6 } })
+                                <img src="~/Image/search.png" class="Help_image_button" id="help_Recvdiv" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetStkIssue", PageControllerName)','DOCNO/OTHAUTONO','0/2','Document Details','DOCNO','DOCCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                <input type="button" class="btn btn-sm btn-primary" value="Fill Issue Data" onclick="ReloadWithData2()" />
                             </div>
                         </div>
                     }
@@ -1107,7 +1169,7 @@
                         <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport">Transport(T)</a></li>
                         <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
                     }
-                    @if (Model.MENU_PARA == "SO" || Model.MENU_PARA == "SI")
+                    @if (Model.MENU_PARA == "ISS" || Model.MENU_PARA == "REC")
                     {
                         <li id="StockTransfer_LI" class=""><a data-toggle="tab" href="#StockTransfer">Stock Out/In</a></li>
                     }
@@ -1259,6 +1321,8 @@
 
                         </div>
                         <div class="row">
+                            @if (Model.MENU_PARA != "ISS" && Model.MENU_PARA != "REC")
+                            {
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Godown")
@@ -1277,6 +1341,7 @@
                                     @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
                                 </div>
                             </div>
+                            }
                             <div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Price Code")
@@ -1294,6 +1359,10 @@
                                         @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
                                     }
                                     @Html.HiddenFor(model => model.Last_PRCCD, new { id = "Last_PRCCD" })
+@if (Model.MENU_PARA == "ISS" && Model.MENU_PARA == "REC")
+{
+    @Html.HiddenFor(model => model.T_TXN.GOCD, new { id = "GOCD" })
+}
  </div>
                             </div>
                             <div class="col-md-9">
@@ -2954,9 +3023,30 @@
                             </div>
                         </div>
                     </div>
+                    @if (Model.MENU_PARA == "ISS" || Model.MENU_PARA == "REC")
+                    {
                     <div id="StockTransfer" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+
                         <div class="row">
                             <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "From Company Code")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_STKTRNF.SCOMPCD, new { htmlAttributes = new { @class = "form-control", id = "SCOMPCD", maxlength = 30, @title = "Only for View", @placeholder = "Code", @TabIndex = -1, @readonly = "readonly" } })
+                                    @Html.HiddenFor(s => s.T_STKTRNF.OTHAUTONO, new { id = "OTHAUTONO" })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.SCOMPNM, new { htmlAttributes = new { @class = "form-control", id = "SCOMPNM", maxlength = 30, @title = "Only for View", @placeholder = "From Company Name", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "From Location")
                                     <sup style="color:red">*</sup>
@@ -2964,20 +3054,80 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.SLOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLOCCD", onkeyup = "GetHelp('" + @Url.Action("GetLocationDetails", PageControllerName) + "','SLOCCD/SLOCNM','1/0','From Location Name','SLOCCD')", @placeholder = "Loc code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" title="Help" onclick="GetHelp('@Url.Action("GetLocationDetails", PageControllerName )','SLOCCD/SLOCNM','1/0','From Location Name','SLOCCD')" />
-                                    @*@Html.EditorFor(model => model.T_STKTRNF.SLOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLOCCD", onblur = "SelectLocationCode(this.value,SLOCCD,SLOCNM);", onkeyup = "GetHelp('" + @Url.Action("GetLocationDetails", PageControllerName) + "','SLOCCD/SLOCNM','1/0','From Location Name','SLOCCD')", @placeholder = "Loc code", maxlength = 4 } })
-                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" title="Help" onclick="GetHelp('@Url.Action("GetLocationDetails", PageControllerName )','SLOCCD/SLOCNM','1/0','From Location Name','SLOCCD')" />*@
+                                    @Html.EditorFor(model => model.T_STKTRNF.SLOCCD, new { htmlAttributes = new { @class = "form-control", id = "SLOCCD", @title = "Only for View", @placeholder = "Code", @TabIndex = -1, @readonly = "readonly" } })
+
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.SLOCNM, new { htmlAttributes = new { @class = "form-control", id = "SLOCNM", @placeholder = "Location Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.SLOCNM, new { htmlAttributes = new { @class = "form-control", id = "SLOCNM", @placeholder = "From Location Name", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "From Godown")
+                                    <sup style="color:red">*</sup>
+                                </div>
+                            </div>
+                            @if (Model.MENU_PARA == "ISS")
+                            {
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STKTRNF.SGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SGOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','SGOCD','SGOCD=GOCD=1/SGONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','SGOCD','SGOCD=GOCD=1/SGONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                                        <img src="~/Image/search.png" id="gocd_help" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','SGOCD','SGOCD=GOCD=1/SGONM=GONM=0')" />
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STKTRNF.SGOCD, new { htmlAttributes = new { @class = "form-control", id = "SGOCD", maxlength = 6, @placeholder = "Code", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.SGONM, new { htmlAttributes = new { @class = "form-control", id = "SGONM", maxlength = 20, @placeholder = "From Godown Name", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "To Company Code")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            @if (Model.MENU_PARA == "ISS")
+                            {
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STKTRNF.TOCOMPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TOCOMPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetCompanyDetails", PageControllerName) + "','Party Details','TOCOMPCD','TOCOMPCD=compcd=1/TCOMPNM=compnm=0/TOLOCCD=loccd=3/TLOCNM=locnm=2','TOLOCCD')", onblur = "GetHelpBlur('" + @Url.Action("GetCompanyDetails", PageControllerName) + "','Party Details','TOCOMPCD','TOCOMPCD=compcd=1/TCOMPNM=compnm=0/TOLOCCD=loccd=3/TLOCNM=locnm=2','TOLOCCD');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCompanyDetails", PageControllerName)','Party Details','TOCOMPCD','TOCOMPCD=compcd=1/TCOMPNM=compnm=0/TOLOCCD=loccd=3/TLOCNM=locnm=2','TOLOCCD')" />
+
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STKTRNF.TOCOMPCD, new { htmlAttributes = new { @class = "form-control", id = "TOCOMPCD", maxlength = 8, @placeholder = "Code", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TCOMPNM, new { htmlAttributes = new { @class = "form-control", id = "TCOMPNM", maxlength = 30, @title = "Only for View", @placeholder = "To Company Name", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "To Location")
                                     <sup style="color:red">*</sup>
@@ -2985,98 +3135,50 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.TLOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TLOCCD", onkeyup = "GetHelp('" + @Url.Action("GetLocationDetails", PageControllerName) + "','TLOCCD/TLOCNM','1/0','To Location Name','TLOCCD')", @placeholder = "Loc code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" title="Help" onclick="GetHelp('@Url.Action("GetLocationDetails", PageControllerName )','TLOCCD/TLOCNM','1/0','To Location Name','TLOCCD')" />
-                                    @*@Html.EditorFor(model => model.T_STKTRNF.TLOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TLOCCD", onblur = "SelectLocationCode(this.value,TLOCCD,TLOCNM);", onkeyup = "GetHelp('" + @Url.Action("GetLocationDetails", PageControllerName) + "','TLOCCD/TLOCNM','1/0','To Location Name','TLOCCD')", @placeholder = "Loc code", maxlength = 4 } })
-                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" title="Help" onclick="GetHelp('@Url.Action("GetLocationDetails", PageControllerName )','TLOCCD/TLOCNM','1/0','To Location Name','TLOCCD')" />*@
+                                    @Html.EditorFor(model => model.T_STKTRNF.TOLOCCD, new { htmlAttributes = new { @class = "form-control", id = "TOLOCCD", @placeholder = "Code", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
+
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TLOCNM, new { htmlAttributes = new { @class = "form-control", id = "TLOCNM", @placeholder = "Location Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TLOCNM, new { htmlAttributes = new { @class = "form-control", id = "TLOCNM", @placeholder = "To Location Name", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "From Godown")
-                                    <sup style="color:red">*</sup>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.SGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','SGOCD/SGONM','1/0','Godown Details','SGOCD')", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','SGOCD/SGONM','1/0','Godown Details','SGOCD')" />
-                                    @*@Html.EditorFor(model => model.T_STKTRNF.SGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','SGOCD/SGONM','1/0','Godown Details','SGOCD')", onblur = "SelectGodownCode(this.value,SGOCD,SGONM);", @placeholder = "Code" } })
-                                        <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','SGOCD/SGONM','1/0','Godown Details','SGOCD')" />*@
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.SGONM, new { htmlAttributes = new { @class = "form-control", id = "SGONM", maxlength = 20, @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
+
+                            <div class="col-md-4">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "To Godown")
                                     <sup style="color:red">*</sup>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.TGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','TGOCD/TGONM','1/0','Godown Details','TGOCD')", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','TGOCD/TGONM','1/0','Godown Details','TGOCD')" />
-                                    @*@Html.EditorFor(model => model.T_STKTRNF.TGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TGOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','TGOCD/TGONM','1/0','Godown Details','TGOCD')", onblur = "SelectGodownCode(this.value,TGOCD,TGONM);", @placeholder = "Code" } })
-                                        <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','TGOCD/TGONM','1/0','Godown Details','TGOCD')" />*@
+                            @if (Model.MENU_PARA == "ISS")
+                            {
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STKTRNF.TOGOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TOGOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TOGOCD','TOGOCD=GOCD=1/TGONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TOGOCD','TOGOCD=GOCD=1/TGONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                                        <img src="~/Image/search.png" id="gocd_help" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','TOGOCD','TOGOCD=GOCD=1/TGONM=GONM=0')" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-8">
+                                
+                            }
+                            else
+                            {
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STKTRNF.TOGOCD, new { htmlAttributes = new { @class = "form-control", id = "TOGOCD", maxlength = 6, @placeholder = "Code", @title = "Only for View", @TabIndex = -1, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+
+                            }
+                            <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TGONM, new { htmlAttributes = new { @class = "form-control", id = "TGONM", maxlength = 20, @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TGONM, new { htmlAttributes = new { @class = "form-control", id = "TGONM", maxlength = 20, @TabIndex = -1, @placeholder = "To Godown Name", @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Receive Date")
-                                    <sup style="color:red">*</sup>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.RECDT, new { htmlAttributes = new { @class = "form-control", id = "RECDT", maxlength = 10, @placeholder = "dd/mm/yyyy", autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Source No.")
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.SAUTONO, new { htmlAttributes = new { @class = "form-control", id = "SAUTONO", maxlength = 30, @placeholder = "Source No.", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Target No.")
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STKTRNF.TAUTONO, new { htmlAttributes = new { @class = "form-control", id = "TAUTONO", maxlength = 30, @placeholder = "Target No", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
+                    }
                     <div id="Remarks" class="tab-pane fade">
                         <div class="row">
                             <div>
