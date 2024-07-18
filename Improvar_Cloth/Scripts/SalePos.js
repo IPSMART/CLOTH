@@ -1254,10 +1254,27 @@ function CalculateTotal(CallFrm) {
     $("#A_T_DUTY").val(parseFloat(T_DUTY_AMT).toFixed(2));
     $("#A_T_NET").val(parseFloat(T_NET_AMT).toFixed(2));
 
+    var T_AMT = 0; var TOTADJAMT = 0; var TOTPRVADJAMT = 0;
+    if (MENU_PARA == "SBCM" || MENU_PARA == "SBCMR") {
+        //Party Order Advance GRID TOTAL
+        var GridRow = $("#tbl_AdvanceList > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var AMT = retFloat($("#Adv_ADVAMT_" + i).val());
+            T_AMT += parseFloat(AMT);
+            TOTADJAMT += retFloat($("#Adv_ADJAMT_" + i).val());
+            TOTPRVADJAMT += retFloat($("#Adv_PRVADJAMT_" + i).val());
+        }
+        $("#TOTADVAMT").val(T_AMT.toFixed(2));
+        $("#TOTADJAMT").val(TOTADJAMT.toFixed(2));
+        $("#TOTPRVADJAMT").val(TOTPRVADJAMT.toFixed(2));
+    }
     //PAYMENT GRID TOTAL
     var T_AMT = 0, CARDAMT = 0;
     var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
+        if ($("#PYMTCD_" + i).val() == "AD") {
+            $("#P_AMT_" + i).val(TOTADJAMT);
+        }
         var AMT = retFloat($("#P_AMT_" + i).val());
         T_AMT += parseFloat(AMT);
         if ($("#P_PYMTTYPE_" + i).val() == "R") {
@@ -1754,16 +1771,22 @@ function Addrow(ID) {
         }
     });
 }
-function DeleteRow() {
+function DeleteRow(TABLE) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     $.ajax({
         type: 'POST',
         url: $("#UrlDeleteRowSlsman").val(),// "@Url.Action("DeleteRow", PageControllerName)",
-        data: $('form').serialize(),
+        data: $('form').serialize() + "&TABLE=" + TABLE,
         success: function (result) {
-            $("#partialdivSalesman").animate({ marginTop: '0px' }, 50);
-            $("#partialdivSalesman").html(result);
+            if (TABLE == "tbl_TSalePayment") {
+                $("#partialdivPayment").animate({ marginTop: '-0px' }, 50);
+                $("#partialdivPayment").html(result);
+            }
+            else {
+                $("#partialdivSalesman").animate({ marginTop: '0px' }, 50);
+                $("#partialdivSalesman").html(result);
+            }
             CalculateTotal();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

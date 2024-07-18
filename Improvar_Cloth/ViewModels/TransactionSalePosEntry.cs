@@ -287,5 +287,39 @@ namespace Improvar.ViewModels
         public string Last_DOCDT { get; set; }
         public List<RegistrationType> RegistrationType { get; set; }
         public bool IsAPIEnabled { get; set; }
+        public List<AdvanceList> PopupAdvanceList { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
+        public DateTime? FROMDT { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+
+        public DateTime? TODT { get; set; }
+        public List<AdvanceList> AdvanceList { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? TOTADVAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? TOTADJAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? TOTPRVADJAMT { get; set; }
+        public string GLNM { get; set; }
+        public string PARGLNM { get; set; }
+
+    }
+    public class AdvanceList
+    {
+        public bool Checked { get; set; }
+        public short SLNO { get; set; }
+        public string ADVDOCNO { get; set; }
+        public string ADVDOCDT { get; set; }
+        public string ADVAUTONO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? ADVAMT { get; set; }
+        public string SLCD { get; set; }
+        public string SLNM { get; set; }
+        public double? ADJAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? PRVADJAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? BALADVAMT { get; set; }
     }
 }

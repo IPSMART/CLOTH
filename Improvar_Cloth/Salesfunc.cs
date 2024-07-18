@@ -3742,6 +3742,51 @@ namespace Improvar
                 return "";
             }
         }
+        public DataTable getPendingPOAdvance(string fdt, string tdt, string slcd, string autono = "", string skipbillautono = "", bool OnlyBal = true, string billupto = "", string scm = "")
+        {
+            DataTable tbl;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            string scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            scm = scm == "" ? CommVar.CurSchema(UNQSNO) : scm;
+            string sql = "";
+            sql = "";
+            sql += "select a.autono, a.docno tchdocno,to_char(a.docdt,'dd/mm/yyyy') docdt, a.slcd, nvl(a.nm,a.slnm)slnm, a.district,nvl(b.advamt,0)advamt,nvl(c.adjamt,0)adjamt,(nvl(b.advamt,0)-nvl(c.adjamt,0))balamt,  " + Environment.NewLine;
+            sql += "c.billdocno,c.billdocdt " + Environment.NewLine;
+            sql += "from " + Environment.NewLine;
+            sql += "(select a.autono, c.docno, c.docdt, c.slcd, g.slnm, nvl(g.slarea,g.district) district,i.nm " + Environment.NewLine;
+            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr c, " + Environment.NewLine;
+            sql += scm + ".m_doctype d," + scmf + ".m_subleg g," + scm + ".T_TXNMEMO i " + Environment.NewLine;
+            sql += "where a.autono=c.autono(+) and c.doccd=d.doccd(+) and a.doctag in ('CAD') and a.slcd=g.slcd(+) and a.autono=i.autono(+) and " + Environment.NewLine;
+            if (autono.retStr() != "") sql += "a.autono in (" + autono + ") and " + Environment.NewLine;
+            sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' " + Environment.NewLine;
+            if (fdt.retStr() != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy') " + Environment.NewLine;
+            if (tdt.retStr() != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
+            if (slcd.retStr() != "") sql += "and c.slcd = '" + slcd + "' " + Environment.NewLine;
+            sql += " )a, " + Environment.NewLine;
+
+            //Advance amt
+            sql += "(select a.autono, sum(a.amt)advamt " + Environment.NewLine;
+            sql += "from " + scm + ".t_txnpymt a," + scm + ".m_payment b " + Environment.NewLine;
+            sql += "where a.pymtcd=b.pymtcd " + Environment.NewLine;
+            sql += "group by a.autono )b, " + Environment.NewLine;
+
+            //adj amt
+            sql += "(select a.linkautono, sum(a.amt)adjamt, " + Environment.NewLine;
+            sql += "listagg(d.docno,',') within group (order by a.linkautono) as billdocno, ";
+            sql += "listagg(to_char(d.docdt,'dd/mm/yyyy'),',') within group (order by a.linkautono) as billdocdt ";
+            sql += "from " + scm + ".t_txn_linkno a," + scm + ".t_txn c," + scm + ".t_cntrl_hdr d " + Environment.NewLine;
+            sql += "where a.autono=c.autono(+)  and c.autono=d.autono " + Environment.NewLine;
+            if (skipbillautono.retStr() != "") sql += "and d.autono not in (" + skipbillautono + ") " + Environment.NewLine;
+            if (billupto.retStr() != "") sql += "and d.docdt <= to_date('" + billupto + "','dd/mm/yyyy') " + Environment.NewLine;
+            sql += "group by a.linkautono)c " + Environment.NewLine;
+
+            sql += "where a.autono=b.autono and a.autono=c.linkautono(+) " + Environment.NewLine;
+            if (OnlyBal == true) sql += "and (b.advamt-nvl(c.adjamt,0))>0 " + Environment.NewLine;
+            sql += "order by a.docno,a.docdt ";
+            tbl = masterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+
 
     }
 }
