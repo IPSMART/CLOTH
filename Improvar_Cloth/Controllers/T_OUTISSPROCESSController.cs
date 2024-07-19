@@ -822,7 +822,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrm
                 TransactionOutIssProcess VE = new TransactionOutIssProcess();
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -844,9 +844,10 @@ namespace Improvar.Controllers
                     BOMITCD = data[7].retStr() == "" ? "" : data[7].retStr().retSqlformat();
                     //if (BOMITCD == "") return Content("Please select Bom Item Code ");
                 }
-
+                string callfrm = data[8].retStr();
+                bool exactbarno = callfrm == "bar" ? true : false;
                 //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, BOMITCD);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, BOMITCD, exactbarno);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

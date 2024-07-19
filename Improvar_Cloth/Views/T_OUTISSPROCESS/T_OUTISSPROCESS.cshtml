@@ -673,7 +673,7 @@
 
 </script>
 <script>
-    function Program_GetBarnoDetails(id, P_BARNO_, P_MTRLJOBCD_, P_PARTCD_, P_ITCD_, P_ITNM_, P_UOM_, P_ITGRPCD_, P_ITGRPNM_, P_COLRCD_, P_SIZECD_, P_COLRNM_, P_MTRLJOBNM_, P_BarImages_, BarImagesCount_, P_DECIMALS_, P_CLRBARCODE_, P_SZBARCODE_, tag) {
+    function Program_GetBarnoDetails(id, P_BARNO_, P_MTRLJOBCD_, P_PARTCD_, P_ITCD_, P_ITNM_, P_UOM_, P_ITGRPCD_, P_ITGRPNM_, P_COLRCD_, P_SIZECD_, P_COLRNM_, P_MTRLJOBNM_, P_BarImages_, BarImagesCount_, P_DECIMALS_, P_CLRBARCODE_, P_SZBARCODE_, tag,callfrm) {
         debugger;
         if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
@@ -691,13 +691,33 @@
             var prccd = $("#PRCCD").val();
             var allmtrljobcd = "";
             var bomitcd = "";
-            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd;
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd + String.fromCharCode(181) + callfrm;
             $.ajax({
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
                 url: "@Url.Action("GetBarCodeDetailsGrid", PageControllerName)",
                 data: "&val=" + id + "&Code=" + code,
                 success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes(P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_);
+                        if (callfrm == "bar") {
+                            $('#SearchFldValue').val(P_BARNO_);
+                        }
+                        else {
+                            $('#SearchFldValue').val(P_ITNM_);
+                        }
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(P_BARNO_ + "/" + P_MTRLJOBCD_ + "/" + P_PARTCD_ + "/" + P_ITNM_);
+                        $('#ReferanceColumn').val('0/2/5/3');
+                        if (callfrm == "bar") {
+                            $('#helpDIV_Header').html('Barno Details');
+                        }
+                        else {
+                            $('#helpDIV_Header').html('Design No Details');
+                        }
+                    }
+                    else {
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
@@ -729,7 +749,7 @@
                         ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
                         message_value = P_BARNO_;
                     }
-
+                }
                     $("#WaitingMode").hide();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -742,7 +762,7 @@
     }
 </script>
 <script>
-    function T_OUTISSPROCESS_GetBarnoDetails(id) {
+    function T_OUTISSPROCESS_GetBarnoDetails(id,callfrm) {
         if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
             T_OUTISSPROCESS_ClearBarcodeArea('B');
@@ -759,7 +779,7 @@
             var prccd = $("#PRCCD").val();
             var allmtrljobcd = $("#ALLMTRLJOBCD").val();
             var bomitcd = $("#BOMITCD").val();
-            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd;
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd + String.fromCharCode(181) + callfrm;
             $.ajax({
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
@@ -769,11 +789,21 @@
                     var MSG = result.indexOf('#helpDIV');
                     if (MSG >= 0) {
                         ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
-                        $('#SearchFldValue').val('BARCODE');
+                        if (callfrm == "bar") {
+                            $('#SearchFldValue').val('BARCODE');
+                        }
+                        else {
+                            $('#SearchFldValue').val('ITSTYLENO');
+                        }
                         $('#helpDIV').html(result);
                         $('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
                         $('#ReferanceColumn').val('0/2/5');
-                        $('#helpDIV_Header').html('Barno Details');
+                        if (callfrm == "bar") {
+                            $('#helpDIV_Header').html('Barno Details');
+                        }
+                        else {
+                            $('#helpDIV_Header').html('Design No Details');
+                        }
                     }
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
@@ -785,7 +815,12 @@
                             $('#helpDIV').html("");
                             msgInfo("" + result + " !");
                             ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
-                            message_value = "BARCODE";
+                            if (callfrm == "bar") {
+                                message_value = "BARCODE";
+                            }
+                            else {
+                                message_value = "ITSTYLENO";
+                            }
                         }
                     }
                     $("#WaitingMode").hide();
@@ -2298,6 +2333,8 @@
         <input type="hidden" id="bardatachng" value="N" />
         <input type="hidden" id="RoundOff" />
         <input type="hidden" id="DISPBLAMT" />
+        <input type="hidden" id="callfrmbar" value="bar" />
+        <input type="hidden" id="callfrmstyle" value="style" />
         <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
@@ -2549,8 +2586,20 @@
                                 </div>
                                 <div class="col-md-8">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD')" />
+                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmbar')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value,'bar');", @placeholder = "Bar Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmbar')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Design No")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmstyle')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value,'style');", @placeholder = "Design No", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmstyle')" />
                                     </div>
                                 </div>
                                 }
@@ -2616,7 +2665,7 @@
 
                                                     @*@Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
                                                         <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd =2/ITSTYLE =ITSTYLE =1/UOM =uomcd =3/STYLENO =styleno =0/ITGRPCD =itgrpcd =5/ITGRPNM =itgrpnm =4/HSNCODE =hsncode','ITGRPCD')" />*@
-                                                    @Html.HiddenFor(model => model.STYLENO, new { id = "STYLENO" })
+                                                    @*@Html.HiddenFor(model => model.STYLENO, new { id = "STYLENO" })*@
                                                 </div>
                                             </div>
                                             @*<div class="col-md-8">

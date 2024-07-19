@@ -319,7 +319,9 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            @Html.HiddenFor(s => s.DefaultAction)
+            <input type="hidden" id="callfrmbar" value="bar"/>
+            <input type="hidden" id="callfrmstyle" value="style" />
+  @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
             @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
             @Html.HiddenFor(m => m.MENU_PARA)

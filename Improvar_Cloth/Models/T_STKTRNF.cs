@@ -26,52 +26,28 @@ namespace Improvar.Models
         public string AUTONO { get; set; }
 
         [Required]
-        [StringLength(4)]
-        public string SLOCCD { get; set; }
-
-        [Required]
-        [StringLength(4)]
-        public string TLOCCD { get; set; }
-
-        [Required]
         [StringLength(6)]
-        public string SGOCD { get; set; }
-
-        [Required]
-        [StringLength(6)]
-        public string TGOCD { get; set; }
-
-        [Required]
-        [StringLength(30)]
-        public string SAUTONO { get; set; }
-
-        [Required]
-        [StringLength(30)]
-        public string TAUTONO { get; set; }
-
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime? RECDT { get; set; }
-
-        [StringLength(100)]
-        public string RECREM { get; set; }
-
-        [Required]
-        [StringLength(4)]
-        public string TOCOMPCD { get; set; }
+        public string TOGOCD { get; set; }
 
         [Required]
         [StringLength(4)]
         public string TOLOCCD { get; set; }
 
         [Required]
-        [StringLength(6)]
-        public string TOGOCD { get; set; }
+        [StringLength(4)]
+        public string TOCOMPCD { get; set; }
+
+        [StringLength(30)]
+        public string OTHAUTONO { get; set; }
 
         [StringLength(4)]
         public string SCOMPCD { get; set; }
 
-        [StringLength(30)]
-        public string OTHAUTONO { get; set; }
+        [StringLength(4)]
+        public string SLOCCD { get; set; }
+
+        [StringLength(6)]
+        public string SGOCD { get; set; }
 
     }
 }

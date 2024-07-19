@@ -114,7 +114,7 @@ namespace Improvar.ViewModels
         public string PSTYLENO { get; set; }
         public double? BALSTOCK { get; set; }
         public double? NEGSTOCK { get; set; }
-        
+
         public double? FLAGMTR { get; set; }
         [StringLength(1)]
         public string DISCTYPE { get; set; }
@@ -196,5 +196,6 @@ namespace Improvar.ViewModels
         public List<VECHLTYPE> VECHLTYPE { get; set; }
         public List<TRANSMODE> TRANSMODE { get; set; }
         public string TransporterName { get; set; }
+        public string ITSTYLENO { get; set; }
     }
 }

@@ -906,15 +906,22 @@ namespace Improvar.Controllers
                                 default: copymode = ""; break;
                             }
                             string negamt = "";
-                            if (CommVar.ClientCode(UNQSNO) == "TRES")
+                            //if (CommVar.ClientCode(UNQSNO) == "TRES")
+                            //{
+                            //    negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                            //}
+                            //else
+                            //{
+                            //    negamt = "N";
+                            //}
+                            if (menupara == "SBCM")
                             {
-                                negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                                negamt = (tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
                             }
                             else
                             {
                                 negamt = "N";
                             }
-
 
 
                             string SLMSLNM = "";
