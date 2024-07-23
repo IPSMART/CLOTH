@@ -691,8 +691,8 @@ namespace Improvar.Controllers
                             {
                                 amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["balqnty"].retDbl();
                                 tqty_ += tbl.Rows[i]["balqnty"].retDbl();
-                                //IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
-                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tqty_;
+                                IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
+                                //IR.Rows[rNo][amtdr["gocd"].ToString()] = tqty_;
 
                             }
                         }

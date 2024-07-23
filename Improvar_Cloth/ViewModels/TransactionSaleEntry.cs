@@ -299,5 +299,9 @@ namespace Improvar.ViewModels
         public string Last_PRCCD { get; set; }
         public string TCOMPNM { get; set; }
         public string SCOMPNM { get; set; }
+        public string OTHDOCNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? OTHDOCDT { get; set; }
+
     }
 }
