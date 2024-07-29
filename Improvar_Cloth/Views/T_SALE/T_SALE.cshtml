@@ -716,6 +716,41 @@
             window.location = url;
         }
     </script>
+<script>
+    function Edit_Remarks() {
+        debugger;
+       
+     $("#DOCREMOTH").attr("readonly", false);
+                
+
+       // $("#txtZoomTextBoxModal").attr("readonly", false);
+         $("#edit_remarks").hide();
+         $("#update_remarks").show();
+         $("#cancel_remarks").show();
+         $("#update_remarks").prop("disabled", false);
+    }
+
+    function Cancel_Remarks() {
+        location.reload();
+    }
+    function Update_Remarks() {
+        debugger;
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("UpdateRemarks", PageControllerName )",
+            data: $('form').serialize(),
+            success: function (result) {
+                msgSuccess1("Updated Successfully");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 }
 @*<script>
         function DocumentDateChng(fld) {
@@ -1749,6 +1784,18 @@
                                 </p>
                             </div>
                         }
+
+                        @if (Model.DefaultAction == "V" && Model.Edit=="E" && (Model.MENU_PARA == "SR"|| Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR"))
+                           {
+                            <div class="row">
+                            <div class="col-md-1" style="width:auto;">
+                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update remarks" id="edit_remarks" value="Update Doc. Remarks" title="Click to remarks button for edit remarks field in Details Tab" onclick="Edit_Remarks()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="update" id="update_remarks" value="Update" accesskey="I" title="Click to Update remarks in Details Tab" disabled onclick="Update_Remarks()" />
+                                <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="cancel" id="cancel_remarks" value="Cancel" title="Click to Cancel for unchane remarks in Details Tab" onclick="Cancel_Remarks()" />
+                            </div>
+                        </div>
+                            }
+                       
                     </div>
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
@@ -1756,9 +1803,9 @@
                             {
                                 <div class="row">
                                     @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                                    {
-                                        if (Model.M_SYSCNFG.MNTNBARNO == "Y")
-                                        {
+                            {
+                                if (Model.M_SYSCNFG.MNTNBARNO == "Y")
+                                {
                                             <div class="col-md-1" style="width:auto;">
                                                 <div class="editor-label" style="margin-top: 6px;">
                                                     @Html.Label("", "Bar Code")
