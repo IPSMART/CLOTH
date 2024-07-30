@@ -1569,7 +1569,8 @@ namespace Improvar
             sql += " from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d  ";
             sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
-            sql += "b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ) a ";
+            //sql += "b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ) a ";
+            sql += "b.txtag in('RC','PR') and nvl(d.cancel, 'N')= 'N'  ) a ";
             sql += " group by a.blautono, a.balenoyr) h,	";
 
             sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e," + schema + ".t_txndtl f," + schema + ".m_sitem g ";
@@ -1654,7 +1655,8 @@ namespace Improvar
             sql += " from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d  ";
             sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
-            sql += "b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ) a ";
+            //sql += "b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ) a ";
+            sql += "b.txtag in ('RC','PR') and nvl(d.cancel, 'N')= 'N'  ) a ";
             sql += " group by a.blautono, a.balenoyr) c,	";
 
             sql += " " + schema + ".t_txntrans e, " + schema + ".t_txn f, " + schema + ".t_txndtl g,  ";
