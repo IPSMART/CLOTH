@@ -1785,8 +1785,8 @@
                             </div>
                         }
 
-                        @if (Model.DefaultAction == "V" && Model.Edit=="E" && (Model.MENU_PARA == "SR"|| Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR"))
-                           {
+                        @if (Model.DefaultAction == "V" && Model.Modify == "E" && (Model.MENU_PARA == "SR"|| Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR"))
+                        {
                             <div class="row">
                             <div class="col-md-1" style="width:auto;">
                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update remarks" id="edit_remarks" value="Update Doc. Remarks" title="Click to remarks button for edit remarks field in Details Tab" onclick="Edit_Remarks()" />

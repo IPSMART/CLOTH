@@ -2356,9 +2356,9 @@ namespace Improvar
             sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d " + Environment.NewLine;
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and " + Environment.NewLine;
             sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and " + Environment.NewLine;
-            sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and " + Environment.NewLine;
-            if (mergeloca == false) sql += "d.loccd='" + LOC + "' and " + Environment.NewLine;
-            sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
+            sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N'  " + Environment.NewLine;
+            if (mergeloca == false) sql += "and d.loccd='" + LOC + "'  " + Environment.NewLine;
+            if (tdt.retStr() != "") sql += "and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
             if (skipautono.retStr() != "") sql += "and b.autono not in ('" + skipautono + "') " + Environment.NewLine;
             sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno " + Environment.NewLine;
 

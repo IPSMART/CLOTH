@@ -302,6 +302,7 @@ namespace Improvar.ViewModels
         public string OTHDOCNO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? OTHDOCDT { get; set; }
+        public string Modify { get; set; }
 
     }
 }

@@ -36,6 +36,7 @@ namespace Improvar.Controllers
                 {
                     TransactionSaleEntry VE = (parkID == "") ? new TransactionSaleEntry() : (Improvar.ViewModels.TransactionSaleEntry)Session[parkID];
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+                    VE.Modify = VE.Edit;
                     ViewBag.formname = MenuDescription(VE.MENU_PARA).Rows[0]["FORMNAME"].ToString();
                     string LOC = CommVar.Loccd(UNQSNO);
                     string COM = CommVar.Compcd(UNQSNO);
