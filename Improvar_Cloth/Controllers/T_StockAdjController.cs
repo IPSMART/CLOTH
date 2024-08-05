@@ -454,8 +454,13 @@ namespace Improvar.Controllers
                 string MTRLJOBCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
                 string callfrm = data[3].retStr();
                 bool exactbarno = callfrm == "bar" ? true : false;
+                string barno = "";
+                if(callfrm == "style")
+                {
+                    barno = data[4].retStr()==""?"":data[4].retStr().retSqlformat();
+                }
                 //string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD);
-                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", "", "", false);
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
