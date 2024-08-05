@@ -103,7 +103,7 @@ namespace Improvar.Controllers
                             return "Failed because of row:" + row + ",  " + msg;
                         }
                         msg = row.ToString();
-                        row++;
+                        //row++;
                     }
                 }
                 return "Uploaded Successfully ! ";
