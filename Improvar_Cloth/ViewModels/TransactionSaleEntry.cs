@@ -40,6 +40,7 @@ namespace Improvar.ViewModels
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<Database_Combo3> Database_Combo3 { get; set; }
         public List<Database_Combo4> Database_Combo4 { get; set; }
+        public List<Database_Combo5> Database_Combo5 { get; set; }
         public List<HSN_CODE> HSN_CODE { get; set; }
         public List<DropDown_list_BLTYPE> BL_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
@@ -303,6 +304,7 @@ namespace Improvar.ViewModels
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? OTHDOCDT { get; set; }
         public string Modify { get; set; }
+        public double BuyerTotTurnover { get; set; }
 
     }
 }

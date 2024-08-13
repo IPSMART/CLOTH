@@ -987,7 +987,7 @@
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                         </div>
                     }
-                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR" && Model.MENU_PARA != "PR" && (Model.T_TXNTRANS.EWAYBILLNO.retStr() == "" || Model.T_TXNTRANS.LRNO.retStr() == "") && Model.T_CNTRL_HDR.CANCEL != "Y")
+                    @if (Model.DefaultAction == "V" && Model.MENU_PARA != "SR" && (Model.T_TXNTRANS.EWAYBILLNO.retStr() == "" || Model.T_TXNTRANS.LRNO.retStr() == "") && Model.T_CNTRL_HDR.CANCEL != "Y")
                     {
                         <div class="col-md-1" style="width:auto;">
                             <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Transport" id="edit_Transport" value="Update Transport" title="Click to Update Transport button for edit Transport Tab" onclick="Edit_Transport()" />
@@ -1084,7 +1084,11 @@
                     <div class="col-md-4">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.DISPBLAMT, new { htmlAttributes = new { @class = "form-control", id = "DISPBLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right;color:red;", @title = "Bill Amount" } })
-                        </div>
+                           @if (Model.MENU_PARA != "SBDIR")
+                           {
+                            @Html.HiddenFor(model => Model.BuyerTotTurnover, new { @class = "form-control", id = "BuyerTotTurnover" })
+                           }
+                         </div>
                     </div>
                     @*<div class="col-md-1" style="width:auto">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -1102,9 +1106,18 @@
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Pending_Order" value="Get Pending Order" title="Click to Get Pending Order" onclick="GetPendOrder()" />
                         </div>
                     }
+                    @if (Model.MENU_PARA == "SBDIR")
+                    {
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.BuyerTotTurnover, new { htmlAttributes = new { @class = "form-control", id = "BuyerTotTurnover", maxlength = 15, @TabIndex = -1, @placeholder = "Total Turnover For the year", @readonly = "readonly", @title = "Total Turnover For the year", @style = "text-align:right" } })
+                            </div>
+                        </div>
+                    }
+                    
                 </div>
                 @if (Model.MENU_PARA == "SBPOS")
-                {
+                    {
                     <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -2958,7 +2971,27 @@
                                 </p>
                             </div>
                         }
-                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "To Pay")
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.TOPAY, new { htmlAttributes = new { @class = "form-control", id = "TOPAY", @placeholder = "To Pay", maxlength = 50, @list = "TOPAYTYPE_List" } })
+                                    <datalist id="TOPAYTYPE_List">
+                                        @foreach (var jg in Model.Database_Combo5)
+                                        {
+                                            <option value="@jg.FIELD_VALUE" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+
+                            </div>
+                        </div>
                     <div id="OtherAddress" class="tab-pane fade" style="margin-top: 10px;">
                         <div class="row">
                             <div class="col-md-6">

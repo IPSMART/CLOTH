@@ -3066,7 +3066,7 @@ function GetPartyDetails(id) {
     var MENU_PARA = $("#MENU_PARA").val();
     var ClientCode = $("#ClientCode").val();
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -3092,7 +3092,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -3129,6 +3129,9 @@ function GetPartyDetails(id) {
                             $("#AMT").val(returncolvalue(result, "AMT"));
                             $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
                             $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
+                            $("#BuyerTotTurnover").val(returncolvalue(result, "TOTTURNOVER"));
+
+
                             debugger;
                             if (ClientCode == "DIWH" && (MENU_PARA == "SBDIR" || MENU_PARA == "ISS")) {
                                 debugger;
@@ -3177,7 +3180,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
                         message_value = "SLCD";
                     }
                 }
@@ -4203,6 +4206,8 @@ function Sale_SelectTTXNDTLDetails() {
                     $("#SAGSLCD").val(returncolvalue(res[0], "SAGSLCD"));
                     $("#SAGSLNM").val(returncolvalue(res[0], "SAGSLNM"));
                 }
+                $("#BLTYPE").val(returncolvalue(res[0], "BLTYPE"));
+
 
                 //}
                 //}
