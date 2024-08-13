@@ -65,6 +65,9 @@ namespace Improvar.Controllers
                     VE.Database_Combo4 = (from n in DB.T_BATCHDTL
                                           where n.PCSTYPE != null
                                           select new Database_Combo4() { FIELD_VALUE = n.PCSTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.Database_Combo5 = (from n in DB.T_TXNOTH
+                                          select new Database_Combo5() { FIELD_VALUE = n.TOPAY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
                     VE.PCSTYPEVALUE = PCSTYPE_BIND(VE.Database_Combo4);
 
                     VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
@@ -761,6 +764,7 @@ namespace Improvar.Controllers
                     VE.TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
                 }
                 VE.AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TXN.DOCDT.retStr().Remove(10), VE.MENU_PARA, TXN.AUTONO).retDbl();
+                VE.BuyerTotTurnover = VE.AMT;
                 VE.AMT = VE.AMT.retDbl() > VE.TDSLIMIT.retDbl() ? VE.TDSLIMIT.retDbl() : VE.AMT.retDbl();
                 if (TXN.TDSCODE.retStr() != "")
                 {
@@ -1548,7 +1552,7 @@ namespace Improvar.Controllers
                 {
                     if (code_data[0].retStr() == "Party")
                     {
-                        string TCSPER = "", TCSCODE = "", TCSNM = "", TDSLIMIT = "", TDSCALCON = "", AMT = "", TDSROUNDCAL = "";
+                        string TCSPER = "", TCSCODE = "", TCSNM = "", TDSLIMIT = "", TDSCALCON = "", AMT = "", TDSROUNDCAL = "", TOTTURNOVER = "";
                         if (str.IndexOf(Cn.GCS()) > 0)
                         {
                             string DOCTAG = MenuDescription(VE.MENU_PARA).Rows[0]["DOCTAG"].ToString().retSqlformat();
@@ -1573,6 +1577,7 @@ namespace Improvar.Controllers
                                         TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
                                     }
                                     AMT = salesfunc.getSlcdTCSonCalc(party_data.Rows[0]["PANNO"].retStr(), code_data[1], VE.MENU_PARA, Autono.retStr()).ToString();
+                                    TOTTURNOVER = AMT;
                                     AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
                                 }
                                 str = masterHelp.ToReturnFieldValues("", party_data);
@@ -1583,6 +1588,7 @@ namespace Improvar.Controllers
                                 str += "^" + "TDSROUNDCAL" + "=^" + TDSROUNDCAL + Cn.GCS();
                                 str += "^" + "TCSCODE" + "=^" + TCSCODE + Cn.GCS();
                                 str += "^" + "TCSNM" + "=^" + TCSNM + Cn.GCS();
+                                str += "^" + "TOTTURNOVER" + "=^" + TOTTURNOVER + Cn.GCS();
 
                                 string scmdisctype = party_data.Rows[0]["scmdisctype"].retStr() == "P" ? "%" : party_data.Rows[0]["scmdisctype"].retStr() == "N" ? "Nos" : party_data.Rows[0]["scmdisctype"].retStr() == "Q" ? "Qnty" : party_data.Rows[0]["scmdisctype"].retStr() == "F" ? "Fixed" : "";
                                 str += "^" + "SLDISCDESC" + "=^" + (party_data.Rows[0]["listdiscper"].retStr() + " " + party_data.Rows[0]["scmdiscrate"].retStr() + " " + scmdisctype + " " + (party_data.Rows[0]["lastbldt"].retStr() == "" ? "" : party_data.Rows[0]["lastbldt"].retStr().Remove(10))) + Cn.GCS();
@@ -3350,34 +3356,34 @@ namespace Improvar.Controllers
                 sql += Environment.NewLine + "a.PRTBARCODE,a.STKTYPE,a.STKNAME,a.BARNO,a.COLRCD,a.COLRNM,a.CLRBARCODE,a.SIZECD,a.SIZENM,a.SZBARCODE,a.SHADE,a.QNTY,a.NOS,a.RATE,a.DISCRATE, ";
                 sql += Environment.NewLine + "a.DISCTYPE,a.TDDISCRATE,a.TDDISCTYPE,a.SCMDISCTYPE,a.SCMDISCRATE,a.HSNCODE,a.BALENO,a.PDESIGN,a.OURDESIGN,a.FLAGMTR,a.LOCABIN,a.BALEYR ";
                 sql += Environment.NewLine + ",a.SALGLCD,a.PURGLCD,a.SALRETGLCD,a.PURRETGLCD,a.WPRATE,a.RPRATE,a.ITREM,a.RPPRICEGEN,a.DOCNO,a.DOCDT,a.WPPER,a.RPPER, ";
-                sql += Environment.NewLine + "a.WPPRICEGEN,a.LISTPRICE,a.LISTDISCPER,a.CUTLENGTH,a.PAGENO,a.PAGESLNO,a.PCSTYPE,a.AUTONO,a.PREFNO,a.PREFDT,a.GLCD,a.GSTPER,a.prodgrpgstper,a.barimage,a.barimagecount,a.FABITCD,a.FABITNM,a.BLQNTY,a.CONVQTYPUNIT,a.BLUOMCD,a.NEGSTOCK,a.agslcd,a.sagslcd,a.balqnty,a.balnos,a.balcutlength from ( ";
+                sql += Environment.NewLine + "a.WPPRICEGEN,a.LISTPRICE,a.LISTDISCPER,a.CUTLENGTH,a.PAGENO,a.PAGESLNO,a.PCSTYPE,a.AUTONO,a.PREFNO,a.PREFDT,a.GLCD,a.GSTPER,a.prodgrpgstper,a.barimage,a.barimagecount,a.FABITCD,a.FABITNM,a.BLQNTY,a.CONVQTYPUNIT,a.BLUOMCD,a.NEGSTOCK,a.agslcd,a.sagslcd,a.balqnty,a.balnos,a.balcutlength,a.BLSLNO,a.BLTYPE from ( ";
 
 
                 sql += "select a.TXNSLNO,a.ITGRPCD,a.ITGRPNM,a.BARGENTYPE,a.MTRLJOBCD,a.MTRLJOBNM,a.MTBARCODE,a.ITCD,a.ITNM,a.UOMCD,a.STYLENO,a.PARTCD,a.PARTNM, ";
                 sql += Environment.NewLine + "a.PRTBARCODE,a.STKTYPE,a.STKNAME,a.BARNO,a.COLRCD,a.COLRNM,a.CLRBARCODE,a.SIZECD,a.SIZENM,a.SZBARCODE,a.SHADE,nvl(a.QNTY,0)qnty,a.NOS,a.RATE,a.DISCRATE, ";
                 sql += Environment.NewLine + "a.DISCTYPE,a.TDDISCRATE,a.TDDISCTYPE,a.SCMDISCTYPE,a.SCMDISCRATE,a.HSNCODE,a.BALENO,a.PDESIGN,a.OURDESIGN,a.FLAGMTR,a.LOCABIN,a.BALEYR ";
                 sql += Environment.NewLine + ",a.SALGLCD,a.PURGLCD,a.SALRETGLCD,a.PURRETGLCD,a.WPRATE,a.RPRATE,a.ITREM,a.RPPRICEGEN,a.DOCNO,a.DOCDT,a.WPPER,a.RPPER, ";
-                sql += Environment.NewLine + "a.WPPRICEGEN,a.LISTPRICE,a.LISTDISCPER,a.CUTLENGTH,a.PAGENO,a.PAGESLNO,a.PCSTYPE,a.AUTONO,a.PREFNO,a.PREFDT,a.GLCD,a.GSTPER,a.prodgrpgstper,a.barimage,a.barimagecount,a.FABITCD,a.FABITNM,a.BLQNTY,a.CONVQTYPUNIT,a.BLUOMCD,a.NEGSTOCK,a.agslcd,a.sagslcd,(nvl(a.qnty,0)-nvl(b.qnty,0))balqnty,(nvl(a.nos,0)-nvl(b.nos,0))balnos,(nvl(a.CUTLENGTH,0)-nvl(b.CUTLENGTH,0))balcutlength from ( ";
+                sql += Environment.NewLine + "a.WPPRICEGEN,a.LISTPRICE,a.LISTDISCPER,a.CUTLENGTH,a.PAGENO,a.PAGESLNO,a.PCSTYPE,a.AUTONO,a.PREFNO,a.PREFDT,a.GLCD,a.GSTPER,a.prodgrpgstper,a.barimage,a.barimagecount,a.FABITCD,a.FABITNM,a.BLQNTY,a.CONVQTYPUNIT,a.BLUOMCD,a.NEGSTOCK,a.agslcd,a.sagslcd,(nvl(a.qnty,0)-nvl(b.qnty,0))balqnty,(nvl(a.nos,0)-nvl(b.nos,0))balnos,(nvl(a.CUTLENGTH,0)-nvl(b.CUTLENGTH,0))balcutlength,a.BLSLNO,a.BLTYPE from ( ";
 
                 sql += Environment.NewLine + "select x.TXNSLNO,x.ITGRPCD,x.ITGRPNM,x.BARGENTYPE,x.MTRLJOBCD,x.MTRLJOBNM,x.MTBARCODE,x.ITCD,x.ITNM,x.UOMCD,x.STYLENO,x.PARTCD,x.PARTNM, ";
                 sql += Environment.NewLine + "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,sum(nvl(x.QNTY,0))qnty,sum(nvl(x.NOS,0))nos,sum(nvl(x.CUTLENGTH,0))CUTLENGTH,x.RATE,x.DISCRATE, ";
                 sql += Environment.NewLine + "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                 sql += Environment.NewLine + ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,sum(x.BLQNTY)BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd from";
+                sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,sum(x.BLQNTY)BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd,x.BLSLNO,x.BLTYPE from";
 
                 sql += Environment.NewLine + "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                 sql += Environment.NewLine + "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,nvl(i.QNTY,0)qnty,nvl(i.NOS,0)nos,nvl(i.CUTLENGTH,0)CUTLENGTH,i.RATE,i.DISCRATE, ";
                 sql += Environment.NewLine + "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 sql += Environment.NewLine + ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
                 sql += Environment.NewLine + "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
-                sql += Environment.NewLine + ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK,v.agslcd,v.sagslcd ";
+                sql += Environment.NewLine + ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK,v.agslcd,v.sagslcd,w.BLSLNO,v.BLTYPE ";
                 //sql Environment.NewLine++= "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
                 sql += Environment.NewLine + "from " + scm + ".T_BATCHDTL i, " + scm + ".T_BATCHMST j, " + scm + ".M_SITEM k, " + scm + ".M_SIZE l, " + scm + ".M_COLOR m, ";
                 sql += Environment.NewLine + scm + ".M_GROUP n," + scm + ".M_MTRLJOBMST o," + scm + ".M_PARTS p," + scm + ".M_STKTYPE q," + scm + ".T_CNTRL_HDR r ";
-                sql += Environment.NewLine + "," + scm + ".T_TXNDTL s," + scm + ".T_TXN t, " + scm + ".M_SITEM u," + scm + ".T_TXNOTH v ";
+                sql += Environment.NewLine + "," + scm + ".T_TXNDTL s," + scm + ".T_TXN t, " + scm + ".M_SITEM u," + scm + ".T_TXNOTH v, " + scm + ".T_BALE w ";
                 sql += Environment.NewLine + "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                 sql += Environment.NewLine + "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+)and t.autono=v.autono(+) ";
-                sql += Environment.NewLine + "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+) ";
+                sql += Environment.NewLine + "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+) and i.autono=w.autono(+) and i.txnslno=w.slno(+) and i.baleno=w.baleno(+) ";
                 sql += Environment.NewLine + "and t.doctag in('" + doctag + "')  ";
                 if (R_DOCNO.retStr() != "") sql += Environment.NewLine + " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                 if (FDT.retDateStr() != "") sql += Environment.NewLine + "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
@@ -3422,7 +3428,7 @@ namespace Improvar.Controllers
                 sql += Environment.NewLine + "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.RATE,x.DISCRATE, ";
                 sql += Environment.NewLine + "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0),x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                 sql += Environment.NewLine + ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd ";
+                sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd,x.BLSLNO,x.BLTYPE ";
 
                 #region lastyr data
                 for (int a = 0; a < 2; a++)
@@ -3445,21 +3451,21 @@ namespace Improvar.Controllers
                         sql += Environment.NewLine + "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,sum(nvl(x.QNTY,0))qnty,sum(nvl(x.NOS,0))nos,sum(nvl(x.CUTLENGTH,0))CUTLENGTH,x.RATE,x.DISCRATE, ";
                         sql += Environment.NewLine + "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                         sql += Environment.NewLine + ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                        sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,sum(x.BLQNTY)BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd from";
+                        sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,sum(x.BLQNTY)BLQNTY,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd,x.BLSLNO,x.BLTYPE from";
 
                         sql += Environment.NewLine + "(select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.prodgrpcd,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
                         sql += Environment.NewLine + "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,nvl(i.QNTY,0)qnty,nvl(i.NOS,0)nos,nvl(i.CUTLENGTH,0)CUTLENGTH,i.RATE,i.DISCRATE, ";
                         sql += Environment.NewLine + "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                         sql += Environment.NewLine + ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,n.RPPRICEGEN,(s.IGSTPER+s.CGSTPER+s.SGSTPER) GSTPER, ";
                         sql += Environment.NewLine + "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,s.PAGENO,s.PAGESLNO,i.PCSTYPE,r.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
-                        sql += Environment.NewLine + ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK,v.agslcd,v.sagslcd ";
+                        sql += Environment.NewLine + ",j.FABITCD,u.ITNM FABITNM,i.BLQNTY,k.CONVQTYPUNIT,s.BLUOMCD,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK,v.agslcd,v.sagslcd,w.BLSLNO,v.BLTYPE ";
                         //sql += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,s.PAGENO,s.PAGESLNO,i.PCSTYPE,t.docno,t.docdt,r.AUTONO,t.PREFNO,t.PREFDT,s.GLCD,n.WPPER,n.RPPER ";
                         sql += Environment.NewLine + "from " + scm_prevyr + ".T_BATCHDTL i, " + scm_prevyr + ".T_BATCHMST j, " + scm_prevyr + ".M_SITEM k, " + scm_prevyr + ".M_SIZE l, " + scm_prevyr + ".M_COLOR m, ";
                         sql += Environment.NewLine + scm_prevyr + ".M_GROUP n," + scm_prevyr + ".M_MTRLJOBMST o," + scm_prevyr + ".M_PARTS p," + scm_prevyr + ".M_STKTYPE q," + scm_prevyr + ".T_CNTRL_HDR r ";
-                        sql += Environment.NewLine + "," + scm_prevyr + ".T_TXNDTL s," + scm_prevyr + ".T_TXN t, " + scm_prevyr + ".M_SITEM u," + scm_prevyr + ".T_TXNOTH v ";
+                        sql += Environment.NewLine + "," + scm_prevyr + ".T_TXNDTL s," + scm_prevyr + ".T_TXN t, " + scm_prevyr + ".M_SITEM u," + scm_prevyr + ".T_TXNOTH v, " + scm_prevyr + ".T_BALE w ";
                         sql += Environment.NewLine + "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                         sql += Environment.NewLine + "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+) ";
-                        sql += Environment.NewLine + "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+)and t.autono=v.autono(+) ";
+                        sql += Environment.NewLine + "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+)and t.autono=v.autono(+) and i.autono=w.autono(+) and i.txnslno=w.slno(+) and i.baleno=w.baleno(+) ";
                         sql += Environment.NewLine + "and t.doctag in('" + doctag + "')  ";
                         if (R_DOCNO.retStr() != "") sql += Environment.NewLine + " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                         //if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
@@ -3503,7 +3509,7 @@ namespace Improvar.Controllers
                         sql += Environment.NewLine + "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.RATE,x.DISCRATE, ";
                         sql += Environment.NewLine + "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0),x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                         sql += Environment.NewLine + ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT,x.WPPER,x.RPPER, ";
-                        sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd ";
+                        sql += Environment.NewLine + "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,X.PREFDT,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount,x.FABITCD,x.FABITNM,x.CONVQTYPUNIT,x.BLUOMCD,x.NEGSTOCK,x.agslcd,x.sagslcd,x.BLSLNO,x.BLTYPE ";
 
                     }
                 }
@@ -3670,6 +3676,7 @@ namespace Improvar.Controllers
                                      FABITCD = dr["FABITCD"].retStr(),
                                      FABITNM = dr["FABITNM"].retStr(),
                                      NEGSTOCK = dr["NEGSTOCK"].retStr(),
+                                     RECPROGSLNO = dr["BLSLNO"].retShort(),
                                  }).ToList();
                 if (VE.TBATCHDTL == null)
                 {
@@ -3678,6 +3685,14 @@ namespace Improvar.Controllers
                 else
                 {
                     VE.TBATCHDTL.AddRange(TBATCHDTL);
+                }
+                string BLTYPE = "";
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    if (CommVar.ClientCode(UNQSNO) == "BNBH")
+                    {
+                        BLTYPE = (from DataRow dr in dt.Rows where dr["bltype"].retStr() != "" orderby dr["docdt"].retStr() select dr["bltype"].retStr()).FirstOrDefault();
+                    }
                 }
                 string str = "";
                 string AGSLCD = (from DataRow dr in dt.Rows where selectedautoslno.Contains(dr["autono"].retStr() + dr["barno"].retStr()) select dr["agslcd"].retStr()).FirstOrDefault();
@@ -3689,6 +3704,8 @@ namespace Improvar.Controllers
                 str += "^SAGSLCD=^" + SAGSLCD + Cn.GCS();
                 str += "^AGSLNM=^" + AGSLNM + Cn.GCS();
                 str += "^SAGSLNM=^" + SAGSLNM + Cn.GCS();
+                str += "^BLTYPE=^" + BLTYPE + Cn.GCS();
+
                 //fill stock in t_batchdtl
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
@@ -4735,7 +4752,7 @@ namespace Improvar.Controllers
                     minhsnlen = compdt.Rows[0]["minhsnlen"].retInt();
                 }
                 DataTable baledata = new DataTable();
-                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "PJBR") && balenocount > 0)
+                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "PJBR" || VE.MENU_PARA == "SR") && balenocount > 0)
                 {
                     var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToArray().retSqlfromStrarray();
                     string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen,baleno from " + scm1 + ".t_bale where baleno in (" + baleno + ") ";
@@ -5297,6 +5314,7 @@ namespace Improvar.Controllers
                     TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
                     TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
                     TTXNOTH.MUTSLCD = VE.T_TXNOTH.MUTSLCD;
+                    TTXNOTH.TOPAY = VE.T_TXNOTH.TOPAY;
                     //----------------------------------------------------------//
 
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.DISPBLAMT.retDbl());
@@ -5644,7 +5662,7 @@ namespace Improvar.Controllers
                                     TBALE.DRCR = TTXNDTL.STKDRCR;
                                     TBALE.GOCD = TTXN.GOCD;
                                     TBALE.BALENO = TTXNDTL.BALENO;
-                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS") && baledata.Rows.Count > 0)
+                                    if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "SR") && baledata.Rows.Count > 0)
                                     {
                                         string baleno = VE.TTXNDTL[i].BALENO.retStr();
                                         var data = baledata.Select("baleno = '" + baleno + "' and blslno = " + VE.TTXNDTL[i].RECPROGSLNO + "");
@@ -7731,11 +7749,11 @@ namespace Improvar.Controllers
                     string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                     string ContentFlg = "";
                     var schnm = CommVar.CurSchema(UNQSNO);
-                       
+
                     sql = "update " + schnm + ". T_TXNOTH set DOCREM='" + VE.T_TXNOTH.DOCREM + "'  "
                     + " where  AUTONO='" + VE.T_TXN.AUTONO + "'   ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                        
+
                     ModelState.Clear();
                     OraTrans.Commit();
                     OraTrans.Dispose();
