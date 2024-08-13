@@ -1910,7 +1910,7 @@ namespace Improvar.Controllers
                 sql += "(case when h.docdt >= to_date('01/07/2021','dd/mm/yyyy') and nvl(s.einvappl,'N')='Y' and e.gstno is null then 'Y' else 'N' end)B2C, ";
                 //sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,y.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  " + Environment.NewLine;
-                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,b.PREFNO,b.PREFdt from " + Environment.NewLine;
+                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,b.PREFNO,b.PREFdt,d.topay from " + Environment.NewLine;
 
                 //sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,''pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  " + Environment.NewLine;
@@ -2261,6 +2261,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("COURNM", typeof(string), "");
                 IR.Columns.Add("PREFNO", typeof(string), "");
                 IR.Columns.Add("PREFdt", typeof(string), "");
+                IR.Columns.Add("topaytrans", typeof(string));
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2539,6 +2540,10 @@ namespace Improvar.Controllers
                                 if (duedays == 0) payterms = ""; else payterms = duedays.ToString() + " days.";
                             }
 
+                            if (VE.Checkbox12 == true)
+                            {
+                                dr1["topaytrans"] = tbl.Rows[i]["topay"].ToString();
+                            }
                             //dr1["menu_para"] = VE.MENU_PARA;
                             //dr1["pvtag"] = VE.Checkbox7 == true ? "Y" : "N";
                             dr1["menu_para"] = VE.MENU_PARA;
@@ -4882,7 +4887,7 @@ namespace Improvar.Controllers
                 sql += "when nvl(s.einvappl,'N')='Y' and p.irnno is null and e.gstno is not null and s.expcd is null and s.salpur='S' then 'I' end) cancel,p.irnno, " + Environment.NewLine;
                 //sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,y.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  " + Environment.NewLine;
-                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile from " + Environment.NewLine;
+                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,d.topay from " + Environment.NewLine;
 
                 //sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,''pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  " + Environment.NewLine;
@@ -5017,12 +5022,19 @@ namespace Improvar.Controllers
                 IR.Columns.Add("compemail", typeof(string));
                 IR.Columns.Add("compgstno", typeof(string));
                 IR.Columns.Add("topay", typeof(string));
+                IR.Columns.Add("topaytrans", typeof(string));
 
                 Int32 i = 0, rNo = 0; maxR = tbl.Rows.Count - 1;
                 while (i <= maxR)
                 {
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["topay"] = VE.TEXTBOX11; ;
+
+                    if(VE.Checkbox12==true)
+                    {
+                        IR.Rows[rNo]["topaytrans"] = tblinv.Rows[i]["topay"];
+                    }
+
                     if (VE.TEXTBOX12.retStr() == "Buyer")
                     {
                         IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"];

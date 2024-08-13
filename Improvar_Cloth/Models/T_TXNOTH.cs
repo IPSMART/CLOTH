@@ -129,5 +129,7 @@ namespace Improvar.Models
          public double? TDSAMT { get; set; }
         [StringLength(8)]
         public string MUTSLCD { get; set; }
+        [StringLength(20)]
+        public string TOPAY { get; set; }
     }
 }
