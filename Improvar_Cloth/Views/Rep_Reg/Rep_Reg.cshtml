@@ -312,7 +312,7 @@
                         @(new HtmlString(Model.SubAgent))
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Godown")
@@ -332,7 +332,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:6px">
+                            @Html.Label("", "Location")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.TEXTBOX5))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Detailed")
@@ -347,140 +357,158 @@
                         </div>
                     </div>
                 </div>
+                
+                    @if (Model.MENU_PARA == "SB")
+                    {
+                        <div class="row" style="margin-top:10PX">
+                            <div class="col-lg-2">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Sorting on")
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
+                                <input type="radio" name="RepSortOn" value="partywise" />Party-wise
+                            </div>
+                        </div>
+                    }
+                    else {
+                        <div class="row" style="margin-top:10PX">
+                            <div class="col-lg-2">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Sorting on")
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
+                                <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date[Mother Invoice]
+                                <input type="radio" name="RepSortOn" value="partywise" />Party-wise
+                            </div>
+                        </div>}
+
                 <div class="row" style="margin-top:10px;">
                     <div class="col-lg-2"></div>
-                    @if (Model.MENU_PARA == "SB")
-                    { <div class="col-md-7">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Bill Type")
-
-                            @Html.CheckBoxFor(model => model.Checkbox1, true)
-                        </div>
-                    </div>
-                    }
-                    <div class="col-md-7">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Item Remarks")
-                            @Html.CheckBoxFor(model => model.Checkbox6, true)
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Transporter Details")
-
-                            @Html.CheckBoxFor(model => model.Checkbox3, true)
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Consignee Details")
-                            @Html.CheckBoxFor(model => model.Checkbox9, true)
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Show Pcs Column")
-                            @Html.CheckBoxFor(model => model.Checkbox10, true)
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Show Only Pending PI")
-                            @Html.CheckBoxFor(model => model.Checkbox11, true)
-                        </div>
+                    <div class="col-lg-3">
+                        <table style="border:1px solid">
+                            @if (Model.MENU_PARA == "SB")
+                            {
+                                <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox1, true)</td><td style="border:1px groove;">Bill Type</td></tr>
+                            }
+                            <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6)</td><td style="border:1px groove;">Item Remarks</td></tr>
+                            <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3)</td><td style="border:1px groove;">Transporter Details</td></tr>
+                            <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox9)</td><td style="border:1px groove;">Consignee Details</td></tr>
+                        </table>
+                     </div>
+                    <div class="col-lg-3">
+                        <table style="border:1px solid">
+                            <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox10)</td><td style="border:1px groove;">Show Pcs Column</td></tr>
+                            <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox11)</td><td style="border:1px groove;">Show Only Pending PI</td></tr>
+                            <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox12)</td><td style="border:1px groove;">Show Only Pending Transporter</td></tr>
+                        </table>
                     </div>
                 </div>
+               
 
-                @if (Model.MENU_PARA == "SB")
-                    {
+
+                @*@if (Model.MENU_PARA == "SB")
+                 {
+            <div class="col-md-7">
+                <div class="editor-field" style="margin-top: 4px;">
+                    @Html.Label("", "Bill Type")
+
+                    @Html.CheckBoxFor(model => model.Checkbox1, true)
+                </div>
+            </div>
+        }
+        <div class="col-md-7">
+            <div class="editor-field" style="margin-top: 4px;">
+                @Html.Label("", "Item Remarks")
+                @Html.CheckBoxFor(model => model.Checkbox6, true)
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="editor-field" style="margin-top: 4px;">
+                @Html.Label("", "Transporter Details")
+
+                @Html.CheckBoxFor(model => model.Checkbox3, true)
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="editor-field" style="margin-top: 4px;">
+                @Html.Label("", "Consignee Details")
+                @Html.CheckBoxFor(model => model.Checkbox9, true)
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="editor-field" style="margin-top: 4px;">
+                @Html.Label("", "Show Pcs Column")
+                @Html.CheckBoxFor(model => model.Checkbox10, true)
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="editor-field" style="margin-top: 4px;">
+                @Html.Label("", "Show Only Pending PI")
+                @Html.CheckBoxFor(model => model.Checkbox11, true)
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="editor-field" style="margin-top: 4px;">
+                @Html.Label("", "Pending Transporter")
+                @Html.CheckBoxFor(model => model.Checkbox12, true)
+            </div>
+        </div>*@
+                    
+
                     <div class="row" style="margin-top:10PX">
                         <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Sorting on")
-                            </div>
                         </div>
-                        <div class="col-lg-10">
-                            <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
-                            <input type="radio" name="RepSortOn" value="partywise" />Party-wise
+                        <div class="col-lg-6">
+                            <input type="button" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
                         </div>
+                        @*<div class="col-lg-6">
+                    <input type="button" value="Get Pending Profoma" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
+                </div>*@
                     </div>
-                }
-                else {
-                    <div class="row" style="margin-top:10PX">
-                        <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Sorting on")
-                            </div>
-                        </div>
-                        <div class="col-lg-10">
-                            <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
-                            <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date[Mother Invoice]
-                            <input type="radio" name="RepSortOn" value="partywise" />Party-wise
-                        </div>
-                    </div>}
+                    <div class="row">
+                        <div class="modal fade" id="myColumnModal" role="dialog">
 
-
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top:6px">
-                            @Html.Label("", "Location")
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        @(new HtmlString(Model.TEXTBOX5))
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top:10PX">
-                    <div class="col-lg-2">
-                    </div>
-                    <div class="col-lg-6">
-                        <input type="button" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
-                    </div>
-                    @*<div class="col-lg-6">
-                        <input type="button" value="Get Pending Profoma" name="submitbutton" class="btn btn-info" onclick="Proceed('BarNo_Transfer');" />
-                    </div>*@
-                </div>
-                <div class="row">
-                    <div class="modal fade" id="myColumnModal" role="dialog">
-
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Select Column</h4>
-                                    <div class="row">
-                                        <div class="col-md-9">
-                                            <div class="editor-field">
-                                                @Html.DropDownListFor(model => Model.TEXTBOX6, new SelectList(Model.DropDown_list2, "Value", "Text", Model.TEXTBOX6), new { @class = "form-control", id = "TEXTBOX6", @onchange = "GetColumn();" })
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Select Column</h4>
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.DropDownListFor(model => Model.TEXTBOX6, new SelectList(Model.DropDown_list2, "Value", "Text", Model.TEXTBOX6), new { @class = "form-control", id = "TEXTBOX6", @onchange = "GetColumn();" })
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <div class="editor-field">
-                                                @Html.EditorFor(model => model.TEXTBOX7, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX7", @placeholder = "New Format Name" } })
+                                            <div class="col-md-9">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.TEXTBOX7, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX7", @placeholder = "New Format Name" } })
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div id="partialdiv">
-                                    @Html.Partial("_Rep_Reg_Column")
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('S')">Save New</button>
-                                    @if (Model.DropDown_list2 != null && Model.DropDown_list2.Count() != 0)
-                                    {
-                                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('U')">Update</button>
-                                    }
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('D')">Delete</button>
+                                    <div id="partialdiv">
+                                        @Html.Partial("_Rep_Reg_Column")
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('S')">Save New</button>
+                                        @if (Model.DropDown_list2 != null && Model.DropDown_list2.Count() != 0)
+                                        {
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('U')">Update</button>
+                                        }
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SaveSetting('D')">Delete</button>
 
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="FilterColumn()">Close</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="FilterColumn()">Close</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
     }
     <div class="container">

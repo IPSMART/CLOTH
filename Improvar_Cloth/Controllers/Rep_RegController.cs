@@ -428,6 +428,10 @@ namespace Improvar.Controllers
                 if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+                if (VE.Checkbox12 == true)
+                {
+                    sql += "and f.translcd is null and k.autono is not null " + Environment.NewLine;
+                }
                 sql += ") a " + Environment.NewLine;
                 if (dtlsumm == "E")
                 {

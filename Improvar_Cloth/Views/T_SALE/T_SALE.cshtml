@@ -818,6 +818,7 @@
         <input type="hidden" id="UrlSelectPendOrder" value="@Url.Action("SelectPendOrder", PageControllerName )" />
         <input type="hidden" id="UrlOrderDetails" value="@Url.Action("GetOrderDetails", PageControllerName )" />
         <input type="hidden" id="UrlRateHistory" value="@Url.Action("GetRateHistoryDetails", PageControllerName )" />
+        <input type="hidden" id="UrlPaymentHistory" value="@Url.Action("GetPaymentDetails", PageControllerName )" />
         <input type="hidden" id="UrlItemDetails" value="@Url.Action("GetItemDetails", PageControllerName )" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="UrlCheckBillNumber" value="@Url.Action("CheckBillNumber", PageControllerName)" />
@@ -1005,6 +1006,13 @@
                         </div>
 
                     }
+                    @if (Model.DefaultAction == "V" && Model.MENU_PARA == "SBDIR")
+                    {
+                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Payment Details" id="btnpaymentdetails" value="Payment Details" title="Payment Details" onclick="PaymentDetails()" data-toggle="modal" data-target="#PaymentDetailsModal" />
+
+                    }
+                    
+
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -3354,6 +3362,8 @@
                 </div>
             </div>
             <div class="modal fade" id="RateHistoryModal" role="dialog">
+            </div>
+            <div class="modal fade" id="PaymentDetailsModal" role="dialog">
             </div>
         </div>
 

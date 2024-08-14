@@ -305,6 +305,20 @@ namespace Improvar.ViewModels
         public DateTime? OTHDOCDT { get; set; }
         public string Modify { get; set; }
         public double BuyerTotTurnover { get; set; }
+        public List<PAYMENT_DETAILS> PAYMENT_DETAILS { get; set; }
 
+    }
+
+    public class PAYMENT_DETAILS
+    {
+        public string DOCDT { get; set; }
+        public string DOCNO { get; set; }
+        public string REMARKS { get; set; }
+        public string CHQNO { get; set; }
+        public string DOCTYPE { get; set; }
+        public string DRAMT { get; set; }
+        public string CRAMT { get; set; }
+       
+       
     }
 }

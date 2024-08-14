@@ -3260,7 +3260,8 @@ namespace Improvar.Controllers
                 RateHistory RH = new RateHistory();
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
-                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), PARTYCD.retStr().retSqlformat(), VE.DOC_CODE.retStr().retSqlformat(), ITCD.retStr().retSqlformat());
+                string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET'";
+                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), PARTYCD.retStr().retSqlformat(), doctype, ITCD.retStr().retSqlformat());
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {
@@ -3289,6 +3290,55 @@ namespace Improvar.Controllers
                     ModelState.Clear();
                     return PartialView("_T_SALE_RateHistory", RH);
                 }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
+        public ActionResult GetPaymentDetails(TransactionSaleEntry VE, string SLCD, string PARGLCD)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO);
+                var COMPCD = CommVar.Compcd(UNQSNO);
+                var LOCCD = CommVar.Loccd(UNQSNO);
+
+
+                string sql = "";
+                sql += "select * from( " + Environment.NewLine;
+                sql += "select b.DOCDT,b.DOCNO,a.T_REM,a.CHQNO,c.DOCNM,a.BANK_DT,a.AMT,a.DRCR " + Environment.NewLine;
+                sql += "from " + scmf + ".T_VCH_DET a, " + scmf + ".T_CNTRL_HDR b, " + scmf + ".M_DOCTYPE c  " + Environment.NewLine;
+                sql += "where a.AUTONO=b.AUTONO(+) and b.DOCCD=c.DOCCD(+) and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' and nvl(b.cancel, 'N') = 'N' " + Environment.NewLine;
+                sql += "and a.SLCD in('" + SLCD + "') and a.GLCD in('" + PARGLCD + "') " + Environment.NewLine;
+                sql += "order by b.DOCDT desc )a " + Environment.NewLine;
+                sql += "WHERE ROWNUM <= 10" + Environment.NewLine;
+
+                DataTable tbl = masterHelp.SQLquery(sql);
+                VE.PAYMENT_DETAILS = (from DataRow dr in tbl.Rows
+                                      select new PAYMENT_DETAILS
+                                      {
+                                          DOCDT = dr["DOCDT"].retDateStr(),
+                                          DOCNO = dr["DOCNO"].ToString(),
+                                          REMARKS = dr["T_REM"].ToString(),
+                                          CHQNO = dr["CHQNO"].ToString(),
+                                          DOCTYPE = dr["DOCNM"].ToString(),
+                                          DRAMT = dr["DRCR"].ToString() == "D" ? dr["AMT"].ToString() : "",
+                                          CRAMT = dr["DRCR"].ToString() == "C" ? dr["AMT"].ToString() : "",
+
+                                      }).ToList();
+
+                VE.DefaultView = true;
+                ModelState.Clear();
+                return PartialView("_T_SALE_PaymentDetails", VE);
+
+
+
             }
             catch (Exception ex)
             {
@@ -6969,8 +7019,8 @@ namespace Improvar.Controllers
                                 }
                                 DataTable ITEM_STOCK_DATA = new DataTable();
 
-                                //ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, "", ITGRPCD, "", "", "", false, "", "", true);
-                                ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), TTXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, VE.DefaultAction == "E" ? TTXN.AUTONO : "", ITGRPCD, "", "", "", false, "", "", true);
+                                //ITEM_STOCK_DATA = salesfunc.GetBaleStock(VE.T_TXN.DOCDT.retDateStr(), TTXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, VE.DefaultAction == "E" ? TTXN.AUTONO : "", ITGRPCD, "", "", "", false, "", "", true);
+                                ITEM_STOCK_DATA = salesfunc.GetBaleStock("", TTXN.GOCD.retSqlformat(), balno, ITCD, mtrljobcd, VE.DefaultAction == "E" ? TTXN.AUTONO : "", ITGRPCD, "", "", "", false, "", "", true, true);
 
 
 
@@ -7007,15 +7057,10 @@ namespace Improvar.Controllers
                                         {
                                             var vQNTY1 = vQNTY.CopyToDataTable();
                                             QNTY = vQNTY1.Rows[0]["qnty"].retStr();
-                                            STOCK_QNTY = QNTY.retDbl();
-
-                                            saleqnty = txndata[i].QNTY.retDbl();
-
-
-                                            STOCK_QNTY = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "REC") ? STOCK_QNTY + saleqnty.retDbl() : STOCK_QNTY - saleqnty.retDbl();
                                         }
-
-
+                                        STOCK_QNTY = QNTY.retDbl();
+                                        saleqnty = txndata[i].QNTY.retDbl();
+                                        STOCK_QNTY = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "REC") ? STOCK_QNTY + saleqnty.retDbl() : STOCK_QNTY - saleqnty.retDbl();
 
                                         if (STOCK_QNTY < 0)
                                         {

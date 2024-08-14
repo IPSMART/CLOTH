@@ -1550,6 +1550,7 @@
     <Content Include="Views\Rep_SalPur\Rep_SalPur.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_OrderAdvancePopup.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_OrderAdvance.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PaymentDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

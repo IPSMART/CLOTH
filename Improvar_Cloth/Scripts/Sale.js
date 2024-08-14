@@ -3500,6 +3500,31 @@ function RateHistoryDetails(ITCDId, ITNMId, TAG) {
     });
 }
 
+
+function PaymentDetails() {
+    debugger;
+    
+    SLCD = $("#SLCD").val();
+    PARGLCD = $("#PARGLCD").val();
+    $.ajax({
+        type: 'get',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlPaymentHistory").val(),//GetPaymentDetails
+       
+        data: "SLCD=" + SLCD + "&PARGLCD=" + PARGLCD,
+        success: function (result) {
+            $("#WaitingMode").hide();
+            $("#PaymentDetailsModal").html(result);
+           
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+
 //Calculate T_OutIssProcess Amount Details
 function CalculateOutIssProcessAmt_Details(i) {
     var DefaultAction = $("#DefaultAction").val();
