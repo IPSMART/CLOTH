@@ -2982,7 +2982,7 @@ namespace Improvar
 
         public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "", bool skipstyleno = false, bool skippageno = false, string pagenoslno = "", bool balStockOnly = true, bool skipNegetivStock = false)
         {
-            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno, balStockOnly);
+            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno, balStockOnly, skipNegetivStock);
             //DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno, balStockOnly, tdt, skipNegetivStock);
             DataView dv = new DataView(tbl);
             //string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono,blslno";//data duplicate for blslno
