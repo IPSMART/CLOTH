@@ -2595,15 +2595,19 @@ namespace Improvar
         {
             try
             {
-                string scm1 = CommVar.FinSchema(UNQSNO); string Compcd = CommVar.Compcd(UNQSNO); string Loccd = CommVar.Loccd(UNQSNO);
+                string scm1 = CommVar.FinSchema(UNQSNO);
+                string scm = CommVar.SaleSchema(UNQSNO);
+                string Compcd = CommVar.Compcd(UNQSNO);
+                string Loccd = CommVar.Loccd(UNQSNO);
                 string valsrch = val.ToUpper().Trim();
                 string sql = "";
 
                 sql += "select distinct a.autono, a.pcode slcd, c.slnm, c.gstno, a.blno, to_char(a.bldt,'dd/mm/yyyy')bldt, sum(a.blamt) blamt, b.ewaybillno,to_char(b.ewaybilldt,'dd/mm/yyyy')ewaybilldt, " + System.Environment.NewLine;
-                sql += "b.lrno, to_char(b.lrdt,'dd/mm/yyyy')lrdt, b.translcd, b.lorryno, d.slnm trslnm,f.agslcd,g.slnm agslnm,b.reasoncd,b.reasonrem  " + System.Environment.NewLine;
+                sql += "b.lrno, to_char(b.lrdt,'dd/mm/yyyy')lrdt, b.translcd, b.lorryno, d.slnm trslnm,f.agslcd,g.slnm agslnm,b.reasoncd,b.reasonrem,h.amt CRGAMT  " + System.Environment.NewLine;
                 sql += "from " + scm1 + ".t_vch_gst a, " + scm1 + ".t_txnewb b, " + scm1 + ".t_cntrl_hdr e, " + System.Environment.NewLine;
-                sql += "" + scm1 + ".m_subleg c, " + scm1 + ".m_subleg d," + scm1 + ".t_vch_bl f," + scm1 + ".m_subleg g  " + System.Environment.NewLine;
-                sql += "where a.autono = b.autono and a.autono = e.autono(+) and a.autono = f.autono(+) and " + System.Environment.NewLine;
+                sql += "" + scm1 + ".m_subleg c, " + scm1 + ".m_subleg d," + scm1 + ".t_vch_bl f," + scm1 + ".m_subleg g , " + System.Environment.NewLine;
+                sql += "(select a.amt,a.autono from " + scm + ".t_txnamt a," + scm1 + ".t_cntrl_hdr b where a.amtcd='0003' and a.autono=b.autono(+) and nvl(b.cancel,'N') = 'N') h ";
+                sql += "where a.autono = b.autono and a.autono = e.autono(+) and a.autono = f.autono(+) and a.autono = h.autono(+) and " + System.Environment.NewLine;
                 //sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and b.translcd is not null and " + System.Environment.NewLine;
                 sql += "e.compcd = '" + Compcd + "' and e.loccd = '" + Loccd + "' and nvl(e.cancel, 'N')= 'N' and a.salpur = 'S' and " + System.Environment.NewLine;
                 if (DOCDT.retStr() != "") sql += "e.docdt >= to_date('" + DOCDT.retStr() + "', 'dd/mm/yyyy') and ";
@@ -2612,7 +2616,7 @@ namespace Improvar
                 //if(autono.retStr()!="") sql += "and ( upper(a.autono) like '%" + autono + "%')  " + System.Environment.NewLine;
                 if (valsrch.retStr() != "") sql += "and ( upper(a.blno) like '%" + valsrch + "%' or upper(a.autono) like '%" + valsrch + "%')  " + System.Environment.NewLine;
                 sql += "group by a.autono, a.pcode, c.slnm, c.gstno, a.blno, a.bldt, b.ewaybillno, b.ewaybilldt, " + System.Environment.NewLine;
-                sql += "b.lrno, b.lrdt, b.translcd, b.lorryno, d.slnm,f.agslcd,g.slnm,b.reasoncd,b.reasonrem ";
+                sql += "b.lrno, b.lrdt, b.translcd, b.lorryno, d.slnm,f.agslcd,g.slnm,b.reasoncd,b.reasonrem, h.amt ";
                 sql += "order by bldt, blno ";
 
                 DataTable rsTmp = SQLquery(sql);

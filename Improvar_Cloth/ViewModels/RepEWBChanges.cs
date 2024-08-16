@@ -51,5 +51,6 @@ namespace Improvar.ViewModels
         public string AGSLNM { get; set; }
         public string AGSLCD1 { get; set; }
         public string AGSLNM1 { get; set; }
+        public string CARRIAGEAMT { get; set; }
     }
 }

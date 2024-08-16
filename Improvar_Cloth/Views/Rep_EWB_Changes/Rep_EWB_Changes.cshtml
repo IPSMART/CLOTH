@@ -28,7 +28,7 @@
         if (id == "") {
             $("#" + BLNO.id).val("");
             //$("#" + AUTONO.id).val("");
-            ClearAllTextBoxes("BLNO,AUTONO,BLDT,SLNM,GSTNO,ITCD_NEW,BLAMT,EWAYBILLNO,EWAYBILLDT,TRSLCD,TRSLNM,LRNO,LRDT,LORRYNO,TRSLCD1,TRSLNM1,LRNO1,LRDT1,LORRYNO1,reasoncd,reasonrem,AGSLCD,AGSLNM,AGSLCD1,AGSLNM1");
+            ClearAllTextBoxes("BLNO,AUTONO,BLDT,SLNM,GSTNO,ITCD_NEW,BLAMT,EWAYBILLNO,EWAYBILLDT,TRSLCD,TRSLNM,LRNO,LRDT,LORRYNO,TRSLCD1,TRSLNM1,LRNO1,LRDT1,LORRYNO1,reasoncd,reasonrem,AGSLCD,AGSLNM,AGSLCD1,AGSLNM1,CARRIAGEAMT");
         }
         else {
             $.ajax({
@@ -60,6 +60,7 @@
                         document.getElementById("LRNO1").value = returncolvalue(res, "LRNO");
                         document.getElementById("LRDT1").value = returncolvalue(res, "LRDT");
                         document.getElementById("LORRYNO1").value = returncolvalue(res, "LORRYNO");
+                        document.getElementById("CARRIAGEAMT").value = returncolvalue(res, "CRGAMT");
                         var reasoncd = returncolvalue(res, "reasoncd");
                         var reasonrem = returncolvalue(res, "reasonrem");  
                         if (reasoncd != "")
@@ -292,6 +293,16 @@
             </div>
         </div>
 
+        <div class="col-md-5">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Carriage Charges")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.CARRIAGEAMT, new { htmlAttributes = new { @class = "form-control", id = "CARRIAGEAMT", @placeholder = "CARRIAGEAMT", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-5">
