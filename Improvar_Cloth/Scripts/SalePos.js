@@ -114,6 +114,7 @@
                             ClearAllTextBoxes("R_BARCODE,R_STYLENO,MTRLJOBCD,PARTCD");
                             AddReturnRow(result);
                         }
+                        $("input[name='INC_RATE']").css('pointer-events', 'none');
                     }
                     else {
                         $('#helpDIV').html("");
@@ -173,6 +174,11 @@ function DeleteBarnoRow() {
             Checked_Disable();
             //CalculateRowAmt();
             CalculateTotal();
+            var MainGridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+            var ReturnMainGridRow = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
+            if (MainGridRow == 0 && ReturnMainGridRow==0) {
+                $("input[name='INC_RATE']").css('pointer-events', '');
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -195,6 +201,11 @@ function DeleteReturnRow() {
             Checked_Disable();
             //CalculateRowAmt();
             CalculateTotal();
+            var MainGridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+            var ReturnMainGridRow = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
+            if (MainGridRow == 0 && ReturnMainGridRow == 0) {
+                $("input[name='INC_RATE']").css('pointer-events', '');
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -1383,7 +1394,7 @@ function CalculateTotal(CallFrm) {
             itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
         }
         else {
-           itamt = parseFloat(Rtaxamt);
+            itamt = parseFloat(Rtaxamt);
         }
         if ($("#S_PER_" + i).val() != "") { $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2)); } else { $("#S_ITAMT_" + i).val(parseFloat(0).toFixed(2)); }
 
@@ -1651,7 +1662,7 @@ function SalesmanPerChk() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     //if (DefaultAction == "V") return true;
-   
+
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
     var T_PER = 0;
     for (var j = 0; j <= GridRow - 1; j++) {

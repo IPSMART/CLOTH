@@ -256,6 +256,14 @@
                         $("#M_BARCODE").focus();
                         var strrel = result.split("~");
                         if (strrel.length > 1) {
+                            $("input[name='INC_RATE']").css('pointer-events', '');
+                            if ($("#INCLRATEASKMASTER").val() == "Y") {
+                                document.getElementById("INC_RATE").checked = true;
+                            }
+                            else {
+                                document.getElementById("INC_RATE").checked = false;
+                            }
+                            ChangeIncRate();
                             var autono = strrel[1];
                             $("#AUTONO").val(autono);
                             jQuery("form").attr("target", "_blank");
@@ -656,6 +664,21 @@
         $("#TOTBALAMT").val(totamt.toFixed(2));
     }
 </script>
+<script>
+    function ChangeIncRate() {
+        debugger;
+        if (document.getElementById("INC_RATE").checked == true) {
+            $("#INCLRATEASK").val("Y");
+            $("#RateCap").html("Incl.Rate");
+            $("#RetRateCap").html("Incl.Rate");
+        }
+        else {
+            $("#INCLRATEASK").val("N");
+            $("#RateCap").html("Rate");
+            $("#RetRateCap").html("Rate");
+        }
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -700,6 +723,7 @@
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.INCLRATEASK, new { id = "INCLRATEASK" })
+        @Html.HiddenFor(a => a.INCLRATEASKMASTER, new { id = "INCLRATEASKMASTER" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
@@ -714,7 +738,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.CMROFFTYPE, new { id = "CMROFFTYPE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNOURDESIGN, new { id = "MNTNOURDESIGN" })
         @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
- <div class="form-horizontal">
+        <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
                 @Html.Partial("_FilteredSearch")
@@ -873,7 +897,14 @@
                         </div>
                         <div class="col-md-1" style="width:auto;">
                             <div class="editor-field" style="margin-top: 6px;">
-                                @Html.CheckBoxFor(model => model.INC_RATE, new { htmlAttributes = new { @class = "form-control", id = "INC_RATE" } })
+                                @if (Model.DefaultAction == "A")
+                                {
+                                    @Html.CheckBoxFor(model => model.INC_RATE, new { @class = "form-control", id = "INC_RATE", onchange = "ChangeIncRate(this)" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(model => model.INC_RATE, new { @class = "form-control", id = "INC_RATE", onchange = "ChangeIncRate(this)", style = "pointer-events:none;background-color:#eee" })
+                                }
                             </div>
                         </div>
                         <div class="col-md-1" style="width:auto;">
@@ -965,7 +996,7 @@
                             <div class="col-md-1" style="width:auto;">
                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Mobile" id="edit_Mobile" value="Update Mobile" title="Click to Update Mobile button for edit Mobile " onclick="Edit_Mobile()" />
                                 <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
-                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Mobile" value="Update" title="Click to Update Mobile" disabled onclick="Update_Mobile()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Mobile" value="Update" title="Click to Update Mobile" disabled onclick="Update_Mobile()" />
                                 <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Mobile" value="Cancel" title="Click to Cancel" onclick="Cancel_Mobile()" />
                             </div>
 
@@ -1170,27 +1201,110 @@
         </div>
         <div class="row" style="margin-top:5px;">
             <ul class="nav nav-tabs">
-@if (Model.MENU_PARA != "CADV")
-{
-                if (Model.MENU_PARA != "SBCMR")
+                @if (Model.MENU_PARA != "CADV")
                 {
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
+                    if (Model.MENU_PARA != "SBCMR")
+                    {
+                        <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
+                    }
+                    @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
+                    <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab">Return(J)</a></li>
+                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
                 }
-                @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
-                <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab">Return(J)</a></li>
-                <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
-}
                 <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
                 <li id="Party_LI" class=""><a data-toggle="tab" href="#Party">Party(K)</a></li>
                 <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
                 <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
             </ul>
             <div class="tab-content">
-@if (Model.MENU_PARA != "CADV")
-{
-                if (Model.MENU_PARA != "SBCMR")
+                @if (Model.MENU_PARA != "CADV")
                 {
-                    <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
+                    if (Model.MENU_PARA != "SBCMR")
+                    {
+                        <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
+                            <div class="row">
+
+                                <div class="row">
+                                    @if (Model.DefaultAction != "V")
+                                    {
+                                        if (Model.M_SYSCNFG.MNTNBARNO == "Y")
+                                        {
+                                            <div class="col-md-1">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Bar Code")
+                                                    <b style="color:Red;">*</b>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_BARCODE", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE');", onblur = "GetBarnoDetails('M_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE')" />
+                                                    @Html.HiddenFor(a => a.PARTCD, new { id = "PARTCD" })
+                                                    @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
+                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="col-md-1">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Design No.")
+                                                <b style="color:Red;">*</b>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetBarnoDetails('M_STYLENO',Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />
+
+                                                @if (Model.M_SYSCNFG.MNTNBARNO != "Y")
+                                                {
+                                                    @Html.HiddenFor(model => model.BARCODE, new { id = "M_BARCODE" })
+
+                                                }
+                                            </div>
+
+                                        </div>
+
+                                    }
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3" style="width:auto;">
+                                    </div>
+                                </div>
+                                <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                    <div id="partialdivBarCodeTab">
+                                        @Html.Partial("_T_SALE_POS_PRODUCT")
+                                    </div>
+
+                                </div>
+                                @if (Model.DefaultAction != "V")
+                            { <div class="row">
+                                <p class="text-info" style="margin-top:10px;">
+                                    ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
+                                    *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
+                                </p>
+                            </div> }
+
+                                @*@if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                                    {
+                                        <div>
+                                            <div class="row">
+                                                <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-1" style="width:auto;">
+                                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }*@
+
+                            </div>
+                        </div>
+                    }
+                    <div id="ReturnTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row">
 
                             <div class="row">
@@ -1206,8 +1320,8 @@
                                         </div>
                                         <div class="col-md-8">
                                             <div class="editor-field">
-                                                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_BARCODE", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE');", onblur = "GetBarnoDetails('M_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE')" />
+                                                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "R_BARCODE", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','R_BARCODE','R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/R_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/R_BARCODE');", onblur = "GetBarnoDetails('R_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','R_BARCODE','R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/R_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/R_BARCODE')" />
                                                 @Html.HiddenFor(a => a.PARTCD, new { id = "PARTCD" })
                                                 @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
@@ -1222,18 +1336,62 @@
                                     </div>
                                     <div class="col-md-7">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetBarnoDetails('M_STYLENO',Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />
-
+                                            @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "R_STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','R_STYLENO','R_STYLENO=STYLENO=3/R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/R_BARCODE')", onblur = "GetBarnoDetails('R_STYLENO',Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','R_STYLENO','R_STYLENO=STYLENO=3/R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/R_BARCODE')" />
                                             @if (Model.M_SYSCNFG.MNTNBARNO != "Y")
                                             {
-                                                @Html.HiddenFor(model => model.BARCODE, new { id = "M_BARCODE" })
+                                                @Html.HiddenFor(model => model.BARCODE, new { id = "R_BARCODE" })
 
                                             }
                                         </div>
-
                                     </div>
-
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "From Date")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "To Date")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Doc No.")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 6 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Bar No.")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control", id = "R_BARNO", @placeholder = "BARNO", maxlength = 25 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Get Barno" onclick="GetTTXNDTLDetails()" />
+                                    </div>
+                                    <div class="row">
+                                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                        </div>
+                                    </div>
                                 }
 
                             </div>
@@ -1243,164 +1401,37 @@
                                 </div>
                             </div>
                             <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
-                                <div id="partialdivBarCodeTab">
-                                    @Html.Partial("_T_SALE_POS_PRODUCT")
+                                <div id="partialdivReturn">
+                                    @Html.Partial("_T_SALE_POS_RETURN")
                                 </div>
 
                             </div>
                             @if (Model.DefaultAction != "V")
-                            { <div class="row">
-                                <p class="text-info" style="margin-top:10px;">
-                                    ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
-                                    *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
-                                </p>
-                            </div> }
-
-                            @*@if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                                {
-                                    <div>
-                                        <div class="row">
-                                            <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                }*@
-
-                        </div>
-                    </div>
-                }
-                <div id="ReturnTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                    <div class="row">
-
-                        <div class="row">
-                            @if (Model.DefaultAction != "V")
-                            {
-                                if (Model.M_SYSCNFG.MNTNBARNO == "Y")
-                                {
-                                    <div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Bar Code")
-                                            <b style="color:Red;">*</b>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "R_BARCODE", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','R_BARCODE','R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/R_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/R_BARCODE');", onblur = "GetBarnoDetails('R_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','R_BARCODE','R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/R_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/R_BARCODE')" />
-                                            @Html.HiddenFor(a => a.PARTCD, new { id = "PARTCD" })
-                                            @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
-                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
-                                        </div>
-                                    </div>
-                                }
-                                <div class="col-md-1">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Design No.")
-                                        <b style="color:Red;">*</b>
-                                    </div>
-                                </div>
-                                <div class="col-md-7">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "R_STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','R_STYLENO','R_STYLENO=STYLENO=3/R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/R_BARCODE')", onblur = "GetBarnoDetails('R_STYLENO',Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','R_STYLENO','R_STYLENO=STYLENO=3/R_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/R_BARCODE')" />
-                                        @if (Model.M_SYSCNFG.MNTNBARNO != "Y")
-                                        {
-                                            @Html.HiddenFor(model => model.BARCODE, new { id = "R_BARCODE" })
-
-                                        }
-                                    </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "From Date")
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                    </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "To Date")
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                    </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Doc No.")
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 6 } })
-                                    </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Bar No.")
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control", id = "R_BARNO", @placeholder = "BARNO", maxlength = 25 } })
-                                    </div>
-                                </div>
-                                <div class="col-md-1" style="width:auto;">
-                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Get Barno" onclick="GetTTXNDTLDetails()" />
-                                </div>
-                                <div class="row">
-                                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
-                                    </div>
-                                </div>
-                            }
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-3" style="width:auto;">
-                            </div>
-                        </div>
-                        <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
-                            <div id="partialdivReturn">
-                                @Html.Partial("_T_SALE_POS_RETURN")
-                            </div>
-
-                        </div>
-                        @if (Model.DefaultAction != "V")
                         { <div class="row">
                             <p class="text-info" style="margin-top:10px;">
                                 ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
                                 *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
                             </p>
                         </div> }
-                    </div>
+                        </div>
 
-                    @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivReturn" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_RETURN")
+                        @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivReturn" style="margin-top:0px;">
+                                        @Html.Partial("_T_SALE_POS_RETURN")
+                                    </div>
                                 </div>
-                            </div>
-                        </div>*@
-                </div>
-                <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                    <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                        <div>
-                            <div id="partialdivAmounts" style="margin-top:0px;">
-                                @Html.Partial("_T_SALE_POS_AMOUNT")
+                            </div>*@
+                    </div>
+                    <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivAmounts" style="margin-top:0px;">
+                                    @Html.Partial("_T_SALE_POS_AMOUNT")
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 }
                 <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
@@ -1433,11 +1464,11 @@
                                     @Html.EditorFor(model => model.TODT, new { htmlAttributes = new { @class = "form-control", id = "TODT", maxlength = 10, @placeholder = "To Date", autocomplete = "off" } })
                                 </div>
                             </div>
-                                <div class="col-md-7">
-                                    <div class="editor-field" style="margin-top: 2px;">
-                                        <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Party Order Advance " onclick="GetOrderAdvance()" />
-                                    </div>
+                            <div class="col-md-7">
+                                <div class="editor-field" style="margin-top: 2px;">
+                                    <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Party Order Advance " onclick="GetOrderAdvance()" />
                                 </div>
+                            </div>
                         </div>
                     }
                     <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
@@ -1464,8 +1495,8 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-field" style="margin-top: 4px;">
-                                    @Html.Label("", "Party Gen.Leder ")                                   
-                                        <b style="color:red"><sup>*</sup></b>
+                                    @Html.Label("", "Party Gen.Leder ")
+                                    <b style="color:red"><sup>*</sup></b>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -1482,7 +1513,7 @@
                             <div class="col-md-5">
                                 <div class="editor-field" style="margin-top: 4px;">
                                     @Html.Label("", "Exp. Gen.Ledger")
-                                        <b style="color:red"><sup>*</sup></b>
+                                    <b style="color:red"><sup>*</sup></b>
                                 </div>
                             </div>
                             <div class="col-md-4">

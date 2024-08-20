@@ -159,6 +159,9 @@ namespace Improvar.Controllers
 
                 bool showbatch = true;
                 var MSYSCNFG = Salesfunc.M_SYSCNFG(tdt.retDateStr());
+
+                bool BatchExist = Salesfunc.GetBatchExist();
+
                 string sql = "";
                 sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt,a.docnm, a.prefno, a.prefdt, a.slnm, a.gstno,a.district,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, " + Environment.NewLine;
                 sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.rate,a.pageslno, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos,e.tgonm,f.fgonm,g.baleno from " + Environment.NewLine;
@@ -192,10 +195,16 @@ namespace Improvar.Controllers
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') " + Environment.NewLine;
                 if (mtrljobcd.retStr() != "") sql += "and a.mtrljobcd in (" + mtrljobcd + ") " + Environment.NewLine;
                 sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt,d.docnm, b.prefno, b.prefdt, i.slnm, i.gstno,i.district, a.itcd, a.rate, a.txblval,a.pageslno ) a, " + Environment.NewLine;
-
-                sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos " + Environment.NewLine;
-                sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, " + Environment.NewLine;
-
+                if (BatchExist == true)
+                {
+                    sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos " + Environment.NewLine;
+                    sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, " + Environment.NewLine;
+                }
+                else
+                {
+                    sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos " + Environment.NewLine;
+                    sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, " + Environment.NewLine;
+                }
                 sql += "(select listagg(gonm, ',') within group (order by gonm) tgonm,autono,slno " + Environment.NewLine;
                 sql += "from (select distinct a.gocd, a.autono, c.gonm,a.slno " + Environment.NewLine;
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scmf + ".m_godown c where a.autono = b.autono(+) and a.gocd = c.gocd(+) and a.stkdrcr = 'D' " + Environment.NewLine;

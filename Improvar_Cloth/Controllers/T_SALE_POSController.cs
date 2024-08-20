@@ -257,6 +257,7 @@ namespace Improvar.Controllers
                                     TXNMEMO.CITY = syscnfgdt.Rows[0]["city"].retStr();
                                     VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
                                     VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
+                                    VE.INCLRATEASKMASTER = syscnfgdt.Rows[0]["INC_RATE"].retStr();
                                     VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
                                     TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr(); VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();

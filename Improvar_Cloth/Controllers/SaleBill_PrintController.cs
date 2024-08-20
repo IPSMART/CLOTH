@@ -347,7 +347,7 @@ namespace Improvar.Controllers
                 sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,   " + Environment.NewLine;
                 sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,   " + Environment.NewLine;
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,   " + Environment.NewLine;
-                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno,s.docrem tchdocrem from   " + Environment.NewLine;
+                sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno,s.docrem tchdocrem,nvl(b.INCL_RATE,'N')INCL_RATE from   " + Environment.NewLine;
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,   " + Environment.NewLine;
@@ -1463,7 +1463,8 @@ namespace Improvar.Controllers
                                 dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
                                 var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
-                                if (tblsyscnfg.Rows[0]["INC_RATE"].retStr() == "Y")
+                                //if (tblsyscnfg.Rows[0]["INC_RATE"].retStr() == "Y")
+                                if (tbl.Rows[i]["INCL_RATE"].retStr() == "Y")
                                 {
                                     dr1["incl_disc"] = (tbl.Rows[i]["inclrate"].retDbl() * dr1["qnty"].retDbl()) - dr1["netamt"].retDbl();
                                 }

@@ -1552,6 +1552,9 @@ namespace Improvar.Controllers
                         //if (TDT.retStr() != "") sqlcchq += "and b.docdt <= to_date('" + TDT.retDateStr() + "','dd/mm/yyyy')  ";
                         DataTable tbldelchq = masterHelp.SQLquery(sqlcchq);
 
+                        sql = "alter table " + newFinschema + ".T_VCH_BL_ADJ disable constraint FKEY_T_VCH_BL_ADJ_R_AUTONO";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
                         if (tbldel.Rows.Count > 0)
                         {
                             query = "delete from " + newFinschema + ".T_TXNSTATUS where autono in (" + sqlc + ") ";
@@ -1761,6 +1764,9 @@ namespace Improvar.Controllers
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             }
                         }
+
+                        sql = "alter table " + newFinschema + ".T_VCH_BL_ADJ enable constraint FKEY_T_VCH_BL_ADJ_R_AUTONO";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }
 
                     #endregion
