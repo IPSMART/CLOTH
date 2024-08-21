@@ -1,0 +1,163 @@
+﻿@model Improvar.ViewModels.DiscountCodeMasterEntry
+@{
+    ViewBag.Title = "Discount Code Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#DISCRTCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#DISCRTCD").attr("readonly", "readonly");
+            $("#DISCRTCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Discount Code", "DISCRTCD")) { return false; }
+       if (!emptyFieldCheck("Enter Discount Name ", "DISCRTNM")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_DISCRT != null)
+        {
+            mldauto = Model.M_DISCRT.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckDiscountCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#CheckDisCode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#DISCRTCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "DISCRTCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+
+@{
+    string PageControllerName = "M_Disc_Code";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="CheckDisCode" value="@Url.Action("CheckDiscountCode", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_DISCRT.M_AUTONO)
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Discount Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_DISCRT.DISCRTCD, new { htmlAttributes = new { @class = "form-control ", onblur = "CheckDiscountCode('DISCRTCD');", id = "DISCRTCD", @placeholder = "Code", maxlength = 4, @style = "text-transform:uppercase;" } })
+                        @Html.HiddenFor(a => a.M_DISCRT.DISCRTCD)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Discount Name")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_DISCRT.DISCRTNM, new { htmlAttributes = new { @class = "form-control ", id = "DISCRTNM", @placeholder = "Name", maxlength = 30 } })
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

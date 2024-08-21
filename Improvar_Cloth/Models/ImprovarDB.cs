@@ -195,6 +195,8 @@ namespace Improvar.Models
         public virtual DbSet<T_PHYSTK_HDR> T_PHYSTK_HDR { get; set; }
         public virtual DbSet<T_KARDTL> T_KARDTL { get; set; }
         public virtual DbSet<T_MOBDTL> T_MOBDTL { get; set; }
+        public virtual DbSet<M_SCMITMGRP> M_SCMITMGRP { get; set; }
+        public virtual DbSet<M_SCMITMGRP_HDR> M_SCMITMGRP_HDR { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

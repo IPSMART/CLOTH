@@ -3286,6 +3286,35 @@ namespace Improvar
                 }
             }
         }
+       
+    
+        public string SCMITMGRPCD_help(ImprovarDB DB)
+        {
+            using (DB)
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string COM_CD = CommVar.Compcd(UNQSNO);
+                string LOC_CD = CommVar.Loccd(UNQSNO);
+                var query = (from c in DB.M_SCMITMGRP_HDR
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             join k in DB.M_CNTRL_LOCA on c.M_AUTONO equals k.M_AUTONO into g
+                             from k in g.DefaultIfEmpty()
+                             where i.INACTIVE_TAG == "N" && (k.COMPCD == COM_CD || k.COMPCD == null) && (k.LOCCD == LOC_CD || k.LOCCD == null)
+                             select new
+                             {
+                                 Code = c.SCMITMGRPCD,
+                                 Description = c.SCMITMGRPNM
+                             }).ToList();
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+                }
+                var hdr = "Scheme Item Group Name" + Cn.GCS() + "Scheme Item Group code";
+                return Generate_help(hdr, SB.ToString());
+            }
+        }
+
 
     }
 }

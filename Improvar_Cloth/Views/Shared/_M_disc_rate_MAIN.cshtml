@@ -1,0 +1,79 @@
+﻿@model Improvar.ViewModels.DiscountRateMasterEntry
+<div class="table-responsive">
+    @if (Model.DefaultView == true)
+    {
+        @Html.ValidationSummary(true)
+        <div class="grid_title">
+                <img src="~/Image/Plus.png" id="btnAddDisRate" class="Help_image_buttonAddRemove" title="Add Row" onclick="AddrowDisntRate()" />
+                <img src="~/Image/Minus.png" id="btnDeleteDisRate" class="Help_image_buttonAddRemove" title="Delete Row" onclick="DeleterowDisntRate()" />
+            <div class="col-md-8">
+                <input type="text" id="searchDis" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleDiscountRate');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Discount Rate Master Entry </b></center>
+        </div>
+        <table id="exampleDiscountRate" class="resizable grid_table" cellpadding="0px" cellspacing="0px" width="100%">
+            <thead>
+                <tr style="height:30px">
+                    <th class="grid_th" style="width:10px"> </th>
+                    <th class="grid_th" style="width:40px">SL NO.</th>
+                    <th class="grid_th"style="width:160px">Discount Item Group Code</th>
+                    <th class="grid_th">Discount Item Group Description</th>
+                    <th class="grid_th" style="width:140px">Disc. Per</th>
+                    <th class="grid_th"style="width:140px">Disc. Rate</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.MDISCRTDTL != null)
+                {
+                    for (int i = 0; i <= Model.MDISCRTDTL.Count - 1; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MDISCRTDTL[i].Checked, new { htmlAttributes = new { id = "Checked_" } })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => Model.MDISCRTDTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor", @title = "Only Numeric", maxlength = 2, Type = "TEXT", @readonly = "readonly" })
+                            </td>
+                            <td>
+                                 @if(@Model.DefaultAction == "A")
+                                {  
+                                @Html.EditorFor(model => model.MDISCRTDTL[i].SCMITMGRPCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "SCMITMGRPCD_" + i, onkeyup = "GetHelp('" + @Url.Action("GetDiscountItmGrpCode", "M_disc_rate") + "','" + "SCMITMGRPCD_" + i + "/" + "SCMITMGRPNM_" + i + "','1/0','Discount Item Group Code Details','" + "SCMITMGRPCD_" + i + "')", onblur = "SelectDisItmGrpCode(this.value,SCMITMGRPCD_" + i + ",SCMITMGRPNM_" + i + ",'SCMITMGRPCD_" + i + "','SCMITMGRPNM_" + i + "');CheckDISCRTCD_EFDT('DISCRTCD','EFFDT')", maxlength = 6, required = "required" } })
+                                    <img src="~/Image/search.png" width="20px" class="Help_image_button_grid" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetDiscountItmGrpCode", "M_disc_rate")','SCMITMGRPCD_@i/SCMITMGRPNM_@i','1/0','Discount Item Group Code Details','SCMITMGRPCD_@i')" />
+
+                                }
+                                else
+                                {
+                                    @Html.EditorFor(model => model.MDISCRTDTL[i].SCMITMGRPCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "SCMITMGRPCD_" + i, onkeyup = "GetHelp('" + @Url.Action("GetDiscountItmGrpCode", "M_disc_rate") + "','" + "SCMITMGRPCD_" + i + "/" + "SCMITMGRPNM_" + i + "','1/0','Discount Item Group Code Details','" + "SCMITMGRPCD_" + i + "')", onblur = "SelectDisItmGrpCode(this.value,SCMITMGRPCD_" + i + ",SCMITMGRPNM_" + i + ",'SCMITMGRPCD_" + i + "','SCMITMGRPNM_" + i + "');", maxlength = 6, required = "required" } })
+                                    <img src="~/Image/search.png" width="20px" class="Help_image_button_grid" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetDiscountItmGrpCode", "M_disc_rate")','SCMITMGRPCD_@i/SCMITMGRPNM_@i','1/0','Select Discount Item Group Code DETAILS','SCMITMGRPCD_@i')" />
+  }
+                              </td>
+                            <td>
+                                @Html.EditorFor(model => model.MDISCRTDTL[i].SCMITMGRPNM, new { htmlAttributes = new { @class = "atextBoxFor", id = "SCMITMGRPNM_" + i, maxlength = 30, @readonly = "readonly" } })
+
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => model.MDISCRTDTL[i].DISCPER, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "DISCPER_" + i, @onkeypress = "return numericOnly(this,2);" } })
+                            </td>
+                            <td>
+                                @if (@Model.DefaultAction == "A")
+                            {
+                                @Html.EditorFor(model => model.MDISCRTDTL[i].DISCRATE, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "DISCRATE_" + i, @onkeypress = "return numericOnly(this,2);", @onblur = "CheckDISCRTCD_EFDT('DISCRTCD','EFFDT')" } })
+                            }
+                            else {
+                                @Html.EditorFor(model => model.MDISCRTDTL[i].DISCRATE, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "DISCRATE_" + i, @onkeypress = "return numericOnly(this,2);" } })
+                            }
+
+
+                            </td>
+
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+
+</div>

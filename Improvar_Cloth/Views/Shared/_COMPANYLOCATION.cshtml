@@ -1,0 +1,45 @@
+﻿@model Improvar.Models.Permission
+
+<div style="width:1024px; overflow-y:auto;">
+    <div class="table-responsive">
+        @using (Html.BeginForm())
+        {
+            if (Model.DefaultView == true)
+            {
+                @Html.ValidationSummary(true)
+                <table id="CompanyLoation" cellpadding="3PX" cellspacing="3PX" border="1" width="300px" style="margin-left:15px;">
+                    <tr>
+                        <td align="center">
+                            <input type="checkbox" name="Test" onclick="SetAllCheckBoxes(this, 'CompanyLoation')" />
+                        </td>
+                        <td align="center">
+                            Company Name
+                        </td>
+                        <td align="center">
+                            Location Name
+                        </td>
+                    </tr>
+                    @for (int i = 0; i < Model.CompanyLocationName.Count(); i++)
+                    {
+                        <tr>
+                            <td align="center">
+                                @Html.CheckBoxFor(model => model.CompanyLocationName[i].Checked, new { id = "SelectCheck_" + i })
+                            </td>
+                            <td align="center">
+                                @{ string STRC = Model.CompanyLocationName[i].COMPNM.ToString();}
+                                @Html.DisplayFor(model => STRC)
+                                @Html.HiddenFor(model => model.CompanyLocationName[i].COMPCD)
+                            </td>
+                            <td align="center">
+                                @{ string STRL = Model.CompanyLocationName[i].LOCNM.ToString();}
+                                @Html.DisplayFor(model => STRL)
+                                @Html.HiddenFor(model => model.CompanyLocationName[i].LOCCD)
+                            </td>
+                        </tr>
+                                    }
+                </table>
+
+                                        }
+                                    }
+    </div>
+</div>

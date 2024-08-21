@@ -349,7 +349,7 @@ namespace Improvar.Controllers
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,   " + Environment.NewLine;
                 sql += " b.curr_cd,a.usr_id,a.inclrate,n.nm,n.addr,n.city,n.mobile,a.barno,s.docrem tchdocrem,nvl(b.INCL_RATE,'N')INCL_RATE from   " + Environment.NewLine;
 
-                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
+                sql += " (select a.autono,'' addless, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,   " + Environment.NewLine;
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,   " + Environment.NewLine;
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,   " + Environment.NewLine;
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno   " + Environment.NewLine;
@@ -365,9 +365,9 @@ namespace Improvar.Controllers
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,n.inclrate,o.barno   " + Environment.NewLine;
                 sql += " union all   " + Environment.NewLine;
 
-                sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,   " + Environment.NewLine;
-                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,   " + Environment.NewLine;
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id,0 inclrate,'' barno   " + Environment.NewLine;
+                sql += " select a.autono,d.addless, a.autono autoslno, nvl(ascii(d.calccode), 0) + 2000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,   " + Environment.NewLine;
+                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, decode(d.addless,'L',a.amt*-1,a.amt) amt, '' agroup, '' agdocdt, '' batchdtl,   " + Environment.NewLine;
+                sql += " a.igstper, decode(d.addless,'L',a.igstamt*-1,a.igstamt) igstamt, a.cgstper, decode(d.addless,'L',a.cgstamt*-1,a.cgstamt) cgstamt, a.sgstper, decode(d.addless,'L',a.sgstamt*-1,a.sgstamt) sgstamt, a.dutyper, decode(d.addless,'L',a.dutyamt*-1,a.dutyamt) dutyamt, a.cessper, decode(d.addless,'L',a.cessamt*-1,a.cessamt)cessamt,c.usr_id,0 inclrate,'' barno   " + Environment.NewLine;
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d   " + Environment.NewLine;
                 sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and   " + Environment.NewLine;
                 if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and  " + Environment.NewLine;
@@ -916,7 +916,7 @@ namespace Improvar.Controllers
                             //}
                             if (menupara == "SBCM")
                             {
-                                negamt = (tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+                                negamt = (tbl.Rows[i]["slno"].retDbl() > 1000 && tbl.Rows[i]["slno"].retDbl() <= 2000) ? "Y" : "N";
                             }
                             else
                             {

@@ -3894,7 +3894,7 @@ namespace Improvar.Controllers
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     //update to T_TXNOTH//
-                    sql = "update " + schnm + ". T_TXNOTH set CASENOS='" + VE.T_TXNOTH.CASENOS + "', NOOFCASES='" + VE.T_TXNOTH.NOOFCASES + "', MUTSLCD='" + VE.T_TXNOTH.MUTSLCD + "' ";
+                    sql = "update " + schnm + ". T_TXNOTH set CASENOS='" + VE.T_TXNOTH.CASENOS + "', NOOFCASES='" + VE.T_TXNOTH.NOOFCASES + "', MUTSLCD='" + VE.T_TXNOTH.MUTSLCD + "', TOPAY='" + VE.T_TXNOTH.TOPAY + "' ";
                     sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 

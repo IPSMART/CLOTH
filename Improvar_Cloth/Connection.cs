@@ -4031,5 +4031,59 @@ namespace Improvar
             DDL.Add(DDL4);
             return DDL;
         }
+        public List<CompanyLocationName> GetCompanyLocation(string action, string schema = "", long AutoNO = 0)
+        {
+            MasterHelp Master_Help = new MasterHelp();
+            var UNQSNO = getQueryStringUNQSNO();
+            string fscm = CommVar.FinSchema(UNQSNO);
+            if (schema == "") schema = CommVar.CurSchema(UNQSNO);
+            string str = "select b.compcd,b.compnm,a.loccd,a.locnm from " + fscm + ".m_loca a," + fscm + ".m_comp b where a.compcd=b.compcd(+) order by b.compnm,a.locnm ";
+            List<CompanyLocationName> CompanyLocationName = Master_Help.SQLquery(str).DataTableToListConvertion<CompanyLocationName>();
+
+            if (action != "A")
+            {
+                str = "select a.compcd,b.compnm,a.loccd,c.locnm from " + schema + ".m_cntrl_loca a," + fscm + ".m_comp b," + fscm + ".m_loca c ";
+                str += "where a.compcd=b.compcd(+) and a.loccd=c.loccd(+) and a.m_autono= " + AutoNO + " ";
+                DataTable tbl = Master_Help.SQLquery(str);
+                if (CompanyLocationName != null)
+                    foreach (var i in CompanyLocationName)
+                    {
+                        for (int x = 0; x <= tbl.Rows.Count - 1; x++)
+                        {
+                            if (i.COMPCD == tbl.Rows[x]["COMPCD"].retStr() && i.LOCCD == tbl.Rows[x]["LOCCD"].retStr())
+                            {
+                                i.Checked = true;
+                            }
+                        }
+                    }
+            }
+
+            return CompanyLocationName;
+        }
+        public Tuple<List<M_CNTRL_LOCA>> SaveCompanyLocation(List<CompanyLocationName> CompanyLocationName, long AutoNo, int EmdNo)
+        {
+            var UNQSNO = getQueryStringUNQSNO();
+            List<M_CNTRL_LOCA> mloca = new List<M_CNTRL_LOCA>();
+
+            if (CompanyLocationName != null)
+            {
+                for (int i = 0; i <= CompanyLocationName.Count - 1; i++)
+                {
+                    if (CompanyLocationName[i].Checked)
+                    {
+                        M_CNTRL_LOCA MCL = new M_CNTRL_LOCA();
+                        MCL.M_AUTONO = AutoNo;
+                        MCL.EMD_NO = EmdNo;
+                        MCL.CLCD = CommVar.ClientCode(UNQSNO);
+                        MCL.COMPCD = CompanyLocationName[i].COMPCD;
+                        MCL.LOCCD = CompanyLocationName[i].LOCCD;
+                        mloca.Add(MCL);
+                    }
+                }
+            }
+            var result = Tuple.Create(mloca);
+            return result;
+        }
+
     }
 }

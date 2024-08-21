@@ -1,0 +1,622 @@
+﻿@model Improvar.ViewModels.DiscountRateMasterEntry
+@{
+    ViewBag.Title = "Discount Rate Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("select").attr("disabled", "true");
+            $("input[type='checkbox']").attr("disabled", "true");
+            $("input").attr("readonly", "readonly");
+            $(".Help_image_buttonAddRemove").hide();
+            $(".Help_image_button").hide();
+            $(".Help_image_button_grid").hide();
+            $("input").attr("placeholder", "");
+            $("input[type='file']").attr("disabled", "true");
+            $("input[type='radio']").attr("disabled", "true");
+            $("#DISCRTCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#doctype").attr("disabled", "true");
+            $("#DISCRTCD").attr("readonly", "readonly");
+            $("#imgdR").hide(); 
+            $("#EFFDT").attr("readonly", "readonly");
+         //   $("#DISCRTCD").attr("disabled", "true");
+        }
+        $("#WaitingMode").hide();
+    });
+
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Discount Rate Code", "DISCRTCD")) { return false; }
+       if (!emptyFieldCheck("Enter Effective Date ", "EFFDT")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_DISCRTHDR != null)
+        {
+            mldauto = Model.M_DISCRTHDR.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#serhelpmnu').dataTable({ "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]] });
+    });
+    function pageValidation(id) {
+
+        var DISCRTCD = $("#DISCRTCD").val();
+        if (DISCRTCD.length <= 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html("Enter Discount Rate Code !! ");
+            $("#btnok").focus();
+            message_value = "DISCRTCD";
+            return false;
+        }
+
+        var EFFDT = $("#EFFDT").val();
+        if (EFFDT.length <= 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html(" Enter Discount Rate Name !! ");
+            $("#btnok").focus();
+            message_value = "EFFDT";
+            return false;
+        }
+
+        var DISCPRCD_0 = $("#DISCPRCD_0").val();
+        if (DISCPRCD_0.length <= 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html(" Enter Atleast one(1) Discount Price Code !! ");
+            $("#btnok").focus();
+            message_value = "DISCPRCD_0";
+            return false;
+        }
+
+        var RATE_0 = $("#RATE_0").val();
+        if (RATE_0.length <= 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html(" Enter Atleast one(1) Discount Rate  !! ");
+            $("#btnok").focus();
+            message_value = "RATE_0";
+            return false;
+        }
+       
+        if (id == "D") {
+            if (confirm("Are you sure to delete?")) {
+                $.ajax({
+                    type: 'post',
+                    url: $("#btnSave").val(),
+                    beforesend: $("#WaitingMode").show(),
+                    data: $('form').serialize(),
+                    success: function (result) {
+                        if (result == "3") {
+                            $("#WaitingMode").hide();
+                            $("#message_stay").val($("#loadurl").val());
+                            $("#Msgdiv1").show();
+                            $("#success2").show();
+                            $("#btnok").focus();
+                            $("#msgbody_success2").html("Deleted Successfully! ");
+                        }
+                        else {
+                            $("#WaitingMode").hide();
+                            $('#Msgdiv1').show();
+                            $('#warning').show();
+                            $("#msg_ok_warning").focus();
+                            $('#msgbody_warning').html(result);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                url: $("#btnSave").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    if (result == "1") {
+                        $("#WaitingMode").hide()
+                        $('#Msgdiv1').show();
+                        $('#success1').show();
+                        $("#msg_ok_success1").focus();
+                        $('#msgbody_success1').html("Save Successfully ");
+                    }
+                    else if (result == "2") {
+                        $("#WaitingMode").hide()
+                        $("#message_stay").val($("#loadurl").val());
+                        $('#Msgdiv1').show();
+                        $('#success2').show();
+                        $("#msg_ok_success2").focus();
+                        $('#msgbody_success2').html("Edited Successfully ");
+                        //alert(result);
+                    }
+                    else {
+                        $("#WaitingMode").hide();
+                        $('#Msgdiv1').show();
+                        $('#warning').show();
+                        $("#msg_ok_warning").focus();
+                        $('#msgbody_warning').html(result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckPartCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checkPartcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#DISCRTCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "DISCRTCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputrate(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectDISCRTCD(id, DISCRTCD, DISCRTNM) {
+        if (id == "") {
+            $("#DISCRTNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#SelectDISCRTC").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#DISCRTCD").val("");
+                        $("#DISCRTNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Employee Code !! ");
+                        message_value = "DISCRTCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputrate(DISCRTCD, DISCRTNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+    function SelectDisItmGrpCode(id, SCMITMGRPCD, SCMITMGRPNM) {
+        if (id == "") {
+            $("#" + SCMITMGRPNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#DisitgrpCode").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + SCMITMGRPCD.id).val("");
+                        $("#" + SCMITMGRPNM.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Discount Item Group Code !! ");
+                        message_value = SCMITMGRPCD;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputrate(SCMITMGRPCD, SCMITMGRPNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    //end
+</script>
+<script>
+    if ("@Model.DefaultAction" == "A") {
+
+        $(function () {
+            $("#EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        });
+    }
+
+</script>
+<script type="text/javascript">
+    var specialKeys = new Array();
+    specialKeys.push(8); //Backspace
+    function numericOnly(elementRef, position) {
+        var keyCodeEntered = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        if ((keyCodeEntered >= 48) && (keyCodeEntered <= 57)) {
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+                var aa = elementRef.value;
+                var ab = aa.indexOf('.');
+                var ac = aa.toString().substring(ab);
+                if (ac.length <= position) {
+                    return true; n
+                }
+                else {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+            // '.' decimal point...
+        else if (keyCodeEntered == 46) {
+            // Allow only 1 decimal point ('.')...
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function fileCheck(id, index) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            var fname = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE_NAME");
+            fname.value = fileToLoad.name;
+            var fileReader = new FileReader();
+
+            fileReader.onload = function (fileLoadedEvent) {
+                var textAreaFileContents = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE");
+
+                textAreaFileContents.value = fileLoadedEvent.target.result;
+                $("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+            };
+
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+</script>
+<script>
+    function AddrowDisntRate() {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddDisRat").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDiscountRT").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDiscountRT").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleterowDisntRate() {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteDisRat").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDiscountRT").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDiscountRT").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+
+</script>
+<script>
+    function CheckDISCRTCD_EFDT(id,id2) {
+        var valu = document.getElementById(id).value;
+        var valu1 = document.getElementById(id2).value;
+        if (valu == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#checkDISCRTCD_EFFDT").val(),
+                data: {
+                    val1: valu,
+                    val2: valu1
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#DISCRTCD").val("");
+                        $("#msgbody_info").html("Same Code and Same Date Already Exists : Please Change the Code Or Date !! ");
+                        $("#btnok").focus();
+                        message_value = "EFFDT";
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+@{
+    string PageControllerName = "M_disc_rate";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <input type="hidden" id="loadurl" value="@Url.Action("M_disc_rate", PageControllerName, new { op = "V" })" />
+
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="checkPartcode" value="@Url.Action("CheckPartCode", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="checkDISCRTCD_EFFDT" value="@Url.Action("checkDISCRTCD_EFFDaTe", PageControllerName)" />
+            <input type="hidden" id="SelectDISCRTC" value="@Url.Action("DiscountCode", PageControllerName)" />
+            <input type="hidden" id="DisitgrpCode" value="@Url.Action("DiscountItmGrpCode", PageControllerName)" />
+            <input type="hidden" id="btnAddDisRat" value="@Url.Action("AddrowDiscntRate", PageControllerName)" />
+            <input type="hidden" id="btnDeleteDisRat" value="@Url.Action("DeleterowDiscntRate", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_DISCRTHDR.M_AUTONO)
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+ <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                <li><a data-toggle="tab" href="#Documents">Documents</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Discount Rate Code")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_DISCRTHDR.DISCRTCD, new { htmlAttributes = new { @class = "form-control textbox_image ", id = "DISCRTCD", @placeholder = "Code", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetDiscountCode", PageControllerName) + "','DISCRTCD/DISCRTNM','1/0','Discount Details','DISCRTCD');", onblur = "SelectDISCRTCD(this.value, DISCRTCD, DISCRTNM)" } })
+                                <img src="~/Image/search.png" width="20px" id="imgdR" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetDiscountCode", PageControllerName)','DISCRTCD/DISCRTNM','1/0','Discount Details','DISCRTCD')" />
+                                @Html.HiddenFor(a => a.M_DISCRTHDR.DISCRTCD)
+                            </div>
+                        </div>
+                        <div class="col-md-11">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_DISCRT.DISCRTNM, new { htmlAttributes = new { @class = "form-control ", id = "DISCRTNM", @placeholder = "Discount Name", maxlength = 75, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Effective Date")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_DISCRTHDR.EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Calculation method")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control" id="DISCCALCTYPE" name="DISCCALCTYPE">
+                                @foreach (var i in Model.DropDown_list)
+                                {
+                                    if (Model.DefaultAction == "A")
+                                    {
+                                        <option value="@i.value" id="@i.value">@i.text</option>
+                                    }
+                                    else
+                                    {
+                                        if (Model.M_DISCRTHDR.DISCCALCTYPE == i.value)
+                                        {
+                                            <option value="@i.value" id="@i.value" selected="selected">@i.text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@i.value" id="@i.value">@i.text</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Remarks")
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_DISCRTHDR.REMARKS, new { htmlAttributes = new { @class = "form-control ", id = "REMARKS", @placeholder = "REMARKS", maxlength = 200 } })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                                    @Html.Label("", "Deactivate")
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field" style="display: inline-block;">
+                                    @Html.CheckBoxFor(model => model.Deactive)
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-top:12px;">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    <b>  @Html.Label("", "Discount Rate:")</b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="background-color:#c4b9b9;width:700px;">
+                            <div id="partialdivDiscountRT">
+                                @Html.Partial("_M_disc_rate_MAIN")
+                            </div>
+                        </div>
+                    </div>
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="background-color:#c4b9b9;width:1024px;">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

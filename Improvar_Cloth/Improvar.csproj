@@ -260,6 +260,8 @@
     <Compile Include="Controllers\M_BrandController.cs" />
     <Compile Include="Controllers\M_CollectionController.cs" />
     <Compile Include="Controllers\M_ColorController.cs" />
+    <Compile Include="Controllers\M_Disc_CodeController.cs" />
+    <Compile Include="Controllers\M_disc_rateController.cs" />
     <Compile Include="Controllers\M_Doc_AttachedController.cs" />
     <Compile Include="Controllers\M_FinProductController.cs" />
     <Compile Include="Controllers\M_FloorController.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="Controllers\M_Plist_CodeController.cs" />
     <Compile Include="Controllers\M_Prod_GroupController.cs" />
     <Compile Include="Controllers\M_RetMasterController.cs" />
+    <Compile Include="Controllers\M_ScmItemGrpController.cs" />
     <Compile Include="Controllers\M_StitchController.cs" />
     <Compile Include="Controllers\M_StktypeController.cs" />
     <Compile Include="Controllers\M_SubBrandController.cs" />
@@ -506,6 +509,8 @@
     <Compile Include="Models\M_RETDEB.cs" />
     <Compile Include="Models\M_SCHEME.cs" />
     <Compile Include="Models\M_SCHEME_HDR.cs" />
+    <Compile Include="Models\M_SCMITMGRP.cs" />
+    <Compile Include="Models\M_SCMITMGRP_HDR.cs" />
     <Compile Include="Models\M_SDR_QUERY.cs" />
     <Compile Include="Models\M_SDR_USERID.cs" />
     <Compile Include="Models\M_SIGN_AUTH.cs" />
@@ -913,6 +918,8 @@
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\DataUploadVM.cs" />
+    <Compile Include="ViewModels\DiscountCodeMasterEntry.cs" />
+    <Compile Include="ViewModels\DiscountRateMasterEntry.cs" />
     <Compile Include="ViewModels\GenEinvIRN.cs" />
     <Compile Include="ViewModels\GenEinvIRNCancel.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
@@ -925,6 +932,7 @@
     <Compile Include="ViewModels\RepEWBChanges.cs" />
     <Compile Include="ViewModels\RepMiscQryUpdt.cs" />
     <Compile Include="ViewModels\SalePymtEntry.cs" />
+    <Compile Include="ViewModels\SchmItemGroupMaster.cs" />
     <Compile Include="ViewModels\StitchMaster.cs" />
     <Compile Include="ViewModels\StockAdjustmentsConversionEntry.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
@@ -1551,6 +1559,13 @@
     <Content Include="Views\Shared\_T_SALE_POS_OrderAdvancePopup.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_OrderAdvance.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PaymentDetails.cshtml" />
+    <Content Include="Views\Shared\_M_ScmItemGrp.cshtml" />
+    <Content Include="Views\Shared\_M_ScmItemGrpData.cshtml" />
+    <Content Include="Views\M_ScmItemGrp\M_ScmItemGrp.cshtml" />
+    <Content Include="Views\M_Disc_Code\M_Disc_Code.cshtml" />
+    <Content Include="Views\M_disc_rate\M_disc_rate.cshtml" />
+    <Content Include="Views\Shared\_M_disc_rate_MAIN.cshtml" />
+    <Content Include="Views\Shared\_COMPANYLOCATION.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

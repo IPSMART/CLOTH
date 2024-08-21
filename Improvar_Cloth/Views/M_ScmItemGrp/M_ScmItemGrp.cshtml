@@ -1,0 +1,561 @@
+﻿@model Improvar.ViewModels.SchmItemGroupMaster
+@{
+    ViewBag.Title = "Scheme Item Group";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#SCMITMGRPCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#SCMITMGRPCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Item Group Code", "SCMITMGRPCD")) { return false; }
+        if (!emptyFieldCheck("Item Group Name ", "SCMITMGRPNM")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    
+   
+    function chkitgrpcd() {
+        var code = $("#SCMITMGRPCD").val();
+
+            $.ajax({
+                type: 'GET',
+                url: $("#urlChkITGRP").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    val: code
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + SCMITMGRPCD.id).val("");
+                        $("#msgbody_info").html("Scheme Item Group Code " + code + " already exist !! ");
+                        message_value = SCMITMGRPCD.id;
+                    }
+                    else {
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        
+    }
+</script>
+<script>
+    function SchemeItemDet() {
+    var code = $("#SCMITMGRPCD").val();
+    var flag = $("#flagtabdata").val();
+    if (flag == "false") {
+        $("#flagtabdata").val("true");
+            $.ajax({
+                type: 'GET',
+                url: $("#urlSchemeItemDet").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    val: code
+                },
+                success: function (result) {
+                    $("#partialdivSchemeItem").html(result);
+                    $("#partialdivSchemeItem").show();
+                    $("#WaitingMode").hide();
+                   
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+           
+    }
+    else {
+        return false;
+    }
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_SCMITMGRP_HDR != null)
+        {
+            mldauto = Model.M_SCMITMGRP_HDR.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+       
+    }
+    function SelectBrandCode(id, BRANDCD_, BRANDNM_, SBRANDCD_, SBRANDNM_, ITGRPCD_, ITGRPNM_) {
+      
+        if (id == "") {
+            $("#" + BRANDCD_.id).val("");
+            $("#" + BRANDNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameBRAND").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + BRANDCD_.id).val("");
+                        $("#" + BRANDNM_.id).val("");
+                        $("#" + BRANDCD_.id).focus();
+                        $("#msgbody_info").html("Invalid BRAND Code ! Please Enter a Valid Code !! ");
+                        message_value = BRANDCD_.id;
+                    }
+                    else {
+                        $("#" + SBRANDCD_.id).val("");
+                        $("#" + SBRANDNM_.id).val("");
+                        $("#" + ITGRPCD_.id).val("");
+                        $("#" + ITGRPNM_.id).val("");
+                        $("#tempHDD").val(result);
+                        input(BRANDCD_, BRANDNM_);
+
+                    }
+                }
+            });
+        }
+    }
+    function SelectSBrandCode(valu, fld1, fld2, code) {
+        if (valu == "") {
+            $("#" + fld1.id).val("");
+            $("#" + fld2.id).val("");
+        }
+        else {
+            var BRAND = $("#" + code.id).val();
+            if (BRAND != "") {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlSBRAND").val(),
+                    data: {
+                        val: valu,
+                        Code: BRAND
+                    },
+                    success: function (result) {
+                        if (result == "0") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msgbody_info").html(" Invalid Sub Brand Code !! ");
+                            $("#" + fld1.id).val("");
+                            $("#" + fld2.id).val("");
+                            $("#btnok").focus();
+                            message_value = fld1.id;
+                        }
+                        else {
+                            $("#tempHDD").val(result);
+                            input(fld1, fld2);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError("Error: " + textStatus + "," + errorThrown);
+                    }
+                });
+            }
+        }
+    }
+    function SelectItmGrpCode(id, ITGRPCD_, ITGRPNM_, code) {
+        if (id == "") {
+            $("#" + ITGRPCD_.id).val("");
+            $("#" + ITGRPNM_.id).val("");
+        }
+        else {
+            var BRAND = $("#" + code.id).val();
+            if (BRAND != "") {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlITGRP").val(),
+                    data: {
+                        val: id,
+                        Code: BRAND
+            },
+            success: function (result) {
+                if (result == "0") {
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $("#" + ITGRPCD_.id).val("");
+                    $("#" + ITGRPNM_.id).val("");
+                    $("#" + ITGRPCD_.id).focus();
+                    $("#msgbody_info").html("Invalid Item Group Code ! Please Enter a Valid Code !! ");
+                    message_value = ITGRPCD_.id;
+                }
+                else {
+                    $("#tempHDD").val(result);
+                    input(ITGRPCD_, ITGRPNM_);
+                }
+            }
+        });
+    }
+        }
+    }
+    function SelectCollectionCode(id, COLLCD_, COLLNM_) {
+        if (id == "") {
+            $("#" + COLLCD_.id).val("");
+            $("#" + COLLNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameCOLLEC").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + COLLCD_.id).val("");
+                        $("#" + COLLNM_.id).val("");
+                        $("#" + COLLCD_.id).focus();
+                        $("#msgbody_info").html("Invalid Collection Code ! Please Enter a Valid Code !! ");
+                        message_value = COLLCD_.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(COLLCD_, COLLNM_);
+                    }
+                }
+            });
+        }
+    }
+    function SelectSizeCode(id, SIZECD_, SIZENM_, code) {
+        if (id == "") {
+            $("#" + SIZECD_.id).val("");
+            $("#" + SIZENM_.id).val("");
+        }
+        else {
+            var ITCD = $("#" + code.id).val();
+            if (ITCD != "") {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlnameSIZE").val(),
+                    data: {
+                        val: id,
+                        Code: ITCD
+                    },
+                    success: function (result) {
+                        if (result == "0") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#" + SIZECD_.id).val("");
+                            $("#" + SIZENM_.id).val("");
+                            $("#" + SIZECD_.id).focus();
+                            $("#msgbody_info").html("Invalid Size Code ! Please Enter a Valid Code !! ");
+                            message_value = SIZECD_.id;
+                        }
+                        else {
+                            $("#tempHDD").val(result);
+                            input(SIZECD_, SIZENM_);
+                        }
+                    }
+                });
+            }
+        }
+    }
+    function SelectColourCode(id, COLRCD_, COLRNM_) {
+        if (id == "") {
+            $("#" + COLRCD_.id).val("");
+            $("#" + COLRNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameCOLOR").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + COLRCD_.id).val("");
+                        $("#" + COLRNM_.id).val("");
+                        $("#" + COLRCD_.id).focus();
+                        $("#msgbody_info").html("Invalid Colour Code ! Please Enter a Valid Code !! ");
+                        message_value = COLRCD_.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(COLRCD_, COLRNM_);
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectStyleCode(id, STYLENO_, ITNM_, ITCD_, SIZECD_, SIZENM_)
+    {
+        if (id == "")
+        {
+            $("#" + STYLENO_.id).val("");
+            $("#" + ITCD_.id).val("");
+            $("#" + ITNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameSTYLE").val(),
+                data: {
+                    val: id,
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + STYLENO_.id).val("");
+                        $("#" + ITCD_.id).val("");
+                        $("#" + ITNM_.id).val("");
+                        $("#msgbody_info").html("Invalid Style Number ! Please Enter a Valid Style Number !! ");
+                        message_value = STYLENO_.id;
+                        return false;
+                    }
+                    else {
+                        $("#" + SIZECD_.id).val("");
+                        $("#" + SIZENM_.id).val("");
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(STYLENO_.id).value = str[0].toString();
+                        document.getElementById(ITCD_.id).value = str[1].toString();
+                        document.getElementById(ITNM_.id).value = str[2].toString();
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function Addrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAdd").val(),
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivMain").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivMain").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function Deleterow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDelete").val(),
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                $("#partialdivMain").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+
+
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        $("#btnprint").click();
+    }
+</script>
+@{
+    string PageControllerName = "M_ScmItemGrp";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="btnAdd" value="@Url.Action("Addrow", PageControllerName)" />
+            <input type="hidden" id="btnDelete" value="@Url.Action("Deleterow", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="urlnameBRAND" value="@Url.Action("BRANDCode", PageControllerName)" />
+            <input type="hidden" id="urlSBRAND" value="@Url.Action("SBRANDCode", PageControllerName)" />
+            <input type="hidden" id="urlITGRP" value="@Url.Action("ITEMGRPCode", PageControllerName)" />
+            <input type="hidden" id="urlnameCOLLEC" value="@Url.Action("COLLECTIONCode", PageControllerName)" />
+            <input type="hidden" id="urlnameSTYLE" value="@Url.Action("GetStyleDetails", PageControllerName)" />
+            <input type="hidden" id="urlSchemeItemDet" value="@Url.Action("SchemeItemDet", PageControllerName)" />
+            <input type="hidden" id="urlnameSIZE" value="@Url.Action("SIZECode", PageControllerName)" />
+            <input type="hidden" id="urlnameCOLOR" value="@Url.Action("COLORCode", PageControllerName)" />
+            <input type="hidden" id="urlChkITGRP" value="@Url.Action("ChkITGRPCD", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            <input type="hidden" id="flagtabdata" value="false"/>
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_SCMITMGRP_HDR.M_AUTONO)
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Item Group Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SCMITMGRP_HDR.SCMITMGRPCD, new { htmlAttributes = new { @class = "form-control ", id = "SCMITMGRPCD", @placeholder = "Code", onchange = "chkitgrpcd();", maxlength = 6, @style = "text-transform:uppercase;"} })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Item Group Name")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SCMITMGRP_HDR.SCMITMGRPNM, new { htmlAttributes = new { @class = "form-control ", id = "SCMITMGRPNM", @placeholder = "Name", maxlength = 30 } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+            <ul class="nav nav-tabs"style="margin-top: 10px;">
+                <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+             
+                @if (Model.DefaultAction == "V")
+                {
+                    <li><a data-toggle="tab" href="#SchemeItem" onclick="SchemeItemDet()">Scheme Item</a></li>
+                }
+                <li> <a data-toggle="tab" href="#CompanyLocation">Company Location</a></li>
+                <li><a data-toggle="tab" href="#Document">Document</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+                    <div class="row" style="height:auto;background-color:#c4b9b9">
+                        <div id="partialdivMain">
+                            @Html.Partial("_M_ScmItemGrp")
+                        </div>
+                    </div>
+                </div>
+                <div id="SchemeItem" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="height:auto;">
+                        <div id="partialdivSchemeItem" >
+                            @Html.Partial("_M_ScmItemGrpData")
+                        </div>
+                    </div>
+                </div>
+                <div id="CompanyLocation" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row">
+                        <div id="partialdivCompanyLocation">
+                            @Html.Partial("_COMPANYLOCATION")
+                        </div>  
+                    </div>
+                </div>
+                <div id="Document" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+
