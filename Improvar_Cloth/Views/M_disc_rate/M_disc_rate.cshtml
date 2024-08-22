@@ -27,7 +27,7 @@
         else if ("@Model.DefaultAction" == "E") {
             $("#doctype").attr("disabled", "true");
             $("#DISCRTCD").attr("readonly", "readonly");
-            $("#imgdR").hide(); 
+            $("#imgdR").hide();
             $("#EFFDT").attr("readonly", "readonly");
          //   $("#DISCRTCD").attr("disabled", "true");
         }
@@ -36,12 +36,12 @@
 
 </script>
 <script>
-   function requiredFieldValidator()
-   {
-       if (!emptyFieldCheck("Enter Discount Rate Code", "DISCRTCD")) { return false; }
-       if (!emptyFieldCheck("Enter Effective Date ", "EFFDT")) { return false; }
+    function requiredFieldValidator()
+    {
+        if (!emptyFieldCheck("Enter Discount Rate Code", "DISCRTCD")) { return false; }
+        if (!emptyFieldCheck("Enter Effective Date ", "EFFDT")) { return false; }
         return true;
-   }
+    }
 </script>
 <script>
     @{
@@ -87,26 +87,26 @@
             return false;
         }
 
-        //var DISCPER_0 = $("#DISCPER_0").val();
-        //if (DISCPER_0.length <= 0) {
-        //    $("#Msgdiv1").show();
-        //    $("#info").show();
-        //    $("#msgbody_info").html(" Enter Atleast one(1) Discount Price Code !! ");
-        //    $("#btnok").focus();
-        //    message_value = "DISCPER_0";
-        //    return false;
-        //}
+        var DISCPRCD_0 = $("#DISCPER_0").val();
+        if (DISCPRCD_0.length <= 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html(" Enter Atleast one(1) Discount Price Code !! ");
+            $("#btnok").focus();
+            message_value = "DISCPER_0";
+            return false;
+        }
 
-        //var DISCRATE_0 = $("#DISCRATE_0").val();
-        //if (DISCRATE_0.length <= 0) {
-        //    $("#Msgdiv1").show();
-        //    $("#info").show();
-        //    $("#msgbody_info").html(" Enter Atleast one(1) Discount Rate  !! ");
-        //    $("#btnok").focus();
-        //    message_value = "DISCRATE_0";
-        //    return false;
-        //}
-       
+        var RATE_0 = $("#DISCRATE_0").val();
+        if (RATE_0.length <= 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html(" Enter Atleast one(1) Discount Rate  !! ");
+            $("#btnok").focus();
+            message_value = "DISCRATE_0";
+            return false;
+        }
+
         if (id == "D") {
             if (confirm("Are you sure to delete?")) {
                 $.ajax({
@@ -122,6 +122,7 @@
                             $("#success2").show();
                             $("#btnok").focus();
                             $("#msgbody_success2").html("Deleted Successfully! ");
+                            location.reload();
                         }
                         else {
                             $("#WaitingMode").hide();
@@ -488,7 +489,7 @@
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_DISCRTHDR.M_AUTONO)
             @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
- <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
             </ul>
@@ -557,46 +558,46 @@
                             </select>
                         </div>
                     </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-field" style="margin-top: 4px;">
-                                    @Html.Label("", "Remarks")
-                                </div>
-                            </div>
-                            <div class="col-lg-10">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_DISCRTHDR.REMARKS, new { htmlAttributes = new { @class = "form-control ", id = "REMARKS", @placeholder = "REMARKS", maxlength = 200 } })
-
-                                </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Remarks")
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
-                                    @Html.Label("", "Deactivate")
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field" style="display: inline-block;">
-                                    @Html.CheckBoxFor(model => model.Deactive)
-                                </div>
-                            </div>
+                        <div class="col-lg-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_DISCRTHDR.REMARKS, new { htmlAttributes = new { @class = "form-control ", id = "REMARKS", @placeholder = "REMARKS", maxlength = 200 } })
 
-                        </div>
-
-                        <div class="row" style="margin-top:12px;">
-                            <div class="col-md-5">
-                                <div class="editor-field" style="margin-top: 4px;">
-                                    <b>  @Html.Label("", "Discount Rate:")</b>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="background-color:#c4b9b9;width:700px;">
-                            <div id="partialdivDiscountRT">
-                                @Html.Partial("_M_disc_rate_MAIN")
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                                @Html.Label("", "Deactivate")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field" style="display: inline-block;">
+                                @Html.CheckBoxFor(model => model.Deactive)
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row" style="margin-top:12px;">
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                <b>  @Html.Label("", "Discount Rate:")</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="background-color:#c4b9b9;width:700px;">
+                        <div id="partialdivDiscountRT">
+                            @Html.Partial("_M_disc_rate_MAIN")
+                        </div>
+                    </div>
+                </div>
                 <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row" style="background-color:#c4b9b9;width:1024px;">
                         <div id="partialdivDocument">
