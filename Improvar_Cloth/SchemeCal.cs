@@ -19,50 +19,48 @@ namespace Improvar
 
                 if (OnlyCode == "N")
                 {
-                    sql += "select '" + scmgrpcode + "' scmitmgrpcd, a.brandcd, b.brandnm, a.sbrandcd, c.sbrandnm, a.collcd, d.collnm, a.itgrpcd, e.itgrpnm, ";
-                    sql += "a.styleno, f.itnm, a.itcd, a.sizecd, g.print_seq, g.sizenm, a.colrcd, h.colrnm, ";
-                    sql += "a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize ";
+                    sql += "select '" + scmgrpcode + "' scmitmgrpcd, a.brandcd, b.brandnm, a.sbrandcd, c.sbrandnm, a.collcd, d.collnm, a.itgrpcd, e.itgrpnm, " + Environment.NewLine;
+                    sql += "a.styleno, f.itnm, a.itcd, a.sizecd, g.print_seq, g.sizenm, a.colrcd, h.colrnm, " + Environment.NewLine;
+                    sql += "a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize " + Environment.NewLine;
                 }
                 else
                 {
-                    sql += "select '" + scmgrpcode + "' scmitmgrpcd, a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize ";
+                    sql += "select '" + scmgrpcode + "' scmitmgrpcd, a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize " + Environment.NewLine;
                 }
-                sql += "from ( ";
-                sql += "select distinct a.itcd, d.brandcd, a.sbrandcd, a.itgrpcd, a.collcd, a.styleno, ";
-                if (skipsize == true) sql += "'' sizecd, '' colrcd "; else sql += "b.sizecd, c.colrcd ";
-                sql += "from " + scm + ".m_sitem a, " + scm + ".m_sitem_size b, " + scm + ".m_sitem_color c, " + scm + ".m_group d ";
-                sql += "where a.itcd=b.itcd(+) and a.itcd=c.itcd(+) and a.itgrpcd=d.itgrpcd(+) and ";
-                sql += "( ";
-                sql += "(d.brandcd in (select r.brandcd from " + scm + ".m_scmitmgrp r ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and sbrandcd||collcd||itgrpcd||itcd is null)) or ";
-                sql += "(d.brandcd||a.sbrandcd in (select r.brandcd||r.sbrandcd from " + scm + ".m_scmitmgrp r ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and collcd||itgrpcd||itcd is null)) or ";
-                sql += "(d.brandcd||a.sbrandcd||a.collcd in (select r.brandcd||r.sbrandcd||r.collcd from " + scm + ".m_scmitmgrp r ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and itgrpcd||itcd is null)) or ";
-                //sql += "(d.brandcd||a.sbrandcd||a.collcd||a.itgrpcd in (select r.brandcd||r.sbrandcd||r.collcd||r.itgrpcd from " + scm + ".m_scmitmgrp r ";
-                //sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and itcd is null)) or ";
-                sql += "(d.brandcd||a.itgrpcd in (select r.brandcd||r.itgrpcd from " + scm + ".m_scmitmgrp r ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and sbrandcd||collcd||itcd is null)) or ";
-                sql += "(d.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd in (select t.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd ";
-                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd is not null and r.sizecd||r.colrcd is null)) or ";
-                sql += "(d.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd||b.sizecd||c.colrcd in (select t.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd||r.sizecd||r.colrcd  ";
-                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd||r.sizecd||r.colrcd is not null)) or ";
-                sql += "(d.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd||b.sizecd in (select t.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd||r.sizecd ";
-                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd||r.sizecd is not null)) or ";
-                sql += "(d.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd||c.colrcd in (select t.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd||r.colrcd ";
-                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t ";
-                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd||r.colrcd is not null)) ";
-                sql += ") ";
-                sql += ") a, " + scm + ".m_brand b, " + scm + ".m_subbrand c, " + scm + ".m_collection d, " + scm + ".m_group e, ";
-                sql += "" + scm + ".m_sitem f, " + scm + ".m_size g, " + scm + ".m_color h ";
-                sql += "where a.brandcd=b.brandcd(+) and a.sbrandcd=c.sbrandcd(+) and a.collcd=d.collcd(+) and a.itgrpcd=e.itgrpcd(+) and ";
-                sql += "a.itcd=f.itcd(+) and a.sizecd=g.sizecd(+) and a.colrcd=h.colrcd(+) ";
-                if (selitcd != "") sql += "and a.itcd in (" + selitcd + ") ";
-                sql += "order by brandnm, brandcd, sbrandnm, sbrandcd, collnm, collcd, itgrpnm, itgrpcd, ";
-                sql += "styleno, print_seq, sizenm, sizecd, colrnm, colrcd ";
+                sql += "from ( " + Environment.NewLine;
+                sql += "select distinct a.itcd, a.brandcd, a.sbrandcd, a.itgrpcd, a.collcd, a.styleno, " + Environment.NewLine;
+                if (skipsize == true) sql += "'' sizecd, '' colrcd "; else sql += "b.sizecd, b.colrcd " + Environment.NewLine;
+                sql += "from " + scm + ".m_sitem a, " + scm + ".t_batchmst b, " + scm + ".m_group d " + Environment.NewLine;
+                sql += "where a.itcd=b.itcd(+)  and b.COMMONUNIQBAR='C' and a.itgrpcd=d.itgrpcd(+) and " + Environment.NewLine;
+                sql += "( " + Environment.NewLine;
+                sql += "(a.brandcd in (select r.brandcd from " + scm + ".m_scmitmgrp r " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and sbrandcd||collcd||itgrpcd||itcd is null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.sbrandcd in (select r.brandcd||r.sbrandcd from " + scm + ".m_scmitmgrp r " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and collcd||itgrpcd||itcd is null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.sbrandcd||a.collcd in (select r.brandcd||r.sbrandcd||r.collcd from " + scm + ".m_scmitmgrp r " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and itgrpcd||itcd is null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.itgrpcd in (select r.brandcd||r.itgrpcd from " + scm + ".m_scmitmgrp r " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and sbrandcd||collcd||itcd is null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd in (select s.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd " + Environment.NewLine;
+                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd is not null and r.sizecd||r.colrcd is null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd||b.sizecd||b.colrcd in (select s.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd||r.sizecd||r.colrcd  " + Environment.NewLine;
+                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd||r.sizecd||r.colrcd is not null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd||b.sizecd in (select s.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd||r.sizecd ";
+                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd||r.sizecd is not null)) or " + Environment.NewLine;
+                sql += "(a.brandcd||a.sbrandcd||a.collcd||a.itgrpcd||a.itcd||b.colrcd in (select s.brandcd||s.sbrandcd||s.collcd||s.itgrpcd||r.itcd||r.colrcd " + Environment.NewLine;
+                sql += "from " + scm + ".m_scmitmgrp r, " + scm + ".m_sitem s, " + scm + ".m_group t " + Environment.NewLine;
+                sql += "where r.scmitmgrpcd in (" + scmitmgrpcd + ") and r.itcd=s.itcd(+) and s.itgrpcd=t.itgrpcd(+) and r.itcd||r.colrcd is not null)) " + Environment.NewLine;
+                sql += ") " + Environment.NewLine;
+                sql += ") a, " + scm + ".m_brand b, " + scm + ".m_subbrand c, " + scm + ".m_collection d, " + scm + ".m_group e, " + Environment.NewLine;
+                sql += "" + scm + ".m_sitem f, " + scm + ".m_size g, " + scm + ".m_color h " + Environment.NewLine;
+                sql += "where a.brandcd=b.brandcd(+) and a.sbrandcd=c.sbrandcd(+) and a.collcd=d.collcd(+) and a.itgrpcd=e.itgrpcd(+) and " + Environment.NewLine;
+                sql += "a.itcd=f.itcd(+) and a.sizecd=g.sizecd(+) and a.colrcd=h.colrcd(+) " + Environment.NewLine;
+                if (selitcd != "") sql += "and a.itcd in (" + selitcd + ") " + Environment.NewLine;
+                sql += "order by brandnm, brandcd, sbrandnm, sbrandcd, collnm, collcd, itgrpnm, itgrpcd, " + Environment.NewLine;
+                sql += "styleno, print_seq, sizenm, sizecd, colrnm, colrcd " + Environment.NewLine;
 
                 return sql;
             }

@@ -1330,7 +1330,7 @@ namespace Improvar
                 }
 
                 sql += "" + Environment.NewLine;
-                sql += "" + Environment.NewLine;
+                sql += "--discount from master" + Environment.NewLine;
                 sql += "(select a.barno, b.effdt, a.pdesign, b.discper, b.discrate, b.disccalctype from " + Environment.NewLine;
                 sql += "" + scm + ".t_batchmst a, " + Environment.NewLine;
                 sql += "(select a.pdesign, a.effdt, a.discrtcd, a.scmitmgrpcd, a.discper, a.discrate, a.disccalctype from " + Environment.NewLine;
