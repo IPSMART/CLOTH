@@ -459,8 +459,15 @@ namespace Improvar.Controllers
                 {
                     barno = data[4].retStr()==""?"":data[4].retStr().retSqlformat();
                 }
+                if(menupara == "SB")
+                {
+                    if(data[1].retStr() == "")
+                    {
+                        return Content("Enter Godown");
+                    }
+                }
                 //string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD);
-                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false);
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "C001", GOCD, "WP", MTRLJOBCD, "", exactbarno, "", barno, "", false,"",true);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
