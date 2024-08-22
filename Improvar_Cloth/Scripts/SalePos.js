@@ -255,8 +255,23 @@ function AddMainRow(hlpstr) {
     var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
-    var DISCTYPE = returncolvalue(hlpstr, "DISCTYPE");
-    var DISCRATE = returncolvalue(hlpstr, "DISCRATE");
+    var DISCTYPE = "", DISCRATE = 0;
+    if (parseFloat(returncolvalue(hlpstr, "DISCPER")) != 0 || parseFloat(returncolvalue(hlpstr, "DISCRATE")) != 0)
+    {
+        DISCTYPE = returncolvalue(hlpstr, "DISCCALCTYPE");
+        if (DISCTYPE == "P")
+        {
+            DISCRATE = returncolvalue(hlpstr, "DISCPER");
+        }
+        else
+        {
+            DISCRATE = returncolvalue(hlpstr, "DISCRATE");
+        }        
+    }
+    else {
+         DISCTYPE = returncolvalue(hlpstr, "DISCTYPE");
+         DISCRATE = returncolvalue(hlpstr, "DISCRATE");
+    }
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE, DISCTYPE, DISCRATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
@@ -389,7 +404,7 @@ function AddMainRow(hlpstr) {
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onblur="CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + DISCRATE + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" style="text-align: right;" readonly="readonly" type="text" >';
@@ -478,6 +493,7 @@ function AddMainRow(hlpstr) {
     tr += ' </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
+    $("#B_DISCTYPE_" + rowindex).val(DISCTYPE);
     if (INCLRATEASK == "Y") {
         CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
     }
