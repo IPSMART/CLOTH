@@ -1112,7 +1112,7 @@ namespace Improvar
                 sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
                 sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
                 sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen,x.scmdiscrate,x.scmdisctype,c.commonuniqbar " + Environment.NewLine;
-                sql += ",p.conslcd,p.prefno,p.prefdt,c.slno,d.favcolr " + Environment.NewLine;
+                sql += ",p.conslcd,p.prefno,p.prefdt,c.slno,d.favcolr,r.discper, r.discrate, r.disccalctype " + Environment.NewLine;
                 sql += "from " + Environment.NewLine;
 
                 sql += "( " + Environment.NewLine;
@@ -1329,11 +1329,31 @@ namespace Improvar
                     sql += "where a.autono = b.autono and b.doctag = '" + doctag + "') where rn = 1 ) x, " + Environment.NewLine;
                 }
 
+                sql += "" + Environment.NewLine;
+                sql += "" + Environment.NewLine;
+                sql += "(select a.barno, b.effdt, a.pdesign, b.discper, b.discrate, b.disccalctype from " + Environment.NewLine;
+                sql += "" + scm + ".t_batchmst a, " + Environment.NewLine;
+                sql += "(select a.pdesign, a.effdt, a.discrtcd, a.scmitmgrpcd, a.discper, a.discrate, a.disccalctype from " + Environment.NewLine;
+                sql += "(select a.effdt, a.discrtcd, a.discper, a.discrate, c.disccalctype, " + Environment.NewLine;
+                sql += "b.scmitmgrpcd, b.pdesign, b.brandcd, b.itcd, b.itgrpcd " + Environment.NewLine;
+                sql += "from " + scm + ".m_discrtdtl a, " + scm + ".m_scmitmgrp b, " + scm + ".m_discrthdr c " + Environment.NewLine;
+                sql += "where a.scmitmgrpcd = b.scmitmgrpcd(+) and a.discrtcd || a.effdt = c.discrtcd || c.effdt and b.pdesign is not null) a, " + Environment.NewLine;
+                sql += "" + Environment.NewLine;
+                sql += "(select effdt, discrtcd, scmitmgrpcd from " + Environment.NewLine;
+                sql += "(select a.effdt, a.discrtcd, b.scmitmgrpcd, " + Environment.NewLine;
+                sql += "row_number() over(partition by a.discrtcd, a.scmitmgrpcd order by a.effdt desc) as rno " + Environment.NewLine;
+                sql += "from " + scm + ".m_discrtdtl a, " + scm + ".m_scmitmgrp_hdr b " + Environment.NewLine;
+                sql += "where a.scmitmgrpcd = b.scmitmgrpcd(+) and " + Environment.NewLine;
+                sql += "a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) where rno = 1 ) b " + Environment.NewLine;
+                sql += "where a.discrtcd || a.effdt || a.scmitmgrpcd = b.discrtcd || b.effdt || b.scmitmgrpcd ) b " + Environment.NewLine;
+                sql += "where a.pdesign like b.pdesign)r, " + Environment.NewLine;
+                sql += "" + Environment.NewLine;
+                sql += "" + Environment.NewLine;
 
                 sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, " + Environment.NewLine;
                 sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, " + Environment.NewLine;
                 sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l," + scmf + ".m_godown m, " + scm + ".m_sitem n, " + scm + ".m_cntrl_hdr o, " + scm + ".t_txn p " + Environment.NewLine;
-                sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and a.barno=q.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
+                sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and a.barno=q.barno(+) and a.barno=r.barno(+) and d.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and " + Environment.NewLine;
                 sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and d.fabitcd=n.itcd(+) and " + Environment.NewLine; //c.fabitcd=n.itcd(+) 
                 sql += "a.barno=x.barno(+) and " + Environment.NewLine;
                 if (stylelike.retStr() != "")
