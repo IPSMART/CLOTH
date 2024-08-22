@@ -431,19 +431,19 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetStyleDetails(string val)
-        {
-            string ITGTYPE = "F";
-            if (val == null)
-            {
-                return PartialView("_Help2", Master_Help.ITCD_help(val, ITGTYPE));
-            }
-            else
-            {
-                string str = Master_Help.ITCD_help(val, ITGTYPE);
-                return Content(str);
-            }
-        }
+        //public ActionResult GetStyleDetails(string val)
+        //{
+        //    string ITGTYPE = "F";
+        //    if (val == null)
+        //    {
+        //        return PartialView("_Help2", Master_Help.ITCD_help(val, ITGTYPE));
+        //    }
+        //    else
+        //    {
+        //        string str = Master_Help.ITCD_help(val, ITGTYPE);
+        //        return Content(str);
+        //    }
+        //}
         //public ActionResult GetSizeDetails(string val, string Code)
         //{
         //    try
@@ -906,6 +906,18 @@ namespace Improvar.Controllers
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetItemDetails(string val, string Code)
+        {
+            var str = Master_Help.ITCD_help(val, Code);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
             }
         }
     }

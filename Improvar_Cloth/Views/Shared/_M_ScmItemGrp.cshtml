@@ -17,14 +17,14 @@
                 <tr>
                     <th class="grid_th" style="width:19px"> </th>
                     <th class="grid_th" style="width: 27px;">SL No.</th>
-                    <th class="grid_th" style="width:80px;">Item Group Code</th>
+                    <th class="grid_th" style="width:90px;">Item Group Code</th>
                     <th class="grid_th">Item Group Name</th>
-                    <th class="grid_th" style="width:80px;">Item Design</th>
+                    <th class="grid_th" style="width:90px;">Item Design</th>
                     <th class="grid_th">Item Code</th>
                     <th class="grid_th">Item Name</th>
-                    <th class="grid_th" style="width:80px;">Size Code</th>
+                    <th class="grid_th" style="width:90px;">Size Code</th>
                     <th class="grid_th" >Size Name</th>
-                    <th class="grid_th" style="width:80px;">Colour Code</th>
+                    <th class="grid_th" style="width:90px;">Colour Code</th>
                     <th class="grid_th" >Colour Name</th>
                 </tr>
             </thead>
@@ -41,21 +41,17 @@
                             <td>
                                 @Html.TextBoxFor(model => Model.MSCMITMGRP[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor", @title = "Only Numeric", Type = "TEXT", @readonly = "readonly" })
                             </td>                         
-                            @*<td>
-                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].ITGRPCD, new { id = "ITGRPCD_" + i,  onkeyup = "GetHelp_WithId('" + @Url.Action("GetItmGrpDetails", "M_ScmItemGrp") + "','" + "ITGRPCD_" + i + "/" + "ITGRPNM_" + i + "','1/0','Item Group Details','" + "ITGRPCD_" + i + "','" + "BRANDCD_" + i + "')", onblur = "SelectItmGrpCode(this.value," + "ITGRPCD_" + i + "," + "ITGRPNM_" + i + "," + "BRANDCD_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 4 })
-                                <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp_WithId('@Url.Action("GetItmGrpDetails", "M_ScmItemGrp")','ITGRPCD_@i/ITGRPNM_@i','1/0','Item Group Details','ITGRPCD_@i','BRANDCD_@i')" />
-                            </td>*@
                             <td>
-                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].ITGRPCD, new { id = "ITGRPCD_", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "M_ScmItemGrp") + "','Item Group Details','ITGRPCD_','ITGRPCD_=ITGRPCD=1/ITGRPNM_=ITGRPNM=0');", @class = " atextBoxFor textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "M_ScmItemGrp") + "','Item Group Details','ITGRPCD_','ITGRPCD_=ITGRPCD=1/ITGRPNM_=ITGRPNM=0');", @placeholder = "Item Group Code", @title = "Item Group Code" })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "M_ScmItemGrp")','Item Group Details','ITGRPCD_','ITGRPCD_=ITGRPCD=1/ITGRPNM_=ITGRPNM=0')" />
+                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].ITGRPCD, new { id = "ITGRPCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "M_ScmItemGrp") + "','Item Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPCD_" + i + "=ITGRPCD=1/" + "ITGRPNM_" + i + "=ITGRPNM=0');", @class = " atextBoxFor textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "M_ScmItemGrp") + "','Item Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPCD_" + i + "=ITGRPCD=1/" + "ITGRPNM_" + i + "=ITGRPNM=0');", @placeholder = "Item Group Code", @title = "Item Group Code" })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "M_ScmItemGrp")','Item Group Details','ITGRPCD_@i','ITGRPCD_@i=ITGRPCD=1/ITGRPNM_@i=ITGRPNM=0')" />
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].ITGRPNM, new { id = "ITGRPNM_", @class = " atextBoxFor ", maxlength = 30, @TabIndex = -1, @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", maxlength = 30, @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].STYLENO, new { id = "STYLENO_" + i, onkeyup = "GetHelp('" + @Url.Action("GetBarCodeDetailsInGrid", "M_ScmItemGrp") + "','" + "STYLENO_" + i + "/" + "ITCD_" + i + "/" + "ITNM_" + i + "','0/2/1','Style Details','" + "STYLENO_" + i + "')", onblur = "SelectStyleCode(this.value," + "STYLENO_" + i + "," + "ITNM_" + i + "," + "ITCD_" + i + "," + "SIZECD_" + i + "," + "SIZENM_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 20 })
-                                <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetStyleDetails", "M_ScmItemGrp")','STYLENO_@i/ITCD_@i/ITNM_@i','0/2/1','Style Details','STYLENO_@i')" />
-                            </td>
+                                @Html.EditorFor(model => Model.MSCMITMGRP[i].STYLENO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "STYLENO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "M_ScmItemGrp") + "','DesignWise Item Details','" + "STYLENO_" + i + "','" + "STYLENO_" + i + "=itstyle=0/" + "ITCD_" + i + "=itcd=2/" + "ITNM_" + i + " =itnm=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "M_ScmItemGrp") + "','DesignWise Item Details','" + "STYLENO_" + i + "','" + "STYLENO_" + i + "=itstyle=0/" + "ITCD_" + i + "=itcd=2/" + "ITNM_" + i + " =itnm=1');", @placeholder = "Item Design" } })
+                                <img src="~/Image/search.png" id="ITCD_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "M_ScmItemGrp")','DesignWise Item Details','STYLENO_@i','STYLENO_@i=itstyle=0/ITCD_@i=itcd=2/ITNM_@i=itnm=1')" />
+                             </td>
                             <td>
                                 @Html.TextBoxFor(model => model.MSCMITMGRP[i].ITCD, new { id = "ITCD_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
                             </td>
@@ -63,14 +59,14 @@
                                 @Html.TextBoxFor(model => Model.MSCMITMGRP[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
                             </td>                           
                             <td>
-                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].SIZECD, new { id = "SIZECD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_ScmItemGrp") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_ScmItemGrp") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].SIZECD, new { id = "SIZECD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_ScmItemGrp") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_ScmItemGrp") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", @placeholder = "Size Code", @class = " atextBoxFor textbox_image" })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "M_ScmItemGrp")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1/SIZENM_@i=SIZENM=0')" />
                             </td>
                             <td>
                                 @Html.TextBoxFor(model => Model.MSCMITMGRP[i].SIZENM, new { id = "SIZENM_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
                             </td>                           
                             <td>
-                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].COLRCD, new { id = "COLRCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_ScmItemGrp") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_ScmItemGrp") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                @Html.TextBoxFor(model => Model.MSCMITMGRP[i].COLRCD, new { id = "COLRCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_ScmItemGrp") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_ScmItemGrp") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", @placeholder = "Colour Code", @class = " atextBoxFor textbox_image" })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "M_ScmItemGrp")','Color Details','COLRCD_@i','COLRCD_@i=COLRCD=1/COLRNM_@i=COLRNM=0')" />
                             </td>
                             <td>
