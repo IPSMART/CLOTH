@@ -23,7 +23,8 @@ namespace Improvar.ViewModels
         public List<MSCMITMGRP> MSCMITMGRP { get; set; }
         public List<MSCMITEMGRPDATA> MSCMITEMGRPDATA { get; set; }
         public bool Deactive { get; set; }
-       // public List<CompanyLocationName> CompanyLocationName { get; set; }
+        public string PDESIGN { get; set; }
+        // public List<CompanyLocationName> CompanyLocationName { get; set; }
 
     }
 }

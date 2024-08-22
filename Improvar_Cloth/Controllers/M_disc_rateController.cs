@@ -497,11 +497,12 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
 
                         //allowance grid saving
+                        int count = 0;
                         if (VE.MDISCRTDTL != null)
                         {
                             for (int i = 0; i <= VE.MDISCRTDTL.Count - 1; i++)
                             {
-                                if (VE.MDISCRTDTL[i].SLNO != 0 && VE.MDISCRTDTL[i].SCMITMGRPCD != null && VE.MDISCRTDTL[i].DISCRATE != 0 && VE.MDISCRTDTL[i].DISCPER != 0)
+                                if (VE.MDISCRTDTL[i].SLNO != 0 && VE.MDISCRTDTL[i].SCMITMGRPCD != null)
                                 {
                                     M_DISCRTDTL MdsL = new M_DISCRTDTL();
                                     MdsL.EMD_NO = MDISHD.EMD_NO;
@@ -512,9 +513,18 @@ namespace Improvar.Controllers
                                     MdsL.SCMITMGRPCD = VE.MDISCRTDTL[i].SCMITMGRPCD;
                                     MdsL.DISCPER = VE.MDISCRTDTL[i].DISCPER;
                                     MdsL.DISCRATE = VE.MDISCRTDTL[i].DISCRATE;
+                                    if(MdsL.SCMITMGRPCD!=null && MdsL.DISCPER==0 && MdsL.DISCRATE==0)
+                                    {
+                                        return Content("Disc. Per or Disc. Rate is required against Sl No." + VE.MDISCRTDTL[i].SLNO);
+                                    }
                                     DB.M_DISCRTDTL.Add(MdsL);
+                                    count++;
                                 }
                             }
+                        }
+                        if(count==0)
+                        {
+                            return Content("Please enter item in grid");
                         }
                         //end allawance saving
 

@@ -26,6 +26,7 @@
                     <th class="grid_th" >Size Name</th>
                     <th class="grid_th" style="width:90px;">Colour Code</th>
                     <th class="grid_th" >Colour Name</th>
+                    <th class="grid_th">Pdesign</th>
                 </tr>
             </thead>
 
@@ -71,6 +72,10 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(model => Model.MSCMITMGRP[i].COLRNM, new { id = "COLRNM_" + i, @class = " atextBoxFor ", maxlength = 20, @TabIndex = -1, @readonly = "readonly" })
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => model.MSCMITMGRP[i].PDESIGN, new { htmlAttributes = new { @class = " atextBoxFor " , id = "PDESIGN", @placeholder = "PDESIGN", maxlength = 20 } })
+
                             </td>
                         </tr>
                     }

@@ -219,7 +219,8 @@ namespace Improvar.Controllers
                                      ITGRPCD = j.ITGRPCD,
                                      ITGRPNM = m.ITGRPNM,
                                      SIZECD = j.SIZECD,
-                                     SIZENM = p.SIZENM
+                                     SIZENM = p.SIZENM,
+                                     PDESIGN=j.PDESIGN
                                  }).ToList();
 
                 if (VE.MSCMITMGRP != null)
@@ -698,6 +699,7 @@ namespace Improvar.Controllers
                                     MSCMITMGRP.ITCD = VE.MSCMITMGRP[i].ITCD;
                                     MSCMITMGRP.SIZECD = VE.MSCMITMGRP[i].SIZECD;
                                     MSCMITMGRP.COLRCD = VE.MSCMITMGRP[i].COLRCD;
+                                    MSCMITMGRP.PDESIGN = VE.MSCMITMGRP[i].PDESIGN;
 
                                     DB.M_SCMITMGRP.Add(MSCMITMGRP);
 

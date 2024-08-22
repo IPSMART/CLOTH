@@ -75,6 +75,8 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string SKIPCOND { get; set; }
+        [StringLength(20)]
+        public string PDESIGN { get; set; }
 
     }
 }
