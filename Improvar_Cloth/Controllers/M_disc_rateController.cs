@@ -41,18 +41,23 @@ namespace Improvar.Controllers
                     //=================For Type  ================//
                     List<DropDown_list> DDl = new List<DropDown_list>();
                     DropDown_list DDl1 = new DropDown_list();
-                    DDl1.text = "Pcs";
+                    DDl1.text = "%";
                     DDl1.value = "P";
                     DDl.Add(DDl1);
                     DropDown_list DDl2 = new DropDown_list();
-                    DDl2.text = "Box";
-                    DDl2.value = "B";
+                    DDl2.text = "Nos";
+                    DDl2.value = "N";
                     DDl.Add(DDl2);
                     DropDown_list DDl3 = new DropDown_list();
-                    DDl3.text = "Per";
-                    DDl3.value = "R";
+                    DDl3.text = "Qnty";
+                    DDl3.value = "Q";
                     DDl.Add(DDl3);
+                    DropDown_list DDl4 = new DropDown_list();
+                    DDl4.text = "Fixed";
+                    DDl4.value = "F";
+                    DDl.Add(DDl4);
                     VE.DropDown_list = DDl;
+                    
                     //=================End ================//
 
 

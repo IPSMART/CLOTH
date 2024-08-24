@@ -1341,7 +1341,7 @@ namespace Improvar
                 sql += "" + Environment.NewLine;
                 sql += "(select effdt, discrtcd, scmitmgrpcd from " + Environment.NewLine;
                 sql += "(select a.effdt, a.discrtcd, b.scmitmgrpcd, " + Environment.NewLine;
-                sql += "row_number() over(partition by a.discrtcd, a.scmitmgrpcd order by a.effdt desc) as rno " + Environment.NewLine;
+                sql += "row_number() over(partition by a.discrtcd order by a.effdt desc) as rno " + Environment.NewLine;
                 sql += "from " + scm + ".m_discrtdtl a, " + scm + ".m_scmitmgrp_hdr b " + Environment.NewLine;
                 sql += "where a.scmitmgrpcd = b.scmitmgrpcd(+) and " + Environment.NewLine;
                 sql += "a.effdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) where rno = 1 ) b " + Environment.NewLine;
