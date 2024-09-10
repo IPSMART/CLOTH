@@ -197,9 +197,9 @@ namespace Improvar.Controllers
                     //tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", "", selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
                     tbl = Salesfunc.GenStocktblwithVal("FIFO", asdt, "", mtrljobcd, selitgrpcd, selitcd, selgocd, true, "", summdtl, "", "", "", "", VE.Checkbox9);
                 }
-               else if (summary == "P")
+                else if (summary == "P")
                 {
-                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7,false,true,false,fdt);
+                    tbl = Salesfunc.GetStock(tdt, selgocd, "", selitcd, mtrljobcd, "", selitgrpcd, "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", party, VE.Checkbox7, false, true, false, fdt);
                 }
                 else
                 {
@@ -243,7 +243,7 @@ namespace Improvar.Controllers
                 }
                 else if (summary == "P")
                 {
-                    if(repon=="D")
+                    if (repon == "D")
                     {
                         return PhysicalStock_Detail(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, summary);
                     }
@@ -252,7 +252,7 @@ namespace Improvar.Controllers
                         return PhysicalStock_Summary(FC, VE, tbl, COM, LOC, asdt, prccd, qdsp, ignoreitems, summary);
 
                     }
-                   
+
                 }
                 else
                 {
@@ -839,7 +839,8 @@ namespace Improvar.Controllers
                     if (tbl1.Rows[i]["doctag"].retStr() == "OP")
                     {
                         opqty = tbl1.Rows[i]["doctag"].retStr() == "OP" ? tbl1.Rows[i]["qnty"].retDbl() : 0;
-                        opval = (tbl1.Rows[i]["txblval"].retDbl() == 0 ? (opqty.retDbl() * (tbl1.Rows[i]["oprate"].retDbl() + tbl1.Rows[i]["othrate"].retDbl())).toRound(2) : (tbl1.Rows[i]["txblval"].retDbl()));
+                        //opval = (tbl1.Rows[i]["txblval"].retDbl() == 0 ? (opqty.retDbl() * (tbl1.Rows[i]["oprate"].retDbl() + tbl1.Rows[i]["othrate"].retDbl())).toRound(2) : (tbl1.Rows[i]["txblval"].retDbl()));
+                        opval = (opqty.retDbl() * (tbl1.Rows[i]["oprate"].retDbl() + tbl1.Rows[i]["othrate"].retDbl())).toRound(2);
                     }
 
                     netpur = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
@@ -1402,7 +1403,7 @@ namespace Improvar.Controllers
             HC.GetPrintHeader(IR, "qnty", "double", QDSP, "Stk.Qnty");
             HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Av.Rate");
             HC.GetPrintHeader(IR, "amt", "double", "n,14,2", "Stock Value");
-          
+
             maxR = tbl.Rows.Count - 1;
             DataView dv = new DataView(tbl);
             dv.Sort = "itgrpcd, itcd ASC";
@@ -1446,7 +1447,7 @@ namespace Improvar.Controllers
                         }
 
                         double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
-                      
+
                         iqnty = iqnty + _qty;
                         iamt = iamt + _amt;
                         i++;
@@ -1469,7 +1470,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["rate"] = avrt;
                             IR.Rows[rNo]["amt"] = iamt;
 
-                            
+
                         }
                         bdue1Qty = bdue1Qty + due1Qty; bdue1Amt = bdue1Amt + due1Amt;
                         bdue2Qty = bdue2Qty + due2Qty; bdue2Amt = bdue2Amt + due2Amt;
@@ -1502,7 +1503,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["amt"] = bamt;
                     }
                 }
-               
+
                 gamt = gamt + bamt;
                 gqnty = gqnty + bqnty;
                 //i++;
@@ -1513,7 +1514,7 @@ namespace Improvar.Controllers
             IR.Rows[rNo]["amt"] = gamt;
             IR.Rows[rNo]["qnty"] = gqnty;
             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-          
+
 
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
