@@ -1,4 +1,5 @@
 ﻿@model Improvar.ViewModels.ModifyLog
+<script src="~/Scripts/Custom.js"></script>
 <div class="modal-dialog modal-sm">
     <div class="modal-content">
         <div class="modal-header">
@@ -10,11 +11,6 @@
             {
                 <table class="table table-striped table-bordered" style="max-width:815px">
                     <thead>
-                        @*<tr>
-                            <th colspan="3" class="text-center">
-                                <span class="text-right" style="float:unset;color:darkslateblue;"> Edited BY </span>
-                            </th>
-                        </tr>*@
                         <tr><th>SL. No.</th><th>Activity Date</th><th>User Name</th><th>Edit Remarks</th></tr>
                     </thead>
                     <tbody>
@@ -22,16 +18,57 @@
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(model => model.ModifyLogGrid[i].SLNO)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    {
+                                        @Html.DisplayFor(model => model.ModifyLogGrid[i].SLNO)
+                                        @Html.HiddenFor(model => model.ModifyLogGrid[i].AUTONO, new { id = "AUTONO_" + i })
+                                        @Html.HiddenFor(model => model.ModifyLogGrid[i].SCHEMA, new { id = "SCHEMA_" + i })
+                                    }
+                                    else
+                                    {
+                                        <a href="~/Audit_Details/Audit_Details?AUTONO=@Model.ModifyLogGrid[i].AUTONO&EMDNO=@Model.ModifyLogGrid[i].EMDNO" target="_blank">
+                                            @Html.DisplayFor(model => model.ModifyLogGrid[i].SLNO)
+                                            @Html.HiddenFor(model => model.ModifyLogGrid[i].AUTONO, new { id = "AUTONO_" + i })
+                                            @Html.HiddenFor(model => model.ModifyLogGrid[i].SCHEMA, new { id = "SCHEMA_" + i })
+                                        </a>
+                                    }
+
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(model => model.ModifyLogGrid[i].MODIFYDT)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    {
+                                        @Html.DisplayFor(model => model.ModifyLogGrid[i].MODIFYDT)
+                                    }
+                                    else
+                                    {
+                                        <a href="~/Audit_Details/Audit_Details?AUTONO=@Model.ModifyLogGrid[i].AUTONO&EMDNO=@Model.ModifyLogGrid[i].EMDNO" target="_blank">
+                                            @Html.DisplayFor(model => model.ModifyLogGrid[i].MODIFYDT)
+                                        </a>
+                                    }
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(model => model.ModifyLogGrid[i].USERID)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    {
+                                        @Html.DisplayFor(model => model.ModifyLogGrid[i].USERID)
+                                    }
+                                    else
+                                    {
+                                        <a href="~/Audit_Details/Audit_Details?AUTONO=@Model.ModifyLogGrid[i].AUTONO&EMDNO=@Model.ModifyLogGrid[i].EMDNO" target="_blank">
+                                            @Html.DisplayFor(model => model.ModifyLogGrid[i].USERID)
+                                        </a>
+                                    }
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(model => model.ModifyLogGrid[i].LM_REM)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    {
+                                        @Html.DisplayFor(model => model.ModifyLogGrid[i].LM_REM)
+                                    }
+                                    else
+                                    {
+                                        <a href="~/Audit_Details/Audit_Details?AUTONO=@Model.ModifyLogGrid[i].AUTONO&EMDNO=@Model.ModifyLogGrid[i].EMDNO" target="_blank">
+                                            @Html.DisplayFor(model => model.ModifyLogGrid[i].LM_REM)
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -50,4 +87,3 @@
         </div>
     </div>
 </div>
-

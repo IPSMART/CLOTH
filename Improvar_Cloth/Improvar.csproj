@@ -247,6 +247,7 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="CommFunc.cs" />
     <Compile Include="CommVar.cs" />
+    <Compile Include="Controllers\Audit_DetailsController.cs" />
     <Compile Include="Controllers\DatalockController.cs" />
     <Compile Include="Controllers\DOCPASS_STRGYController.cs" />
     <Compile Include="Controllers\Gen_EinvIRNCancelController.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="Controllers\Prepare_JSONController.cs" />
     <Compile Include="Controllers\PrintPageController.cs" />
     <Compile Include="Controllers\Rep_AgentController.cs" />
+    <Compile Include="Controllers\Rep_AuditTrail.cs" />
     <Compile Include="Controllers\Rep_Bale_HistoryController.cs" />
     <Compile Include="Controllers\Rep_Bale_StockController.cs" />
     <Compile Include="Controllers\Rep_BarcodeImageController.cs" />
@@ -914,6 +916,7 @@
     <Compile Include="SMS.cs" />
     <Compile Include="ViewModels\AmountTypeMasterEntry.cs" />
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
+    <Compile Include="ViewModels\AuditDetails.cs" />
     <Compile Include="ViewModels\BillTypeMaster.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
@@ -1566,6 +1569,9 @@
     <Content Include="Views\M_disc_rate\M_disc_rate.cshtml" />
     <Content Include="Views\Shared\_M_disc_rate_MAIN.cshtml" />
     <Content Include="Views\Shared\_COMPANYLOCATION.cshtml" />
+    <Content Include="Views\Rep_AuditTrail\Rep_AuditTrail.cshtml" />
+    <Content Include="Views\Audit_Details\Audit_Details.cshtml" />
+    <Content Include="Views\Shared\_Audit_Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

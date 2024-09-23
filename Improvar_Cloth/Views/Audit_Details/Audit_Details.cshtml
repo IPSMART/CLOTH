@@ -1,0 +1,66 @@
+﻿@model Improvar.ViewModels.AuditDetails
+@{
+    ViewBag.Title = "Audit Details";
+    ViewBag.formname = "Audit Details";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string PageControllerName = "Audit_Details";
+
+}
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css" type="text/css" />
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function ReloadAudit(EMDNOVal) {
+        debugger;
+        if (retFloat(EMDNOVal) != 0) {
+            $("#WaitingMode").show();
+            var url = window.location.href;
+            url = updateQueryStringParameter(url, "EMDNO", EMDNOVal);
+            window.location = url;
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-2" style="width:auto">
+                    <div class="editor-field" style="margin-top: 6px;font: caption;">
+                        @Html.Label("", "Document No :")
+                    </div>
+                </div>
+                <div class="col-md-8" style="width:auto;">
+                    <div class="editor-field" style="margin-top: 8px;font: caption;border:groove 3px;">
+                        @Html.DisplayFor(model => model.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 16, @placeholder = "DOCNO" } })
+                    </div>
+                </div>
+                <div class="col-md-2" style="width:auto">
+                    <div class="editor-field" style="margin-top: 6px;font: caption;">
+                        @Html.Label("", "Document Date :")
+                    </div>
+                </div>
+                <div class="col-md-6" style="width:auto;">
+                    <div class="editor-field" style="margin-top: 8px;font: caption;border:groove 3px;">
+                        @Html.DisplayFor(model => model.DOCDT1, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 16, @placeholder = "DOCDT" } })
+                        @Html.HiddenFor(model => model.AUTONO, new { id = "AUTONO" })
+                        @Html.HiddenFor(model => model.EMD_NO, new { id = "EMD_NO" })
+                        @Html.HiddenFor(model => model.PrevEMD_NO, new { id = "PrevEMD_NO" })
+                        @Html.HiddenFor(model => model.NextEMD_NO, new { id = "NextEMD_NO" })
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 11px;background-color:#ffffff;">
+                <div>
+                    <div id="partialdivAudit" style="margin-top:0px;">
+                        @Html.Partial("_Audit_Details")
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

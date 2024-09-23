@@ -1,0 +1,115 @@
+﻿@model Improvar.ViewModels.AuditDetails
+<div>
+    <div style="width:100%;border:1px solid #c4b9b9;float:left;">
+        <div class="sticky-table sticky-ltr-cells">
+            <div style="max-height:512px;overflow-y:scroll;">
+                <table id="oldAuditDetTbl" cellpadding="0" cellspacing="0" class="resizable table-striped">
+                    <thead>
+                        <tr class="sticky-header" style="height:25px;">
+                            <th style="top:0px;background-color:bisque;color: black;">Activity By : </th>
+                            <th style="top:0px;background-color:bisque;color: black;"> @Model.OldActivby</th>
+                            <th style="top:0px;background-color:bisque;color: black;">
+                                @Model.NewActivby
+                                @if (Model.PrevEMD_NO.retDbl() == 0)
+                                {
+                                    <button type="button" title="Previous Audit" disabled class="btn btn-sm btn-success" style="margin-top:-3px;padding: 2px 7px 1px 7px;float:right;">
+                                        <span class="glyphicon glyphicon-arrow-left"></span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" title="Previous Audit" onclick="ReloadAudit('@Model.PrevEMD_NO')" class="btn btn-sm btn-success" style="margin-top:-3px;padding: 2px 7px 1px 7px;float:right;">
+                                        <span class="glyphicon glyphicon-arrow-left"></span>
+                                    </button>
+                                }
+                            </th>
+                        </tr>
+                        <tr class="sticky-header" style="height:25px;">
+                            <th style="top:25px;background-color:bisque;color: black;"> Activity Date : </th>
+                            <th style="top:25px;background-color:bisque;color: black;"> @Model.OldActivDate</th>
+                            <th style="top:25px;background-color:bisque;color: black;">
+                                @Model.NewActivDate
+                                @if (Model.NextEMD_NO.retDbl() == 0)
+                                {
+                                    <button type="button" title="Next Audit" disabled class="btn btn-sm btn-success" style="margin-top:-3px;padding: 2px 7px 1px 7px;float:right;">
+                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button"  title="Next Audit" onclick="ReloadAudit('@Model.NextEMD_NO')" class="btn btn-sm btn-success" style="margin-top:-3px;padding: 2px 7px 1px 7px;float:right;">
+                                        <span class="glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                }
+                            </th>
+
+                        </tr>
+                        <tr class="sticky-header" style="height:25px;">
+                            <th style="top:50px;background-color:bisque;color: black;">Activity No : </th>
+                            <th style="top:50px;background-color:bisque;color: black;"> @Model.OldEMDNO  </th>
+                            <th style="top:50px;background-color:bisque;color: black;"> @Model.NewEMDNO</th>
+                        </tr>
+                        <tr class="sticky-header" style="height:30px;">
+                            <th style="width:197px;top:75px">Column Name</th>
+                            <th style="width:519px;top:75px">Old Value</th>
+                            <th colspan="2" style="width:181px;top:75px">New Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.AuditDetailsGrid_Old != null)
+                        {
+                            int i = 0;
+                            while (i <= Model.AuditDetailsGrid_Old.Count - 1)
+                            {
+                                string TableName = Model.AuditDetailsGrid_Old[i].TableName.retStr();
+                                if (Model.AuditDetailsGrid_Old[i].TableName.retStr() != "")
+                                {
+                                    <tr>
+                                        <td colspan="3" class="">
+                                            @Html.TextBoxFor(model => Model.AuditDetailsGrid_Old[i].TableName, new { id = "TableName_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", @style = "background-color:#faea8f;" })
+                                        </td>
+                                    </tr>
+                                }
+                                while (Model.AuditDetailsGrid_Old[i].TableName.retStr() == TableName)
+                                {
+                                    <tr>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AuditDetailsGrid_Old[i].ColName, new { id = "ColName_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", @style = "background-color:#e2effa; " })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.AuditDetailsGrid_Old[i].OLD_ColValue, new { id = "OLD_ColValue_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", @style = "background-color:#e2effa;" })
+                                        </td>
+                                        <td colspan="2" class="">
+                                            @Html.TextBoxFor(model => Model.AuditDetailsGrid_Old[i].New_ColValue, new { id = "New_ColValue_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", @style = "background-color:#e2effa;" })
+                                        </td>
+                                    </tr>
+                                    i++;
+                                    if (i > Model.AuditDetailsGrid_Old.Count - 1) { break; }
+
+                                }
+                                if (i > Model.AuditDetailsGrid_Old.Count - 1) { break; }
+                            }
+                            if (Model.AuditDetailsGrid_Old.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="4" style="color:red;font-weight:bold;height:50px;text-align:center">
+                                        ⚠️ Available Audit Details Not Found For Seletion
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" style="color:red;font-weight:bold;height:50px;text-align:center">
+                                    ⚠️ Available Audit Details Not Found For Seletion
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
