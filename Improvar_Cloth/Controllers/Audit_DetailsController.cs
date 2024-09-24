@@ -91,6 +91,7 @@ namespace Improvar.Controllers
                 DataTable[] rs1 = new DataTable[50];
                 DataTable[] rs2 = new DataTable[50];
 
+                string[] exclcolnm = { "EMD_NO", "DTAG", "TTAG", "AUTONO", "CLCD" };
                 string STR, strT, ownr, modcd, tblnm, s_Cols, autoemd, fldnm, flddsc, diffstr, sql = "", sql1 = "", sql2 = "", sqlC = "", strInAutoNo = autono, pkey, strAuto, strAutoEmdNo;
                 int tbl;
                 double maxTbls;
@@ -155,12 +156,12 @@ namespace Improvar.Controllers
                         if (i == 0)
                         {
                             sqlC = "";
-                            sqlC += "and nvl(b.emd_no,0)=" + emdno;
+                            sqlC += "and nvl(b.emd_no,0)=" + emdno + " ";
                         }
                         else
                         {
                             sqlC = "";
-                            sqlC += "and nvl(b.emd_no,0)=" + (emdno.retDbl() - 1);
+                            sqlC += "and nvl(b.emd_no,0)=" + (emdno.retDbl() - 1) + " ";
                         }
                         STR = "";
                         STR += "select a.autono||nvl(a.emd_no,0) autoemdno, " + rstbls.Rows[a]["pkey_cols"].retStr().Replace(",", "||") + " pkeycols, " + Environment.NewLine;
@@ -302,24 +303,27 @@ namespace Improvar.Controllers
 
                                                                 if (insrecord == true)
                                                                 {
-                                                                    DataRow ROWDATA = FinalDt.NewRow();
-                                                                    ROWDATA["autono"] = rsTblHdr.Rows[d]["autono"];
-                                                                    ROWDATA["docno"] = rsTblHdr.Rows[d]["docno"];
-                                                                    ROWDATA["docdt"] = rsTblHdr.Rows[d]["docdt"];
-                                                                    ROWDATA["ActivityUser"] = rsTblHdr.Rows[d]["LM_USR_ID"];
-                                                                    ROWDATA["ActivityDate"] = rsTblHdr.Rows[d]["LM_USR_ENTDT"];
-                                                                    ROWDATA["ActivityNo"] = rsTblHdr.Rows[d]["EMD_NO"];
+                                                                    if (!exclcolnm.Contains(fldnm.ToUpper()))
+                                                                    {
+                                                                        DataRow ROWDATA = FinalDt.NewRow();
+                                                                        ROWDATA["autono"] = rsTblHdr.Rows[d]["autono"];
+                                                                        ROWDATA["docno"] = rsTblHdr.Rows[d]["docno"];
+                                                                        ROWDATA["docdt"] = rsTblHdr.Rows[d]["docdt"];
+                                                                        ROWDATA["ActivityUser"] = rsTblHdr.Rows[d]["LM_USR_ID"];
+                                                                        ROWDATA["ActivityDate"] = rsTblHdr.Rows[d]["LM_USR_ENTDT"];
+                                                                        ROWDATA["ActivityNo"] = rsTblHdr.Rows[d]["EMD_NO"];
 
-                                                                    ROWDATA["ActivityUserOld"] = rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_id"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr();
-                                                                    ROWDATA["ActivityDateOld"] = rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_entdt"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr();
-                                                                    ROWDATA["ActivityNoOld"] = rsTblHdrOld.Rows[d]["EMD_NO"];
+                                                                        ROWDATA["ActivityUserOld"] = rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_id"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr();
+                                                                        ROWDATA["ActivityDateOld"] = rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_entdt"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr();
+                                                                        ROWDATA["ActivityNoOld"] = rsTblHdrOld.Rows[d]["EMD_NO"];
 
-                                                                    ROWDATA["tblnm"] = tblnm;
-                                                                    ROWDATA["Colnm"] = flddsc;
-                                                                    ROWDATA["CurrentVal"] = temprs1[f][fldnm].retStr();
-                                                                    ROWDATA["OldVal"] = temprs2.Count() == 0 ? "" : temprs2[0][fldnm].retStr();
-                                                                    FinalDt.Rows.Add(ROWDATA);
-                                                                    //diffstr = diffstr + flddsc + " : " + temprs1[f][fldnm].retStr() + "  [" + temprs2[0][fldnm].retStr() + " ]" + "<br/>";
+                                                                        ROWDATA["tblnm"] = tblnm;
+                                                                        ROWDATA["Colnm"] = flddsc;
+                                                                        ROWDATA["CurrentVal"] = temprs1[f][fldnm].retStr();
+                                                                        ROWDATA["OldVal"] = temprs2.Count() == 0 ? "" : temprs2[0][fldnm].retStr();
+                                                                        FinalDt.Rows.Add(ROWDATA);
+                                                                        //diffstr = diffstr + flddsc + " : " + temprs1[f][fldnm].retStr() + "  [" + temprs2[0][fldnm].retStr() + " ]" + "<br/>";
+                                                                    }
                                                                 }
                                                                 g++;
                                                                 if (g > temprsCols.Count() - 1) break;
@@ -375,23 +379,26 @@ namespace Improvar.Controllers
                                                 flddsc = temprsCols[g]["coldesc"].retStr();
                                                 if (tempolddata.Rows[xx][fldnm].retStr() != "" && tempolddata.Rows[xx][fldnm].retStr() != "0")
                                                 {
-                                                    DataRow ROWDATA = FinalDt.NewRow();
-                                                    ROWDATA["autono"] = rsTblHdr.Rows[d]["autono"];
-                                                    ROWDATA["docno"] = rsTblHdr.Rows[d]["docno"];
-                                                    ROWDATA["docdt"] = rsTblHdr.Rows[d]["docdt"];
-                                                    ROWDATA["ActivityUser"] = rsTblHdr.Rows[d]["LM_USR_ID"];
-                                                    ROWDATA["ActivityDate"] = rsTblHdr.Rows[d]["LM_USR_ENTDT"];
-                                                    ROWDATA["ActivityNo"] = rsTblHdr.Rows[d]["EMD_NO"];
+                                                    if (!exclcolnm.Contains(fldnm.ToUpper()))
+                                                    {
+                                                        DataRow ROWDATA = FinalDt.NewRow();
+                                                        ROWDATA["autono"] = rsTblHdr.Rows[d]["autono"];
+                                                        ROWDATA["docno"] = rsTblHdr.Rows[d]["docno"];
+                                                        ROWDATA["docdt"] = rsTblHdr.Rows[d]["docdt"];
+                                                        ROWDATA["ActivityUser"] = rsTblHdr.Rows[d]["LM_USR_ID"];
+                                                        ROWDATA["ActivityDate"] = rsTblHdr.Rows[d]["LM_USR_ENTDT"];
+                                                        ROWDATA["ActivityNo"] = rsTblHdr.Rows[d]["EMD_NO"];
 
-                                                    ROWDATA["ActivityUserOld"] = rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_id"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr();
-                                                    ROWDATA["ActivityDateOld"] = rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_entdt"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr();
-                                                    ROWDATA["ActivityNoOld"] = rsTblHdrOld.Rows[d]["EMD_NO"];
+                                                        ROWDATA["ActivityUserOld"] = rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_id"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ID"].retStr();
+                                                        ROWDATA["ActivityDateOld"] = rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr() == "" ? rsTblHdrOld.Rows[d]["usr_entdt"].retStr() : rsTblHdrOld.Rows[d]["LM_USR_ENTDT"].retStr();
+                                                        ROWDATA["ActivityNoOld"] = rsTblHdrOld.Rows[d]["EMD_NO"];
 
-                                                    ROWDATA["tblnm"] = tblnm;
-                                                    ROWDATA["Colnm"] = flddsc;
-                                                    ROWDATA["CurrentVal"] = "";
-                                                    ROWDATA["OldVal"] = tempolddata.Rows[xx][fldnm].retStr();
-                                                    FinalDt.Rows.Add(ROWDATA);
+                                                        ROWDATA["tblnm"] = tblnm;
+                                                        ROWDATA["Colnm"] = flddsc;
+                                                        ROWDATA["CurrentVal"] = "";
+                                                        ROWDATA["OldVal"] = tempolddata.Rows[xx][fldnm].retStr();
+                                                        FinalDt.Rows.Add(ROWDATA);
+                                                    }
                                                 }
                                                 g++;
                                                 if (g > temprsCols.Count() - 1) break;

@@ -18,7 +18,7 @@
                         {
                             <tr>
                                 <td>
-                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.ModifyLogGrid[i].showlink == false)
                                     {
                                         @Html.DisplayFor(model => model.ModifyLogGrid[i].SLNO)
                                         @Html.HiddenFor(model => model.ModifyLogGrid[i].AUTONO, new { id = "AUTONO_" + i })
@@ -35,7 +35,7 @@
 
                                 </td>
                                 <td>
-                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.ModifyLogGrid[i].showlink == false)
                                     {
                                         @Html.DisplayFor(model => model.ModifyLogGrid[i].MODIFYDT)
                                     }
@@ -47,7 +47,7 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.ModifyLogGrid[i].showlink == false)
                                     {
                                         @Html.DisplayFor(model => model.ModifyLogGrid[i].USERID)
                                     }
@@ -59,7 +59,7 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.showlink == false)
+                                    @if (i == Model.ModifyLogGrid.Count-1 || Model.ModifyLogGrid[i].showlink == false)
                                     {
                                         @Html.DisplayFor(model => model.ModifyLogGrid[i].LM_REM)
                                     }

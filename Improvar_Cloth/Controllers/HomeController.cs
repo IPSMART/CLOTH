@@ -576,7 +576,14 @@ namespace Improvar.Controllers
                     }
 
                     DTL.DEL_REM = tbl.Rows[i]["DEL_REM"].ToString();
-                    VE.showlink = tbl.Rows[i]["trnautono"].retStr() == "" ? false : true;
+                    DTL.showlink = tbl.Rows[i]["trnautono"].retStr() == "" ? false : true;
+
+                    int k;
+                    bool isNumeric = int.TryParse(DTL.SLNO, out k);
+                    if (isNumeric == false)
+                    {
+                        DTL.showlink = false;
+                    }
                     ModifyLogGrid.Add(DTL);
 
                     if (tbl.Rows[i]["emd_no"].retStr() == "" || tbl.Rows[i]["emd_no"].retStr() == "0")

@@ -8,8 +8,7 @@ namespace Improvar.ViewModels
 {
     public class ModifyLog
     {
-        public List <ModifyLogGrid> ModifyLogGrid { get; set; }
-        public bool showlink { get; set; }
+        public List <ModifyLogGrid> ModifyLogGrid { get; set; }       
     }
 }
 namespace Improvar.Models
@@ -24,5 +23,6 @@ namespace Improvar.Models
         public string AUTONO { get; set; }
         public string SCHEMA { get; set; }
         public string EMDNO { get; set; }
+        public bool showlink { get; set; }
     }
 }
