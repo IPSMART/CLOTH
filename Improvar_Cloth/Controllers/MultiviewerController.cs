@@ -9,6 +9,12 @@ using System.Collections;
 using System.Security.Cryptography;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using Improvar.ViewModels;
+using System.Web;
+using iTextSharp.text.html.simpleparser;
+using System.IO;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace Improvar.Controllers
 {
@@ -21,6 +27,8 @@ namespace Improvar.Controllers
         string CS = null;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         DropDownHelp DropDownHelp = new DropDownHelp();
+        string path_Save = @"C:\\Ipsmart\\Temp";
+
         public ActionResult multiVu()
         {
             try
@@ -231,9 +239,15 @@ namespace Improvar.Controllers
                                     string COM = CommVar.Compcd(UNQSNO);
                                     if (det.BoardCode == "FABOARD4")
                                     {
+                                        INI Handel_Ini = new INI();
+
                                         EMAILSTATUSTBL EMAILSTATUSTBL = new EMAILSTATUSTBL();
 
                                         EMAILSTATUSTBL.curdt = System.DateTime.Now.Date.retDateStr();
+                                        EMAILSTATUSTBL.CLASS1_CODE = Handel_Ini.IniReadValue("FABOARD4_ReportEmail", "CLASS1_CODE", Server.MapPath("~/Ipsmart.ini"));
+                                        EMAILSTATUSTBL.CLASS1_NAME = Handel_Ini.IniReadValue("FABOARD4_ReportEmail", "CLASS1_NAME", Server.MapPath("~/Ipsmart.ini"));
+                                        EMAILSTATUSTBL.CCMAIL = Handel_Ini.IniReadValue("FABOARD4_ReportEmail", "CCMAIL", Server.MapPath("~/Ipsmart.ini"));
+
                                         det.EMAILSTATUSTBL = EMAILSTATUSTBL;
                                     }
 
@@ -405,7 +419,7 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-        public string addFavorite(string MENU_ID, string MENU_INDEX,string MENU_CHECK)
+        public string addFavorite(string MENU_ID, string MENU_INDEX, string MENU_CHECK)
         {
             string schema = Cn.Getschema;
             string MODULE_CODE = Session["ModuleCode"].ToString();
@@ -1284,6 +1298,7 @@ namespace Improvar.Controllers
             }
             return Json(dic, JsonRequestBehavior.AllowGet);
         }
+       
 
     }
 }

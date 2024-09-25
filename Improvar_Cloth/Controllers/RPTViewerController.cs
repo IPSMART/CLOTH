@@ -20,6 +20,8 @@ namespace Improvar.Controllers
         MasterHelp masterhelp = new MasterHelp();
         Connection Cn = new Connection();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
+        string path_Save = @"C:\\Ipsmart\\Temp";
+
         // GET: RPTViewer
         public ActionResult PrintViewer()
         {
@@ -76,15 +78,22 @@ namespace Improvar.Controllers
                 return View(PV1);
             }
         }
-        public ActionResult GetExcel()
+        public ActionResult GetExcel(string RepNM = "")
         {
             string ReportName = "";
-            var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
-            var uri = new Uri(PreviousUrl);//Create Virtually Query String
-            var queryString = HttpUtility.ParseQueryString(uri.Query);
-            if (queryString.AllKeys.Contains("ReportName"))
+            if (RepNM == "")
             {
-                ReportName = queryString.Get("ReportName").ToString();
+                var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
+                var uri = new Uri(PreviousUrl);//Create Virtually Query String
+                var queryString = HttpUtility.ParseQueryString(uri.Query);
+                if (queryString.AllKeys.Contains("ReportName"))
+                {
+                    ReportName = queryString.Get("ReportName").ToString();
+                }
+            }
+            else
+            {
+                ReportName = RepNM;
             }
             PrintViewer PV = (Improvar.Models.PrintViewer)System.Web.HttpContext.Current.Session[ReportName];
             string HTML = PV.SetReportContaint[0].GetHtml;
@@ -113,20 +122,38 @@ namespace Improvar.Controllers
 
             return PartialView();
         }
-        public ActionResult GetPDF()
+        public ActionResult GetPDF(string RepNM = "", string Action = "")
         {
 
             string ReportName = "";
-            var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
-            var uri = new Uri(PreviousUrl);//Create Virtually Query String
-            var queryString = HttpUtility.ParseQueryString(uri.Query);
-            if (queryString.AllKeys.Contains("ReportName"))
+            if (RepNM == "")
             {
-                ReportName = queryString.Get("ReportName").ToString();
+                var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
+                var uri = new Uri(PreviousUrl);//Create Virtually Query String
+                var queryString = HttpUtility.ParseQueryString(uri.Query);
+                if (queryString.AllKeys.Contains("ReportName"))
+                {
+                    ReportName = queryString.Get("ReportName").ToString();
+                }
             }
-            PrintViewer PV = (Improvar.Models.PrintViewer)TempData[ReportName];
-            TempData.Keep();
+            else
+            {
+                ReportName = RepNM;
+            }
+            PrintViewer PV = (Improvar.Models.PrintViewer)System.Web.HttpContext.Current.Session[ReportName];
             string HTML = PV.SetReportContaint[0].GetHtml;
+            //HTML = HTML.Replace("border:1px", "border:0.1pt");
+            //HTML = HTML.Replace("border: 1px", "border:0.1pt");
+            //HTML = HTML.Replace("border-top: 1px", "border-top: 0.1pt");
+            //HTML = HTML.Replace("border-bottom: 1px", "border-bottom: 0.1pt");
+            //HTML = HTML.Replace("border-left: 1px", "border-left: 0.1pt");
+            //HTML = HTML.Replace("border-right: 1px", "border-right: 0.1pt");
+            //HTML = HTML.Replace("border-top: 2px", "border-top: 0.1pt");
+            //HTML = HTML.Replace("border-bottom: 2px", "border-bottom: 0.1pt");
+            //HTML = HTML.Replace("border-left: 2px", "border-left: 0.1pt");
+            //HTML = HTML.Replace("border-right: 2px", "border-right: 0.1pt");
+            //HTML = HTML.Replace("border: hidden", "border: hidden");
+            //HTML = HTML.Replace("<table", "<table border='1'");
 
             StyleSheet st = new StyleSheet();
             st.LoadStyle("body", "fontsize", "8");
@@ -138,30 +165,87 @@ namespace Improvar.Controllers
             HTML = System.Text.RegularExpressions.Regex.Replace(HTML, "<script.*?</script>", "", System.Text.RegularExpressions.RegexOptions.Singleline | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             //HTML = HTML.Replace("px", "");
 
-            StringReader sr = new StringReader(HTML);
-            Document pdfDoc = new Document(PageSize.A2, 10f, 10f, 10f, 0f);
+            byte[] pdfBytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(HTML);
 
-            HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-            MemoryStream memoryStream = new MemoryStream();
-            PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
-            pdfDoc.Open();
-            htmlparser.Parse(sr);
-            pdfDoc.Close();
-            byte[] bytes = memoryStream.ToArray();
-            memoryStream.Close();
-            Response.ClearContent();
-            Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment; filename=" + MyGlobal.ReportName + ".pdf");
-            Response.ContentType = "application/pdf";
-            Response.Charset = "";
-            Response.OutputStream.Write(bytes, 0, bytes.Length);
-            Response.Flush();
-            Response.End();
+            //StringReader sr = new StringReader(HTML);
+            //Document pdfDoc = new Document();
+
+            //HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+            //MemoryStream memoryStream = new MemoryStream();
+            //PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
+            //pdfDoc.Open();
+            //htmlparser.Parse(sr);
+            //pdfDoc.Close();
+            //byte[] bytes = memoryStream.ToArray();
+            //memoryStream.Close();
+            if (Action == "Save")
+            {
+                string filePath = path_Save + "\\" + ReportName + ".pdf";
+                System.IO.File.WriteAllBytes(filePath, pdfBytes);
+            }
+            else
+            {
+                System.Web.HttpContext.Current.Response.ClearContent();
+                System.Web.HttpContext.Current.Response.Buffer = true;
+                System.Web.HttpContext.Current.Response.AddHeader("content-disposition", "attachment; filename=" + ReportName + ".pdf");
+                System.Web.HttpContext.Current.Response.ContentType = "application/pdf";
+                System.Web.HttpContext.Current.Response.Charset = "";
+                System.Web.HttpContext.Current.Response.OutputStream.Write(pdfBytes, 0, pdfBytes.Length);
+                System.Web.HttpContext.Current.Response.Flush();
+                System.Web.HttpContext.Current.Response.End();
+            }
             return PartialView();
         }
+
+        //public ActionResult GetPDF()
+        //{
+
+        //    string ReportName = "";
+        //    var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
+        //    var uri = new Uri(PreviousUrl);//Create Virtually Query String
+        //    var queryString = HttpUtility.ParseQueryString(uri.Query);
+        //    if (queryString.AllKeys.Contains("ReportName"))
+        //    {
+        //        ReportName = queryString.Get("ReportName").ToString();
+        //    }
+        //    PrintViewer PV = (Improvar.Models.PrintViewer)TempData[ReportName];
+        //    TempData.Keep();
+        //    string HTML = PV.SetReportContaint[0].GetHtml;
+
+        //    StyleSheet st = new StyleSheet();
+        //    st.LoadStyle("body", "fontsize", "8");
+        //    //HTML = HTML.Replace("font-size:10px;", "font-size:7px;");
+        //    //HTML = HTML.Replace("font-size:13px;", "font-size:7px;");
+        //    //HTML = HTML.Replace("font-size:14px;", "font-size:9pt;");
+        //    //HTML = HTML.Replace("font-size:17px;", "font-size:9pt;");
+        //    //HTML = HTML.Replace("font-size:9pt;", "font-size:7px;");
+        //    HTML = System.Text.RegularExpressions.Regex.Replace(HTML, "<script.*?</script>", "", System.Text.RegularExpressions.RegexOptions.Singleline | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        //    //HTML = HTML.Replace("px", "");
+
+        //    StringReader sr = new StringReader(HTML);
+        //    Document pdfDoc = new Document(PageSize.A2, 10f, 10f, 10f, 0f);
+
+        //    HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+        //    MemoryStream memoryStream = new MemoryStream();
+        //    PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
+        //    pdfDoc.Open();
+        //    htmlparser.Parse(sr);
+        //    pdfDoc.Close();
+        //    byte[] bytes = memoryStream.ToArray();
+        //    memoryStream.Close();
+        //    Response.ClearContent();
+        //    Response.Buffer = true;
+        //    Response.AddHeader("content-disposition", "attachment; filename=" + MyGlobal.ReportName + ".pdf");
+        //    Response.ContentType = "application/pdf";
+        //    Response.Charset = "";
+        //    Response.OutputStream.Write(bytes, 0, bytes.Length);
+        //    Response.Flush();
+        //    Response.End();
+        //    return PartialView();
+        //}
         public ActionResult GetFreez(string freezIndex)
         {
-            string ReportName = "";string extr_col = "";
+            string ReportName = ""; string extr_col = "";
             var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
             var uri = new Uri(PreviousUrl);//Create Virtually Query String
             var queryString = HttpUtility.ParseQueryString(uri.Query);
@@ -177,7 +261,7 @@ namespace Improvar.Controllers
             string html = PV1.SetReportContaint[0].GetHtml;
             if (IR.Columns.Contains("doclink"))
             {
-                extr_col="doclink";
+                extr_col = "doclink";
             }
             PrintViewer PV = HC.ShowReport3(IR, ReportName, "", "", true, true, "L", false, Convert.ToInt32(rowColindex[1]), Colindex - 3, PV1, extr_col);
             string HTML1 = PV.SetReportContaint[0].GetHtml;
@@ -233,11 +317,12 @@ namespace Improvar.Controllers
                         }
                         newdt.Columns.Remove("flag");
                         newdt.Columns.Remove("celldesign");
-                        if(newdt.Columns.Contains("doclink"))
-                        { newdt.Columns.Remove("doclink");
+                        if (newdt.Columns.Contains("doclink"))
+                        {
+                            newdt.Columns.Remove("doclink");
                             extr_col = "doclink";
                         }
-                        
+
                     }
                     //remove a blank row from datatable
                     //newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrWhiteSpace(field as string))).CopyToDataTable();
@@ -259,8 +344,8 @@ namespace Improvar.Controllers
                     int rowslength = PV.HeaderArray.GetLength(0);
                     int collength = PV.HeaderArray.GetLength(1);
                     string hdrvalue = "";
-                    int i1 = 0;int i2 = 0;int i3 = 0;
-                    if (extr_col == "") { i1 = 3; i2 = 1; i3 = 2; } else { i1 = 4;i2 = 2; i3 = 3; }
+                    int i1 = 0; int i2 = 0; int i3 = 0;
+                    if (extr_col == "") { i1 = 3; i2 = 1; i3 = 2; } else { i1 = 4; i2 = 2; i3 = 3; }
                     for (int i = i1; i < collength; i++)
                     {
                         hdrvalue = "";
@@ -300,7 +385,7 @@ namespace Improvar.Controllers
             }
             return Content("");
         }
-        public ActionResult CheckDocument(string autono,string extr_col="")
+        public ActionResult CheckDocument(string autono, string extr_col = "")
         {
             try
             {
@@ -311,32 +396,38 @@ namespace Improvar.Controllers
                 string scmI = CommVar.InvSchema(UNQSNO);
                 string scmP = CommVar.PaySchema(UNQSNO);
                 string sql = "", str = "", PopupDetails = "", RecordCnt = "", scm = "", docsrc = "", docdesc = "", docno = "";
-                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-                sql += "from " + scmS + ".t_cntrl_hdr_doc x," + scmS + ".t_cntrl_hdr y " + Environment.NewLine;
-                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
-                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                if (scmS != "")
+                {
+                    sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                    sql += "from " + scmS + ".t_cntrl_hdr_doc x," + scmS + ".t_cntrl_hdr y " + Environment.NewLine;
+                    sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                    sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                }
 
-                sql += "union all " + Environment.NewLine;
-
-                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-                sql += "from " + scmF + ".t_cntrl_hdr_doc x," + scmF + ".t_cntrl_hdr y " + Environment.NewLine;
-                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
-                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-
-                sql += "union all " + Environment.NewLine;
-
-                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-                sql += "from " + scmI + ".t_cntrl_hdr_doc x," + scmI + ".t_cntrl_hdr y " + Environment.NewLine;
-                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
-                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-
-                sql += "union all " + Environment.NewLine;
-
-                sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-                sql += "from " + scmP + ".t_cntrl_hdr_doc x," + scmP + ".t_cntrl_hdr y " + Environment.NewLine;
-                sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
-                sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
-
+                if (scmF != "")
+                {
+                    if (sql != "") sql += "union all " + Environment.NewLine;
+                    sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                    sql += "from " + scmF + ".t_cntrl_hdr_doc x," + scmF + ".t_cntrl_hdr y " + Environment.NewLine;
+                    sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                    sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                }
+                if (scmI != "")
+                {
+                    if (sql != "") sql += "union all " + Environment.NewLine;
+                    sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                    sql += "from " + scmI + ".t_cntrl_hdr_doc x," + scmI + ".t_cntrl_hdr y " + Environment.NewLine;
+                    sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                    sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                }
+                if (scmP != "")
+                {
+                    if (sql != "") sql += "union all " + Environment.NewLine;
+                    sql += "select count(*)cnt,x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                    sql += "from " + scmP + ".t_cntrl_hdr_doc x," + scmP + ".t_cntrl_hdr y " + Environment.NewLine;
+                    sql += "where x.autono = y.autono(+) and x.autono in (" + autono + ")" + Environment.NewLine;
+                    sql += "group by x.autono,y.modcd,y.docno,y.docdt " + Environment.NewLine;
+                }
                 DataTable dt = masterhelp.SQLquery(sql);
                 if (dt != null && dt.Rows.Count > 0)
                 {
@@ -438,6 +529,7 @@ namespace Improvar.Controllers
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         PrintViewer PV = new PrintViewer();
         Connection Cn = new Connection();
+        MasterHelp masterhelp = new MasterHelp();
         public static string[,] headerArray;
         public string SpanColumnContaint { get; set; }
         public string SpanColumnLength { get; set; }
@@ -774,7 +866,8 @@ namespace Improvar.Controllers
                                     if (dammyCOLSPAN.Length > 1)
                                     {
                                         InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";
-                                        x += 4;
+                                        //x += 4;
+                                        x += (dammyCOLSPAN[1].retInt()+2);
                                     }
                                     else
                                     {
@@ -836,8 +929,12 @@ namespace Improvar.Controllers
             if (extr_col != "")
             { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
             else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
-            PV.Title = CommVar.LocName(UNQSNO);
-            PV.Vname = CommVar.CompName(UNQSNO);
+            //PV.Title = CommVar.LocName(UNQSNO);
+            //PV.Vname = CommVar.CompName(UNQSNO);
+            string compdet = GetComptbl();
+            PV.Title = compdet.retCompValue("locnm");
+            PV.Vname = compdet.retCompValue("compnm");
+
             PV.Para1 = header1; PV.Para2 = header2;
             PV.AlternetiveRowColor = alternativerowcolor;
             PV = GetResponsiveHTML(IR, PV, headerArray);
@@ -945,7 +1042,7 @@ namespace Improvar.Controllers
             PV.TotReportWidth += (colno * 6);
         }
 
-        public void RepStart(DataTable IR, int noheadrow = 2,string extr_col="")
+        public void RepStart(DataTable IR, int noheadrow = 2, string extr_col = "")
         {
             int aryA = noheadrow; int aryB = 3;
             string[,] hdArray = new string[aryA, aryB];
@@ -953,14 +1050,14 @@ namespace Improvar.Controllers
             IR.Columns.Add("dammy", typeof(string));
             IR.Columns.Add("flag", typeof(string));
             IR.Columns.Add("celldesign", typeof(string));
-            if(extr_col.Count()>0)
+            if (extr_col.Count() > 0)
             {
                 var extr_col_add = extr_col.Split(',');
                 for (int i = 0; i <= extr_col_add.Count() - 1; i++)
                 { IR.Columns.Add(extr_col_add[i], typeof(string)); }
             }
-           
-            
+
+
         }
         public PrintViewer ShowReport2(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
             string orientation = "P", Boolean alternativerowcolor = true, string RowIDColumnNM = "", bool expand = false, string extr_col = "")
@@ -974,9 +1071,11 @@ namespace Improvar.Controllers
             { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
             else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
             PV.AlternetiveRowColor = true;
-            PV.Title = CommVar.LocName(UNQSNO);
-            PV.Vname = CommVar.CompName(UNQSNO);
-
+            //PV.Title = CommVar.LocName(UNQSNO);
+            //PV.Vname = CommVar.CompName(UNQSNO);
+            string compdet = GetComptbl();
+            PV.Title = compdet.retCompValue("locnm");
+            PV.Vname = compdet.retCompValue("compnm");
             PV.Para1 = header1; PV.Para2 = header2;
 
             PV.AlternetiveRowColor = alternativerowcolor;
@@ -998,9 +1097,11 @@ namespace Improvar.Controllers
             { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
             else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
             PV.AlternetiveRowColor = true;
-            PV.Title = CommVar.LocName(UNQSNO);
-            PV.Vname = CommVar.CompName(UNQSNO);
-
+            //PV.Title = CommVar.LocName(UNQSNO);
+            //PV.Vname = CommVar.CompName(UNQSNO);
+            string compdet = GetComptbl();
+            PV.Title = compdet.retCompValue("locnm");
+            PV.Vname = compdet.retCompValue("compnm");
             PV.Para1 = header1; PV.Para2 = header2;
 
             PV.AlternetiveRowColor = alternativerowcolor;
@@ -1023,9 +1124,11 @@ namespace Improvar.Controllers
             { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
             else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
 
-            PV.Title = CommVar.LocName(UNQSNO);
-            PV.Vname = CommVar.CompName(UNQSNO);
-
+            //PV.Title = CommVar.LocName(UNQSNO);
+            //PV.Vname = CommVar.CompName(UNQSNO);
+            string compdet = GetComptbl();
+            PV.Title = compdet.retCompValue("locnm");
+            PV.Vname = compdet.retCompValue("compnm");
             PV.Para1 = header1; PV.Para2 = header2;
 
             PV.AlternetiveRowColor = alternativerowcolor;
@@ -1723,17 +1826,17 @@ namespace Improvar.Controllers
             }
         }
         public PrintViewer ShowReport3(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-          string orientation = "P", Boolean alternativerowcolor = true, int RowIndex = 0, int colIndex = 0, PrintViewer PV2 = null,string extr_col="")
+          string orientation = "P", Boolean alternativerowcolor = true, int RowIndex = 0, int colIndex = 0, PrintViewer PV2 = null, string extr_col = "")
         {
             PV = PV2;
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
             { PV.Portrait = true; }
             else { PV.Portrait = false; }
-            if(extr_col!="")
+            if (extr_col != "")
             { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4; }
             else { PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3; }
-            
+
             PV.AlternetiveRowColor = true;
             // PV.Title = CommVar.LocName(UNQSNO);
             //  PV.Vname = CommVar.CompName(UNQSNO); 
@@ -2116,7 +2219,7 @@ namespace Improvar.Controllers
         }
 
         public PrintViewer ShowReportWithImage(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-        string orientation = "P", Boolean alternativerowcolor = true, string Link_Var = "",string extr_col = "")
+        string orientation = "P", Boolean alternativerowcolor = true, string Link_Var = "", string extr_col = "")
         {
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
@@ -2125,9 +2228,11 @@ namespace Improvar.Controllers
             PV.IR = IR;
             PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 4;
 
-            PV.Title = CommVar.LocName(UNQSNO);
-            PV.Vname = CommVar.CompName(UNQSNO);
-
+            //PV.Title = CommVar.LocName(UNQSNO);
+            //PV.Vname = CommVar.CompName(UNQSNO);
+            string compdet = GetComptbl();
+            PV.Title = compdet.retCompValue("locnm");
+            PV.Vname = compdet.retCompValue("compnm");
             PV.Para1 = header1; PV.Para2 = header2;
 
             PV.AlternetiveRowColor = alternativerowcolor;
@@ -2139,7 +2244,7 @@ namespace Improvar.Controllers
             return PV;
         }
 
-        public PrintViewer GetResponsiveHTMLWithImage(DataTable Table, PrintViewer pv, string[,] headerArray1, string Link_Var,string extr_col="")
+        public PrintViewer GetResponsiveHTMLWithImage(DataTable Table, PrintViewer pv, string[,] headerArray1, string Link_Var, string extr_col = "")
         {
             List<ReportContaint> listemail = new List<ReportContaint>();
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -2314,7 +2419,7 @@ namespace Improvar.Controllers
                                     {
                                         string linkpara = Table.Rows[i]["doclink"].retStr().Replace("'", "\'");
                                         InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'> ";//onclick=ShowPopup();
-                                        InnerRow = InnerRow + " <a href='#' onclick=\"CheckDocument(" + linkpara + ",'"+ extr_col + "');return false;\">" + Table.Rows[i][x].ToString() + " </a>  <script>Rmenu('col_" + i + "_" + x + "','',1);</script> </td>";
+                                        InnerRow = InnerRow + " <a href='#' onclick=\"CheckDocument(" + linkpara + ",'" + extr_col + "');return false;\">" + Table.Rows[i][x].ToString() + " </a>  <script>Rmenu('col_" + i + "_" + x + "','',1);</script> </td>";
                                     }
                                     else if (sd == typeof(string) && chk != "doclink") InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'" + " style='text-align:left;border-left: 1px outset;border-top: 1px outset;padding-right: 2px;padding-left: 2px; " + Table.Rows[i]["Flag"].ToString() + cellform + "'>" + Table.Rows[i][x].ToString() + " <script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";//onclick=ShowPopup();
 
@@ -2364,8 +2469,11 @@ namespace Improvar.Controllers
 
             PV.ColspanForPDF = PV.HeaderArray.GetLength(1);
 
-            PV.Title = CommVar.LocName(UNQSNO);
-            PV.Vname = CommVar.CompName(UNQSNO);
+            //PV.Title = CommVar.LocName(UNQSNO);
+            //PV.Vname = CommVar.CompName(UNQSNO);
+            string compdet = GetComptbl();
+            PV.Title = compdet.retCompValue("locnm");
+            PV.Vname = compdet.retCompValue("compnm");
 
             PV.Para1 = header1; PV.Para2 = header2;
             PV.Para3 = header3;
@@ -2601,7 +2709,25 @@ namespace Improvar.Controllers
                 return PV;
             }
         }
+        public string GetComptbl()
+        {
+            string sql = "", scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            sql = "";
+            sql += "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.statecd, b.panno, a.tanno, b.cinno, b.propname, ";
+            sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
+            sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
+            sql += "decode(nvl(a.phno1std,0),0,'',to_char(a.phno1std)||'-')||to_char(a.phno1) phno1, ";
+            sql += "decode(nvl(a.phno2std,0),0,'',to_char(a.phno2std)||'-')||to_char(a.phno2) phno2, ";
+            sql += "decode(nvl(a.phno3std,0),0,'',to_char(a.phno3std)||'-')||to_char(a.phno3) phno3, ";
+            sql += "a.statno_1, a.statno_2, a.statno_3, ";
+            sql += "a.state lstate, a.statecd lstatecd, a.country lcountry, a.gstno, a.regemailid, a.regmobile,a.locnm ";
+            sql += "from " + scmf + ".m_loca a, " + scmf + ".m_comp b ";
+            sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
+            DataTable tbl = masterhelp.SQLquery(sql);
 
+            string str = masterhelp.ToReturnFieldValues("", tbl);
+            return str;
+        }
 
     }
 }

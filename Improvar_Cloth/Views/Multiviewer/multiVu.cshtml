@@ -412,6 +412,28 @@
                 }
             });
         }
+        function OS_RM_RepMailSend(index) {
+            debugger;
+            if (!emptyFieldCheck("Please Select / Enter CC Mail", "CCMAIL")) { return false; }
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("OS_RM_RepMailSend", "Rep_BlWise")",
+                beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&index=" + index,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result != " ") {
+                    msgSuccess(result)
+                } else {
+                    msgInfo(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+        }
     </script>
     <script>
         function UpdateLedger(index) {
@@ -457,6 +479,41 @@
 
             }
         });
+    </script>
+    <script>
+        function SelectBlurData(id, CODE, NAME, URLNAME) {
+                if (id == "") {
+                    $("#" + CODE).val("");
+                    $("#" + NAME).val("");
+                }
+                else {
+                    $.ajax({
+                        type: 'POST',
+                        url: "@Url.Action("GetClass1Details", "Rep_BlWise")",
+                        data: { val: id },
+                        success: function (result) {
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (MSG >= 0) {
+                                $("#tempHDD").val(result);
+                                var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                                $("#" + CODE).val(str[0].toString());
+                                $("#" + NAME).val(str[1].toString());
+                            }
+                            else {
+                                msgInfo(result);
+                                $("#" + CODE).val("");
+                                $("#" + NAME).val("");
+                                message_value = CODE;
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            $("#WaitingMode").hide();
+                            msgError(XMLHttpRequest.responseText);
+                            $("body span h1").remove(); $("#msgbody_error style").remove();
+                        }
+                    });
+                }
+        }
     </script>
 </head>
 

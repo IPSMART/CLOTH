@@ -41,6 +41,10 @@ namespace Improvar.Models
         public string CCMAIL { get; set; }
         public string PARTY_CODE { get; set; }
         public string PARTY_NAME { get; set; }
+        public string CLASS1_CODE { get; set; }
+        public string CLASS1_NAME { get; set; }
+
+
     }
     public class SPREPORT
     {

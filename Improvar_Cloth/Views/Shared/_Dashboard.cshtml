@@ -407,6 +407,15 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td style="width:113px;">
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.CLASS1_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CLASS1_CODE", onkeyup = "GetHelp('" + @Url.Action("GetClass1Details", "Rep_BlWise") + "','CLASS1_CODE/CLASS1_NAME','1/0','Class 1 Details','CLASS1_CODE')", onblur = "SelectBlurData(this.value,'CLASS1_CODE','CLASS1_NAME','GetClass1Details');", @placeholder = "Code", maxlength = 8 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetClass1Details",  "Rep_BlWise")','CLASS1_CODE/CLASS1_NAME','1/0','Class 1 Details','CLASS1_CODE')" />
+                                            </td>
+                                            <td>
+                                                @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.CLASS1_NAME, new { htmlAttributes = new { @class = "form-control", id = "CLASS1_NAME", maxlength = 20, @title = "Only for View", @placeholder = "Class1 Name", @TabIndex = -1, @readonly = "readonly" } })
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>
                                                 @Html.Label("", "CC Mail")
                                             </td>
@@ -421,6 +430,7 @@
                                 @*<button class="btn-sm btn-info" name="btnPostAction" onclick="FormSubmit('@Model.DashboardList[index].BoardCode')" style="margin-top: 5px;">Email</button>*@
                                 <input type="button" class="btn-sm btn-info" onclick="OS_RM_MailSend('@index');" name="Email" value="Email" />
                                 <input type="button" class="btn-sm btn-info" onclick="OS_RM_SMSSend('@index');" name="SMS" value="SMS" />
+                                <input type="button" class="btn-sm btn-info" onclick="OS_RM_RepMailSend('@index');" name="ReportEmail" value="Report Email" />
                                 <img src="~/Image/squere.png" style="float:right;padding-top:3px;padding-right:25px" width="62px" height="40px" />
                             </div>
                         </div>

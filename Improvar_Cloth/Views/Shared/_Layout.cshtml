@@ -499,6 +499,95 @@
 
                             if (Model.MENU_TYPE == "E")
                             {
+                                if (Model.CancelRecord == false)
+                                {
+                                    DateTime backdate = new DateTime(1999, 12, 12);
+                                    if (Model.DeleteDay > 0)
+                                    {
+                                        backdate = System.DateTime.Now.AddDays(-Model.DeleteDay);
+                                    }
+                                    else
+                                    {
+                                        backdate = DateTime.ParseExact(Model.mindate, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                                    }
+                                    //    DateTime backdate = System.DateTime.Now.AddDays(-Model.DeleteDay);
+                                    DateTime docdt = System.DateTime.Now;
+                                    if (Model.DOCDT != null)
+                                    {
+                                        docdt = Model.DOCDT.Value;
+                                    }
+                                    DateTime lockdate = (DateTime)Model.LOCKDT;
+                                    if (lockdate.Date == new DateTime(1900, 12, 12))
+                                    {
+                                        if (docdt.Date >= backdate.Date || docdt.Date == DateTime.Now.Date)
+                                        {
+                                        <li class="menu-item" id="trash_nav">
+                                            <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
+                                        </li>
+                                        @*if (Model.CancelRecord == true)
+                                        {
+                                            <li class="menu-item" id="floppy_remove_nav">
+                                                <a href="#" title="UnCancel Record" onclick="return entryundoCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#ffd800"></span></a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+
+                                            <li class="menu-item" id="floppy_remove_nav">
+                                                <a href="#" title="Cancel Record" onclick="return entryCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#fa0808"></span></a>
+                                            </li>
+                                        }*@
+                                    }
+                                }
+                                else if (docdt.Date >= lockdate.Date)
+                                {
+                                    <li class="menu-item" id="trash_nav">
+                                        <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
+                                    </li>
+                                    @*if (Model.CancelRecord == true)
+                                    {
+                                        <li class="menu-item" id="floppy_remove_nav">
+                                            <a href="#" title="UnCancel Record" onclick="return entryundoCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#ffd800"></span></a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+
+                                        <li class="menu-item" id="floppy_remove_nav">
+                                            <a href="#" title="Cancel Record" onclick="return entryCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#fa0808"></span></a>
+                                        </li>
+                                    }*@
+                                }
+                            }
+                        }
+                        else
+                        {
+                                <li class="menu-item" id="trash_nav">
+                                    <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
+                                </li>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (Model.DefaultAction == "E" || Model.DefaultAction == "A")
+                        {
+                            <li class="menu-item" id="trash_nav">
+                                <a href="#" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" title="Delete Mode(Alt+D)" style="font-size:larger;color:darkgray"></span></a>
+                            </li>
+                        }
+                    }
+                }
+                @if (Model.Delete == "D" || Model.Edit == "E")
+                {
+                    setind = Model.Index + 1;
+                    if (Model.DefaultAction == "V")
+                    {
+                        if (TotalCount >= 0)
+                        {
+
+                            if (Model.MENU_TYPE == "E")
+                            {
                                 DateTime backdate = new DateTime(1999, 12, 12);
                                 if (Model.DeleteDay > 0)
                                 {
@@ -519,9 +608,6 @@
                                 {
                                     if (docdt.Date >= backdate.Date || docdt.Date == DateTime.Now.Date)
                                     {
-                                        <li class="menu-item" id="trash_nav">
-                                            <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
-                                        </li>
                                         if (Model.CancelRecord == true)
                                         {
                                             <li class="menu-item" id="floppy_remove_nav">
@@ -539,9 +625,6 @@
                                 }
                                 else if (docdt.Date >= lockdate.Date)
                                 {
-                                    <li class="menu-item" id="trash_nav">
-                                        <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
-                                    </li>
                                     if (Model.CancelRecord == true)
                                     {
                                         <li class="menu-item" id="floppy_remove_nav">
@@ -557,21 +640,6 @@
                                     }
                                 }
                             }
-                            else
-                            {
-                                <li class="menu-item" id="trash_nav">
-                                    <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
-                                </li>
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (Model.DefaultAction == "E" || Model.DefaultAction == "A")
-                        {
-                            <li class="menu-item" id="trash_nav">
-                                <a href="#" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" title="Delete Mode(Alt+D)" style="font-size:larger;color:darkgray"></span></a>
-                            </li>
                         }
                     }
                 }
@@ -957,7 +1025,7 @@
                 <div id="Audit_overlay">
                     <div id="Audit_text">
                         <script type="text/javascript">
-                            document.body.style.background="white";
+                            //document.body.style.background="white";
                         </script>
                         <div style="padding:5px">
                             <p><b>Reason:</b></p>
