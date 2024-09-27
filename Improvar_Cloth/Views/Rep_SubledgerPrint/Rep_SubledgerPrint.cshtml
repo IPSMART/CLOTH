@@ -15,7 +15,8 @@
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
-    { <input type="hidden" id="trnsportlinkcd" value="T" />
+    {
+        <input type="hidden" id="trnsportlinkcd" value="T" />
         <div class="form-horizontal">
             @Html.HiddenFor(s => s.DefaultAction)
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
@@ -53,6 +54,16 @@
                         @(new HtmlString(Model.Slnm))
                     </div>
                 </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Party Grouping")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.SubLeg_Grp))
+                    </div>
+                </div>
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-md-8">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -71,7 +82,7 @@
                             @Html.Label("", "Regd.Off.Address")
                         </div>
                     </div>
-                    <div class="col-md-11">
+                    <div class="col-md-3">
                         <div class="editor-field" style="margin-top:6px;">
                             @Html.CheckBoxFor(model => model.Checkbox1)
                         </div>
@@ -83,7 +94,7 @@
                             @Html.Label("", "Show Auto Reminder")
                         </div>
                     </div>
-                    <div class="col-md-11">
+                    <div class="col-md-3">
                         <div class="editor-field" style="margin-top:6px;">
                             @Html.CheckBoxFor(model => model.Checkbox2)
                         </div>
@@ -116,34 +127,44 @@
                             @Html.EditorFor(model => model.TEXTBOX7, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
                         </div>
                     </div>
-                    </div>
-                    <div class="row" style="margin-top:10PX">
-                        <div class="col-md-8">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Report Type")
-                            </div>
-                        </div>
-                        <div class="col-lg-9">
-                            <label class="radio-inline">
-                                @Html.RadioButtonFor(g => g.TEXTBOX5, "All", new { @checked = "checked" })  @Html.Label("Show All Ledger")
-                            </label>
-                            <label class="radio-inline">
-                                @Html.RadioButtonFor(g => g.TEXTBOX5, "Correspondence", new { @checked = "checked" })  @Html.Label("Correspondence")
-                            </label>
-                            <label class="radio-inline">
-                                @Html.RadioButtonFor(g => g.TEXTBOX5, "Envelope")  @Html.Label("Envelope")
-                            </label>
-                            <label class="radio-inline">
-                                @Html.RadioButtonFor(g => g.TEXTBOX5, "Excel")  @Html.Label("Excel")
-                            </label>
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Agent")
                         </div>
                     </div>
-                    <div class="row" style="margin-top:10PX">
-                        <div class="col-lg-6">
-                            <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
-                        </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Agslnm))
                     </div>
                 </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX5, "All", new { @checked = "checked" })  @Html.Label("Show All Ledger")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX5, "Correspondence", new { @checked = "checked" })  @Html.Label("Correspondence")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX5, "Envelope")  @Html.Label("Envelope")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX5, "Excel")  @Html.Label("Excel")
+                        </label>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-6">
+                        <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                    </div>
+                </div>
+            </div>
         </div>
     }
     <div class="container">

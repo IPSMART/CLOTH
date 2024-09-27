@@ -15,7 +15,6 @@ namespace Improvar.Controllers
         public static string[,] headerArray;
         Connection Cn = new Connection();
         MasterHelp MasterHelp = new MasterHelp();
-        Salesfunc Salesfunc = new Salesfunc();
         DropDownHelp DropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
 
@@ -58,6 +57,13 @@ namespace Improvar.Controllers
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
                     VE.DropDown_list = (from i in DB1.MS_LINK select new DropDown_list() { value = i.LINKCD, text = i.LINKNM }).OrderBy(s => s.text).ToList();
                     VE.TEXTBOX3 = MasterHelp.ComboFill("linkcd", VE.DropDown_list, 0, 1);
+
+                    VE.DropDown_list_SubLegGrp = DropDownHelp.GetSubLegGrpforSelection();
+                    VE.SubLeg_Grp = MasterHelp.ComboFill("slcdgrpcd", VE.DropDown_list_SubLegGrp, 0, 1);
+
+                    VE.DropDown_list_AGSLCD = DropDownHelp.GetAgSlcdforSelection();
+                    VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_AGSLCD, 0, 1);
+
                     VE.Checkbox1 = true;
                     VE.DefaultView = true;
                     VE.DefaultView = true;
@@ -113,13 +119,68 @@ namespace Improvar.Controllers
                 }
                 DataTable tbl;
                 string query = "";
+                string agslcdsql = "";
+                switch (CommVar.ModuleCode())
+                {
+                    case "SALES":
+                        agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_com a where a.compcd='" + COM + "' group by a.slcd ) b, ";
+                        break;
+                    case "SALESCHEM": case "SALESREC": case "SALESSMPL": case "SALESELEC": case "SALESMKJ":
+                        agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_sddtl a where a.compcd='" + COM + "' group by a.slcd ) b, ";
+                        break;
+                    case "SALESSAREE": case "SALESCLOTH":
+                        agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_com a where a.compcd='" + COM + "' group by a.slcd ) b, ";
+                        break;
+                    case "SALESPOLY":
+                        agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_sddtl a where a.compcd='" + COM + "' group by a.slcd ) b, ";
+                        break;
+                    case "SALKNITFAB":
+                        agslcdsql = "( select a.slcd, max(a.agslcd) agslcd from " + CommVar.SaleSchema(UNQSNO) + ".m_subleg_com a where a.compcd='" + COM + "' group by a.slcd ) b, ";
+                        break;
+                    default:
+                        agslcdsql = "( select '' slcd, '' agslcd from dual ) b, ";
+                        break;
+                }
                 if (reptype == "All")
                 {
-                    query = query + "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF  ";
-                    query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+) ";
-                    if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") ";
-                    query += " order by a.SLNM ";
+                    string selslcdgrpcd = "", agslcdvalue = "", fld = "slcd";
+                    if (FC.AllKeys.Contains("slcdgrpcdvalue")) { selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString()); fld = "parentcd"; }
+                    if (FC.AllKeys.Contains("agslcdvalue")) agslcdvalue = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
+
+                    query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm, ";
+                    query += "a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT from  ";
+
+                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF  ";
+                    query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+)  ";
+                    if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") " + Environment.NewLine;
+                    query += ") a , ";
+
+                    query += agslcdsql + Environment.NewLine;
+
+                    query += "(select a.grpcd, a.parentcd, c.slcdgrpnm||'  '||b.slcdgrpnm parentnm, " + Environment.NewLine;
+                    query += "a.grpcdfull, a.slcdgrpnm, a.class1cd, a.slcd, a.slcdclass1cd from " + Environment.NewLine;
+
+                    query += "(select a.grpcd, a.slcdgrpcd parentcd, a.parentcd rootcd, a.grpcdfull, a.slcdgrpnm, b.class1cd, a.slcd, " + Environment.NewLine;
+                    query += "a.slcd||nvl(b.class1cd,' ') slcdclass1cd " + Environment.NewLine;
+                    query += "from " + scmf + ".m_subleg_grp a, " + scmf + ".m_subleg_grpclass1 b " + Environment.NewLine;
+                    query += "where a.grpcd=b.grpcd(+) and a.slcd is not null ) a, " + Environment.NewLine;
+
+                    query += "(select distinct a.slcdgrpcd, a.slcdgrpnm, a.grpcdfull " + Environment.NewLine;
+                    query += "from " + scmf + ".m_subleg_grp a where a.slcd is null) b, " + Environment.NewLine;
+
+                    query += "(select distinct a.slcdgrpcd, a.slcdgrpnm, a.grpcdfull " + Environment.NewLine;
+                    query += "from " + scmf + ".m_subleg_grp a where a.slcd is null) c " + Environment.NewLine;
+
+                    query += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s," + scmf + ".m_cntrl_hdr t, " + scmf + ".m_subleg z " + Environment.NewLine;
+                    query += " where a.slcd=s.slcd(+) and a.m_autono=t.m_autono(+) and a.slcd=b.slcd(+) and b.agslcd=z.slcd(+) ";
+                    if (selslcdgrpcd.retStr() != "") query += "and (nvl(s.parentcd,' ') in (" + selslcdgrpcd + ") ) " + Environment.NewLine;
+                    if (agslcdvalue != "") query += " and b.agslcd in (" + agslcdvalue + ") " + Environment.NewLine;
+                    if (selslcdgrpcd.retStr() != "") query += " order by s.parentnm,a.SLNM "; else query += " order by a.SLNM ";
                     tbl = MasterHelp.SQLquery(query);
+                    if (tbl.Rows.Count == 0)
+                    {
+                        return Content("No records found");
+                    }
                     if (tbl.Rows.Count != 0)
                     {
                         DataTable IR = new DataTable("mstrep");
@@ -140,28 +201,46 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "REGMOBILE", "string", "c,13", "Mobile");
                         HC.GetPrintHeader(IR, "REGEMAILID", "string", "c,27", "Email");
                         if (VE.Checkbox2 == true) HC.GetPrintHeader(IR, "AUTOREMINDEROFF", "string", "c,10", "Auto Send Email/Sms of reminder disable");
+                        HC.GetPrintHeader(IR, "USR_ENTDT", "string", "c,27", "Entry Date");
+                        HC.GetPrintHeader(IR, "AGSLCD", "string", "c,10", "Agent Code");
+                        HC.GetPrintHeader(IR, "AGSLNM", "string", "c,20", "Agent Name");
 
-                        Int32 i = 0; Int32 maxR = 0;
+                        Int32 i = 0; Int32 maxR = 0, rNo = 0;
                         i = 0; maxR = tbl.Rows.Count - 1;
                         while (i <= maxR)
                         {
-                            IR.Rows.Add("");
-                            IR.Rows[i]["SLCD"] = tbl.Rows[i]["SLCD"];
-                            IR.Rows[i]["SLNM"] = tbl.Rows[i]["SLNM"];
-                            IR.Rows[i]["FULLNAME"] = tbl.Rows[i]["FULLNAME"];
-                            IR.Rows[i]["PARTYCD"] = tbl.Rows[i]["PARTYCD"];
-                            IR.Rows[i]["PARTYNM"] = tbl.Rows[i]["PARTYNM"];
-                            IR.Rows[i]["STATE"] = tbl.Rows[i]["STATE"];
-                            IR.Rows[i]["SLAREA"] = tbl.Rows[i]["SLAREA"];
-                            IR.Rows[i]["ADDRESS"] = tbl.Rows[i]["add1"].ToString() + "," + tbl.Rows[i]["add2"].ToString() + "," + tbl.Rows[i]["add3"].ToString() + "," +
-                                 tbl.Rows[i]["add4"].ToString() + "," + tbl.Rows[i]["add5"].ToString() + "," + tbl.Rows[i]["add6"].ToString() + "," + tbl.Rows[i]["add7"].ToString();
-                            IR.Rows[i]["PANNO"] = tbl.Rows[i]["PANNO"];
-                            IR.Rows[i]["GSTNO"] = tbl.Rows[i]["GSTNO"];
-                            IR.Rows[i]["ADHAARNO"] = tbl.Rows[i]["ADHAARNO"];
-                            IR.Rows[i]["REGMOBILE"] = tbl.Rows[i]["REGMOBILE"];
-                            IR.Rows[i]["REGEMAILID"] = tbl.Rows[i]["REGEMAILID"];
-                            if (VE.Checkbox2 == true) IR.Rows[i]["AUTOREMINDEROFF"] = tbl.Rows[i]["AUTOREMINDEROFF"].retStr() == "Y" ? "Yes" : "No";
-                            i = i + 1;
+                            string fldval = tbl.Rows[i][fld].retStr();
+                            if (selslcdgrpcd != "")
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + fldval + "  " + " </span>" + tbl.Rows[i]["parentnm"].retStr();
+                                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                            }
+                            while (tbl.Rows[i][fld].retStr() == fldval)
+                            {
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                IR.Rows[rNo]["SLCD"] = tbl.Rows[i]["SLCD"];
+                                IR.Rows[rNo]["SLNM"] = tbl.Rows[i]["SLNM"];
+                                IR.Rows[rNo]["FULLNAME"] = tbl.Rows[i]["FULLNAME"];
+                                IR.Rows[rNo]["PARTYCD"] = tbl.Rows[i]["PARTYCD"];
+                                IR.Rows[rNo]["PARTYNM"] = tbl.Rows[i]["PARTYNM"];
+                                IR.Rows[rNo]["STATE"] = tbl.Rows[i]["STATE"];
+                                IR.Rows[rNo]["SLAREA"] = tbl.Rows[i]["SLAREA"];
+                                IR.Rows[rNo]["ADDRESS"] = tbl.Rows[i]["add1"].ToString() + "," + tbl.Rows[i]["add2"].ToString() + "," + tbl.Rows[i]["add3"].ToString() + "," +
+                                     tbl.Rows[i]["add4"].ToString() + "," + tbl.Rows[i]["add5"].ToString() + "," + tbl.Rows[i]["add6"].ToString() + "," + tbl.Rows[i]["add7"].ToString();
+                                IR.Rows[rNo]["PANNO"] = tbl.Rows[i]["PANNO"];
+                                IR.Rows[rNo]["GSTNO"] = tbl.Rows[i]["GSTNO"];
+                                IR.Rows[rNo]["ADHAARNO"] = tbl.Rows[i]["ADHAARNO"];
+                                IR.Rows[rNo]["REGMOBILE"] = tbl.Rows[i]["REGMOBILE"];
+                                IR.Rows[rNo]["REGEMAILID"] = tbl.Rows[i]["REGEMAILID"];
+                                if (VE.Checkbox2 == true) IR.Rows[rNo]["AUTOREMINDEROFF"] = tbl.Rows[i]["AUTOREMINDEROFF"].retStr() == "Y" ? "Yes" : "No";
+                                IR.Rows[rNo]["USR_ENTDT"] = tbl.Rows[i]["USR_ENTDT"];
+                                IR.Rows[rNo]["AGSLCD"] = tbl.Rows[i]["AGSLCD"];
+                                IR.Rows[rNo]["AGSLNM"] = tbl.Rows[i]["AGSLNM"];
+                                i = i + 1;
+                                if (i > maxR) break;
+                            }
+
                         }
 
                         string pghdr1 = "";
@@ -224,7 +303,7 @@ namespace Improvar.Controllers
                     IR.Columns.Add("compemail", typeof(string));
                     IR.Columns.Add("docno", typeof(string));
                     IR.Columns.Add("translnm", typeof(string));
-                    
+
                     Int32 i = 0, rNo = 0, maxR = tbl.Rows.Count - 1;
                     while (i <= maxR)
                     {
@@ -251,7 +330,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["compadd7"] = tblComp.Rows[0]["add7"];
                         IR.Rows[rNo]["compphno"] = tblComp.Rows[0]["regmobile"] == DBNull.Value ? "" : "Ph. " + tblComp.Rows[0]["regmobile"];
                         IR.Rows[rNo]["compemail"] = tblComp.Rows[0]["regemailid"] == DBNull.Value ? "" : "Email : " + tblComp.Rows[0]["regemailid"];
-                        if(VE.TEXTBOX7.retStr()!="") IR.Rows[rNo]["translnm"] = VE.TEXTBOX7.retStr();
+                        if (VE.TEXTBOX7.retStr() != "") IR.Rows[rNo]["translnm"] = VE.TEXTBOX7.retStr();
                         IR.Rows[rNo]["docno"] = "";
                         i++;
                     }
@@ -264,7 +343,7 @@ namespace Improvar.Controllers
                         rptfile = reptype == "Envelope" ? "ENVELOPE" : "CORRES";
                     }
                     string rptname = "~/Report/" + rptfile + ".rpt";
-                    string complogo = Salesfunc.retCompLogo();
+                    string complogo = MasterHelp.retCompLogo();
 
                     ReportDocument reportdocument = new ReportDocument();
                     reportdocument.Load(Server.MapPath(rptname));
