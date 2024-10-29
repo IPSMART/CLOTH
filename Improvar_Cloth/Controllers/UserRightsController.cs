@@ -63,7 +63,7 @@ namespace Improvar.Controllers
 
                 sql = "select a.compcd, a.loccd, a.locnm, b.compnm ";
                 sql += "from " + CommVar.FinSchema(UNQSNO) + ".m_loca a, " + CommVar.FinSchema(UNQSNO) + ".m_comp b, " + comptbl + " c ";
-                sql += "where a.compcd=b.compcd(+) and a.compcd||a.loccd = c.compcd||c.loccd and c.schema_name = '" + CommVar.CurSchema(UNQSNO) + "' ";
+                sql += "where a.compcd=b.compcd(+) and a.compcd||a.loccd = c.compcd||c.loccd and c.schema_name = '" + CommVar.CurSchema(UNQSNO) + "' and c.client_code='"+CommVar.ClientCode(UNQSNO)+"' ";
                 sql += "order by compcd, locnm ";
                 tbl = masterHelp.SQLquery(sql);
                 UR.Comp_List = (from DataRow dr in tbl.Rows
@@ -75,6 +75,7 @@ namespace Improvar.Controllers
                                     comnm = dr["compnm"].ToString(),
                                     locnm = dr["locnm"].ToString(),
                                 }).Distinct().ToList();
+                UR.UnselectComp_List = UR.Comp_List;
                 UR.UNQSNO = UNQSNO;
                 //string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 //if (UR.Comp_List.Count == 0)
@@ -120,13 +121,15 @@ namespace Improvar.Controllers
                 string sql = null;
                 string comcode = CommVar.Compcd(UNQSNO);
                 string LOCCODE = CommVar.Loccd(UNQSNO);
+                string clcd = CommVar.ClientCode(UNQSNO);
+
                 string ModuleCode = MobModuleCode.retStr() != "" ? MobModuleCode.retStr() : CommVar.ModuleCode();
                 string Scm = MobModuleCode.retStr() != "" ? CommVar.FinSchema(UNQSNO) : CommVar.CurSchema(UNQSNO);
                 sql = "select distinct a.MENU_ID,a.MENU_NAME,a.MENU_INDEX,a.MENU_PARENT_ID,a.MENU_PROGCALL,b.USER_RIGHT,b.E_DAY,b.A_DAY,'Y' AS PERDOTNETMENU,'Y' AS ATVDOTNETMENU,b.D_DAY,a.MENU_ORDER_CODE,b.USER_ID,a.menu_type,a.menu_date_option ,a.PKG_INDEX from ("
                     + "Select m.MENU_ID, m.MENU_NAME,m.MENU_INDEX,m.PKG_INDEX, m.MENU_PARENT_ID,  m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL, 'Y' AS PERDOTNETMENU, 'Y' AS ATVDOTNETMENU, m.MENU_ORDER_CODE,m.menu_type,m.menu_date_option from " + SCHEMA + ".APPL_MENU m";
                 sql += " where M.MODULE_CODE = '" + ModuleCode + "')a left join (Select m.MENU_ID, m.MENU_NAME, m.MENU_INDEX, m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL, p.USER_RIGHT, p.E_DAY, p.A_DAY, 'Y' AS PERDOTNETMENU, 'Y' AS ATVDOTNETMENU,"
                     + " p.D_DAY, m.MENU_ORDER_CODE, P.USER_ID from " + SCHEMA + ".APPL_MENU m  inner join " + Scm + ".M_USR_ACS p  on p.MENU_NAME = m.MENU_ID and p.MENU_INDEX = m.MENU_INDEX";
-                sql += "  where M.MODULE_CODE = '" + ModuleCode + "' and P.USER_ID = '" + user + "' and p.compcd='" + comcode + "' and p.loccd = '" + LOCCODE + "')b on  a.MENU_NAME = b.MENU_NAME and a.MENU_INDEX = b.MENU_INDEX and a.MENU_ID = b.MENU_ID order by a.MENU_ORDER_CODE,a.PKG_INDEX";
+                sql += "  where M.MODULE_CODE = '" + ModuleCode + "' and P.USER_ID = '" + user + "' and p.compcd='" + comcode + "' and p.loccd = '" + LOCCODE + "' and p.clcd = '" + clcd + "' )b on  a.MENU_NAME = b.MENU_NAME and a.MENU_INDEX = b.MENU_INDEX and a.MENU_ID = b.MENU_ID order by a.MENU_ORDER_CODE,a.PKG_INDEX";
                 MenuTble = masterHelp.SQLquery(sql);
                 if (MenuTble.Rows.Count > 0)
                 {
@@ -196,7 +199,7 @@ namespace Improvar.Controllers
                         if (menu_row.ItemArray[8].ToString().Trim() == "Y")
                         {
                             string Menu = "<li>";
-                            Menu = Menu + "<input type='checkbox'  id='" + parent + "'/>" + "<label class='tree_label' for='" + parent + "'><img src='../Image/folder1.png' class='folderimg'/>&nbsp;" + mname + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultPermission('" + parent + "',0);>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + parent + "',1);>&nbsp;(Unset)</span>";
+                            Menu = Menu + "<input type='checkbox'  id='" + parent + "'/>" + "<label class='tree_label' for='" + parent + "'><img src='../Image/folder1.png' class='folderimg'/>&nbsp;" + mname + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultPermission('" + parent + "',0);>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + parent + "',1);>&nbsp;(Unset)</span><span class='default_label' onclick=Opencustompermission('" + parent + "');>&nbsp;(Custom)</span>";
                             Menu = Menu + "<ul>";
                             Main_Menu.Add(parent, mname);
                             ManuLine.Add(Menu);
@@ -220,7 +223,7 @@ namespace Improvar.Controllers
                                         string parent1 = boundTable.Rows[x][4].ToString();
                                         string menuid_Child1 = boundTable.Rows[x][0].ToString() + "!" + boundTable.Rows[x][2].ToString();
                                         string SubMenu = "<li>";
-                                        SubMenu = SubMenu + "<input type='checkbox'  id='" + parent1 + "'/>" + "<label class='tree_label' for='" + parent1 + "'><img src='../Image/folder1.png' class='folderimg'/>&nbsp;" + boundTable.Rows[x][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultPermission('" + parent1 + "',0);>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + parent + "',1);>&nbsp;(Unset)</span>";
+                                        SubMenu = SubMenu + "<input type='checkbox'  id='" + parent1 + "'/>" + "<label class='tree_label' for='" + parent1 + "'><img src='../Image/folder1.png' class='folderimg'/>&nbsp;" + boundTable.Rows[x][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultPermission('" + parent1 + "',0);>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + parent1 + "',1);>&nbsp;(Unset)</span><span class='default_label' onclick=Opencustompermission('" + parent1 + "');>&nbsp;(Custom)</span>";
                                         SubMenu = SubMenu + "<ul>";
                                         Main_Menu.Add(parent1, boundTable.Rows[x][1].ToString());
                                         Permission_Details.Add(parent1, boundTable.Rows[x][5] == null ? "" : boundTable.Rows[x][5].ToString() + "#" + boundTable.Rows[x][6].ToString() + "#" + boundTable.Rows[x][7].ToString() + "#" + boundTable.Rows[x][10].ToString());
@@ -486,6 +489,14 @@ namespace Improvar.Controllers
                 {
                     try
                     {
+                        foreach (var i in URight.UnselectComp_List)
+                        {
+                            if (i.Check)
+                            {
+                                dbsql = "delete from " + Scm + ".M_USR_ACS where USER_ID = '" + user + "' and COMPCD = '" + i.comcd + "' and LOCCD = '" + i.loccd + "' ";
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                            }
+                        }
                         foreach (var i in URight.Comp_List)
                         {
                             string comcode = i.comcd;
@@ -499,12 +510,13 @@ namespace Improvar.Controllers
                             {
                                 emdno = Convert.ToByte(emdno + 1);
                             }
-                            whereClause = "USER_ID = '" + user + "' and COMPCD = '" + i.comcd + "' and LOCCD = '" + i.loccd + "' and MENU_NAME||MENU_INDEX in (select MENU_ID||MENU_INDEX from " + Cn.Getschema + ".APPL_MENU where MODULE_CODE='" + ModuleCode + "') ";
-                            dbsql = masterHelp.TblUpdt("M_USR_ACS", "", "E", modcd, whereClause);
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                             if (i.Check)
                             {
+                                whereClause = "USER_ID = '" + user + "' and COMPCD = '" + i.comcd + "' and LOCCD = '" + i.loccd + "' and MENU_NAME||MENU_INDEX in (select MENU_ID||MENU_INDEX from " + Cn.Getschema + ".APPL_MENU where MODULE_CODE='" + ModuleCode + "') ";
+                                dbsql = masterHelp.TblUpdt("M_USR_ACS", "", "E", modcd, whereClause);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
                                 checkParent.Clear();
                                 foreach (MenuRightByUser MRU in MR2)
                                 {
@@ -832,48 +844,65 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
-                            else
-                            {
-                                DB.M_USR_ACS.RemoveRange(DB.M_USR_ACS.Where(x => x.USER_ID == user && x.COMPCD == i.comcd && x.LOCCD == i.loccd));
-                            }
-                        }
+                            //else
+                            //{
+                            //    dbsql = "delete from " + Scm + ".M_USR_ACS where USER_ID = '" + user + "' and COMPCD = '" + i.comcd + "' and LOCCD = '" + i.loccd + "' ";
+                            //    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-
-
-                        var clcd = CommVar.ClientCode(UNQSNO);
-
-                        whereClause = "USER_ID = '" + user + "' and CLCD = '" + clcd + "' and SCHEMA_NAME = '" + Scm + "' and MODULE_CODE='" + ModuleCode + "' ";
-                        dbsql = "delete from " + Cn.Getschema + ".MS_MUSRACS where  " + whereClause;
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                        sql = " select distinct clcd, user_id, compcd, loccd, schema_name  from " + Scm + ".m_usr_acs where USER_ID = '" + user + "' union ";
-                        sql += " select distinct a.clcd, a.user_id, b.compcd, b.loccd, b.schema_name ";
-                        sql += " from " + Scm + ".m_usr_acs_grpdtl a, " + Scm + ".m_usr_acs b where a.linkuser_id = b.user_id AND B.USER_ID = '" + user + "' ";
-                        var tbl = masterHelp.SQLquery(sql);
-                        foreach (DataRow dr in tbl.Rows)
-                        {
-                            MS_MUSRACS MUSRACS = new MS_MUSRACS();
-                            MUSRACS.CLCD = CommVar.ClientCode(UNQSNO);
-                            MUSRACS.COMPCD = dr["compcd"].retStr();
-                            MUSRACS.LOCCD = dr["loccd"].retStr();
-                            MUSRACS.USER_ID = dr["user_id"].retStr();
-                            MUSRACS.SCHEMA_NAME = dr["schema_name"].retStr();
-                            MUSRACS.MODULE_CODE = ModuleCode;
-                            dbsql = masterHelp.RetModeltoSql(MUSRACS, "A", Cn.Getschema);
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            //    //DB.M_USR_ACS.RemoveRange(DB.M_USR_ACS.Where(x => x.USER_ID == user && x.COMPCD == i.comcd && x.LOCCD == i.loccd));
+                            //}
                         }
                         ModelState.Clear();
                         transaction.Commit();
                         transactionImp.Commit();
                         OraTrans.Commit();
 
+                        ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Scm);
+
+                        //Oracle Queries
+                        OracleConnection OraCon1 = new OracleConnection(Cn.GetConnectionString());
+                        OraCon1.Open();
+                        OracleCommand OraCmd1 = OraCon1.CreateCommand();
+                        OracleTransaction OraTrans1;
+
+                        OraTrans1 = OraCon1.BeginTransaction(IsolationLevel.ReadCommitted);
+                        OraCmd1.Transaction = OraTrans1;
+                        using (var transactionC = DB1.Database.BeginTransaction())
+                        {
+                            var clcd = CommVar.ClientCode(UNQSNO);
+
+                            whereClause = "USER_ID = '" + user + "' and CLCD = '" + clcd + "' and SCHEMA_NAME = '" + Scm + "' and MODULE_CODE='" + ModuleCode + "' ";
+                            dbsql = "delete from " + Cn.Getschema + ".MS_MUSRACS where  " + whereClause;
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                            sql = " select distinct clcd, user_id, compcd, loccd, schema_name  from " + Scm + ".m_usr_acs where USER_ID = '" + user + "'  and CLCD = '" + clcd + "' union ";
+                            sql += " select distinct a.clcd, a.user_id, b.compcd, b.loccd, b.schema_name ";
+                            sql += " from " + Scm + ".m_usr_acs_grpdtl a, " + Scm + ".m_usr_acs b where a.linkuser_id = b.user_id AND B.USER_ID = '" + user + "' ";
+                            var tbl = masterHelp.SQLquery(sql);
+                            foreach (DataRow dr in tbl.Rows)
+                            {
+                                MS_MUSRACS MUSRACS = new MS_MUSRACS();
+                                MUSRACS.CLCD = CommVar.ClientCode(UNQSNO);
+                                MUSRACS.COMPCD = dr["compcd"].retStr();
+                                MUSRACS.LOCCD = dr["loccd"].retStr();
+                                MUSRACS.USER_ID = dr["user_id"].retStr();
+                                MUSRACS.SCHEMA_NAME = dr["schema_name"].retStr();
+                                MUSRACS.MODULE_CODE = ModuleCode;
+                                dbsql = masterHelp.RetModeltoSql(MUSRACS, "A", Cn.Getschema);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
+                            ModelState.Clear();
+                            transactionC.Commit();
+                            OraTrans1.Commit();
+                        }
+
                     }
                     catch (Exception ex)
                     {
                         OraTrans.Rollback();
                         OraCon.Dispose();
-                        Cn.SaveException(ex, "");
-                        return Content(ex.Message + " " + ex.InnerException);
+                        Cn.SaveException(ex, "" + " " + dbsql);
+                        return Content(ex.Message + " " + ex.InnerException + " " + dbsql);
                     }
 
                 }
@@ -928,6 +957,7 @@ namespace Improvar.Controllers
             MR = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(serial);
             var getdata = MR.Where(s => s.MENU_PROGCALL == progcalid).SingleOrDefault();
             var data = MR.Where(s => s.ParentID == getdata.MENU_ID + "!" + getdata.MENU_INDEX).ToList();
+
             foreach (var menu_row in data)
             {
                 string parent = menu_row.MENU_PROGCALL;
@@ -1057,6 +1087,33 @@ namespace Improvar.Controllers
                     }
                 }
             }
+            if (Flag == "0")
+            {
+                getdata.Add = true;
+                getdata.Edit = true;
+                getdata.Delete = true;
+                getdata.View = true;
+                getdata.Check = true;
+                getdata.A_DAY = 0;
+                getdata.D_DAY = 0;
+                getdata.E_DAY = 0;
+                getdata.Active = true;
+            }
+            else
+            {
+                getdata.Add = false;
+                getdata.Edit = false;
+                getdata.Delete = false;
+                getdata.View = false;
+                getdata.Check = false;
+                getdata.A_DAY = 0;
+                getdata.D_DAY = 0;
+                getdata.E_DAY = 0;
+                getdata.Active = false;
+            }
+            int index = MR.IndexOf(getdata);
+            MR[index] = getdata;
+
             string Serialize = javaScriptSerializer.Serialize(MR);
             image_name = image_name.Substring(0, image_name.Length - 1);
             return Content(Serialize + "^^^^^^^+++++++^^^^^^" + image_name);
@@ -1110,6 +1167,208 @@ namespace Improvar.Controllers
 
                 return View("user_rights", UR);
             }
+        }
+        public ActionResult OpenCustomPermission(string progcalid, string serial)
+        {
+            UserRight UR = new UserRight();
+            List<MenuRightByUser> MR = new List<MenuRightByUser>();
+            var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            MR = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(serial);
+            UR.MenuRightByUser = MR;
+            string progcall = progcalid;
+            MenuRightByUser active = UR.MenuRightByUser.Where(s => s.MENU_PROGCALL == progcall).SingleOrDefault();
+            UR.index = UR.MenuRightByUser.IndexOf(active);
+            return PartialView("_userRightsCustom", active);
+        }
+
+        public ActionResult DefaultPermissionCustom(MenuRightByUser MR, string progcalid, string serial)
+        {
+            string image_name = "";
+            Hashtable Main_Menu;
+            Hashtable Main_Menu_Head;
+            ArrayList ManuLine = null;
+            string Child = null;
+            string ReParent = null;
+            int Reuse = 0;
+            Stack ST1 = new Stack();
+            Main_Menu = new Hashtable();
+            Main_Menu_Head = new Hashtable();
+            ManuLine = new ArrayList();
+            List<MenuRightByUser> MR1 = new List<MenuRightByUser>();
+            var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            MR1 = javaScriptSerializer.Deserialize<List<MenuRightByUser>>(serial);
+            var getdata = MR1.Where(s => s.MENU_PROGCALL == progcalid).SingleOrDefault();
+            var data = MR1.Where(s => s.ParentID == getdata.MENU_ID + "!" + getdata.MENU_INDEX).ToList();
+
+            bool rights = false;
+            foreach (var menu_row in data)
+            {
+                string parent = menu_row.MENU_PROGCALL;
+                string menuid_Child = menu_row.MENU_ID + "!" + menu_row.MENU_INDEX;
+                string mname = menu_row.MENU_NAME;
+                Main_Menu.Add(parent, mname);
+                ManuLine.Add("1");
+                Main_Menu_Head.Add(parent, ManuLine.Count - 1);
+                Child = menuid_Child;
+                ReParent = parent;
+                ST1.Push(menuid_Child + "." + Reuse + "." + ReParent);
+                while (true)
+                {
+                    var data1 = MR1.Where(s => s.ParentID == Child).ToList();
+                    if (data1.Any() == true)
+                    {
+                        for (int x = Reuse; x <= data1.Count - 1; x++)
+                        {
+                            string parent1 = data1[x].MENU_PROGCALL;
+                            string menuid_Child1 = data1[x].MENU_ID + "!" + data1[x].MENU_INDEX;
+                            Main_Menu.Add(parent1, data1[x].MENU_NAME);
+                            ManuLine.Add("");
+                            Main_Menu_Head.Add(parent1, ManuLine.Count - 1);
+                            Child = menuid_Child1;
+                            ReParent = parent1;
+                            Reuse = 0;
+                            ST1.Push(menuid_Child1 + "." + Reuse + "." + ReParent);
+                            break;
+                        }
+                        if (Reuse > data1.Count - 1)
+                        {
+                            if (ST1.Count > 0)
+                            {
+                                ST1.Pop();
+                                if (ST1.Count == 0)
+                                {
+                                    Reuse = 0;
+                                    break;
+                                }
+                                string str = ST1.Pop().ToString();
+                                string[] getParent;
+                                getParent = str.Split('.');
+                                Child = getParent[0];
+                                ReParent = getParent[2];
+                                Reuse = Convert.ToInt32(getParent[1]);
+                                Reuse += 1;
+                                ST1.Push(Child + "." + Reuse + "." + ReParent);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (ST1.Count > 0)
+                        {
+                            string Recall = ST1.Peek().ToString();
+                            string[] RecallDetails;
+                            RecallDetails = Recall.Split('.');
+                            image_name = image_name + RecallDetails[2] + "*";
+                            MenuRightByUser active = MR1.Where(s => s.MENU_PROGCALL == RecallDetails[2]).SingleOrDefault();
+                            int index1 = MR1.IndexOf(active);
+                            if (active.MENU_type == "E" || active.MENU_type == "M")
+                            {
+                                if (MR.Add == true)
+                                {
+                                    active.Add = true;
+                                    rights = true;
+                                }
+                                else
+                                {
+                                    active.Add = false;
+                                }
+                                if (MR.Edit == true)
+                                {
+                                    active.Edit = true;
+                                    rights = true;
+                                }
+                                else
+                                {
+                                    active.Edit = false;
+                                }
+                                if (MR.Delete == true)
+                                {
+                                    active.Delete = true;
+                                    rights = true;
+                                }
+                                else
+                                {
+                                    active.Delete = false;
+                                }
+                                if (MR.View == true)
+                                {
+                                    active.View = true;
+                                    rights = true;
+                                }
+                                else
+                                {
+                                    active.View = false;
+                                }
+                                if (active.MENU_type != "M")
+                                {
+                                    if (MR.Check == true)
+                                    {
+                                        active.Check = true;
+                                        rights = true;
+                                    }
+                                    else
+                                    {
+                                        active.Check = false;
+                                    }
+                                }
+
+
+                            }
+                            else if (active.MENU_type == "" || active.MENU_type == null || active.MENU_type == "O")
+                            {
+                                if (MR.Active == true)
+                                {
+                                    active.Active = true;
+                                    rights = true;
+                                }
+                                else
+                                {
+                                    active.Active = false;
+                                }
+                            }
+                            MR1[index1] = active;
+                            ST1.Pop();
+                            if (ST1.Count == 0)
+                            {
+                                Reuse = 0;
+                                break;
+                            }
+                            string str = ST1.Pop().ToString();
+                            string[] getParent;
+                            getParent = str.Split('.');
+                            Child = getParent[0];
+                            ReParent = getParent[2];
+                            Reuse = Convert.ToInt32(getParent[1]);
+                            Reuse += 1;
+                            ST1.Push(Child + "." + Reuse + "." + ReParent);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            string flag = "";
+            if ((MR.Add == false && MR.Edit == false && MR.Delete == false && MR.Check == false && MR.View == false && MR.Active == false) || rights == false)
+            {
+                flag = "userpermission.png";
+            }
+            else
+            {
+                flag = "userpermission1.png";
+            }
+            MenuRightByUser active1 = MR1.Where(s => s.MENU_PROGCALL == MR.MENU_PROGCALL && s.ParentID == MR.ParentID && s.MENU_NAME == MR.MENU_NAME && s.MENU_INDEX == MR.MENU_INDEX).SingleOrDefault();
+            int index = MR1.IndexOf(active1);
+            MR1[index] = MR;
+
+            string Serialize = javaScriptSerializer.Serialize(MR1);
+            image_name = image_name.Substring(0, image_name.Length - 1);
+            return Content(Serialize + "^^^^^^^+++++++^^^^^^" + image_name + "^^^^^^^+++++++^^^^^^" + flag);
         }
 
     }

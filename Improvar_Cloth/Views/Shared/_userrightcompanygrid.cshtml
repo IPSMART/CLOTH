@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.UserRight  
-<div style="background-color:#5a8408;text-align:center;border:1px solid">Company and Location Details</div>
-<table cellpadding="0" cellspacing="0" id="comuser" style="FONT-SIZE:9px;">
+<div style="background-color:#5a8408;text-align:center;border:1px solid">Selected Company and Location Details</div>
+<table cellpadding="0" cellspacing="0" id="comuser" style="FONT-SIZE:9px;" class="comlocuser">
     <thead>
         <tr style="color:#ffeb00;font-weight:bold;font-size:11px">
             <th style="width:17px;text-align:center;border-bottom: 1px solid">
@@ -17,7 +17,7 @@
     {
         <tr>
             <td style="width:17px;text-align:center">
-                @Html.CheckBoxFor(model => Model.Comp_List[i].Check, new { id = "Checked_" + i, @class = "atextBoxFor", @style = "text-align:center;" })
+                @Html.CheckBoxFor(model => Model.Comp_List[i].Check, new { id = "Checked_" + i, @class = "atextBoxFor", @style = "text-align:center;", onclick = "compareCompList('comuser');" })
             </td>
             <td>
                 @Html.HiddenFor(model => Model.Comp_List[i].comcd, new { id = "comcd_" + i })

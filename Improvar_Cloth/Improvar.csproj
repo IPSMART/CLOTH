@@ -1576,6 +1576,8 @@
     <Content Include="Views\Rep_AuditTrail\Rep_AuditTrail.cshtml" />
     <Content Include="Views\Audit_Details\Audit_Details.cshtml" />
     <Content Include="Views\Shared\_Audit_Details.cshtml" />
+    <Content Include="Views\Shared\_userrightcompanygridUnselect.cshtml" />
+    <Content Include="Views\Shared\_userRightsCustom.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -34,6 +34,7 @@ namespace Improvar.Controllers
                         comp_table = "FIN_COMPANY";
                         break;
                     case "SALES":
+                    case "SALKNITFAB":
                         comp_table = "SD_COMPANY";
                         break;
                     case "PAYROLL":
@@ -168,6 +169,7 @@ namespace Improvar.Controllers
                     comp_table = "FIN_COMPANY";
                     break;
                 case "SALES":
+                case "SALKNITFAB":
                     comp_table = "SD_COMPANY";
                     break;
                 case "PAYROLL":
@@ -355,6 +357,7 @@ namespace Improvar.Controllers
                             Session.Add("MotherMenuIdentifier", "FAIMPROVAR");
                             break;
                         case "SALES":
+                        case "SALKNITFAB":
                             Session.Add("MotherMenuIdentifier", "SDIMPROVAR");
                             break;
                         case "PAYROLL":
@@ -512,42 +515,53 @@ namespace Improvar.Controllers
 
                 DataTable tbl;
                 string sql = "";
-                sql += " select a.emd_no, a.usr_entdt, nvl(b.user_name,a.usr_id) usr_id,a.lm_rem,a.del_rem,c.autono trnautono from (" + Environment.NewLine;
+                sql += " select a.emd_no, a.usr_entdt, nvl(b.user_name,a.usr_id) usr_id,a.lm_rem,a.del_rem,c.autono trnautono,usr_entdate from (" + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,a.autono autonum  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,a.autono autonum,null usr_entdate  " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_hdrt a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 sql += " union  " + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,a.autono autonum " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,a.autono autonum,null usr_entdate " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_hdr a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,to_char(a.m_autono) autonum  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,to_char(a.m_autono) autonum,null usr_entdate  " + Environment.NewLine;
                 sql += " from " + dbnm + ".m_cntrl_hdrt a " + Environment.NewLine;
                 sql += " where to_char(a.m_autono) in ('" + autono + "') " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
                 sql += " select to_char(a.emd_no) emd_no, nvl(a.lm_usr_entdt,a.usr_entdt) usr_entdt, nvl(a.lm_usr_id,a.usr_id) usr_id,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,to_char(a.m_autono) autonum  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.lm_rem,a.del_rem,to_char(a.m_autono) autonum,null usr_entdate  " + Environment.NewLine;
                 sql += " from " + dbnm + ".m_cntrl_hdr a " + Environment.NewLine;
                 sql += " where to_char(a.m_autono) in ('" + autono + "') " + Environment.NewLine;
                 sql += " union " + Environment.NewLine;
-                sql += " select 'AUTH'||decode(a.slno,1,'','-'||to_char(a.slno)) emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum " + Environment.NewLine;
+                sql += " select 'AUTH'||decode(a.slno,1,'','-'||to_char(a.slno)) emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum,null usr_entdate " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_auth a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') " + Environment.NewLine;
                 if (Module.MODULE != "PAYROLL")
                 {
                     sql += " union " + Environment.NewLine;
-                    sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum " + Environment.NewLine;
+                    sql += " select a.ststype||a.flag1 emd_no, a.usr_entdt, a.usr_id, a.usr_lip, a.usr_sip,''lm_rem,''del_rem,a.autono autonum,null usr_entdate " + Environment.NewLine;
                     sql += " from " + dbnm + ".t_txnstatus a " + Environment.NewLine;
                     sql += " where a.autono in ('" + autono + "') and a.ststype <> 'A' " + Environment.NewLine;
                 }
+                //sql += " union " + Environment.NewLine;
+                //sql += " select 'Cancelled' emd_no,a.CANC_USR_ENTDT usr_entdt,a.CANC_USR_ID usr_id ,  " + Environment.NewLine;
+                //sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.canc_rem lm_rem,a.del_rem,a.autono autonum  " + Environment.NewLine;
+                //sql += " from " + dbnm + ".t_cntrl_hdr a " + Environment.NewLine;
+                //sql += " where a.autono in ('" + autono + "') and a.cancel='Y' " + Environment.NewLine;
+
                 sql += " union " + Environment.NewLine;
-                sql += " select 'Cancelled' emd_no,a.CANC_USR_ENTDT usr_entdt,a.CANC_USR_ID usr_id ,  " + Environment.NewLine;
-                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.canc_rem lm_rem,a.del_rem,a.autono autonum  " + Environment.NewLine;
+                sql += "select emd_no, to_date(usr_entdt,'dd/mm/yyyy HH24:MI:SS')usr_entdt,usr_id,lm_usr_lip, usr_sip, lm_rem,del_rem,autonum,usr_entdate from ( " + Environment.NewLine;
+                sql += " select 'Cancelled' emd_no, " + Environment.NewLine;
+                sql += "(case when TO_CHAR(a.CANC_USR_ENTDT, 'dd/mm/yyyy') = TO_CHAR(a.usr_entdt, 'dd/mm/yyyy') and length(TO_CHAR(a.CANC_USR_ENTDT)) = 9 " + Environment.NewLine;
+                sql += "then TO_CHAR(a.CANC_USR_ENTDT, 'dd/mm/yyyy') || ' 23:59:00' else TO_CHAR(a.CANC_USR_ENTDT,'dd/mm/yyyy HH24:MI:SS') end) usr_entdt, " + Environment.NewLine;
+                sql += "a.CANC_USR_ID usr_id ,  " + Environment.NewLine;
+                sql += " nvl(a.lm_usr_lip,a.usr_lip) lm_usr_lip, nvl(a.lm_usr_sip,a.usr_sip) usr_sip,a.canc_rem lm_rem,a.del_rem,a.autono autonum,a.CANC_USR_ENTDT usr_entdate  " + Environment.NewLine;
                 sql += " from " + dbnm + ".t_cntrl_hdr a " + Environment.NewLine;
                 sql += " where a.autono in ('" + autono + "') and a.cancel='Y' " + Environment.NewLine;
+                sql += ") " + Environment.NewLine;
 
                 sql += " ) a,  " + Environment.NewLine;
                 sql += " user_appl b," + dbnm + ".t_cntrl_hdr c where a.usr_id = b.user_id(+) and a.autonum=c.autono(+) " + Environment.NewLine;
@@ -562,7 +576,7 @@ namespace Improvar.Controllers
                     ModifyLogGrid DTL = new ModifyLogGrid();
                     DTL.SLNO = (tbl.Rows[i]["emd_no"].ToString() == "" || tbl.Rows[i]["emd_no"].ToString() == "0") ? "Original" : tbl.Rows[i]["emd_no"].ToString();
                     DTL.USERID = tbl.Rows[i]["usr_id"].ToString();
-                    DTL.MODIFYDT = tbl.Rows[i]["usr_entdt"].ToString();
+                    DTL.MODIFYDT = tbl.Rows[i]["usr_entdate"].retStr() == "" ? tbl.Rows[i]["usr_entdt"].ToString() : tbl.Rows[i]["usr_entdate"].ToString();
                     DTL.LM_REM = tbl.Rows[i]["LM_REM"].ToString();
                     DTL.AUTONO = autono;
                     DTL.SCHEMA = schema;

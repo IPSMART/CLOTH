@@ -783,12 +783,13 @@ function CAN_Remark_undo() {
 }
 function CAN_record_save(remarks) {
     var rem = document.getElementById("CAN_Remarks").value;
+    var dt = document.getElementById("CANC_USR_ENTDT").value;
     if (!emptyFieldCheck("Please Enter Remark for Cancelation", "CAN_Remarks")) { return false; }
     $.ajax({
         type: 'post',
         url: $("#urlcancelrecord").val(),
         beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&par1=" + rem,
+        data: $('form').serialize() + "&par1=" + rem + "&par2=" + dt,
         success: function (result) {
             result = result;
             if (result == "1") {
@@ -1367,6 +1368,7 @@ function DocumentDateCHK(dateField, auto, current_date_auto_if_blank, disabledt)
 
 var message_value;
 function closeDiv(id, flag) {
+    debugger;
     $(id).hide();
     var will_go = message_value;
     $("#" + will_go).focus();
@@ -1410,6 +1412,16 @@ function closeDiv(id, flag) {
                     var ViewLocation = crntLocation.replace("op=A", "op=V");
                     if (typeof (parkIDval) !== "undefined") {
                         ViewLocation = updateQueryStringParameter(ViewLocation, "parkID", "");
+                    }
+                    if (typeof (RemoveParamNm) !== "undefined") {
+                        var arrRemoveParamNm = RemoveParamNm.split("~");
+                        if (arrRemoveParamNm.length != null && arrRemoveParamNm.length > 0) {
+                            for (var i = 0; i <= arrRemoveParamNm.length - 1; i++) {
+                                var param = arrRemoveParamNm[i];
+                                var paramval = getQueryStringParameter(param);
+                                ViewLocation = ViewLocation.replace(param + "=" + paramval, "");
+                            }
+                        }
                     }
                     ViewLocation = updateQueryStringParameter(ViewLocation, "searchValue", servl);
                     location.href = ViewLocation;
@@ -1496,8 +1508,7 @@ function closeDiv(id, flag) {
         ViewLocation = updateQueryStringParameter(ViewLocation, "searchValue", "");
         location.href = ViewLocation;
     }
-}
-function EnabledfilteredSearch() {
+} function EnabledfilteredSearch() {
     $("#SRC_SLCD").attr("readonly", false);
     $("#SRC_DOCNO").attr("readonly", false);
     $("#SRC_FDT").attr("readonly", false);
@@ -1610,6 +1621,7 @@ function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds, formd
         }
         $.ajax({
             type: 'POST',
+            beforesend: $("#WaitingMode").show(),
             url: urlstring,
             //data: "&val=" + value + "&Code=" + dependfldIds,
             data: Data,

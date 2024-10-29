@@ -521,47 +521,47 @@
                                     {
                                         if (docdt.Date >= backdate.Date || docdt.Date == DateTime.Now.Date)
                                         {
+                                            <li class="menu-item" id="trash_nav">
+                                                <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
+                                            </li>
+                                            @*if (Model.CancelRecord == true)
+                                                {
+                                                    <li class="menu-item" id="floppy_remove_nav">
+                                                        <a href="#" title="UnCancel Record" onclick="return entryundoCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#ffd800"></span></a>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+
+                                                    <li class="menu-item" id="floppy_remove_nav">
+                                                        <a href="#" title="Cancel Record" onclick="return entryCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#fa0808"></span></a>
+                                                    </li>
+                                                }*@
+                                        }
+                                    }
+                                    else if (docdt.Date >= lockdate.Date)
+                                    {
                                         <li class="menu-item" id="trash_nav">
                                             <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
                                         </li>
                                         @*if (Model.CancelRecord == true)
-                                        {
-                                            <li class="menu-item" id="floppy_remove_nav">
-                                                <a href="#" title="UnCancel Record" onclick="return entryundoCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#ffd800"></span></a>
-                                            </li>
-                                        }
-                                        else
-                                        {
+                                            {
+                                                <li class="menu-item" id="floppy_remove_nav">
+                                                    <a href="#" title="UnCancel Record" onclick="return entryundoCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#ffd800"></span></a>
+                                                </li>
+                                            }
+                                            else
+                                            {
 
-                                            <li class="menu-item" id="floppy_remove_nav">
-                                                <a href="#" title="Cancel Record" onclick="return entryCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#fa0808"></span></a>
-                                            </li>
-                                        }*@
+                                                <li class="menu-item" id="floppy_remove_nav">
+                                                    <a href="#" title="Cancel Record" onclick="return entryCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#fa0808"></span></a>
+                                                </li>
+                                            }*@
                                     }
-                                }
-                                else if (docdt.Date >= lockdate.Date)
-                                {
-                                    <li class="menu-item" id="trash_nav">
-                                        <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
-                                    </li>
-                                    @*if (Model.CancelRecord == true)
-                                    {
-                                        <li class="menu-item" id="floppy_remove_nav">
-                                            <a href="#" title="UnCancel Record" onclick="return entryundoCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#ffd800"></span></a>
-                                        </li>
-                                    }
-                                    else
-                                    {
-
-                                        <li class="menu-item" id="floppy_remove_nav">
-                                            <a href="#" title="Cancel Record" onclick="return entryCancelation();showLoder(this);"><span class="glyphicon glyphicon-floppy-remove" style="font-size:larger;color:#fa0808"></span></a>
-                                        </li>
-                                    }*@
                                 }
                             }
-                        }
-                        else
-                        {
+                            else
+                            {
                                 <li class="menu-item" id="trash_nav">
                                     <a href="#" onclick="return pageValidation('D');" title="Delete Mode(Alt+D)" class="anchor_handleCls"><span class="glyphicon glyphicon-trash" style="font-size:larger;color:red"></span></a>
                                 </li>
@@ -998,7 +998,7 @@
                 <div style="padding:5px;" id="UndoCancel" align="center">
                     <p><strong>Are you sure to un cancelled this record?</strong></p>
                     <input type="button" class="btn btn-success" value="Yes" onclick="CAN_UNDO_Record();" />
-                    <input type="button" class="btn btn-info" value="Undo" onclick="CAN_Remark_undo();" />
+                    <input type="button" class="btn btn-info" value="No" onclick="CAN_Remark_undo();" />
                     <script type="text/javascript">
                         document.body.style.background="#FFCCCC";
                     </script>
@@ -1008,12 +1008,16 @@
             {
                 <script type="text/javascript">
                     document.body.style.background="white";
+                    $(function () { $("#CANC_USR_ENTDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, minDate: '@Model.DOCDT' }); });
                 </script>
                 <div style="padding:5px">
+                    <p>Cancel Date (optional)</p>
+                    <input type="search" id="CANC_USR_ENTDT" name="CANC_USR_ENTDT" class="form-control" maxlength="10" onblur="DocumentDateCHK(this);" />
+                    <p>Cancel Remarks<b style="color:Red;">*</b></p>
                     <input type="search" autofocus id="CAN_Remarks" maxlength="100" style="height:50px" placeholder="Remarks for Cancelation..." class="form-control" />
                     <p><strong>Note:</strong>Remarks should be proper for cancel the current record</p>
                     <input type="button" class="btn btn-success" value="OK" onclick="CAN_record_save('Uncheck');" />
-                    <input type="button" class="btn btn-info" value="Close" onclick="CAN_Remark_close();" />
+                    <input type="button" class="btn btn-danger" value="Cancel" onclick="CAN_Remark_close();" />
                 </div>
             }
         </div>
@@ -1080,21 +1084,21 @@
                 @if (Model.AuthorisationStatus == "A")
                 {
                     <p><strong id="AuthoriseCaption">Are you sure to Unauthorise this record?</strong></p>
-                        <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
-                        <script type="text/javascript">
-                            document.body.style.background="#c6e3c6";
-                        </script>
+                    <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
+                    <script type="text/javascript">
+                        document.body.style.background="#c6e3c6";
+                    </script>
                 }
                 else if (Model.AuthorisationStatus == "N")
                 {
                     <p><strong id="AuthoriseCaption">Are you sure to Authorised this record?</strong></p>
-                        <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
+                    <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
                 }
                 else
                 {
                     <p><strong id="AuthoriseCaption">Add Remarks </strong></p>
-                        <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
-                        <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
+                    <input type="button" class="btn btn-success" value="AUTHORISE" onclick="SaveCheckAuthorisation('Authorise');" />
+                    <input type="button" class="btn btn-danger" value="REJECT" onclick="SaveCheckAuthorisation('Unauthorise');" />
                 }
                 <input type="button" class="btn btn-info" value="Close" onclick="CHK_Remark_close();" />
             </div>

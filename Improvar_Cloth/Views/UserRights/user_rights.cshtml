@@ -243,11 +243,44 @@
                 color: black;
             }
             /*#comuser tr:hover {
-                background-color: #fafbb7;
-                color:black;
-            }*/
+                 background-color: #fafbb7;
+                 color:black;
+             }*/
 
             #comuser th {
+                padding-top: 7px;
+                padding-bottom: 7px;
+                text-align: left;
+                background-color: #4f5d7b;
+                color: white;
+            }
+
+               #unselectcomuser {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #unselectcomuser td, #unselectcomuser th {
+                border: 1px solid #ddd;
+                padding: 4px;
+            }
+
+            #unselectcomuser tr:nth-child(even) {
+                background-color: #f2f2f2;
+                color: black;
+            }
+
+            #unselectcomuser tr:nth-child(odd) {
+                background-color: #fafbb7;
+                color: black;
+            }
+            /*#comuser tr:hover {
+                 background-color: #fafbb7;
+                 color:black;
+             }*/
+
+            #unselectcomuser th {
                 padding-top: 7px;
                 padding-bottom: 7px;
                 text-align: left;
@@ -295,7 +328,7 @@
                 }
             });
         }
-
+       
         function gotoTree() {
             debugger;
             var user = $("#userID").val();
@@ -439,6 +472,113 @@
                     chkbox.checked = obj.checked;
                 }
             }
+            compareCompList(tablename);
+        }
+
+        function compareCompList(tblid)
+        {
+            debugger;
+            if (tblid == "unselectcomuser") {
+                var currcomcdid = "Unselectcomcd_";
+                var currloccdid = "Unselectloccd_";
+                var currchkid = "UnselectChecked_";
+                var comcdid = "comcd_";
+                var loccdid = "loccd_";
+                var chkid = "Checked_";
+                var cftblid = "comuser";
+            }
+            else {
+                var comcdid = "Unselectcomcd_";
+                var loccdid = "Unselectloccd_";
+                var chkid = "UnselectChecked_";
+                var currcomcdid = "comcd_";
+                var currloccdid = "loccd_";
+                var currchkid = "Checked_";
+                var cftblid = "unselectcomuser";
+            }
+
+
+            var rows = document.querySelector("#" + tblid + " tbody").rows;
+            var rows1 = document.querySelector("#" + cftblid + " tbody").rows;
+            var errcomploccd = "";
+
+            for (var i = 0; i <= rows.length - 1; i++) {
+                var chkbox = document.getElementById(currchkid + i).checked;
+                if (chkbox == true) {
+                    var _comcd = $("#" + currcomcdid + i).val();
+                    var _loccd = $("#" + currloccdid + i).val();
+
+                    for (var j = 0; j <= rows1.length - 1; j++) {
+                        var chkbox = document.getElementById(chkid + j).checked;
+                        if (chkbox == true) {
+                            var _comcd1 = $("#" + comcdid + j).val();
+                            var _loccd1 = $("#" + loccdid + j).val();
+
+                            if (_comcd + _loccd == _comcd1 + _loccd1) {
+                                errcomploccd += _comcd + " " + _loccd+", ";
+                                document.getElementById(currchkid + i).checked = false;
+                            }
+                        }
+
+                    }
+                }
+            }
+            if (errcomploccd != "") {
+                msgInfo("same company and loction found both side " + errcomploccd + " !");
+            }
+        }
+        function Opencustompermission(id) {
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("OpenCustomPermission", "UserRights")",
+                data: {
+                progcalid: id,
+                serial: $("#serializeString").val(),
+                },
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialuserright").show();
+                $("#partialuserright").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+        });
+        }
+        function defaultPermissionCustom(id) {
+            var user = $("#userID").val();
+            if (user == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msgbody_info").html("Select User First!");
+                message_value = "userID";
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("DefaultPermissionCustom", "UserRights")",
+                data: $('form').serialize() + "&progcalid=" + id + "&serial=" + $("#serializeString").val() ,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    var dd = String(result);
+                    var dd1 = dd.split("^^^^^^^+++++++^^^^^^");
+                    $("#serializeString").val(dd1[0]);
+                    $("#partialuserright").hide();
+                    $("#partialuserright").html("");
+                    var data = dd1[1];
+                    var data1 = data.split("*");
+                    for (var i = 0; i <= data1.length - 1; i++) {
+                        document.getElementById(data1[i]).src = "../Image/" + dd1[2];
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown);
+                }
+            });
         }
     </script>
     <style>
@@ -508,8 +648,12 @@
                 </div>
                 <div class="griddiv">
                     <div id="_compergrid">
-                        @Html.Partial("_userrightcompanygrid")
-
+                        @Html.Partial("_userrightcompanygrid")                     
+                    </div>
+                    <div class="row">
+                        <p class="text-info">
+                            * Select the above <b>Company and Location</b> for <b>Give Rights</b>
+                        </p>
                     </div>
                     <div>
                         <p> Note:</p>
@@ -517,6 +661,16 @@
                             <li>1.If click on <u><b>Get Rights</b></u> on that time Loged in company data will come.</li>
                             <li>2.Selected company only effected when click on <u><b>Save Rights</b></u>.</li>
                         </ol>
+                    </div>
+                </div>
+                <div class="griddiv">
+                    <div id="_compergridUnselect">
+                        @Html.Partial("_userrightcompanygridUnselect")
+                        <div class="row">
+                            <p class="text-info">
+                                * Select the above <b>Company and Location</b> for <b>Remove Rights</b>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

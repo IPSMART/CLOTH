@@ -1382,7 +1382,7 @@ namespace Improvar
             VE.ListAuditRemarks = Dropdown_AuditRemarks();
             //end Modification Remarks Bind
         }
-        public Models.T_CNTRL_HDR T_CONTROL_HDR(string Auto_Number, string DATABASE, string Cancel_Remarks)
+        public Models.T_CNTRL_HDR T_CONTROL_HDR(string Auto_Number, string DATABASE, string Cancel_Remarks, string Cancel_Date = "")
         {
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), DATABASE);
             Models.T_CNTRL_HDR TCH = new Models.T_CNTRL_HDR();
@@ -1390,7 +1390,7 @@ namespace Improvar
             TCH.CANCEL = "Y";
             TCH.CANC_REM = Cancel_Remarks;
             TCH.CANC_USR_ID = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
-            TCH.CANC_USR_ENTDT = System.DateTime.Now;
+            TCH.CANC_USR_ENTDT = Cancel_Date.retStr() == "" ? System.DateTime.Now : Convert.ToDateTime(Cancel_Date);
             TCH.CANC_USR_LIP = GetIp();
             TCH.CANC_USR_SIP = GetStaticIp();
             TCH.CANC_USR_OS = null;

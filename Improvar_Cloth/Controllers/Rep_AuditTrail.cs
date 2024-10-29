@@ -125,11 +125,11 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    sql += "select a.autono, a.dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt,  a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, a.docnm, a.dname, a.dcd from (" + Environment.NewLine;
+                    sql += "select a.autono, a.dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt,  a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, a.docnm, a.dname, a.dcd,a.CANC_REM,a.CANC_USR_ENTDT,a.CANC_USR_ID from (" + Environment.NewLine;
 
                 }
                 sql += "/*  Voucher edit/delete */  " + Environment.NewLine;
-                sql += "select a.autono, a.dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt,  a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd " + Environment.NewLine;
+                sql += "select a.autono, a.dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt,  a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd,a.CANC_REM,a.CANC_USR_ENTDT,a.CANC_USR_ID " + Environment.NewLine;
                 sql += comsql;
                 if (seluser != "") sql += "a.lm_usr_id in (" + seluser + ") and " + Environment.NewLine;
                 if (seluser != "") sql += "a.del_usr_id in (" + seluser + ") and " + Environment.NewLine;
@@ -148,7 +148,7 @@ namespace Improvar.Controllers
                 }
                 sql += "union " + Environment.NewLine;
                 sql += "/*  Voucher created*/ " + Environment.NewLine;
-                sql += "select a.autono, 'A' dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt, a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd " + Environment.NewLine;
+                sql += "select a.autono, 'A' dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt, a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd,a.CANC_REM,a.CANC_USR_ENTDT,a.CANC_USR_ID " + Environment.NewLine;
                 sql += comsql.Replace("t_cntrl_hdrt", "t_cntrl_hdr");
                 dtflt = DtChk == "DOCDT" ? "a.docdt" : "a.usr_entdt";
                 if (seluser != "") sql += "a.usr_id in (" + seluser + ") and " + Environment.NewLine;
@@ -163,7 +163,7 @@ namespace Improvar.Controllers
                 }
                 sql += "union " + Environment.NewLine;
                 sql += "/*  Voucher created but deleteed */ " + Environment.NewLine;
-                sql += "select a.autono, 'AD' dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt, a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd " + Environment.NewLine;
+                sql += "select a.autono, 'AD' dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt, a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd,a.CANC_REM,a.CANC_USR_ENTDT,a.CANC_USR_ID " + Environment.NewLine;
                 sql += comsql;
                 dtflt = DtChk == "DOCDT" ? "a.docdt" : "a.usr_entdt";
                 if (seluser != "") sql += "a.usr_id in (" + seluser + ") and " + Environment.NewLine;
@@ -178,7 +178,7 @@ namespace Improvar.Controllers
                 }
                 sql += "union " + Environment.NewLine;
                 sql += "/*  Voucher cancelled */ " + Environment.NewLine;
-                sql += "select a.autono, 'C' dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt, a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd " + Environment.NewLine;
+                sql += "select a.autono, 'C' dtag, a.emd_no, a.docno, a.docdt, a.usr_id, a.lm_usr_id, a.del_usr_id, a.usr_entdt, a.lm_usr_entdt, a.del_usr_entdt, a.lm_rem, a.del_rem, a.doccd, b.docnm, c.dname, c.dcd,a.CANC_REM,a.CANC_USR_ENTDT,a.CANC_USR_ID " + Environment.NewLine;
                 sql += comsql.Replace("t_cntrl_hdrt", "t_cntrl_hdr");
                 dtflt = DtChk == "DOCDT" ? "a.docdt" : "a.canc_usr_entdt";
                 if (seluser != "") sql += "a.canc_usr_id in (" + seluser + ") and " + Environment.NewLine;
@@ -298,8 +298,9 @@ namespace Improvar.Controllers
                                 break;
                             case "C":
                                 IR.Rows[rNo]["activity"] = "Cancel";
-                                IR.Rows[rNo]["userid"] = tbl.Rows[i]["usr_id"].retStr();
-                                IR.Rows[rNo]["actdate"] = tbl.Rows[i]["usr_entdt"].retDateStr();
+                                IR.Rows[rNo]["userid"] = tbl.Rows[i]["CANC_USR_ID"].retStr();
+                                IR.Rows[rNo]["actdate"] = tbl.Rows[i]["CANC_USR_ENTDT"].retDateStr();
+                                IR.Rows[rNo]["actrem"] = tbl.Rows[i]["CANC_REM"].retStr();
                                 break;
                         }
 
