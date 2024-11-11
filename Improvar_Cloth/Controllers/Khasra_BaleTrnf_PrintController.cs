@@ -47,11 +47,11 @@ namespace Improvar.Controllers
                         case "KHSR":
                             ViewBag.formname = "Khasra Printing"; break;
                         case "TRFB":
-                            ViewBag.formname = "Sotck Transfer Bale Printing"; break;
+                            ViewBag.formname = "Stock Transfer Bale Printing"; break;
                         case "BLTR":
                             ViewBag.formname = "Receive from Mutia Report"; break;
                         case "TRWB":
-                            ViewBag.formname = "Sotck Transfer With Waybill  Bale Printing"; break;
+                            ViewBag.formname = "Stock Transfer With Waybill  Bale Printing"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -408,7 +408,7 @@ namespace Improvar.Controllers
                         case "KHSR":
                             blhead = "Khasra"; break;
                         case "TRFB":
-                            blhead = "Sotck Transfer Bale"; break;
+                            blhead = "Stock Transfer Bale"; break;
                         default: blhead = ""; break;
                     }
                     ReportDocument reportdocument = new ReportDocument();

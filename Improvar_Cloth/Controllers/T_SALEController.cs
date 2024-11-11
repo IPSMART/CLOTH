@@ -3401,6 +3401,7 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
                 string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : VE.MENU_PARA.retStr() == "PJBR" ? "JB" : "PB";
                 string retdoctag = VE.MENU_PARA.retStr() == "SR" ? "SR" : VE.MENU_PARA.retStr() == "PJBR" ? "JQ" : "PR";
+                string stkdrcr = VE.MENU_PARA.retStr() == "SR" ? "'C'" : "";
 
                 sql += "select a.TXNSLNO,a.ITGRPCD,a.ITGRPNM,a.BARGENTYPE,a.MTRLJOBCD,a.MTRLJOBNM,a.MTBARCODE,a.ITCD,a.ITNM,a.UOMCD,a.STYLENO,a.PARTCD,a.PARTNM, ";
                 sql += Environment.NewLine + "a.PRTBARCODE,a.STKTYPE,a.STKNAME,a.BARNO,a.COLRCD,a.COLRNM,a.CLRBARCODE,a.SIZECD,a.SIZENM,a.SZBARCODE,a.SHADE,a.QNTY,a.NOS,a.RATE,a.DISCRATE, ";
@@ -3435,6 +3436,7 @@ namespace Improvar.Controllers
                 sql += Environment.NewLine + "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+)and t.autono=v.autono(+) ";
                 sql += Environment.NewLine + "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+) and i.autono=w.autono(+) and i.txnslno=w.slno(+) and i.baleno=w.baleno(+) ";
                 sql += Environment.NewLine + "and t.doctag in('" + doctag + "')  ";
+                if (stkdrcr.retStr() != "") sql += Environment.NewLine + "and s.stkdrcr in (" + stkdrcr + ") ";
                 if (R_DOCNO.retStr() != "") sql += Environment.NewLine + " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                 if (FDT.retDateStr() != "") sql += Environment.NewLine + "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
                 if (TDT.retDateStr() != "") sql += Environment.NewLine + " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
@@ -3516,7 +3518,8 @@ namespace Improvar.Controllers
                         sql += Environment.NewLine + "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                         sql += Environment.NewLine + "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.AUTONO=r.AUTONO(+) ";
                         sql += Environment.NewLine + "and i.autono=s.autono and i.txnslno=s.slno and s.autono=t.autono and j.fabitcd=u.itcd(+)and t.autono=v.autono(+) and i.autono=w.autono(+) and i.txnslno=w.slno(+) and i.baleno=w.baleno(+) ";
-                        sql += Environment.NewLine + "and t.doctag in('" + doctag + "')  ";
+                        sql += Environment.NewLine + "and t.doctag in('" + doctag + "') ";
+                        if (stkdrcr.retStr() != "") sql += Environment.NewLine + "and s.stkdrcr in (" + stkdrcr + ") ";
                         if (R_DOCNO.retStr() != "") sql += Environment.NewLine + " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.doconlyno in(" + R_DOCNO + ") " : "t.prefno in('" + R_DOCNO + "') ");
                         //if (FDT.retDateStr() != "") sql += "and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') " : "t.PREFDT >= to_date('" + FDT + "', 'dd/mm/yyyy') ");
                         if (TDT.retDateStr() != "") sql += Environment.NewLine + " and " + ((VE.MENU_PARA.retStr() == "SR" || VE.MENU_PARA.retStr() == "PJBR") ? "r.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  " : "t.PREFDT <= to_date('" + TDT + "', 'dd/mm/yyyy') ");
