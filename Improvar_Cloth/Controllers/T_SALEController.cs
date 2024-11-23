@@ -4323,10 +4323,10 @@ namespace Improvar.Controllers
                 var LOCCD = CommVar.Loccd(UNQSNO);
                 //string AUTONO = DB.T_BALE.Where(a => a.BALENO == VE.BALENO_HELP && a.GOCD == VE.T_TXN.GOCD).Select(a => a.AUTONO).Distinct().ToArray().retSqlfromStrarray();
                 string AUTONO = (from a in DB.T_BALE
-                              join b in DB.T_CNTRL_HDR on a.AUTONO equals b.AUTONO
-                              where a.BALENO == VE.BALENO_HELP && a.GOCD == VE.T_TXN.GOCD
-                              orderby b.DOCDT
-                              select a.AUTONO).FirstOrDefault();
+                                 join b in DB.T_CNTRL_HDR on a.AUTONO equals b.AUTONO
+                                 where a.BALENO == VE.BALENO_HELP && a.GOCD == VE.T_TXN.GOCD
+                                 orderby b.DOCDT
+                                 select a.AUTONO).FirstOrDefault();
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
                 DataTable tbl = new DataTable();
@@ -5173,7 +5173,10 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO);
+                        if (!(VE.MENU_PARA == "PB" && VE.ChildData == "child record found"))
+                        {
+                            ContentFlg = ChildRecordCheck(VE.T_TXN.AUTONO);
+                        }
                         if (ContentFlg != "") goto dbnotsave;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
                         TTXN.DOCNO = VE.T_TXN.DOCNO;

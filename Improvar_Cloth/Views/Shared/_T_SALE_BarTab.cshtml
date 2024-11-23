@@ -527,7 +527,7 @@
                                 }
                                 @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP" || Model.MENU_PARA == "OTH" || Model.MENU_PARA == "PJRC") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                 {
-                                <td class="">
+                                <td class="colpcstype">
                                     @*@Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })*@
                                     @Html.EditorFor(model => model.TBATCHDTL[i].PCSTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_PCSTYPE_" + i, maxlength = 15, @list = "Pcstype_List", autocomplete = "off" } })
                                     <datalist id="Pcstype_List">
@@ -582,7 +582,7 @@
                                     <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('B_ITCD_@i','B_ITSTYLE_@i','POPUP')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
                                 </td>
                                 <td class="sticky-cell-opposite">
-                                    <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea('', '_T_SALE_PRODUCT_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
+                                    <button type="button" class="btnFillBarcodeArea atextBoxFor btn-info" onclick="FillBarcodeArea('', '_T_SALE_PRODUCT_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
                                 </td>
                                 }
                                 else

@@ -164,6 +164,10 @@
                 if ("@Model.ChildData" == "child record found") {
                     $("#DOCDT").attr("readonly", "readonly");
                     $("#DOCDT").attr("style", "pointer-events:none");
+                    modeView();
+                    $('#AMOUNT_GRID tr td').find('input').attr("readonly", false);
+                    $('#AMOUNT_GRID tr td').find('select').css('pointer-events', '');
+                    $('#AMOUNT_GRID tr td').find("input[type='checkbox']").css('pointer-events', '');
                 }
             }
 
@@ -175,6 +179,24 @@
                 $('.PJBLDiv').find(".Help_image_button_grid").hide();
                 $('.PJBLDiv input').removeAttr("onkeydown");
             }*@
+            if ('@Model.MENU_PARA' == "PB" ) {
+                if ("@Model.ChildData" == "child record found") {
+                    modeView();
+                    $('#AMOUNT_GRID tr td').find('input').attr("readonly", false);
+                    $('#Pending_Order').hide();
+                    $('#AddRow_Barcode').attr('accesskey', '');
+                    $('#AddRow_Barcode').hide();
+                    $('#Clear_Barcode').attr('accesskey', '');
+                    $('#Clear_Barcode').hide();
+                    $('#FillDetail').attr('accesskey', '');
+                    $('#FillDetail').hide();
+                    $('#RegenerateBillSl').attr('accesskey', '');
+                    $('#RegenerateBillSl').hide();
+                    $('.btnFillBarcodeArea').prop('disabled', true);
+                    $('.colpcstype input').attr("readonly", false);
+
+                }
+            }
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -879,7 +901,8 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.COMMONUNIQBAR, new { id = "SYSCNFGCOMMONUNIQBAR" })
         @Html.HiddenFor(a => a.SHOWBLTYPE, new { id = "SHOWBLTYPE" })
         @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
-        <div class="form-horizontal">
+        @Html.HiddenFor(a => a.ChildData, new { id = "ChildData" })
+   <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
                 @Html.Partial("_FilteredSearch")
@@ -2658,7 +2681,7 @@
                                                 <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
                                             </div>
                                             <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="O" value="Regenerate Bill Sl(Alt+O)" title="Click to Regenerate Bill Sl in Bar Code Tab" onclick="UpdateBillSlno()" />
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="RegenerateBillSl" id="RegenerateBillSl" accesskey="O" value="Regenerate Bill Sl(Alt+O)" title="Click to Regenerate Bill Sl in Bar Code Tab" onclick="UpdateBillSlno()" />
                                             </div>
                                         </div>
                                     </div>
