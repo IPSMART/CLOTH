@@ -86,7 +86,8 @@ namespace Improvar.Controllers
 
                 sql += "(select a.autono,a.amtcd,sum(nvl(a.amt,0))tranamt ";
                 sql += "from " + scm1 + ".t_txnamt a," + scm1 + ".M_AMTTYPE b ";
-                sql += "where a.amtcd=b.amtcd and b.TAXCODE='TC' ";
+                //sql += "where a.amtcd=b.amtcd and b.TAXCODE='TC' ";
+                sql += "where a.amtcd=b.amtcd ";
                 sql += "group by  a.autono,a.amtcd )b ";
 
                 sql += "where a.autono=b.autono  ";
