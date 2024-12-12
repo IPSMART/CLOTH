@@ -43,7 +43,7 @@
                 var columnNMseq = $('#ReferanceColumn').val().split('/');
                 for (var n = 0; n < fieldIDseq.length ; n++) {
                     var columnSeq = columnNMseq[n];
-                    var fieldData = data[columnSeq];
+                    var fieldData = data[columnSeq].replace(/&amp;/g, '&');
                     $("#" + fieldIDseq[n]).val(fieldData);
                 }
                 $('#helpDIV').html("");
@@ -53,13 +53,14 @@
             }
         });
         $('#helpDIV tbody').on('click', 'tr', function () {
+            debugger;
             var rowindex = table.row(this).index();
                 var data = table.row(rowindex).data();
                 var fieldIDseq = $('#ReferanceFieldID').val().split('/');
                 var columnNMseq = $('#ReferanceColumn').val().split('/');
                 for (var n = 0; n < fieldIDseq.length ; n++) {
                     var columnSeq = columnNMseq[n];
-                    var fieldData = data[columnSeq];
+                    var fieldData = data[columnSeq].replace(/&amp;/g, '&');
                     $("#" + fieldIDseq[n]).val(fieldData);
                 }
                 $('#helpDIV').html("");
