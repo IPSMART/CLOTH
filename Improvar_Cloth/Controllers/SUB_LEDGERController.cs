@@ -1243,13 +1243,17 @@ namespace Improvar.Controllers
                     var SIFSC = (from j in DB.M_SUBLEG_IFSC where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
                     var STAX = (from j in DB.M_SUBLEG_TAX where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
                     //var SLOCOTH = (from j in DB.M_SUBLEG_LOCOTH where (j.SLCD == VE.M_SUBLEG.SLCD) select j).ToList();
-                    string[] loca = (from i in DB_PREVYR_temp.M_LOCA select i.LOCCD + i.COMPCD).ToArray();
-                    var SLOCOTH = (from j in DB.M_SUBLEG_LOCOTH where (j.SLCD == VE.M_SUBLEG.SLCD) && loca.Contains(j.LOCCD + j.COMPCD) select j).ToList();
+
+                    string[] loca = (from i in DB_PREVYR_temp.M_LOCA select i.LOCCD+i.COMPCD).ToArray();
+                    
+                    var SLOCOTH = (from j in DB.M_SUBLEG_LOCOTH where (j.SLCD == VE.M_SUBLEG.SLCD) && loca.Contains(j.LOCCD+j.COMPCD) select j).ToList();
+
+
 
                     if (PSL == null)
                     {
                         var AUTONO_PREVYR = Cn.M_AUTONO(CommVar.FinSchemaPrevYr(UNQSNO));
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO),VE.Audit_REM);
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", AUTONO_PREVYR, "A", CommVar.FinSchemaPrevYr(UNQSNO), VE.Audit_REM, VE.M_CNTRL_HDR == null ? "" : VE.M_CNTRL_HDR.PKGLEGACYCD);
                         DB_PREVYR.M_CNTRL_HDR.Add(MCH_PREVYR);
                         DB_PREVYR.SaveChanges();
                         M_SUBLEG MSUBLEG_PREVYR = new M_SUBLEG();
@@ -1283,7 +1287,7 @@ namespace Improvar.Controllers
                     }
                     else
                     {
-                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", PSL.M_AUTONO, "E", CommVar.FinSchemaPrevYr(UNQSNO), VE.Audit_REM);
+                        M_CNTRL_HDR MCH_PREVYR = Cn.M_CONTROL_HDR(VE.Checked, "M_SUBLEG", PSL.M_AUTONO, "E", CommVar.FinSchemaPrevYr(UNQSNO));
                         DB_PREVYR.Entry(MCH_PREVYR).State = System.Data.Entity.EntityState.Modified;
                         M_SUBLEG MSUBLEG_PREVYR = new M_SUBLEG();
                         MSUBLEG_PREVYR = SL; MSUBLEG_PREVYR.M_AUTONO = MCH_PREVYR.M_AUTONO;
@@ -1295,7 +1299,8 @@ namespace Improvar.Controllers
                         DB_PREVYR.M_SUBLEG_LINK.RemoveRange(DB_PREVYR.M_SUBLEG_LINK.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
                         DB_PREVYR.M_SUBLEG_CONT.RemoveRange(DB_PREVYR.M_SUBLEG_CONT.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
                         DB_PREVYR.M_SUBLEG_IFSC.RemoveRange(DB_PREVYR.M_SUBLEG_IFSC.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
-                        DB.M_SUBLEG_TAX.RemoveRange(DB_PREVYR.M_SUBLEG_TAX.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
+                        //DB.M_SUBLEG_TAX.RemoveRange(DB_PREVYR.M_SUBLEG_TAX.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
+                        DB_PREVYR.M_SUBLEG_TAX.RemoveRange(DB_PREVYR.M_SUBLEG_TAX.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
                         DB_PREVYR.M_SUBLEG_LOCOTH.RemoveRange(DB_PREVYR.M_SUBLEG_LOCOTH.Where(x => x.SLCD == VE.M_SUBLEG.SLCD));
                         DB_PREVYR.SaveChanges();
                         if (SLOCA.Count != 0)
@@ -1581,7 +1586,7 @@ namespace Improvar.Controllers
                             if (VE.M_SUBLEG.FLOORNO != null) { add1 = add1 + VE.M_SUBLEG.FLOORNO + " "; };
                             if (VE.M_SUBLEG.PREMISES != null) { add1 = add1 + VE.M_SUBLEG.PREMISES + " "; };
                             add1 = add1.Trim();
-                            MSUBLEG.ADD1 = add1.Length>60? add1.Substring(0,60): add1;
+                            MSUBLEG.ADD1 = add1.Length > 60 ? add1.Substring(0, 60) : add1;
                             MSUBLEG.ADD2 = VE.M_SUBLEG.ROADNAME;
                             MSUBLEG.ADD3 = VE.M_SUBLEG.LOCALITY;
                             MSUBLEG.ADD4 = VE.M_SUBLEG.EXTADDR;
@@ -1819,7 +1824,7 @@ namespace Improvar.Controllers
 
                             else if (VE.DefaultAction == "E")
                             {
-                                DB.Entry(MSUBLEG).State = System.Data.Entity.EntityState.Modified;
+                                //DB.Entry(MSUBLEG).State = System.Data.Entity.EntityState.Modified;
                                 if (action == "A")
                                 {
                                     DB.M_CNTRL_HDR.Add(MCH);
@@ -2285,18 +2290,18 @@ namespace Improvar.Controllers
 
                     slno++;
                     msg = " Excelrow:" + excelrow;
-                    if(excelrow==129)
+                    if (excelrow == 129)
                     {
 
                     }
                     MCH.PKGLEGACYCD = oudr["SL_CD"].retStr();
 
-                    MSUBLEG.SLNM = oudr["SL_NM"].retStr().Length>45? oudr["SL_NM"].retStr().Substring(0,45): oudr["SL_NM"].retStr();
+                    MSUBLEG.SLNM = oudr["SL_NM"].retStr().Length > 45 ? oudr["SL_NM"].retStr().Substring(0, 45) : oudr["SL_NM"].retStr();
                     //MSUBLEG.PRNTNM = oudr["PRNTNM"].retStr();
                     //MSUBLEG.BLNKFLD = oudr["BLNKFLD"].retStr();
                     MSUBLEG.BLDGNO = oudr["BLDNGNO"].retStr();
-                    MSUBLEG.PREMISES = oudr["PREMISES"].retStr().Length > 80? oudr["PREMISES"].retStr().Substring(0,80): oudr["PREMISES"].retStr();
-                    MSUBLEG.FLOORNO = oudr["FLOORNO"].retStr().Length > 80? oudr["FLOORNO"].retStr().Substring(0,80): oudr["FLOORNO"].retStr();
+                    MSUBLEG.PREMISES = oudr["PREMISES"].retStr().Length > 80 ? oudr["PREMISES"].retStr().Substring(0, 80) : oudr["PREMISES"].retStr();
+                    MSUBLEG.FLOORNO = oudr["FLOORNO"].retStr().Length > 80 ? oudr["FLOORNO"].retStr().Substring(0, 80) : oudr["FLOORNO"].retStr();
                     MSUBLEG.ROADNAME = oudr["ROADNAME"].retStr();
                     MSUBLEG.LOCALITY = oudr["LOCALITY"].retStr();
                     MSUBLEG.EXTADDR = oudr["EXTADDR"].retStr();
@@ -2335,7 +2340,7 @@ namespace Improvar.Controllers
                     MSUBLEG.FACEBOOK_ID = oudr["FACEBOOK"].retStr();
                     MSUBLEG.TWITTER_ID = oudr["TWITTER"].retStr();
                     MSUBLEG.WHATSAPP_NO = Convert.ToInt64(oudr["WHATSAPP"].retDbl());
-                   
+
                     //MSUBLEG.ACODE = oudr["ACODE"].retStr();
                     //MSUBLEG.TRAN_CD = oudr["TRAN_CD"].retStr();
                     //MSUBLEG.FASMARTLINKCD = oudr["FASMARTLINKCD"].retStr();
@@ -2343,8 +2348,8 @@ namespace Improvar.Controllers
                     MSUBLEG.OTHADD2 = oudr["OTHADD2"].retStr();
                     MSUBLEG.OTHADD3 = oudr["OTHADD3"].retStr();
                     MSUBLEG.OTHADDREM = oudr["OTHREM"].retStr();
-                    MSUBLEG.SLCOMPTYPE = oudr["LTD_IND"].retStr()=="I"?"07":"02";
-                   // MSUBLEG.REGNTYPE = "";
+                    MSUBLEG.SLCOMPTYPE = oudr["LTD_IND"].retStr() == "I" ? "07" : "02";
+                    // MSUBLEG.REGNTYPE = "";
 
                     MSUBLEGCONT SUBLEGCONT = new MSUBLEGCONT();
                     SUBLEGCONT.MOBILE1PREFIX = Convert.ToByte(oudr["CPERSON"].retDbl());
@@ -2359,13 +2364,13 @@ namespace Improvar.Controllers
                     SUBLEGIFSC1.ADDRESS = oudr["BANKADD"].retStr();
                     SUBLEGIFSC1.BANKACTNO = oudr["BANKACT"].retStr();
                     SUBLEGIFSC1.BANKACTTYPE = oudr["BACNKACTTYPE"].retStr();
-                    SUBLEGIFSC1.BRANCH = oudr["BANKNM"].retStr()!=""?".":"";
+                    SUBLEGIFSC1.BRANCH = oudr["BANKNM"].retStr() != "" ? "." : "";
                     SUBLEGIFSC1.SLNO = 1;
 
                     MSUBLEGIFSCLlist.Add(SUBLEGIFSC1);
 
                     MSUBLEGIFSC SUBLEGIFSC2 = new MSUBLEGIFSC();
-                   
+
                     SUBLEGIFSC2.IFSCCODE = oudr["IFSC2"].retStr();
                     SUBLEGIFSC2.BANKNAME = oudr["BANKNM2"].retStr();
                     SUBLEGIFSC2.ADDRESS = oudr["BANKADD2"].retStr();

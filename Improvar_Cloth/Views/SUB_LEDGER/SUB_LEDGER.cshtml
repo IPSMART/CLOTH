@@ -332,7 +332,7 @@
     }
     function ModifyLogDetails() {
         if ("@Model.DefaultAction" == "V") {
-            ModifyLogDtl(@mldauto);
+            ModifyLogDtl(@mldauto,'@CommVar.FinSchema(Model.UNQSNO)');
         }
     }
 </script>
@@ -858,6 +858,7 @@
                     var REGNTYPE = result.TxpType;
                     document.getElementById("REGNTYPE").value = REGNTYPE == "COM" ? "C" : "R";
                     document.getElementById("COUNTRY").value = "INDIA"; //result.TxpType;
+                    $("#SLNM").blur();
                 } else {
                     msgInfo(result.message);
                 }

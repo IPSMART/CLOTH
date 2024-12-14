@@ -711,7 +711,7 @@ namespace Improvar
         //                                   }).ToList();
         //    return DOC_TYPE;
         //}
-        public Models.M_CNTRL_HDR M_CONTROL_HDR(bool Tag, string Table_Name, long Auto_Number, string ACTION, string DATABASE, string auditrem)
+        public Models.M_CNTRL_HDR M_CONTROL_HDR(bool Tag, string Table_Name, long Auto_Number, string ACTION, string DATABASE, string auditrem="", string PKGLEGACYCD = "")
         {
             var UNQSNO = getQueryStringUNQSNO();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), DATABASE);
@@ -777,6 +777,7 @@ namespace Improvar
 
             if (ACTION == "A")
             {
+                if (PKGLEGACYCD.retStr() != "") MCH.PKGLEGACYCD = PKGLEGACYCD;
                 MCH.USR_ID = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
                 MCH.USR_ENTDT = System.DateTime.Now;
                 MCH.USR_LIP = GetIp();
