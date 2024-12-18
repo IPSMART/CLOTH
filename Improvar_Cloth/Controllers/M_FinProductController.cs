@@ -2387,7 +2387,7 @@ namespace Improvar.Controllers
                 }
                 //DESIGN ITEM GROUP ITEM NAME UOM HSN CODE    FAB ITNM    BARNO WPRATE    MRP CPRATE   RPRATE JOBPRATE    JOBSRATE IGST    RNO ITLEGACYCD  LEGACYCD
 
-                string Excel_Header = "DESIGN" + "|" + "ITEM GROUP" + "|" + "ITEM NAME" + "|" + "UOM" + "|" + "HSN CODE" + "|" + "FAB ITNM"
+                string Excel_Header = "DESIGN" + "|" + "ITEM GROUP NAME" + "|" + "ITEM NAME" + "|" + "UOM CODE" + "|" + "HSN CODE" + "|" + "FAB ITNM"
                     + "|" + "BARNO" + "|" + "WPRATE" + "|" + "MRP" + " |" + "CPRATE" + "|" + "RPRATE" + "|" + "JOBPRATE" + "|" + "JOBSRATE" + "|" + "IGST" + "|" + "RNO"
                     + "|" + "ITLEGACYCD" + "|" + "LEGACYCD" + "|" + "Sales Ledger Code" + "|" + "Purchase Ledger Code" + "|" + "Bill_UOM" + "|" + "Effective Date" + "|" + "Allow Negetive Stock(Y/N)";
 
@@ -2440,9 +2440,9 @@ namespace Improvar.Controllers
                 DataTable dbfdt = new DataTable();
                 dbfdt.Columns.Add("Sl", typeof(int));
                 dbfdt.Columns.Add("DESIGN", typeof(string));
-                dbfdt.Columns.Add("ITEM GROUP", typeof(string));
+                dbfdt.Columns.Add("ITEM GROUP NAME", typeof(string));
                 dbfdt.Columns.Add("ITEM NAME", typeof(string));
-                dbfdt.Columns.Add("UOM", typeof(string));
+                dbfdt.Columns.Add("UOM CODE", typeof(string));
                 dbfdt.Columns.Add("HSN CODE", typeof(string));
                 dbfdt.Columns.Add("FAB ITNM", typeof(string));
                 dbfdt.Columns.Add("BARNO", typeof(string));
@@ -2503,9 +2503,9 @@ namespace Improvar.Controllers
                 {
                     ++excelrow; msg = "<br/><br/> Excelrow:" + excelrow + " ";
                     string DESIGN = oudr["DESIGN"].retStr();
-                    string GRPNM = oudr["ITEM GROUP"].retStr();
+                    string GRPNM = oudr["ITEM GROUP NAME"].retStr();
                     string ITNM = oudr["ITEM NAME"].retStr();
-                    string UOM = oudr["UOM"].retStr();
+                    string UOM = oudr["UOM CODE"].retStr();
                     string HSNCODE = oudr["HSN CODE"].retStr();
                     string FABITNM = oudr["FAB ITNM"].retStr();
                     string BARNO = oudr["BARNO"].retStr();
