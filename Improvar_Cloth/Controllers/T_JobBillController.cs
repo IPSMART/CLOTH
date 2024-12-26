@@ -1400,7 +1400,7 @@ namespace Improvar.Controllers
             string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
             string doccd = XYZ.retSqlfromStrarray();
             string sql = "";
-            sql += "select distinct a.autono, d.doccd, to_char(d.docdt,'dd/mm/yyyy') docdt, d.docno, d.doconlyno, c.jobnm, a.slcd, e.slnm, a.pblno, d.docdt ddocdt ";
+            sql += "select distinct a.autono, d.doccd, to_char(d.docdt,'dd/mm/yyyy') docdt, d.docno, d.doconlyno, c.jobnm,nvl(d.cancel,'N')cancel, a.slcd, e.slnm, a.pblno, d.docdt ddocdt ";
             sql += "from " + scm + ".t_jbill a, " + scm + ".m_jobmst c, " + scm + ".t_cntrl_hdr d, " + scmf + ".m_subleg e ";
             sql += "where a.slcd = e.slcd(+) and a.autono = d.autono(+) and a.jobcd=c.jobcd(+) and ";
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and d.yr_cd = '" + yrcd + "' and d.doccd in (" + doccd + ") ";
@@ -1411,7 +1411,8 @@ namespace Improvar.Controllers
             var hdr = "Doc No" + Cn.GCS() + "Doc Date" + Cn.GCS() + "Job Name" + Cn.GCS() + "P/Blno" + Cn.GCS() + "Party Name" + Cn.GCS() + "AUTONO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "] </td><td>" + tbl.Rows[j]["docdt"] + "</td><td>" + tbl.Rows[j]["jobnm"] + "</td><td>" + tbl.Rows[j]["pblno"] +
+                string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + "</td><td>" + tbl.Rows[j]["docdt"] + "</td><td>" + tbl.Rows[j]["jobnm"] + "</td><td>" + tbl.Rows[j]["pblno"] +
                     " </td><td><b>" + tbl.Rows[j]["slnm"] + " </b> (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
             return PartialView("_SearchPannel2", masfa.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
