@@ -2514,11 +2514,13 @@ function AddBarCodeGrid() {
     }
     tr += '        <input data-val="true" data-val-length="The field BALEYR must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALEYR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALEYR" type="hidden" value="' + BALEYR + '">';
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
-        tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
+        //tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
         //tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
     }
     if (MENU_PARA != "PB" & MENU_PARA != "OP" && MENU_PARA != "OTH" && MENU_PARA != "PJRC" && MENU_PARA != "PR" && MNTNOURDESIGN != "Y") {
         tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
+        tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
+
     }
     tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
     tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
@@ -2622,6 +2624,9 @@ function AddBarCodeGrid() {
     if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") && MNTNOURDESIGN == "Y") {
         tr += '    <td class="" title="' + PDESIGN + '">';
         tr += '        <input class=" atextBoxFor " id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="text" value="' + PDESIGN + '">';
+        tr += '    </td>         ';
+        tr += '    <td class="" title="' + OURDESIGN + '">';
+        tr += '        <input class=" atextBoxFor " id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="text" value="' + OURDESIGN + '">';
         tr += '    </td>         ';
     }
     if (ModuleCode.indexOf("SALESCLOTH") == -1) {

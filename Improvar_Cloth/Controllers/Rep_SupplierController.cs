@@ -99,7 +99,7 @@ namespace Improvar.Controllers
                 else if (reptype == "ClosingStockBarcode") { return ClosingStockBarcodeWise(scm, scmf, fdt, tdt, LOC, COM, slcd, itgrpcd, loccd); }
                 //if (reptype != "PurchasebillwiseStock")
                 //{
-                string sql = "select a.autono,e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign, a.doctag,a.stkdrcr, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
+                string sql = "select a.autono,e.slcd,j.slnm, a.loccd, k.locnm, a.barno, e.itcd, e.fabitcd,e.pdesign,e.ourdesign, a.doctag,a.stkdrcr, a.qnty, a.txblval, a.othramt, f.itgrpcd, h.itgrpnm, f.itnm, ";
                 sql += Environment.NewLine + "nvl(e.pdesign, f.styleno) styleno, e.othrate, nvl(b.rate, 0) oprate, nvl(cp.rate, 0) clrate, ";
                 sql += Environment.NewLine + "nvl(rp.rate, 0) rprate, ";
                 sql += Environment.NewLine + "f.uomcd, i.uomnm, i.decimals, g.itnm fabitnm,l.docno,l.docdt,nvl(m.prefno,l.docno)blno,nvl(m.prefdt,l.docdt)bldt   from ";
@@ -179,6 +179,7 @@ namespace Improvar.Controllers
                 if (reptype == "S") HC.GetPrintHeader(IR, "itgrpnm", "string", "c,40", "Group");
                 HC.GetPrintHeader(IR, "styleno", "string", "c,40", "Styleno");
                 HC.GetPrintHeader(IR, "pdesign", "string", "c,20", "Party Design");
+                HC.GetPrintHeader(IR, "ourdesign", "string", "c,20", "Our Design");
                 HC.GetPrintHeader(IR, "uomnm", "string", "c,5", "uom");
                 HC.GetPrintHeader(IR, "openingqnty", "double", "n,10,2", "Opening Qty");
                 if (MENU_PARA != "Q") HC.GetPrintHeader(IR, "openingamt", "double", "n,10,2", "Opening Value");
@@ -412,6 +413,7 @@ namespace Improvar.Controllers
 
                                             IR.Rows[rNo]["styleno"] = tbl.Rows[i - 1]["styleno"].ToString();
                                             IR.Rows[rNo]["pdesign"] = tbl.Rows[i - 1]["pdesign"].ToString();
+                                            IR.Rows[rNo]["ourdesign"] = tbl.Rows[i - 1]["ourdesign"].ToString();
                                             IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomnm"].ToString();
                                             IR.Rows[rNo]["itgrpcd"] = tbl.Rows[i - 1]["itgrpcd"].retStr();
                                             IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
@@ -481,6 +483,7 @@ namespace Improvar.Controllers
                                         if (reptype == "N") IR.Rows[rNo]["slno"] = islno;
                                         IR.Rows[rNo]["styleno"] = tbl.Rows[indx]["styleno"].ToString();
                                         IR.Rows[rNo]["pdesign"] = tbl.Rows[indx]["pdesign"].ToString();
+                                        IR.Rows[rNo]["ourdesign"] = tbl.Rows[indx]["ourdesign"].ToString();
                                         IR.Rows[rNo]["uomnm"] = tbl.Rows[indx]["uomnm"].ToString();
                                         IR.Rows[rNo]["itgrpcd"] = tbl.Rows[indx]["itgrpcd"].retStr();
                                         IR.Rows[rNo]["slcd"] = tbl.Rows[indx]["slcd"].retStr();
@@ -583,7 +586,7 @@ namespace Improvar.Controllers
                                         }
                                         string uomnm = uomlist[x].retStr();
                                         IR.Rows[rNo]["uomnm"] = uomnm;
-                                        int strart = reptype == "N" ? 9 : 10;
+                                        int strart = reptype == "N" ? 10 : 11;
                                         for (int a = strart; a < IR.Columns.Count - 2; a++)
                                         {
                                             var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
@@ -653,7 +656,7 @@ namespace Improvar.Controllers
                                     }
                                     string uomnm = uomlist1[x].retStr();
                                     IR.Rows[rNo]["uomnm"] = uomnm;
-                                    int strart = reptype == "N" ? 9 : 10;
+                                    int strart = reptype == "N" ? 10 : 11;
                                     for (int a = strart; a < IR.Columns.Count - 2; a++)
                                     {
                                         var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("slcd").retStr() == slcd && g.Field<string>("uomnm").retStr() == uomnm)
@@ -711,7 +714,7 @@ namespace Improvar.Controllers
                         }
                         string uomnm = uomlist2[x].retStr();
                         IR.Rows[rNo]["uomnm"] = uomnm;
-                        int strart = reptype == "N" ? 9 : 10;
+                        int strart = reptype == "N" ? 10 : 11;
                         for (int a = strart; a < IR.Columns.Count - 2; a++)
                         {
                             var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("itgrpcd").retStr() != "")

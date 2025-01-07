@@ -44,8 +44,21 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     string com = CommVar.Compcd(UNQSNO);
-                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
+                    string FScm1 = CommVar.FinSchema(UNQSNO);
+                    //VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
+                    //VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+                    string sql1 = "select distinct rtdebcd,rtdebnm from " + FScm1 + ".m_retdeb ";
+                    var dt1 = MasterHelp.SQLquery(sql1);
+
+                    VE.DropDown_list_SLCD = (from DataRow dr in dt1.Rows
+                                         select new DropDown_list_SLCD()
+                                         {
+                                             value = dr["rtdebnm"].ToString(),
+                                             text = dr["rtdebnm"].ToString(),
+
+                                         }).ToList();
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
@@ -363,7 +376,7 @@ namespace Improvar.Controllers
 
 
                 sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,a.docdt tchdocdt,h.agslcd, " + Environment.NewLine;
-                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,i.nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+                sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,nvl(i.nm,p.rtdebnm) nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
                 sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
                 sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
                 //query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
@@ -419,11 +432,13 @@ namespace Improvar.Controllers
                 sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
                 sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
                 sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
-                sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o " + Environment.NewLine;
+                sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o, " + scmf + ".M_RETDEB p " + Environment.NewLine;
                 sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
-                sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) " + Environment.NewLine;
-                if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
-                if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
+                //if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
+                //if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                if (selslcd != "") sql += " and nvl(i.nm,c.slnm) in (" + selslcd + ") " + Environment.NewLine;//only retail party respect filter
+                if (unselslcd != "") sql += " and nvl(i.nm,c.slnm) not in (" + unselslcd + ") " + Environment.NewLine;
                 if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
                 if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
