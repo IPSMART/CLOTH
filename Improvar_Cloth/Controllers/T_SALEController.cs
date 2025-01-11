@@ -6425,12 +6425,13 @@ namespace Improvar.Controllers
                         }
                         strduedt = Convert.ToDateTime(TTXN.DOCDT.Value).AddDays(Convert.ToDouble(TTXN.DUEDAYS)).ToString().retDateStr();
                         //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
-                        {
-                            strblno = TTXN.PREFNO;
-                            strbldt = TTXN.PREFDT.ToString();
-                        }
-                        else if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
+                        //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                        //{
+                        //    strblno = TTXN.PREFNO;
+                        //    strbldt = TTXN.PREFDT.ToString();
+                        //}
+                        //else 
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR" )
                         {
                             if (TTXN.PREFNO.retStr() != "")
                             {
@@ -6660,7 +6661,7 @@ namespace Improvar.Controllers
                                     TVCHGST.RATE = VE.TTXNDTL[i].RATE.retDbl();
                                     TVCHGST.PINV = pinv;
                                     TVCHGST.GOOD_SERV = (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR") ? "S" : "";
-                                    if (VE.MENU_PARA == "PR")
+                                    if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
                                     {
                                         TVCHGST.PREFDT = VE.T_TXN.PREFDT;
                                         TVCHGST.PREFNO = VE.T_TXN.PREFNO;
@@ -6929,7 +6930,7 @@ namespace Improvar.Controllers
                                     TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT.retDbl() * gmult;
                                     TVCHGST1.RATE = VE.TTXNAMT[i].AMTRATE.retDbl();
                                     TVCHGST1.PINV = pinv;
-                                    if (VE.MENU_PARA == "PR")
+                                    if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR")
                                     {
                                         TVCHGST1.PREFDT = VE.T_TXN.PREFDT;
                                         TVCHGST1.PREFNO = VE.T_TXN.PREFNO;

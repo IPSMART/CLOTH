@@ -1280,8 +1280,9 @@
                                 <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Party bill dt")
-                                        @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC")
-                                        {
+                                        @*@if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC")*@
+                                      @if (Model.MENU_PARA == "PB")
+                                      {
                                             <b style="color:Red;">*</b>
                                         }
                                     </div>
