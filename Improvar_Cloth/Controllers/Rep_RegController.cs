@@ -47,16 +47,25 @@ namespace Improvar.Controllers
                     string FScm1 = CommVar.FinSchema(UNQSNO);
                     //VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     //VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-                    string sql1 = "select distinct rtdebcd,rtdebnm from " + FScm1 + ".m_retdeb ";
-                    var dt1 = MasterHelp.SQLquery(sql1);
 
-                    VE.DropDown_list_SLCD = (from DataRow dr in dt1.Rows
-                                         select new DropDown_list_SLCD()
-                                         {
-                                             value = dr["rtdebnm"].ToString(),
-                                             text = dr["rtdebnm"].ToString(),
+                    if (VE.MENU_PARA == "CM")
+                    {
+                        string sql1 = "select distinct rtdebcd,rtdebnm from " + FScm1 + ".m_retdeb ";
+                        var dt1 = MasterHelp.SQLquery(sql1);
 
-                                         }).ToList();
+                        VE.DropDown_list_SLCD = (from DataRow dr in dt1.Rows
+                                                 select new DropDown_list_SLCD()
+                                                 {
+                                                     value = dr["rtdebnm"].ToString(),
+                                                     text = dr["rtdebnm"].ToString(),
+
+                                                 }).ToList();
+                    }
+                    else
+                    {
+                        VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
+                    }
+                    
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
 
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
@@ -437,8 +446,17 @@ namespace Improvar.Controllers
                 sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
                 //if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
                 //if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
-                if (selslcd != "") sql += " and nvl(i.nm,c.slnm) in (" + selslcd + ") " + Environment.NewLine;//only retail party respect filter
-                if (unselslcd != "") sql += " and nvl(i.nm,c.slnm) not in (" + unselslcd + ") " + Environment.NewLine;
+                if (VE.MENU_PARA == "CM")
+                {
+                    if (selslcd != "") sql += " and nvl(i.nm,c.slnm) in (" + selslcd + ") " + Environment.NewLine;//only retail party respect filter
+                    if (unselslcd != "") sql += " and nvl(i.nm,c.slnm) not in (" + unselslcd + ") " + Environment.NewLine;
+                }
+                else
+                {
+                    if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
+                    if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
+                }
+                
                 if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
                 if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
