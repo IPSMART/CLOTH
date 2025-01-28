@@ -402,9 +402,9 @@ namespace Improvar.Controllers
                             case 0:
                                 copymode = "ORIGINAL FOR KARIGAR"; break;
                             case 1:
-                                copymode = "DUPLICATE FOR SUPPLIER"; break;
+                                copymode = "DUPLICATE FOR TRANSPORTER"; break;
                             case 2:
-                                copymode = "EXTRA COPY"; break;
+                                copymode = "TRIPLICATE FOR SUPPLIER"; break;
                             case 3:
                                 copymode = "EXTRA COPY"; break;
                             case 4:
