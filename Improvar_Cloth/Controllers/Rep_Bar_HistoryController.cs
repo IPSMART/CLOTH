@@ -61,6 +61,18 @@ namespace Improvar.Controllers
                             }
                         }
                         VE.SHOWMTRLJOBCD = VE.DropDown_list_MTRLJOBCD.Count() > 1 ? "Y" : "N";
+
+                        ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                        VE.DropDown_list1 = (from a in DBF.M_PRCLST
+                                             join i in DBF.M_CNTRL_HDR on a.M_AUTONO equals i.M_AUTONO
+                                             where (i.INACTIVE_TAG == "N")
+                                             select new DropDown_list1()
+                                             {
+                                                 text = a.PRCNM,
+                                                 value = a.PRCCD,
+                                             }).Distinct().OrderBy(A => A.text).ToList();
+                        VE.listprccd = masterHelp.ComboFill("prccd", VE.DropDown_list1, 0, 1);
+
                         VE.DefaultView = true;
                         VE.ExitMode = 1;
                         VE.DefaultDay = 0;
@@ -217,99 +229,189 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult Rep_Bar_History(RepBarHistory VE)
+        public ActionResult Rep_Bar_History(RepBarHistory VE, FormCollection FC, string submitbutton)
         {
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             try
             {
-                string Excel_Header = "SL No" + "|" + "Doc Date" + "|" + "Doc No" + "|" + "Party Ref" + "|" + "Doc Type" + "|" + "Party" + "|" + "Location" + "|" + "In" + "|";
-                Excel_Header = Excel_Header + "Out" + "|" + "Other Qnty" + "|" + "Rate" + "|" + "Disc %";
-
-
-                ExcelPackage ExcelPkg = new ExcelPackage();
-                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
-
-                using (ExcelRange Rng = wsSheet1.Cells["A1:L1"])
+                if (submitbutton == "Download Excel")
                 {
-                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
-                    string[] Header = Excel_Header.Split('|');
-                    for (int i = 0; i < Header.Length; i++)
+                    #region BarCode Details
+                    string Excel_Header = "SL No" + "|" + "Doc Date" + "|" + "Doc No" + "|" + "Party Ref" + "|" + "Doc Type" + "|" + "Party" + "|" + "Location" + "|" + "In" + "|";
+                    Excel_Header = Excel_Header + "Out" + "|" + "Other Qnty" + "|" + "Rate" + "|" + "Disc %";
+
+
+                    ExcelPackage ExcelPkg = new ExcelPackage();
+                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                    using (ExcelRange Rng = wsSheet1.Cells["A1:L1"])
                     {
-                        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                        string[] Header = Excel_Header.Split('|');
+                        for (int i = 0; i < Header.Length; i++)
+                        {
+                            wsSheet1.Cells[1, i + 1].Value = Header[i];
+                        }
                     }
+
+                    string E_DATE = System.DateTime.Now.ToString().Substring(0, 10);
+                    string seletype = "", Etyp1 = "";
+
+
+                    string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
+                    sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE, ";
+                    sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,nvl(f.cancel,'N')cancel ";
+                    sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
+                    sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
+                    sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
+                    sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
+                    sql1 += "a.AUTONO = f.AUTONO(+) and f.compcd = g.compcd(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BAR_CODE + "' ";
+                    sql1 += "order by b.DOCDT,b.DOCNO ";
+                    DataTable barcdhistory = masterHelp.SQLquery(sql1);
+
+                    int exlrowno = 2; double TINQTY = 0, TOUTQTY = 0, TNOS = 0, InQty = 0, OutQty = 0;
+                    for (int i = 0; i < barcdhistory.Rows.Count; i++)
+                    {
+                        wsSheet1.Cells[i + 2, 1].Value = barcdhistory.Rows[i]["SLNO"].retShort();
+                        wsSheet1.Cells[i + 2, 2].Value = barcdhistory.Rows[i]["DOCDT"].retDateStr();
+                        wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["DOCNO"].retStr() : barcdhistory.Rows[i]["DOCNO"].retStr() + " (Record Cancelled)";
+                        wsSheet1.Cells[i + 2, 4].Value = barcdhistory.Rows[i]["PREFNO"].retStr();
+                        wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
+                        wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
+                        wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
+                        //var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                        //var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                        InQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0) : 0;
+                        OutQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0) : 0;
+                        //if (inqty != null)
+                        //{
+                        //    InQty = inqty.QNTY.retDbl();
+                        //}
+                        //else { InQty = 0; }
+                        wsSheet1.Cells[i + 2, 8].Value = InQty;
+                        //if (outqty != null)
+                        //{
+                        //    OutQty = outqty.QNTY.retDbl();
+                        //}
+                        //else { OutQty = 0; }
+                        wsSheet1.Cells[i + 2, 9].Value = OutQty;
+                        wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl() : 0;
+                        wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["RATE"].retDbl() : 0;
+                        wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr()) : 0.retStr();
+                        TINQTY = TINQTY + InQty;
+                        TOUTQTY = TOUTQTY + OutQty;
+                        TNOS = TNOS + barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl() : 0;
+                        exlrowno++;
+                    }
+                    wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    wsSheet1.Row(exlrowno).Style.Font.Bold = true;
+                    wsSheet1.Cells[exlrowno, 7].Value = "TOTAL";
+                    wsSheet1.Cells[exlrowno, 8].Value = TINQTY;
+                    wsSheet1.Cells[exlrowno, 9].Value = TOUTQTY;
+
+                    wsSheet1.Row(++exlrowno).Style.Font.Bold = true;
+                    wsSheet1.Cells[exlrowno, 7].Value = "Balance Qnty";
+                    wsSheet1.Cells[exlrowno, 9].Value = (TINQTY - TOUTQTY);
+                    //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
+                    //for download//
+                    Response.Clear();
+                    Response.ClearContent();
+                    Response.Buffer = true;
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("Content-Disposition", "attachment; filename=BarCode History.xlsx");
+                    Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                    Response.Flush();
+                    Response.Close();
+                    Response.End();
+                    #endregion
                 }
-
-                string E_DATE = System.DateTime.Now.ToString().Substring(0, 10);
-                string seletype = "", Etyp1 = "";
-
-
-                string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
-                sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE, ";
-                sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,nvl(f.cancel,'N')cancel ";
-                sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
-                sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
-                sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
-                sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                sql1 += "a.AUTONO = f.AUTONO(+) and f.compcd = g.compcd(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BAR_CODE + "' ";
-                sql1 += "order by b.DOCDT,b.DOCNO ";
-                DataTable barcdhistory = masterHelp.SQLquery(sql1);
-
-                int exlrowno = 2; double TINQTY = 0, TOUTQTY = 0, TNOS = 0, InQty = 0, OutQty = 0;
-                for (int i = 0; i < barcdhistory.Rows.Count; i++)
+                else if (submitbutton == "Download Price Details Excel")
                 {
-                    wsSheet1.Cells[i + 2, 1].Value = barcdhistory.Rows[i]["SLNO"].retShort();
-                    wsSheet1.Cells[i + 2, 2].Value = barcdhistory.Rows[i]["DOCDT"].retDateStr();
-                    wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["DOCNO"].retStr() : barcdhistory.Rows[i]["DOCNO"].retStr() + " (Record Cancelled)";
-                    wsSheet1.Cells[i + 2, 4].Value = barcdhistory.Rows[i]["PREFNO"].retStr();
-                    wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
-                    wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
-                    wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
-                    //var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    //var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
-                    InQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "D" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0) : 0;
-                    OutQty = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["STKDRCR"].retStr() == "C" ? barcdhistory.Rows[i]["QNTY"].retDbl() : 0) : 0;
-                    //if (inqty != null)
-                    //{
-                    //    InQty = inqty.QNTY.retDbl();
-                    //}
-                    //else { InQty = 0; }
-                    wsSheet1.Cells[i + 2, 8].Value = InQty;
-                    //if (outqty != null)
-                    //{
-                    //    OutQty = outqty.QNTY.retDbl();
-                    //}
-                    //else { OutQty = 0; }
-                    wsSheet1.Cells[i + 2, 9].Value = OutQty;
-                    wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl() : 0;
-                    wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["RATE"].retDbl() : 0;
-                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["cancel"].retStr() == "N" ? (barcdhistory.Rows[i]["DISCRATE"].retDbl() == 0 ? "" : barcdhistory.Rows[i]["DISCRATE"].retDbl() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr()) : 0.retStr();
-                    TINQTY = TINQTY + InQty;
-                    TOUTQTY = TOUTQTY + OutQty;
-                    TNOS = TNOS + barcdhistory.Rows[i]["cancel"].retStr() == "N" ? barcdhistory.Rows[i]["NOS"].retDbl() : 0;
-                    exlrowno++;
-                }
-                wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                wsSheet1.Row(exlrowno).Style.Font.Bold = true;
-                wsSheet1.Cells[exlrowno, 7].Value = "TOTAL";
-                wsSheet1.Cells[exlrowno, 8].Value = TINQTY;
-                wsSheet1.Cells[exlrowno, 9].Value = TOUTQTY;
+                    string selprccd = "";
+                    if (FC.AllKeys.Contains("prccdvalue")) selprccd = CommFunc.retSqlformat(FC["prccdvalue"].ToString());
+                    if (selprccd == "")
+                    {
+                        return Content("Select Price code");
+                    }
+                    string[] arrprccd = FC["prccdvalue"].ToString().Split(',');
+                    #region Price Details
+                    int col = 3;
+                    string Excel_Header = "SL No" + "|" + "Bar Code" + "|" + "Design No./Item";
+                    foreach (var v in arrprccd)
+                    {
+                        Excel_Header += "|" + v + " Rate";
+                        col++;
+                    }
 
-                wsSheet1.Row(++exlrowno).Style.Font.Bold = true;
-                wsSheet1.Cells[exlrowno, 7].Value = "Balance Qnty";
-                wsSheet1.Cells[exlrowno, 9].Value = (TINQTY - TOUTQTY);
-                //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
-                //for download//
-                Response.Clear();
-                Response.ClearContent();
-                Response.Buffer = true;
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.AddHeader("Content-Disposition", "attachment; filename=BarCode History.xlsx");
-                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
-                Response.Flush();
-                Response.Close();
-                Response.End();
+                    ExcelPackage ExcelPkg = new ExcelPackage();
+                    ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                    using (ExcelRange Rng = wsSheet1.Cells[1, 1, 1, col])
+                    {
+                        Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                        string[] Header = Excel_Header.Split('|');
+                        for (int i = 0; i < Header.Length; i++)
+                        {
+                            wsSheet1.Cells[1, i + 1].Value = Header[i];
+                        }
+                    }
+
+
+
+                    string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm, c.styleno||' '||c.itnm itstyle from ";
+                    sql2 += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
+                    sql2 += "from(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
+                    sql2 += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql2 += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate, 0) <> 0 ) a, ";
+                    sql2 += "" + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c where a.barno = b.barno(+) and a.prccd = b.prccd(+) and ";
+                    sql2 += "a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.rn = 1 ";
+                    sql2 += "union all ";
+                    sql2 += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
+                    sql2 += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+                    sql2 += "from " + scm + ".t_batchmst_price a where nvl(a.rate, 0) <> 0 ) a, ";
+                    sql2 += "" + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c, " + scm + ".T_BATCHmst d where a.barno = b.barno(+) and ";
+                    sql2 += "a.prccd = b.prccd(+) and a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.barno = d.barno(+) and d.barno is null) a ";
+                    sql2 += ") a, ";
+                    sql2 += "" + scmf + ".m_prclst b," + scm + ".m_sitem c ";
+                    sql2 += "where a.prccd = b.prccd(+) and a.itcd=c.itcd(+) and a.prccd in (" + selprccd + ")  ";
+                    DataTable barcdhistory = masterHelp.SQLquery(sql2);
+                    DataTable dt = new DataTable();
+                    DataView dv = new DataView(barcdhistory);
+                    string[] arr = { "barno", "itstyle" };
+                    dt = dv.ToTable(true, arr);
+                    int exlrowno = 2;
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        wsSheet1.Cells[i + 2, 1].Value = (i + 1);
+
+                        wsSheet1.Cells[i + 2, 2].Value = dt.Rows[i]["barno"].retStr();
+                        wsSheet1.Cells[i + 2, 3].Value = dt.Rows[i]["itstyle"].retStr();
+                        string barno = dt.Rows[i]["barno"].retStr();
+                        col = 4;
+                        foreach (var v in arrprccd)
+                        {
+                            wsSheet1.Cells[i + 2, col].Value = (from DataRow dr in barcdhistory.Rows where dr["barno"].retStr() == barno && dr["prccd"].retStr() == v select dr["rate"].retDbl()).FirstOrDefault();
+                            col++;
+                        }
+
+
+                        exlrowno++;
+                    }
+
+                    Response.Clear();
+                    Response.ClearContent();
+                    Response.Buffer = true;
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("Content-Disposition", "attachment; filename=BarCode Rate Details.xlsx");
+                    Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                    Response.Flush();
+                    Response.Close();
+                    Response.End();
+                    #endregion
+                }
             }
             catch (Exception ex)
             {

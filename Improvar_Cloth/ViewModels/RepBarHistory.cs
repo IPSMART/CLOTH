@@ -74,6 +74,9 @@ namespace Improvar.ViewModels
         public string COMMONUNIQBAR { get; set; }
         public NEWBARDATA NEWPRICEDATA { get; set; }
         public string STYLENO { get; set; }
+        public string listprccd { get; set; }
+        public List<DropDown_list1> DropDown_list1 { get; set; }
+
 
     }
     public class NEWBARDATA
