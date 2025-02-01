@@ -243,7 +243,7 @@ namespace Improvar.Controllers
                 #region IN TAB DATA
                 string str = "";
                 str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,i.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
-                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.COMMONUNIQBAR ";
+                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.COMMONUNIQBAR,q.WPRATE,q.RPRATE ";
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p, " + Scm + ".T_BATCHMST q ";
                 str += "where i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
@@ -274,8 +274,8 @@ namespace Improvar.Controllers
                                     SIZECD = dr["SIZECD"].retStr(),
                                     SIZENM = dr["SIZENM"].retStr(),
                                     SZBARCODE = dr["SZBARCODE"].retStr(),
-                                    //WPRATE = dr["WPRATE"].retDbl(),
-                                    //RPRATE = dr["RPRATE"].retDbl(),
+                                    WPRATE = dr["WPRATE"].retDbl(),
+                                    RPRATE = dr["RPRATE"].retDbl(),
                                     QNTY = dr["QNTY"].retDbl(),
                                     MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                                     MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
@@ -996,6 +996,7 @@ namespace Improvar.Controllers
                                             TBATCHMST.QNTY = VE.TBATCHDTL[i].QNTY;
                                             TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
                                             TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
+                                            TBATCHMST.COMMONUNIQBAR = (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") ? "E" : "";
 
                                             dbsql = Master_Help.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -1206,6 +1207,7 @@ namespace Improvar.Controllers
                                             TBATCHMST.QNTY = VE.TBATCHDTL_OUT[i].QNTY;
                                             TBATCHMST.WPRATE = VE.TBATCHDTL_OUT[i].WPRATE;
                                             TBATCHMST.RPRATE = VE.TBATCHDTL_OUT[i].RPRATE;
+                                            TBATCHMST.COMMONUNIQBAR = (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") ? "E" : "";
 
                                             dbsql = Master_Help.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
