@@ -395,7 +395,7 @@ namespace Improvar.Controllers
                         if (copyno[ic].ToString() == "N")
                         {
                             x = x + 1;
-                            break;
+                            continue;
                         }
                         switch (ic)
                         {
