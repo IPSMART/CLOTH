@@ -243,7 +243,7 @@ namespace Improvar.Controllers
                 #region IN TAB DATA
                 string str = "";
                 str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,i.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
-                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.COMMONUNIQBAR,q.WPRATE,q.RPRATE ";
+                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE,q.COMMONUNIQBAR,q.WPRATE,q.RPRATE,q.RATE,q.OURDESIGN,q.PDESIGN,q.HSNCODE ";
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p, " + Scm + ".T_BATCHMST q ";
                 str += "where i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
@@ -280,6 +280,10 @@ namespace Improvar.Controllers
                                     MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                                     MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
                                     MTBARCODE = dr["MTBARCODE"].retStr(),
+                                    RATE = dr["RATE"].retDbl(),
+                                    OURDESIGN = dr["OURDESIGN"].retStr(),
+                                    PDESIGN = dr["PDESIGN"].retStr(),
+                                    HSNCODE = dr["HSNCODE"].retStr(),
                                 }).ToList();
 
                 VE.IN_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -996,6 +1000,12 @@ namespace Improvar.Controllers
                                             TBATCHMST.QNTY = VE.TBATCHDTL[i].QNTY;
                                             TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
                                             TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
+                                            TBATCHMST.RATE = VE.TBATCHDTL[i].RATE;
+                                            TBATCHMST.OURDESIGN = VE.TBATCHDTL[i].OURDESIGN;
+                                            TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
+                                            TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
+
+
                                             TBATCHMST.COMMONUNIQBAR = (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") ? "E" : "";
 
                                             dbsql = Master_Help.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);

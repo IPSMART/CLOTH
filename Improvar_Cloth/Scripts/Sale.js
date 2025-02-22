@@ -132,7 +132,12 @@ function GetBarnoDetails(id, HelpFrom) {
                                 $("#SZBARCODE").val(returncolvalue(result, "SZBARCODE"));
                                 $("#NEGSTOCK").val(returncolvalue(result, "NEGSTOCK"));
                                 $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
-                                $("#GLCD").val(returncolvalue(result, "GLCD"));
+                                if (MENU_PARA == "PJBL" || MENU_PARA == "PJBR") {
+                                    $("#GLCD").val($("#JOBEXPGLCD").val());
+                                }
+                                else {
+                                    $("#GLCD").val(returncolvalue(result, "GLCD"));
+                                }
                                 $("#COMMONUNIQBAR").val(returncolvalue(result, "COMMONUNIQBAR"));
                                 if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "ISS" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") && retFloat($("#CONVQTYPUNIT").val()).toFixed(0) != "0") {
                                     $("#BLQNTY").focus();
@@ -439,7 +444,12 @@ function FillBarcodeArea(str, Table, i) {
         }
         $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
         $("#UOM").val($(FieldidStarting + "UOM_" + i).val());
-        $("#GLCD").val($(FieldidStarting + "GLCD_" + i).val());
+        if (MENU_PARA == "PJBL" || MENU_PARA == "PJBR") {
+            $("#GLCD").val($("#JOBEXPGLCD").val());
+        }
+        else {
+            $("#GLCD").val($(FieldidStarting + "GLCD_" + i).val());
+        }
 
         if (MENU_PARA == "SR" || MENU_PARA == "PR" || MENU_PARA == "PJBR") {
             $("#AGDOCNO").val($(FieldidStarting + "AGDOCNO_" + i).val());

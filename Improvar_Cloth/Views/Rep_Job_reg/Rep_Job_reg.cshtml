@@ -26,6 +26,51 @@
 
     }
 </script>
+<script>
+    $(document).ready(function () {
+        getdoctype(); // Call function on page load
+        $('#display').hide();// hide the div
+    });
+</script>
+<script>
+    function getdoctype() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Getdoctype", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),//+ "&TABLE=" + TABLE,
+            success: function (result) {
+                debugger;
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                if (res[0] == "ok") {
+                    $("#partialdivdoctype").html(res[1]);
+                }
+                else {
+                    msgInfo(result.message);
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function Check(id) {
+        debugger;
+        if (id == "REGISTER") {
+            $('#display').show();
+        }
+        else {
+            $('#display').hide();
+        }
+    }
+</script>
+
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
@@ -65,10 +110,22 @@
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field">
-                            @Html.DropDownListFor(model => Model.JOBCD, new SelectList(Model.DropDown_list_JOBCD, "Value", "Text", Model.JOBCD), new { @class = "form-control" })
+                            @Html.DropDownListFor(model => Model.JOBCD, new SelectList(Model.DropDown_list_JOBCD, "Value", "Text", Model.JOBCD), new { @class = "form-control", @onclick = "getdoctype()" })
                         </div>
                     </div>
                 </div>
+                @*<div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Doctype")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        <div id="partialdivdoctype">
+                            @(new HtmlString(Model.TEXTBOX11))
+                        </div>
+                    </div>
+                </div>*@
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
@@ -136,14 +193,35 @@
                     </div>
                     <div class="col-lg-8" style="border: 2px groove;width:auto;">
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX3, "DETAIL", new { @checked = "checked" })  @Html.Label("Detail")
+                            @Html.RadioButtonFor(g => g.TEXTBOX3, "DETAIL", new { @checked = "checked", onclick = "Check('DETAIL')" })  @Html.Label("Detail")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX3, "SUMMARY")  @Html.Label("Summary")
+                            @Html.RadioButtonFor(g => g.TEXTBOX3, "SUMMARY", new { onclick = "Check('SUMMARY')" })  @Html.Label("Summary")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(g => g.TEXTBOX3, "SUPERSUMMARY")  @Html.Label("Super Summary")
+                            @Html.RadioButtonFor(g => g.TEXTBOX3, "SUPERSUMMARY", new { onclick = "Check('SUPERSUMMARY')" })  @Html.Label("Super Summary")
                         </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX3, "REGISTER", new { onclick = "Check('REGISTER')" })  @Html.Label("Register")
+                        </label>
+                    </div>
+                </div>
+                <div id="display" class="row" style="margin-top: 8px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Register Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-8" style="border: 2px groove;width:auto;">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX10, "ISSUE")  @Html.Label("Issue")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX10, "RECEIVE")  @Html.Label("Receive")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX10, "BOTH", new { @checked = "checked" })  @Html.Label("Both")
+                        </label>                        
                     </div>
                 </div>
                 <div class="row" style="margin-top: 8px;">

@@ -68,7 +68,17 @@
                         @(new HtmlString(Model.Translnm))
                     </div>
                 </div>
-                
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:6px">
+                            @Html.Label("", "Show Topay")
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="margin-top:6px">
+                            @Html.CheckBoxFor(model => model.Checkbox1)
+                    </div>
+
+                </div>
                
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">

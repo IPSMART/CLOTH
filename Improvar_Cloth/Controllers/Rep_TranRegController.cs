@@ -69,14 +69,14 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "parcel", "double", "n,10,2", "Parcel");
                 HC.GetPrintHeader(IR, "slnm", "string", "c,40", "Party");
                 HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Amt.");
-
+                if(VE.Checkbox1==true) HC.GetPrintHeader(IR, "topay", "string", "c,25", "Topay");
 
                 string sql = "";
-                sql += " select a.autono,a.docno,a.docdt,a.translcd,a.translnm,a.lrno,a.lrdt,a.trwt,a.slcd,a.slnm,a.blamt,a.ntwt,b.tranamt,a.cancel from ";
+                sql += " select a.autono,a.docno,a.docdt,a.translcd,a.translnm,a.lrno,a.lrdt,a.trwt,a.slcd,a.slnm,a.blamt,a.ntwt,b.tranamt,a.cancel,a.topay from ";
 
-                sql += "(select a.autono,c.docno,c.docdt,b.translcd,d.slnm translnm,b.lrno,b.lrdt,b.trwt,a.slcd,e.slnm,a.blamt,b.ntwt,c.cancel ";
-                sql += "from " + scm1 + ".t_txn a," + scm1 + ".t_txntrans b, " + scm1 + ".t_cntrl_hdr c," + scmf + ".m_subleg d," + scmf + ".m_subleg e," + scmf + ".m_doctype f ";
-                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.translcd = d.slcd(+) and a.slcd = e.slcd(+) and c.doccd=f.doccd and f.doctype in ('SBILD','SPRM')  ";
+                sql += "(select a.autono,c.docno,c.docdt,b.translcd,d.slnm translnm,b.lrno,b.lrdt,b.trwt,a.slcd,e.slnm,a.blamt,b.ntwt,c.cancel,g.topay ";
+                sql += "from " + scm1 + ".t_txn a," + scm1 + ".t_txntrans b, " + scm1 + ".t_cntrl_hdr c," + scmf + ".m_subleg d," + scmf + ".m_subleg e," + scmf + ".m_doctype f, " + scm1 + ".t_txnoth g ";
+                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and b.translcd = d.slcd(+) and a.slcd = e.slcd(+) and c.doccd=f.doccd and a.autono = g.autono(+) and f.doctype in ('SBILD','SPRM')  ";
                 sql += "and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "'  ";
                 if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy')  ";
@@ -113,6 +113,7 @@ namespace Improvar.Controllers
                     }                    
                     IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + " [" + tbl.Rows[i]["slcd"].ToString() + "]";
                     IR.Rows[rNo]["amt"] = tbl.Rows[i]["tranamt"];
+                    if (VE.Checkbox1 == true) IR.Rows[rNo]["topay"] = tbl.Rows[i]["topay"];
 
                     i++;
                     if (i > maxR) break;
