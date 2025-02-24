@@ -131,5 +131,7 @@ namespace Improvar.Models
         public string MUTSLCD { get; set; }
         [StringLength(20)]
         public string TOPAY { get; set; }
+        [StringLength(20)]
+        public string NOOFCASES_REM { get; set; }
     }
 }
