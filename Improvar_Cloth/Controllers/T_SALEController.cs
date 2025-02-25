@@ -5351,6 +5351,7 @@ namespace Improvar.Controllers
                     TTXNOTH.INSBY = VE.T_TXNOTH.INSBY;
                     TTXNOTH.PAYTERMS = VE.T_TXNOTH.PAYTERMS;
                     TTXNOTH.CASENOS = VE.T_TXNOTH.CASENOS;
+                    TTXNOTH.NOOFCASES_REM = VE.T_TXNOTH.NOOFCASES_REM;
                     TTXNOTH.NOOFCASES = VE.T_TXNOTH.NOOFCASES;
                     TTXNOTH.PRCCD = VE.T_TXNOTH.PRCCD;
                     TTXNOTH.OTHNM = VE.T_TXNOTH.OTHNM;

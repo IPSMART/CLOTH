@@ -673,7 +673,7 @@ namespace Improvar.Controllers
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         TTXNDTL.UOM = "MTR";
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C", "");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C","","","",0,false,"","","","Y");
                         if (ItemDet.ITCD.retStr() == "" && ItemDet.ErrMsg.retStr() == "")
                         {
                             dupgrid.MESSAGE = "Please add style:(" + style + ") at Item Master Manually because master transfer done in next year . ";
