@@ -333,7 +333,7 @@ namespace Improvar.Controllers
                     sql1 += "select a.autono,a.slno,c.docdt,c.docno,f.slnm,a.nos,a.qnty,c.doccd doccode,f.slarea area, " + Environment.NewLine;
                     sql1 += "f.gstno,a.amt basicamt,0 disc1amt,0 disc2amt, " + Environment.NewLine;
                     sql1 += "a.txblval taxableval,a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,d.tcsamt, " + Environment.NewLine;
-                    sql1 += "d.roamt roffamt,d.blamt billval " + Environment.NewLine;
+                    sql1 += "d.roamt roffamt,d.blamt billval,e.itnm,e.styleno||' '||e.itnm itstyle " + Environment.NewLine;
                     sql1 += "from " + scm + ".t_txndtl a," + scm + ".t_batchdtl b," + scm + ".t_cntrl_hdr c," + scm + " "+ Environment.NewLine;
                     sql1 += ".t_txn d," + scm + ".m_sitem e," + scmf + ".m_subleg f," + scm + ".m_doctype g " + Environment.NewLine;
                     sql1 += "where a.autono = b.autono(+) and a.slno=b.slno(+) and a.autono=c.autono(+) and c.autono=d.autono(+) " + Environment.NewLine;
@@ -345,6 +345,7 @@ namespace Improvar.Controllers
                     if (fdt != "") sql1 += "c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
                     sql1 += "c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
                     sql1 += "and a.stkdrcr in ('C')  " + Environment.NewLine;
+                    sql1 += "order by c.docdt,c.docno,slnm,d.slcd,e.styleno||' '||e.itnm,a.itcd  " + Environment.NewLine;
 
                     DataTable tbl1 = MasterHelp.SQLquery(sql1);
                     //if (tbl1.Rows.Count == 0)
@@ -356,7 +357,7 @@ namespace Improvar.Controllers
                     sql2 += "select a.autono,a.slno,c.docdt,c.docno,f.slnm,a.nos,a.qnty,c.doccd doccode, " + Environment.NewLine;
                     sql2 += "f.slarea area,f.gstno,a.amt basicamt,0 disc1amt,0 disc2amt, " + Environment.NewLine;
                     sql2 += "a.txblval taxableval,a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt, " + Environment.NewLine;
-                    sql2 += "d.tcsamt,d.roamt roffamt,d.blamt billval,b.recprogautono,b.recprogslno " + Environment.NewLine;
+                    sql2 += "d.tcsamt,d.roamt roffamt,d.blamt billval,b.recprogautono,b.recprogslno,e.itnm,e.styleno||' '||e.itnm itstyle " + Environment.NewLine;
                     sql2 += "from " + scm + ".t_txndtl a," + scm + ".t_batchdtl b," + scm + ".t_cntrl_hdr c," + scm + " " + Environment.NewLine;
                     sql2 += ".t_txn d," + scm + ".m_sitem e," + scmf + ".m_subleg f ," + scm + ".m_doctype g " + Environment.NewLine;
                     sql2 += "where a.autono = b.autono(+) and a.slno=b.slno(+) and a.autono=c.autono(+) " + Environment.NewLine;
@@ -368,6 +369,7 @@ namespace Improvar.Controllers
                     if (fdt != "") sql2 += "c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
                     sql2 += "c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
                     sql2 += "and a.stkdrcr in ('D')  " + Environment.NewLine;
+                    sql2 += "order by c.docdt,c.docno,slnm,d.slcd,e.styleno||' '||e.itnm,a.itcd  " + Environment.NewLine;
 
                     DataTable tbl2 = MasterHelp.SQLquery(sql2);
                     //if (tbl2.Rows.Count == 0)
@@ -384,6 +386,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "slnm", "string", "c,20", "Party;Name");
                     HC.GetPrintHeader(IR, "slarea", "string", "c,10", "Area");
                     HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+                    HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                     HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
                     HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                     HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
@@ -409,9 +412,9 @@ namespace Improvar.Controllers
                     i = 0; maxR = maintbl.Rows.Count - 1;
                     while (i <= maxR)
                     {
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["Dammy"] = " ";
-                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:12px;border-top: 1px solid;border-bottom: 1px solid;";
+                        //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        //IR.Rows[rNo]["Dammy"] = " ";
+                        //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:12px;border-top: 1px solid;border-bottom: 1px solid;";
                                                 
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["doccd"] = maintbl.Rows[i]["doccode"].retStr();
@@ -420,6 +423,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["slnm"] = maintbl.Rows[i]["slnm"].retStr();
                         IR.Rows[rNo]["slarea"] = maintbl.Rows[i]["area"].retStr();
                         IR.Rows[rNo]["gstno"] = maintbl.Rows[i]["gstno"].retStr();
+                        IR.Rows[rNo]["itnm"] = maintbl.Rows[i]["itstyle"].retStr();
                         IR.Rows[rNo]["nos"] = maintbl.Rows[i]["nos"].retDbl();
                         IR.Rows[rNo]["qnty"] = maintbl.Rows[i]["qnty"].retDbl();
                         IR.Rows[rNo]["amt"] = maintbl.Rows[i]["basicamt"].retDbl();
@@ -454,6 +458,7 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slnm"] = innertable1.Rows[j]["slnm"].retStr();
                                     IR.Rows[rNo]["slarea"] = innertable1.Rows[j]["area"].retStr();
                                     IR.Rows[rNo]["gstno"] = innertable1.Rows[j]["gstno"].retStr();
+                                    IR.Rows[rNo]["itnm"] = innertable1.Rows[j]["itstyle"].retStr();
                                     IR.Rows[rNo]["nos"] = innertable1.Rows[j]["nos"].retDbl();
                                     IR.Rows[rNo]["qnty"] = innertable1.Rows[j]["qnty"].retDbl();
                                     IR.Rows[rNo]["amt"] = innertable1.Rows[j]["basicamt"].retDbl();
@@ -479,7 +484,7 @@ namespace Improvar.Controllers
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["docno"] = "Grand Total";
-                    for (int a = 9; a < IR.Columns.Count; a++)
+                    for (int a = 10; a < IR.Columns.Count; a++)
                     {
                         string colnm = IR.Columns[a].ColumnName;
                         var purewisegrptotal = (from DataRow dr in IR.Rows where dr["docno"].retStr() != "" select dr[colnm].retDbl()).Sum();
@@ -633,13 +638,19 @@ namespace Improvar.Controllers
                 sql += "where a.doctype in(" + doctype + ") " + Environment.NewLine;
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
-                VE.DropDown_list = (from DataRow dr in tbl.Rows
-                                    select new DropDown_list()
-                                    {
-                                        text = dr["doctype"].retStr(),
-                                        value = dr["docnm"].retStr()
-                                    }).OrderBy(A => A.text).ToList();
-                               
+                if (tbl != null && tbl.Rows.Count > 0)
+                {
+                    VE.DropDown_list = (from DataRow dr in tbl.Rows
+                                        select new DropDown_list()
+                                        {
+                                            text = dr["doctype"].retStr(),
+                                            value = dr["docnm"].retStr()
+                                        }).OrderBy(A => A.text).ToList();
+                }
+                else
+                {
+                    VE.DropDown_list = new List<DropDown_list>();
+                } 
                 var doctp = MasterHelp.ComboFill("doctype", VE.DropDown_list, 0, 0);
                 ModelState.Clear();
                 VE.DefaultView = true;
