@@ -1395,7 +1395,7 @@ namespace Improvar.Controllers
                 if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
                 if (SRC_FLAG.retStr() != "") sql += "(upper(d.baleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%') and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-                if (CommVar.ClientCode(UNQSNO) == "DIWH") sql += "order by b.doccd,b.doconlyno,b.docdt "; else sql += "order by docdt, docno ";//diwans heritage wants docno wise nav
+                if (CommVar.ClientCode(UNQSNO) == "DIWH") sql += "order by b.doccd,b.doconlyno,b.docdt "; else sql += "order by b.docdt, b.docno ";//diwans heritage wants docno wise nav
                 DataTable tbl = masterHelp.SQLquery(sql);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
