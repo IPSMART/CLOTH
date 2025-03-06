@@ -304,7 +304,6 @@ namespace Improvar.Controllers
                     else
                     {
                         #region
-                        HC.RepStart(IR, 2);
                         HC.GetPrintHeader(IR, "itgrpnm", "string", "c,12", "Group");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,20", "Item Description");
                         HC.GetPrintHeader(IR, "uom", "string", "c,10", "Uom");
@@ -576,7 +575,7 @@ namespace Improvar.Controllers
                             cgstamt += maintbl.Rows[i]["cgstamt"].retDbl();
                             sgstamt += maintbl.Rows[i]["sgstamt"].retDbl();
 
-                            i++;
+                            i++;                            
                             if (i > maxR) break;
                         }
 
@@ -620,7 +619,7 @@ namespace Improvar.Controllers
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["docno"] = "Grand Total";
-                    for (int a = 10; a < IR.Columns.Count; a++)
+                    for (int a = 14; a < IR.Columns.Count; a++)
                     {
                         string colnm = IR.Columns[a].ColumnName;
                         var purewisegrptotal = (from DataRow dr in IR.Rows where dr["docno"].retStr() != "" select dr[colnm].retDbl()).Sum();
