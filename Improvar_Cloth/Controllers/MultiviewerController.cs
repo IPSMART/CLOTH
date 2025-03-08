@@ -202,6 +202,7 @@ namespace Improvar.Controllers
                                 Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "','" + MENU_CHECK + "'); />";
                             }
                             Menu += " </span></li>";
+                            string filepath = @"C:/IPSMART/Ipsmart.ini";
 
                             if (MENU_PROGCALL == "T_App_Atten")
                             {
@@ -233,6 +234,7 @@ namespace Improvar.Controllers
                             }
                             else if (MENU_PROGCALL == "FABOARD4")
                             {
+
                                 DashboardDetails.Add(new DashboardDetails { BoardCode = "FABOARD4", Permission = "1", Caption = "Overdue Reminder" });
                                 foreach (DashboardDetails det in DashboardDetails)
                                 {
@@ -244,9 +246,9 @@ namespace Improvar.Controllers
                                         EMAILSTATUSTBL EMAILSTATUSTBL = new EMAILSTATUSTBL();
 
                                         EMAILSTATUSTBL.curdt = System.DateTime.Now.Date.retDateStr();
-                                        EMAILSTATUSTBL.CLASS1_CODE = Handel_Ini.IniReadValue("FABOARD4_ReportEmail", "CLASS1_CODE", Server.MapPath("~/Ipsmart.ini"));
-                                        EMAILSTATUSTBL.CLASS1_NAME = Handel_Ini.IniReadValue("FABOARD4_ReportEmail", "CLASS1_NAME", Server.MapPath("~/Ipsmart.ini"));
-                                        EMAILSTATUSTBL.CCMAIL = Handel_Ini.IniReadValue("FABOARD4_ReportEmail", "CCMAIL", Server.MapPath("~/Ipsmart.ini"));
+                                        EMAILSTATUSTBL.CLASS1_CODE = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "CLASS1_CODE", filepath);
+                                        EMAILSTATUSTBL.CLASS1_NAME = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "CLASS1_NAME", filepath);
+                                        EMAILSTATUSTBL.CCMAIL = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "CCMAIL", filepath);
 
                                         det.EMAILSTATUSTBL = EMAILSTATUSTBL;
                                     }
@@ -262,7 +264,7 @@ namespace Improvar.Controllers
                                     if (det.BoardCode == "FABOARD3")
                                     {
                                         INI Handel_Ini = new INI();
-                                        string glcd = Handel_Ini.IniReadValue("FABOARD3_P", "GLCDVALUE", Server.MapPath("~/Ipsmart.ini"));
+                                        string glcd = Handel_Ini.IniReadValue("FABOARD3_P", "GLCDVALUE", filepath);
 
                                         SPREPORT SPREPORT = new SPREPORT();
                                         SPREPORT.fdt = CommVar.FinStartDate(UNQSNO);
@@ -737,11 +739,16 @@ namespace Improvar.Controllers
                         var graceday = FC["DashboardList[" + index + "].EMAILSTATUSTBL.graceday"].retDbl();
                         var agslcd = FC["DashboardList[" + index + "].EMAILSTATUSTBL.AGENT_CODE"].retStr();
                         var ccmail = FC["DashboardList[" + index + "].EMAILSTATUSTBL.CCMAIL"].retStr();
+                        var party = FC["DashboardList[" + index + "].EMAILSTATUSTBL.PARTY_CODE"].retStr();
+                        if (party.retStr() != "")
+                        {
+                            party = party.retSqlformat();
+                        }
                         //select unselslcd
                         var unselslcd = string.Join(",", (DBF.M_SUBLEG.Where(e => e.AUTOREMINDEROFF == autoreminderofff).Select(e => e.SLCD))).retSqlformat();
                         //
-                        var ostbl = masterHelpFa.GenOSTbl("", "", curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, unselslcd);
-                        //var ostbl = masterHelpFa.GenOSTbl("", "'DA00076','DL00001'", curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, ""); //testing
+                        var ostbl = masterHelpFa.GenOSTbl("", party, curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, unselslcd);
+                        //var ostbl = masterHelpFa.GenOSTbl("", "", curdt, "", "", "", "", "", "Y", agslcd.retSqlformat(), "", "", "", "", false, false, unselslcd);
                         if (ostbl.Rows.Count == 0)
                         {
                             errmsg = "Record not found";
@@ -756,6 +763,7 @@ namespace Improvar.Controllers
                         {
                             nextslcd:;
                             body = ""; errmsg = ""; sladd = "";
+                            string strhtml = "";
                             double days = 0, cdays = 0, odays = 0, osamt = 0, totalosamt = 0, checkdays = 0;
                             var slcd = rsemailid1.Rows[iz]["slcd"].retStr();
                             var partydata = (from a in DBF.M_SUBLEG
@@ -810,7 +818,7 @@ namespace Improvar.Controllers
                                                      select a).FirstOrDefault();
                                     if (agentdata != null) grpemailid = agentdata.REGEMAILID;
                                     //end
-                                    if (days > checkdays && rsemailid1.Rows[iz]["drcr"].retStr() == "D")
+                                    if (days > checkdays && rsemailid1.Rows[iz]["drcr"].retStr() == "D" && CommVar.ClientCode(UNQSNO) != "CHEM")
                                     {
                                         body += "<tr style='background-color:#ffcccc;'>";
                                     }
@@ -818,12 +826,25 @@ namespace Improvar.Controllers
                                     {
                                         body += "<tr>";
                                     }
+                                    if (CommVar.ClientCode(UNQSNO) == "CHEM")
+                                    {
+                                        body += "<td>" + rsemailid1.Rows[iz]["slnm"] + "</td>";
+                                        body += "<td>" + rsemailid1.Rows[iz]["tchdocno"] + "</td>";
+                                        body += "<td>" + rsemailid1.Rows[iz]["docdt"].retStr().Remove(10) + "</td>";
+                                        body += "<td style='text-align:center'>" + days + "</td>";
+                                        body += "<td>" + rsemailid1.Rows[iz]["duedt"] + "</td>";
+                                        body += "<td>INR</td>";
+                                        body += "<td style='text-align:right'>" + Cn.Indian_Number_format(Convert.ToDouble(rsemailid1.Rows[iz]["bal_amt"]).ToString(), "0.00") + "</td>";
+                                    }
+                                    else
+                                    {
+                                        body += "<td>" + (rsemailid1.Rows[iz]["bldt"].retStr() == "" ? rsemailid1.Rows[iz]["docdt"].retStr().Remove(10) : rsemailid1.Rows[iz]["bldt"].retStr()) + "</td>";
+                                        body += "<td>" + (rsemailid1.Rows[iz]["blno"].retStr() == "" ? rsemailid1.Rows[iz]["docno"] : rsemailid1.Rows[iz]["blno"]) + "</td>";
+                                        body += "<td>" + rsemailid1.Rows[iz]["lrdt"] + "</td>";
+                                        body += "<td style='text-align:center'>" + days + "</td>";
+                                        body += "<td style='text-align:right'>" + Cn.Indian_Number_format(Convert.ToDouble(rsemailid1.Rows[iz]["bal_amt"]).ToString(), "0.00") + "</td>";
 
-                                    body += "<td>" + (rsemailid1.Rows[iz]["bldt"].retStr() == "" ? rsemailid1.Rows[iz]["docdt"].retStr().Remove(10) : rsemailid1.Rows[iz]["bldt"].retStr()) + "</td>";
-                                    body += "<td>" + (rsemailid1.Rows[iz]["blno"].retStr() == "" ? rsemailid1.Rows[iz]["docno"] : rsemailid1.Rows[iz]["blno"]) + "</td>";
-                                    body += "<td>" + rsemailid1.Rows[iz]["lrdt"] + "</td>";
-                                    body += "<td style='text-align:center'>" + days + "</td>";
-                                    body += "<td style='text-align:right'>" + Cn.Indian_Number_format(Convert.ToDouble(rsemailid1.Rows[iz]["bal_amt"]).ToString(), "0.00") + "</td>";
+                                    }
                                     body += "</tr>";
                                 }
 
@@ -836,7 +857,7 @@ namespace Improvar.Controllers
                                 if (iz > maxR) break;
                                 goto nextslcd;
                             }
-                            mailSubject += "Remainder for over dues";
+                            mailSubject += "Reminder for over dues as on " + curdt;
                             string uid = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
                             string MOBILE = DB1.USER_APPL.Find(uid).MOBILE;
                             string usrEMAIL = DB1.USER_APPL.Find(uid).EMAIL;
@@ -887,6 +908,44 @@ namespace Improvar.Controllers
                             emlaryBody[14, 0] = "{compstat}"; emlaryBody[14, 1] = compaddress.retCompValue("compstat");
                             emlaryBody[15, 0] = "{compcommu}"; emlaryBody[15, 1] = compcommu;
 
+
+                            ////////////////
+                            strhtml = "";
+                            strhtml += "<table>";
+                            strhtml += "<thead>";
+                            strhtml += "<tr><th colspan='6'>" + CommVar.CompName(UNQSNO) + "</th></tr>";
+                            strhtml += "<tr><th colspan='6'>" + CommVar.LocName(UNQSNO) + "</th></tr>";
+                            strhtml += "<tr><th colspan='6'>" + "Bill Wise Outstanding as on " + curdt + "</th></tr>";
+                            strhtml += "<tr><th colspan='6'></th></tr>";
+                            strhtml += "<tr>";
+                            strhtml += "<th>Customer Name &nbsp;</th>";
+                            strhtml += "<th style='padding-right:6px;'>Invoice No &nbsp; &nbsp; &nbsp;</th>";
+                            strhtml += "<th>Invoice Date &nbsp;</th>";
+                            strhtml += "<th style='text-align:center'>Over Due &nbsp;</th>";
+                            strhtml += "<th>Due Date &nbsp;</th>";
+                            strhtml += "<th>Document Currency &nbsp;</th>";
+                            strhtml += "<th style='text-align:right'>Amount</th>";
+                            strhtml += "</tr>";
+                            strhtml += "</thead>";
+                            strhtml += "<tbody>";
+                            strhtml += body;
+                            strhtml += "</tbody>";
+                            strhtml += "<tfoot>";
+                            strhtml += "<tr>";
+                            strhtml += "<th></th>";
+                            strhtml += "<th></th>";
+                            strhtml += "<th></th>";
+                            strhtml += "<th></th>";
+                            strhtml += "<th></th>";
+                            strhtml += "<th style='text-align:center;'>Total Amount Due</th>";
+                            strhtml += "<th style='text-align:right;'>" + Cn.Indian_Number_format(totalosamt.ToString(), "0.00") + "</th>";
+                            strhtml += "</tr>";
+                            strhtml += "</tfoot>";
+                            strhtml += "</table>";
+                            byte[] pdfBytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(strhtml);
+                            string pdffilePath = @"C:\\Ipsmart\\Temp" + "\\" + ("OS_REM_".retRepname()) + ".pdf";
+                            System.IO.File.WriteAllBytes(pdffilePath, pdfBytes);
+                            attchmail.Add(new System.Net.Mail.Attachment(pdffilePath));
 
 
                             bool emailsent = false;
@@ -1298,7 +1357,7 @@ namespace Improvar.Controllers
             }
             return Json(dic, JsonRequestBehavior.AllowGet);
         }
-       
+
 
     }
 }

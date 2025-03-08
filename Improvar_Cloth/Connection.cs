@@ -2166,11 +2166,11 @@ namespace Improvar
                     //DateTime F_FROMDate = DateTime.ParseExact(financialyeardate[0].Trim().ToString(), "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
 
                     string cmaxdate = financialyeardate[1].Trim().ToString(), cmindate = financialyeardate[0].Trim().ToString();
-                    if (opening == true)
-                    {
-                        cmaxdate = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-1).ToString().retDateStr();
-                        cmindate = "01/01/2000";
-                    }
+                    //if (opening == true)
+                    //{
+                    //    cmaxdate = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-1).ToString().retDateStr();
+                    //    cmindate = "01/01/2000";
+                    //}
                     DateTime cLockdate = new DateTime(1900, 12, 12);
                     //DateTime cLockdate = Convert.ToDateTime(financialyeardate[0].ToString());
                     if (rsMax.Rows.Count != 0)
@@ -2261,6 +2261,11 @@ namespace Improvar
                     if (FDATE != "Z" && opening == false && convstr2date(cmindate) < convstr2date(financialyeardate[0].ToString())) cmindate = financialyeardate[0].ToString();
 
                     cmindate = cmindate.Trim().Substring(0, 10); cmaxdate = cmaxdate.Trim().Substring(0, 10);
+                    if (opening == true)
+                    {
+                        cmaxdate = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).AddDays(-1).ToString().retDateStr();
+                        cmindate = "01/01/2000";
+                    }
                     ViewClass.GetType().GetProperty("LOCKDT").SetValue(ViewClass, cLockdate.AddDays(1));
                     ViewClass.GetType().GetProperty("mindate").SetValue(ViewClass, cmindate);
                     ViewClass.GetType().GetProperty("maxdate").SetValue(ViewClass, cmaxdate);
@@ -3269,13 +3274,21 @@ namespace Improvar
             VE.DefaultView = true;
             VE.ExitMode = 1;
         }
-        public void SaveTextFile(string message)
+        public void SaveTextFile(string message, string savefilename = "", string savefilepath = "")
         {
             try
             {
                 var line = Environment.NewLine + Environment.NewLine;
-                string filepath = Path.Combine(@"C:/IPSMART", "");
-                filepath = filepath + "/" + "ERROR LOG " + DateTime.Today.ToString("yyyy-MM-dd") + ".txt";   //Text File Name
+                //string filepath = @"C:/IPSMART/ErrorLog/" + "ERROR LOG " + DateTime.Today.ToString("yyyy-MM-dd") + ".txt";   //Text File Name
+                //string filepath = @"C:/IPSMART/Irn/" + "IRN " + DateTime.Today.ToString("yyyy-MM-dd") + ".txt";   //Text File Name
+                if (savefilepath.retStr() == "") savefilepath = @"C:/IPSMART/Irn";
+                if (savefilename.retStr() == "") savefilename = "IRN " + DateTime.Today.ToString("yyyy-MM-dd");
+                string filepath = savefilepath + "/" + savefilename + ".txt";
+
+                if (!Directory.Exists(Path.GetDirectoryName(filepath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+                }
                 if (!File.Exists(filepath))
                 {
                     File.Create(filepath).Dispose();

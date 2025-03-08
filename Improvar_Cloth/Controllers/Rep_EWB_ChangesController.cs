@@ -18,7 +18,6 @@ namespace Improvar.Controllers
         string CS = null;
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
-        Salesfunc Salesfunc = new Salesfunc();
         //BarCode CnBarCode = new BarCode();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         string sql = "";
@@ -128,7 +127,7 @@ namespace Improvar.Controllers
                     sql += " where AUTONO='" + VE.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                    sql = "update " + schnmF + ".t_vch_bl set AGSLCD ='" + AGSLCD + "' ";
+                    sql = "update " + schnmF + ".t_vch_bl set AGSLCD ='" + AGSLCD + "',LRDT =to_date('" + LRDT + "','dd/mm/yyyy'),LRNO ='" + LRNO + "',TRANSNM ='" + VE.TRSLNM1 + "' ";
                     sql += " where AUTONO='" + VE.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 

@@ -29,6 +29,10 @@
                             <th class="" style="width: 30px;">
                                 <input type="checkbox" name="AllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, '_Gen_EinvIRN_GRID', 'Checked_', 'Gen_EinvIRN_GRIDsrc')" />
                             </th>
+                            <th class="" style="width: 30px;">
+                                EWB
+                                <input type="checkbox" name="SelectAllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, '_Gen_EinvIRN_GRID', 'WAYBILLChecked_', 'Gen_EinvIRN_GRIDsrc')" />
+                            </th>
                             <th class="" style="width: 39px;">SL No</th>
                             <th class="" style="width: 69px;">Loccd</th>
                             <th class="" style="width: 111px;">Document No.</th>
@@ -41,10 +45,7 @@
                             <th class="" style="width: 89px;text-align:right;">IRN No</th>
                             <th class="" style="width: 89px;">EWB</th>
                             <th class="" style="">Message</th>
-                            <th class="" style="width: 30px;">
-                                EWB
-                                <input type="checkbox" name="SelectAllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, '_Gen_EinvIRN_GRID', 'WAYBILLChecked_', 'Gen_EinvIRN_GRIDsrc')" />
-                            </th>
+                           
                         </tr>
                     </thead>
                     <tbody>
@@ -57,6 +58,9 @@
 
                                     <td class="">
                                         @Html.CheckBoxFor(model => Model.GenEinvIRNGrid[i].Checked, new { id = "Checked_" + i, @class = " atextBoxFor " })
+                                    </td>
+                                    <td>
+                                        @Html.CheckBoxFor(model => model.GenEinvIRNGrid[i].WAYBILLChecked, new { id = "WAYBILLChecked_" + i, @TabIndex = -1 })
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -95,9 +99,7 @@
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].MESSAGE, new { id = "MESSAGE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                     </td>
-                                    <td>
-                                        @Html.CheckBoxFor(model => model.GenEinvIRNGrid[i].WAYBILLChecked, new { id = "WAYBILLChecked_" + i, @TabIndex = -1 })
-                                    </td>
+                                
                                 </tr>
                             }
                         }

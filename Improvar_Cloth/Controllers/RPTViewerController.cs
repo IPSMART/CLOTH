@@ -268,20 +268,27 @@ namespace Improvar.Controllers
             PV.SetReportContaint[0].GetHtml = html;
             return Content(HTML1 + "******~~~****" + PV.FreezInnerWidth);
         }
-        public ActionResult GetStandardExcel()
+        public ActionResult GetStandardExcel(string RepNM = "", string Action = "")
         {
             try
             {
                 string ReportName = "";
-                var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
-                var uri = new Uri(PreviousUrl);//Create Virtually Query String
-                var queryString = HttpUtility.ParseQueryString(uri.Query);
-                if (queryString.AllKeys.Contains("ReportName"))
+                if (RepNM == "")
                 {
-                    ReportName = queryString.Get("ReportName").ToString();
+                    var PreviousUrl = Request.UrlReferrer.AbsoluteUri;
+                    var uri = new Uri(PreviousUrl);//Create Virtually Query String
+                    var queryString = HttpUtility.ParseQueryString(uri.Query);
+                    if (queryString.AllKeys.Contains("ReportName"))
+                    {
+                        ReportName = queryString.Get("ReportName").ToString();
+                    }
+                }
+                else
+                {
+                    ReportName = RepNM;
                 }
                 bool isdammy = false;
-                if (Session[ReportName] != null)
+                if (System.Web.HttpContext.Current.Session[ReportName] != null)
                 {
                     PrintViewer PV = (Improvar.Models.PrintViewer)System.Web.HttpContext.Current.Session[ReportName];
                     DataTable newdt = new DataView(PV.IR).ToTable();
@@ -364,19 +371,29 @@ namespace Improvar.Controllers
                         }
                     }
                     worksheet.View.FreezePanes(4, 1);
-                    Response.Clear();
-                    Response.Buffer = true;
-                    Response.Charset = "";
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("content-disposition", "attachment;filename=" + ReportName + ".xlsx");
-                    using (MemoryStream MyMemoryStream = new MemoryStream())
+
+                    if (Action == "Save")
                     {
-                        workbook.SaveAs(MyMemoryStream);
-                        MyMemoryStream.WriteTo(Response.OutputStream);
-                        Response.Flush();
-                        Response.End();
+                        Byte[] fileBytes = workbook.GetAsByteArray();
+                        string filePath = path_Save + "\\" + ReportName + ".xlsx";
+                        System.IO.File.WriteAllBytes(filePath, fileBytes);
                     }
-                    workbook.Dispose();
+                    else
+                    {
+                        Response.Clear();
+                        Response.Buffer = true;
+                        Response.Charset = "";
+                        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        Response.AddHeader("content-disposition", "attachment;filename=" + ReportName + ".xlsx");
+                        using (MemoryStream MyMemoryStream = new MemoryStream())
+                        {
+                            workbook.SaveAs(MyMemoryStream);
+                            MyMemoryStream.WriteTo(Response.OutputStream);
+                            Response.Flush();
+                            Response.End();
+                        }
+                        workbook.Dispose();
+                    }
                 }
             }
             catch (Exception ex)
@@ -867,7 +884,7 @@ namespace Improvar.Controllers
                                     {
                                         InnerRow = InnerRow + "<td id='col_" + i + "_" + x + "'  colspan='" + dammyCOLSPAN[1] + "' style='" + dammyCOLSPAN[0] + "'>" + Table.Rows[i][x].ToString() + "<script>Rmenu('col_" + i + "_" + x + "','',1);</script>" + " </td>";
                                         //x += 4;
-                                        x += (dammyCOLSPAN[1].retInt()+2);
+                                        x += (dammyCOLSPAN[1].retInt() + 2);
                                     }
                                     else
                                     {

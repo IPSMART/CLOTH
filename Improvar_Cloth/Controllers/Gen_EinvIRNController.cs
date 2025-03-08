@@ -283,7 +283,8 @@ namespace Improvar.Controllers
                 sql += "from " + scmf + ".t_vch_gst a, " + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f ";
                 sql += "where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.translcd=f.slcd(+) and a.autono=e.autono(+) and ";
                 sql += "a.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and a.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
-                sql += "nvl(a.gstregntype,b.regntype) in ('R','C','U') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N' and ";
+                //sql += "nvl(a.gstregntype,b.regntype) in ('R','C','U') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null and nvl(d.cancel,'N')='N' and ";
+                sql += "nvl(a.gstregntype,b.regntype) in ('R','C','U') and a.salpur='S' and nvl(a.exemptedtype,' ') not in ( 'Z','N') and a.expcd is null and nvl(d.cancel,'N')='N' and ";
                 sql += "a.autono not in (select autono from " + scmf + ".t_txneinv) and d.modcd='" + Module.MODCD + "' and ";
                 sql += "a.autono not in (select distinct autono from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_doc_pass) and ";
                 sql += "d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "' and ( (b.gstno is null and a.invtypecd not in ('01') or b.gstno is not null ) )  ";

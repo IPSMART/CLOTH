@@ -124,7 +124,7 @@ namespace Improvar
                     AdqrRespGenIRNfail GenIRNfail = JsonConvert.DeserializeObject<AdqrRespGenIRNfail>(jsonstr);
                     adqrRespGENEWAYBILL.success = GenIRNfail.success;
                     adqrRespGENEWAYBILL.message = GenIRNfail.message;
-                    if (adqrRespGENEWAYBILL.message == "2150 : Duplicate IRN")
+                    if (adqrRespGENEWAYBILL.message == "2150 : Duplicate IRN" || adqrRespGENEWAYBILL.message == "2295 : IRN is already generated and registered with GSTN Lookup Portal by other IRP")
                     {
                         if (GenIRNfail.result != null && GenIRNfail.result[0] != null && GenIRNfail.result[0].Desc != null && GenIRNfail.result[0].Desc.Irn != null)
                         {
@@ -132,7 +132,7 @@ namespace Improvar
                             adqrRsltGenIRN.AckNo = GenIRNfail.result[0].Desc.AckNo;
                             adqrRsltGenIRN.AckDt = GenIRNfail.result[0].Desc.AckDt;
                             AdqrRespInvoiceByIRN InvByIRN = AdqrGetInvoicebyIRN(adqrRsltGenIRN.Irn);
-                            if (InvByIRN != null && InvByIRN.result != null )
+                            if (InvByIRN != null && InvByIRN.result != null)
                             {
                                 adqrRsltGenIRN.SignedInvoice = InvByIRN.result.SignedInvoice;
                                 adqrRsltGenIRN.SignedQRCode = InvByIRN.result.SignedQRCode;
@@ -411,7 +411,7 @@ namespace Improvar
         }
         #endregion //E-Waybill end
 
-        public string ConsumeAdqrAPI(string url, string jsonStr, Dictionary<string, string> headerdic)
+        public string ConsumeAdqrAPI(string url, string jsonStr, Dictionary<string, string> headerdic, string method = "", string FileNm = "")
         {
             if (headerdic == null) return "";
             string resp = "", hdrString = "";
@@ -428,18 +428,25 @@ namespace Improvar
                         hdrString += item.Key + " :" + item.Value + System.Environment.NewLine;
                     }
                     hdrString += jsonStr;
-                    Cn.SaveTextFile(hdrString);
+                    Cn.SaveTextFile(hdrString, FileNm);
                     if (jsonStr == "")
                     {
                         response = client.GetAsync(url).GetAwaiter().GetResult(); //Make sure it is synchonrous  //   response = client.GetAsync(url).Result;
                     }
                     else
                     {
-                        response = client.PostAsync(url, data).GetAwaiter().GetResult(); //Make sure it is synchonrous
+                        if (method == "PUT")
+                        {
+                            response = client.PutAsync(url, data).GetAwaiter().GetResult(); //Make sure it is synchonrous
+                        }
+                        else
+                        {
+                            response = client.PostAsync(url, data).GetAwaiter().GetResult(); //Make sure it is synchonrous
+                        }
                     }
                     resp = response.Content.ReadAsStringAsync().Result;//Make sure it is synchonrous
                     int StatusCode = (int)response.StatusCode;
-                    Cn.SaveTextFile("Response: " + resp);
+                    Cn.SaveTextFile("Response: " + resp, FileNm);
                     if (StatusCode > 200)
                     {
                         return "{\"message\":\"" + ErrorAdqrAPI(resp).Replace("\"", "") + "\"}";
