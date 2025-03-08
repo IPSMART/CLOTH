@@ -1028,6 +1028,8 @@ namespace Improvar.Controllers
             { IR.Columns.Add(zfldnm, typeof(int)); }
             else if (zfldtype == "long")
             { IR.Columns.Add(zfldnm, typeof(long)); }
+            else if (zfldcaption == "date")
+            { IR.Columns.Add(zfldnm, typeof(DateTime)); }
             else
             { IR.Columns.Add(zfldnm, typeof(string)); }
             int aryA = PV.HeaderArray.GetLength(0);

@@ -2227,7 +2227,7 @@ namespace Improvar
                         if (action == "E" && idocno == imaxdocno || action == "E" && backdateval == true)
                         {
                             if (FDATE == "Y") cmaxdate = MTDATE; else if (FDATE == "Z") cmaxdate = cfutdate; else cmaxdate = ccurdate;
-                            if (backdateval == true) cmindate = financialyeardate[0]; cmaxdate = System.DateTime.Now.ToString("dd/MM/yyyy");
+                            if (backdateval == true) cmindate = financialyeardate[0]; //cmaxdate = System.DateTime.Now.ToString("dd/MM/yyyy");
                         }
                     }
                     else
@@ -3295,6 +3295,7 @@ namespace Improvar
                 }
                 using (StreamWriter sw = File.AppendText(filepath))
                 {
+                    sw.WriteLine("-----------Details on " + " " + DateTime.Now.ToString() + "-----------------");
                     sw.WriteLine(message);
                     sw.WriteLine("--------------------------------*End*--------------------------------------");
                     sw.WriteLine(line);
@@ -3307,7 +3308,6 @@ namespace Improvar
                 e.ToString();
             }
         }
-
         public void SaveException(Exception ex, string message)
         {
             try
