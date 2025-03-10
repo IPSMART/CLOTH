@@ -2105,13 +2105,14 @@ namespace Improvar.Controllers
                 //return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage");
                 Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
-                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
+                string dbname1 = CommVar.FinSchema(UNQSNO).ToString();
+                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM ";
                 query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, ";
-                query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F ";
+                query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F, " + dbname1 + ".M_UOM G ";
                 query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+)   AND ";
-                query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) ";
+                query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) AND A.UOMCD=G.UOMCD(+) ";
                 // query = query + "A.M_AUTONO='" + VE.M_SITEM.M_AUTONO + "' ";
-                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
+                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM ";
                 query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
 
                 DataTable tbl = masterHelp.SQLquery(query);
@@ -2121,24 +2122,29 @@ namespace Improvar.Controllers
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 HC.RepStart(IR, 3);
+                HC.GetPrintHeader(IR, "slno", "string", "c,5", "Sl.No");
                 HC.GetPrintHeader(IR, "itgrpnm", "string", "c,35", "Group Name");
                 HC.GetPrintHeader(IR, "styleno", "string", "c,15", "Design No");
                 HC.GetPrintHeader(IR, "itcd", "string", "c,10", "Item;Code");
                 HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item Name");
+                HC.GetPrintHeader(IR, "uomnm", "string", "c,10", "UOM");
                 //HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "Pcs/;Box");
                 //HC.GetPrintHeader(IR, "sizes", "string", "c,25", "Sizes");
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
-                string lastgrpnm = ""; string lastbrandnm = "";
+                string lastgrpnm = ""; string lastbrandnm = "";Int32 slno = 0;
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
+                    slno = slno + 1;
                     string grpnm = tbl.Rows[i]["itgrpnm"].ToString();
                     string brandnm = tbl.Rows[i]["brandnm"].ToString();
                     DataRow dr = IR.NewRow();
+                    dr["slno"] = slno;
                     dr["styleno"] = "<b>" + tbl.Rows[i]["styleno"] + "</b>";
                     dr["itgrpnm"] = tbl.Rows[i]["itgrpnm"];
                     dr["itcd"] = tbl.Rows[i]["itcd"];
                     dr["itnm"] = tbl.Rows[i]["itnm"];
+                    dr["uomnm"] = tbl.Rows[i]["uomnm"];
                     //dr["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"] == DBNull.Value ? 0 : tbl.Rows[i]["pcsperbox"]);
                     //dr["sizes"] = (tbl.Rows[i]["sizes"]);
                     dr["hsnsaccd"] = (tbl.Rows[i]["HSNCODE"]);
