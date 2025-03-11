@@ -47,6 +47,7 @@ namespace Improvar.ViewModels
         public bool FAVITEMChecked { get; set; }
         public bool SkipDuplicateDesign { get; set; }
         public bool PreviousYrUpload { get; set; }
-
+        public string LINKITNM { get; set; }
+        public string LINKUOMCD { get; set; }
     }
 }

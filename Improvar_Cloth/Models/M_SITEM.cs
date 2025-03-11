@@ -82,7 +82,7 @@ namespace Improvar.Models
 
         public short? COLRPERSET { get; set; }
 
-        [StringLength(8)]
+        [StringLength(10)]
         public string LINKITCD { get; set; }
         [StringLength(1)]
         public string NEGSTOCK { get; set; }

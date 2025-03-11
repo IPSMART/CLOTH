@@ -999,20 +999,26 @@
                                     @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 30, @onkeyup = "toUpper(this);", @placeholder = "Design", onblur = "CheckDesignNumber();" } })
                                 </div>
                             </div>
-                            <div class="col-md-7">
-                                @if (Model.DefaultAction == "V")
-                                {
-                                    if (Model.isPresentinLastYrSchema == "")
-                                    { }
-                                    if (Model.isPresentinLastYrSchema == "ADD")
-                                    {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
-                                    }
-                                    if (Model.isPresentinLastYrSchema == "EDIT")
-                                    {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
-                                    }
-                                }
 
-                            </div>
+                            @if (Model.DefaultAction == "V")
+                            {
+                                <div class="col-md-7">
+                                    @if (Model.isPresentinLastYrSchema == "")
+                                    {
+
+                                    }
+                                    @if (Model.isPresentinLastYrSchema == "ADD")
+                                    {
+                                        <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
+                                    }
+                                    @if (Model.isPresentinLastYrSchema == "EDIT")
+                                    {
+                                        <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
+                                    }
+                                </div>
+                            }
+
+
 
                             @*<div class="row">*@
                             @if (Model.DefaultAction == "A")
@@ -1038,6 +1044,8 @@
                             }
                             @*</div>*@
                         </div>
+
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1405,6 +1413,29 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Link Item Code")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.LINKITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LINKITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetLinkItemDetails", PageControllerName) + "','Item Details','LINKITCD','LINKITCD=itcd=0/LINKITNM=itstyle=1/LINKUOMCD=uomcd=2','ITCD')", @placeholder = "Code", maxlength = 30, onblur = "GetHelpBlur('" + @Url.Action("GetLinkItemDetails", PageControllerName) + "','Item Details','LINKITCD','LINKITCD=itcd=0/LINKITNM=itstyle=1/LINKUOMCD=uomcd=2','ITCD');" } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLinkItemDetails", PageControllerName)','Item Details','LINKITCD','LINKITCD=itcd=0/LINKITNM=itstyle=1/LINKUOMCD=uomcd=2','ITCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.LINKITNM, new { htmlAttributes = new { @class = "form-control", id = "LINKITNM", @placeholder = "Item Name", maxlength = 15, @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.LINKUOMCD, new { htmlAttributes = new { @class = "form-control", id = "LINKUOMCD", @placeholder = "UOM", maxlength = 15, @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "De - Active")
                                 </div>
@@ -1423,7 +1454,7 @@
                                         @Html.Label("", "Select File")
                                     </div>
                                 </div>
-                              
+
                                 <div class="col-md-8" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 4px;">
                                         <input type="file" id="UploadedFile" name="UploadedFile" required accept=".xlsx" />
@@ -1434,7 +1465,7 @@
                                         @Html.Label("", "Skip Duplicate Design")
                                     </div>
                                 </div>
-                                <div class="col-md-1" >
+                                <div class="col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top:6px;">
                                         @Html.CheckBoxFor(model => model.SkipDuplicateDesign, new { id = "SkipDuplicateDesign" })
                                     </div>
@@ -1444,7 +1475,7 @@
                                         @Html.Label("", "Upload to Previous Year")
                                     </div>
                                 </div>
-                                <div class="col-md-1">
+                                <div class="col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top:6px;">
                                         @Html.CheckBoxFor(model => model.PreviousYrUpload, new { id = "PreviousYrUpload" })
                                     </div>

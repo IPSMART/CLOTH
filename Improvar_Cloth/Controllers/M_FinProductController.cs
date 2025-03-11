@@ -347,6 +347,12 @@ namespace Improvar.Controllers
                 {
                     VE.Checked = false;
                 }
+                if (sl.LINKITCD.retStr() != "")
+                {
+                    var fitem = (from a in DB.M_SITEM where a.ITCD == sl.LINKITCD select new { a.ITNM, a.STYLENO, a.UOMCD }).FirstOrDefault();
+                    VE.LINKITNM = fitem.STYLENO + " " + fitem.ITNM;
+                    VE.LINKUOMCD = fitem.UOMCD;
+                }
                 VE.FAVITEMChecked = sl.FAVITEM == "Y" ? true : false;
 
                 string sql = "";
@@ -1658,6 +1664,7 @@ namespace Improvar.Controllers
                         //MSITEM.MERGEPCS = VE.M_SITEM.MERGEPCS;
                         MSITEM.FAVITEM = VE.FAVITEMChecked == true ? "Y" : "N";
                         MSITEM.FAVCOLR = VE.M_SITEM.FAVCOLR;
+                        MSITEM.LINKITCD = VE.M_SITEM.LINKITCD;
                         if (VE.DefaultAction == "E")
                         {
                             MSITEM.DTAG = "E";
@@ -2132,7 +2139,7 @@ namespace Improvar.Controllers
                 //HC.GetPrintHeader(IR, "sizes", "string", "c,25", "Sizes");
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
-                string lastgrpnm = ""; string lastbrandnm = "";Int32 slno = 0;
+                string lastgrpnm = ""; string lastbrandnm = ""; Int32 slno = 0;
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
                     slno = slno + 1;
@@ -2748,6 +2755,54 @@ namespace Improvar.Controllers
                 return dt.Rows[0]["itcd"].ToString();
             }
             return "";
+        }
+        public ActionResult GetLinkItemDetails(string val, string Code)
+        {
+            try
+            {
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                string valsrch = val.ToUpper().Trim();
+
+                sql += "select nvl(a.linkitcd,a.itcd) itcd, b.itnm,b.styleno||' '||b.itnm itstyle,b.uomcd ";
+                sql += " from " + scm1 + ".m_sitem a," + scm1 + ".m_sitem b, " + scm1 + ".M_CNTRL_HDR c ";
+                sql += "where nvl(a.linkitcd,a.itcd)=b.itcd and  b.M_AUTONO=c.M_AUTONO(+) and c.INACTIVE_TAG = 'N' ";
+                if (valsrch.retStr() != "") sql += "and ( upper(nvl(a.linkitcd,a.itcd)) = '" + valsrch + "' ) ";
+                if (Code.retStr() != "") sql += "and nvl(a.linkitcd,a.itcd)<>'" + Code + "'  ";
+
+                sql += "order by b.itcd,b.itnm";
+
+                DataTable rsTmp = masterHelp.SQLquery(sql);
+
+                if (val.retStr() == "" || rsTmp.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["itstyle"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td></tr>");
+                    }
+                    var hdr = "Item Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "UOM";
+                    return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
+                }
+                else
+                {
+                    string str = "";
+                    if (rsTmp.Rows.Count > 0)
+                    {
+                        str = masterHelp.ToReturnFieldValues("", rsTmp);
+                    }
+                    else
+                    {
+                        str = "Invalid Item Code. Please Enter a Valid Item Code !!";
+                    }
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
 
     }
