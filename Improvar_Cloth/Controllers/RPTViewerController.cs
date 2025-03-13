@@ -303,13 +303,22 @@ namespace Improvar.Controllers
                                 string dammy = dr["dammy"].retStr();
                                 if (dammy != "")
                                 {
-                                    int eind = dammy.IndexOf("'>");
-                                    if (eind != -1)
+                                    while (true)
                                     {
-                                        var spanstr = dammy.Substring(0, eind + 2);
-                                        dammy = dammy.Replace(spanstr, "");
-                                        dammy = dammy.Replace("</span>", "");
-                                        dr["dammy"] = dammy;
+                                        int eind = dammy.IndexOf("'>");
+                                        if (eind != -1)
+                                        {
+                                            int sind = dammy.IndexOf("<span");
+                                            eind = Math.Abs(sind - eind);
+                                            var spanstr = dammy.Substring(sind, eind + 2);
+                                            dammy = dammy.Replace(spanstr, "");
+                                            dammy = dammy.Replace("</span>", "");
+                                            dr["dammy"] = dammy;
+                                        }
+                                        if (!dammy.Contains("span"))
+                                        {
+                                            break;
+                                        }
                                     }
                                 }
 
@@ -333,7 +342,11 @@ namespace Improvar.Controllers
                     }
                     //remove a blank row from datatable
                     //newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrWhiteSpace(field as string))).CopyToDataTable();
-                    newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrEmpty(field as string ?? field.ToString()))).CopyToDataTable();
+                    string RemoveBlankRowExl = System.Web.HttpContext.Current.Session[ReportName + "_RemoveBlankRowExl"].retStr();
+                    if (RemoveBlankRowExl != "N")
+                    {
+                        newdt = newdt.Rows.Cast<DataRow>().Where(row => !row.ItemArray.All(field => field is DBNull || string.IsNullOrEmpty(field as string ?? field.ToString()))).CopyToDataTable();
+                    }
                     ExcelPackage workbook = new ExcelPackage();
                     ExcelWorksheet worksheet = workbook.Workbook.Worksheets.Add("Sheet1");
                     worksheet.Cells["A1"].Value = PV.Vname + ", " + PV.Title;
@@ -936,7 +949,7 @@ namespace Improvar.Controllers
         }
 
         public PrintViewer ShowReport(DataTable IR, string reportname, string header1 = "", string header2 = "", Boolean showfooter = true, Boolean showhdronevrypage = true,
-            string orientation = "P", Boolean alternativerowcolor = true, string extr_col = "")
+            string orientation = "P", Boolean alternativerowcolor = true, string extr_col = "", string RemoveBlankRowExl = "Y")
         {
             PV.RepetedHeader = showhdronevrypage;
             if (orientation == "P")
@@ -958,6 +971,8 @@ namespace Improvar.Controllers
             PV.ReportName = reportname;
             if (showfooter == true) PV.StaticFooter = DateTime.Now.ToString("dd/MM/yyyy") + " " + DateTime.Now.ToString("hh:mm:ss tt");
             System.Web.HttpContext.Current.Session[reportname] = PV;
+            System.Web.HttpContext.Current.Session[reportname + "_RemoveBlankRowExl"] = RemoveBlankRowExl;
+
             return PV;
         }
 

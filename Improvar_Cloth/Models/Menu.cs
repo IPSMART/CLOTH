@@ -43,6 +43,7 @@ namespace Improvar.Models
         public string PARTY_NAME { get; set; }
         public string CLASS1_CODE { get; set; }
         public string CLASS1_NAME { get; set; }
+        public string mailtype { get; set; }
 
 
     }

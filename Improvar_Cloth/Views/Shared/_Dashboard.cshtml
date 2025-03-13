@@ -423,6 +423,19 @@
                                                 @Html.EditorFor(model => model.DashboardList[index].EMAILSTATUSTBL.CCMAIL, new { htmlAttributes = new { @class = "form-control", id = "CCMAIL", maxlength = 100, Style = "height: 25px;", autocomplete = "off" } })
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.Label("", "Report Email Type")
+                                            </td>
+                                            <td>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].EMAILSTATUSTBL.mailtype, "P", new { id = "mailtype" })  @Html.Label("Pdf")
+                                                </label>
+                                                <label class="radio-inline">
+                                                    @Html.RadioButtonFor(model => model.DashboardList[index].EMAILSTATUSTBL.mailtype, "E", new { id = "mailtype" })  @Html.Label("Excel")
+                                                </label>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </div>
                             </div>

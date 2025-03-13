@@ -249,7 +249,11 @@ namespace Improvar.Controllers
                                         EMAILSTATUSTBL.CLASS1_CODE = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "CLASS1_CODE", filepath);
                                         EMAILSTATUSTBL.CLASS1_NAME = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "CLASS1_NAME", filepath);
                                         EMAILSTATUSTBL.CCMAIL = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "CCMAIL", filepath);
-
+                                        EMAILSTATUSTBL.mailtype = Handel_Ini.IniReadValue("FABOARD4_ReportOSEmail", "MAILTYPE", filepath);
+                                        if(EMAILSTATUSTBL.mailtype.retStr() == "")
+                                        {
+                                            EMAILSTATUSTBL.mailtype = "P";
+                                        }
                                         det.EMAILSTATUSTBL = EMAILSTATUSTBL;
                                     }
 
@@ -1203,10 +1207,10 @@ namespace Improvar.Controllers
                 string compcd = CommVar.Compcd(UNQSNO);
 
                 string sql = "";
-                sql += "select a.panno, a.slnm, a.slarea,a.amt,a.blamt from(  " + Environment.NewLine;
-                sql += "select a.panno, b.slnm, b.slarea,  " + Environment.NewLine;
+                sql += "select a.panno, a.slnm, a.slarea, a.amt, a.blamt from (  " + Environment.NewLine;
+                sql += "select a.panno, b.slnm, b.slarea, count(*) no_docu, " + Environment.NewLine;
                 sql += "sum(a.amt) amt, sum(a.blamt) blamt from " + Environment.NewLine;
-                sql += "(select c.panno, a.expglcd, " + Environment.NewLine;
+                sql += "(select c.panno, a.expglcd, a.autono, " + Environment.NewLine;
                 if (salepur == "P")
                 {
                     sql += "sum(case a.drcr when 'D' then a.amt when 'C' then a.amt * -1 end) amt, " + Environment.NewLine;
@@ -1224,7 +1228,7 @@ namespace Improvar.Controllers
                 if (fdt.retStr() != "") sql += "and b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') " + Environment.NewLine;
                 if (tdt.retStr() != "") sql += "and b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
                 sql += "and a.salpur = '" + salepur + "' and nvl(a.pinv, 'N') = 'N' and c.panno is not null " + Environment.NewLine;
-                sql += "group by c.panno, a.expglcd ) a, " + Environment.NewLine;
+                sql += "group by c.panno, a.expglcd, a.autono ) a, " + Environment.NewLine;
 
                 sql += "(select panno, slnm, slarea from ( " + Environment.NewLine;
                 sql += "select a.panno, a.slnm, a.slcd, nvl(a.district, a.slarea) slarea,  " + Environment.NewLine;
@@ -1240,9 +1244,6 @@ namespace Improvar.Controllers
                 if (noofrec.retDbl() != 0) sql += "where ROWNUM <= " + noofrec + " " + Environment.NewLine;
                 DataTable tbl = masterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return "no records..";
-
-
-
 
                 string filename = ("Top Sales/Purchase " + (salepur == "P" ? "Purchase" : "Sales")).retRepname();
                 ExcelPackage ExcelPkg = new ExcelPackage();

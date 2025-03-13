@@ -111,10 +111,10 @@ namespace Improvar.Controllers
                     //=========For Dept Type===========//
                     //=========For TOT194Q ===========//
                     List<DropDown_list2> TOT = new List<DropDown_list2>();
-                    DropDown_list2 TOT1 = new DropDown_list2();
-                    TOT1.value = "";
-                    TOT1.text = "";
-                    TOT.Add(TOT1);
+                    //DropDown_list2 TOT1 = new DropDown_list2();
+                    //TOT1.value = "";
+                    //TOT1.text = "";
+                    //TOT.Add(TOT1);
                     DropDown_list2 TOT2 = new DropDown_list2();
                     TOT2.value = "Y";
                     TOT2.text = "Yes";
@@ -2206,387 +2206,446 @@ namespace Improvar.Controllers
                     return Content("Download Sucessfull");
                     #endregion
                 }
+                else
+                {
+                    #region Upload
+                    if (Request.Files.Count == 0) return Content("No File Selected");
+                    HttpPostedFileBase file = Request.Files[0];
+                    if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
+                    Stream stream = file.InputStream;
 
-                return null;
+                    string msg = "", MESSAGE = "", errorstat = "", strerrline = ""; //sl = new M_RTMAST();
+                    try
+                    {
+                        // Excel Columns: SL_CD	SL_NM	PRNTNM	BLNKFLD	BLDNGNO	PREMISES	FLOORNO	ROADNAME	LOCALITY	EXTADDR	LANDMARK	STATE	CITY	PIN	STATE_CD	COUNTRY	SL_AREA	ITFILE	TANNO	LTD_IND	CINNO	LEGALNAME	ADHARNO	GST	GSTDT	REGNTYPE	EMAIL	MOBILE	CPERSON	CPERSONMOB	PHNO1STD	PHNO1	PHNO2STD	PHNO2	PHNO3STD	PHNO3	PHNO	RPHNO	CPERSON2	CPERSON2MOBILE	FAX	FACEBOOK	TWITTER	WHATSAPP	IFSC	BANKNM	BANKADD	BANKACT	BACNKACTTYPE	IFSC2	BANKNM2	BANKADD2	BANKACT2	BACNKACTTYPE2	ACODE	TRAN_CD	LINKCD	FASMARTLINKCD	OTHADD1	OTHADD2	OTHADD3	OTHREM
+
+                        DataTable dbfdt = new DataTable();
+                        dbfdt.Columns.Add("Sl", typeof(int));
+                        dbfdt.Columns.Add("SL_CD", typeof(string));
+                        dbfdt.Columns.Add("SL_NM", typeof(string));
+                        dbfdt.Columns.Add("PRNTNM", typeof(string));
+                        dbfdt.Columns.Add("BLNKFLD", typeof(string));
+                        dbfdt.Columns.Add("BLDNGNO", typeof(string));
+                        dbfdt.Columns.Add("PREMISES", typeof(string));
+                        dbfdt.Columns.Add("FLOORNO", typeof(string));
+                        dbfdt.Columns.Add("ROADNAME", typeof(string));
+                        dbfdt.Columns.Add("LOCALITY", typeof(string));
+                        dbfdt.Columns.Add("EXTADDR", typeof(string));
+                        dbfdt.Columns.Add("LANDMARK", typeof(string));
+                        dbfdt.Columns.Add("STATE", typeof(string));
+                        dbfdt.Columns.Add("CITY", typeof(string));
+                        dbfdt.Columns.Add("PIN", typeof(string));
+                        dbfdt.Columns.Add("STATE_CD", typeof(string));
+                        dbfdt.Columns.Add("COUNTRY", typeof(string));
+                        dbfdt.Columns.Add("SL_AREA", typeof(string));
+                        dbfdt.Columns.Add("ITFILE", typeof(string));
+                        dbfdt.Columns.Add("TANNO", typeof(string));
+                        dbfdt.Columns.Add("LTD_IND", typeof(string));
+                        dbfdt.Columns.Add("CINNO", typeof(string));
+                        dbfdt.Columns.Add("LEGALNAME", typeof(string));
+                        dbfdt.Columns.Add("ADHARNO", typeof(string));
+                        dbfdt.Columns.Add("GST", typeof(string));
+                        dbfdt.Columns.Add("GSTDT", typeof(string));
+                        dbfdt.Columns.Add("REGNTYPE", typeof(string));
+                        dbfdt.Columns.Add("EMAIL", typeof(string));
+                        dbfdt.Columns.Add("MOBILE", typeof(string));
+                        dbfdt.Columns.Add("CPERSON", typeof(string));
+                        dbfdt.Columns.Add("CPERSONMOB", typeof(string));
+                        dbfdt.Columns.Add("PHNO1STD", typeof(string));
+                        dbfdt.Columns.Add("PHNO1", typeof(string));
+                        dbfdt.Columns.Add("PHNO2STD", typeof(string));
+                        dbfdt.Columns.Add("PHNO2", typeof(string));
+                        dbfdt.Columns.Add("PHNO3STD", typeof(string));
+                        dbfdt.Columns.Add("PHNO3", typeof(string));
+                        dbfdt.Columns.Add("PHNO", typeof(string));
+                        dbfdt.Columns.Add("RPHNO", typeof(string));
+                        dbfdt.Columns.Add("CPERSON2", typeof(string));
+                        dbfdt.Columns.Add("CPERSON2MOBILE", typeof(string));
+                        dbfdt.Columns.Add("FAX", typeof(string));
+                        dbfdt.Columns.Add("FACEBOOK", typeof(string));
+                        dbfdt.Columns.Add("TWITTER", typeof(string));
+                        dbfdt.Columns.Add("WHATSAPP", typeof(string));
+                        dbfdt.Columns.Add("IFSC", typeof(string));
+                        dbfdt.Columns.Add("BANKNM", typeof(string));
+                        dbfdt.Columns.Add("BANKADD", typeof(string));
+                        dbfdt.Columns.Add("BANKACT", typeof(string));
+                        dbfdt.Columns.Add("BACNKACTTYPE", typeof(string));
+                        dbfdt.Columns.Add("IFSC2", typeof(string));
+                        dbfdt.Columns.Add("BANKNM2", typeof(string));
+                        dbfdt.Columns.Add("BANKADD2", typeof(string));
+                        dbfdt.Columns.Add("BANKACT2", typeof(string));
+                        dbfdt.Columns.Add("BACNKACTTYPE2", typeof(string));
+                        dbfdt.Columns.Add("ACODE", typeof(string));
+                        dbfdt.Columns.Add("TRAN_CD", typeof(string));
+                        dbfdt.Columns.Add("LINKCD", typeof(string));
+                        dbfdt.Columns.Add("FASMARTLINKCD", typeof(string));
+                        dbfdt.Columns.Add("OTHADD1", typeof(string));
+                        dbfdt.Columns.Add("OTHADD2", typeof(string));
+                        dbfdt.Columns.Add("OTHADD3", typeof(string));
+                        dbfdt.Columns.Add("OTHREM", typeof(string));
+
+                        dbfdt.Columns.Add("FULLNAME", typeof(string));
+                        dbfdt.Columns.Add("DISTRICT", typeof(string));
+                        dbfdt.Columns.Add("OLDPHNO1", typeof(string));
+                        dbfdt.Columns.Add("OLDPHNO2", typeof(string));
+
+
+                        using (var package = new ExcelPackage(stream))
+                        {
+                            var currentSheet = package.Workbook.Worksheets;
+                            var workSheet = currentSheet.First();
+                            var noOfCol = workSheet.Dimension.End.Column;
+                            var noOfRow = workSheet.Dimension.End.Row;
+                            int rowNum = 2;
+                            for (rowNum = 2; rowNum <= noOfRow; rowNum++)
+                            {
+                                if (workSheet.Cells[rowNum, 2].Value.retStr() != "")
+                                {
+                                    DataRow dr = dbfdt.NewRow();
+                                    dr["Sl"] = rowNum;
+                                    var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
+                                    for (int colnum = 1; colnum <= noOfCol; colnum++)
+                                    {
+                                        string colname = workSheet.Cells[1, colnum].Value.retStr().Trim();
+                                        string colValue = workSheet.Cells[rowNum, colnum].Value.retStr().Trim();
+                                        try
+                                        {
+                                            if (colname == "") continue;
+                                            dr[colname] = colValue;
+                                        }
+                                        catch (ArgumentException ex)
+                                        {
+                                            return Content("Wrong ColumnName:" + colname + " Error:" + ex.Message);
+                                        }
+                                    }
+                                    dbfdt.Rows.Add(dr);
+                                }
+                            }
+                        }
+
+
+
+                        CultureInfo culture = CultureInfo.CreateSpecificCulture("en-GB");
+                        VE.DefaultAction = "A";
+
+
+                        int excelrow = 2; int slno = 0;
+                        string DISTRICT = "", STATE_CD = "", STATE = "", COUNTRY = "", PIN = "", LINKCD = "", LTD_IND = "", REGNTYPE = "", slnm = "", MOBILE = "", CPERSONMOB = "";
+
+                        foreach (DataRow oudr in dbfdt.Rows)
+                        {
+                            string ERROR = "";
+                            slnm = oudr["SL_NM"].retStr().Length > 45 ? oudr["SL_NM"].retStr().Substring(0, 45) : oudr["SL_NM"].retStr();
+                            //var chkslnm = CheckSubledgerName(slnm, "Y");
+                            //if (chkslnm.retStr() != "")
+                            //{
+                            //    ERROR = ERROR + chkslnm + ". At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            //    strerrline += excelrow + ",";
+                            //}
+                            DISTRICT = oudr["DISTRICT"].retStr();
+                            if (DISTRICT == "")
+                            {
+                                ERROR = ERROR + "DISTRICT not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            PIN = oudr["PIN"].retStr();
+                            if (PIN == "")
+                            {
+                                ERROR = ERROR + "PIN not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            STATE_CD = oudr["STATE_CD"].retStr();
+                            if (STATE_CD == "")
+                            {
+                                ERROR = ERROR + "STATE_CD not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            STATE = oudr["STATE"].retStr();
+                            if (STATE == "")
+                            {
+                                ERROR = ERROR + "STATE not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            COUNTRY = oudr["COUNTRY"].retStr();
+                            if (COUNTRY == "")
+                            {
+                                ERROR = ERROR + "COUNTRY not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            LINKCD = oudr["LINKCD"].retStr();
+                            if (LINKCD == "")
+                            {
+                                ERROR = ERROR + "LINKCD not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            LTD_IND = oudr["LTD_IND"].retStr();
+                            if (LTD_IND == "")
+                            {
+                                ERROR = ERROR + "LTD_IND not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+                            REGNTYPE = oudr["REGNTYPE"].retStr();
+                            if (REGNTYPE == "")
+                            {
+                                ERROR = ERROR + "REGNTYPE not found !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+
+                            bool isNumeric = true;
+                            MOBILE = oudr["MOBILE"].retStr();
+                            int length = MOBILE.Length;
+                            if (length > 12)
+                            {
+                                isNumeric = false;
+                            }
+                            foreach (char c in MOBILE)
+                            {
+                                if (!char.IsDigit(c))
+                                {
+                                    isNumeric = false;
+                                    break;
+                                }
+                            }
+                            if (isNumeric == false)
+                            {
+                                ERROR = ERROR + "MOBILE is not valid !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+
+                            bool isNumeric1 = true;
+                            CPERSONMOB = oudr["CPERSONMOB"].retStr();
+                            int length1 = CPERSONMOB.Length;
+                            if (length1 > 12)
+                            {
+                                isNumeric1 = false;
+                            }
+                            foreach (char c in CPERSONMOB)
+                            {
+                                if (!char.IsDigit(c))
+                                {
+                                    isNumeric1 = false;
+                                    break;
+                                }
+                            }
+                            if (isNumeric1 == false)
+                            {
+                                ERROR = ERROR + "CPERSONMOB is not valid !! At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                            }
+
+                            if (ERROR != "")
+                            {
+                                errorstat += ERROR;
+                                ++excelrow;
+                                continue;
+                            }
+                            else
+                            {
+                                SUB_LEDGERController MSCntlr = new SUB_LEDGERController();
+                                SubLedgerEntry SRMEVE = new SubLedgerEntry();
+                                M_SUBLEG MSUBLEG = new M_SUBLEG();
+                                M_CNTRL_HDR MCH = new M_CNTRL_HDR();
+                                List<MSUBLEGCONT> MSUBLEGCONTLlist = new List<Models.MSUBLEGCONT>();
+                                List<MSUBLEGIFSC> MSUBLEGIFSCLlist = new List<Models.MSUBLEGIFSC>();
+                                List<LinkType> LinkTypeLlist = new List<Models.LinkType>();
+
+                                slno++;
+                                msg = " Excelrow:" + excelrow;
+                                MCH.PKGLEGACYCD = oudr["SL_CD"].retStr();
+
+                                MSUBLEG.SLNM = oudr["SL_NM"].retStr().Length > 45 ? oudr["SL_NM"].retStr().Substring(0, 45) : oudr["SL_NM"].retStr();
+                                MSUBLEG.FULLNAME = oudr["FULLNAME"].retStr();
+                                //MSUBLEG.PRNTNM = oudr["PRNTNM"].retStr();
+                                //MSUBLEG.BLNKFLD = oudr["BLNKFLD"].retStr();
+                                MSUBLEG.BLDGNO = oudr["BLDNGNO"].retStr();
+                                MSUBLEG.PREMISES = oudr["PREMISES"].retStr().Length > 80 ? oudr["PREMISES"].retStr().Substring(0, 80) : oudr["PREMISES"].retStr();
+                                MSUBLEG.FLOORNO = oudr["FLOORNO"].retStr().Length > 80 ? oudr["FLOORNO"].retStr().Substring(0, 80) : oudr["FLOORNO"].retStr();
+                                MSUBLEG.ROADNAME = oudr["ROADNAME"].retStr();
+                                MSUBLEG.LOCALITY = oudr["LOCALITY"].retStr();
+                                MSUBLEG.EXTADDR = oudr["EXTADDR"].retStr();
+
+                                MSUBLEG.LANDMARK = oudr["LANDMARK"].retStr();
+                                MSUBLEG.STATE = oudr["STATE"].retStr();
+                                //MSUBLEG.DISTRICT = oudr["CITY"].retStr();
+                                MSUBLEG.DISTRICT = oudr["DISTRICT"].retStr();
+
+                                MSUBLEG.PIN = oudr["PIN"].retStr();
+                                MSUBLEG.STATECD = oudr["STATE_CD"].retStr();
+                                MSUBLEG.COUNTRY = oudr["COUNTRY"].retStr();
+                                MSUBLEG.SLAREA = oudr["SL_AREA"].retStr();
+                                //MSUBLEG.ITFILE = oudr["ITFILE"].retStr();
+                                MSUBLEG.PANNO = oudr["ITFILE"].retStr();
+                                MSUBLEG.TANNO = oudr["TANNO"].retStr();
+                                //MSUBLEG.LTD_IND = oudr["LTD_IND"].retStr();
+                                MSUBLEG.CINNO = oudr["CINNO"].retStr();
+                                MSUBLEG.PROPNAME = oudr["LEGALNAME"].retStr();
+                                MSUBLEG.ADHAARNO = oudr["ADHARNO"].retStr();
+                                MSUBLEG.GSTNO = oudr["GST"].retStr();
+                                if (oudr["GSTDT"].retStr() != "")
+                                {
+                                    MSUBLEG.GSTDT = Convert.ToDateTime(oudr["GSTDT"].retStr());
+                                }
+                                MSUBLEG.REGEMAILID = oudr["EMAIL"].retStr();
+                                MSUBLEG.REGMOBILE = Convert.ToInt64(oudr["MOBILE"].retDbl());
+                                MSUBLEG.PHNO1STD = oudr["PHNO1STD"].retInt();
+                                MSUBLEG.PHNO1 = Convert.ToInt64(oudr["PHNO1"].retDbl());
+                                MSUBLEG.PHNO2STD = oudr["PHNO2STD"].retInt();
+                                MSUBLEG.PHNO2 = Convert.ToInt64(oudr["PHNO2"].retDbl());
+                                MSUBLEG.PHNO3STD = oudr["PHNO3STD"].retInt();
+                                MSUBLEG.PHNO3 = Convert.ToInt64(oudr["PHNO3"].retDbl());
+                                MSUBLEG.SLPHNO = oudr["OLDPHNO1"].retStr();
+                                //MSUBLEG.PHNO1STD = oudr["PHNO"].retInt();
+                                //MSUBLEG.PHNO1 = Convert.ToInt64(oudr["RPHNO"].retDbl());
+
+                                //MSUBLEG.FAX = oudr["FAX"].retStr();
+                                MSUBLEG.FACEBOOK_ID = oudr["FACEBOOK"].retStr();
+                                MSUBLEG.TWITTER_ID = oudr["TWITTER"].retStr();
+                                MSUBLEG.WHATSAPP_NO = Convert.ToInt64(oudr["WHATSAPP"].retDbl());
+                                //MSUBLEG.ACODE = oudr["ACODE"].retStr();
+                                //MSUBLEG.TRAN_CD = oudr["TRAN_CD"].retStr();
+                                //MSUBLEG.FASMARTLINKCD = oudr["FASMARTLINKCD"].retStr();
+                                MSUBLEG.CENNO = oudr["ACODE"].retStr() + "," + oudr["TRAN_CD"].retStr();
+                                MSUBLEG.OTHADD1 = oudr["OTHADD1"].retStr();
+                                MSUBLEG.OTHADD2 = oudr["OTHADD2"].retStr();
+                                MSUBLEG.OTHADD3 = oudr["OTHADD3"].retStr();
+                                MSUBLEG.OTHADDREM = oudr["OTHREM"].retStr();
+                                MSUBLEG.SLCOMPTYPE = oudr["LTD_IND"].retStr() == "I" ? "07" : "02";
+                                // MSUBLEG.REGNTYPE = "";
+                                MSUBLEG.REGNTYPE = oudr["REGNTYPE"].retStr();
+
+                                MSUBLEGCONT SUBLEGCONT1 = new MSUBLEGCONT();
+                                //SUBLEGCONT.MOBILE1PREFIX = Convert.ToByte(oudr["CPERSON"].retDbl());
+                                SUBLEGCONT1.SLNO = 1;
+                                SUBLEGCONT1.CPERSON = oudr["CPERSON"].retStr();
+                                SUBLEGCONT1.MOBILE1 = Convert.ToInt64(oudr["CPERSONMOB"].retDbl());
+                                MSUBLEGCONTLlist.Add(SUBLEGCONT1);
+
+                                MSUBLEGCONT SUBLEGCONT2 = new MSUBLEGCONT();
+                                //SUBLEGCONT.MOBILE2PREFIX = Convert.ToByte(oudr["CPERSON2"].retDbl());
+                                SUBLEGCONT2.SLNO = 2;
+                                SUBLEGCONT2.CPERSON = oudr["CPERSON2"].retStr();
+                                SUBLEGCONT2.MOBILE1 = Convert.ToInt64(oudr["CPERSON2MOBILE"].retDbl());
+                                MSUBLEGCONTLlist.Add(SUBLEGCONT2);
+
+                                MSUBLEGIFSC SUBLEGIFSC1 = new MSUBLEGIFSC();
+                                SUBLEGIFSC1.IFSCCODE = oudr["IFSC"].retStr();
+                                SUBLEGIFSC1.BANKNAME = oudr["BANKNM"].retStr();
+                                SUBLEGIFSC1.ADDRESS = oudr["BANKADD"].retStr();
+                                SUBLEGIFSC1.BANKACTNO = oudr["BANKACT"].retStr();
+                                SUBLEGIFSC1.BANKACTTYPE = oudr["BACNKACTTYPE"].retStr();
+                                SUBLEGIFSC1.BRANCH = oudr["BANKNM"].retStr() != "" ? "." : "";
+                                SUBLEGIFSC1.SLNO = 1;
+
+                                MSUBLEGIFSCLlist.Add(SUBLEGIFSC1);
+
+                                MSUBLEGIFSC SUBLEGIFSC2 = new MSUBLEGIFSC();
+
+                                SUBLEGIFSC2.IFSCCODE = oudr["IFSC2"].retStr();
+                                SUBLEGIFSC2.BANKNAME = oudr["BANKNM2"].retStr();
+                                SUBLEGIFSC2.ADDRESS = oudr["BANKADD2"].retStr();
+                                SUBLEGIFSC2.BANKACTNO = oudr["BANKACT2"].retStr();
+                                SUBLEGIFSC2.BANKACTTYPE = oudr["BACNKACTTYPE2"].retStr();
+                                SUBLEGIFSC2.BRANCH = oudr["BANKNM2"].retStr() != "" ? "." : "";
+                                SUBLEGIFSC2.SLNO = 2;
+                                MSUBLEGIFSCLlist.Add(SUBLEGIFSC2);
+
+
+                                LinkType LinkType1 = new LinkType();
+                                LinkType1.LINKCD = oudr["LINKCD"].retStr();
+                                LinkType1.Checked = true;
+                                LinkTypeLlist.Add(LinkType1);
+
+
+                                SRMEVE.DefaultAction = "A";
+                                SRMEVE.M_SUBLEG = MSUBLEG;
+                                SRMEVE.MSUBLEGCONT = MSUBLEGCONTLlist;
+                                SRMEVE.MSUBLEGIFSC = MSUBLEGIFSCLlist;
+                                SRMEVE.LinkType = LinkTypeLlist;
+                                SRMEVE.M_CNTRL_HDR = MCH;
+                                FormCollection collection = new FormCollection();
+                                string tslCont = (string)MSCntlr.SAVE(collection, SRMEVE, "Upload");
+                                tslCont = tslCont.retStr().Split('~')[0];
+                                if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1")
+                                {
+                                    strerrline += excelrow + ",";
+                                    ++excelrow;
+                                    MESSAGE += "Success : " + tslCont.Remove(0, 11) + ". At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                                }
+                                else
+                                {
+                                    errorstat += tslCont + ". At Row Number : " + oudr["Sl"].retStr() + "<br/>";
+                                }
+                            }
+                        }//outer
+                        if (errorstat != "")
+                        {
+                            goto notsave;
+                        }
+                        return Content("Excel Uploaded Successfully !! <br/>" + MESSAGE);
+
+
+                    }//try
+                    catch (Exception ex)
+                    {
+                        Cn.SaveException(ex, msg);
+                        string InnerException = "";
+                        if (ex.InnerException != null)
+                        {
+                            if (ex.InnerException.InnerException != null)
+                            {
+                                InnerException = ex.InnerException.InnerException.Message;
+                            }
+                            else
+                            {
+                                InnerException = ex.InnerException.Message;
+                            }
+                        }
+                        errorstat += "<br/>" + ex.Message + " at " + msg+" "+ InnerException;
+                        goto notsave;
+                        //return Content(ex.Message + " at " + msg + MESSAGE);
+                    }
+                    notsave:
+                    {
+                        using (var ExcelPkg = new ExcelPackage(stream))
+                        {
+                            string[] errline = strerrline.Split(',');
+                            int rowNum = 2;
+                            var noOfRow = ExcelPkg.Workbook.Worksheets[1].Dimension.End.Row;
+                            for (rowNum = noOfRow; rowNum >= 2; rowNum--)
+                            {
+                                if (errline.Contains(rowNum.retStr()))
+                                {
+                                    ExcelPkg.Workbook.Worksheets[1].DeleteRow(rowNum, 1);
+                                }
+                            }
+                            ExcelPkg.Workbook.Worksheets.Add("ErrorMsg");
+
+                            rowNum = 1;
+                            string[] arrerrmsg = errorstat.Split(new string[] { "<br/>" }, StringSplitOptions.None);
+                            foreach (var v in arrerrmsg)
+                            {
+                                ExcelPkg.Workbook.Worksheets["ErrorMsg"].Cells[rowNum, 1].Value = v;
+                                rowNum++;
+                            }
+                            ExcelPkg.Workbook.Worksheets.Add("SuccessMsg");
+
+                            rowNum = 1;
+                            string[] arrsmsg = MESSAGE.Split(new string[] { "<br/>" }, StringSplitOptions.None);
+                            foreach (var v in arrsmsg)
+                            {
+                                ExcelPkg.Workbook.Worksheets["SuccessMsg"].Cells[rowNum, 1].Value = v;
+                                rowNum++;
+                            }
+                            Response.Clear();
+                            Response.ClearContent();
+                            Response.Buffer = true;
+                            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                            Response.AddHeader("Content-Disposition", "attachment; filename=ErrorExcel.xlsx");
+                            Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                            Response.Flush();
+                            Response.Close();
+                            Response.End();
+                            return Content("Excel Uploaded Successfully !!");
+                        }
+                    }
+                    #endregion
+                }
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
+                return Content(ex.Message);
             }
-        }
-        public ActionResult SUB_LEDGER_Upload(SubLedgerEntry VE, FormCollection FC, ImprovarDB DB)
-        {
-
-            string msg = "",errorstat=""; //sl = new M_RTMAST();
-            try
-            {
-                if (Request.Files.Count == 0) return Content("No File Selected");
-                HttpPostedFileBase file = Request.Files[0];
-                if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
-                Stream stream = file.InputStream;
-                // Excel Columns: SL_CD	SL_NM	PRNTNM	BLNKFLD	BLDNGNO	PREMISES	FLOORNO	ROADNAME	LOCALITY	EXTADDR	LANDMARK	STATE	CITY	PIN	STATE_CD	COUNTRY	SL_AREA	ITFILE	TANNO	LTD_IND	CINNO	LEGALNAME	ADHARNO	GST	GSTDT	REGNTYPE	EMAIL	MOBILE	CPERSON	CPERSONMOB	PHNO1STD	PHNO1	PHNO2STD	PHNO2	PHNO3STD	PHNO3	PHNO	RPHNO	CPERSON2	CPERSON2MOBILE	FAX	FACEBOOK	TWITTER	WHATSAPP	IFSC	BANKNM	BANKADD	BANKACT	BACNKACTTYPE	IFSC2	BANKNM2	BANKADD2	BANKACT2	BACNKACTTYPE2	ACODE	TRAN_CD	LINKCD	FASMARTLINKCD	OTHADD1	OTHADD2	OTHADD3	OTHREM
-
-                DataTable dbfdt = new DataTable();
-                dbfdt.Columns.Add("Sl", typeof(int));
-                dbfdt.Columns.Add("SL_CD", typeof(string));
-                dbfdt.Columns.Add("SL_NM", typeof(string));
-                dbfdt.Columns.Add("PRNTNM", typeof(string));
-                dbfdt.Columns.Add("BLNKFLD", typeof(string));
-                dbfdt.Columns.Add("BLDNGNO", typeof(string));
-                dbfdt.Columns.Add("PREMISES", typeof(string));
-                dbfdt.Columns.Add("FLOORNO", typeof(string));
-                dbfdt.Columns.Add("ROADNAME", typeof(string));
-                dbfdt.Columns.Add("LOCALITY", typeof(string));
-                dbfdt.Columns.Add("EXTADDR", typeof(string));
-                dbfdt.Columns.Add("LANDMARK", typeof(string));
-                dbfdt.Columns.Add("STATE", typeof(string));
-                dbfdt.Columns.Add("CITY", typeof(string));
-                dbfdt.Columns.Add("PIN", typeof(string));
-                dbfdt.Columns.Add("STATE_CD", typeof(string));
-                dbfdt.Columns.Add("COUNTRY", typeof(string));
-                dbfdt.Columns.Add("SL_AREA", typeof(string));
-                dbfdt.Columns.Add("ITFILE", typeof(string));
-                dbfdt.Columns.Add("TANNO", typeof(string));
-                dbfdt.Columns.Add("LTD_IND", typeof(string));
-                dbfdt.Columns.Add("CINNO", typeof(string));
-                dbfdt.Columns.Add("LEGALNAME", typeof(string));
-                dbfdt.Columns.Add("ADHARNO", typeof(string));
-                dbfdt.Columns.Add("GST", typeof(string));
-                dbfdt.Columns.Add("GSTDT", typeof(string));
-                dbfdt.Columns.Add("REGNTYPE", typeof(string));
-                dbfdt.Columns.Add("EMAIL", typeof(string));
-                dbfdt.Columns.Add("MOBILE", typeof(string));
-                dbfdt.Columns.Add("CPERSON", typeof(string));
-                dbfdt.Columns.Add("CPERSONMOB", typeof(string));
-                dbfdt.Columns.Add("PHNO1STD", typeof(string));
-                dbfdt.Columns.Add("PHNO1", typeof(string));
-                dbfdt.Columns.Add("PHNO2STD", typeof(string));
-                dbfdt.Columns.Add("PHNO2", typeof(string));
-                dbfdt.Columns.Add("PHNO3STD", typeof(string));
-                dbfdt.Columns.Add("PHNO3", typeof(string));
-                dbfdt.Columns.Add("PHNO", typeof(string));
-                dbfdt.Columns.Add("RPHNO", typeof(string));
-                dbfdt.Columns.Add("CPERSON2", typeof(string));
-                dbfdt.Columns.Add("CPERSON2MOBILE", typeof(string));
-                dbfdt.Columns.Add("FAX", typeof(string));
-                dbfdt.Columns.Add("FACEBOOK", typeof(string));
-                dbfdt.Columns.Add("TWITTER", typeof(string));
-                dbfdt.Columns.Add("WHATSAPP", typeof(string));
-                dbfdt.Columns.Add("IFSC", typeof(string));
-                dbfdt.Columns.Add("BANKNM", typeof(string));
-                dbfdt.Columns.Add("BANKADD", typeof(string));
-                dbfdt.Columns.Add("BANKACT", typeof(string));
-                dbfdt.Columns.Add("BACNKACTTYPE", typeof(string));
-                dbfdt.Columns.Add("IFSC2", typeof(string));
-                dbfdt.Columns.Add("BANKNM2", typeof(string));
-                dbfdt.Columns.Add("BANKADD2", typeof(string));
-                dbfdt.Columns.Add("BANKACT2", typeof(string));
-                dbfdt.Columns.Add("BACNKACTTYPE2", typeof(string));
-                dbfdt.Columns.Add("ACODE", typeof(string));
-                dbfdt.Columns.Add("TRAN_CD", typeof(string));
-                dbfdt.Columns.Add("LINKCD", typeof(string));
-                dbfdt.Columns.Add("FASMARTLINKCD", typeof(string));
-                dbfdt.Columns.Add("OTHADD1", typeof(string));
-                dbfdt.Columns.Add("OTHADD2", typeof(string));
-                dbfdt.Columns.Add("OTHADD3", typeof(string));
-                dbfdt.Columns.Add("OTHREM", typeof(string));
-
-                dbfdt.Columns.Add("FULLNAME", typeof(string));
-                dbfdt.Columns.Add("DISTRICT", typeof(string));
-                dbfdt.Columns.Add("OLDPHNO1", typeof(string));
-                dbfdt.Columns.Add("OLDPHNO2", typeof(string));
-
-
-                using (var package = new ExcelPackage(stream))
-                {
-                    var currentSheet = package.Workbook.Worksheets;
-                    var workSheet = currentSheet.First();
-                    var noOfCol = workSheet.Dimension.End.Column;
-                    var noOfRow = workSheet.Dimension.End.Row;
-                    int rowNum = 2;
-                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
-                    {
-                        if (workSheet.Cells[rowNum, 2].Value.retStr() != "")
-                        {
-                            DataRow dr = dbfdt.NewRow();
-                            dr["Sl"] = rowNum;
-                            var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
-                            for (int colnum = 1; colnum <= noOfCol; colnum++)
-                            {
-                                string colname = workSheet.Cells[1, colnum].Value.retStr().Trim();
-                                string colValue = workSheet.Cells[rowNum, colnum].Value.retStr().Trim();
-                                try
-                                {
-                                    if (colname == "") continue;
-                                    dr[colname] = colValue;
-                                }
-                                catch (ArgumentException ex)
-                                {
-                                    return Content("Wrong ColumnName:" + colname + " Error:" + ex.Message);
-                                }
-                            }
-                            dbfdt.Rows.Add(dr);
-                        }
-                    }
-                }
-
-
-
-                CultureInfo culture = CultureInfo.CreateSpecificCulture("en-GB");
-                VE.DefaultAction = "A";
-
-
-                int excelrow = 2; int slno = 0;
-                string DISTRICT = "", STATE_CD = "", STATE = "", COUNTRY = "", PIN = "", LINKCD = "", LTD_IND = "", REGNTYPE = "", slnm = "", MOBILE="", CPERSONMOB="";
-
-
-                foreach (DataRow oudr in dbfdt.Rows)
-                {
-                    string ERROR = "";
-                    slnm = oudr["SL_NM"].retStr().Length > 45 ? oudr["SL_NM"].retStr().Substring(0, 45) : oudr["SL_NM"].retStr();
-                    var chkslnm = CheckSubledgerName(slnm);
-                    if (chkslnm.retStr() != "")
-                    {
-                        ERROR = ERROR + chkslnm + ". At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    DISTRICT = oudr["DISTRICT"].retStr();
-                    if (DISTRICT == "")
-                    {
-                        ERROR = ERROR + "DISTRICT not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    PIN = oudr["PIN"].retStr();
-                    if (PIN == "")
-                    {
-                        ERROR = ERROR + "PIN not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    STATE_CD = oudr["STATE_CD"].retStr();
-                    if (STATE_CD == "")
-                    {
-                        ERROR = ERROR + "STATE_CD not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    STATE = oudr["STATE"].retStr();
-                    if (STATE == "")
-                    {
-                        ERROR = ERROR + "STATE not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    COUNTRY = oudr["COUNTRY"].retStr();
-                    if (COUNTRY == "")
-                    {
-                        ERROR = ERROR + "COUNTRY not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    LINKCD = oudr["LINKCD"].retStr();
-                    if (LINKCD == "")
-                    {
-                        ERROR = ERROR + "LINKCD not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    LTD_IND = oudr["LTD_IND"].retStr();
-                    if (LTD_IND == "")
-                    {
-                        ERROR = ERROR + "LTD_IND not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    REGNTYPE = oudr["REGNTYPE"].retStr();
-                    if (REGNTYPE == "")
-                    {
-                        ERROR = ERROR + "REGNTYPE not found !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-
-                    bool isNumeric = true;
-                    MOBILE = oudr["MOBILE"].retStr();
-                    int length = MOBILE.Length;
-                    if(length>12)
-                    {
-                        isNumeric = false;
-                    }
-                    foreach (char c in MOBILE)
-                    {
-                        if (!char.IsDigit(c))
-                        {
-                            isNumeric = false;
-                            break;
-                        }
-                    }
-                    if (isNumeric==false)
-                    {
-                        ERROR = ERROR + "MOBILE is not valid !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-
-                    bool isNumeric1 = true;
-                    CPERSONMOB = oudr["CPERSONMOB"].retStr();
-                    int length1 = CPERSONMOB.Length;
-                    if (length1 > 12)
-                    {
-                        isNumeric1 = false;
-                    }
-                    foreach (char c in CPERSONMOB)
-                    {
-                        if (!char.IsDigit(c))
-                        {
-                            isNumeric1 = false;
-                            break;
-                        }
-                    }
-                    if (isNumeric1==false)
-                    {
-                        ERROR = ERROR + "CPERSONMOB is not valid !! At Row Number : " + oudr["Sl"].retStr() + "</br>";
-                    }
-                    
-
-
-                    errorstat += ERROR;
-
-                    if (ERROR != "")
-                    {
-                        ++excelrow;
-                        continue;
-                    }
-                    else
-                    {
-                        SUB_LEDGERController MSCntlr = new SUB_LEDGERController();
-                        SubLedgerEntry SRMEVE = new SubLedgerEntry();
-                        M_SUBLEG MSUBLEG = new M_SUBLEG();
-                        M_CNTRL_HDR MCH = new M_CNTRL_HDR();
-                        List<MSUBLEGCONT> MSUBLEGCONTLlist = new List<Models.MSUBLEGCONT>();
-                        List<MSUBLEGIFSC> MSUBLEGIFSCLlist = new List<Models.MSUBLEGIFSC>();
-                        List<LinkType> LinkTypeLlist = new List<Models.LinkType>();
-
-                        slno++;
-                        msg = " Excelrow:" + excelrow;
-                        if (excelrow == 129)
-                        {
-
-                        }
-                        MCH.PKGLEGACYCD = oudr["SL_CD"].retStr();
-
-                        MSUBLEG.SLNM = oudr["SL_NM"].retStr().Length > 45 ? oudr["SL_NM"].retStr().Substring(0, 45) : oudr["SL_NM"].retStr();
-                        MSUBLEG.FULLNAME = oudr["FULLNAME"].retStr();
-                        //MSUBLEG.PRNTNM = oudr["PRNTNM"].retStr();
-                        //MSUBLEG.BLNKFLD = oudr["BLNKFLD"].retStr();
-                        MSUBLEG.BLDGNO = oudr["BLDNGNO"].retStr();
-                        MSUBLEG.PREMISES = oudr["PREMISES"].retStr().Length > 80 ? oudr["PREMISES"].retStr().Substring(0, 80) : oudr["PREMISES"].retStr();
-                        MSUBLEG.FLOORNO = oudr["FLOORNO"].retStr().Length > 80 ? oudr["FLOORNO"].retStr().Substring(0, 80) : oudr["FLOORNO"].retStr();
-                        MSUBLEG.ROADNAME = oudr["ROADNAME"].retStr();
-                        MSUBLEG.LOCALITY = oudr["LOCALITY"].retStr();
-                        MSUBLEG.EXTADDR = oudr["EXTADDR"].retStr();
-
-                        MSUBLEG.LANDMARK = oudr["LANDMARK"].retStr();
-                        MSUBLEG.STATE = oudr["STATE"].retStr();
-                        //MSUBLEG.DISTRICT = oudr["CITY"].retStr();
-                        MSUBLEG.DISTRICT = oudr["DISTRICT"].retStr();
-
-                        MSUBLEG.PIN = oudr["PIN"].retStr();
-                        MSUBLEG.STATECD = oudr["STATE_CD"].retStr();
-                        MSUBLEG.COUNTRY = oudr["COUNTRY"].retStr();
-                        MSUBLEG.SLAREA = oudr["SL_AREA"].retStr();
-                        //MSUBLEG.ITFILE = oudr["ITFILE"].retStr();
-                        MSUBLEG.PANNO = oudr["ITFILE"].retStr();
-                        MSUBLEG.TANNO = oudr["TANNO"].retStr();
-                        //MSUBLEG.LTD_IND = oudr["LTD_IND"].retStr();
-                        MSUBLEG.CINNO = oudr["CINNO"].retStr();
-                        MSUBLEG.PROPNAME = oudr["LEGALNAME"].retStr();
-                        MSUBLEG.ADHAARNO = oudr["ADHARNO"].retStr();
-                        MSUBLEG.GSTNO = oudr["GST"].retStr();
-                        if (oudr["GSTDT"].retStr() != "")
-                        {
-                            MSUBLEG.GSTDT = Convert.ToDateTime(oudr["GSTDT"].retStr());
-                        }
-                        MSUBLEG.REGEMAILID = oudr["EMAIL"].retStr();
-                        MSUBLEG.REGMOBILE = Convert.ToInt64(oudr["MOBILE"].retDbl());
-                        MSUBLEG.PHNO1STD = oudr["PHNO1STD"].retInt();
-                        MSUBLEG.PHNO1 = Convert.ToInt64(oudr["PHNO1"].retDbl());
-                        MSUBLEG.PHNO2STD = oudr["PHNO2STD"].retInt();
-                        MSUBLEG.PHNO2 = Convert.ToInt64(oudr["PHNO2"].retDbl());
-                        MSUBLEG.PHNO3STD = oudr["PHNO3STD"].retInt();
-                        MSUBLEG.PHNO3 = Convert.ToInt64(oudr["PHNO3"].retDbl());
-                        MSUBLEG.SLPHNO = oudr["OLDPHNO1"].retStr();
-                        //MSUBLEG.PHNO1STD = oudr["PHNO"].retInt();
-                        //MSUBLEG.PHNO1 = Convert.ToInt64(oudr["RPHNO"].retDbl());
-
-                        //MSUBLEG.FAX = oudr["FAX"].retStr();
-                        MSUBLEG.FACEBOOK_ID = oudr["FACEBOOK"].retStr();
-                        MSUBLEG.TWITTER_ID = oudr["TWITTER"].retStr();
-                        MSUBLEG.WHATSAPP_NO = Convert.ToInt64(oudr["WHATSAPP"].retDbl());
-                        //MSUBLEG.ACODE = oudr["ACODE"].retStr();
-                        //MSUBLEG.TRAN_CD = oudr["TRAN_CD"].retStr();
-                        //MSUBLEG.FASMARTLINKCD = oudr["FASMARTLINKCD"].retStr();
-                        MSUBLEG.CENNO = oudr["ACODE"].retStr() + "," + oudr["TRAN_CD"].retStr();
-                        MSUBLEG.OTHADD1 = oudr["OTHADD1"].retStr();
-                        MSUBLEG.OTHADD2 = oudr["OTHADD2"].retStr();
-                        MSUBLEG.OTHADD3 = oudr["OTHADD3"].retStr();
-                        MSUBLEG.OTHADDREM = oudr["OTHREM"].retStr();
-                        MSUBLEG.SLCOMPTYPE = oudr["LTD_IND"].retStr() == "I" ? "07" : "02";
-                        // MSUBLEG.REGNTYPE = "";
-                        MSUBLEG.REGNTYPE = oudr["REGNTYPE"].retStr();
-
-                        MSUBLEGCONT SUBLEGCONT1 = new MSUBLEGCONT();
-                        //SUBLEGCONT.MOBILE1PREFIX = Convert.ToByte(oudr["CPERSON"].retDbl());
-                        SUBLEGCONT1.SLNO = 1;
-                        SUBLEGCONT1.CPERSON = oudr["CPERSON"].retStr();
-                        SUBLEGCONT1.MOBILE1 = Convert.ToInt64(oudr["CPERSONMOB"].retDbl());
-                        MSUBLEGCONTLlist.Add(SUBLEGCONT1);
-
-                        MSUBLEGCONT SUBLEGCONT2 = new MSUBLEGCONT();
-                        //SUBLEGCONT.MOBILE2PREFIX = Convert.ToByte(oudr["CPERSON2"].retDbl());
-                        SUBLEGCONT2.SLNO = 2;
-                        SUBLEGCONT2.CPERSON = oudr["CPERSON2"].retStr();
-                        SUBLEGCONT2.MOBILE1 = Convert.ToInt64(oudr["CPERSON2MOBILE"].retDbl());
-                        MSUBLEGCONTLlist.Add(SUBLEGCONT2);
-
-                        MSUBLEGIFSC SUBLEGIFSC1 = new MSUBLEGIFSC();
-                        SUBLEGIFSC1.IFSCCODE = oudr["IFSC"].retStr();
-                        SUBLEGIFSC1.BANKNAME = oudr["BANKNM"].retStr();
-                        SUBLEGIFSC1.ADDRESS = oudr["BANKADD"].retStr();
-                        SUBLEGIFSC1.BANKACTNO = oudr["BANKACT"].retStr();
-                        SUBLEGIFSC1.BANKACTTYPE = oudr["BACNKACTTYPE"].retStr();
-                        SUBLEGIFSC1.BRANCH = oudr["BANKNM"].retStr() != "" ? "." : "";
-                        SUBLEGIFSC1.SLNO = 1;
-
-                        MSUBLEGIFSCLlist.Add(SUBLEGIFSC1);
-
-                        MSUBLEGIFSC SUBLEGIFSC2 = new MSUBLEGIFSC();
-
-                        SUBLEGIFSC2.IFSCCODE = oudr["IFSC2"].retStr();
-                        SUBLEGIFSC2.BANKNAME = oudr["BANKNM2"].retStr();
-                        SUBLEGIFSC2.ADDRESS = oudr["BANKADD2"].retStr();
-                        SUBLEGIFSC2.BANKACTNO = oudr["BANKACT2"].retStr();
-                        SUBLEGIFSC2.BANKACTTYPE = oudr["BACNKACTTYPE2"].retStr();
-                        SUBLEGIFSC2.BRANCH = oudr["BANKNM2"].retStr() != "" ? "." : "";
-                        SUBLEGIFSC2.SLNO = 2;
-                        MSUBLEGIFSCLlist.Add(SUBLEGIFSC2);
-
-
-                        LinkType LinkType1 = new LinkType();
-                        LinkType1.LINKCD = oudr["LINKCD"].retStr();
-                        LinkType1.Checked = true;
-                        LinkTypeLlist.Add(LinkType1);
-
-
-                        SRMEVE.DefaultAction = "A";
-                        SRMEVE.M_SUBLEG = MSUBLEG;
-                        SRMEVE.MSUBLEGCONT = MSUBLEGCONTLlist;
-                        SRMEVE.MSUBLEGIFSC = MSUBLEGIFSCLlist;
-                        SRMEVE.LinkType = LinkTypeLlist;
-                        SRMEVE.M_CNTRL_HDR = MCH;
-                        FormCollection collection = new FormCollection();
-                        string tslCont = (string)MSCntlr.SAVE(collection, SRMEVE, "Upload");
-                        tslCont = tslCont.retStr().Split('~')[0];
-                        if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1")
-                        {
-                            ++excelrow;
-
-                        }// msg += "Success " + tslCont.Substring(1);
-                        else return Content(tslCont + " at " + msg + errorstat);
-                    }
-
-                }//outer
-
-            }//try
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, msg);
-                return Content(ex.Message + " at " + msg + errorstat);
-            }
-            return Content("Excel Uploaded Successfully !!<br/>" + errorstat);
         }
     }
 }
