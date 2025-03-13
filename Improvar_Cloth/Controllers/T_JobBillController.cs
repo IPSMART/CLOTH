@@ -2511,8 +2511,8 @@ namespace Improvar.Controllers
                                 selauto.Add(VE.T_JBILL.AUTONO);
                                 if (VE.MENU_PARA == "JB")
                                 {
-                                    selauto.Add(VE.T_JBILL.OTHAUTONO);
-                                    selauto.Add(VE.T_JBILL.OTHAUTONO1);
+                                    if (VE.T_JBILL.OTHAUTONO.retStr() != "") selauto.Add(VE.T_JBILL.OTHAUTONO);
+                                    if (VE.T_JBILL.OTHAUTONO1.retStr() != "") selauto.Add(VE.T_JBILL.OTHAUTONO1);
                                 }
                                 else
                                 {
@@ -2525,6 +2525,12 @@ namespace Improvar.Controllers
                                 }
                                 string sqlautono = "'" + string.Join("','", selauto) + "'";
 
+                                foreach (var v in selauto)
+                                {
+                                    T_CNTRL_HDR TCH = Cn.T_CONTROL_HDR(VE.T_JBILL.DOCCD, VE.T_JBILL.DOCDT, VE.T_JBILL.DOCNO, v, "", "", VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, VE.T_JBILL.SLCD, Convert.ToDouble(VE.T_JBILL.DNCNAMT), null, VE.Audit_REM);
+                                    DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
+                                    DB.SaveChanges();
+                                }
                                 DB.T_CNTRL_HDR.Where(x => selauto.Contains(x.AUTONO)).ToList().ForEach(x => { x.DTAG = "D"; });
                                 DB.T_JBILL.Where(x => selauto.Contains(x.AUTONO)).ToList().ForEach(x => { x.DTAG = "D"; });
                                 DB.T_JBILLDTL.Where(x => selauto.Contains(x.AUTONO)).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -2565,9 +2571,10 @@ namespace Improvar.Controllers
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                                 dbsql = Master_Help.finTblUpdt("t_vch_hdr", sqlautono, "D");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-                                dbsql = Master_Help.finTblUpdt("t_cntrl_hdr", sqlautono, "D");
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
+                                dbsql = Master_Help.finTblUpdt("t_cntrl_hdr", sqlautono, "D", "F", VE.Audit_REM);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                                
                                 ModelState.Clear();
                                 transaction.Commit();
                                 OraTrans.Commit();
