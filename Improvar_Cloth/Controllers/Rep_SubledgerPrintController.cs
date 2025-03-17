@@ -148,9 +148,9 @@ namespace Improvar.Controllers
                     if (FC.AllKeys.Contains("agslcdvalue")) agslcdvalue = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
 
                     query = "Select distinct a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO, b.agslcd, z.slnm agslnm, ";
-                    query += "a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT from  ";
+                    query += "a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,a.PARTYNM,nvl(a.AUTOREMINDEROFF,'N') AUTOREMINDEROFF,s.parentcd, s.parentnm,t.USR_ENTDT,a.TCSAPPL,a.TOT194Q from  ";
 
-                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF  ";
+                    query += "(Select distinct a.m_autono,a.SLCD,a.SLNM,a.FULLNAME,a.PARTYCD,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.STATE,a.SLAREA,a.PANNO,a.GSTNO,a.ADHAARNO,a.MSMENO,a.REGMOBILE,a.REGEMAILID,b.PARTYNM,nvl(a.AUTOREMINDEROFF,'N')AUTOREMINDEROFF,a.TCSAPPL,a.TOT194Q  ";
                     query += " from " + dbname + ".m_subleg a," + dbname + ".M_PARTYGRP b," + dbname + ".m_subleg_link c where a.PARTYCD=b.PARTYCD(+) and a.slcd=c.slcd(+)  ";
                     if (linkcd != "") query += " and c.linkcd in(" + linkcd + ") " + Environment.NewLine;
                     query += ") a , ";
@@ -198,12 +198,15 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "PANNO", "string", "c,14", "PANNO");
                         HC.GetPrintHeader(IR, "GSTNO", "string", "c,17", "GSTNO");
                         HC.GetPrintHeader(IR, "ADHAARNO", "string", "c,13", "ADHAARNO");
+                        HC.GetPrintHeader(IR, "MSMENO", "string", "c,13", "MSME No");
                         HC.GetPrintHeader(IR, "REGMOBILE", "string", "c,13", "Mobile");
                         HC.GetPrintHeader(IR, "REGEMAILID", "string", "c,27", "Email");
                         if (VE.Checkbox2 == true) HC.GetPrintHeader(IR, "AUTOREMINDEROFF", "string", "c,10", "Auto Send Email/Sms of reminder disable");
                         HC.GetPrintHeader(IR, "USR_ENTDT", "string", "c,27", "Entry Date");
                         HC.GetPrintHeader(IR, "AGSLCD", "string", "c,10", "Agent Code");
                         HC.GetPrintHeader(IR, "AGSLNM", "string", "c,20", "Agent Name");
+                        HC.GetPrintHeader(IR, "TCSAPPL", "string", "c,5", "TCS Applicable");
+                        HC.GetPrintHeader(IR, "TOT194Q", "string", "c,5", "Turnover Limit Cross For 194Q");
 
                         Int32 i = 0; Int32 maxR = 0, rNo = 0;
                         i = 0; maxR = tbl.Rows.Count - 1;
@@ -231,12 +234,15 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["PANNO"] = tbl.Rows[i]["PANNO"];
                                 IR.Rows[rNo]["GSTNO"] = tbl.Rows[i]["GSTNO"];
                                 IR.Rows[rNo]["ADHAARNO"] = tbl.Rows[i]["ADHAARNO"];
+                                IR.Rows[rNo]["MSMENO"] = tbl.Rows[i]["MSMENO"];
                                 IR.Rows[rNo]["REGMOBILE"] = tbl.Rows[i]["REGMOBILE"];
                                 IR.Rows[rNo]["REGEMAILID"] = tbl.Rows[i]["REGEMAILID"];
                                 if (VE.Checkbox2 == true) IR.Rows[rNo]["AUTOREMINDEROFF"] = tbl.Rows[i]["AUTOREMINDEROFF"].retStr() == "Y" ? "Yes" : "No";
                                 IR.Rows[rNo]["USR_ENTDT"] = tbl.Rows[i]["USR_ENTDT"];
                                 IR.Rows[rNo]["AGSLCD"] = tbl.Rows[i]["AGSLCD"];
                                 IR.Rows[rNo]["AGSLNM"] = tbl.Rows[i]["AGSLNM"];
+                                IR.Rows[rNo]["TCSAPPL"] = tbl.Rows[i]["TCSAPPL"].retStr() == "Y" ? "Yes" : "No";
+                                IR.Rows[rNo]["TOT194Q"] = tbl.Rows[i]["TOT194Q"].retStr() == "Y" ? "Yes" : "No";
                                 i = i + 1;
                                 if (i > maxR) break;
                             }
