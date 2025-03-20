@@ -494,9 +494,7 @@
                                             @Html.EditorFor(model => Model.M_SYSCNFG.WPPER, new { htmlAttributes = new { id = "WPPER", @class = "form-control", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 6 } })
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" style="width:auto;">
                                         <div class="editor-field" style="margin-top: 4px;">
                                             @Html.Label("", "RP %")
 
@@ -732,6 +730,14 @@
                                         </div>
                                     </div>
                                 </div>
+                            @if (Model.DefaultAction == "E")
+                            {
+                                <div class="row">
+                                    <p class="text-info">
+                                        * <b>if you change/update any value then you have to re-login package for updation</b>
+                                    </p>
+                                </div>
+                            }
                             </div>
                         <div class="col-lg-3">
                             <table style="border:1px solid;margin-top: 8px;">
