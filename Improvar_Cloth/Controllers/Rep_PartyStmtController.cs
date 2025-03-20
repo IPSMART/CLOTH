@@ -168,12 +168,12 @@ namespace Improvar.Controllers
                         sql += "b.itcd cd, nvl(b.styleno,b.itnm) nm, b.prodgrpcd snm, ";
                     }
                     sql += "b.stkdrcr,b.styleno, b.uomnm, b.decimals, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
-                    sql += "b.batchno,b.stktype,b.shade,b.baleno ";
+                    sql += "b.batchno,b.stktype,b.shade,b.baleno,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.district ";
                     if (VE.Checkbox8 == true && repon == "P" && reptype != "SS") sql += ",b.hsncode ";
                     sql += "from ";
                     sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, ";
                     sql += " a.prefno, a.prefdt, ";
-                    sql += "a.slcd, c.slnm,c.gstno,nvl(c.slarea,c.district) slarea,a.conslcd,f.slnm conslnm,c.shortnm ";
+                    sql += "a.slcd, c.slnm,c.gstno,nvl(c.slarea,c.district) slarea,a.conslcd,f.slnm conslnm,c.shortnm,c.add1,c.add2,c.add3,c.add4,c.add5,c.add6,c.add7,c.district ";
                     sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c," + scmf + ".m_subleg f ";
                     sql += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.conslcd=f.slcd(+) and ";
                     //a.itgrpcd=e.itgrpcd(+) and ";
@@ -301,6 +301,8 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
                     HC.GetPrintHeader(IR, "gstno", "string", "c,35", "GST No.");
                     HC.GetPrintHeader(IR, "slarea", "string", "c,35", "Area");
+                    HC.GetPrintHeader(IR, "city", "string", "c,15", "City;");
+                    HC.GetPrintHeader(IR, "add", "string", "c,35", "Address;");
                     HC.GetPrintHeader(IR, "cd", "string", "c,10", "Item Code");
                     HC.GetPrintHeader(IR, "nm", "string", "c,35", "Item Name");
                 }
@@ -384,6 +386,9 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slnm"] = tbl.Rows[i]["nm"].ToString();
                                     IR.Rows[rNo]["gstno"] = tbl.Rows[i]["gstno"].ToString();
                                     IR.Rows[rNo]["slarea"] = tbl.Rows[i]["slarea"].ToString();
+                                    IR.Rows[rNo]["city"] = tbl.Rows[i]["district"].ToString();
+                                    IR.Rows[rNo]["add"] = tbl.Rows[i]["add1"].ToString() + "," + tbl.Rows[i]["add2"].ToString() + "," + tbl.Rows[i]["add3"].ToString() + "," +
+                                         tbl.Rows[i]["add4"].ToString() + "," + tbl.Rows[i]["add5"].ToString() + "," + tbl.Rows[i]["add6"].ToString() + "," + tbl.Rows[i]["add7"].ToString();
                                 }
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i]["ocd"].ToString();
                                 IR.Rows[rNo]["nm"] = tbl.Rows[i]["onm"].ToString();
@@ -527,6 +532,8 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
                     HC.GetPrintHeader(IR, "gstno", "string", "c,35", "GST No.");
                     HC.GetPrintHeader(IR, "slarea", "string", "c,35", "Area");
+                    HC.GetPrintHeader(IR, "city", "string", "c,15", "City;");
+                    HC.GetPrintHeader(IR, "add", "string", "c,35", "Address;");
                     if (reptype == "S")
                     {
                         HC.GetPrintHeader(IR, "cd", "string", "c,10", "Item Code");
@@ -628,6 +635,9 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["nm"].ToString();
                                     IR.Rows[rNo]["gstno"] = tbl.Rows[i - 1]["gstno"].ToString();
                                     IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].ToString();
+                                    IR.Rows[rNo]["city"] = tbl.Rows[i - 1]["district"].ToString();
+                                    IR.Rows[rNo]["add"] = tbl.Rows[i - 1]["add1"].ToString() + "," + tbl.Rows[i - 1]["add2"].ToString() + "," + tbl.Rows[i - 1]["add3"].ToString() + "," +
+                                         tbl.Rows[i - 1]["add4"].ToString() + "," + tbl.Rows[i - 1]["add5"].ToString() + "," + tbl.Rows[i - 1]["add6"].ToString() + "," + tbl.Rows[i - 1]["add7"].ToString();
                                 }
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i - 1]["ocd"].ToString();
                                 IR.Rows[rNo]["nm"] = tbl.Rows[i - 1]["onm"].ToString();
@@ -693,6 +703,9 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["nm"].ToString();
                                 IR.Rows[rNo]["gstno"] = tbl.Rows[i - 1]["gstno"].ToString();
                                 IR.Rows[rNo]["slarea"] = tbl.Rows[i - 1]["slarea"].ToString();
+                                IR.Rows[rNo]["city"] = tbl.Rows[i - 1]["district"].ToString();
+                                IR.Rows[rNo]["add"] = tbl.Rows[i - 1]["add1"].ToString() + "," + tbl.Rows[i - 1]["add2"].ToString() + "," + tbl.Rows[i - 1]["add3"].ToString() + "," +
+                                     tbl.Rows[i - 1]["add4"].ToString() + "," + tbl.Rows[i - 1]["add5"].ToString() + "," + tbl.Rows[i - 1]["add6"].ToString() + "," + tbl.Rows[i - 1]["add7"].ToString();
                             }
                             else {
                                 IR.Rows[rNo]["cd"] = tbl.Rows[i - 1]["cd"].ToString();
