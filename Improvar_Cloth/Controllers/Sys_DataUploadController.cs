@@ -10,6 +10,7 @@ using System.Globalization;
 using Oracle.ManagedDataAccess.Client;
 using System.IO;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 //using NDbfReader;
 namespace Improvar.Controllers
 {
@@ -51,11 +52,57 @@ namespace Improvar.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
-            if (Request.Files.Count == 0) return Content("No File Selected");
-            HttpPostedFileBase file = Request.Files["UploadedFile"];
-            if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
-            string resp = ReadOpstockExcel(VE, file.InputStream);
-            return Content(resp);
+            if(Command == "Upload")
+            {
+                if (Request.Files.Count == 0) return Content("No File Selected");
+                HttpPostedFileBase file = Request.Files["UploadedFile"];
+                if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
+                string resp = ReadOpstockExcel(VE, file.InputStream);
+                return Content(resp);
+            }
+            else
+            {
+               string nm = "Opening Stock";
+             
+               // Excel Columns: DOCDT	PBLNO	SLNM	SLCD	ITGRPNM	FABITGRPNM	FABITNM	ITNM	PRODGRPCD	STYLENO	UOMCD
+               //BARNO	NOS	QNTY	RATE	AMT	GOCD	LRNO	LRDT	BALENO	COMMONUNIQBAR	PAGENO	PAGESLNO	WPRATE	RPRATE	
+               //MAKERATE	SHADE	COLRCD	SIZECD	PDESIGN	PCSCTG	HSNCODE	GSTPER	GSTABOVEPER
+
+               string Excel_Header = "DOCDT" + "|" + "PBLNO" + "|" + "SLNM" + "|" + "SLCD" + "|" + "ITGRPNM" + "|" + "FABITGRPNM"
+                           + "|" + "FABITNM" + "|" + "ITNM" + "|" + "PRODGRPCD" + "|" + "STYLENO" + "|" + "UOMCD" + "|" + "BARNO"
+                           + "|" + "NOS" + "|" + "QNTY" + "|" + "RATE" + "|" + "AMT" + "|" + "GOCD" + "|" + "LRNO" + "|" + "LRDT"
+                           + "|" + "BALENO" + "|" + "COMMONUNIQBAR" + "|" + "PAGENO" + "|" + "PAGESLNO" + "|" + "WPRATE" + "|" + "RPRATE"
+                           + "|" + "MAKERATE" + "|" + "SHADE" + "|" + "COLRCD" + "|" + "SIZECD" + "|" + "PDESIGN" + "|" + "PCSCTG"
+                           + "|" + "HSNCODE" + "|" + "GSTPER" + "|" + "GSTABOVEPER";
+             
+               ExcelPackage ExcelPkg = new ExcelPackage();
+               ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+             
+                using (ExcelRange Rng = wsSheet1.Cells["A1:AH1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    string[] Header = Excel_Header.Split('|');
+                    for (int i = 0; i < Header.Length; i++)
+                    {
+                        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                    }
+                }
+                wsSheet1.Cells[1, 1, 1, 34].AutoFitColumns();
+                wsSheet1.Column(1).Style.Numberformat.Format = "@";
+                wsSheet1.Column(2).Style.Numberformat.Format = "@";
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + nm.retRepname() + ".xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
+                return Content("Download Sucessfull");
+                }
+                        
         }
         public string ReadOpstockExcel(ReportViewinHtml VE, Stream stream)
         {
