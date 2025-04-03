@@ -1929,9 +1929,9 @@ function UpdateTaxPer() {
         }
         var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
         if (tax.length > 0) {
-            IGST = parseFloat(tax[0]).toFixed(2);
-            CGST = parseFloat(tax[1]).toFixed(2);
-            SGST = parseFloat(tax[2]).toFixed(2);
+            IGST = retFloat(parseFloat(tax[0]).toFixed(2));
+            CGST = retFloat(parseFloat(tax[1]).toFixed(2));
+            SGST = retFloat(parseFloat(tax[2]).toFixed(2));
         }
 
         if (IGST > IGST_PER) {

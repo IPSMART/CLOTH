@@ -47,6 +47,11 @@ namespace Improvar.Models
 
         [StringLength(4)]
         public string PARTCD { get; set; }
+        [StringLength(4)]
+        public string COLRCD { get; set; }
+
+        [StringLength(4)]
+        public string SIZECD { get; set; }
 
         [StringLength(8)]
         public string HSNCODE { get; set; }

@@ -1911,14 +1911,15 @@ namespace Improvar.Controllers
                 sql += "(case when h.docdt >= to_date('01/07/2021','dd/mm/yyyy') and nvl(s.einvappl,'N')='Y' and e.gstno is null then 'Y' else 'N' end)B2C, ";
                 //sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,a.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper,p.ackno,to_char(p.ackdt,'dd-mm-yyyy hh24:mi:ss') ackdt,d.mutslcd,q.slnm mutslnm,a.flagmtr,d.payterms,d.bltype,y.pdesign,t.itcd fabitcd,t.itnm fabitnm,e.district plsupply,u.slnm sagslnm,v.courcd,w.slnm cournm,  " + Environment.NewLine;
-                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,b.PREFNO,b.PREFdt,d.topay from " + Environment.NewLine;
+                sql += "x.nm,x.addr addr1,x.city addr2,decode(x.mobile, null, '', 'Ph. # '||x.mobile)addr3,''addr4,''addr5,''addr6,''addr7,''addr8,''addr9,''addr10,''addr11,''addr12,x.mobile,b.PREFNO,b.PREFdt,d.topay, " + Environment.NewLine;
+                sql += "a.partcd,pr.partnm,a.colrcd,cl.colrnm,a.sizecd,sz.sizenm from ";
 
                 //sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,o.pdesign, nvl(nvl(o.pdesign,o.ourdesign),d.styleno) styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " (select a.autono, '' addless,a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm,''pdesign, d.styleno, nvl(a.bluomcd,d.uomcd)uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  " + Environment.NewLine;
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " a.itrem, a.baleno, a.nos, decode( nvl(a.blqnty, 0),0,a.qnty,nvl(a.blqnty, 0)) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  " + Environment.NewLine;
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,  " + Environment.NewLine;
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.listprice,a.listdiscper  " + Environment.NewLine;
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.listprice,a.listdiscper,nvl(n.partcd,o.partcd)partcd,nvl(n.colrcd,o.colrcd)colrcd,nvl(n.sizecd,o.sizecd)sizecd  " + Environment.NewLine;
                 sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  " + Environment.NewLine;
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+) and  " + Environment.NewLine;
                 sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  " + Environment.NewLine;
@@ -1938,12 +1939,12 @@ namespace Improvar.Controllers
                 sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm,d.styleno, nvl(a.bluomcd,d.uomcd), nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  " + Environment.NewLine;
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
                 sql += " a.itrem, a.baleno, a.nos, decode( nvl(a.blqnty, 0),0,a.qnty,nvl(a.blqnty, 0)), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  " + Environment.NewLine;
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.listprice,a.listdiscper  " + Environment.NewLine;
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.listprice,a.listdiscper,nvl(n.partcd,o.partcd),nvl(n.colrcd,o.colrcd),nvl(n.sizecd,o.sizecd)  " + Environment.NewLine;
                 sql += " union all  ";
 
                 sql += " select a.autono,d.addless, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm,'' pdesign, '' styleno, '' uomcd, a.hsncode hsncode,  " + Environment.NewLine;
                 sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.amtrate rate, decode(d.addless,'L',a.amt*-1,a.amt)amt, '' agdocno, '' agdocdt, '' batchdtl,  " + Environment.NewLine;
-                sql += " a.igstper, decode(d.addless,'L',a.igstamt*-1,a.igstamt) igstamt, a.cgstper, decode(d.addless,'L',a.cgstamt*-1,a.cgstamt)cgstamt, a.sgstper, decode(d.addless,'L',a.sgstamt*-1,a.sgstamt) sgstamt, a.dutyper, decode(d.addless,'L',a.dutyamt*-1,a.dutyamt) dutyamt, a.cessper, decode(d.addless,'L',a.cessamt*-1,a.cessamt) cessamt,0 listprice,0 listdiscper  " + Environment.NewLine;
+                sql += " a.igstper, decode(d.addless,'L',a.igstamt*-1,a.igstamt) igstamt, a.cgstper, decode(d.addless,'L',a.cgstamt*-1,a.cgstamt)cgstamt, a.sgstper, decode(d.addless,'L',a.sgstamt*-1,a.sgstamt) sgstamt, a.dutyper, decode(d.addless,'L',a.dutyamt*-1,a.dutyamt) dutyamt, a.cessper, decode(d.addless,'L',a.cessamt*-1,a.cessamt) cessamt,0 listprice,0 listdiscper,''partcd,''colrcd,''sizecd  " + Environment.NewLine;
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  " + Environment.NewLine;
                 sql += " where a.autono = b.autono and a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  " + Environment.NewLine;
                 if (docnos.retStr() == "")
@@ -1982,13 +1983,16 @@ namespace Improvar.Controllers
 
                 sql += " " + Scm1 + ".t_txndtl z, " + Scm1 + ".t_txn b, " + Scm1 + ".t_txntrans c, " + Scm1 + ".t_txnoth d, " + Scmf + ".m_subleg e, " + Scmf + ".m_subleg f, " + Scmf + ".m_subleg g,  " + Environment.NewLine;
                 //sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w  ";
-                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w, " + Scm1 + ".T_TXNMEMO x  " + Environment.NewLine;
+                sql += " " + Scm1 + ".t_cntrl_hdr h, " + Scmf + ".m_uom i, " + Scm1 + ".m_group j, " + Scmf + ".m_godown k, " + Scm1 + ".m_sitem l, " + Scmf + ".m_subleg m," + Scmf + ".t_txneinv p, " + Scmf + ".m_subleg q, " + Scm1 + ".m_sitem t," + Scmf + ".m_subleg u," + Scm1 + ".m_subleg_sddtl v," + Scmf + ".m_subleg w, " + Scm1 + ".T_TXNMEMO x,  " + Environment.NewLine;
+                sql += "" + Scm1 + ".M_SIZE sz, " + Scm1 + ".M_COLOR cl," + Scm1 + ".M_PARTS pr ";
                 sql += " where a.autono = z.autono(+) and a.slno = z.slno(+) and a.autono = b.autono and a.autono = c.autono(+) and a.autono = d.autono(+) and  " + Environment.NewLine;
                 sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and  " + Environment.NewLine;
                 sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+) and l.fabitcd=t.itcd(+) and b.slcd=v.slcd(+)  and (v.compcd='" + COM + "' or v.compcd is null) and (v.loccd='" + LOC + "'  or v.loccd is null)  and v.courcd=w.slcd(+) and  " + Environment.NewLine;
                 //sql += "a.autono=r.autono(+) and a.autono=s.autono(+) and a.autono=p.autono(+) and d.mutslcd=q.slcd(+) and d.sagslcd=u.slcd(+) and ";
                 sql += "a.autono=r.autono(+) and a.autono=s.autono(+) and a.autono=p.autono(+) and d.mutslcd=q.slcd(+) and d.sagslcd=u.slcd(+) and a.autono=x.autono(+) and a.autono = y.autono(+) and a.slno = y.slno(+) and " + Environment.NewLine;
                 if (slcd.retStr() != "") sql += " b.slcd in (" + slcd + ") and " + Environment.NewLine;
+                sql += "a.SIZECD = sz.SIZECD(+) and a.COLRCD = cl.COLRCD(+) and a.PARTCD=pr.PARTCD(+) and ";
+
                 sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c  " + Environment.NewLine;
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and c.autono is null and b.doccd = '" + doccd + "' )   " + Environment.NewLine;
                 if (VE.Checkbox11 == true && printemail == "Print")
@@ -2263,6 +2267,12 @@ namespace Improvar.Controllers
                 IR.Columns.Add("PREFNO", typeof(string), "");
                 IR.Columns.Add("PREFdt", typeof(string), "");
                 IR.Columns.Add("topaytrans", typeof(string));
+                IR.Columns.Add("partcd", typeof(string), "");
+                IR.Columns.Add("partnm", typeof(string), "");
+                IR.Columns.Add("colrcd", typeof(string), "");
+                IR.Columns.Add("colrnm", typeof(string), "");
+                IR.Columns.Add("sizecd", typeof(string), "");
+                IR.Columns.Add("sizenm", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2896,6 +2906,14 @@ namespace Improvar.Controllers
                                 dr1["txnslno"] = tbl.Rows[i]["slno"].retInt();
                                 dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
                                 dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
+                                dr1["partcd"] = tbl.Rows[i]["partcd"].ToString();
+                                dr1["partnm"] = tbl.Rows[i]["partnm"].ToString();
+                                dr1["colrcd"] = tbl.Rows[i]["colrcd"].ToString();
+                                dr1["colrnm"] = tbl.Rows[i]["colrnm"].ToString();
+                                dr1["sizecd"] = tbl.Rows[i]["sizecd"].ToString();
+                                dr1["sizenm"] = tbl.Rows[i]["sizenm"].ToString();
+
+
                                 dr1["pdesign"] = tbl.Rows[i]["pdesign"].ToString();
                                 dr1["itgrpnm"] = tbl.Rows[i]["itgrpnm"].ToString();
                                 dr1["fabitcd"] = tbl.Rows[i]["fabitcd"].ToString();

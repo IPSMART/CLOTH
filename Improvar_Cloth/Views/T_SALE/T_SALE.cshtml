@@ -5,12 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Partycaption = "Party";
 
-    string COMMONUNIQBAR = "", MNTNCOLOR = "", MNTNWPRPPER = "";
+    string COMMONUNIQBAR = "", MNTNCOLOR = "", MNTNWPRPPER = "", MNTNPART="", MNTNSIZE="";
     if (Model != null && Model.M_SYSCNFG != null)
     {
         COMMONUNIQBAR = Model.M_SYSCNFG.COMMONUNIQBAR;
         MNTNCOLOR = Model.M_SYSCNFG.MNTNCOLOR;
         MNTNWPRPPER = Model.M_SYSCNFG.MNTNWPRPPER;
+        MNTNPART = Model.M_SYSCNFG.MNTNPART;
+        MNTNSIZE = Model.M_SYSCNFG.MNTNSIZE;
     }
     int doccdcnt = 0;
     if (Model != null && Model.DocumentType != null)
@@ -134,12 +136,36 @@
                 $('.barfirstrow input').removeAttr("onkeydown");
                 $('.barfirstrow input').attr('TabIndex', '-1');
             }
-            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "ISS" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP" && '@Model.MENU_PARA' != "SBPOS") {
+            if (('@Model.MENU_PARA' == "SBPCK" || '@Model.MENU_PARA' == "SB" || '@Model.MENU_PARA' == "SBDIR") && '@CommVar.ModuleCode()' == "SALESSAREE") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
                 if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").show();
                     $(".colrcddiv").hide();
+                }
+                if ('@MNTNPART' == "Y") {
+                    $(".partcdhlpdiv").show();
+                    $(".partcddiv").hide();
+                }
+                if ('@MNTNCOLOR' == "Y") {
+                    $(".sizecdhlpdiv").show();
+                    $(".sizecddiv").hide();
+                }
+            }
+          else  if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "ISS" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP" && '@Model.MENU_PARA' != "SBPOS") {
+                $(".fabitcdhlpdiv").show();
+                $(".fabitcddiv").hide();
+                if ('@MNTNCOLOR' == "Y") {
+                    $(".colrcdhlpdiv").show();
+                    $(".colrcddiv").hide();
+                }
+                if ('@MNTNPART' == "Y") {
+                    $(".partcdhlpdiv").show();
+                    $(".partcddiv").hide();
+                }
+                if ('@MNTNCOLOR' == "Y") {
+                    $(".sizecdhlpdiv").show();
+                    $(".sizecddiv").hide();
                 }
             }
             else {
@@ -148,6 +174,14 @@
                 if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").hide();
                     $(".colrcddiv").show();
+                }
+                if ('@MNTNPART' == "Y") {
+                    $(".partcdhlpdiv").hide();
+                    $(".partcddiv").show();
+                }
+                if ('@MNTNSIZE' == "Y") {
+                    $(".sizecdhlpdiv").hide();
+                    $(".sizecddiv").show();
                 }
             }
 
@@ -211,12 +245,36 @@
                 $('.barfirstrow input').removeAttr("onkeydown");
                 $('.barfirstrow input').attr('TabIndex', '-1');
             }
-            if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "ISS" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP" && '@Model.MENU_PARA' != "SBPOS") {
+            if (('@Model.MENU_PARA' == "SBPCK" || '@Model.MENU_PARA' == "SB" || '@Model.MENU_PARA' == "SBDIR") && '@CommVar.ModuleCode()' == "SALESSAREE") {
                 $(".fabitcdhlpdiv").show();
                 $(".fabitcddiv").hide();
                 if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").show();
                     $(".colrcddiv").hide();
+                }
+                if ('@MNTNPART' == "Y") {
+                    $(".partcdhlpdiv").show();
+                    $(".partcddiv").hide();
+                }
+                if ('@MNTNSIZE' == "Y") {
+                    $(".sizecdhlpdiv").show();
+                    $(".sizecddiv").hide();
+                }
+            }
+          else  if ('@Model.MENU_PARA' != "SBPCK" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "SBDIR" && '@Model.MENU_PARA' != "ISS" && '@Model.MENU_PARA' != "SR" && '@Model.MENU_PARA' != "SBEXP" && '@Model.MENU_PARA' != "SBPOS") {
+                $(".fabitcdhlpdiv").show();
+                $(".fabitcddiv").hide();
+                if ('@MNTNCOLOR' == "Y") {
+                    $(".colrcdhlpdiv").show();
+                    $(".colrcddiv").hide();
+                }
+                if ('@MNTNPART' == "Y") {
+                    $(".partcdhlpdiv").show();
+                    $(".partcddiv").hide();
+                }
+                if ('@MNTNSIZE' == "Y") {
+                    $(".sizecdhlpdiv").show();
+                    $(".sizecddiv").hide();
                 }
             }
             else {
@@ -225,6 +283,15 @@
                 if ('@MNTNCOLOR' == "Y") {
                     $(".colrcdhlpdiv").hide();
                     $(".colrcddiv").show();
+                }
+
+                if ('@MNTNPART' == "Y") {
+                    $(".partcdhlpdiv").hide();
+                    $(".partcddiv").show();
+                }
+                if ('@MNTNSIZE' == "Y") {
+                    $(".sizecdhlpdiv").hide();
+                    $(".sizecddiv").show();
                 }
             }
         }
@@ -2183,10 +2250,21 @@
                                                 </div>
                                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                                 {
-                                                    <div class="barfirstrow col-md-1">
+                                                    <div class="partcdhlpdiv col-md-1">
                                                         <div class="editor-field">
-                                                            @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE');", @placeholder = "Part Code", maxlength = 4, @title = "Part Code" } })
-                                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')" />
+                                                            @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCDHLP", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCDHLP','PARTCDHLP=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE/PARTCD=PARTCD=1')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCDHLP','PARTCDHLP=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE/PARTCD=PARTCD=1');", @placeholder = "Part Code", maxlength = 4, @title = "Part Code" } })
+                                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCDHLP','PARTCDHLP=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE/PARTCD=PARTCD=1')" />
+                                                            @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
+                                                            @Html.HiddenFor(model => model.PRTBARCODE, new { id = "PRTBARCODE" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="partcddiv col-md-1">
+                                                        <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                            <span class="has-float-label">
+                                                                @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control", id = "PARTCD", @title = "Part Code", @placeholder = "Part Code", @readonly = "readonly", @TabIndex = -1 } })
+                                                                <label for="PARTCD" style="font-size: 87%;color: darkgreen;">Part Code</label>
+                                                            </span>
                                                             @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
                                                             @Html.HiddenFor(model => model.PRTBARCODE, new { id = "PRTBARCODE" })
                                                         </div>
@@ -2220,10 +2298,20 @@
                                                 }
                                                 @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                                 {
-                                                    <div class="barfirstrow col-md-1">
+                                                    <div class="sizecdhlpdiv col-md-1">
                                                         <div class="editor-field">
-                                                            @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE');", @placeholder = "Size Code", maxlength = 4, @title = "Size Code" } })
-                                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')" />
+                                                            @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECDHLP", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECDHLP','SIZECDHLP=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE/SIZECD=SIZECD=1')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECDHLP','SIZECDHLP=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE/SIZECD=SIZECD=1');", @placeholder = "Size Code", maxlength = 4, @title = "Size Code" } })
+                                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECDHLP','SIZECDHLP=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE/SIZECD=SIZECD=1')" />
+                                                            @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
+                                                            @Html.HiddenFor(model => model.SZBARCODE, new { id = "SZBARCODE" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="sizecddiv col-md-1">
+                                                        <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                            <span class="has-float-label">
+                                                                @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", @title = "Size Code", @placeholder = "Size Code", @readonly = "readonly", @TabIndex = -1 } })
+                                                                <label for="SIZECD" style="font-size: 87%;color: darkgreen;">Size Code</label>
+                                                            </span>
                                                             @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
                                                             @Html.HiddenFor(model => model.SZBARCODE, new { id = "SZBARCODE" })
                                                         </div>

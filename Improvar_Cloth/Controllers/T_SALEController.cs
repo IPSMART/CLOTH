@@ -712,6 +712,10 @@ namespace Improvar.Controllers
                         VE.LINKDOCNO = (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
                     }
                 }
+                if (VE.MENU_PARA == "SB" && loadOrder != "N")
+                {
+                    VE.M_SLIP_NO = TCH.DOCONLYNO;
+                }
                 string panno = "";
                 if (TXN.SLCD.retStr() != "")
                 {
@@ -803,20 +807,30 @@ namespace Improvar.Controllers
 
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
-                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
-                str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
+                str1 += "select a.SLNO,a.TXNSLNO,a.ITGRPCD,a.ITGRPNM,a.BARGENTYPE,a.MTRLJOBCD,a.MTRLJOBNM,a.MTBARCODE,a.ITCD,a.ITNM,a.UOMCD,a.STYLENO,a.PARTCD,p.PARTNM, ";
+                str1 += "p.PRTBARCODE,a.STKTYPE,a.STKNAME,a.BARNO,a.COLRCD,m.COLRNM,m.CLRBARCODE,a.SIZECD,l.SIZENM,l.SZBARCODE,a.SHADE,a.QNTY,a.NOS,a.RATE,a.DISCRATE, ";
+                str1 += "a.DISCTYPE,a.TDDISCRATE,a.TDDISCTYPE,a.SCMDISCTYPE,a.SCMDISCRATE,a.HSNCODE,a.BALENO,a.PDESIGN,a.OURDESIGN,a.FLAGMTR,a.LOCABIN,a.BALEYR ";
+                str1 += ",a.SALGLCD,a.PURGLCD,a.SALRETGLCD,a.PURRETGLCD,a.WPRATE,a.RPRATE,a.ITREM,a.ORDAUTONO,a.ORDSLNO,a.ORDDOCNO,a.ORDDOCDT,a.RPPRICEGEN, ";
+                str1 += "a.WPPRICEGEN,a.LISTPRICE,a.LISTDISCPER,a.CUTLENGTH,a.NEGSTOCK ";
+                str1 += ",a.AGDOCNO,a.AGDOCDT,a.PAGENO,a.PAGESLNO,a.PCSTYPE,a.glcd,a.BLUOMCD,a.COMMONUNIQBAR,a.FABITCD,a.FABITNM,a.WPPER,a.RPPER,a.RECPROGSLNO,a.BLQNTY, ";
+                str1 += "a.CONVQTYPUNIT,a.FREESTK from(";
+
+                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,nvl(i.PARTCD,j.PARTCD)PARTCD, ";
+                str1 += "i.STKTYPE,q.STKNAME,i.BARNO,nvl(i.COLRCD,j.COLRCD)COLRCD,nvl(i.SIZECD,j.SIZECD)SIZECD,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
                 str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
-                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,i.BLQNTY,k.CONVQTYPUNIT,nvl(s.FREESTK,'N')FREESTK ";
-                str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
+                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd,s.BLUOMCD,j.COMMONUNIQBAR,j.FABITCD,t.ITNM FABITNM,n.WPPER,n.RPPER,i.RECPROGSLNO,i.BLQNTY, ";
+                str1 += "k.CONVQTYPUNIT,nvl(s.FREESTK,'N')FREESTK ";
+                str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, ";
+                str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "," + Scm + ".T_TXNDTL s, " + Scm + ".M_SITEM t ";
-                str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) ";
+                str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+)  and k.ITGRPCD=n.ITGRPCD(+) ";
+                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+)  and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) and j.fabitcd=t.itcd(+) ";
                 str1 += "and i.autono=s.autono and i.txnslno=s.slno ";
-                str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
-                str1 += "order by i.SLNO ";
+                str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ) a, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m," + Scm + ".M_PARTS p ";
+                str1 += "where   a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and a.PARTCD=p.PARTCD(+) ";
+                str1 += "order by a.SLNO ";
                 DataTable tbl = masterHelp.SQLquery(str1);
 
                 VE.TBATCHDTL = (from DataRow dr in tbl.Rows
@@ -2114,7 +2128,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         var stock_data = salesfunc.GetStock(DOCDT, GOCD, BARNO, "", MTRLJOBCD, AUTONO, "", barnoOrStyle, PRCCD, TAXGRPCD, "", "", true, true, "", "", false, false, exactbarno, "", true);
-                        if (stock_data != null)
+                        if (stock_data != null && stock_data.Rows.Count>0)
                         {
                             string grppricegenstr = "^BALQNTY=^" + str.retCompValue("BALQNTY") + Cn.GCS();
                             string syspricegenstr = "^BALQNTY=^" + stock_data.Rows[0]["balqnty"] + Cn.GCS();
@@ -6045,6 +6059,8 @@ namespace Improvar.Controllers
                                 TBATCHDTL.BARNO = barno;
                                 TBATCHDTL.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
                                 TBATCHDTL.PARTCD = VE.TBATCHDTL[i].PARTCD;
+                                TBATCHDTL.COLRCD = VE.TBATCHDTL[i].COLRCD;
+                                TBATCHDTL.SIZECD = VE.TBATCHDTL[i].SIZECD;
                                 TBATCHDTL.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
                                 TBATCHDTL.STKDRCR = stkdrcr;
                                 TBATCHDTL.NOS = (VE.TBATCHDTL[i].UOM == "MTR" && VE.TBATCHDTL[i].NOS.retDbl() == 0) ? 1 : VE.TBATCHDTL[i].NOS; /*VE.TBATCHDTL[i].NOS;*/
@@ -6432,7 +6448,7 @@ namespace Improvar.Controllers
                         //    strbldt = TTXN.PREFDT.ToString();
                         //}
                         //else 
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR" )
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PR")
                         {
                             if (TTXN.PREFNO.retStr() != "")
                             {

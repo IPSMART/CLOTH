@@ -205,6 +205,8 @@ function FillBarcodeArea(str, Table, i) {
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
+    var MNTNPART = $("#MNTNPART").val();
+    var MNTNSIZE = $("#MNTNSIZE").val();
     var MNTNSHADE = $("#MNTNSHADE").val();
     var SYSCNFGCOMMONUNIQBAR = $("#SYSCNFGCOMMONUNIQBAR").val();
     if (DefaultAction == "V") return true;
@@ -241,6 +243,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#FABITNMHLP").val(returncolvalue(str, "FABITNM"));
         //$("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
         $("#PARTCD").val(returncolvalue(str, "PARTCD"));
+        $("#PARTCDHLP").val(returncolvalue(str, "PARTCD"));
         $("#PARTNM").val(returncolvalue(str, "PARTNM"));
         $("#PRTBARCODE").val(returncolvalue(str, "PRTBARCODE"));
         $("#COLRCD").val(returncolvalue(str, "COLRCD"));
@@ -248,6 +251,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#COLRNM").val(returncolvalue(str, "COLRNM"));
         $("#CLRBARCODE").val(returncolvalue(str, "CLRBARCODE"));
         $("#SIZECD").val(returncolvalue(str, "SIZECD"));
+        $("#SIZECDHLP").val(returncolvalue(str, "SIZECD"));
         $("#SIZENM").val(returncolvalue(str, "SIZENM"));
         $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
         $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
@@ -414,12 +418,15 @@ function FillBarcodeArea(str, Table, i) {
         $("#FABITNMHLP").val($(FieldidStarting + "FABITNM_" + i).val());
         $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
         $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
+        $("#PARTCDHLP").val($(FieldidStarting + "PARTCD_" + i).val());
+        $("#PARTNM").val($(FieldidStarting + "PARTNM_" + i).val());
         $("#PRTBARCODE").val($(FieldidStarting + "PRTBARCODE_" + i).val());
         $("#COLRCD").val($(FieldidStarting + "COLRCD_" + i).val());
         $("#COLRCDHLP").val($(FieldidStarting + "COLRCD_" + i).val());
         $("#COLRNM").val($(FieldidStarting + "COLRNM_" + i).val());
         $("#CLRBARCODE").val($(FieldidStarting + "CLRBARCODE_" + i).val());
         $("#SIZECD").val($(FieldidStarting + "SIZECD_" + i).val());
+        $("#SIZECDHLP").val($(FieldidStarting + "SIZECD_" + i).val());
         $("#SIZENM").val($(FieldidStarting + "SIZENM_" + i).val());
         $("#SZBARCODE").val($(FieldidStarting + "SZBARCODE_" + i).val());
         $("#FLAGMTR").val($(FieldidStarting + "FLAGMTR_" + i).val());
@@ -545,12 +552,36 @@ function FillBarcodeArea(str, Table, i) {
             RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
         }
     }
-    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "ISS" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && MENU_PARA != "SBPOS" && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#BARGENTYPETEMP").val() == "E"))) {
+    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR") && ModuleCode == "SALESSAREE") {
         $(".fabitcdhlpdiv").show();
         $(".fabitcddiv").hide();
         if (MNTNCOLOR == "Y") {
             $(".colrcdhlpdiv").show();
             $(".colrcddiv").hide();
+        }
+        if (MNTNPART == "Y") {
+            $(".partcdhlpdiv").show();
+            $(".partcddiv").hide();
+        }
+        if (MNTNSIZE == "Y") {
+            $(".sizecdhlpdiv").show();
+            $(".sizecddiv").hide();
+        }
+    }
+  else  if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "ISS" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && MENU_PARA != "SBPOS" && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#BARGENTYPETEMP").val() == "E"))) {
+        $(".fabitcdhlpdiv").show();
+        $(".fabitcddiv").hide();
+        if (MNTNCOLOR == "Y") {
+            $(".colrcdhlpdiv").show();
+            $(".colrcddiv").hide();
+        }
+        if (MNTNPART == "Y") {
+            $(".partcdhlpdiv").show();
+            $(".partcddiv").hide();
+        }
+        if (MNTNSIZE == "Y") {
+            $(".sizecdhlpdiv").show();
+            $(".sizecddiv").hide();
         }
     }
     else {
@@ -559,6 +590,14 @@ function FillBarcodeArea(str, Table, i) {
         if (MNTNCOLOR == "Y") {
             $(".colrcdhlpdiv").hide();
             $(".colrcddiv").show();
+        }
+        if (MNTNPART == "Y") {
+            $(".partcdhlpdiv").hide();
+            $(".partcddiv").show();
+        }
+        if (MNTNSIZE == "Y") {
+            $(".sizecdhlpdiv").hide();
+            $(".sizecddiv").show();
         }
     }
 
@@ -889,11 +928,15 @@ function ClearBarcodeArea(TAG) {
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
+    var ModuleCode = $("#ModuleCode").val();
+
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var MNTNDISC2 = $("#MNTNDISC2").val();
     var MNTNDISC1 = $("#MNTNDISC1").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP,BLUOMCD,BLQNTY,CONVQTYPUNIT,PCSTYPE,BALEYR");
+    var MNTNPART = $("#MNTNPART").val();
+    var MNTNSIZE = $("#MNTNSIZE").val();
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE,COMMONUNIQBAR,FABITCD,FABITNM,FABITCDHLP,FABITNMHLP,FABITNMHLP,COLRCDHLP,PARTCDHLP,SIZECDHLP,BLUOMCD,BLQNTY,CONVQTYPUNIT,PCSTYPE,BALEYR");
     if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN,WPPER,RPPER");
     }
@@ -931,12 +974,36 @@ function ClearBarcodeArea(TAG) {
     if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && MENU_PARA != "PJRC") {
         ClearAllTextBoxes("MTRLJOBCD,MTRLJOBNM,MTBARCODE");
     }
-    if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "ISS" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && MENU_PARA != "SBPOS") {
+    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR") && ModuleCode == "SALESSAREE") {
         $(".fabitcdhlpdiv").show();
         $(".fabitcddiv").hide();
         if (MNTNCOLOR == "Y") {
             $(".colrcdhlpdiv").show();
             $(".colrcddiv").hide();
+        }
+        if (MNTNPART == "Y") {
+            $(".partcdhlpdiv").show();
+            $(".partcddiv").hide();
+        }
+        if (MNTNSIZE == "Y") {
+            $(".sizecdhlpdiv").show();
+            $(".sizecddiv").hide();
+        }
+    }
+   else if (MENU_PARA != "SBPCK" && MENU_PARA != "SB" && MENU_PARA != "SBDIR" && MENU_PARA != "ISS" && MENU_PARA != "SR" && MENU_PARA != "SBEXP" && MENU_PARA != "SBPOS") {
+        $(".fabitcdhlpdiv").show();
+        $(".fabitcddiv").hide();
+        if (MNTNCOLOR == "Y") {
+            $(".colrcdhlpdiv").show();
+            $(".colrcddiv").hide();
+        }
+        if (MNTNPART == "Y") {
+            $(".partcdhlpdiv").show();
+            $(".partcddiv").hide();
+        }
+        if (MNTNSIZE == "Y") {
+            $(".sizecdhlpdiv").show();
+            $(".sizecddiv").hide();
         }
     }
     else {
@@ -945,6 +1012,14 @@ function ClearBarcodeArea(TAG) {
         if (MNTNCOLOR == "Y") {
             $(".colrcdhlpdiv").hide();
             $(".colrcddiv").show();
+        }
+        if (MNTNPART == "Y") {
+            $(".partcdhlpdiv").hide();
+            $(".partcddiv").show();
+        }
+        if (MNTNSIZE == "Y") {
+            $(".sizecdhlpdiv").hide();
+            $(".sizecddiv").show();
         }
     }
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "ISS" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI" || MENU_PARA == "SBPOS") {
@@ -1666,9 +1741,9 @@ function UpdateTaxPer() {
             }
             var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
             if (tax.length > 0) {
-                IGST = parseFloat(tax[0]).toFixed(2);
-                CGST = parseFloat(tax[1]).toFixed(2);
-                SGST = parseFloat(tax[2]).toFixed(2);
+                IGST = retFloat(parseFloat(tax[0]).toFixed(2));
+                CGST = retFloat(parseFloat(tax[1]).toFixed(2));
+                SGST = retFloat(parseFloat(tax[2]).toFixed(2));
             }
 
             if (IGST > IGST_PER) {
@@ -3803,12 +3878,15 @@ function FillOrderToBarcode() {
             $("#ITSTYLE").val($("#Ord_ITSTYLE_" + i).val());
             $("#COLRNM").val($("#Ord_COLRNM_" + i).val());
             $("#SIZECD").val($("#Ord_SIZECD_" + i).val());
+            $("#SIZECDHLP").val($("#Ord_SIZECD_" + i).val());
             $("#ITCD").val($("#Ord_ITCD_" + i).val());
             $("#COLRCD").val($("#Ord_COLRCD_" + i).val());
+            $("#COLRCDHLP").val($("#Ord_COLRCD_" + i).val());
             $("#PDESIGN").val($("#Ord_PDESIGN_" + i).val());
             $("#RATE").val($("#Ord_RATE_" + i).val());
             $("#ITGRPCD").val($("#Ord_ITGRPCD_" + i).val());
             $("#PARTCD").val($("#Ord_PARTCD_" + i).val());
+            $("#PARTCDHLP").val($("#Ord_PARTCD_" + i).val());
             $("#PARTNM").val($("#Ord_PARTNM_" + i).val());
             $("#PRTBARCODE").val($("#Ord_PRTBARCODE_" + i).val());
             $("#CLRBARCODE").val($("#Ord_CLRBARCODE_" + i).val());

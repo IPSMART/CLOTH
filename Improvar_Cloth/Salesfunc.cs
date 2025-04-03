@@ -926,7 +926,7 @@ namespace Improvar
             {
                 barno = barno.ToUpper();
             }
-            bool BatchExist = GetBatchExist();
+            bool BatchExist = GetBatchExist(scm);
 
             #region Generate Stock Table
             DataTable rsstk = new DataTable();
@@ -3173,7 +3173,6 @@ namespace Improvar
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             var MSYSCNFG = M_SYSCNFG(tdt.retDateStr());
-            bool BatchExist = GetBatchExist();
 
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string sql = "", sqlc = "";
@@ -3184,6 +3183,8 @@ namespace Improvar
             {
                 FinStartDate = Convert.ToDateTime(FinStartDate.retDateStr().Substring(0, 6) + (Convert.ToDecimal(CommVar.YearCode(UNQSNO).retStr()) - 1).ToString());
             }
+            bool BatchExist = GetBatchExist(scm);
+
             DataTable rsitem = new DataTable();
             DataTable rsIn = new DataTable();
             DataTable rsOut = new DataTable();
@@ -3984,9 +3985,12 @@ namespace Improvar
             return tbl;
         }
 
-        public bool GetBatchExist()
+        public bool GetBatchExist(string curschema = "")
         {
-            string sql = "select autono from " + CommVar.SaleSchema(UNQSNO) + ".t_batchdtl ";
+            string scm = CommVar.SaleSchema(UNQSNO);
+            if (curschema != "") scm = curschema;
+
+            string sql = "select autono from " + scm + ".t_batchdtl ";
             DataTable dt = SQLquery(sql);
             if (dt != null && dt.Rows.Count > 0)
             {
