@@ -746,6 +746,12 @@
       <DependentUpon>Order.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\PrintBarcode_DDYA.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintBarcode_DDYA.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\PrintBarcode_DIWH_Old.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1724,6 +1730,10 @@
     <Content Include="Report\CashMemo_Rops.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CashMemo_Rops.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\PrintBarcode_DDYA.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PrintBarcode_DDYA.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_DIWH_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
