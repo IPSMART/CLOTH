@@ -627,6 +627,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("incl_disc", typeof(double), "");
                 IR.Columns.Add("barno", typeof(string), "");
                 IR.Columns.Add("tchdocrem", typeof(string), "");
+                IR.Columns.Add("tdiscamt", typeof(double), "");
+
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -698,7 +700,7 @@ namespace Improvar.Controllers
                         i = istore;
                         lslno = 0;
                         auto1 = tbl.Rows[i]["autono"].ToString();
-                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0; double tincldisc = 0;
+                        double dbasamt = 0; double ddisc1 = 0; double ddisc2 = 0; double dtxblval = 0; double tincldisc = 0; double tdiscamt = 0;
                         double dcgstamt = 0; double dsgstamt = 0; double dnetamt = 0; double dnos = 0; double dqnty = 0;
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
@@ -1472,6 +1474,8 @@ namespace Improvar.Controllers
                                 {
                                     dr1["incl_disc"] = (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
                                 }
+                                dr1["tdiscamt"] = (tbl.Rows[i]["tddiscamt"]).retDbl() + (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["scmdiscamt"]).retDbl();
+
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
                                 dqnty = dqnty + (dr1["qnty"].ToString()).retDbl();
@@ -1483,6 +1487,7 @@ namespace Improvar.Controllers
                                 dcgstamt = dcgstamt + (dr1["cgstamt"].ToString()).retDbl();
                                 dsgstamt = dsgstamt + (dr1["sgstamt"].ToString()).retDbl();
                                 dnetamt = dnetamt + (dr1["netamt"].ToString()).retDbl();
+                                tdiscamt += (dr1["tdiscamt"].ToString()).retDbl();
                             }
                             IR.Rows.Add(dr1);
 
@@ -1524,6 +1529,7 @@ namespace Improvar.Controllers
                                             dr1["amt"] = dbasamt;
                                             dr1["tddiscamt"] = ddisc1;
                                             dr1["discamt"] = ddisc2;
+                                            dr1["tdiscamt"] = tdiscamt;
                                             dr1["txblval"] = dtxblval.ToINRFormat();
                                             dr1["cgstamt"] = dcgstamt;
                                             dr1["sgstamt"] = dsgstamt;
@@ -1563,6 +1569,7 @@ namespace Improvar.Controllers
                                         dr1["amt"] = dbasamt;
                                         dr1["tddiscamt"] = ddisc1;
                                         dr1["discamt"] = ddisc2;
+                                        dr1["tdiscamt"] = tdiscamt;
                                         dr1["txblval"] = dtxblval.ToINRFormat();
                                         dr1["cgstamt"] = dcgstamt;
                                         dr1["sgstamt"] = dsgstamt;
@@ -1595,6 +1602,7 @@ namespace Improvar.Controllers
                                     dr1["amt"] = dbasamt;
                                     dr1["tddiscamt"] = ddisc1;
                                     dr1["discamt"] = ddisc2;
+                                    dr1["tdiscamt"] = tdiscamt;
                                     dr1["txblval"] = dtxblval.ToINRFormat();
                                     dr1["cgstamt"] = dcgstamt;
                                     dr1["sgstamt"] = dsgstamt;
@@ -5049,7 +5057,7 @@ namespace Improvar.Controllers
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["topay"] = VE.TEXTBOX11; ;
 
-                    if(VE.Checkbox12==true)
+                    if (VE.Checkbox12 == true)
                     {
                         IR.Rows[rNo]["topaytrans"] = tblinv.Rows[i]["topay"];
                     }
