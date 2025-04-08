@@ -52,7 +52,7 @@ namespace Improvar.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
-            if(Command == "Upload")
+            if (Command == "Upload")
             {
                 if (Request.Files.Count == 0) return Content("No File Selected");
                 HttpPostedFileBase file = Request.Files["UploadedFile"];
@@ -62,23 +62,23 @@ namespace Improvar.Controllers
             }
             else
             {
-               string nm = "Opening Stock";
-             
-               // Excel Columns: DOCDT	PBLNO	SLNM	SLCD	ITGRPNM	FABITGRPNM	FABITNM	ITNM	PRODGRPCD	STYLENO	UOMCD
-               //BARNO	NOS	QNTY	RATE	AMT	GOCD	LRNO	LRDT	BALENO	COMMONUNIQBAR	PAGENO	PAGESLNO	WPRATE	RPRATE	
-               //MAKERATE	SHADE	COLRCD	SIZECD	PDESIGN	PCSCTG	HSNCODE	GSTPER	GSTABOVEPER
+                string nm = "Opening Stock";
 
-               string Excel_Header = "DOCDT" + "|" + "PBLNO" + "|" + "SLNM" + "|" + "SLCD" + "|" + "ITGRPNM" + "|" + "FABITGRPNM"
-                           + "|" + "FABITNM" + "|" + "ITNM" + "|" + "PRODGRPCD" + "|" + "STYLENO" + "|" + "UOMCD" + "|" + "BARNO"
-                           + "|" + "NOS" + "|" + "QNTY" + "|" + "RATE" + "|" + "AMT" + "|" + "GOCD" + "|" + "LRNO" + "|" + "LRDT"
-                           + "|" + "BALENO" + "|" + "COMMONUNIQBAR" + "|" + "PAGENO" + "|" + "PAGESLNO" + "|" + "WPRATE" + "|" + "RPRATE"
-                           + "|" + "MAKERATE" + "|" + "SHADE" + "|" + "COLRCD" + "|" + "SIZECD" + "|" + "PDESIGN" + "|" + "PCSCTG"
-                           + "|" + "HSNCODE" + "|" + "GSTPER" + "|" + "GSTABOVEPER";
-             
-               ExcelPackage ExcelPkg = new ExcelPackage();
-               ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
-             
-                using (ExcelRange Rng = wsSheet1.Cells["A1:AH1"])
+                // Excel Columns: DOCDT	PBLNO	SLNM	SLCD	ITGRPNM	FABITGRPNM	FABITNM	ITNM	PRODGRPCD	STYLENO	UOMCD
+                //BARNO	NOS	QNTY	RATE	AMT	GOCD	LRNO	LRDT	BALENO	COMMONUNIQBAR	PAGENO	PAGESLNO	WPRATE	RPRATE	
+                //MAKERATE	SHADE	COLRCD	SIZECD	PDESIGN	PCSCTG	HSNCODE	GSTPER	GSTABOVEPER
+
+                string Excel_Header = "DOCDT" + "|" + "PBLNO" + "|" + "SLNM" + "|" + "SLCD" + "|" + "ITGRPNM" + "|" + "FABITGRPNM"
+                            + "|" + "FABITNM" + "|" + "ITNM" + "|" + "PRODGRPCD" + "|" + "STYLENO" + "|" + "UOMCD" + "|" + "BARNO"
+                            + "|" + "NOS" + "|" + "QNTY" + "|" + "RATE" + "|" + "AMT" + "|" + "GOCD" + "|" + "LRNO" + "|" + "LRDT"
+                            + "|" + "BALENO" + "|" + "COMMONUNIQBAR" + "|" + "PAGENO" + "|" + "PAGESLNO" + "|" + "WPRATE" + "|" + "RPRATE"
+                            + "|" + "MAKERATE" + "|" + "SHADE" + "|" + "COLRCD" + "|" + "SIZECD" + "|" + "PDESIGN" + "|" + "PCSCTG"
+                            + "|" + "HSNCODE" + "|" + "GSTPER" + "|" + "GSTABOVEPER" + "|" + "MTRLJOBCD";
+
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                using (ExcelRange Rng = wsSheet1.Cells["A1:AI1"])
                 {
                     Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                     Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
@@ -88,7 +88,7 @@ namespace Improvar.Controllers
                         wsSheet1.Cells[1, i + 1].Value = Header[i];
                     }
                 }
-                wsSheet1.Cells[1, 1, 1, 34].AutoFitColumns();
+                wsSheet1.Cells[1, 1, 1, 35].AutoFitColumns();
                 wsSheet1.Column(1).Style.Numberformat.Format = "@";
                 wsSheet1.Column(2).Style.Numberformat.Format = "@";
                 Response.Clear();
@@ -101,8 +101,8 @@ namespace Improvar.Controllers
                 Response.Close();
                 Response.End();
                 return Content("Download Sucessfull");
-                }
-                        
+            }
+
         }
         public string ReadOpstockExcel(ReportViewinHtml VE, Stream stream)
         {
@@ -147,6 +147,7 @@ namespace Improvar.Controllers
                 dbfdt.Columns.Add("HSNCODE", typeof(string));
                 dbfdt.Columns.Add("GSTPER", typeof(string));
                 dbfdt.Columns.Add("GSTABOVEPER", typeof(string));
+                dbfdt.Columns.Add("MTRLJOBCD", typeof(string));
 
                 using (var package = new ExcelPackage(stream))
                 {
@@ -358,9 +359,16 @@ namespace Improvar.Controllers
                         //{
                         //    ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE, itnm);
                         //}
+                        if (inrdr["MTRLJOBCD"].retStr() == "")
+                        {
+
+                            errmsg += "Please enter MTRLJOBCD for this style:(" + style + ") . " + msg + ",";
+                            strerrline += excelrow + ",";
+                            continue;
+                        }
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITSTYLE = style + " " + itnm;
-                        TTXNDTL.MTRLJOBCD = "FS";
+                        TTXNDTL.MTRLJOBCD = inrdr["MTRLJOBCD"].ToString();// "FS";
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
@@ -499,7 +507,12 @@ namespace Improvar.Controllers
                     {
                         errmsg += "Success " + tslCont.Substring(1) + ",";
                     }// msg += "Success " + tslCont.Substring(1);
-                    else errmsg += tslCont + " at " + msg + ",";
+                    else
+                    {
+                        errmsg += tslCont + " at " + msg + ",";
+                        strerrline += excelrow + ",";
+                        continue;
+                    }
                 }//outer
 
             }//try
