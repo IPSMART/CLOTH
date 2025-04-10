@@ -2128,7 +2128,7 @@ namespace Improvar.Controllers
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
                         var stock_data = salesfunc.GetStock(DOCDT, GOCD, BARNO, "", MTRLJOBCD, AUTONO, "", barnoOrStyle, PRCCD, TAXGRPCD, "", "", true, true, "", "", false, false, exactbarno, "", true);
-                        if (stock_data != null && stock_data.Rows.Count>0)
+                        if (stock_data != null && stock_data.Rows.Count > 0)
                         {
                             string grppricegenstr = "^BALQNTY=^" + str.retCompValue("BALQNTY") + Cn.GCS();
                             string syspricegenstr = "^BALQNTY=^" + stock_data.Rows[0]["balqnty"] + Cn.GCS();
@@ -2254,6 +2254,29 @@ namespace Improvar.Controllers
             try
             {
                 Cn.getQueryString(VE);
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+
+                string str = "";
+                var ordcnt = VE.TBATCHDTL.Where(a => a.ORDAUTONO.retStr() != "").Count();
+                if (ordcnt > 0)
+                {
+                    var orddet = (from a in VE.TBATCHDTL
+                                  join b in DB.T_SORD on a.ORDAUTONO equals b.AUTONO into x
+                                  from b in x.DefaultIfEmpty()
+                                  join c in DB.T_CNTRL_HDR on b.AUTONO equals c.AUTONO into y
+                                  from c in y.DefaultIfEmpty()
+                                  where a.ORDAUTONO.retStr() != ""
+                                  select new
+                                  {
+                                      PREFNO = b.PREFNO.retStr() == "" ? c.DOCNO : b.PREFNO,
+                                      PREFDT = b.PREFNO.retStr() == "" ? c.DOCDT : b.PREFDT,
+                                  }).FirstOrDefault();
+                    if (orddet != null)
+                    {
+                        str += "^PREFNO=^" + orddet.PREFNO + Cn.GCS();
+                        str += "^PREFDT=^" + orddet.PREFDT.retDateStr() + Cn.GCS();
+                    }
+                }
                 VE.TBATCHDTL.ForEach(x =>
                 {
                     x.RATE = x.RATE.retDbl();
@@ -2439,7 +2462,10 @@ namespace Improvar.Controllers
 
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_SALE_DETAIL", VE);
+                //return PartialView("_T_SALE_DETAIL", VE);
+
+                var GRID_DATA = RenderRazorViewToString(ControllerContext, "_T_SALE_DETAIL", VE);
+                return Content(str + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + GRID_DATA);
             }
             catch (Exception ex)
             {
@@ -2595,6 +2621,7 @@ namespace Improvar.Controllers
                 dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", "", VE.MENU_PARA);
                 string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].ToString();
                 DataTable PRODGRPDATA = new DataTable();
+                DataTable BARMASTERDATA = new DataTable();
                 if (dt != null && dt.Rows.Count > 0)
                 {
 
@@ -2628,10 +2655,12 @@ namespace Improvar.Controllers
                                            NEGSTOCK = dr["NEGSTOCK"].retStr(),
                                        }).ToList();
                     string ITCDLIST = VE.PENDINGORDER.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
+                    BARMASTERDATA = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
-                        PRODGRPDATA = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+                        PRODGRPDATA = BARMASTERDATA;
+                        //PRODGRPDATA = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
                     }
                     //else if (VE.MENU_PARA == "ALL")
                     //{
@@ -2709,6 +2738,10 @@ namespace Improvar.Controllers
                         VE.PENDINGORDER[p].MTRLJOBCD = mtrljobcd;
                         VE.PENDINGORDER[p].MTRLJOBNM = mtrljobnm;
                         VE.PENDINGORDER[p].MTBARCODE = mtbarcode;
+                        if (BARMASTERDATA != null)
+                        {
+                            VE.PENDINGORDER[p].BARNO = BARMASTERDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("barno")).FirstOrDefault();
+                        }
                         slno++;
                     }
                 }
@@ -2766,7 +2799,8 @@ namespace Improvar.Controllers
                               TDDISCTYPE_DESC = "%",
                               SCMDISCTYPE = "P",
                               SCMDISCTYPE_DESC = "%",
-                              NEGSTOCK = a.NEGSTOCK.retStr()
+                              NEGSTOCK = a.NEGSTOCK.retStr(),
+                              BARNO = a.BARNO.retStr()
                           }).ToList();
 
                 if (VE.TBATCHDTL != null)
@@ -2813,7 +2847,8 @@ namespace Improvar.Controllers
                                 a.AGDOCNO.retStr() == VE.TBATCHDTL[i].AGDOCNO.retStr() &&
                                 a.AGDOCDT.retStr() == VE.TBATCHDTL[i].AGDOCDT.retStr() &&
                                 a.LISTPRICE.retStr() == VE.TBATCHDTL[i].LISTPRICE.retStr() &&
-                                a.LISTDISCPER.retStr() == VE.TBATCHDTL[i].LISTDISCPER.retStr()
+                                a.LISTDISCPER.retStr() == VE.TBATCHDTL[i].LISTDISCPER.retStr() &&
+                                a.BARNO.retStr() == VE.TBATCHDTL[i].BARNO.retStr()
                            ).Select(b => b.TXNSLNO).FirstOrDefault();
                         if (VE.TBATCHDTL[i].TXNSLNO == 0)
                         {
@@ -2877,7 +2912,8 @@ namespace Improvar.Controllers
                               MTRLJOBCD = a.MTRLJOBCD.retStr(),
                               MTRLJOBNM = a.MTRLJOBNM.retStr(),
                               MTBARCODE = a.MTBARCODE.retStr(),
-                              NEGSTOCK = a.NEGSTOCK.retStr()
+                              NEGSTOCK = a.NEGSTOCK.retStr(),
+                              BARNO = a.BARNO.retStr()
                           }).ToList();
                 TempData["PENDORDER" + VE.MENU_PARA] = dt;
                 return Content("0");

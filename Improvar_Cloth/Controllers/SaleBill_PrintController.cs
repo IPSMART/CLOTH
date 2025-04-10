@@ -1898,10 +1898,10 @@ namespace Improvar.Controllers
                 sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, " + Environment.NewLine;
                 //sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
                 sql += " nvl(x.nm,nvl(e.fullname, e.slnm)) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  " + Environment.NewLine;
-                sql += " e.gstno, e.panno,e.MSMENO, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
+                sql += " e.gstno, e.panno,e.MSMENO, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno,e.REGEMAILID, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
                 sql += " nvl(b.conslcd, b.slcd) cslcd, '' cpartycd, nvl(f.fullname, f.slnm) cslnm, f.add1 csladd1, f.add2 csladd2, f.add3 csladd3, f.add4 csladd4, f.add5 csladd5, " + Environment.NewLine;
                 sql += " f.add6 csladd6, f.add7 csladd7, nvl(f.gstno, f.gstno) cgstno, nvl(f.panno, f.panno) cpanno,nvl(f.MSMENO, f.MSMENO) cMSMENO,f.actnameof cslactnameof,f.subdistrict csldistrict, " + Environment.NewLine;
-                sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  " + Environment.NewLine;
+                sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno,f.REGEMAILID cREGEMAILID, f.state cstate, f.statecd cstatecd,  " + Environment.NewLine;
                 sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,  " + Environment.NewLine;
                 //sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, a.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  ";
                 sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, y.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  " + Environment.NewLine;
@@ -2651,6 +2651,12 @@ namespace Improvar.Controllers
                                 rfld = "sladd" + Convert.ToString(rf);
                                 dr1[rfld] = "Ph. # " + tbl.Rows[i]["phno"].ToString();
                             }
+                            if (tbl.Rows[i]["REGEMAILID"].ToString() != "")
+                            {
+                                rf = rf + 1;
+                                rfld = "sladd" + Convert.ToString(rf);
+                                dr1[rfld] = "Email # " + tbl.Rows[i]["REGEMAILID"].ToString();
+                            }
                             if (tbl.Rows[i]["slactnameof"].ToString() != "")
                             {
                                 rf = rf + 1;
@@ -2710,6 +2716,13 @@ namespace Improvar.Controllers
                                     rfld = "csladd" + Convert.ToString(rf);
                                     dr1[rfld] = "Ph. # " + tbl.Rows[i]["cphno"].ToString();
                                 }
+                                if (tbl.Rows[i]["cREGEMAILID"].ToString() != "")
+                                {
+                                    rf = rf + 1;
+                                    rfld = "csladd" + Convert.ToString(rf);
+                                    dr1[rfld] = "Email # " + tbl.Rows[i]["cREGEMAILID"].ToString();
+                                }
+                                
                                 if (tbl.Rows[i]["cslactnameof"].ToString() != "")
                                 {
                                     rf = rf + 1;

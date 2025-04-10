@@ -1107,6 +1107,7 @@ function Fill_DetailData(TAG) {
         url: $("#UrlFillDetailData").val(),//"@Url.Action("FillDetailData", PageControllerName)",
         data: $('form').serialize(),
         success: function (result) {
+            var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
             if (result.indexOf("_T_SALE_DETAIL_GRID") == -1) {
                 //msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
                 msgInfo(result);
@@ -1121,7 +1122,7 @@ function Fill_DetailData(TAG) {
             }
             else {
                 //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDetail").html(result);
+                $("#partialdivDetail").html(res[1]);
                 if (TAG != "N") {
                     $("li").removeClass("active").addClass("");
                     $(".nav-tabs li:nth-child(3)").addClass('active');
@@ -1141,7 +1142,11 @@ function Fill_DetailData(TAG) {
                 //    $('.PJBLDiv').find(".Help_image_button_grid").hide();
                 //    $('.PJBLDiv input').removeAttr("onkeydown");
                 //}
-
+                if ($("#POREFNO").val() == "")
+                {
+                    $("#POREFNO").val(returncolvalue(res[0], "PREFNO"));
+                    $("#POREFDT").val(returncolvalue(res[0], "PREFDT"));
+                }
             }
             $("#WaitingMode").hide();
         },
@@ -3905,6 +3910,8 @@ function FillOrderToBarcode() {
             $("#MTRLJOBNM").val($("#Ord_MTRLJOBNM_" + i).val());
             $("#MTBARCODE").val($("#Ord_MTBARCODE_" + i).val());
             $("#NEGSTOCK").val($("#Ord_NEGSTOCK_" + i).val());
+            $("#BARCODE").val($("#Ord_BARNO_" + i).val());
+
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
             var qnty = retFloat(BALQTY - CURRENTADJQTY).toFixed(2);

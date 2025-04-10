@@ -343,14 +343,27 @@ namespace Improvar.Controllers
                             strerrline += excelrow + ",";
                             continue;
                         }
-                        sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where barno='" + inrdr["BARNO"].ToString() + "'";
-                        dt = masterHelp.SQLquery(sql);
-                        if (dt.Rows.Count == 0)
+                        if(inrdr["BARNO"].retStr() == "")
                         {
-                            errmsg += "Barno:" + inrdr["BARNO"].ToString() + " not found at Item master at itnm=" + inrdr["ITNM"].ToString() + msg + ",";
-                            strerrline += excelrow + ",";
-                            continue;
+                            sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where itcd='" + ItemDet.ITCD + "'";
+                            dt = masterHelp.SQLquery(sql);
+                            if (dt.Rows.Count > 0)
+                            {
+                                TTXNDTL.BARNO = dt.Rows[0]["BARNO"].ToString();
+                            }
                         }
+                        else
+                        {
+                            sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst where barno='" + inrdr["BARNO"].ToString() + "'";
+                            dt = masterHelp.SQLquery(sql);
+                            if (dt.Rows.Count == 0)
+                            {
+                                errmsg += "Barno:" + inrdr["BARNO"].ToString() + " not found at Item master at itnm=" + inrdr["ITNM"].ToString() + msg + ",";
+                                strerrline += excelrow + ",";
+                                continue;
+                            }
+                        }
+                      
                         //if (BARGENTYPE == "E")
                         //{
                         //    ItemDet = Salesfunc.CreateItem("", TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "", "F", BARGENTYPE, itnm);

@@ -391,7 +391,8 @@ namespace Improvar.Controllers
                             sql += " select " + rstmp.Rows[0]["colnm"] + ",a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
                             sql += "  from  " + DatabaseSchemaName + ".M_SYSCNFG a, " + tbl.Rows[0]["fin_schema"].ToString() + ".M_RETDEB b, " + DatabaseSchemaName + ".M_SUBLEG_SDDTL c, " + DatabaseSchemaName + ".m_subleg_com d, " + tbl.Rows[0]["fin_schema"].ToString() + ".m_prclst e ";
                             sql += " where a.RTDEBCD=b.RTDEBCD and a.retdebslcd=d.slcd(+) and ";
-                            sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + VE.COMPCD + "' and c.loccd='" + VE.LOCCD + "' and d.prccd=e.prccd(+) ";
+                            sql += "a.retdebslcd=C.SLCD(+) and d.prccd=e.prccd(+) and a.compcd='" + VE.COMPCD + "' ";
+                            sql += "and (c.compcd='" + VE.COMPCD + "' or c.compcd is null) and (c.loccd='" + VE.LOCCD + "' or c.loccd is null)  ";
                         }
                         else
                         {

@@ -77,6 +77,7 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
 
@@ -796,8 +797,8 @@
                             $('#SearchFldValue').val('ITSTYLENO');
                         }
                         $('#helpDIV').html(result);
-                        $('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
-                        $('#ReferanceColumn').val('0/2/5');
+                            $('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
+                            $('#ReferanceColumn').val('0/2/5');                       
                         if (callfrm == "bar") {
                             $('#helpDIV_Header').html('Barno Details');
                         }
@@ -2397,7 +2398,8 @@
                     <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Job")
-                        </div>
+                            <b style="color:Red;">*</b>
+   </div>
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
@@ -2598,7 +2600,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmstyle')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value,'style');", @placeholder = "Design No", maxlength = 25 } })
+                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmstyle')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value,'style');", @placeholder = "Design No", maxlength = 25, @TabIndex = -1 } })
                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','STYLENO','STYLENO=STYLENO=3/BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD/callfrmstyle')" />
                                     </div>
                                 </div>

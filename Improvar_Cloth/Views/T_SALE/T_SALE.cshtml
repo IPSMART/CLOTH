@@ -513,6 +513,7 @@
                 url: $("#UrlFillDetailData").val(),
                 data: $('form').serialize(),
                 success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
                     if (result.indexOf("_T_SALE_DETAIL_GRID") == -1) {
                         //msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
                         msgInfo(result);
@@ -526,13 +527,17 @@
                         return false;
                     }
                     else {
-                        $("#partialdivDetail").html(result);
+                        $("#partialdivDetail").html(res[1]);
                         GridRow_detail = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
                         for (var i = 0; i <= GridRow_detail - 1; i++) {
                             CalculateAmt_Details(i);
                         }
                         $("#bardatachng").val("N");
                         $("#WaitingMode").hide();
+                        if ($("#POREFNO").val() == "") {
+                            $("#POREFNO").val(returncolvalue(res[0], "PREFNO"));
+                            $("#POREFDT").val(returncolvalue(res[0], "PREFDT"));
+                        }
                     }
                     debugger;
                     pageValidation("@Model.DefaultAction");

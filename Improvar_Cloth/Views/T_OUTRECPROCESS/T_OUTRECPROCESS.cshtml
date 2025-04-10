@@ -100,6 +100,7 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
         if (!emptyFieldCheck("Please Enter Party Bill No", "PREFNO")) { return false; }
@@ -108,7 +109,7 @@
         var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
         if ($("#bardatachng").val() == "Y" && GridRow > 0) {
             debugger;
-            if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
+            //if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
             var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
             if (GridRow == 0) {
                 $("li").removeClass("active").addClass("");
@@ -242,7 +243,7 @@
     }
 </script>
 <script>
-    function SelectItemDetails(id, B_ITCD_, B_UOM_, B_ITSTYLE_, B_ITGRPCD_, B_ITGRPNM_, B_RATE_, B_BARNO_, B_WPRATE_,CLFRM) {
+    function SelectItemDetails(id, B_ITCD_, B_UOM_, B_ITSTYLE_, B_ITGRPCD_, B_ITGRPNM_, B_RATE_, B_BARNO_, B_WPRATE_, CLFRM) {
         debugger;
         if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
@@ -1436,7 +1437,7 @@
             QNTYID = "B_QNTY_" + index;
             UOMID = "B_UOM_" + index;
         }
-       
+
         if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
             var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
             $("#" + QNTYID).val(retFloat(qnty));
@@ -1505,23 +1506,23 @@
     }
 </script>
 @*<script>
-    function pageprinting() {
-        var ty = $("#DOCCD").val();
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
-            success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>*@
+        function pageprinting() {
+            var ty = $("#DOCCD").val();
+            $.ajax({
+                type: 'get',
+                url: "@Url.Action("Print", PageControllerName)",
+                data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+                success: function (result) {
+                    window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    </script>*@
 <script>
     function pageprinting() {
         $.ajax({
@@ -1553,7 +1554,7 @@
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
-            <input type="hidden" id="agentlinkcd" value="A" />
+        <input type="hidden" id="agentlinkcd" value="A" />
             <input type="hidden" id="courierlinkcd" value="U" />
             <input type="hidden" id="trnsportlinkcd" value="T" />
             <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
@@ -1566,8 +1567,8 @@
             @Html.HiddenFor(a => a.T_TXN.DOCNO)
             @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
             @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
-        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
-<div class="form-horizontal">
+            @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+            <div class="form-horizontal">
                 @if (Model.DefaultAction == "V")
                 {
                     @Html.Partial("_FilteredSearch")
@@ -1616,6 +1617,7 @@
                         <div class="col-md-1">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Job")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-3">
