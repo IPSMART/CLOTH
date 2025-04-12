@@ -440,7 +440,7 @@ namespace Improvar.Controllers
                 string str2 = "";
                 str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k1.itgrpcd,n.itgrpnm, ";
                 str2 += " k.itnm Qitnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd Quomcd,b.qnty qntyMst, ";
-                str2 += "a.sample,k.styleno ||' '||k.itnm Qitstyle,k1.styleno||' '||k1.itnm itstyle,k1.uomcd ,b.barno from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += "a.sample,k.styleno ||' '||k.itnm Qitstyle,k1.styleno||' '||k1.itnm itstyle,k1.uomcd ,b.barno,a.CUTLENGTH,a.NOS from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
                 str2 += Scm + ".M_SITEM k, " + Scm + ".M_SITEM k1, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k1.ITCD(+) and b.ITCD = k.ITCD(+)  ";
@@ -474,7 +474,9 @@ namespace Improvar.Controllers
                                    UOM = dr["uomcd"].retStr(),
                                    BOMQNTY = dr["bomqnty"].retDbl(),
                                    EXTRAQNTY = dr["extraqnty"].retDbl(),
-                                   Q_SAMPLE = dr["sample"].retStr()
+                                   Q_SAMPLE = dr["sample"].retStr(),
+                                   CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                   NOS = dr["NOS"].retDbl()
                                }).OrderBy(s => s.SLNO).ToList();
                 foreach (var q in VE.TPROGBOM)
                 {
@@ -494,6 +496,7 @@ namespace Improvar.Controllers
                 VE.T_QQNTY = TOTAL_QQNTY.retDbl();
                 VE.T_BOMQNTY = TOTAL_BOMQNTY.retDbl();
                 VE.T_EXTRAQNTY = TOTAL_EXTRAQNTY.retDbl();
+                VE.T_NOS = VE.TPROGBOM.Sum(a => a.NOS).retDbl();
 
                 #region batch and detail data
                 string str1 = "";
@@ -846,9 +849,20 @@ namespace Improvar.Controllers
                     //if (BOMITCD == "") return Content("Please select Bom Item Code ");
                 }
                 string callfrm = data[8].retStr();
-                bool exactbarno = callfrm == "bar" ? true : false;
+                //bool exactbarno = callfrm == "bar" ? true : false;
+                bool exactbarno = false, exactstyleno = false;
+                if (callfrm == "bar")
+                {
+                    exactbarno = true;
+                    exactstyleno = false;
+                }
+                else
+                {
+                    exactbarno = false;
+                    exactstyleno = true;
+                }
                 //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, BOMITCD, exactbarno);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, BOMITCD, exactbarno, "", "", "", true, "", false, exactstyleno);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -2036,6 +2050,8 @@ namespace Improvar.Controllers
                                        MTRLJOBNM = dr["mtrljobnm"].ToString(),
                                        SLNO = dr["slno"].retShort(),
                                        RSLNO = dr["rslno"].retShort(),
+                                       CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                       NOS = dr["NOS"].retDbl(),
                                    }).ToList();
                     string[] itcdarr = VE.TPROGBOM.Select(a => a.ITCD).Distinct().ToArray();
                     itemdata = (from a in DB.M_SITEM
@@ -2103,6 +2119,8 @@ namespace Improvar.Controllers
                                        MTRLJOBCD = VE.T_TXN.JOBCD == "DY" ? (x.CheckedSample == true ? x.MTRLJOBCD : "PL") : x.CheckedSample == true ? x.MTRLJOBCD : "",
                                        //MTRLJOBNM = x.MTRLJOBNM,
                                        Q_CheckedSample = (VE.T_TXN.JOBCD == "DY" || x.CheckedSample == true) ? (x.CheckedSample == true ? true : false) : false,
+                                       CUTLENGTH = x.CUTLENGTH,
+                                       NOS = x.NOS,
                                    }).ToList();
                 }
                 for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
@@ -2115,6 +2133,9 @@ namespace Improvar.Controllers
                     }
                 }
                 VE.T_QQNTY = VE.TPROGBOM.Sum(a => a.QQNTY).retDbl();
+                VE.T_NOS = VE.TPROGBOM.Sum(a => a.NOS).retDbl();
+                VE.T_BOMQNTY = VE.TPROGBOM.Sum(a => a.BOMQNTY).retDbl();
+                VE.T_EXTRAQNTY = VE.TPROGBOM.Sum(a => a.EXTRAQNTY).retDbl();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
@@ -2596,11 +2617,14 @@ namespace Improvar.Controllers
                                    //EXTRAQNTY = a.extraqnty.retDbl(),
                                    Q_SAMPLE = a.SAMPLE.retStr(),
                                    Q_CheckedSample = a.SAMPLE.retStr() == "Y" ? true : false,
+                                   CUTLENGTH = a.CUTLENGTH,
+                                   NOS = a.NOS
                                }).OrderBy(s => s.SLNO).ToList();
 
                 VE.T_QQNTY = VE.TPROGBOM.Select(a => a.QQNTY).Sum().retDbl();
                 VE.T_BOMQNTY = VE.TPROGBOM.Select(a => a.BOMQNTY).Sum().retDbl();
                 VE.T_EXTRAQNTY = VE.TPROGBOM.Select(a => a.EXTRAQNTY).Sum().retDbl();
+                VE.T_NOS = VE.TPROGBOM.Select(a => a.NOS).Sum().retDbl();
                 #endregion
 
                 ModelState.Clear();
@@ -2654,6 +2678,8 @@ namespace Improvar.Controllers
                                    //EXTRAQNTY = a.extraqnty.retDbl(),
                                    Q_SAMPLE = a.SAMPLE.retStr(),
                                    Q_CheckedSample = a.SAMPLE.retStr() == "Y" ? true : false,
+                                   CUTLENGTH = a.CUTLENGTH,
+                                   NOS = a.NOS
                                }).OrderBy(s => s.SLNO).ToList();
 
                 int i = 0;
@@ -2674,6 +2700,7 @@ namespace Improvar.Controllers
                 VE.T_QQNTY = VE.TPROGBOM.Select(a => a.QQNTY).Sum().retDbl();
                 VE.T_BOMQNTY = VE.TPROGBOM.Select(a => a.BOMQNTY).Sum().retDbl();
                 VE.T_EXTRAQNTY = VE.TPROGBOM.Select(a => a.EXTRAQNTY).Sum().retDbl();
+                VE.T_NOS = VE.TPROGBOM.Select(a => a.NOS).Sum().retDbl();
                 #endregion
 
                 ModelState.Clear();
@@ -3028,7 +3055,7 @@ namespace Improvar.Controllers
                     TTXNOTH.TDSPER = VE.T_TXNOTH.TDSPER;
                     TTXNOTH.TDSAMT = VE.T_TXNOTH.TDSAMT;
                     //----------------------------------------------------------//
-                    
+
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
                     dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.T_TXN.BLAMT.retDbl(), VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -3234,6 +3261,8 @@ namespace Improvar.Controllers
                                 TPROGBOM.EXTRAQNTY = VE.TPROGBOM[i].EXTRAQNTY.retDcml();
                                 TPROGBOM.QNTY = VE.TPROGBOM[i].QQNTY.retDcml();
                                 TPROGBOM.MTRLJOBCD = VE.TPROGBOM[i].MTRLJOBCD;
+                                TPROGBOM.CUTLENGTH = VE.TPROGBOM[i].CUTLENGTH;
+                                TPROGBOM.NOS = VE.TPROGBOM[i].NOS;
                                 if (VE.TPROGBOM[i].Q_CheckedSample == true) TPROGBOM.SAMPLE = "Y"; else TPROGBOM.SAMPLE = "N";
                                 dbsql = masterHelp.RetModeltoSql(TPROGBOM);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -4119,6 +4148,8 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                                     STKNAME = h == null ? "" : h.STKNAME.retStr(),
                                     FABITCD = k == null ? "" : k.ITCD.retStr(),
                                     FABITNM = l == null ? "" : l.ITNM.retStr(),
+                                    CUTLENGTH = a.CUTLENGTH.retDbl(),
+                                    NOS = a.NOS.retDbl(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 #endregion

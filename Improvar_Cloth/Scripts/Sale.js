@@ -4036,6 +4036,12 @@ function CalculateBargridQnty(tableid, index) {
         CONVQTYPUNITID = "B_CONVQTYPUNIT_" + index;
         BLQNTYID = "B_BLQNTY_" + index;
     }
+    else if (tableid == "__T_OUTISSPROCESS_QtyRequirement_GRID") {
+        CUTLENGTHID = "Q_CUTLENGTH_" + index;
+        NOSID = "Q_NOS_" + index;
+        QNTYID = "Q_BOMQNTY_" + index;
+        UOMID = "Q_UOM_" + index;
+    }
     else {
         CUTLENGTHID = "CUTLENGTH";
         NOSID = "NOS";
@@ -4065,7 +4071,11 @@ function CalculateBargridQnty(tableid, index) {
     //$("#" + BLQNTYID).val(BLQNTY);
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CalculateTotal_Barno();
-        HasChangeBarSale()
+        HasChangeBarSale();
+    }
+    else if (tableid == "__T_OUTISSPROCESS_QtyRequirement_GRID")
+    {
+        CalculateTotalProgBomQnty();
     }
 }
 var hlpblurval = "";

@@ -2298,7 +2298,7 @@ namespace Improvar
                 }
             }
         }
-        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "", string SKIPAUTONO = "", bool showonlycommonbar = true, string SLCD = "", bool skipNegetivStock = false)
+        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "", string SKIPAUTONO = "", bool showonlycommonbar = true, string SLCD = "", bool skipNegetivStock = false, bool exactstyleno = false)
         {
             var MSYSCNFG = salesfunc.M_SYSCNFG(DOCDT);
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
@@ -2307,7 +2307,7 @@ namespace Improvar
             //if (menupara == "OP" || menupara == "OTH" || menupara == "PJRC")//menupara == "PB" || 
             if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
             {
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar);
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar,exactstyleno);
             }
             //else if (menupara == "ALL")
             //{
@@ -2315,7 +2315,7 @@ namespace Improvar
             //}
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag, SLCD,false,false,false,skipNegetivStock);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), SKIPAUTONO.retStr(), "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true, doctag, SLCD,false,false,false,skipNegetivStock,"",exactstyleno);
 
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)

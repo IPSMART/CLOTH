@@ -65,7 +65,10 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string SAMPLE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? CUTLENGTH { get; set; }
+        public double? NOS { get; set; }
 
-        
+
     }
 }

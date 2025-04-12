@@ -319,7 +319,7 @@
 
     function CalculateTotalProgBomQnty() {
         if ("@Model.DefaultAction" == "V") return true;
-        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0, T_QQTY1 = 0;
+        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0, T_QQTY1 = 0, T_NOS=0;
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var QQTY1 = document.getElementById("Q_QNTY1_" + i).value;
@@ -337,11 +337,14 @@
             if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
             else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
+            T_NOS += retFloat($("#Q_NOS_" + i).val());
+
 
         }
         document.getElementById("T_QQNTY").value = parseFloat(T_QQTY1).toFixed(3);
         document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(3);
         document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(3);
+        $("#T_NOS").val(T_NOS);
     }
 
 
@@ -729,7 +732,8 @@
                         $("#" + P_BARNO_).val(returncolvalue(result, "BARNO"));
                         $("#" + P_PARTCD_).val(returncolvalue(result, "PARTCD"));
                         $("#" + P_ITCD_).val(returncolvalue(result, "ITCD"));
-                        $("#" + P_ITNM_).val(returncolvalue(result, "ITSTYLE"));
+                        //$("#" + P_ITNM_).val(returncolvalue(result, "ITSTYLE"));//FOR ANKAN DESIGN : TISSUE AFTER 2ND BLUR SHOWING ERROR
+                        $("#" + P_ITNM_).val(returncolvalue(result, "STYLENO"));
                         $("#" + P_UOM_).val(returncolvalue(result, "UOMCD"));
                         $("#" + P_ITGRPCD_).val(returncolvalue(result, "ITGRPCD"));
                         $("#" + P_ITGRPNM_).val(returncolvalue(result, "ITGRPNM"));
@@ -1187,7 +1191,7 @@
                       retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
                      retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
                      retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
-                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val())) {
+                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(RECPROGSLNO) == retStr($("#B_RECPROGSLNO_" + j).val())) {
 
                             matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                             if (ModuleCode.indexOf("SALESCLOTH") != -1) {
@@ -1242,7 +1246,7 @@
         tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
         tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
         //tr += '        <input id="B_RECPROGSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO" type="hidden" value="' + RECPROGSLNO + '">';
-        tr += '        <input id="B_TXNSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="' + TXNSLNO + '">';
+        //tr += '        <input id="B_TXNSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="' + TXNSLNO + '">';
         tr += '        <input id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" type="hidden" value="' + DISCTYPE_DESC + '">';
         tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
         tr += '        <input id="B_DISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCRATE" type="hidden" value="' + DISCRATE + '">';
@@ -1260,10 +1264,10 @@
         tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
         tr += '    </td>';
-        //tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
-        //tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
-        //tr += '    </td>';
-        tr += '    <td class="sticky-cell" style="left:40px" title="' + RECPROGSLNO + '">';
+        tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:72px" title="' + RECPROGSLNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field RECPROGSLNO must be a number." data-val-required="The RECPROGSLNO field is required." id="B_RECPROGSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" readonly="readonly" type="text" value="' + RECPROGSLNO + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + RECPROGITSTYLE + '">';

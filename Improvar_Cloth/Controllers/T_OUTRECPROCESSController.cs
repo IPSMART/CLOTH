@@ -1477,7 +1477,7 @@ namespace Improvar.Controllers
                 { BARNO = ""; val = ""; }
                 if (val.retStr() != "") { showonlycommonbar = false; }
                 //var str = masterHelp.ITCD_help(val, "", "");
-                var str = masterHelp.T_TXN_BARNO_help(val.Trim(), "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "");
+                var str = masterHelp.T_TXN_BARNO_help(val.Trim(), "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "",false,true);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

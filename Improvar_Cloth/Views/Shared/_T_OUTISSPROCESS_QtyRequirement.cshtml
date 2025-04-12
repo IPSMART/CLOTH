@@ -57,6 +57,8 @@
                                 <th class="" style="width: 59px;">Color Code</th>
                                 <th class="" style="width:100px;">Color Name</th>
                                 <th class="" style="width:62px;">Size</th>
+                                <th class="" style="width:60px;text-align:right;">Cutlength</th>
+                                <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:111px;text-align:right;">Bom Quantity</th>
                                 <th class="" style="width:111px;text-align:right;">Extra Quantity</th>
                                 <th class="" style="text-align:center;">Sample</th>
@@ -141,7 +143,13 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTISSPROCESS")','Size Details','Q_SIZECD_@i','Q_SIZECD_@i=SIZECD=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPROGBOM[i].BOMQNTY, new { htmlAttributes = new { id = "Q_BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].CUTLENGTH, new { htmlAttributes = new { id = "Q_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateBargridQnty('__T_OUTISSPROCESS_QtyRequirement_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].NOS, new { htmlAttributes = new { id = "Q_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('__T_OUTISSPROCESS_QtyRequirement_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].BOMQNTY, new { htmlAttributes = new { id = "Q_BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", maxlength = 12, onblur = "CalculateBargridQnty('__T_OUTISSPROCESS_QtyRequirement_GRID', " + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { htmlAttributes = new { id = "Q_EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 } })
@@ -174,8 +182,12 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+ <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
                                 <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_NOS, new { htmlAttributes = new { id = "T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.T_BOMQNTY, new { htmlAttributes = new { id = "T_BOMQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
