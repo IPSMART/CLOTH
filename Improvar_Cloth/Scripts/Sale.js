@@ -2711,6 +2711,24 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
     tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
     tr += '    </td>         ';
+    tr += '    <td class="">';
+    if (ClientCode == "DIWH") {
+        tr += '<input class=" atextBoxFor " data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" type="text" value=""> ';
+    }
+    else {
+        tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" onclick="OpenZoomTextBoxModal(this.id)" style="cursor:pointer" type="text" value="">';
+    }
+    //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
+    tr += '    </td>';
+    if (MNTNCOLOR == "Y") {
+        tr += '    <td class="" title="' + COLRCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="' + COLRCD + '">';
+        tr += '     <input id="B_CLRBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="' + CLRBARCODE + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + COLRNM + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="' + COLRNM + '">';
+        tr += '    </td>';
+    }
     if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC" || MENU_PARA == "PR") && MNTNOURDESIGN == "Y") {
         tr += '    <td class="" title="' + PDESIGN + '">';
         tr += '        <input class=" atextBoxFor " id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="text" value="' + PDESIGN + '">';
@@ -2749,15 +2767,7 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRTBARCODE" type="hidden" value="' + PRTBARCODE + '">';
         tr += '    </td>';
     }
-    if (MNTNCOLOR == "Y") {
-        tr += '    <td class="" title="' + COLRCD + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="' + COLRCD + '">';
-        tr += '     <input id="B_CLRBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="' + CLRBARCODE + '">';
-        tr += '    </td>';
-        tr += '    <td class="" title="' + COLRNM + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="' + COLRNM + '">';
-        tr += '    </td>';
-    }
+   
     if (MNTNSIZE == "Y") {
         tr += '    <td class="" title="' + SIZECD + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="' + SIZECD + '">';
@@ -2903,15 +2913,7 @@ function AddBarCodeGrid() {
         //tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
         tr += '    </td>';
     }
-    tr += '    <td class="">';
-    if (ClientCode == "DIWH") {
-        tr += '<input class=" atextBoxFor " data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" type="text" value=""> ';
-    }
-    else {
-        tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale(\'Y\',' + rowindex + ');" onclick="OpenZoomTextBoxModal(this.id)" style="cursor:pointer" type="text" value="">';
-    }
-    //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
-    tr += '    </td>';
+    
 
 
     if ((MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {

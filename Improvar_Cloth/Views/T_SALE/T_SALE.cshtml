@@ -890,6 +890,59 @@
             });
         }
     </script>*@
+<script>
+    function GetPrice() {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") {
+                ClearAllTextBoxes("PRCCD,PRCNM");
+            }
+            else {
+                var id = $("#PRCCD").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetPriceDetails", PageControllerName)",
+                    data: "&val=" + id,
+                    success: function (result) {
+                        var MSG = result.indexOf('#helpDIV');
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("PRCCD,PRCNM");
+                            $('#SearchFldValue').val("PRCCD");
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("PRCCD/PRCNM");
+                            $('#ReferanceColumn').val("1/0");
+                            $('#helpDIV_Header').html("Price Details");
+                        }
+                        else {
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (MSG >= 0) {
+                                $("#PRCCD").val(returncolvalue(result, "PRCCD"));
+                                $("#PRCNM").val(returncolvalue(result, "PRCNM"));
+                                var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                                if (GridRowMain == 0) {
+                                    $("#Last_PRCCD").val(returncolvalue(result, "PRCCD"));
+                                }
+                            }
+                            else {
+                                $('#helpDIV').html("");
+                                msgInfo("" + result + " !");
+                                ClearAllTextBoxes("PRCCD,PRCNM");
+                                message_value = "PRCCD";
+                            }
+                        }
+                        $("#WaitingMode").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1506,7 +1559,7 @@
                                 <div class="editor-field">
                                     @if (Model.Delete == "D" && Model.DefaultAction == "A")
                                     {
-                                        @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
+                                        @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetPrice();", @placeholder = "Code", maxlength = 4 } })
                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" id="PRCCD_HELP" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')" />
                                     }
                                     else

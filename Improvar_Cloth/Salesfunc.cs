@@ -257,7 +257,7 @@ namespace Improvar
             if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
             sql += "nvl(a.balqnty,0) <> 0 ";
             sql += "and f.fabitcd=j.itcd(+) and d.linecd=k.linecd(+) and d.sizecd=l.sizecd(+) ";
-            sql += "order by styleno, itnm, itcd, partcd, print_seq, sizenm ";
+            sql += "order by a.progautono, a.progslno,styleno, itnm, itcd, partcd, print_seq, sizenm ";
             DataTable tbl = SQLquery(sql);
             return tbl;
         }
