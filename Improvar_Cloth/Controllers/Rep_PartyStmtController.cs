@@ -74,6 +74,10 @@ namespace Improvar.Controllers
                                         where i.COMPCD == com
                                         select new DropDown_list() { value = i.LOCCD, text = i.LOCNM }).Distinct().OrderBy(s => s.text).ToList();// location
                     VE.TEXTBOX4 = MasterHelp.ComboFill("loccd", VE.DropDown_list, 0, 1);
+
+
+                    VE.DropDown_list_BLTYPE = DropDownHelp.DropDownBLTYPE();
+                    VE.TEXTBOX5 = MasterHelp.ComboFill("BLTYPE", VE.DropDown_list_BLTYPE, 0, 1);
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -96,7 +100,7 @@ namespace Improvar.Controllers
                 string RateQntyBAg = "Q";
                 //if (FC["RATEQNTYBAG"].ToString() == "BAGS") RateQntyBAg = "B";
                 //else RateQntyBAg = "Q";
-                string txntag = ""; string txnrettag = "", selloccd = "";
+                string txntag = ""; string txnrettag = "", selloccd = "", selbltype = "";
                 string reptype = FC["Reptype"].ToString();
                 string repon = FC["PartyItem"].ToString();
                 //string grpcd = VE.TEXTBOX2;
@@ -105,6 +109,8 @@ namespace Improvar.Controllers
                 string selslcdgrpcd = "";
                 if (FC.AllKeys.Contains("slcdgrpcdvalue")) selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("loccdvalue")) selloccd = FC["loccdvalue"].retSqlformat();
+                if (FC.AllKeys.Contains("BLTYPEvalue")) selbltype = FC["BLTYPEvalue"].retSqlformat();
+
                 //if (grpcd.retStr() != "")
                 //{
                 // string   sql1 = "select a.itgrpcd, a.class1cd from " + scm1 + ".m_group a where a.class1cd in ( ";
@@ -168,7 +174,7 @@ namespace Improvar.Controllers
                         sql += "b.itcd cd, nvl(b.styleno,b.itnm) nm, b.prodgrpcd snm, ";
                     }
                     sql += "b.stkdrcr,b.styleno, b.uomnm, b.decimals, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
-                    sql += "b.batchno,b.stktype,b.shade,b.baleno,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.district ";
+                    sql += "b.batchno,b.stktype,b.shade,b.baleno,a.add1,a.add2,a.add3,a.add4,a.add5,a.add6,a.add7,a.district,t.BLTYPE ";
                     if (VE.Checkbox8 == true && repon == "P" && reptype != "SS") sql += ",b.hsncode ";
                     sql += "from ";
                     sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, ";
@@ -219,9 +225,9 @@ namespace Improvar.Controllers
                     sql += "(select distinct a.slcdgrpcd, a.slcdgrpnm, a.grpcdfull ";
                     sql += "from " + scmf + ".m_subleg_grp a where a.slcd is null) c ";
 
-                    sql += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s ";
+                    sql += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s, " + scm1 + ".T_TXNOTH t ";
 
-                    sql += "where a.autono=b.autono(+) and b.slcdclass1cd = s.slcdclass1cd(+) ";
+                    sql += "where a.autono=b.autono(+) and b.slcdclass1cd = s.slcdclass1cd(+) and a.autono=t.autono(+) ";
                     if (selitgrpcd.retStr() != "") sql += "and b.itgrpcd in (" + selitgrpcd + ") ";
 
                     if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") ";
@@ -231,6 +237,7 @@ namespace Improvar.Controllers
                     if (unselslcd.retStr() != "") sql += "and a.slcd not in (" + unselslcd + ") ";
                     if (plist.retStr() != "") sql += "and b.prccd in (" + plist + ") ";
                     if (selslcdgrpcd.retStr() != "") sql += "and (s.parentcd in (" + selslcdgrpcd + ") ) ";
+                    if (selbltype.retStr() != "") sql += "and t.BLTYPE in (" + selbltype + ") ";
                 }
                 if (reptype == "D") sql += " order by nm,cd,docdt,docno,docno,autono ";
                 else if (reptype == "G" && groupingwith == "MONTH") sql += " order by docdt,nm,cd ";
@@ -311,6 +318,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "conslnm", "string", "c,35", "Consignee Name");
                 HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Document Date");
                 HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No");
+                HC.GetPrintHeader(IR, "BLTYPE", "string", "c,10", "Bill Type");
                 if (PrintBale == true) HC.GetPrintHeader(IR, "baleno", "string", "c,35", "Bale");
                 HC.GetPrintHeader(IR, "snm", "string", "c,15", "prodgrpcd");
                 //HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
@@ -406,6 +414,7 @@ namespace Improvar.Controllers
                                 }
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
+                                IR.Rows[rNo]["BLTYPE"] = tbl.Rows[i]["BLTYPE"].ToString();
                                 if (PrintBale == true) IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].ToString();
                                 IR.Rows[rNo]["snm"] = tbl.Rows[i]["osnm"].ToString();
                                 //if (showpacksize == true) IR.Rows[rNo]["packsize"] = Convert.ToDouble(tbl.Rows[i]["packsize"]);

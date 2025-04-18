@@ -2959,7 +2959,7 @@ namespace Improvar.Controllers
                                 //{
                                 //    if (uomdecimal > 4) uomdecimal = 4;
                                 //}
-                                //if (uomdecimal > uommaxdecimal) uommaxdecimal = uomdecimal;
+                                if (uomdecimal > uommaxdecimal) uommaxdecimal = uomdecimal;
 
                                 dr1["qdecimal"] = uomdecimal;
 

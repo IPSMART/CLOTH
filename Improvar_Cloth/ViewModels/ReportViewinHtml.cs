@@ -100,6 +100,7 @@ namespace Improvar.ViewModels
         public string JOBNM { get; set; }
         public string TEXTBOX11 { get; set; }
         public string TEXTBOX12 { get; set; }
+        public List<DropDown_list_BLTYPE> DropDown_list_BLTYPE { get; set; }
 
 
     }
