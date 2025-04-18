@@ -199,5 +199,6 @@ namespace Improvar.Models
         [StringLength(1)]
         public string FREESTK { get; set; }
         public string ADJAUTONO { get; set; }
+        public int ParentSerialNo { get; set; }
     }
 }

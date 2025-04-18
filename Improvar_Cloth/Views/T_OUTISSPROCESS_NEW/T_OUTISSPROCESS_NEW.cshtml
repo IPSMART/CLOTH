@@ -1,0 +1,3002 @@
+﻿@model Improvar.ViewModels.TransactionOutIssProcess
+@{
+    string PageControllerName = "T_OUTISSPROCESS_NEW";
+    ViewBag.Title = "Issue for Processing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@{
+    switch (Model.MENU_PARA)
+    {
+        case "DY":
+            ViewBag.Title = "Issue for Dyer"; break;
+        case "PR":
+            ViewBag.Title = "Issue for Printing"; break;
+        case "ST":
+            ViewBag.Title = "Issue for Stiching"; break;
+        case "EM":
+            ViewBag.Title = "Issue for Embroidery"; break;
+        case "JW":
+            ViewBag.Title = "Issue for Other Jobs"; break;
+        case "IR":
+            ViewBag.Title = "Issue for Iron"; break;
+        default: ViewBag.Title = ""; break;
+    }
+}
+<style>
+    .TextAreaRemarks {
+        height: 190px;
+    }
+</style>
+<script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/Cloth.js"></script>
+<script src="~/Scripts/Sale.js"></script>
+<script type="text/javascript">
+    $("#WaitingMode").show();
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+
+        //$("#popup1").hide();
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled) <span style='font-size: small;'>" + Model.T_CNTRL_HDR.CANC_REM + "</span>";
+                    //ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
+
+        //START OF auto click FINALIZE
+        if ($("#bardatachng").val() == "Y") {
+            debugger;
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            var mtrlcdblank = false;
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if ($("#B_ITCD_" + i).val() != "" && $("#B_MTRLJOBCD_" + i).val() == "") {
+                        mtrlcdblank = true;
+                        break;
+                    }
+                }
+            }
+            if (mtrlcdblank == true) {
+                msgInfo("Please Fill Material Job in Barcode Grid !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "B_MTRLJOBCD_" + i;
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#UrlFillDetailData").val(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    var MSG = result.indexOf('_T_OUTISSPROCESS_Programme_GRID');
+                    if (MSG >= 0) {
+                        $("#partialdivProgramme").html(res[0]);
+                        $("#partialdivDetail").html(res[1]);
+                        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                        for (var i = 0; i <= GridRow - 1; i++) {
+                            OutCalculateAmt_Details(i);
+                        }
+                        $("#bardatachng").val("N");
+                        $("#WaitingMode").hide();
+                    }
+                    else {
+                        msgInfo(result);
+                        $("#WaitingMode").hide();
+                        return false;
+                    }
+                    debugger;
+                    pageValidation("@Model.DefaultAction");
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+            return false;
+        }
+        else {
+            return true;
+        }
+        //END OFauto click FINALIZE
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        }
+    });
+</script>
+
+
+<script>
+    function Fill_BarCodeData() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillBarCodeData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivBarCodeTab").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function Fill_DetailData() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillDetailData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                var MSG = result.indexOf('_T_OUTISSPROCESS_Programme_GRID');
+                if (MSG >= 0)
+                {
+                    $("#partialdivProgramme").html(res[0]);
+                    $("#partialdivDetail").html(res[1]);
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:nth-child(2)").addClass('active');
+                    //below set the  child sequence
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                    for (var i = 0; i <= GridRow - 1; i++) {
+                        CalculateOutIssProcessAmt_Details(i);
+                    }
+                    $("#bardatachng").val("N");
+                    $("#WaitingMode").hide();
+                }
+                else {
+                    msgInfo(result);
+                    $("#WaitingMode").hide();
+                    return false;
+                }
+              
+               
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function Fill_QtyRequirementData() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_Doc_Print", "Rep_Doc_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateProgQnty(i) {
+        if ("@Model.DefaultAction" != "V") {
+            var NOS = retFloat($("#P_NOS_" + i).val());
+            var CUTLENGTH = retFloat($("#P_CUTLENGTH_" + i).val());
+            var DECIMALS = retFloat($("#P_DECIMALS_" + i).val());
+            var QNTY = retFloat($("#P_QNTY_" + i).val());
+
+            if (DECIMALS == 0) {
+                if (NOS == 0) {
+                    $("#P_NOS_" + i).val(retFloat(QNTY).toFixed(2));
+                }
+                else {
+                    $("#P_QNTY_" + i).val(retFloat(NOS).toFixed(2));
+                }
+            }
+            else {
+                if (NOS != 0 && CUTLENGTH != 0) {
+                    QNTY = retFloat(NOS * CUTLENGTH).toFixed(2);
+                    $("#P_QNTY_" + i).val(retFloat(QNTY).toFixed(2));
+                }
+            }
+
+        } CalculateTotal();
+    }
+
+    function CalculateTotal() {
+        if ("@Model.DefaultAction" == "V") return true;
+        debugger;
+        var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
+        var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
+        var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = document.getElementById("P_NOS_" + i).value;
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+            var QNTY = document.getElementById("P_QNTY_" + i).value;
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
+            else { T_QNTY = T_QNTY + parseFloat(0); }
+
+
+        }
+        document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
+        document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
+
+
+    }
+
+    function CalculateTotalProgBomQnty() {
+        if ("@Model.DefaultAction" == "V") return true;
+        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0, T_QQTY1 = 0, T_NOS = 0;
+        var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QQTY1 = document.getElementById("Q_QNTY1_" + i).value;
+            if (QQTY1 == "") { QQTY1 = parseFloat(0) } else { QQTY1 = parseFloat(QQTY1) }
+            if (QQTY1 != "") { T_QQTY1 = T_QQTY1 + parseFloat(QQTY1); }
+            else { T_QQTY1 = T_QQTY1 + parseFloat(0); }
+
+            var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
+            if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
+            if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
+            else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
+
+            var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
+            if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
+            if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
+            else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
+
+            T_NOS += retFloat($("#Q_NOS_" + i).val());
+
+
+        }
+        document.getElementById("T_QQNTY").value = parseFloat(T_QQTY1).toFixed(3);
+        document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(3);
+        document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(3);
+        $("#T_NOS").val(T_NOS);
+    }
+
+
+</script>
+<script>
+    function Addrow(ID) {
+        if ("@Model.DefaultAction" == "V") return true;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                //$("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivProgramme").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function DeleteRow() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                $("#partialdivProgramme").html(result);
+                CalculateTotal();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddrowQTY(ID) {
+        if ("@Model.DefaultAction" == "V") return true;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowQTY", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function DeleteRowQTY() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRowQTY", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+                CalculateTotalProgBomQnty();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function RepeatAboveRow_TPROGBOM(i) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        i = parseInt(i);
+        if (event.key == "F9") {
+            var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+            for (var J = 0; J <= GridRow - 1; J++) {
+                var pslno = $("#P_SLNO_" + J).val();
+                var qslno = $("#Q_SLNO_" + i).val();
+                if (parseInt(pslno) == parseInt(qslno)) {
+                    $("#Q_BARNO_" + i).val($("#P_BARNO_" + J).val());
+                    $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
+                    $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
+                    $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
+                    $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
+                    $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
+                    $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
+                    $("#Q_BOMQNTY_" + i).val($("#P_QNTY_" + J).val());
+                    if ("@Model.MENU_PARA" == "DY") {
+                        $("#Q_MTRLJOBCD_" + i).val("PL");
+                    }
+                    else {
+                        $("#Q_MTRLJOBCD_" + i).val("DY");
+                    }
+                }
+            }
+        }
+        if (event.key == "F8" && i > 0) {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&RowIndex=" + i,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    //$("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivQtyRequirement").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+</script>
+<script>
+
+    function OutCalculateAmt_Details(i) {
+        if ("@Model.DefaultAction" == "V") return true;
+        var BLQNTY = $("#D_BLQNTY_" + i).val();
+        if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
+
+        var QNTY = $("#D_QNTY_" + i).val();
+        if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
+
+        var NOS = $("#D_NOS_" + i).val();
+        if (NOS != "") { NOS = parseFloat(NOS); } else { NOS = parseFloat(0); }
+
+        var FLAGMTR = $("#D_FLAGMTR_" + i).val();
+        if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
+
+        var RATE = $("#D_RATE_" + i).val();
+        if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
+
+        var IGSTPER = $("#D_IGSTPER_" + i).val();
+        if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+        var CGSTPER = $("#D_CGSTPER_" + i).val();
+        if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+        var SGSTPER = $("#D_SGSTPER_" + i).val();
+        if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+        var CESSPER = $("#D_CESSPER_" + i).val();
+        if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
+
+        var DISCTYPE = $("#D_DISCTYPE_" + i).val();
+        var DISCRATE = $("#D_DISCRATE_" + i).val();
+        if (DISCRATE != "") { DISCRATE = parseFloat(DISCRATE); } else { DISCRATE = parseFloat(0); }
+
+        var TDDISCTYPE = $("#D_TDDISCTYPE_" + i).val();
+        var TDDISCRATE = $("#D_TDDISCRATE_" + i).val();
+        if (TDDISCRATE != "") { TDDISCRATE = parseFloat(TDDISCRATE); } else { TDDISCRATE = parseFloat(0); }
+
+        var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
+        var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
+        if (SCMDISCRATE != "") { SCMDISCRATE = parseFloat(SCMDISCRATE); } else { SCMDISCRATE = parseFloat(0); }
+
+
+        //AMOUNT CALCULATION
+        var amount = 0;
+        if (BLQNTY == 0) {
+            amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
+        }
+        else {
+            amount = parseFloat(BLQNTY) * parseFloat(RATE);
+        }
+        amount = parseFloat(amount).toFixed(2);
+        $("#D_AMT_" + i).val(amount);
+
+        //DISCOUNT AMOUNT CALCULATION
+        var DISCAMT = 0;
+        if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
+        else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
+        else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
+        else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
+        else { DISCAMT = 0; }
+        DISCAMT = parseFloat(DISCAMT).toFixed(2);
+        $("#D_DISCAMT_" + i).val(DISCAMT);
+
+        //TDDISCOUNT AMOUNT CALCULATION
+        var TDDISCAMT = 0;
+        if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
+        else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
+        else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
+        else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
+        else { TDDISCAMT = 0; }
+        TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
+        $("#D_TDDISCAMT_" + i).val(TDDISCAMT);
+
+        //SCMDISCOUNT AMOUNT CALCULATION
+        var SCMDISCAMT = 0;
+        if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
+        else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
+        else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
+        else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
+        else { SCMDISCAMT = 0; }
+        SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
+        $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
+
+        //TOTAL DISCOUNT AMOUNT CALCULATION
+        var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+        $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
+
+        //TAXABLE CALCULATION
+        var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
+        taxbleamt = parseFloat(taxbleamt).toFixed(2);
+        $("#D_TXBLVAL_" + i).val(taxbleamt);
+        //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+        var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+
+        //IGST
+        if (IGSTPER == 0 || IGSTPER == "") {
+            IGSTPER = 0; IGST_AMT = 0;
+        }
+        else {
+            IGST_AMT = parseFloat((taxbleamt * IGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_IGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+        }
+        $("#D_IGSTAMT_" + i).val(IGST_AMT);
+        //CGST
+        if (CGSTPER == "" || CGSTPER == 0) {
+            CGSTPER = 0; CGST_AMT = 0;
+        }
+        else {
+            CGST_AMT = parseFloat((taxbleamt * CGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_CGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+        }
+        $("#D_CGSTAMT_" + i).val(CGST_AMT);
+        //SGST
+        if (SGSTPER == "" || SGSTPER == 0) {
+            SGSTPER = 0; SGST_AMT = 0;
+        }
+        else {
+            SGST_AMT = parseFloat((taxbleamt * SGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_SGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+        }
+        $("#D_SGSTAMT_" + i).val(SGST_AMT);
+
+        //CESS
+        if (CESSPER == "" || CESSPER == 0) {
+            CESSPER = 0; CESS_AMT = 0;
+        }
+        else {
+            CESS_AMT = parseFloat((taxbleamt * CESSPER) / 100).toFixed(2);
+            chkAmt = $("#D_CESSAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+        }
+        $("#D_CESSAMT_" + i).val(CESS_AMT);
+
+        var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
+        $("#D_NETAMT_" + i).val(netamt);
+        OutCalculateTotal_Details();
+    }
+
+    function OutCalculateTotal_Details() {
+        if ("@Model.DefaultAction" == "V") return true;
+        var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
+
+        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = $("#D_NOS_" + i).val();
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+            var QNTY = $("#D_QNTY_" + i).val();
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
+
+            var AMT = $("#D_AMT_" + i).val();
+            if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+
+            var GROSS_AMT = $("#D_TXBLVAL_" + i).val();
+            if (GROSS_AMT != "") { T_GROSS_AMT = T_GROSS_AMT + parseFloat(GROSS_AMT); } else { T_GROSS_AMT = T_GROSS_AMT + parseFloat(0); }
+
+            var IGST_AMT = $("#D_IGSTAMT_" + i).val();
+            if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
+
+            var CGST_AMT = $("#D_CGSTAMT_" + i).val();
+            if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+
+            var SGST_AMT = $("#D_SGSTAMT_" + i).val();
+            if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+
+            var CESS_AMT = $("#D_CESSAMT_" + i).val();
+            if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
+
+            var NET_AMT = $("#D_NETAMT_" + i).val();
+            if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
+        }
+        var totaltax = parseFloat(T_IGST_AMT) + parseFloat(T_CGST_AMT) + parseFloat(T_SGST_AMT) + parseFloat(T_CESS_AMT);
+        $("#T_NOS").val(parseFloat(T_NOS).toFixed(0));
+        $("#T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+        $("#T_AMT").val(parseFloat(T_AMT).toFixed(2));
+        $("#T_GROSS_AMT").val(parseFloat(T_GROSS_AMT).toFixed(2));
+        $("#T_IGST_AMT").val(parseFloat(T_IGST_AMT).toFixed(2));
+        $("#T_CGST_AMT").val(parseFloat(T_CGST_AMT).toFixed(2));
+        $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
+        $("#T_CESS_AMT").val(parseFloat(T_CESS_AMT).toFixed(2));
+        $("#T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
+    }
+
+
+</script>
+<script>
+    function Program_GetBarnoDetails(id, P_BARNO_, P_MTRLJOBCD_, P_PARTCD_, P_ITCD_, P_ITNM_, P_UOM_, P_ITGRPCD_, P_ITGRPNM_, P_COLRCD_, P_SIZECD_, P_COLRNM_, P_MTRLJOBNM_, P_BarImages_, BarImagesCount_, P_DECIMALS_, P_CLRBARCODE_, P_SZBARCODE_, tag, callfrm, i) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        if (id == "") {
+            if (tag == "QTY") {
+                ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i);
+            }
+            else {
+                ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
+            }
+        }
+        else {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
+            if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+            var MTRLJOBCD = $("#" + P_MTRLJOBCD_).val();
+            var PARTCD = $("#PARTCD").val();
+            var docdt = $("#DOCDT").val();
+            var taxgrpcd = $("#TAXGRPCD").val();
+            var gocd = $("#GOCD").val();
+            var prccd = $("#PRCCD").val();
+            var allmtrljobcd = "";
+            var bomitcd = "";
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd + String.fromCharCode(181) + callfrm + String.fromCharCode(181) + tag;
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetailsGrid", PageControllerName)",
+                data: "&val=" + id + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        if (tag == "QTY") {
+                            ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i);
+                        }
+                        else {
+                            ClearAllTextBoxes(P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_);
+                        }
+                        if (callfrm == "bar") {
+                            $('#SearchFldValue').val(P_BARNO_);
+                        }
+                        else {
+                            $('#SearchFldValue').val(P_ITNM_);
+                        }
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(P_BARNO_ + "/" + P_MTRLJOBCD_ + "/" + P_PARTCD_ + "/" + P_ITNM_);
+                        $('#ReferanceColumn').val('0/2/5/3');
+                        if (callfrm == "bar") {
+                            $('#helpDIV_Header').html('Barno Details');
+                        }
+                        else {
+                            $('#helpDIV_Header').html('Design No Details');
+                        }
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            if (tag == "QTY") {
+                                $("#B_BARCODE_" + i).val(returncolvalue(result, "BARNO"));
+                                $("#B_ITGRPCD_" + i).val(returncolvalue(result, "ITGRPCD"));
+                                $("#B_ITGRPNM_" + i).val(returncolvalue(result, "ITGRPNM"));
+                                $("#B_MTRLJOBCD_" + i).val(returncolvalue(result, "MTRLJOBCD"));
+                                $("#B_MTRLJOBNM_" + i).val(returncolvalue(result, "MTRLJOBNM"));
+                                $("#B_MTBARCODE_" + i).val(returncolvalue(result, "MTBARCODE"));
+                                $("#B_ITCD_" + i).val(returncolvalue(result, "ITCD"));
+                                $("#B_ITSTYLE_" + i).val(returncolvalue(result, "STYLENO"));
+                                $("#B_STYLENO_" + i).val(returncolvalue(result, "STYLENO"));
+                                $("#B_PARTCD_" + i).val(returncolvalue(result, "PARTCD"));
+                                $("#B_PARTNM_" + i).val(returncolvalue(result, "PARTNM"));
+                                $("#B_PRTBARCODE_" + i).val(returncolvalue(result, "PRTBARCODE"));
+                                $("#B_COLRCD_" + i).val(returncolvalue(result, "COLRCD"));
+                                $("#B_COLRNM_" + i).val(returncolvalue(result, "COLRNM"));
+                                $("#B_CLRBARCODE_" + i).val(returncolvalue(result, "CLRBARCODE"));
+                                $("#B_SIZECD_" + i).val(returncolvalue(result, "SIZECD"));
+                                $("#B_SIZENM_" + i).val(returncolvalue(result, "SIZENM"));
+                                $("#B_SZBARCODE_" + i).val(returncolvalue(result, "SZBARCODE"));
+                                $("#B_BALSTOCK_" + i).val(returncolvalue(result, "BALQNTY"));
+
+                                var stock = retFloat(returncolvalue(result, "BALQNTY"));
+                                var bomqnty = 0;
+                                if ($("#B_BOMQNTY_" + i).val() != "") {
+                                    bomqnty = retFloat($("#B_BOMQNTY_" + i).val().split('~~')[0]);
+                                }
+
+                                if (stock < bomqnty) {
+                                    $("#B_QNTY_" + i).val(stock);
+                                }
+                                else {
+                                    $("#B_QNTY_" + i).val(bomqnty);
+                                }
+
+                                $("#B_UOM_" + i).val(returncolvalue(result, "uomcd"));
+                                $("#B_NOS_" + i).val(returncolvalue(result, "NOS"));
+                                $("#B_FLAGMTR_" + i).val(returncolvalue(result, "FLAGMTR"));
+                                var RATE = returncolvalue(result, "RATE");
+                                var PRODGRPGSTPER = returncolvalue(result, "PRODGRPGSTPER");
+                                var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
+                                var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
+                                $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
+
+                                $("#B_RATE_" + i).val(RATE);
+                                $("#B_GSTPER_" + i).val(GSTPER);
+                                $("#B_PRODGRPGSTPER_" + i).val(PRODGRPGSTPER);
+                                $("#B_DISCRATE_" + i).val(returncolvalue(result, "DISCRATE"));
+                                $("#B_HSNCODE_" + i).val(returncolvalue(result, "HSNCODE"));
+
+                                $("#B_SHADE_" + i).val(returncolvalue(result, "SHADE"));
+                                if (MENU_PARA == "PB") {
+                                    $("#B_BALENO_" + i).val(returncolvalue(result, "BALENO"));
+                                    $("#B_OURDESIGN_" + i).val(returncolvalue(result, "OURDESIGN"));
+                                    $("#B_PDESIGN_" + i).val(returncolvalue(result, "PDESIGN"));
+                                    $("#B_WPPRICEGEN_" + i).val(returncolvalue(result, "WPPRICEGEN"));
+                                    $("#B_RPPRICEGEN_" + i).val(returncolvalue(result, "RPPRICEGEN"));
+                                }
+                                $("#B_TDDISCRATE_" + i).val(returncolvalue(result, "TDDISCRATE"));
+                                $("#B_SCMDISCRATE_" + i).val(returncolvalue(result, "SCMDISCRATE"));
+                                $("#B_LOCABIN_" + i).val(returncolvalue(result, "LOCABIN"));
+                                $("#B_GLCD_" + i).val(returncolvalue(result, "GLCD"));
+                                $("#B_BARGENTYPETEMP_" + i).val(returncolvalue(result, "BARGENTYPE"));
+                                $("#B_NEGSTOCK_" + i).val(returncolvalue(result, "NEGSTOCK"));
+                                $("#B_BarImages_" + i).val(returncolvalue(result, "BARIMAGE"));
+                            }
+                            else {
+                                var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
+                                if (_mtrljbcd == "") {
+                                    $("#" + P_MTRLJOBCD_).val(returncolvalue(result, "MTRLJOBCD_NEW"));
+                                    $("#" + P_MTRLJOBNM_).val(returncolvalue(result, "MTRLJOBNM_NEW"));
+                                }
+                                $("#" + P_BARNO_).val(returncolvalue(result, "BARNO"));
+                                $("#" + P_PARTCD_).val(returncolvalue(result, "PARTCD"));
+                                $("#" + P_ITCD_).val(returncolvalue(result, "ITCD"));
+                                //$("#" + P_ITNM_).val(returncolvalue(result, "ITSTYLE"));//FOR ANKAN DESIGN : TISSUE AFTER 2ND BLUR SHOWING ERROR
+                                $("#" + P_ITNM_).val(returncolvalue(result, "STYLENO"));
+                                $("#" + P_UOM_).val(returncolvalue(result, "UOMCD"));
+                                $("#" + P_ITGRPCD_).val(returncolvalue(result, "ITGRPCD"));
+                                $("#" + P_ITGRPNM_).val(returncolvalue(result, "ITGRPNM"));
+                                $("#" + P_COLRCD_).val(returncolvalue(result, "COLRCD"));
+                                $("#" + P_SIZECD_).val(returncolvalue(result, "SIZECD"));
+                                $("#" + P_COLRNM_).val(returncolvalue(result, "COLRNM"));
+
+                                $("#" + P_BarImages_).val(returncolvalue(result, "BARIMAGE"));
+                                $("#" + BarImagesCount_).val(returncolvalue(result, "barimagecount"));
+                                $("#" + P_DECIMALS_).val(returncolvalue(result, "DECIMALS"));
+                                $("#" + P_CLRBARCODE_).val(returncolvalue(result, "clrbarcode"));
+                                $("#" + P_SZBARCODE_).val(returncolvalue(result, "szbarcode"));
+                            }
+                        }
+                        else {
+                            msgInfo("" + result + " !");
+                            if (tag == "QTY") {
+                                ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i);
+                            }
+                            else {
+                                ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
+                            }
+                            message_value = P_BARNO_;
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function T_OUTISSPROCESS_GetBarnoDetails(id, callfrm) {
+        if ("@Model.DefaultAction" == "V") return true;
+        if (id == "") {
+            T_OUTISSPROCESS_ClearBarcodeArea('B');
+        }
+        else {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
+            if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+            var MTRLJOBCD = $("#MTRLJOBCD").val();
+            var PARTCD = $("#PARTCD").val();
+            var docdt = $("#DOCDT").val();
+            var taxgrpcd = $("#TAXGRPCD").val();
+            var gocd = $("#GOCD").val();
+            var prccd = $("#PRCCD").val();
+            var allmtrljobcd = $("#ALLMTRLJOBCD").val();
+            var bomitcd = $("#BOMITCD").val();
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + bomitcd + String.fromCharCode(181) + callfrm;
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#UrlBarnoDetails").val(),//"@Url.Action("GetBarCodeDetails", PageControllerName)",
+                data: "&val=" + id + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
+                        if (callfrm == "bar") {
+                            $('#SearchFldValue').val('BARCODE');
+                        }
+                        else {
+                            $('#SearchFldValue').val('ITSTYLENO');
+                        }
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
+                        $('#ReferanceColumn').val('0/2/5');
+                        if (callfrm == "bar") {
+                            $('#helpDIV_Header').html('Barno Details');
+                        }
+                        else {
+                            $('#helpDIV_Header').html('Design No Details');
+                        }
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            T_OUTISSPROCESS_FillBarcodeArea(result);
+                            changeBARGENTYPE();
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
+                            if (callfrm == "bar") {
+                                message_value = "BARCODE";
+                            }
+                            else {
+                                message_value = "ITSTYLENO";
+                            }
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function T_OUTISSPROCESS_FillBarcodeArea(str, Table, i) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+        if (DefaultAction == "V") return true;
+        if (Table == "COPYLROW") {
+            if (event.key != "F8") {
+                return true;
+            }
+            else {
+                i = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length - 1;
+            }
+        }
+        if (str != "") {
+            $("#BARCODE").val(returncolvalue(str, "BARNO"));
+            $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
+            $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
+            $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
+            $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
+            $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
+            $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
+            $("#ITCD").val(returncolvalue(str, "ITCD"));
+            $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM") + "" + returncolvalue(str, "FABITNM"));
+            $("#STYLENO").val(returncolvalue(str, "STYLENO"));
+            //$("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
+            $("#PARTCD").val(returncolvalue(str, "PARTCD"));
+            $("#PARTNM").val(returncolvalue(str, "PARTNM"));
+            $("#PRTBARCODE").val(returncolvalue(str, "PRTBARCODE"));
+            $("#COLRCD").val(returncolvalue(str, "COLRCD"));
+            $("#COLRNM").val(returncolvalue(str, "COLRNM"));
+            $("#CLRBARCODE").val(returncolvalue(str, "CLRBARCODE"));
+            $("#SIZECD").val(returncolvalue(str, "SIZECD"));
+            $("#SIZENM").val(returncolvalue(str, "SIZENM"));
+            $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
+            $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
+
+            var stock = retFloat(returncolvalue(str, "BALQNTY"));
+            var bomqnty = 0;
+            if ($("#BOMQNTY").val() != "") {
+                bomqnty = retFloat($("#BOMQNTY").val().split('~~')[0]);
+            }
+
+            if (stock < bomqnty) {
+                $("#QNTY").val(stock);
+            }
+            else {
+                $("#QNTY").val(bomqnty);
+            }
+
+            $("#UOM").val(returncolvalue(str, "uomcd"));
+            $("#NOS").val(returncolvalue(str, "NOS"));
+            $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
+            var RATE = returncolvalue(str, "RATE");
+            var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
+            var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
+            var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
+            $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
+
+            $("#RATE").val(RATE);
+            $("#GSTPER").val(GSTPER);
+            $("#PRODGRPGSTPER").val(PRODGRPGSTPER);
+            $("#DISCRATE").val(returncolvalue(str, "DISCRATE"));
+            //$("#DISCTYPE").val(returncolvalue(str, "DISCTYPE"));
+            $("#HSNCODE").val(returncolvalue(str, "HSNCODE"));
+
+            $("#SHADE").val(returncolvalue(str, "SHADE"));
+            if (MENU_PARA == "PB") {
+                $("#BALENO").val(returncolvalue(str, "BALENO"));
+                $("#OURDESIGN").val(returncolvalue(str, "OURDESIGN"));
+                $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
+                $("#WPPRICEGEN").val(returncolvalue(str, "WPPRICEGEN"));
+                $("#RPPRICEGEN").val(returncolvalue(str, "RPPRICEGEN"));
+            }
+            //$("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
+            $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
+            //$("#SCMDISCTYPE").val(returncolvalue(str, "SCMDISCTYPE"));
+            $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
+            $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
+            $("#GLCD").val(returncolvalue(str, "GLCD"));
+            $("#BARGENTYPETEMP").val(returncolvalue(str, "BARGENTYPE"));
+            $("#NEGSTOCK").val(returncolvalue(str, "NEGSTOCK"));
+            $("#BarImages").val(returncolvalue(str, "BARIMAGE"));
+        }
+        else {
+            var FieldidStarting = "";
+            FieldidStarting = "#B_";
+
+            if (Table != "COPYLROW") {
+                $("#SLNO").val($(FieldidStarting + "SLNO_" + i).val());
+                $("#TXNSLNO").val($(FieldidStarting + "TXNSLNO_" + i).val());
+            }
+            $("#STKNAME").val($(FieldidStarting + "STKNAME_" + i).val());
+            if (Table != "COPYLROW") {
+                $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
+                $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
+                $("#CUTLENGTH").val($(FieldidStarting + "CUTLENGTH_" + i).val());
+            }
+            if (MENU_PARA == "DY") {
+                if (Table != "COPYLROW") {
+                    $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
+                }
+            }
+            else {
+                $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
+            }
+            //$("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
+            $("#RECPROGITCD").val($(FieldidStarting + "RECPROGITCD_" + i).val());
+            $("#RECPROGITSTYLE").val($(FieldidStarting + "RECPROGITSTYLE_" + i).val());
+            //$("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
+            //$("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
+            $("#BOMITCD").val($(FieldidStarting + "RECPROGITCD_" + i).val());
+            $("#BOMITNM").val($(FieldidStarting + "RECPROGITSTYLE_" + i).val());
+            $("#BOMQNTY").val($(FieldidStarting + "BOMQNTY_" + i).val());
+            $("#DISCRATE").val($(FieldidStarting + "DISCRATE_" + i).val());
+            $("#DISCTYPE").val($(FieldidStarting + "DISCTYPE_" + i).val());
+            $("#TDDISCTYPE").val($(FieldidStarting + "TDDISCTYPE_" + i).val());
+            $("#TDDISCRATE").val($(FieldidStarting + "TDDISCRATE_" + i).val());
+            $("#SCMDISCTYPE").val($(FieldidStarting + "SCMDISCTYPE_" + i).val());
+            $("#SCMDISCRATE").val($(FieldidStarting + "SCMDISCRATE_" + i).val());
+            if ((Table != "COPYLROW") && (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB")) {
+                $("#ORDDOCNO").val($(FieldidStarting + "ORDDOCNO_" + i).val());
+                $("#ORDDOCDT").val($(FieldidStarting + "ORDDOCDT_" + i).val());
+                $("#ORDAUTONO").val($(FieldidStarting + "ORDAUTONO_" + i).val());
+                $("#ORDSLNO").val($(FieldidStarting + "ORDSLNO_" + i).val());
+            }
+            $("#BALSTOCK").val($(FieldidStarting + "BALSTOCK_" + i).val());
+            $("#NEGSTOCK").val($(FieldidStarting + "NEGSTOCK_" + i).val());
+
+            $("#BARCODE").val($(FieldidStarting + "BARNO_" + i).val());
+            $("#ITGRPCD").val($(FieldidStarting + "ITGRPCD_" + i).val());
+            $("#ITGRPNM").val($(FieldidStarting + "ITGRPNM_" + i).val());
+            $("#MTRLJOBCD").val($(FieldidStarting + "MTRLJOBCD_" + i).val());
+            $("#MTRLJOBNM").val($(FieldidStarting + "MTRLJOBNM_" + i).val());
+            $("#MTBARCODE").val($(FieldidStarting + "MTBARCODE_" + i).val());
+            $("#ITCD").val($(FieldidStarting + "ITCD_" + i).val());
+            $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val());
+            $("#STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
+            $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
+            $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
+            $("#PRTBARCODE").val($(FieldidStarting + "PRTBARCODE_" + i).val());
+            $("#COLRCD").val($(FieldidStarting + "COLRCD_" + i).val());
+            $("#COLRNM").val($(FieldidStarting + "COLRNM_" + i).val());
+            $("#CLRBARCODE").val($(FieldidStarting + "CLRBARCODE_" + i).val());
+            $("#SIZECD").val($(FieldidStarting + "SIZECD_" + i).val());
+            $("#SIZENM").val($(FieldidStarting + "SIZENM_" + i).val());
+            $("#SZBARCODE").val($(FieldidStarting + "SZBARCODE_" + i).val());
+            $("#FLAGMTR").val($(FieldidStarting + "FLAGMTR_" + i).val());
+            $("#RATE").val($(FieldidStarting + "RATE_" + i).val());
+            $("#HSNCODE").val($(FieldidStarting + "HSNCODE_" + i).val());
+            $("#GSTPER").val($(FieldidStarting + "GSTPER_" + i).val());
+            $("#PRODGRPGSTPER").val($(FieldidStarting + "PRODGRPGSTPER_" + i).val());
+            $("#SHADE").val($(FieldidStarting + "SHADE_" + i).val());
+            $("#BARGENTYPETEMP").val($(FieldidStarting + "BARGENTYPE_" + i).val());
+            if (MENU_PARA == "PB") {
+                $("#BALENO").val($(FieldidStarting + "BALENO_" + i).val());
+                $("#OURDESIGN").val($(FieldidStarting + "OURDESIGN_" + i).val());
+                $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
+                $("#WPPRICEGEN").val($(FieldidStarting + "WPPRICEGEN_" + i).val());
+                $("#RPPRICEGEN").val($(FieldidStarting + "RPPRICEGEN_" + i).val());
+                if (FieldidStarting == "#B_") {
+                    $("#BarImages").val($(FieldidStarting + "BarImages_" + i).val());
+                }
+            }
+            $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
+            $("#UOM").val($(FieldidStarting + "UOM_" + i).val());
+            $("#GLCD").val($(FieldidStarting + "GLCD_" + i).val());
+        }
+        if (Table == "_T_SALE_PRODUCT_GRID") {
+            $("#AddRow_Barcode").hide();
+            $("#UpdateRow_Barcode").prop("value", "Update Row [" + $(FieldidStarting + "SLNO_" + i).val() + "] (Alt+W)");
+            $("#UpdateRow_Barcode").show();
+        }
+        changeBARGENTYPE();
+    }
+    function T_OUTISSPROCESS_AddBarCodeGrid() {
+        if ("@Model.DefaultAction" == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+        var ModuleCode = $("#ModuleCode").val();
+
+        if ($("#ITGRPCD").val() == "") {
+            msgInfo("Please enter/select Item Group Code !");
+            message_value = "ITGRPCD";
+            return false;
+        }
+        if ($("#MTRLJOBCD").val() == "") {
+            msgInfo("Please enter Material Job Code !");
+            message_value = "MTRLJOBCD";
+            return false;
+        }
+        if ($("#ITCD").val() == "") {
+            msgInfo("Please enter Item Code !");
+            message_value = "ITCD";
+            return false;
+        }
+        if ($("#QNTY").val() == "0") {
+            msgInfo("Quantity should not be zero(0) !");
+            message_value = "QNTY";
+            return false;
+        }
+        var retval = IssueQntyChk('BALSTOCK', 'BOMQNTY', 'NEGSTOCK', 'QNTY', 'ITCD', 'SLNO');
+        if (retval == false) {
+            return false;
+        }
+        var FLAGMTR = $("#FLAGMTR").val();
+        var QNTY = $("#QNTY").val();
+
+        if (FLAGMTR != "") {
+            var flgmtr = FLAGMTR;
+            if (flgmtr == "") { flgmtr = parseFloat(0); } else { flgmtr = parseFloat(flgmtr); }
+            var qnty = QNTY;
+            if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
+            if (flgmtr > qnty) {
+                msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
+                message_value = "FLAGMTR";
+                return false;
+            }
+        }
+        if ($("#HSNCODE").val() == "") {
+            msgInfo("Please enter HSN Code !");
+            message_value = "HSNCODE";
+            return false;
+        }
+
+
+        var BARCODE = $("#BARCODE").val();
+        var ITGRPCD = $("#ITGRPCD").val();
+        var ITGRPNM = $("#ITGRPNM").val();
+        var MTRLJOBCD = $("#MTRLJOBCD").val();
+        var MTRLJOBNM = $("#MTRLJOBNM").val();
+        var MTBARCODE = $("#MTBARCODE").val();
+        var ITCD = $("#ITCD").val();
+        var ITSTYLE = $("#ITSTYLE").val();
+        var STYLENO = $("#STYLENO").val();
+        var STKTYPE = $("#STKTYPE").val();
+        var PARTCD = $("#PARTCD").val();
+        var PARTNM = $("#PARTNM").val();
+        var PRTBARCODE = $("#PRTBARCODE").val();
+        var COLRCD = $("#COLRCD").val();
+        var COLRNM = $("#COLRNM").val();
+        var CLRBARCODE = $("#CLRBARCODE").val();
+        var SIZECD = $("#SIZECD").val();
+        var SIZENM = $("#SIZENM").val();
+        var SZBARCODE = $("#SZBARCODE").val();
+
+        var BALSTOCK = $("#BALSTOCK").val();
+        var UOM = $("#UOM").val();
+        var NOS = $("#NOS").val();
+        var RATE = $("#RATE").val();
+
+        var DISCRATE = $("#DISCRATE").val();
+        var DISCTYPE = $("#DISCTYPE").val();
+        var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : DISCTYPE == "F" ? "Fixed" : "";
+        var HSNCODE = $("#HSNCODE").val();
+        var GSTPER = $("#GSTPER").val();
+        var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
+        var SHADE = $("#SHADE").val();
+        var BALENO = "";
+        var OURDESIGN = "";
+        var PDESIGN = "";
+
+        var WPPRICEGEN = "";
+        var RPPRICEGEN = "";
+        if (MENU_PARA == "PB") {
+            BALENO = $("#BALENO").val();
+            OURDESIGN = $("#OURDESIGN").val();
+            PDESIGN = $("#PDESIGN").val();
+            WPPRICEGEN = $("#WPPRICEGEN").val();
+            RPPRICEGEN = $("#RPPRICEGEN").val();
+        }
+        var TDDISCTYPE = $("#TDDISCTYPE").val();
+        var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : TDDISCTYPE == "F" ? "Fixed" : "";
+        var TDDISCRATE = $("#TDDISCRATE").val();
+        var SCMDISCTYPE = $("#SCMDISCTYPE").val();
+        var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : SCMDISCTYPE == "A" ? "AftDsc%" : SCMDISCTYPE == "F" ? "Fixed" : "";
+        var SCMDISCRATE = $("#SCMDISCRATE").val();
+        var LOCABIN = $("#LOCABIN").val();
+        var GLCD = $("#GLCD").val();
+        var ITMBARGENTYPE = $("#BARGENTYPETEMP").val();
+        var ENTRYBARGENTYPE = $("#BARGENTYPE").val();
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
+            var ORDDOCNO = $("#ORDDOCNO").val();
+            var ORDDOCDT = $("#ORDDOCDT").val();
+            var ORDAUTONO = $("#ORDAUTONO").val();
+            var ORDSLNO = $("#ORDSLNO").val();
+        }
+        var BarImages = $("#BarImages").val();
+        if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+            BarImages = "";
+        }
+        var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
+        if (BarImages == '') { NoOfBarImages = ''; }
+        var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        var SLNO = 1;
+        if (parseInt(rowindex) != 0) {
+            var LASTROWINDEX = parseInt(rowindex) - 1;
+            var LASTSLNO = $("#B_SLNO_" + LASTROWINDEX).val();
+            SLNO = parseInt(LASTSLNO) + 1;
+        }
+        var BALSTOCK = $("#BALSTOCK").val();
+        var NEGSTOCK = $("#NEGSTOCK").val();
+        var BOMQNTY = $("#BOMQNTY").val();
+        var RECPROGSLNO = $("#RECPROGSLNO").val();
+        if (RECPROGSLNO == "") {
+            RECPROGSLNO = SLNO;
+        }
+        var RECPROGITCD = $("#BOMITCD").val();
+        if (RECPROGITCD == "") {
+            RECPROGITCD = ITCD;
+        }
+        var RECPROGITSTYLE = $("#BOMITNM").val();
+        if (RECPROGITSTYLE == "") {
+            RECPROGITSTYLE = ITSTYLE;
+        }
+        var CUTLENGTH = $("#CUTLENGTH").val();
+
+        //get bill slno
+        var TXNSLNO = "";
+        var PAGENO = "";
+        var PAGESLNO = "";
+        if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
+            var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            if (GridRowMain == 0) {
+                TXNSLNO = 1;
+            }
+            else {
+                var allslno = [];
+                var matchslno = [];
+                var pageno = [];
+                countmatchslno = 0;
+                for (j = 0; j <= GridRowMain - 1; j++) {
+                    var flag = true;
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                        if (retStr(AGDOCNO) != retStr($("#B_AGDOCNO_" + j).val()) || retStr(AGDOCDT) != retStr($("#B_AGDOCDT_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
+                        if (retFloat(LISTPRICE) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat(LISTDISCPER) != retFloat($("#B_LISTDISCPER_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                    if (retStr(BALENO) != retStr($("#B_BALENO_" + j).val())) {
+                        flag = false;
+                    }
+                    //}
+                    if (flag == true) {
+                        if (retStr(ITGRPCD) == retStr($("#B_ITGRPCD_" + j).val()) && retStr(MTRLJOBCD) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                     retStr(MTBARCODE) == retStr($("#B_MTBARCODE_" + j).val()) && retStr(ITCD) == retStr($("#B_ITCD_" + j).val()) &&
+                     retStr(DISCTYPE) == retStr($("#B_DISCTYPE_" + j).val()) && retStr(TDDISCTYPE) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                      retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
+                     retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
+                     retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                     retStr(GLCD) == retStr($("#B_GLCD_" + j).val()) && retStr(RECPROGSLNO) == retStr($("#B_RECPROGSLNO_" + j).val())) {
+
+                            matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                                var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                                str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
+                                str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
+                                pageno[countmatchslno] = str1;
+                            }
+                            countmatchslno++;
+                        }
+                    }
+                    allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
+                }
+
+                if (matchslno.length > 0) {
+                    TXNSLNO = Math.max.apply(Math, matchslno);
+                    if (TXNSLNO == 0) {
+                        TXNSLNO = Math.max.apply(Math, allslno);
+                        TXNSLNO++;
+                    }
+                    else {
+                        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                            var strpageno = pageno.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
+                            PAGENO = returncolvalue(strpageno, "PAGENO");
+                            PAGESLNO = returncolvalue(strpageno, "PAGESLNO");
+                        }
+                    }
+                }
+                else {
+                    TXNSLNO = Math.max.apply(Math, allslno);
+                    TXNSLNO++;
+                }
+            }
+        }
+        else {
+            TXNSLNO = retInt($("#TXNSLNO").val());
+        }
+
+        var tr = "";
+        tr += ' <tr style="font-size:12px; font-weight:bold;">';
+        tr += '    <td class="sticky-cell">';
+        tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
+        tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
+        tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
+        tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
+        if (MENU_PARA == "PB") {
+            tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
+            tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
+            tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
+        }
+        tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
+        tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
+        tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
+        //tr += '        <input id="B_RECPROGSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO" type="hidden" value="' + RECPROGSLNO + '">';
+        //tr += '        <input id="B_TXNSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="' + TXNSLNO + '">';
+        tr += '        <input id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" type="hidden" value="' + DISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
+        tr += '        <input id="B_DISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCRATE" type="hidden" value="' + DISCRATE + '">';
+
+        tr += '        <input id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" type="hidden" value="' + TDDISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
+        tr += '        <input id="B_TDDISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" type="hidden" value="' + TDDISCRATE + '">';
+
+        tr += '        <input id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" type="hidden" value="' + SCMDISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
+        tr += '        <input id="B_SCMDISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" type="hidden" value="' + SCMDISCRATE + '">';
+
+
+        tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:72px" title="' + RECPROGSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field RECPROGSLNO must be a number." data-val-required="The RECPROGSLNO field is required." id="B_RECPROGSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" readonly="readonly" type="text" value="' + RECPROGSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + RECPROGITSTYLE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_RECPROGITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGITSTYLE" readonly="readonly" type="text" value="' + RECPROGITSTYLE + '">';
+        tr += '        <input id="B_RECPROGITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGITCD" type="hidden" value="' + RECPROGITCD + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + ITGRPNM + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
+        tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
+        tr += '    </td>';
+
+        tr += '    <td class="" title="' + MTRLJOBCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="' + MTRLJOBCD + '">';
+        tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
+        tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + ITCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" readonly="readonly" type="text" value="' + ITCD + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + ITSTYLE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
+        tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
+        tr += '    </td>         ';
+        tr += '    <td class="" title="' + STKTYPE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
+        tr += '     </td>';
+        tr += '    <td class="" title="' + PARTCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTCD" readonly="readonly" type="text" value="' + PARTCD + '">';
+        tr += '        <input id="B_PARTNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTNM" type="hidden" value="' + PARTNM + '">';
+        tr += '        <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRTBARCODE" type="hidden" value="' + PRTBARCODE + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + COLRCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="' + COLRCD + '">';
+        tr += '     <input id="B_CLRBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="' + CLRBARCODE + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + COLRNM + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="' + COLRNM + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + SIZECD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="' + SIZECD + '">';
+        tr += '        <input id="B_SIZENM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZENM" type="hidden" value="' + SIZENM + '">';
+        tr += '        <input id="B_SZBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SZBARCODE" type="hidden" value="' + SZBARCODE + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + SHADE + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SHADE" readonly="readonly" type="text" value="' + SHADE + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + BALSTOCK + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_BALSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
+        tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + CUTLENGTH + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + NOS + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\',\'GRID\');" value="' + QNTY + '">';
+        tr += '        <input id="B_BOMQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BOMQNTY" type="hidden" value="' + BOMQNTY + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + UOM + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + RATE + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="Sale_GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ',\'#B_\');HasChangeBarSale();" value="' + RATE + '" >';
+        tr += '    </td>';
+        if (MENU_PARA == "PB") {
+            tr += '    <td class="">';
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly"  >';
+            tr += '        <input data-val="true" data-val-length="The field WPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_WPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPRICEGEN" type="hidden" value="' + WPPRICEGEN + '">';
+            tr += '        <input data-val="true" data-val-length="The field RPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
+            tr += '    </td>';
+
+            tr += '    <td class="">';
+            tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RPRATE must be a number." id="B_RPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly" >';
+            tr += '    </td>';
+        }
+
+        tr += '    <td class="" title="' + GSTPER + '">';
+        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
+        tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+        tr += '    </td>';
+        //tr += '    <td class="" title="' + DISCTYPE_DESC + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
+        //tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
+        //tr += '    </td>';
+        //tr += '    <td class="" title="' + DISCRATE + '">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + DISCRATE + '">';
+        //tr += '    </td>';
+        //tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="' + TDDISCTYPE_DESC + '">';
+        //tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
+        //tr += '                              </td>';
+        //tr += '    <td class="" title="' + TDDISCRATE + '">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + TDDISCRATE + '">';
+        //tr += '    </td>';
+        //tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
+        //tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
+        //tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
+        //tr += '    </td>';
+        //tr += '    <td class="" title="' + SCMDISCRATE + '">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
+        //tr += '    </td>';
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
+            tr += '    <td class="" title="' + ORDDOCNO + '">';
+            tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCNO" readonly="readonly" type="text" value="' + ORDDOCNO + '">';
+            tr += '        <input id="B_ORDAUTONO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="' + ORDAUTONO + '">';
+            tr += '    </td>';
+            tr += '    <td class="" title="' + ORDSLNO + '">';
+            tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDSLNO" readonly="readonly" type="text" value="' + ORDSLNO + '">';
+            tr += '    </td>';
+            tr += '    <td class="" title="' + ORDDOCDT + '">';
+            tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCDT" readonly="readonly" type="text" value="' + ORDDOCDT + '">';
+            tr += '    </td>';
+        }
+        tr += '    <td class="">';
+        tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM" onblur="HasChangeBarSale();" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="">';
+        //tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
+        tr += '    </td>';
+        tr += '   <td class=""> ';
+        tr += ' <input type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="' + NoOfBarImages + '" readonly="readonly" placeholder="">';
+        tr += '   </td> ';
+        tr += '   <td class="">  ';
+        if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+            tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder="" id="UploadBarnoImage_' + rowindex + '"> ';
+
+        }
+        else {
+            tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px;display:none;" readonly="readonly" placeholder="" id="UploadBarnoImage_' + rowindex + '"> ';
+        }
+        tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
+        tr += '   </td> ';
+        if (MENU_PARA != "SB") {
+            tr += '        <td class="sticky-cell-opposite">';
+            tr += '            <button type="button" class="atextBoxFor btn-info" onclick="T_OUTISSPROCESS_FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+            tr += '        </td>';
+        }
+        tr += ' </tr>';
+
+        $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
+        CalculateTotal_Barno();
+        if (MENU_PARA == "PB") {
+            RateUpdate(rowindex);
+
+        }
+
+        T_OUTISSPROCESS_ClearBarcodeArea();
+        if (MENU_PARA == "PB") {
+            $("#TXNSLNO").focus();
+        } else {
+            $("#BOMITCD").focus();
+        }
+        $("#bardatachng").val("Y");
+    }
+    function T_OUTISSPROCESS_UpdateBarCodeRow() {
+        if ("@Model.DefaultAction" == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+
+        if ($("#ITGRPCD").val() == "") {
+            msgInfo("Please enter/select Item Group Code !");
+            message_value = "ITGRPCD";
+            return false;
+        }
+        if ($("#MTRLJOBCD").val() == "") {
+            msgInfo("Please enter Material Job Code !");
+            message_value = "MTRLJOBCD";
+            return false;
+        }
+        if ($("#ITCD").val() == "") {
+            msgInfo("Please enter Item Code !");
+            message_value = "ITCD";
+            return false;
+        }
+        if ($("#QNTY").val() == "0") {
+            msgInfo("Quantity should not be zero(0) !");
+            message_value = "QNTY";
+            return false;
+        }
+        var retval = IssueQntyChk('BALSTOCK', 'BOMQNTY', 'NEGSTOCK', 'QNTY', 'ITCD', 'SLNO');
+        if (retval == false) {
+            return false;
+        }
+        //get bill slno
+        var TXNSLNO = "";
+        if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
+            var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            if (GridRowMain == 0) {
+                TXNSLNO = 1;
+            }
+            else {
+                var allslno = [];
+                var matchslno = [];
+                countmatchslno = 0;
+                for (j = 0; j <= GridRowMain - 1; j++) {
+                    var flag = true;
+                    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                        if (retStr($("#AGDOCNO").val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#AGDOCDT").val()) != retStr($("#B_AGDOCDT_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
+                        if (retFloat($("#LISTPRICE").val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#LISTDISCPER").val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
+                            flag = false;
+                        }
+                    }
+                    //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                    if (retStr($("#BALENO").val()) != retStr($("#B_BALENO_" + j).val())) {
+                        flag = false;
+                    }
+                    //}
+                    if (flag == true) {
+
+                        if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                                        retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
+                                        retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                                         retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
+                                        retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
+                                        retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                                        retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val())) {
+
+                            matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                            countmatchslno++;
+                        }
+                    }
+                    allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
+                }
+
+                if (matchslno.length > 0) {
+                    TXNSLNO = Math.max.apply(Math, matchslno);
+                    if (TXNSLNO == 0) {
+                        TXNSLNO = Math.max.apply(Math, allslno);
+                        TXNSLNO++;
+                    }
+                }
+                else {
+                    TXNSLNO = Math.max.apply(Math, allslno);
+                    TXNSLNO++;
+                }
+            }
+        }
+        else {
+            TXNSLNO = retInt($("#TXNSLNO").val());
+        }
+        var FLAGMTR = $("#FLAGMTR").val();
+        var QNTY = $("#QNTY").val();
+
+        if (FLAGMTR != "") {
+            var flgmtr = FLAGMTR;
+            if (flgmtr == "") { flgmtr = parseFloat(0); } else { flgmtr = parseFloat(flgmtr); }
+            var qnty = QNTY;
+            if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
+            if (flgmtr > qnty) {
+                msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
+                message_value = "FLAGMTR";
+                return false;
+            }
+        }
+        if ($("#HSNCODE").val() == "") {
+            msgInfo("Please enter HSN Code !");
+            message_value = "HSNCODE";
+            return false;
+        }
+        var SLNO = $("#SLNO").val();
+        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if ($("#B_SLNO_" + j).val() == SLNO) {
+                $("#B_BARNO_" + j).val($("#BARCODE").val());
+                $("#B_TXNSLNO_" + j).val(TXNSLNO);
+                $("#B_ITGRPCD_" + j).val($("#ITGRPCD").val());
+                $("#B_ITGRPNM_" + j).val($("#ITGRPNM").val());
+                $("#B_BARGENTYPE_" + j).val($("#BARGENTYPETEMP").val());
+                $("#B_MTRLJOBCD_" + j).val($("#MTRLJOBCD").val());
+                $("#B_MTRLJOBNM_" + j).val($("#MTRLJOBNM").val());
+                $("#B_MTBARCODE_" + j).val($("#MTBARCODE").val());
+                $("#B_ITCD_" + j).val($("#ITCD").val());
+                $("#B_ITSTYLE_" + j).val($("#ITSTYLE").val());
+                $("#B_STYLENO_" + j).val($("#STYLENO").val());
+                $("#B_STKTYPE_" + j).val($("#STKTYPE").val());
+                $("#B_PARTCD_" + j).val($("#PARTCD").val());
+                $("#B_PARTNM_" + j).val($("#PARTNM").val());
+                $("#B_PRTBARCODE_" + j).val($("#PRTBARCODE").val());
+                $("#B_COLRCD_" + j).val($("#COLRCD").val());
+                $("#B_COLRNM_" + j).val($("#COLRNM").val());
+                $("#B_CLRBARCODE_" + j).val($("#CLRBARCODE").val());
+                $("#B_SIZECD_" + j).val($("#SIZECD").val());
+                $("#B_SIZENM_" + j).val($("#SIZENM").val());
+                $("#B_SZBARCODE_" + j).val($("#SZBARCODE").val());
+                $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
+                $("#B_QNTY_" + j).val($("#QNTY").val());
+                $("#B_CUTLENGTH_" + j).val($("#CUTLENGTH").val());
+                $("#B_BOMQNTY_" + j).val($("#BOMQNTY").val());
+                $("#B_RECPROGSLNO_" + j).val($("#RECPROGSLNO").val());
+                $("#B_RECPROGITCD_" + j).val($("#RECPROGITCD").val());
+                $("#B_RECPROGITSTYLE_" + j).val($("#RECPROGITSTYLE").val());
+                $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
+                $("#B_NEGSTOCK_" + j).val($("#NEGSTOCK").val());
+                $("#B_UOM_" + j).val($("#UOM").val());
+                $("#B_NOS_" + j).val($("#NOS").val());
+                $("#B_FLAGMTR_" + j).val($("#FLAGMTR").val());
+                $("#B_RATE_" + j).val($("#RATE").val());
+                $("#B_DISCRATE_" + j).val($("#DISCRATE").val());
+                $("#B_DISCTYPE_" + j).val($("#DISCTYPE").val());
+                $("#B_HSNCODE_" + j).val($("#HSNCODE").val());
+                $("#B_GSTPER_" + j).val($("#GSTPER").val());
+                $("#B_PRODGRPGSTPER_" + j).val($("#PRODGRPGSTPER").val());
+                $("#B_SHADE_" + j).val($("#SHADE").val());
+                if (MENU_PARA == "PB") {
+                    $("#B_BALENO_" + j).val($("#BALENO").val());
+                    $("#B_OURDESIGN_" + j).val($("#OURDESIGN").val());
+                    $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
+                    $("#B_WPPRICEGEN_" + j).val($("#WPPRICEGEN").val());
+                    $("#B_RPPRICEGEN_" + j).val($("#RPPRICEGEN").val());
+                }
+                $("#B_TDDISCTYPE_" + j).val($("#TDDISCTYPE").val());
+                $("#B_TDDISCRATE_" + j).val($("#TDDISCRATE").val());
+                $("#B_SCMDISCTYPE_" + j).val($("#SCMDISCTYPE").val());
+                $("#B_SCMDISCRATE_" + j).val($("#SCMDISCRATE").val());
+                $("#B_LOCABIN_" + j).val($("#LOCABIN").val());
+                var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "F" ? "Fixed" : "";
+                var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : $("#TDDISCTYPE").val() == "F" ? "Fixed" : "";
+                var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : $("#SCMDISCTYPE").val() == "F" ? "Fixed" : "";
+                $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE);
+                $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
+                $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
+                $("#B_GLCD_" + j).val($("#GLCD").val());
+                if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
+                    $("#B_ORDDOCNO_" + j).val($("#ORDDOCNO").val());
+                    $("#B_ORDAUTONO_" + j).val($("#ORDAUTONO").val());
+                    $("#B_ORDSLNO_" + j).val($("#ORDSLNO").val());
+                    $("#B_ORDDOCDT_" + j).val($("#ORDDOCDT").val());
+                }
+                if (MENU_PARA == "PB") {
+
+                    var BarImages = $("#BarImages").val();
+                    if (MENU_PARA == "PB" && ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_" + j).val() == "E")) {
+                        BarImages = "";
+                    }
+                    var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
+                    if (BarImages == '') { NoOfBarImages = ''; }
+                    $("#BarImagesCount_" + j).val(NoOfBarImages);
+                    $("#B_BarImages_" + j).val(BarImages);
+
+                    if ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_" + j).val() == "E") {
+                        $("#UploadBarnoImage_" + j).show();
+                    }
+                    else {
+                        $("#UploadBarnoImage_" + j).hide();
+                    }
+                    RateUpdate(j);
+
+                }
+            }
+
+        }
+        CalculateTotal_Barno();
+        T_OUTISSPROCESS_ClearBarcodeArea();
+        //@*if (MENU_PARA == "PB") {
+        //    $("#BALENO").val("");
+        //}
+        //$("#DISCTYPE").val("P");
+        //$("#TDDISCTYPE").val("P");
+        //$("#SCMDISCTYPE").val("P");*@
+        $("#AddRow_Barcode").show();
+        $("#UpdateRow_Barcode").hide();
+        if (MENU_PARA == "PB") {
+            $("#TXNSLNO").focus();
+        } else {
+            $("#BOMITCD").focus();
+        }
+        $("#bardatachng").val("Y");
+    }
+    function T_OUTISSPROCESS_ClearBarcodeArea(TAG) {
+        if ("@Model.DefaultAction" == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+        ClearAllTextBoxes("BARCODE,TXNSLNO,SLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,CUTLENGTH");
+        if (MENU_PARA == "PB") {
+            ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
+        }
+        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
+            ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
+        }
+        $("#STKTYPE").val("F");
+        $("#DISCTYPE").val("P");
+        $("#TDDISCTYPE").val("P");
+        $("#SCMDISCTYPE").val("P");
+        if (TAG != "B") {
+            ClearAllTextBoxes("BOMITCD,BOMITNM,BOMQNTY,RECPROGSLNO,RECPROGITCD,RECPROGITSTYLE");
+        }
+        if (TAG == "Y") {
+            $("#AddRow_Barcode").show();
+            $("#UpdateRow_Barcode").hide();
+            if (MENU_PARA == "PB") {
+                $("#TXNSLNO").focus();
+            } else {
+                $("#BOMITCD").focus();
+            }
+        }
+
+    }
+    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id, CALLFRM) {
+        debugger;
+        if ("@Model.DefaultAction" == "V") return true;
+        var STOCKQNTY = retFloat($("#" + STOCKQNTY_Id).val());
+        var BOMQNTY = 0;
+        if ($("#" + BOMQNTY_Id).val() != "") {
+            BOMQNTY = retFloat($("#" + BOMQNTY_Id).val().split('~~')[1]);
+        }
+
+        var QNTY = retFloat($("#" + QNTY_Id).val());
+        var NEGSTOCK = $("#" + NEGSTOCK_Id).val();
+        var SLNO = retFloat($("#" + SLNO_Id).val());
+        var TQNTY = 0, balqnty = 0;
+        var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        if (GridRow != 0) {
+            var ITCD = $("#" + ITCD_Id).val();
+
+
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if ($("#B_ITCD_" + i).val() == ITCD) {
+                    if ($("#B_SLNO_" + i).val() != SLNO) {
+                        TQNTY += retFloat($("#B_QNTY_" + i).val());
+                    }
+                }
+            }
+            balqnty = retFloat(BOMQNTY) - retFloat(TQNTY);
+            TQNTY += retFloat(QNTY);
+        }
+        else {
+            balqnty = BOMQNTY;
+        }
+        if (STOCKQNTY < balqnty) {
+            var balancestock = STOCKQNTY - QNTY;
+            if (balancestock < 0) {
+                if (NEGSTOCK != "Y") {
+                    msgInfo("QNTY (" + QNTY + ") grater than STOCK (" + STOCKQNTY + ") !!");
+                    message_value = QNTY_Id;
+                    return false;
+                }
+            }
+        }
+        //else {
+        //    var balancestock = balqnty - QNTY;
+        //    if (balancestock < 0) {
+        //        if (NEGSTOCK != "Y") {
+        //            msgInfo("QNTY (" + QNTY + ") grater than BOMQNTY (" + balqnty + ") !!");
+        //            message_value = QNTY_Id;
+        //            return false;
+        //        }
+        //    }
+        //}
+        if (CALLFRM == "GRID") {
+            CalculateTotal_Barno();
+            HasChangeBarSale();
+        }
+    }
+</script>
+<script>
+    function GetCashMemoDetails() {
+        debugger
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        //$("#popup1").show();
+        //var FDT = $("#FDT").val();
+        //var FDT = $("#TDT").val();
+        //var R_DOCNO = $("#R_DOCNO").val();
+        //var R_BARNO = $("#R_BARNO").val();
+        //var R_DOCCD = $("#DOCCD").val();
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("OpenPopUp", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#popup1").animate({ marginTop: '-10px' }, 50);
+                $("#popup1").html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function SelectCashMemoDetails() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var Count = 0;
+        var GridRow = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var Check = document.getElementById("C_Checked_" + i).checked;
+            if (Check == true) {
+                Count = Count + 1;
+            }
+        }
+        if (Count == 0) {
+            msgInfo("Please select a Bar No. !");
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("SelectCashMemoDetails", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                if (result == "0") {
+                    //$("#hiddenpendordJSON").val(result);
+                    //$("#Pending_Order").hide();
+                    //if (Count > 0) {
+                    //    $("#show_order").show();
+                    //}
+                    //msgInfo("Order Data selected ");
+                }
+                else {
+                    $("#partialdivProgramme").html(result);
+                    var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+                    for (var i = 0; i <= GridRow - 1; i++) {
+                        //Sale_GetGstPer(i, '#B_');
+                        //RateUpdate(i);
+                    }
+                    CalculateTotal();
+
+                }
+                $("#popup1").html("");
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+
+    }
+    function CloseCashMemoDetails() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        //$("#popup").html("");
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        if (KeyID == 27) {
+            $("#popup1").html("");
+        }
+        else if (KeyID == undefined) {
+            $("#popup1").html("");
+        }
+    }
+</script>
+<script>
+    function GetPopUpBarnoDetails(barhlpId) {
+        debugger;
+        var ID = $("#" + barhlpId).val();
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var BARNO = "", ITCD = "", duplicate = "", slno = 0;
+        debugger;
+        if (ID == "") {
+
+            ClearAllTextBoxes("C_BARNO,M_STYLENO,MTRLJOBCD,PARTCD");
+
+        }
+        else {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            var BARCODE = "";
+            BARCODE = $("#C_BARNO").val();
+            if ($("#TAXGRPCD").val() == "") { $("#C_BARNO").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
+            if ($("#PRCCD").val() == "") { $("#C_BARNO").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+
+
+            var MTRLJOBCD = $("#C_MTRLJOBCD").val();
+            var PARTCD = $("#C_PARTCD").val();
+            var docdt = $("#DOCDT").val();
+            var taxgrpcd = $("#TAXGRPCD").val();
+            var gocd = $("#GOCD").val();
+            var prccd = $("#PRCCD").val();
+            var allmtrljobcd = $("#C_ALLMTRLJOBCD").val();
+
+            var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
+            hlpfieldid = "C_BARNO";
+            hlpfieldindex = "0";
+            ReferanceFieldID = "/C_STYLENO";
+            ReferanceFieldIndex = "/3";
+            var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + "Bar" + String.fromCharCode(181) + BARCODE;
+
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodePopUpDetails", PageControllerName)",
+                data: "&val=" + ID + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
+                        $('#SearchFldValue').val(hlpfieldid);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/C_MTRLJOBCD/C_PARTCD');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/2/5');
+                        $('#helpDIV_Header').html('Barno Details');
+
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
+                            BARNO = returncolvalue(result, "BARNO");
+                            //ITCD = returncolvalue(result, "ITCD");
+                            var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+                            for (j = 0; j <= GridRowMain - 1; j++) {
+                                if (BARNO == $("#C_BARNO_" + j).val()) {
+                                    slno = $("#C_SLNO_" + j).val();
+
+                                }
+                                duplicate = false;
+                            }
+                            if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
+
+                            else { AddMainPopUpGrideRow(result); }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("C_BARNO,C_STYLENO,C_MTRLJOBCD,C_PARTCD");
+                            message_value = hlpfieldid;
+
+
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+    function AddMainPopUpGrideRow(hlpstr) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var ITSTYLE = "", STYLENO = "", ITNM = ""; FABITNM = "";
+        var BARNO = returncolvalue(hlpstr, "BARNO");
+        var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
+        var ITGRPCD = returncolvalue(hlpstr, "ITGRPCD");
+        var ITCD = returncolvalue(hlpstr, "ITCD");
+        ITSTYLE = returncolvalue(hlpstr, "ITSTYLE");
+        if (ITSTYLE == "") {
+            STYLENO = returncolvalue(hlpstr, "STYLENO"); ITNM = returncolvalue(hlpstr, "ITNM"); FABITNM = returncolvalue(hlpstr, "FABITNM");
+            ITSTYLE = STYLENO + "" + ITNM + "" + FABITNM;
+        }
+        var SIZECD = returncolvalue(hlpstr, "SIZECD");
+        var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
+        var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+        var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+        var QNTY = returncolvalue(hlpstr, "QNTY");
+        var UOM = returncolvalue(hlpstr, "UOMCD");
+        var NOS = returncolvalue(hlpstr, "NOS");
+        var RATE = returncolvalue(hlpstr, "RATE");
+        var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
+        var GLCD = returncolvalue(hlpstr, "GLCD");
+        var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
+        var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
+        var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
+        var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
+        var MTRLJOBNM = returncolvalue(hlpstr, "MTRLJOBNM");
+        var DECIMAL = returncolvalue(hlpstr, "DECIMAL");
+        var COLRCD = returncolvalue(hlpstr, "COLRCD");
+        var COLRNM = returncolvalue(hlpstr, "COLRNM");
+        var CLRBARCODE = returncolvalue(hlpstr, "CLRBARCODE");
+        var SZBARCODE = returncolvalue(hlpstr, "SZBARCODE");
+        var CUTLENGTH = returncolvalue(hlpstr, "CUTLENGTH");
+        var SHADE = returncolvalue(hlpstr, "SHADE");
+        var PARTCD = returncolvalue(hlpstr, "PARTCD");
+        var DOCNO = returncolvalue(hlpstr, "DOCNO");
+        var DOCDT = returncolvalue(hlpstr, "DOCDT").split(' ')[0];
+
+
+        var SLNO = 1;
+        var rowindex = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+        SLNO = rowindex + 1;
+        var tr = "";
+        tr += '<tr style="font-size:12px; font-weight:bold;">';
+        tr += ' <td class="sticky-cell" title="true">';
+        tr += '   <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="C_Checked_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].C_Checked" type="checkbox" value="true"><input name="CASHMEMOPOPUP[' + rowindex + '].C_Checked" type="hidden" value="false">';
+        tr += '   <input data-val="true" data-val-number="The field ITGRPCD must be a number." data-val-required="The ITGRPCD field is required." id="C_ITGRPCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
+        tr += '   <input data-val="true" data-val-number="The field ITGRPNM must be a number." id="C_ITGRPNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITGRPNM" type="hidden" value="' + ITGRPNM + '">';
+
+        tr += '   <input data-val="true" data-val-number="The field ITNM must be a number." id="C_ITNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITNM" type="hidden" value="">';
+        tr += '   <input data-val="true" data-val-length="The field DECIMAL must be a string with a maximum length of 8." data-val-length-max="8" id="C_DECIMALS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].DECIMAL" type="hidden" value="' + DECIMAL + '">';
+        tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
+        tr += '   <input data-val="true" data-val-length="The field MTRLJOBNM must be a string with a maximum length of 2." data-val-length-max="2" id="C_MTRLJOBNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
+
+        tr += '   <input data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 8." data-val-length-max="8" id="C_PARTCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].PARTCD" type="hidden" value="' + PARTCD + '">';
+        tr += '   <input id="C_COLRCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRCD" type="hidden" value="' + COLRCD + '">';
+        tr += '   <input id="C_COLRNM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].COLRNM" type="hidden" value="' + COLRNM + '">';
+        tr += '   <input id="C_CLRBARCODE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].CLRBARCODE" type="hidden" value="' + CLRBARCODE + '">';
+        tr += '   <input id="C_UOM_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].UOM" type="hidden" value="' + UOM + '">';
+        tr += '   <input id="C_SIZECD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SIZECD" type="hidden" value="' + SIZECD + '">';
+        tr += '   <input id="C_SZBARCODE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SZBARCODE" type="hidden" value="' + SZBARCODE + '">';
+        tr += '   <input id="C_NOS_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].NOS" type="hidden" value="' + NOS + '">';
+        tr += '   <input id="C_CUTLENGTH_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].CUTLENGTH" type="hidden" value="' + CUTLENGTH + '">';
+        tr += '   <input id="C_SHADE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
+
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="C_SLNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCNO must be a number." data-val-required="The AGDOCNO field is required." id="C_AGDOCNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCNO" readonly="readonly" type="text" value="' + DOCNO + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field AGDOCDT must be a number." data-val-required="The AGDOCDT field is required." id="C_AGDOCDT_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].AGDOCDT" readonly="readonly" type="text" value="' + DOCDT + '">';
+        tr += ' </td>';
+
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="C_BARNO_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 10." data-val-length-max="10" data-val-required="The ITCD field is required." id="C_ITCD_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITCD" readonly="readonly" type="text" value="' + ITCD + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field ITSTYLE must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The ITSTYLE field is required." id="C_ITSTYLE_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
+        tr += ' </td>';
+        tr += ' <td class="sticky-cell" style="left:50px" title="">';
+        //tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field QNTY must be a string with a maximum length of 12." data-val-length-max="12" data-val-required="The QNTY field is required." id="C_QNTY_' + rowindex + '" name="CASHMEMOPOPUP[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" type="text" value="' + QNTY + '">';
+        tr += '  <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="C_QNTY_' + rowindex + '" maxlength="12" name="CASHMEMOPOPUP[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + QNTY + '">';
+        tr += ' </td>';
+
+        tr += '</tr>';
+        $("#_T_OUTISSPROCESS_POPUP_GRID tbody").append(tr);
+        $("#C_BARNO").val('');
+        $("#C_BARNO").focus();
+
+    }
+    function UpdatePopUpGrideRow(hlpstr, slno) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        var MENU_PARA = $("#MENU_PARA").val();
+        if (DefaultAction == "V") return true;
+
+        var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if ($("#C_SLNO_" + j).val() == slno) {
+                var qnty = $("#C_QNTY_" + j).val();
+                var sumqnty = parseFloat(qnty) + parseFloat(returncolvalue(hlpstr, "QNTY"));
+                $("#C_BARNO_" + j).val($("#C_BARNO_" + j).val());
+                $("#C_ITGRPCD_" + j).val($("#C_ITGRPCD_" + j).val());
+                $("#C_ITGRPNM_" + j).val($("#C_ITGRPNM_" + j).val());
+                $("#C_MTRLJOBCD_" + j).val($("#C_MTRLJOBCD_" + j).val());
+                $("#C_ITCD_" + j).val($("#C_ITCD_" + j).val());
+                $("#C_ITSTYLE_" + j).val($("#C_ITSTYLE_" + j).val());
+                $("#C_STYLENO_" + j).val($("#C_STYLENO_" + j).val());
+                $("#C_PARTNM_" + j).val($("#C_PARTNM_" + j).val());
+                $("#C_COLRNM_" + j).val($("#C_COLRNM_" + j).val());
+                $("#C_SIZECD_" + j).val($("#C_SIZECD_" + j).val());
+                $("#C_SIZENM_" + j).val($("#C_SIZENM_" + j).val());
+                $("#C_SZBARCODE_" + j).val($("#C_SZBARCODE_" + j).val());
+                $("#C_QNTY_" + j).val(sumqnty);
+                $("#C_UOM_" + j).val($("#C_UOM_" + j).val());
+                $("#C_NOS_" + j).val($("#C_NOS_" + j).val());
+                $("#C_RATE_" + j).val($("#C_RATE_" + j).val());
+                $("#C_DECIMALS_" + j).val($("#C_DECIMALS_" + j).val());
+                $("#C_SHADE_" + j).val($("#C_SHADE_" + j).val());
+                $("#C_CUTLENGTH_" + j).val($("#C_CUTLENGTH_" + j).val());
+                $("#C_AGDOCNO_" + j).val($("#C_AGDOCNO_" + j).val());
+                $("#C_AGDOCDT_" + j).val($("#C_AGDOCDT_" + j).val());
+                $("#C_BARCODE").val('');
+                $("#C_BARCODE").focus();
+
+            }
+
+        }
+
+
+    }
+</script>
+<script>
+    function GetSelectedCashMemoDetails(barhlpId) {
+        debugger;
+        var ID = $("#" + barhlpId).val();
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var BARNO = "", ITCD = "", duplicate = "", slno = 0;
+        debugger;
+        if (ID == "") {
+
+            ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+
+        }
+        else {
+            //if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            var BARCODE = "";
+            BARCODE = $("#CSM_DOCNO").val();
+            var FDT = $("#FDT").val();
+            var TDT = $("#TDT").val();
+            var AUTONO = $("#CSM_AUTONO").val();
+            var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
+            hlpfieldid = "CSM_DOCNO";
+            hlpfieldindex = "0";
+            ReferanceFieldID = "/FDT";
+            ReferanceFieldIndex = "/1";
+
+            var code = FDT + String.fromCharCode(181) + TDT + String.fromCharCode(181) + AUTONO;
+
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetCashMemoNo", PageControllerName)",
+                data: "&val=" + ID + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG >= 0) {
+                        ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                        $('#SearchFldValue').val(hlpfieldid);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/FDT');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/1');
+                        $("#TDT") = returncolvalue(hlpstr, "docdt");
+                        $("#CSM_AUTONO") = returncolvalue(hlpstr, "autono");
+                        $('#helpDIV_Header').html('Cash Memo Details');
+
+                    }
+                    else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                            BARNO = returncolvalue(result, "BARNO");
+                            //ITCD = returncolvalue(result, "ITCD");
+                            var GridRowMain = $("#_T_OUTISSPROCESS_POPUP_GRID > tbody > tr").length;
+                            for (j = 0; j <= GridRowMain - 1; j++) {
+                                if (BARNO == $("#C_BARNO_" + j).val()) {
+                                    slno = $("#C_SLNO_" + j).val();
+
+                                }
+                                duplicate = false;
+                            }
+                            if (slno > 0) { UpdatePopUpGrideRow(result, slno); }
+
+                            else { AddMainPopUpGrideRow(result); }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("CSM_DOCNO,CSM_AUTONO,FDT,TDT");
+                            message_value = hlpfieldid;
+
+
+                        }
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function GetFilterCashMemoDetails() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var FDT = $("#FDT").val();
+        var FDT = $("#TDT").val();
+        var C_BARNO = $("#C_BARNO").val();
+
+        //var AUTONO = $("#CSM_AUTONO").val();
+        var AUTONO = "";
+
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetFilterCashMemoDetails", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&C_BARNO=" + C_BARNO + "&C_BARNO=" + AUTONO,
+            success: function (result) {
+                $("#popup1").animate({ marginTop: '-10px' }, 50);
+                $("#popup1").html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+
+<script>
+    function UpdateQntyPrgrmData() {
+        debugger;
+        var Count = 0;
+        var Grid = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (var i = 0; i <= Grid - 1; i++) {
+            var itcd = $("#B_ITCD_" + i).val();
+            if (itcd != "") {
+                Count = Count + 1;
+            }
+        }
+        if (Count > 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("UpdateQntyPrgrmFrmIssue", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+
+                    $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivProgramme").html(res[0]);
+
+                    $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivQtyRequirement").html(res[1]);
+
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:first-child").addClass('active');
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+
+
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+
+    }
+    function UpdateQtyReqData() {
+        debugger;
+        var Count = 0;
+        var Grid = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (var i = 0; i <= Grid - 1; i++) {
+            var itcd = $("#B_ITCD_" + i).val();
+            if (itcd != "") {
+                Count = Count + 1;
+            }
+        }
+        if (Count > 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("UpdateQtyReqFrmIssue", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+
+                    $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivQtyRequirement").html(result);
+
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:nth-child(2)").addClass('active');
+                    //below set the  child sequence
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+
+    }
+
+</script>
+<script>
+    function Fill_MaterialIssueData() {
+        if ("@Model.DefaultAction" == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillMaterialIssueData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivBarCodeTab").html(result);
+                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    CalculateBargridQnty('_T_SALE_PRODUCT_GRID', i);
+                }
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(3)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function ChangeDoctype() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("changeDocumentType", PageControllerName)',
+            data: $('form').serialize() + "&AllowBDATE=" + '@Model.AllowBackDate',
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    debugger;
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    var maxdocdt = returncolvalue(result, "docmaxmindate");
+                    var dt = maxdocdt.split('~');
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    $("#DOCDT").datepicker("option", "minDate", dt[0]);
+                    $("#DOCDT").datepicker("option", "maxDate", dt[1]);
+
+                    $("#JOBCD").val(returncolvalue(result, "JOBCD"));
+                    $("#JOBNM").val(returncolvalue(result, "JOBNM"));
+                    $("#GOCD").val(returncolvalue(result, "GOCD"));
+                    $("#GONM").val(returncolvalue(result, "GONM"));
+
+                }
+                else {
+                    msgInfo("" + result + " !");
+                    message_value = "DOCCD";
+                }
+                $("#WaitingMode").hide();
+                return false;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function OpenPopupMI(index) {
+        debugger;
+        var SerialNo = $("#P_SLNO_" + index).val();
+        $("#hiddenindex").val(index);
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("OpenPopupMI", PageControllerName)",
+            data: $('form').serialize() + "&ParentSerialNo=" + SerialNo + "&Rowindexno=" + index,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $('#popupMI').html(result);
+                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    CalculateBargridQnty('_T_SALE_PRODUCT_GRID', i)
+                }
+                Checked_Disable();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function ClosePopupMI() {
+        debugger;
+        var index = $("#hiddenindex").val();
+        var SerialNo = $("#P_SLNO_" + index).val();
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("ClosePopupMI", PageControllerName)",
+            data: $('form').serialize() + "&ParentSerialNo=" + SerialNo,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
+                $('#partialdivProgramme').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+        $("#popupMI").html("");
+    }
+    function CancelPopupMI() {
+        $("#popupMI").html("");
+    }
+    function AddRowBarno(ID) {
+        if ("@Model.DefaultAction" == "V") return true;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        var index = $("#hiddenindex").val();
+        var SerialNo = $("#P_SLNO_" + index).val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowBarno", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG + "&ParentSerialNo=" + SerialNo,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#popupMI").animate({ marginTop: '-10px' }, 50);
+                $("#popupMI").html(result);
+                Checked_Disable();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteBarnoRow() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var index = $("#hiddenindex").val();
+        var SerialNo = $("#P_SLNO_" + index).val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#UrlDeleteRow").val(),// "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize() + "&ParentSerialNo=" + SerialNo,
+            success: function (result) {
+                $("#popupMI").animate({ marginTop: '0px' }, 50);
+                $("#popupMI").html(result);
+                Checked_Disable();
+                CalculateTotal_Barno();
+                HasChangeBarSale();
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="UrlBarnoDetails" value="@Url.Action("GetBarCodeDetails", PageControllerName)" />
+        <input type="hidden" id="UrlAddBarCodeRow" value="@Url.Action("FillBarCodeData", PageControllerName)" />
+        <input type="hidden" id="UrlFillDetailData" value="@Url.Action("FillDetailData", PageControllerName)" />
+        <input type="hidden" id="UrlDeleteRow" value="@Url.Action("DeleteRowBarno", PageControllerName)" />
+        <input type="hidden" id="UrlAddDOCRow" value="@Url.Action("AddDOCRow", PageControllerName)" />
+        <input type="hidden" id="UrlDeleteDOCRow" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
+        <input type="hidden" id="UrlRateHistory" value="@Url.Action("GetRateHistoryDetails", PageControllerName )" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="hidden" id="hiddenindex" name="hiddenindex" value="" />
+        <input type="hidden" id="partylinkcd" value="D" />
+        <input type="hidden" id="agentlinkcd" value="A" />
+        <input type="hidden" id="courierlinkcd" value="U" />
+        <input type="hidden" id="trnsportlinkcd" value="T" />
+        <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
+        <input type="hidden" id="BarImages" />
+        <input type="hidden" id="bardatachng" value="N" />
+        <input type="hidden" id="RoundOff" />
+        <input type="hidden" id="DISPBLAMT" />
+        <input type="hidden" id="callfrmbar" value="bar" />
+        <input type="hidden" id="callfrmstyle" value="style" />
+        <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_TXN.DOCNO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_TXN.TCSON, new { id = "TCSON" })
+        @Html.HiddenFor(a => a.T_TXN.TCSPER, new { id = "TCSPER" })
+        @Html.HiddenFor(a => a.T_TXN.TCSAMT, new { id = "TCSAMT" })
+        @Html.HiddenFor(a => a.T_TXN.BLAMT, new { id = "BLAMT" })
+        @Html.HiddenFor(a => a.T_TXN.ROAMT, new { id = "ROAMT" })
+        @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+        <div class="form-horizontal">
+            @if (Model.DefaultAction == "V")
+            {
+                @Html.Partial("_FilteredSearch")
+            }
+            <div class="row" style="margin-top: 5px;">
+                <div class="row">
+                    <div class="col-md-5" style="margin-top: 6px;">
+                        <div class="editor-label">
+                            @Html.Label("", "Document Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @if (Model.DefaultAction == "A")
+                            {
+                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Job")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Jobber Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/DISTRICT=slarea/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM','DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/DISTRICT=slarea/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM','DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/DISTRICT=slarea/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM','DOCDT')" />
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    @if (Model.DefaultAction != "V" && Model.MENU_PARA == "JW")
+                    {
+                        <div class="col-md-1" style="width:auto;">
+                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Get Data From Cash Memo" title="Click to Get Data From Cash Memo" onclick="GetCashMemoDetails()" />
+                        </div>
+                        <div class="row">
+                            <div id="popup1" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Price Code")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
+                            @*@Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Godown")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
+                            @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", " DOC Remarks")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM", @class = "form-control", @style = "width:270px;height:30px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <ul class="nav nav-tabs">
+                    <li id="Programme_LI" class="active">
+                        <a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a>
+                    </li>
+                    <li id="Detail_LI" class="">
+                        <a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a>
+                    </li>
+                    <li id="Transport_LI" class="">
+                        <a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a>
+                    </li>
+                    <li id="Remarks_LI" class="">
+                        <a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a>
+                    </li>
+                    <li id="Documents_LI" class="">
+                        <a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="Programme" class="tab-pane fade in active" style="">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;">
+                            <div>
+                                <div id="partialdivProgramme" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTISSPROCESS_NEW_Programme")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p class="text-info">
+                                <b>* (Quantity=Nos*Cut Length)</b> If uom is not 'PCS' and Nos,Cut Length is not zero (0)
+                            </p>
+                            <p class="text-info" style="margin-top:-10px;">
+                                <b>** (Nos=Quantity)</b> If uom is 'PCS' and Nos is zero (0) unless
+                                <b>(Quantity=Nos)</b>
+                            </p>
+
+                        </div>
+                        <div>
+                            <div id="popupMI" class="row" style="margin-top: 11px;top:30%;bottom:25%;left:50%;position:absolute;transform: translate(-50%, -50%);">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivDetail" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTISSPROCESS_NEW_DETAIL")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Transport" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transporter")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd/DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartyDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd/DOCDT')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transport Mode")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNTRANS.TRANSMODE, new SelectList(Model.TRANSMODE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "TRANSMODE" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Eway Bill Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 20, @placeholder = "LR Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Date")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vechicle Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vehicle Type")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNTRANS.VECHLTYPE, new SelectList(Model.VECHLTYPE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "VECHLTYPE" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Gross Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Net Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Tare Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Cases Nos.")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.CASENOS, new { htmlAttributes = new { @class = "form-control", id = "CASENOS", maxlength = 500, @placeholder = "Cases Nos" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "No of Cases")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Remarks" class="tab-pane fade">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivAmounts" style="margin-top:0px;">
+                                        @Html.Partial("_T_SALE_AMOUNT")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+
+                    @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+
+                        </div>*@
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="ViewImageModal" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Image Preview</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="myCarousel" class="carousel" data-ride="carousel">
+                                <div class="carousel-inner" id="div_carousel_inner">
+                                    <div class="item active">
+                                        <img src="" alt="Los Angeles" style="width:100%;">
+                                    </div>
+                                    <div class="item">
+                                        <img src="" alt="Chicago" style="width:100%;">
+                                    </div>
+                                </div>
+                                <!-- Left and right controls -->
+                                <a class="left  carousel-control arrow-left" id="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class="right  carousel-control arrow-right" id="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="pull-left">
+                                        <input type="hidden" id="ActiveBarRowIndex" />
+                                        <input type="hidden" id="BarImages" />
+                                        <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="RateHistoryModal" role="dialog">
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

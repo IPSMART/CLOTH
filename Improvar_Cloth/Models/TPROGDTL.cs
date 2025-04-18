@@ -110,6 +110,9 @@ namespace Improvar.Models
         public string MAKESTYLENO { get; set; }
         public string MAKEITCD { get; set; }
         public short ORDSLNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double  MIQNTY { get; set; }
+        public string ChildMIData { get; set; }
         
 
     }

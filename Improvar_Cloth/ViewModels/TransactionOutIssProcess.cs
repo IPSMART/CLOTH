@@ -178,6 +178,8 @@ namespace Improvar.ViewModels
         public double? P_T_NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? P_T_QNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? P_T_MIQNTY { get; set; }
         public string BOMITCD { get; set; }
         public string BOMITNM { get; set; }
         public string BOMQNTY { get; set; }
@@ -197,5 +199,7 @@ namespace Improvar.ViewModels
         public List<TRANSMODE> TRANSMODE { get; set; }
         public string TransporterName { get; set; }
         public string ITSTYLENO { get; set; }
+        public int SERIAL { get; set; }
+
     }
 }

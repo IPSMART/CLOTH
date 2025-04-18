@@ -650,7 +650,7 @@ namespace Improvar.Controllers
                         if (VE.MNTNOURDESIGN == true) { MSYSCNFG.MNTNOURDESIGN = "Y"; } else { MSYSCNFG.MNTNOURDESIGN = "N"; }
                         if (VE.MNTNPCSTYPE == true) { MSYSCNFG.MNTNPCSTYPE = "Y"; } else { MSYSCNFG.MNTNPCSTYPE = "N"; }
                         if (VE.MNTNBARNO == true) { MSYSCNFG.MNTNBARNO = "Y"; } else { MSYSCNFG.MNTNBARNO = "N"; }
-                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "E"; } else { MSYSCNFG.MNTNBARNO = "C"; }
+                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "E"; } else { MSYSCNFG.COMMONUNIQBAR = "C"; }
                         if (VE.CMCASHRECDAUTO == true) { MSYSCNFG.CMCASHRECDAUTO = "Y"; } else { MSYSCNFG.CMCASHRECDAUTO = "N"; }
                         if (VE.MERGEINDTL == true) { MSYSCNFG.MERGEINDTL = "Y"; } else { MSYSCNFG.MERGEINDTL = "N"; }
                         if (VE.DefaultAction == "A")
