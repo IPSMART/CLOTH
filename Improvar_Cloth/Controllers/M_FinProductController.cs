@@ -1530,9 +1530,20 @@ namespace Improvar.Controllers
                 {
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
+                        var itgrptype = "";
+                        if (VE.MENU_PARA == "F")
+                        {
+                            itgrptype = "F";
+                        }
+                        else if (VE.MENU_PARA == "C")
+                        {
+                            itgrptype = "C";
+                        }
+
                         //checking design no
                         var query = (from c in DB.M_SITEM
-                                     where (c.STYLENO == VE.M_SITEM.STYLENO && c.M_AUTONO != VE.M_SITEM.M_AUTONO)
+                                     join o in DB.M_GROUP on c.ITGRPCD equals (o.ITGRPCD)
+                                     where (c.STYLENO == VE.M_SITEM.STYLENO && c.M_AUTONO != VE.M_SITEM.M_AUTONO && o.ITGRPTYPE == itgrptype)
                                      select c);
                         if (query.Any())
                         {
@@ -1555,12 +1566,19 @@ namespace Improvar.Controllers
                         bool dataexist = false;
                         if (VE.DefaultAction == "A")
                         {
-                            var STYLENO = DB.M_SITEM.Where(a => a.STYLENO == VE.M_SITEM.STYLENO);
+                            //var STYLENO = DB.M_SITEM.Where(a => a.STYLENO == VE.M_SITEM.STYLENO);
+                            var STYLENO = (from x in DB.M_SITEM
+                                           join o in DB.M_GROUP on x.ITGRPCD equals (o.ITGRPCD)
+                                           where x.STYLENO == VE.M_SITEM.STYLENO && o.ITGRPTYPE == itgrptype
+                                           select x).ToList();
                             if (STYLENO.Any()) dataexist = true;
                         }
                         else
                         {
-                            var STYLENO = (from x in DB.M_SITEM where x.STYLENO == VE.M_SITEM.STYLENO && x.ITCD != VE.M_SITEM.ITCD select x).ToList();
+                            var STYLENO = (from x in DB.M_SITEM
+                                           join o in DB.M_GROUP on x.ITGRPCD equals (o.ITGRPCD)
+                                           where x.STYLENO == VE.M_SITEM.STYLENO && x.ITCD != VE.M_SITEM.ITCD && o.ITGRPTYPE == itgrptype
+                                           select x).ToList();
                             if (STYLENO.Any()) dataexist = true;
                         }
                         if (dataexist == true)
@@ -2204,8 +2222,19 @@ namespace Improvar.Controllers
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             if (STYLE_NO.retStr() == "") return Content("0");
 
+            var itgrptype = "";
+            if (VE.MENU_PARA == "F")
+            {
+                itgrptype = "F";
+            }
+            else if (VE.MENU_PARA == "C")
+            {
+                itgrptype = "C";
+            }
+
             var query = (from c in DB.M_SITEM
-                         where (c.STYLENO == STYLE_NO && c.M_AUTONO != M_AUTONO)
+                         join o in DB.M_GROUP on c.ITGRPCD equals (o.ITGRPCD)
+                         where (c.STYLENO == STYLE_NO && c.M_AUTONO != M_AUTONO && o.ITGRPTYPE == itgrptype)
                          select c);
             if (query.Any())
             {
