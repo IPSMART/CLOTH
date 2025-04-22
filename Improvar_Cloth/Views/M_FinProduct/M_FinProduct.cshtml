@@ -992,6 +992,26 @@
         $("#BarImages").val(newimg);
     }
 </script>
+<script>
+    function SaveImage() {
+        debugger;
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("SaveItemImage", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    msgInfo(result);
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+    }
+</script>
 @using (Html.BeginForm("M_FinProduct", "M_FinProduct", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
@@ -1565,6 +1585,9 @@
                                 <div class="col-md-7" style="width:auto;">
                                     <input type="submit" value="Download Template" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
                                 </div>
+                                @*<div class="col-md-7" style="width:auto;">
+                                    <input value="Save Image" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="SaveImage()" />
+                                </div>*@
                             </div>
                         }
                         <div class="row">

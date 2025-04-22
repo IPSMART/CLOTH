@@ -529,8 +529,8 @@ namespace Improvar.Controllers
                             }
                             //calcPaytxblamt =(((tbl.Rows[i-1]["itamt"].retDbl() / tbl.Rows[i-1]["amt"].retDbl()) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
                             calcPaytxblamt = (((tbl.Rows[i - 1]["itamt"].retDbl() / tbl.Rows[i - 1]["amt"].retDbl()) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
-                            calcBalamt = (tbl.Rows[i - 1]["amt"].retDbl() - chkRetamt - chkDiscamt - chkOthamt - chkPayamt - chkTdsamt).retDbl();
-                            calcBalamt = balamt;
+                            calcBalamt = (tbl.Rows[i - 1]["amt"].retDbl() - chkRetamt - chkDiscamt - chkOthamt - chkPayamt - chkTdsamt).retDbl().toRound();
+                            calcBalamt = balamt.toRound();
                             calcPaytxblamt = (((itamt / blamt) * (chkPayamt + chkDiscamt)) - chkDiscamt).toRound(2);
                             //if (((tbl.Rows[i - 1]["amt"].retDbl() == chkRetamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkDiscamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkTdsamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkPayamt) || (tbl.Rows[i - 1]["amt"].retDbl() == chkOthamt)) && (tbl.Rows[i - 1]["vchtype"].retStr() != "BL"))
                             //{

@@ -2833,6 +2833,74 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult SaveItemImage(ItemMasterEntry VE)
+        {
+            string m_autono = "";
+            string errautono = "";
+            try
+            {
+                string outputFolder = CommVar.SaveFolderPath() + "/ItemImages/";
+                List<string> imgTypes = new List<string> { "jpg", "jpeg", "jpe", "bmp", "gif", "png" };
+
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                Improvar.Models.ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
+                var doc = (from s in DB.M_CNTRL_HDR_DOC
+                           join a in DB.M_SITEM on s.M_AUTONO equals a.M_AUTONO
+                           join b in DB.T_BATCHMST on a.ITCD equals b.ITCD
+                           where b.COMMONUNIQBAR == "C" && b.AUTONO == null
+                           orderby s.M_AUTONO, s.SLNO
+                           select new
+                           {
+                               s.M_AUTONO,
+                               s.SLNO,
+                               s.DOC_FLNAME,
+                               b.BARNO
+                           }).ToList();
+                foreach (var i in doc)
+                {
+                    m_autono = i.M_AUTONO + " " + i.SLNO;
+
+                    var image = (from h in DB.M_CNTRL_HDR_DOC_DTL
+                                 where h.M_AUTONO == i.M_AUTONO && h.SLNO == i.SLNO
+                                 select h).OrderBy(d => d.RSLNO).ToList();
+
+                    var hh = image.GroupBy(x => x.M_AUTONO).Select(x => new
+                    {
+                        namefl = string.Join("", x.Select(n => n.DOC_STRING))
+                    });
+                    foreach (var ii in hh)
+                    {
+                        string base64String = ii.namefl.retStr(); // shortened for clarity
+                                                                  // Remove the prefix
+                        var base64Data = base64String.Substring(base64String.IndexOf(",") + 1);
+                        byte[] imageData = Convert.FromBase64String(base64Data);
+                        string extn = i.DOC_FLNAME.ToString().Split('.').Last();
+                        bool isImage = imgTypes.Any(img => !img.Except(extn).Any());
+                        if (isImage)
+                        {
+                            string imageName = i.BARNO + "_" + i.SLNO + "." + extn; // e.g., "example.jpg"
+                            string fullPath = Path.Combine(outputFolder, imageName);
+                            if (!System.IO.File.Exists(fullPath))
+                            {
+                                System.IO.File.WriteAllBytes(fullPath, imageData);
+                            }
+                        }
+                    }
+
+
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                errautono += m_autono + "/";
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException + " " + m_autono);
+            }
+        }
+
 
     }
 }
