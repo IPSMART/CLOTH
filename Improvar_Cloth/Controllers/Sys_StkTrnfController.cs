@@ -1999,15 +1999,35 @@ namespace Improvar.Controllers
         {
             try
             {
-                string doctype = "FPSTM";
-                if (val == null)
+                string scm = CommVar.FinSchema(UNQSNO);
+                string sql = "";
+                sql += "select c.DOCTYPE,c.DOCNM,c.DOCCD from " + scm + ".M_DOCTYPE c," + scm + ".m_cntrl_hdr d ";
+                sql += "where c.m_autono=d.m_autono(+) and c.doctype in ('FPSTM') and nvl(d.inactive_tag,'N') = 'N' and c.FLAG1='PDC' ";
+                if (val.retStr() != "") sql += "and c.doccd='" + val + "'";
+                DataTable query = masterHelp.SQLquery(sql);
+
+                if (val.retStr() == "")
                 {
-                    return PartialView("_Help2", masterHelp.DOCCD_help(val, doctype, "", CommVar.FinSchema(UNQSNO)));
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query.Rows[i]["DOCNM"].retStr() + "</td><td>" + query.Rows[i]["DOCCD"].retStr() + " </td></tr>");
+                    }
+                    var hdr = "Document Name" + Cn.GCS() + "Document Code";
+                    return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
                 }
                 else
                 {
-                    string str = masterHelp.DOCCD_help(val, doctype, "", CommVar.FinSchema(UNQSNO));
-                    return Content(str);
+                    if (query.Rows.Count > 0)
+                    {
+                        string str = "";
+                        str = masterHelp.ToReturnFieldValues("", query);
+                        return Content(str);
+                    }
+                    else
+                    {
+                        return Content("Invalid Document Code ! Please Select / Enter a Valid Document Code !!");
+                    }
                 }
             }
             catch (Exception ex)
