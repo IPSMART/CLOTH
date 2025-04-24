@@ -200,6 +200,7 @@ namespace Improvar.ViewModels
         public string TransporterName { get; set; }
         public string ITSTYLENO { get; set; }
         public int SERIAL { get; set; }
+        public string M_SLIP_NO { get; set; }
 
     }
 }
