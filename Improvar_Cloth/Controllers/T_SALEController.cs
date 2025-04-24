@@ -2263,7 +2263,7 @@ namespace Improvar.Controllers
                     var orddet = (from a in VE.TBATCHDTL
                                   join b in DB.T_SORD on a.ORDAUTONO equals b.AUTONO into x
                                   from b in x.DefaultIfEmpty()
-                                  join c in DB.T_CNTRL_HDR on b.AUTONO equals c.AUTONO into y
+                                  join c in DB.T_CNTRL_HDR on (b != null ? b.AUTONO : "") equals c.AUTONO into y
                                   from c in y.DefaultIfEmpty()
                                   where a.ORDAUTONO.retStr() != ""
                                   select new
