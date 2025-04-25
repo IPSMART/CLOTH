@@ -113,7 +113,8 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double  MIQNTY { get; set; }
         public string ChildMIData { get; set; }
-        
+        public string ChildProgData { get; set; }
+
 
     }
 }

@@ -75,9 +75,17 @@
                                     {
                                         <tr style="font-size:12px; font-weight:bold;">
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
+                                                @if (Model.TPROGDTL[i].ChildProgData.retStr() == "Y")
+                                                {
+                                                    @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new  { id = "P_chkid_" + i ,style = "pointer-events:none;background-color:#eee" } )
+                                                }
+                                                else
+                                                {
+                                                    @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
+                                                }
                                                 @*@Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })*@
-                                            </td>
+                                                @Html.HiddenFor(model => model.TPROGDTL[i].ChildProgData, new { id = "P_ChildProgData_" + i })
+ </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                             </td>

@@ -692,6 +692,12 @@ namespace Improvar.Controllers
 
                 foreach (var q in VE.TPROGDTL)
                 {
+                    short slno = q.SLNO;
+                    var chk_child = (from a in DB.T_PROGDTL where a.PROGAUTONO == TXN.AUTONO && a.PROGSLNO == slno && a.AUTONO != TXN.AUTONO select a).ToList();
+                    if (chk_child.Count() > 0)
+                    {
+                        q.ChildProgData = "Y";
+                    }
                     if (q.SAMPLE == "Y") q.CheckedSample = true;
                     TOTAL_NOS = TOTAL_NOS + (q.NOS == null ? 0 : q.NOS.Value);
                     TOTAL_QNTY = TOTAL_QNTY + (q.QNTY == null ? 0 : q.QNTY.Value);
@@ -709,7 +715,6 @@ namespace Improvar.Controllers
                         q.BarImages = img.BARIMAGE;
                         q.BarImagesCount = img.barimagecount.retStr();
                     }
-                    short slno = q.SLNO;
                     var TBATCHDTL = (from a in VE.TBATCHDTL where a.RECPROGSLNO == slno select a).ToList();
                     var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                     string JR = javaScriptSerializer.Serialize(TBATCHDTL);
@@ -2215,6 +2220,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                var chk = (from a in VE.TPROGDTL where a.ChildProgData.retStr() == "Y" select a).Count();
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 List<TPROGDTL> ITEMSIZE = new List<TPROGDTL>();
                 int count = 0;
@@ -2225,7 +2231,27 @@ namespace Improvar.Controllers
                         count += 1;
                         TPROGDTL item = new TPROGDTL();
                         item = VE.TPROGDTL[i];
-                        item.SLNO = count.retShort();
+                        if (chk == 0)
+                        {
+                            item.SLNO = count.retShort();
+                            if (item.ChildMIData != null && item.ChildMIData != "[]")
+                            {
+                                string data = item.ChildMIData;
+                                var helpM = new List<Improvar.Models.TBATCHDTL>();
+                                var javaScriptSerializer1 = new System.Web.Script.Serialization.JavaScriptSerializer();
+                                helpM = javaScriptSerializer1.Deserialize<List<Improvar.Models.TBATCHDTL>>(data);
+                                if (helpM != null)
+                                {
+                                    for (int j = 0; j <= helpM.Count - 1; j++)
+                                    {
+                                        helpM[j].RECPROGSLNO = item.SLNO;
+                                    }
+                                    var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                                    string JR = javaScriptSerializer.Serialize(helpM);
+                                    item.ChildMIData = JR;
+                                }
+                            }
+                        }
                         ITEMSIZE.Add(item);
                     }
 
