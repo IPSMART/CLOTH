@@ -2673,7 +2673,7 @@ function AddBarCodeGrid() {
     tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
     tr += '    </td>';
-    tr += '    <td class="sticky-cell" style="left:60px" title="' + TXNSLNO + '">';
+    tr += '    <td class="sticky-cell" style="left:52px" title="' + TXNSLNO + '">';
     tr += '        <input  class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
     tr += '    </td>';
     if (MENU_PARA == "PJBL") {
