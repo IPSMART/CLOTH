@@ -51,13 +51,13 @@
         <div class="sticky-table sticky-ltr-cells">
             <div id="BARGRID" style="overflow-y:scroll;max-height:235px;">
                 @Html.HiddenFor(a => a.PCSTYPEVALUE, new { id = "PCSTYPEVALUE" })
-                <div style="width: 2145px;">
-                    <table id="_T_SALE_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2135px;">
+                <div style="width: 2211px;">
+                    <table id="_T_SALE_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2201px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
-                                <th class="sticky-cell" style="width: 40px;text-align:center;left:20px">SL No</th>
-                                <th class="sticky-cell" style="width: 40px;text-align:center;left:60px">Bill Sl #</th>
+                                <th class="sticky-cell" style="width: 31px;text-align:center;left:20px">SL No</th>
+                                <th class="sticky-cell" style="width: 31px;text-align:center;left:52px">Bill Sl #</th>
                                 @if (Model.MENU_PARA == "PJBL")
                                 {
                                 <th class="" style="width: 55px;">Return</th>
@@ -73,8 +73,8 @@
                                 <th class="" style="width:45px;">Material Job</th>
                                 }
                                 <th class="" style="width:71px;">Item Code</th>
-                                <th class="" style="width:160px;">Item Design</th>
-                                <th class="" style="width:160px;">Item Remarks</th>
+                                <th class="" style="width:77px;">Item Design</th>
+                                <th class="" >Item Remarks</th>
                                 @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                 {
                                     <th class="" style="width: 50px;">Color Code</th>
@@ -275,7 +275,7 @@
                                 <td class="sticky-cell" style="left:20px;">
                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                 </td>
-                                <td class="sticky-cell" style="left:60px">
+                                <td class="sticky-cell" style="left:52px">
                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();" })
                                 </td>
                                 @if (Model.MENU_PARA == "PJBL")
@@ -609,7 +609,7 @@
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:20px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
                                 <td class="sticky-cell" style="left:20px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td class="sticky-cell" style="left:60px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell" style="left:52px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.MENU_PARA == "PJBL")
                                 {
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
