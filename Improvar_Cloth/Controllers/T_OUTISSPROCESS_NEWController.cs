@@ -598,11 +598,13 @@ namespace Improvar.Controllers
                 //            }).ToList();
                 foreach (var v in VE.TBATCHDTL)
                 {
-                    var progdata = (from a in VE.TPROGDTL where a.SLNO == v.RECPROGSLNO select new { a.ITCD, a.ITNM }).FirstOrDefault();
+                    var progdata = (from a in VE.TPROGDTL where a.SLNO == v.RECPROGSLNO select new { a.ITCD, a.ITNM, a.UOM, a.QNTY }).FirstOrDefault();
                     if (progdata != null)
                     {
                         v.RECPROGITCD = progdata.ITCD;
                         v.RECPROGITSTYLE = progdata.ITNM;
+                        v.RECPROGUOMNM = progdata.UOM;
+                        v.RECPROGQNTY = progdata.QNTY.retDbl();
                     }
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
@@ -687,6 +689,24 @@ namespace Improvar.Controllers
                     }
                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                     v.ALL_GSTPER = ALL_GSTPER;
+                    short slno = v.SLNO;
+                    var progdata = (from a in VE.TBATCHDTL
+                                    where a.TXNSLNO == slno
+                                    select new
+                                    {
+                                        a.RECPROGSLNO,
+                                        a.RECPROGITSTYLE,
+                                        a.RECPROGUOMNM,
+                                        a.RECPROGQNTY
+                                    }).FirstOrDefault();
+                    if (progdata != null)
+                    {
+                        v.PROGSLNO = progdata.RECPROGSLNO.retDbl();
+                        v.PROGITSTYLE = progdata.RECPROGITSTYLE;
+                        v.PROGUOMNM = progdata.RECPROGUOMNM;
+                        v.PROGQNTY = progdata.RECPROGQNTY;
+
+                    }
                 }
                 #endregion
 
@@ -1630,6 +1650,8 @@ namespace Improvar.Controllers
                                         x.SLNO = txnslno.retShort();
                                         txnslno++;
                                     }
+                                    x.RECPROGUOMNM = VE.TPROGDTL[i].UOM;
+                                    x.RECPROGQNTY = VE.TPROGDTL[i].QNTY.retDbl();
                                     TBATCHDTL.Add(x);
                                 }
                             });
@@ -1707,7 +1729,11 @@ namespace Improvar.Controllers
                                   x.FABITNM,
                                   x.RECPROGSLNO,
                                   x.CONVQTYPUNIT,
-                                  x.FREESTK
+                                  x.FREESTK,
+                                  x.RECPROGITSTYLE,
+                                  x.RECPROGUOMNM,
+                                  x.RECPROGQNTY,
+
                               } into P
                               select new TTXNDTL
                               {
@@ -1753,6 +1779,10 @@ namespace Improvar.Controllers
                                   RECPROGSLNO = P.Key.RECPROGSLNO,
                                   CONVQTYPUNIT = P.Key.CONVQTYPUNIT,
                                   FREESTK = P.Key.FREESTK,
+                                  PROGSLNO = P.Key.RECPROGSLNO.retDbl(),
+                                  PROGITSTYLE = P.Key.RECPROGITSTYLE,
+                                  PROGUOMNM = P.Key.RECPROGUOMNM,
+                                  PROGQNTY = P.Key.RECPROGQNTY,
                               }).OrderBy(a => a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();

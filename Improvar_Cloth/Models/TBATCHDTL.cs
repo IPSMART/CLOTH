@@ -200,5 +200,7 @@ namespace Improvar.Models
         public string FREESTK { get; set; }
         public string ADJAUTONO { get; set; }
         public int ParentSerialNo { get; set; }
+        public string RECPROGUOMNM { get; set; }
+        public double RECPROGQNTY { get; set; }
     }
 }

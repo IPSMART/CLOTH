@@ -180,6 +180,7 @@ namespace Improvar.Models
         [StringLength(15)]
         public string STKNAME { get; set; }
         public string DISCTYPE_DESC { get; set; }
+        
         public double? TOTDISCAMT { get; set; }
         public string ALL_GSTPER { get; set; }
         public string PRODGRPGSTPER { get; set; }
@@ -197,6 +198,7 @@ namespace Improvar.Models
         public string COLRNM { get; set; }
         public string MTBARCODE { get; set; }
         public string PRTBARCODE { get; set; }
+       
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
@@ -215,5 +217,9 @@ namespace Improvar.Models
         public double? CONVQTYPUNIT { get; set; }
         public string NEGSTOCK { get; set; }
         public double? BALSTOCK { get; set; }
+        public double PROGSLNO { get; set; }
+        public string PROGITSTYLE { get; set; }
+        public string PROGUOMNM { get; set; }
+        public double PROGQNTY { get; set; }
     }
 }
