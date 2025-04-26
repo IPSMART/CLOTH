@@ -306,6 +306,7 @@
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
     <Compile Include="Controllers\Rep_EWB_ChangesController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
+    <Compile Include="Controllers\Rep_OrdRegController.cs" />
     <Compile Include="Controllers\Rep_Job_LedgerController.cs" />
     <Compile Include="Controllers\Rep_Misc_Qry_UpdtController.cs" />
     <Compile Include="Controllers\Rep_MIS_SaleStkController.cs" />
@@ -1601,6 +1602,7 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_NEW_Programme.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_NEW_MI_POPUP.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_NEW_DETAIL.cshtml" />
+    <Content Include="Views\Rep_OrdReg\Rep_OrdReg.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
