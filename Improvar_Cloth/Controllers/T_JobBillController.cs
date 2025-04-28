@@ -252,8 +252,8 @@ namespace Improvar.Controllers
                                                                            //DocumentType DDL1 = new DocumentType(); DDL1.text = "Unit"; DDL1.value = "P"; DDL.Add(DDL1);
                                                                            //DocumentType DDL2 = new DocumentType(); DDL2.text = "Dzn"; DDL2.value = "D"; DDL.Add(DDL2);
                                                                            //DocumentType DDL3 = new DocumentType(); DDL3.text = "Box"; DDL3.value = "B"; DDL.Add(DDL3);
-                        DocumentType DDL1 = new DocumentType(); DDL1.text = "Nos"; DDL1.value = "N"; DDL.Add(DDL1);
                         DocumentType DDL2 = new DocumentType(); DDL2.text = "Qnty"; DDL2.value = "Q"; DDL.Add(DDL2);
+                        DocumentType DDL1 = new DocumentType(); DDL1.text = "Nos"; DDL1.value = "N"; DDL.Add(DDL1);
                         List<PendingChallanItemDetails> JBD = new List<PendingChallanItemDetails>();
                         if (VE.MENU_PARA == "JB")
                         {
@@ -959,8 +959,8 @@ namespace Improvar.Controllers
                                                                    //DocumentType DDL1 = new DocumentType(); DDL1.text = "Unit"; DDL1.value = "P"; DDL.Add(DDL1);
                                                                    //DocumentType DDL2 = new DocumentType(); DDL2.text = "Dzn"; DDL2.value = "D"; DDL.Add(DDL2);
                                                                    //DocumentType DDL3 = new DocumentType(); DDL3.text = "Box"; DDL3.value = "B"; DDL.Add(DDL3);
-                DocumentType DDL1 = new DocumentType(); DDL1.text = "Nos"; DDL1.value = "N"; DDL.Add(DDL1);
                 DocumentType DDL2 = new DocumentType(); DDL2.text = "Qnty"; DDL2.value = "Q"; DDL.Add(DDL2);
+                DocumentType DDL1 = new DocumentType(); DDL1.text = "Nos"; DDL1.value = "N"; DDL.Add(DDL1);
                 List<PendingChallanItemDetails> PCID = new List<PendingChallanItemDetails>();
                 List<PendingChallan_SBill_Sortage> PCDCND = new List<PendingChallan_SBill_Sortage>();
                 Int16 SLNO = 0; Int16 SLNO1 = 0;
