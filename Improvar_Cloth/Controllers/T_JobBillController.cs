@@ -516,6 +516,20 @@ namespace Improvar.Controllers
                                 i.ShortQNTY_DISPLAY = UOMCOnvertionFromPices(i.qtncalcon, i.ShortQNTY_DISPLAY);
                             }
                         }
+                        VE.Total_RECEVEQNTY = VE.ItemDetails.Sum(a => a.RECQNTY_DISPLAY).retDbl();
+                        VE.Total_BillQNTY = VE.ItemDetails.Sum(a => a.BillQNTY).retDbl(); 
+                        VE.Total_PASSQNTY = VE.ItemDetails.Sum(a => a.PASSQNTY).retDbl();
+                        VE.Total_NOS = VE.ItemDetails.Sum(a => a.NOS).retDbl();
+                        VE.Total_AMOUNT = VE.ItemDetails.Sum(a => a.AMOUNT).retDbl();
+                        VE.Total_ShortQNTY = VE.ItemDetails.Sum(a => a.ShortQNTY_DISPLAY).retDbl();
+                        VE.Total_DISCAMT = VE.ItemDetails.Sum(a => a.DISCAMT).retDbl();
+                        VE.Total_addless = VE.ItemDetails.Sum(a => a.addless).retDbl();
+                        VE.Total_TAXABLE = VE.ItemDetails.Sum(a => a.TAXABLE).retDbl();
+                        VE.Total_igstamt = VE.ItemDetails.Sum(a => a.igstamt).retDbl();
+                        VE.Total_cgstamt = VE.ItemDetails.Sum(a => a.cgstamt).retDbl();
+                        VE.Total_sgstamt = VE.ItemDetails.Sum(a => a.sgstamt).retDbl();
+                        VE.Total_cessamt = VE.ItemDetails.Sum(a => a.cessamt).retDbl();
+                        VE.Total_NETAMOUNT = VE.ItemDetails.Sum(a => a.NETAMOUNT).retDbl();
                         string DOCDT = TJBILL.DOCDT.Value.ToString("dd/MM/yyyy");
                         string sql = "";
                         sql += "select a.effdt, a.prodgrpcd, a.igstper, a.cgstper, a.sgstper, a.cessper from ";
