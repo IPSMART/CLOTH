@@ -2323,7 +2323,7 @@ namespace Improvar.Controllers
                 if (stream.T_TXN.DOCCD.retStr() != "")
                 {
                     stream.T_CNTRL_HDR.DOCCD = stream.T_TXN.DOCCD.retStr();
-                }
+                }                
                 var menuID = MNUDET.Split('~')[0];
                 var menuIndex = MNUDET.Split('~')[1];
                 string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
@@ -2439,10 +2439,10 @@ namespace Improvar.Controllers
                         OraCon.Dispose();
                         return Content("Barcode grid & Detail grid itcd wise qnty, nos should match !!");
                     }
-
-                    T_TXN TTXN = new T_TXN();
+                    
+                    T_TXN TTXN = new T_TXN();                   
                     T_TXNTRANS TXNTRANS = new T_TXNTRANS();
-                    T_TXNOTH TTXNOTH = new T_TXNOTH();
+                    T_TXNOTH TTXNOTH = new T_TXNOTH();                   
 
                     string DOCPATTERN = "";
                     string docpassrem = "";
@@ -2450,7 +2450,7 @@ namespace Improvar.Controllers
                     TTXN.DOCDT = VE.T_TXN.DOCDT;
                     string Ddate = Convert.ToString(TTXN.DOCDT);
                     TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-                    string auto_no = ""; string Month = "";
+                    string auto_no = ""; string Month = "";                   
 
                     #region Posting to finance Preparation
                     int COUNTER = 0;
@@ -2548,8 +2548,17 @@ namespace Improvar.Controllers
                     {
                         TTXN.EMD_NO = 0;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
-                        TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+
+                        if (VE.M_SLIP_NO.retStr().Trim(' ') != "")
+                        {
+                            TTXN.DOCNO = Convert.ToString(VE.M_SLIP_NO).PadLeft(6, '0');
+                        }
+                        else
+                        {
+                            TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
+                        }
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();

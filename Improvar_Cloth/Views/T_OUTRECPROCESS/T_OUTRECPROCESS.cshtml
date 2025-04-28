@@ -104,6 +104,7 @@
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
         if (!emptyFieldCheck("Please Enter Party Bill No", "PREFNO")) { return false; }
+        if (!emptyFieldCheck("Please Enter Mtrl Job Code", "MTRLJOBCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party Bill Date", "PREFDT")) { return false; }
         //start of finalise
         var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
@@ -1614,6 +1615,20 @@
                                 @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                             </div>
                         </div>
+
+                        @if (Model.DefaultAction == "A")
+                    {
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Manual Document No")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SLIP_NO, new { htmlAttributes = new { @class = "form-control", id = "M_SLIP_NO", maxlength = 6, @onkeypress = "return numericOnly(this);", @placeholder = "Manual Document No" } })
+                                </div>
+                            </div>
+                        }
                         <div class="col-md-1">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Job")
@@ -1752,6 +1767,7 @@
                                 <div class="col-md-5">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Mtrl Job Code")
+                                        <b style="color:Red;">*</b>
                                     </div>
                                 </div>
                                 <div class="col-md-4">

@@ -15,7 +15,7 @@ namespace Improvar.Controllers
         Salesfunc Salesfunc = new Salesfunc();
         DropDownHelp DropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        // GET: Rep_OrdReg
+        //GET: Rep_OrdReg
         public ActionResult Rep_OrdReg()
         {
             try
@@ -89,7 +89,8 @@ namespace Improvar.Controllers
             try
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string slcd = "", agslcd = "", slmslcd = "", brandcd = "", fdt, tdt = "", colrcd = "", batchno = "", item = "", mtrlsupplby = "", seldoccd = "";
+                //string slcd = "", agslcd = "", slmslcd = "", brandcd = "", fdt, tdt = "", colrcd = "", batchno = "", item = "", mtrlsupplby = "", seldoccd = "";
+                string slcd = "", agslcd = "", slmslcd = "", brandcd = "", fdt, tdt = "", colrcd = "", batchno = "", item = "", seldoccd = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
                 string ReportType = VE.TEXTBOX3;
@@ -125,9 +126,14 @@ namespace Improvar.Controllers
                         item = FC["itcdvalue"].ToString().retSqlformat();
                     }
                 }
+                //if (FC.AllKeys.Contains("MTRLSUPPLBYvalue"))
+                //{
+                //    mtrlsupplby = FC["MTRLSUPPLBYvalue"].ToString().retSqlformat();
+                //}
+
                 if (FC.AllKeys.Contains("MTRLSUPPLBYvalue"))
                 {
-                    mtrlsupplby = FC["MTRLSUPPLBYvalue"].ToString().retSqlformat();
+
                 }
                 if (FC.AllKeys.Contains("doccdvalue")) seldoccd = CommFunc.retSqlformat(FC["doccdvalue"].ToString());
                 bool mergeloca = VE.Checkbox3;
@@ -146,11 +152,17 @@ namespace Improvar.Controllers
                 sort += ",docdt, docno,  itnm, itcd,rate";
                 if (showcolor == true) sort += ",colrcd";
                 if (ShowBatchNumber == true) sort += ",batchno";
-                if (ReportType == "Details") sort += ",dia";
+                //if (ReportType == "Details") sort += ",dia";
                 if (ShowBatchNumber == true) sort += ",ll";
-                if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd,MTRLSUPPLBY,jobnm";
+                //if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd,MTRLSUPPLBY,jobnm";
+                //if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd,jobnm";
 
-                DataTable tbl = Salesfunc.GetPendOrder(slcd,tdt);
+                //if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd,MTRLSUPPLBY";
+                if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";
+                if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd,";
+                if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";
+
+                DataTable tbl = Salesfunc.GetPendOrder(slcd, tdt);
                 tbl.DefaultView.Sort = sort;
                 tbl = tbl.DefaultView.ToTable();
                 if (tbl.Rows.Count == 0)
@@ -195,20 +207,20 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "district", "string", "c,20", "Area");
                     }
                     HC.GetPrintHeader(IR, "prefno", "string", "c,20", "Party Ref");
-                    HC.GetPrintHeader(IR, "MTRLSUPPLBY", "string", "c,20", "Order Type");
-                    HC.GetPrintHeader(IR, "jobnm", "string", "c,20", "Nature Of Order");
+                    //HC.GetPrintHeader(IR, "MTRLSUPPLBY", "string", "c,20", "Order Type");
+                    //HC.GetPrintHeader(IR, "jobnm", "string", "c,20", "Nature Of Order");
                     if (ReportType == "Details")
                     {
                         HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
-                        if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
-                        if (ShowBatchNumber == true) HC.GetPrintHeader(IR, "BATCHNO", "string", "c,45", "Batch Number");
-                        HC.GetPrintHeader(IR, "dia", "string", "c,25", "Dia");
-                        HC.GetPrintHeader(IR, "GSM", "string", "c,25", "GSM");
-                        if (ShowSLCol == true) HC.GetPrintHeader(IR, "ll", "string", "c,25", "SL");
+                        //if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
+                        //if (ShowBatchNumber == true) HC.GetPrintHeader(IR, "BATCHNO", "string", "c,45", "Batch Number");
+                        //HC.GetPrintHeader(IR, "dia", "string", "c,25", "Dia");
+                        //HC.GetPrintHeader(IR, "GSM", "string", "c,25", "GSM");
+                        //if (ShowSLCol == true) HC.GetPrintHeader(IR, "ll", "string", "c,25", "SL");
                     }
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
                     {
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Balance Order Qnty");
+                        //HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Balance Order Qnty");
                     }
                     else
                     {
@@ -216,32 +228,36 @@ namespace Improvar.Controllers
                     }
                     if (ReportType == "Details" && VE.Checkbox8 == true)
                     {
-                        HC.GetPrintHeader(IR, "ktqnty", "double", "n,12,3:##,##,##,##0.000", "Knitted Qnty");
-                        HC.GetPrintHeader(IR, "balktqnty", "double", "n,12,3:##,##,##,##0.000", "Balance to Knitted");
+                        //HC.GetPrintHeader(IR, "ktqnty", "double", "n,12,3:##,##,##,##0.000", "Knitted Qnty");
+                        //HC.GetPrintHeader(IR, "balktqnty", "double", "n,12,3:##,##,##,##0.000", "Balance to Knitted");
                     }
                     HC.GetPrintHeader(IR, "rate", "double", "n,17,2:####,##,##,##0.00", "Rate");
                     HC.GetPrintHeader(IR, "amt", "double", "n,17,2:####,##,##,##0.00", "Order Value");
+                    //if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
+                    //{
+                    //    HC.GetPrintHeader(IR, "cancqnty", "double", "n,12,3:##,##,##,##0.000", "Cancel Qnty");
+
+                    //    if (VE.Checkbox7 == true)
+                    //    {
+                    //        HC.GetPrintHeader(IR, "billdocno", "string", "c,15", "Bill No");
+                    //        HC.GetPrintHeader(IR, "billdocdt", "string", "c,10", "Bill Date");
+                    //        HC.GetPrintHeader(IR, "billqnty", "double", "n,12,3", "Bill Quantity");
+                    //    }
+                    //    if (VE.Checkbox7 == true)
+                    //    {
+                    //        HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3", "Balance Order Quantity");
+                    //    }
+                    //    else
+                    //    {
+                    //        HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3:##,##,##,##0.000", "Total Qnty");
+                    //    }
+                    //}
+
                     if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                     {
-                        HC.GetPrintHeader(IR, "cancqnty", "double", "n,12,3:##,##,##,##0.000", "Cancel Qnty");
+                        HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3:##,##,##,##0.000", "Total Qnty");
 
-                        if (VE.Checkbox7 == true)
-                        {
-                            HC.GetPrintHeader(IR, "billdocno", "string", "c,15", "Bill No");
-                            HC.GetPrintHeader(IR, "billdocdt", "string", "c,10", "Bill Date");
-                            HC.GetPrintHeader(IR, "billqnty", "double", "n,12,3", "Bill Quantity");
-                        }
-                        if (VE.Checkbox7 == true)
-                        {
-                            HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3", "Balance Order Quantity");
-                        }
-                        else
-                        {
-                            HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3:##,##,##,##0.000", "Total Qnty");
-                        }
                     }
-
-
 
 
 
@@ -277,16 +293,16 @@ namespace Improvar.Controllers
                                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                         //if (count == 0)
                                         //{
-                                            IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Remove(10);
+                                        IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
 
-                                            IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
-                                            //IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
-                                            //IR.Rows[rNo]["district"] = tbl.Rows[i]["district"].ToString();
-                                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
+                                        IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
+                                        //IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
+                                        //IR.Rows[rNo]["district"] = tbl.Rows[i]["district"].ToString();
+                                        IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
 
-                                            //IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                                            //IR.Rows[rNo]["MTRLSUPPLBY"] = Salesfunc.GetMTRLSUPPLBY(tbl.Rows[i]["MTRLSUPPLBY"].retStr());
-                                            IR.Rows[rNo]["jobnm"] = tbl.Rows[i]["jobnm"].ToString();
+                                        //IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                                        //IR.Rows[rNo]["MTRLSUPPLBY"] = Salesfunc.GetMTRLSUPPLBY(tbl.Rows[i]["MTRLSUPPLBY"].retStr());
+                                        //IR.Rows[rNo]["jobnm"] = tbl.Rows[i]["jobnm"].ToString();
                                         //}
 
                                         IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["itcd"].ToString() + "]";
@@ -305,11 +321,14 @@ namespace Improvar.Controllers
 
                                             double ctqnty = 0, ctamt = 0, ctcancqnty = 0;
                                             string gsm = "";
-                                            string chk = tbl.Rows[i]["dia"].retStr()
-                                                      + (showcolor == true ? tbl.Rows[i]["colrcd"].retStr() : tbl.Rows[i]["itcd"].retStr())
-                                                      + (ShowBatchNumber == true ? tbl.Rows[i]["batchno"].retStr() : tbl.Rows[i]["itcd"].retStr())
-                                                  + (ShowSLCol == true ? tbl.Rows[i]["ll"].retStr() : tbl.Rows[i]["itcd"].retStr()) + tbl.Rows[i]["rate"].retDbl()+ tbl.Rows[i]["gsm"].retStr();
+                                            //string chk = tbl.Rows[i]["dia"].retStr()
+                                            //             + (showcolor == true ? tbl.Rows[i]["colrcd"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                            //             + (ShowBatchNumber == true ? tbl.Rows[i]["batchno"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                            //         + (ShowSLCol == true ? tbl.Rows[i]["ll"].retStr() : tbl.Rows[i]["itcd"].retStr()) + tbl.Rows[i]["rate"].retDbl() + tbl.Rows[i]["gsm"].retStr();
 
+                                            string chk = (showcolor == true ? tbl.Rows[i]["colrcd"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                                     + (ShowBatchNumber == true ? tbl.Rows[i]["batchno"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                                 + (ShowSLCol == true ? tbl.Rows[i]["ll"].retStr() : tbl.Rows[i]["itcd"].retStr()) + tbl.Rows[i]["rate"].retDbl();
                                             count++;
                                             if (cnt != 0)
                                             {
@@ -317,21 +336,24 @@ namespace Improvar.Controllers
                                             }
                                             if (showcolor == true) IR.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
                                             if (ShowBatchNumber == true) IR.Rows[rNo]["BATCHNO"] = tbl.Rows[i]["BATCHNO"];
-                                            IR.Rows[rNo]["dia"] = tbl.Rows[i]["dia"];
-                                            IR.Rows[rNo]["gsm"] = tbl.Rows[i]["gsm"];
+                                            //IR.Rows[rNo]["dia"] = tbl.Rows[i]["dia"];
+                                            //IR.Rows[rNo]["gsm"] = tbl.Rows[i]["gsm"];
                                             IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"];
                                             if (ShowSLCol == true) IR.Rows[rNo]["ll"] = tbl.Rows[i]["ll"];
+                                            //while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["slcd"].ToString() == party && tbl.Rows[i]["autono"].ToString() == chk1 && tbl.Rows[i]["itcd"].ToString() == ichk && tbl.Rows[i]["dia"].retStr()
+                                            // + (showcolor == true ? tbl.Rows[i]["colrcd"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                            // + (ShowBatchNumber == true ? tbl.Rows[i]["batchno"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                            // + (ShowSLCol == true ? tbl.Rows[i]["ll"].retStr() : tbl.Rows[i]["itcd"].retStr()) + tbl.Rows[i]["rate"].retDbl() + tbl.Rows[i]["gsm"].retStr() == chk)
 
                                             while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["slcd"].ToString() == party && tbl.Rows[i]["autono"].ToString() == chk1 && tbl.Rows[i]["itcd"].ToString() == ichk &&
-                                                    tbl.Rows[i]["dia"].retStr()
-                                                    + (showcolor == true ? tbl.Rows[i]["colrcd"].retStr() : tbl.Rows[i]["itcd"].retStr())
-                                                    + (ShowBatchNumber == true ? tbl.Rows[i]["batchno"].retStr() : tbl.Rows[i]["itcd"].retStr())
-                                                + (ShowSLCol == true ? tbl.Rows[i]["ll"].retStr() : tbl.Rows[i]["itcd"].retStr()) + tbl.Rows[i]["rate"].retDbl() + tbl.Rows[i]["gsm"].retStr() == chk)
+                                              (showcolor == true ? tbl.Rows[i]["colrcd"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                             + (ShowBatchNumber == true ? tbl.Rows[i]["batchno"].retStr() : tbl.Rows[i]["itcd"].retStr())
+                                             + (ShowSLCol == true ? tbl.Rows[i]["ll"].retStr() : tbl.Rows[i]["itcd"].retStr()) + tbl.Rows[i]["rate"].retDbl() == chk)
                                             {
                                                 ctqnty = ctqnty + tbl.Rows[i][qtyfld].retDbl();
                                                 ctamt = ctamt + Math.Round((tbl.Rows[i][qtyfld].retDbl() * tbl.Rows[i]["rate"].retDbl()), 0);
                                                 //gsm += tbl.Rows[i]["gsm"].retDbl();
-                                                ctcancqnty += tbl.Rows[i]["cancordqnty"].retDbl();
+                                                //ctcancqnty += tbl.Rows[i]["cancordqnty"].retDbl();
 
                                                 i++;
                                                 if (i > maxR) break;
@@ -341,8 +363,9 @@ namespace Improvar.Controllers
                                             IR.Rows[rNo]["qnty"] = ctqnty;
                                             if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                             {
-                                                IR.Rows[rNo]["cancqnty"] = ctcancqnty;
+                                                //IR.Rows[rNo]["cancqnty"] = ctcancqnty;
                                             }
+
                                             IR.Rows[rNo]["amt"] = ctamt;
                                             //IR.Rows[rNo]["gsm"] = gsm;
 
@@ -362,8 +385,8 @@ namespace Improvar.Controllers
                                             if (i > maxR) break;
                                         }
                                         double balqnty = (from DataRow a in tbl.Rows where a["autono"].retStr() == chk1 && a["itcd"].retStr() == ichk select a["ordqnty"].retDbl()).Sum().retDbl();
-                                        double cancqnty = (from DataRow a in tbl.Rows where a["autono"].retStr() == chk1 && a["itcd"].retStr() == ichk select a["cancordqnty"].retDbl()).Sum().retDbl();
-                                        balqnty -= cancqnty;
+                                        //double cancqnty = (from DataRow a in tbl.Rows where a["autono"].retStr() == chk1 && a["itcd"].retStr() == ichk select a["cancordqnty"].retDbl()).Sum().retDbl();
+                                        //balqnty -= cancqnty;
                                         double ktqnty = 0;
                                         if (VE.Checkbox8 == true)
                                         {
@@ -488,7 +511,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["qnty"] = tpqnty;
                                 if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                 {
-                                    IR.Rows[rNo]["cancqnty"] = tpcancqnty;
+                                    //IR.Rows[rNo]["cancqnty"] = tpcancqnty;
                                 }
                                 IR.Rows[rNo]["amt"] = tpamt;
                                 if (VE.Checkbox7 == true)
@@ -509,7 +532,7 @@ namespace Improvar.Controllers
                             else
                             {
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                                IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().Remove(10);
+                                IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
 
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
                                 IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
@@ -519,10 +542,10 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                 //IR.Rows[rNo]["MTRLSUPPLBY"] = Salesfunc.GetMTRLSUPPLBY(tbl.Rows[i]["MTRLSUPPLBY"].retStr());
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                                IR.Rows[rNo]["jobnm"] = tbl.Rows[i]["jobnm"].ToString();
+                                //IR.Rows[rNo]["jobnm"] = tbl.Rows[i]["jobnm"].ToString();
 
                                 string chk1 = tbl.Rows[i]["autono"].ToString();
-                                double cqnty = 0, camt = 0, cancqnty = 0;
+                                double cqnty = 0, camt = 0; //cancqnty = 0;
                                 while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["autono"].ToString() == chk1)
                                 {
                                     string ichk = tbl.Rows[i]["itcd"].ToString() + tbl.Rows[i]["rate"].retDbl();
@@ -530,7 +553,7 @@ namespace Improvar.Controllers
                                     {
                                         cqnty = cqnty + tbl.Rows[i][qtyfld].retDbl();
                                         camt = camt + Math.Round((tbl.Rows[i][qtyfld].retDbl() * tbl.Rows[i]["rate"].retDbl()), 0);
-                                        cancqnty += tbl.Rows[i]["cancordqnty"].retDbl();
+                                        //cancqnty += tbl.Rows[i]["cancordqnty"].retDbl();
 
                                         i++;
                                         if (i > maxR) break;
@@ -542,11 +565,11 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["qnty"] = cqnty;
                                 if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                 {
-                                    IR.Rows[rNo]["cancqnty"] = cancqnty;
+                                    //IR.Rows[rNo]["cancqnty"] = cancqnty;
                                 }
 
                                 IR.Rows[rNo]["amt"] = camt;
-                                double balqnty = cqnty - cancqnty;
+                                //double balqnty = cqnty - cancqnty;
 
                                 if (VE.Checkbox7 == true)
                                 {
@@ -580,10 +603,10 @@ namespace Improvar.Controllers
                                             IR.Rows[rNo]["billdocno"] = selectedTable.Rows[j - 1]["DOCNO"];
                                             IR.Rows[rNo]["billdocdt"] = selectedTable.Rows[j - 1]["DOCDT"].retDateStr();
                                             IR.Rows[rNo]["billqnty"] = tbillqnty;
-                                            balqnty -= tbillqnty;
+                                            //balqnty -= tbillqnty;
                                             if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                             {
-                                                IR.Rows[rNo]["balordqnty"] = balqnty;
+                                                //IR.Rows[rNo]["balordqnty"] = balqnty;
                                             }
                                             cnt++;
                                             if (j > maxJ) break;
@@ -594,7 +617,7 @@ namespace Improvar.Controllers
                                     {
                                         if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                         {
-                                            IR.Rows[rNo]["balordqnty"] = balqnty;
+                                            //IR.Rows[rNo]["balordqnty"] = balqnty;
                                         }
                                     }
 
@@ -605,19 +628,19 @@ namespace Improvar.Controllers
                                 {
                                     if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                                     {
-                                        IR.Rows[rNo]["balordqnty"] = balqnty;
+                                        //IR.Rows[rNo]["balordqnty"] = balqnty;
                                     }
                                 }
-                                tbalqnty += balqnty;
-                                tabalqnty += balqnty;
+                                //tbalqnty += balqnty;
+                                //tabalqnty += balqnty;
 
                                 tqnty += cqnty;
                                 tamt += camt;
                                 taqnty += cqnty;
                                 taamt += camt;
 
-                                tcancqnty += cancqnty;
-                                tacancqnty += cancqnty;
+                                //tcancqnty += cancqnty;
+                                //tacancqnty += cancqnty;
 
                             }
 
@@ -631,7 +654,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["qnty"] = taqnty;
                         if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                         {
-                            IR.Rows[rNo]["cancqnty"] = tacancqnty;
+                            //IR.Rows[rNo]["cancqnty"] = tacancqnty;
                         }
                         IR.Rows[rNo]["amt"] = taamt;
                         if (VE.Checkbox7 == true)
@@ -657,7 +680,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["qnty"] = tqnty;
                     if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                     {
-                        IR.Rows[rNo]["cancqnty"] = tcancqnty;
+                        //IR.Rows[rNo]["cancqnty"] = tcancqnty;
                     }
                     IR.Rows[rNo]["amt"] = tamt;
                     if (VE.Checkbox7 == true)
@@ -676,8 +699,8 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
                     HC.GetPrintHeader(IR, "slnm", "string", "c,45", "Party Name");
                     HC.GetPrintHeader(IR, "district", "string", "c,20", "Area");
-                    HC.GetPrintHeader(IR, "MTRLSUPPLBY", "string", "c,20", "Order Type");
-                    HC.GetPrintHeader(IR, "jobnm", "string", "c,20", "Nature Of Order");
+                    //HC.GetPrintHeader(IR, "MTRLSUPPLBY", "string", "c,20", "Order Type");
+                    //HC.GetPrintHeader(IR, "jobnm", "string", "c,20", "Nature Of Order");
                     //if (VE.Checkbox7 == true)
                     //{
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
@@ -693,7 +716,7 @@ namespace Improvar.Controllers
                         //{
                         //    HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Total;Qnty");
                         //}
-                        HC.GetPrintHeader(IR, "cancqnty", "double", "n,12,3:##,##,##,##0.000", "Cancel;Qnty");
+                        //HC.GetPrintHeader(IR, "cancqnty", "double", "n,12,3:##,##,##,##0.000", "Cancel;Qnty");
                         //HC.GetPrintHeader(IR, "amt", "double", "n,17,2:####,##,##,##0.00", "Orde;Value");
                         if (VE.Checkbox7 == true)
                         {
@@ -722,11 +745,23 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
 
                         double taqnty = 0, taamt = 0, tabqnty = 0, tabamt = 0, tabalqnty = 0, tacancqnty = 0;
+                        //while (tbl.Rows[i]["agslcd"].ToString() == stragslcd)
+                        //{
+                        //    double ordqnty = 0, billqnty = 0, billamt = 0, ordval = 0 /*cancordqnty = 0*/;
+                        //    string fldval = tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["MTRLSUPPLBY"].ToString() + tbl.Rows[i]["jobnm"].ToString();
+                        //    string fldval = tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["jobnm"].ToString();
+                        //    string fldval = tbl.Rows[i]["slcd"].ToString();
+                        //    while (tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["MTRLSUPPLBY"].ToString() + tbl.Rows[i]["jobnm"].ToString() == fldval) ;
+                        //    while (tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["jobnm"].ToString() == fldval) ;
+                        //    while (tbl.Rows[i]["slcd"].ToString()  == fldval) ;
+
+
                         while (tbl.Rows[i]["agslcd"].ToString() == stragslcd)
                         {
-                            double ordqnty = 0, billqnty = 0, billamt = 0, ordval = 0, cancordqnty = 0;
-                            string fldval = tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["MTRLSUPPLBY"].ToString() + tbl.Rows[i]["jobnm"].ToString();
-                            while (tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["MTRLSUPPLBY"].ToString() + tbl.Rows[i]["jobnm"].ToString() == fldval)
+                            double ordqnty = 0, billqnty = 0, billamt = 0, ordval = 0 /*cancordqnty = 0*/;
+                            //string fldval = tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["MTRLSUPPLBY"].ToString();
+                            string fldval = tbl.Rows[i]["slcd"].ToString();
+                            while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["slcd"].ToString() == fldval) 
                             {
                                 string autono = tbl.Rows[i]["autono"].ToString();
                                 if (VE.Checkbox7 == true)
@@ -735,7 +770,7 @@ namespace Improvar.Controllers
                                     billamt += (from DataRow a in tbl1.Rows where a["ordautono"].retStr() == autono select a["netamt"].retDbl()).Sum();
 
                                 }
-                                while (tbl.Rows[i]["slcd"].ToString() + tbl.Rows[i]["MTRLSUPPLBY"].ToString() + tbl.Rows[i]["jobnm"].ToString() == fldval && tbl.Rows[i]["autono"].ToString() == autono)
+                                while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["slcd"].ToString() == fldval && tbl.Rows[i]["autono"].ToString() == autono)
                                 {
                                     ordqnty += tbl.Rows[i][qtyfld].retDbl();
                                     ordval += Math.Round((tbl.Rows[i][qtyfld].retDbl() * tbl.Rows[i]["rate"].retDbl()), 2);
@@ -743,10 +778,6 @@ namespace Improvar.Controllers
                                     tamt += Math.Round((tbl.Rows[i][qtyfld].retDbl() * tbl.Rows[i]["rate"].retDbl()), 2);
                                     taqnty += tbl.Rows[i][qtyfld].retDbl();
                                     taamt += Math.Round((tbl.Rows[i][qtyfld].retDbl() * tbl.Rows[i]["rate"].retDbl()), 2);
-                                    cancordqnty += tbl.Rows[i]["cancordqnty"].retDbl();
-                                    tacancqnty += tbl.Rows[i]["cancordqnty"].retDbl();
-                                    tcancqnty += tbl.Rows[i]["cancordqnty"].retDbl();
-
                                     i++;
                                     if (i > maxR) break;
                                 }
@@ -756,12 +787,10 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].ToString();
                             IR.Rows[rNo]["district"] = tbl.Rows[i - 1]["district"].ToString();
                             IR.Rows[rNo]["slnm"] = tbl.Rows[i - 1]["slnm"].ToString();
-                            //IR.Rows[rNo]["MTRLSUPPLBY"] = Salesfunc.GetMTRLSUPPLBY(tbl.Rows[i - 1]["MTRLSUPPLBY"].retStr());
-                            IR.Rows[rNo]["jobnm"] = tbl.Rows[i - 1]["jobnm"].ToString();
                             IR.Rows[rNo]["qnty"] = ordqnty;
                             if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                             {
-                                IR.Rows[rNo]["cancqnty"] = cancordqnty;
+                                //IR.Rows[rNo]["cancqnty"] = cancordqnty;
                             }
                             //IR.Rows[rNo]["amt"] = ordval;
                             if (VE.Checkbox7 == true)
@@ -769,16 +798,24 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["billqnty"] = billqnty;
                                 //IR.Rows[rNo]["billamt"] = billamt;                               
                             }
+                            //if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
+                            //{
+                            //    IR.Rows[rNo]["balordqnty"] = (ordqnty - billqnty - cancordqnty);
+                            //}
+                            //tbqnty += billqnty;
+                            //tbamt += billamt;
+                            //tbalqnty += (ordqnty - billqnty - cancordqnty);
+                            //tabqnty += billqnty;
+                            //tabamt += billamt;
+                            //tabalqnty += (ordqnty - billqnty - cancordqnty);
+
                             if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
-                            {
-                                IR.Rows[rNo]["balordqnty"] = (ordqnty - billqnty - cancordqnty);
-                            }
-                            tbqnty += billqnty;
+
+                                tbqnty += billqnty;
                             tbamt += billamt;
-                            tbalqnty += (ordqnty - billqnty - cancordqnty);
                             tabqnty += billqnty;
                             tabamt += billamt;
-                            tabalqnty += (ordqnty - billqnty - cancordqnty);
+
                             if (i > maxR) break;
                         }
                         //total of agent
@@ -788,7 +825,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["qnty"] = taqnty;
                         if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                         {
-                            IR.Rows[rNo]["cancqnty"] = tacancqnty;
+                            //IR.Rows[rNo]["cancqnty"] = tacancqnty;
                         }
                         //IR.Rows[rNo]["amt"] = taamt;
                         if (VE.Checkbox7 == true)
@@ -810,7 +847,7 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["qnty"] = tqnty;
                     if (!(VE.Checkbox1 == true && VE.Checkbox7 == false))
                     {
-                        IR.Rows[rNo]["cancqnty"] = tcancqnty;
+                        //IR.Rows[rNo]["cancqnty"] = tcancqnty;
                     }
                     //IR.Rows[rNo]["amt"] = tamt;
                     if (VE.Checkbox7 == true)
@@ -837,6 +874,7 @@ namespace Improvar.Controllers
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
                 return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
             }
+
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");

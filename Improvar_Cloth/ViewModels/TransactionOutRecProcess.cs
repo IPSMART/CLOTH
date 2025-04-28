@@ -196,5 +196,6 @@ namespace Improvar.ViewModels
         public double B_T_SHORTQNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? P_T_SHORTQNTY { get; set; }
+        public double? M_SLIP_NO { get; set; }
     }
 }

@@ -91,7 +91,7 @@
                         @(new HtmlString(Model.Slnm))
                     </div>
                 </div>
-                <div class="row" style="margin-top:6px">
+                @*<div class="row" style="margin-top:6px">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Order Type")
@@ -100,7 +100,7 @@
                     <div class="col-md-6">
                         @(new HtmlString(Model.TEXTBOX4))
                     </div>
-                </div>
+                </div>*@
                 <div class="row" style="margin-top:6px">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top:5px">
@@ -153,7 +153,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" style="margin-top: 8px;">
+                @*<div class="row" style="margin-top: 8px;">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Pending as Per")
@@ -168,7 +168,7 @@
                         </label>
 
                     </div>
-                </div>
+                </div>*@
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -208,22 +208,22 @@
                         <td style="border:1px groove;">Show Color</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, new { id = "Checkbox4", Style = "width:18px;height:18px;" })</td>
                     </tr>
-                    <tr class="itemdiv">
+                    @*<tr class="itemdiv">
                         <td style="border:1px groove;">Show Batch Number Column</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5, new { Style = "width:18px;height:18px;" })</td>
-                    </tr>
-                    <tr class="itemdiv">
+                    </tr>*@
+                    @*<tr class="itemdiv">
                         <td style="border:1px groove;">Show SL Column</td>
                         <td style="border:1px groove;"> @Html.CheckBoxFor(model => model.Checkbox6, new { Style = "width:18px;height:18px;" })</td>
-                    </tr>
+                    </tr>*@
                     <tr>
                         <td style="border:1px groove;">Merge All Locations</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3, new { id = "Checkbox3", Style = "width:18px;height:18px;" })</td>
                     </tr>
-                    <tr>
+                    @*<tr>
                         <td style="border:1px groove;">Show Knitting Details in Details Report</td>
                         <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox8, new { id = "Checkbox8", Style = "width:18px;height:18px;" })</td>
-                    </tr>
+                    </tr>*@
                 </table>
             </div>
         </div>
