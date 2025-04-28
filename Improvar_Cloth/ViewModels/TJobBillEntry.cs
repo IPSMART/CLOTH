@@ -185,6 +185,7 @@ namespace Improvar.ViewModels
         public string ISSDOCNO { get; set; }
         public string ISSDOCDT { get; set; }
         public string PREFNO { get; set; }
+        public string PREFDT { get; set; }
         public string HSNSACCD { get; set; }
         public double RATE { get; set; }
         public double? NOS { get; set; }

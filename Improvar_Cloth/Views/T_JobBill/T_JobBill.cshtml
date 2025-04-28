@@ -577,11 +577,12 @@
         var DOCDT = document.getElementById("DOCDT").value;
         if (!emptyFieldCheck("Enter JOBCDd", "JOBCD")) { return false; }
         var JOB = document.getElementById("JOBCD").value;
-        if (!emptyFieldCheck("Enter PBLNO", "PBLNO")) { return false; }
+        //if (!emptyFieldCheck("Enter PBLNO", "PBLNO")) { return false; }
         var PBLNO = document.getElementById("PBLNO").value;
-        if (!emptyFieldCheck("Enter PBLDT", "PBLDT")) { return false; }
+        //if (!emptyFieldCheck("Enter PBLDT", "PBLDT")) { return false; }
         var PBLDT = document.getElementById("PBLDT").value;
-        if (PARTY != "" && DOCDT != "" && JOB != "" && PBLNO != "" && PBLDT != "") {
+        //if (PARTY != "" && DOCDT != "" && JOB != "" && PBLNO != "" && PBLDT != "") {
+        if (PARTY != "" && DOCDT != "" && JOB != "" ) {
             $.ajax({
                 type: 'post',
                 url: "@Url.Action("GetPendingChallan", PageControllerName)",
@@ -613,7 +614,8 @@
             $("#Msgdiv1").show();
             $("#info").show();
             $("#msg_ok_info").focus();
-            $("#msgbody_info").html("Please Select Valid Party /Document Date /Job /Party Bill No /Party Bill Date to get Challan Details !! ");
+            //$("#msgbody_info").html("Please Select Valid Party /Document Date /Job /Party Bill No /Party Bill Date to get Challan Details !! ");
+            $("#msgbody_info").html("Please Select Valid Party /Document Date /Job  to get Challan Details !! ");
             message_value = "SLCD";
             return false;
         }
@@ -662,6 +664,9 @@
                     var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
                     $("#partialdivItem").html(res[0]);
                     $("#partialdivSbill").html(res[1]);
+                    $("#PBLNO").val(res[2]);
+                    $("#PBLDT").val(res[3]);
+
                     ReverceCharges();
                     $("#BuyerHelp").hide();
                     $("#SLCD").attr("readonly", "readonly");
@@ -1375,7 +1380,43 @@
     }
 </script>
 <script>
- 
+    document.onkeyup = CopyLastData;
+    function CopyLastData(RATE, DISC_ID) {
+        const keyName = event.key;
+        if (keyName == "F8") {
+            var GridRow = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                var STYLENO = $("#ITCD_" + i).val();
+                if (STYLENO != "") {
+                    var DISC = $("#" + DISC_ID + i).val();
+                    if (DISC == "") { parseFloat(0); } else { DISC = parseFloat(DISC); }
+                    if (DISC == 0) {
+                        $("#" + DISC_ID + i).val(RATE);
+                    }
+                    $("#" + DISC_ID + i).blur();
+                }
+            }
+            BillAmount();
+        }
+    }
+
+    document.onkeyup = RemoveLastData;
+    function RemoveLastData(RATEID) {
+        const keyName = event.key;
+        if (keyName == "F9") {
+            debugger;
+            var GridRow = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                var STYLENO = $("#ITCD_" + i).val();
+                if (STYLENO != "") {
+                    $("#DISCPER_" + i).val(0);
+                    $("#DISCAMT_" + i).val(0);
+                    $("#" + RATEID + i).blur();
+                }
+            }
+            BillAmount();
+        }
+    }
 </script>
 @using (Html.BeginForm())
 {
@@ -1872,6 +1913,17 @@
                                     }
                                 </div>
                             </div>
+                            @if (Model.DefaultAction != "V")
+                        {
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <p class="text-info">
+                                            * Press <b>F8</b> on Disc % / Disc. Amount column to <b>Copy</b> respective <b>Disc % / Disc. Amount</b> in all rows<br />
+                                            ** Press <b>F9</b> on Disc % / Disc. Amount column to <b>Remove</b> respective <b>Disc % / Disc. Amount</b> in all rows
+                                        </p>
+                                    </div>
+                                </div>
+                            }
                         </div>
                         <div id="Sbill" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                             <div class="row" style="margin-top: 11px;">

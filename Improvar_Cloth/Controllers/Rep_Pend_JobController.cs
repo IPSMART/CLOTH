@@ -123,7 +123,7 @@ namespace Improvar.Controllers
         public ActionResult Rep_Pend_Job(ReportViewinHtml VE, FormCollection FC)
         {
             string repon = FC["Show_exl"];
-            if (VE.Checkbox5 == true)
+            if (VE.TEXTBOX3 == "S" && VE.Checkbox5 == true)
             {
                 return Rep_Pend_Job_Item(VE, FC, repon);
             }
@@ -147,7 +147,8 @@ namespace Improvar.Controllers
                 tdt = VE.TDT;
                 jobcd = VE.JOBCD;// VE.MENU_PARA;
                 jobnm = VE.JOBNM;// DB.M_JOBMST.Find(jobcd).JOBNM;
-                bool showitem = false, showsumm = VE.Checkbox1, showparty = VE.Checkbox2;
+                bool showitem = false, showparty = VE.Checkbox2;
+                bool showsumm = VE.TEXTBOX3 == "S" ? true : false;//VE.Checkbox1;
                 if (VE.MENU_PARA == "IR")
                 {
                     if (FC.AllKeys.Contains("RECPARTY"))
@@ -196,7 +197,7 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
 
                 string qtydsp = "n,13,0:##,##,##,##0", qtydspo = "n,13,2:###,##,##0.00";
-                string stkcalcon = VE.TEXTBOX2, qty1hd = "Box";
+                string stkcalcon = "P", qty1hd = "Box";
                 if (stkcalcon == "S") qty1hd = "Sets";
                 bool groupondate = false, showothrunit = true, showraka = true;
                 if (showitem == false && showparty == false) groupondate = true;
@@ -238,11 +239,20 @@ namespace Improvar.Controllers
                 i = 0; maxR = tbl.Rows.Count - 1;
                 if (showparty == false)
                 {
-                    chk1fld = "repitcd"; chk1nm = "repitnm"; chk2fld = "repslcd"; chk2nm = "repslnm";
+                    chk1fld = "itcd"; chk1nm = "itnm"; chk2fld = "repslcd"; chk2nm = "repslnm";
                 }
                 else
                 {
                     chk1fld = "repslcd"; chk1nm = "repslnm"; chk2fld = "docdt"; chk2nm = "docdt";
+                }
+                string chkfld3 = "";
+                if(VE.Checkbox5 == true)
+                {
+                    chkfld3 = "itcd";
+                }
+                else
+                {
+                    chkfld3 = "progautono";
                 }
                 Int32 noparty = 0;
                 while (i <= maxR)
@@ -255,7 +265,7 @@ namespace Improvar.Controllers
                         if (showparty == true)
                         {
                             //IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " [ " + tbl.Rows[i]["propname"].ToString() + (tbl.Rows[i]["regmobile"] == DBNull.Value ? "" : "  Mob." + tbl.Rows[i]["regmobile"].ToString()) + " ]";
-                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " [ " +tbl.Rows[i]["slnm"].retStr() + " ]";
+                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " [ " + tbl.Rows[i]["slnm"].retStr() + " ]";
                         }
                         IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     }
@@ -285,16 +295,17 @@ namespace Improvar.Controllers
                                 string dsc = ""; string ordno = "";
                                 double issqty = 0, recqty = 0, retqty = 0, shrqty = 0, losqty = 0, rakqty = 0;
                                 double issqty1 = 0, recqty1 = 0, retqty1 = 0, shrqty1 = 0;
-                                string oldbatchno = VE.Checkbox4 == true ?tbl.Rows[i]["batchno"].ToString():"";
-                                while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono)
+                                string oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString() : "";
+                                string chkval3 = tbl.Rows[i][chkfld3].ToString();
+                                while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono && tbl.Rows[i][chkfld3].ToString() == chkval3)
                                 {
                                     string chk1 = tbl.Rows[i]["itcd"].ToString();
                                     double cpcs = 0, cbox = 0, chkqty = 0, chkpcs = 0, cqty = 0;
                                     if (tbl.Rows[i]["styleno"].ToString() == "") dsc += tbl.Rows[i]["itnm"].ToString() + ",";
                                     else dsc += tbl.Rows[i]["styleno"].ToString() + " " + tbl.Rows[i]["partcd"] + ",";
-                                    oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString():"";
-                                    if (tbl.Rows[i]["ORDDOCNO"].ToString() != "") ordno += tbl.Rows[i]["ORDDOCNO"].ToString()+" ,";
-                                    while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono && tbl.Rows[i]["itcd"].ToString() == chk1)
+                                    oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString() : "";
+                                    if (tbl.Rows[i]["ORDDOCNO"].ToString() != "") ordno += tbl.Rows[i]["ORDDOCNO"].ToString() + " ,";
+                                    while (tbl.Rows[i][chk1fld].ToString() == chk1val && tbl.Rows[i][chk2fld].ToString() == chk2val && tbl.Rows[i]["progautono"].ToString() == autono && tbl.Rows[i]["itcd"].ToString() == chk1 && tbl.Rows[i][chkfld3].ToString() == chkval3)
                                     {
                                         chkqty = Convert.ToDouble(tbl.Rows[i]["balqnty"]);
 
@@ -306,7 +317,7 @@ namespace Improvar.Controllers
                                         i++;
                                         if (i > maxR) break;
                                         if (VE.Checkbox4 == true && tbl.Rows[i]["batchno"].ToString() != oldbatchno) break;
-                                        oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString():"";
+                                        oldbatchno = VE.Checkbox4 == true ? tbl.Rows[i]["batchno"].ToString() : "";
                                     }
                                     if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                     else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
@@ -363,22 +374,26 @@ namespace Improvar.Controllers
                     glosqty = glosqty + plosqty;
                     grakqty = grakqty + prakqty;
                     gissqty1 = gissqty1 + pissqty1;
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     if (showsumm == false)
                     {
                         if (showparty == true || showitem == true)
                         {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+
                             IR.Rows[rNo]["dsc"] = "Total of [" + tbl.Rows[i - 1][chk1nm] + " ]";
+                            IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
                         }
-                        else
-                        {
-                            IR.Rows[rNo]["dsc"] = "Total";
-                        }
-                        IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
+                        //else
+                        //{
+                        //    IR.Rows[rNo]["dsc"] = "Total";
+                        //}
+                        //IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
                     }
                     else
                     {
                         noparty++;
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["docdt"] = noparty;
                         if (groupondate == true)
                         {
@@ -400,12 +415,15 @@ namespace Improvar.Controllers
                         }
                         //IR.Rows[rNo]["opqnty"] = popqty;
                     }
-                    IR.Rows[rNo]["issqnty"] = pissqty;
-                    if (showraka == true)
+                    if (showparty == true || showitem == true)
                     {
-                        IR.Rows[rNo]["losqnty"] = plosqty;
-                        IR.Rows[rNo]["rakqnty"] = prakqty;
-                        if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = pissqty1;
+                        IR.Rows[rNo]["issqnty"] = pissqty;
+                        if (showraka == true)
+                        {
+                            IR.Rows[rNo]["losqnty"] = plosqty;
+                            IR.Rows[rNo]["rakqnty"] = prakqty;
+                            if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = pissqty1;
+                        }
                     }
                     if (i > maxR) break;
                 }

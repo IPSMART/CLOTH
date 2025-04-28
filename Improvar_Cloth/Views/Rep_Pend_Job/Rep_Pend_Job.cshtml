@@ -156,7 +156,7 @@
                 </div>
             </div>*@
         }
-        <div class="row" style="margin-top: 5px;">
+        @*<div class="row" style="margin-top: 5px;">
             <div class="col-lg-2">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "Summary")
@@ -167,7 +167,7 @@
                     @Html.CheckBoxFor(model => model.Checkbox1)
                 </div>
             </div>
-        </div>
+        </div>*@
         <div class="row" style="margin-top: 5px;">
             <div class="col-lg-2">
                 <div class="editor-label" style="margin-top: 6px;">
@@ -222,7 +222,7 @@
         <div class="row" style="margin-top: 5px;">
             <div class="col-lg-2">
                 <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Show Item Summary")
+                    @Html.Label("", "Item Wise")
                 </div>
             </div>
             <div class="col-md-3">
@@ -259,7 +259,7 @@
                 </select>
             </div>
         </div>
-        <div class="row" style="margin-top: 8px;">
+        @*<div class="row" style="margin-top: 8px;">
             <div class="col-md-6">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "Qnty taken as")
@@ -274,6 +274,21 @@
                 </label>
                 <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "S")  @Html.Label("Set")
+                </label>
+            </div>
+        </div>*@
+        <div class="row" style="margin-top: 8px;">
+            <div class="col-md-6">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Report Type")
+                </div>
+            </div>
+            <div class="col-md-8" style="border: 2px groove;width:auto;">
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(g => g.TEXTBOX3, "D", new { @checked = "checked" })  @Html.Label("Details")
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(g => g.TEXTBOX3, "S")  @Html.Label("Summary")
                 </label>
             </div>
         </div>
