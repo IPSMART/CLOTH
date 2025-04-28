@@ -1535,28 +1535,12 @@
                         @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control ", id = "SLNM", @placeholder = "Name", maxlength = 15, @readonly = "readonly" } })
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Party Bill No.")
-                        <b style="color:Red;">*</b>
+                @if (Model.MENU_PARA == "JB")
+                {
+                    <div class="col-md-4">
+                        <input type="button" id="btnChallan" value="Get Challans" class="btn btn-success" style="height:26px;margin-top:2px;padding-top:2px;" onclick="GetChallanData();" title="Get Challans" />
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.T_JBILL.PBLNO, new { htmlAttributes = new { @class = "form-control", id = "PBLNO", onblur = "CheckBillNumber();", maxlength = 16, @placeholder = "Bill No." } })
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Bill Date")
-                        <b style="color:Red;">*</b>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.T_JBILL.PBLDT, new { htmlAttributes = new { @class = "form-control", id = "PBLDT", maxlength = 10, @placeholder = "dd/mm/yyyy", autocomplete = "off", onblur = "DueDateCalculation()" } })
-                    </div>
-                </div>
+                }
                 <div class="col-md-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Reverse Charge")
@@ -1646,12 +1630,30 @@
                         @Html.EditorFor(model => model.T_JBILL.CURRRT, new { htmlAttributes = new { @class = "form-control", id = "CURRRT", maxlength = 15, @placeholder = "Currency Rate", @onkeypress = "return numericOnly(this,2);" } })
                     </div>
                 </div>
-                @if (Model.MENU_PARA == "JB")
-                {
-                    <div class="col-md-4">
-                        <input type="button" id="btnChallan" value="Get Challans" class="btn btn-success" style="height:26px;margin-top:2px;padding-top:2px;" onclick="GetChallanData();" title="Get Challans" />
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Party Bill No.")
+                        <b style="color:Red;">*</b>
                     </div>
-                }
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.PBLNO, new { htmlAttributes = new { @class = "form-control", id = "PBLNO", onblur = "CheckBillNumber();", maxlength = 16, @placeholder = "Bill No." } })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Bill Date")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_JBILL.PBLDT, new { htmlAttributes = new { @class = "form-control", id = "PBLDT", maxlength = 10, @placeholder = "dd/mm/yyyy", autocomplete = "off", onblur = "DueDateCalculation()" } })
+                    </div>
+                </div>
+                
+               
             </div>
             <div class="row" style="margin-top:5px">
                 <ul class="nav nav-tabs">
