@@ -2578,7 +2578,7 @@
                             }
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="width:auto;">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Document Date")
                             <b style="color:Red;">*</b>
@@ -2589,7 +2589,7 @@
                             @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" style="width:auto;">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Document No.")
                         </div>
@@ -2601,9 +2601,9 @@
                     </div>
                     @if (Model.DefaultAction == "A")
                     {
-                        <div class="col-md-3">
+                        <div class="col-md-3" style="width:auto;">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Manual Bill No")
+                                @Html.Label("", "Manual Document No")
                             </div>
                         </div>
                         <div class="col-md-1">
@@ -2612,7 +2612,7 @@
                             </div>
                         </div>
                     }
-                    <div class="col-md-1">
+                    <div class="col-md-1" style="width:auto;">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Job")
                             <b style="color:Red;">*</b>
@@ -2683,7 +2683,7 @@
                             @Html.Label("", "Price Code")
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
                             @*@Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
@@ -2695,7 +2695,7 @@
                             @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-5" style="width:auto;">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Godown")
                             <b style="color:Red;">*</b>

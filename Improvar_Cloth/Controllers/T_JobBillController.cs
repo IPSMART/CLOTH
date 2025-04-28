@@ -310,7 +310,8 @@ namespace Improvar.Controllers
                         VE.Roundoff_Item = TJBILL.ROYN == "Y" ? true : false;
                         if (VE.MENU_PARA == "JB")
                         {
-                            DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true);
+                            //DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true);
+                            DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true,"","","","",true);
                             var temptable = (from DataRow dr in Attached_CHALLANS.Rows
                                              select new Pending_Challan_SLIP
                                              {
@@ -794,7 +795,8 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE);
                 using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
                 {
-                    DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true);
+                    //DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true);
+                    DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true,"","","","",true);
                     var temptable = (from DataRow dr in PENDING_CHALLANS.Rows
                                      select new Pending_Challan_SLIP
                                      {
@@ -802,6 +804,7 @@ namespace Improvar.Controllers
                                          DOCNO = dr["docno"].ToString(),
                                          DOCDT = dr["docdt"] == DBNull.Value ? "" : dr["docdt"].ToString().retDateStr(),
                                          PREFNO = dr["prefno"].ToString(),
+                                         PREFDT = dr["PREFDT"].retDateStr(),
                                          ISSAUTONO = dr["issautono"].ToString(),
                                          ISSDOCNO = dr["issdocno"].ToString(),
                                          ISSDOCDT = dr["issdocdt"] == DBNull.Value ? "" : dr["issdocdt"].ToString().retDateStr(),
@@ -831,6 +834,8 @@ namespace Improvar.Controllers
                     if (PENDING_CHALLANS != null && PENDING_CHALLANS.Rows.Count > 0)
                     {
                         Type DT1 = PENDING_CHALLANS.Rows[0]["issdocdt"].GetType();
+                        Type DT2 = PENDING_CHALLANS.Rows[0]["qnty"].GetType();
+                        Type DT3 = PENDING_CHALLANS.Rows[0]["nos"].GetType();
                         var itmdata = (from DataRow dr in PENDING_CHALLANS.Rows
                                        group dr by new
                                        {
@@ -842,7 +847,7 @@ namespace Improvar.Controllers
                                            AUTONO = X.Key.AUTONO,
                                            SHORTQNTY = Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("SHORTQNTY") ?? 0)),
                                            QNTY = Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("qnty") ?? 0)),
-                                           NOS = Convert.ToDouble(X.Sum(Z => Z.Field<decimal?>("nos") ?? 0)),
+                                           NOS = Convert.ToDouble(X.Sum(Z => Z.Field<double?>("nos") ?? 0)),
                                            DOCNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { DOCNO = i.Field<string>("docno") }).FirstOrDefault(),
                                            DOCDT = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { DOCDT = i.Field<DateTime>("docdt") == null ? "" : i.Field<DateTime>("docdt").ToString().retDateStr() }).FirstOrDefault(),
                                            PREFNO = (from DataRow i in PENDING_CHALLANS.Rows where (i.Field<string>("autono") == X.Key.AUTONO) select new { PREFNO = i.Field<string>("prefno") }).FirstOrDefault(),
@@ -1000,8 +1005,13 @@ namespace Improvar.Controllers
                                    NOS = dr.NOS,
                                    STYLENO = dr.STYLENO,
                                    HSNSACCD = dr.HSNSACCD,
-                                   RATE = dr.RATE
+                                   RATE = dr.RATE,
+                                   PREFNO=  dr.PREFNO,
+                                   PREFDT = dr.PREFDT,
+
                                }).ToList();
+                string PREFNO = itmdata.Where(a => a.PREFNO.retStr() != "").Select(a => a.PREFNO).LastOrDefault();
+                string PREFDT = itmdata.Where(a => a.PREFNO.retStr() != "").Select(a => a.PREFDT).LastOrDefault();
                 foreach (var i in itmdata)
                 {
                     if (i.ITCD != "")
@@ -1075,7 +1085,7 @@ namespace Improvar.Controllers
                 ModelState.Clear();
                 var Itemdetails = RenderRazorViewToString(ControllerContext, "_T_JobBill_ItemDetails", VE);
                 var SbillDetails = RenderRazorViewToString(ControllerContext, "_T_JobBill_SBillDetails", VE);
-                return Content(Itemdetails + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + SbillDetails);
+                return Content(Itemdetails + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + SbillDetails + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + PREFNO + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + PREFDT);
             }
             catch (Exception ex)
             {
@@ -2574,7 +2584,7 @@ namespace Improvar.Controllers
 
                                 dbsql = Master_Help.finTblUpdt("t_cntrl_hdr", sqlautono, "D", "F", VE.Audit_REM);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-                                
+
                                 ModelState.Clear();
                                 transaction.Commit();
                                 OraTrans.Commit();
