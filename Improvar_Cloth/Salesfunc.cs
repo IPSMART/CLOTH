@@ -1882,10 +1882,10 @@ namespace Improvar
             if (slcd != "") { if (slcd.IndexOf("'") < 0) slcd = "'" + slcd + "'"; }
 
             string sqlc = "";
-            sqlc += "b.compcd='" + COM + "' and "; // b.loccd='" + LOC + "' and ";
-            if (slcd != "") sqlc += "c.slcd in (" + slcd + ") and ";
-            if (skipautono != "") sqlc += "a.autono <> '" + skipautono + "' and ";
-            if (OnlyBal == true) sqlc += "nvl(b.cancel,'N')='N' ";
+            sqlc += "b.compcd='" + COM + "' "; // b.loccd='" + LOC + "' and ";
+            if (slcd != "") sqlc += "and c.slcd in (" + slcd + ") ";
+            if (skipautono != "") sqlc += "and a.autono <> '" + skipautono + "'  ";
+            if (OnlyBal == true) sqlc += "and nvl(b.cancel,'N')='N' ";
 
             string sql = "";
 
