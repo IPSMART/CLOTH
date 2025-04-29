@@ -316,6 +316,8 @@
     function CalculateTotal() {
         if ("@Model.DefaultAction" == "V") return true;
         debugger;
+        var strArray = [];
+
         var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
         var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
         var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
@@ -327,12 +329,31 @@
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
             else { T_QNTY = T_QNTY + parseFloat(0); }
 
+            if ($("#P_UOM_" + i).val() != "") {
+                strArray.push({ Uom: $("#P_UOM_" + i).val(), Qnty: retFloat($("#P_QNTY_" + i).val()) });
+            }
 
         }
         document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
         document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
 
 
+        //uom wise total
+        const grouped = {};
+
+        $.each(strArray, function (_, item) {
+            if (grouped[item.Uom]) {
+                grouped[item.Uom] += item.Qnty;
+            } else {
+                grouped[item.Uom] = item.Qnty;
+            }
+        });
+
+        const result = $.map(grouped, function (value, key) {
+            return key + ': ' + value;
+        }).join(', ');
+
+        $("#Prog_UomTotal").val(result);
     }
 
     function CalculateTotalProgBomQnty() {
@@ -1416,13 +1437,13 @@
         tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + CUTLENGTH + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateMiQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + NOS + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateMiQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + QNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\',\'GRID\');" value="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateMiQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\',\'GRID\');" value="' + QNTY + '">';
         tr += '        <input id="B_BOMQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BOMQNTY" type="hidden" value="' + BOMQNTY + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + UOM + '">';
@@ -2354,7 +2375,7 @@
                 $("#partialdivBarCodeTab").html(result);
                 var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
                 for (var i = 0; i <= GridRow - 1; i++) {
-                    CalculateBargridQnty('_T_SALE_PRODUCT_GRID', i);
+                    CalculateMiQnty('_T_SALE_PRODUCT_GRID', i);
                 }
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(3)").addClass('active');
@@ -2410,6 +2431,12 @@
     }
 </script>
 <script>
+    function OpenPopupMIByKey(index) {
+        const keyName = event.key;
+        if (keyName == "F2") {
+            OpenPopupMI(index);
+        }
+    }
     function OpenPopupMI(index) {
         debugger;
         var SerialNo = $("#P_SLNO_" + index).val();
@@ -2424,7 +2451,7 @@
                 $('#popupMI').html(result);
                 var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
                 for (var i = 0; i <= GridRow - 1; i++) {
-                    CalculateBargridQnty('_T_SALE_PRODUCT_GRID', i)
+                    CalculateMiQnty('_T_SALE_PRODUCT_GRID', i)
                 }
                 Checked_Disable();
             },
@@ -2499,6 +2526,31 @@
                 Checked_Disable();
                 CalculateTotal_Barno();
                 HasChangeBarSale();
+                var strArray = [];
+                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if ($("#B_UOM_" + i).val() != "")
+                    {
+                        strArray.push({ Uom: $("#B_UOM_" + i).val(), Qnty: retFloat($("#B_QNTY_" + i).val()) });
+                    }
+                    }
+
+                //uom wise total
+                const grouped = {};
+
+                $.each(strArray, function (_, item) {
+                    if (grouped[item.Uom]) {
+                        grouped[item.Uom] += item.Qnty;
+                    } else {
+                        grouped[item.Uom] = item.Qnty;
+                    }
+                });
+
+                const Mi_UomTotal = $.map(grouped, function (value, key) {
+                    return key + ': ' + value;
+                }).join(', ');
+
+                $("#Mi_UomTotal").val(Mi_UomTotal);
                 $("#WaitingMode").hide();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -2508,6 +2560,37 @@
             }
         });
 
+    }
+</script>
+<script>
+    function CalculateMiQnty(tableid, index) {
+        CalculateBargridQnty(tableid, index);
+        if (tableid == "_T_SALE_PRODUCT_GRID") {
+            var strArray = [];
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if ($("#B_UOM_" + i).val() != "") {
+                    strArray.push({ Uom: $("#B_UOM_" + i).val(), Qnty: retFloat($("#B_QNTY_" + i).val()) });
+                }
+                }
+
+            //uom wise total
+            const grouped = {};
+
+            $.each(strArray, function (_, item) {
+                if (grouped[item.Uom]) {
+                    grouped[item.Uom] += item.Qnty;
+                } else {
+                    grouped[item.Uom] = item.Qnty;
+                }
+            });
+
+            const result = $.map(grouped, function (value, key) {
+                return key + ': ' + value;
+            }).join(', ');
+
+            $("#Mi_UomTotal").val(result);
+        }
     }
 </script>
 @using (Html.BeginForm())
@@ -2762,6 +2845,9 @@
                             <p class="text-info" style="margin-top:-10px;">
                                 <b>** (Nos=Quantity)</b> If uom is 'PCS' and Nos is zero (0) unless
                                 <b>(Quantity=Nos)</b>
+                            </p>
+                            <p class="text-info" style="margin-top:-10px;">
+                                *** Press <b>F2/Click</b> on <b>MI Qty</b> column to Open <b>Material Issue Details</b> 
                             </p>
 
                         </div>

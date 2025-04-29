@@ -450,6 +450,14 @@ namespace Improvar.Controllers
                                    SHORTQNTY = dr["SHORTQNTY"].retDbl(),
                                    ITSTYLE = dr["ITSTYLE"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
+
+                VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
+                                                      where x.UOM.retStr() != ""
+                                                      group x by new
+                                                      {
+                                                          x.UOM
+                                                      } into P
+                                                      select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 if (pendprogramme != null && pendprogramme.Rows.Count > 0)
                 {
                     foreach (var v in VE.TPROGDTL)
@@ -556,6 +564,13 @@ namespace Improvar.Controllers
                                     SHORTQNTY = dr["SHORTQNTY"].retDbl(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
+                VE.Rec_UomTotal = string.Join(", ", (from x in VE.TBATCHDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
@@ -615,6 +630,14 @@ namespace Improvar.Controllers
                                   TOTDISCAMT = dr["TOTDISCAMT"].retDbl(),
                                   ITREM = dr["ITREM"].retStr(),
                               }).OrderBy(s => s.SLNO).ToList();
+
+                VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
                 VE.B_T_SHORTQNTY = VE.TBATCHDTL.Sum(a => a.SHORTQNTY).retDbl();
@@ -1255,8 +1278,8 @@ namespace Improvar.Controllers
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
                 string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" 
-                    + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "][" + tbl.Rows[j]["gstno"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" 
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + cancel + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>"
+                    + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "][" + tbl.Rows[j]["gstno"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>"
                     + tbl.Rows[j]["jobnm"] + "(" + tbl.Rows[j]["jobcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>"
                             + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
@@ -1452,7 +1475,7 @@ namespace Improvar.Controllers
             try
             {
                 var data = Code.Split(Convert.ToChar(Cn.GCS())); bool showonlycommonbar = true;
-                if(data[3].retStr() == "")
+                if (data[3].retStr() == "")
                 {
                     return Content("Please Enter Godown");
                 }
@@ -1467,7 +1490,7 @@ namespace Improvar.Controllers
                 string cllfrm = data[0].retStr(); ;
                 string itgrpcd = data[1].retStr();
                 string docdt = data[2].retStr();
-                string GOCD = data[3].retStr()==""?"": data[3].retStr().retSqlformat();
+                string GOCD = data[3].retStr() == "" ? "" : data[3].retStr().retSqlformat();
                 string BARNO = data[4].retStr();
                 string MTRLJOBCD = data[5].retStr();
                 string PRCCD = data[6].retStr();
@@ -1477,7 +1500,7 @@ namespace Improvar.Controllers
                 { BARNO = ""; val = ""; }
                 if (val.retStr() != "") { showonlycommonbar = false; }
                 //var str = masterHelp.ITCD_help(val, "", "");
-                var str = masterHelp.T_TXN_BARNO_help(val.Trim(), "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "",false,true);
+                var str = masterHelp.T_TXN_BARNO_help(val.Trim(), "PB", docdt, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD.retSqlformat(), "", false, "", BARNO.retSqlformat(), "", showonlycommonbar, "", false, true);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1734,7 +1757,7 @@ namespace Improvar.Controllers
                         SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"].retStr().Remove(10) + " </td><td>" + tbl.Rows[i]["proguniqno"] + " </td><td>"
                             + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " [" + tbl.Rows[i]["itgrpcd"] + "]" + " </td><td>" + tbl.Rows[i]["STYLENO"] + " " + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["itcd"] + "]" + " </td><td>"
                             + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["balnos"] + " </td><td>" + tbl.Rows[i]["balqnty"] + " </td><td>"
-                            + tbl.Rows[i]["progautoslno"] + " </td><td>" + tbl.Rows[i]["itremark"] + " </td><td>" + tbl.Rows[i]["fabitnm"] + " </td><td>" + tbl.Rows[i]["ORDDOCNO"] + " </td><td>" + tbl.Rows[i]["ORDSLNO"] + " </td><td>" + tbl.Rows[i]["makestyleno"] + " </td></tr>"); 
+                            + tbl.Rows[i]["progautoslno"] + " </td><td>" + tbl.Rows[i]["itremark"] + " </td><td>" + tbl.Rows[i]["fabitnm"] + " </td><td>" + tbl.Rows[i]["ORDDOCNO"] + " </td><td>" + tbl.Rows[i]["ORDSLNO"] + " </td><td>" + tbl.Rows[i]["makestyleno"] + " </td></tr>");
                     }
                     var hdr = "Doc No." + Cn.GCS() + "Doc Dt." + Cn.GCS() + "Uniq. No." + Cn.GCS() + "Bar Code No" + Cn.GCS()
                         + "Item Group" + Cn.GCS() + "Item" + Cn.GCS() + "Style No" + Cn.GCS() + "bal. Nos." + Cn.GCS() + "bal. Qnty."
@@ -1798,18 +1821,25 @@ namespace Improvar.Controllers
                                                   balnos = dr["balnos"].retDbl(),
                                                   balqnty = dr["balqnty"].retDbl(),
                                               }).FirstOrDefault();
-                            if(balnosqnty!=null)
+                            if (balnosqnty != null)
                             {
                                 VE.TPROGDTL[p].BALNOS = balnosqnty.balnos.retDbl();
                                 VE.TPROGDTL[p].BALQNTY = balnosqnty.balqnty.retDbl();
                             }
-                           
+
                             slno++;
 
 
                         }
                         VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
                         VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();
+                        VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
+                                                              where x.UOM.retStr() != ""
+                                                              group x by new
+                                                              {
+                                                                  x.UOM
+                                                              } into P
+                                                              select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                         ModelState.Clear();
                         VE.DefaultView = true;
                         return PartialView("_T_OUTRECPROCESS_Programme", VE);
@@ -1943,6 +1973,14 @@ namespace Improvar.Controllers
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
                 VE.DISC_TYPE = masterHelp.DISC_TYPE();
+                VE.Rec_UomTotal = string.Join(", ", (from x in VE.TBATCHDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTRECPROCESS_Receive", VE);
@@ -2008,7 +2046,13 @@ namespace Improvar.Controllers
                         //VE.TTXNDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
                     }
                 }
-
+                VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 VE.DISC_TYPE = masterHelp.DISC_TYPE();
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -2196,6 +2240,13 @@ namespace Improvar.Controllers
 
                 }
                 VE.TPROGDTL = ITEMSIZE;
+                VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
+                                                      where x.UOM.retStr() != ""
+                                                      group x by new
+                                                      {
+                                                          x.UOM
+                                                      } into P
+                                                      select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTRECPROCESS_Programme", VE);
@@ -2323,7 +2374,7 @@ namespace Improvar.Controllers
                 if (stream.T_TXN.DOCCD.retStr() != "")
                 {
                     stream.T_CNTRL_HDR.DOCCD = stream.T_TXN.DOCCD.retStr();
-                }                
+                }
                 var menuID = MNUDET.Split('~')[0];
                 var menuIndex = MNUDET.Split('~')[1];
                 string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
@@ -2383,14 +2434,14 @@ namespace Improvar.Controllers
                     if (VE.TBATCHDTL != null && VE.TPROGDTL != null)
                     {
                         var prgrmdata = (from x in VE.TPROGDTL
-                                         group x by new { x.PROGAUTONO , x.PROGSLNO } into P
+                                         group x by new { x.PROGAUTONO, x.PROGSLNO } into P
                                          select new
                                          {
-                                             PROGAUTOSLNO = P.Key.PROGAUTONO+""+ P.Key.PROGSLNO,
+                                             PROGAUTOSLNO = P.Key.PROGAUTONO + "" + P.Key.PROGSLNO,
                                              QTY = P.Sum(A => A.QNTY.retDbl() + A.SHORTQNTY.retDbl()).retDbl().toRound(3),
                                          }).Where(a => a.QTY != 0).ToList();
                         var rcvdata = (from x in VE.TBATCHDTL
-                                       group x by new { x.RECPROGAUTONO , x.RECPROGSLNO } into P
+                                       group x by new { x.RECPROGAUTONO, x.RECPROGSLNO } into P
                                        select new
                                        {
                                            PROGAUTOSLNO = P.Key.RECPROGAUTONO + "" + P.Key.RECPROGSLNO,
@@ -2439,10 +2490,10 @@ namespace Improvar.Controllers
                         OraCon.Dispose();
                         return Content("Barcode grid & Detail grid itcd wise qnty, nos should match !!");
                     }
-                    
-                    T_TXN TTXN = new T_TXN();                   
+
+                    T_TXN TTXN = new T_TXN();
                     T_TXNTRANS TXNTRANS = new T_TXNTRANS();
-                    T_TXNOTH TTXNOTH = new T_TXNOTH();                   
+                    T_TXNOTH TTXNOTH = new T_TXNOTH();
 
                     string DOCPATTERN = "";
                     string docpassrem = "";
@@ -2450,7 +2501,7 @@ namespace Improvar.Controllers
                     TTXN.DOCDT = VE.T_TXN.DOCDT;
                     string Ddate = Convert.ToString(TTXN.DOCDT);
                     TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-                    string auto_no = ""; string Month = "";                   
+                    string auto_no = ""; string Month = "";
 
                     #region Posting to finance Preparation
                     int COUNTER = 0;
@@ -2722,7 +2773,7 @@ namespace Improvar.Controllers
 
 
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD,VE.T_TXN.BLAMT.retDbl(),VE.Audit_REM);
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.T_TXN.BLAMT.retDbl(), VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = masterHelp.RetModeltoSql(TTXN, VE.DefaultAction);
@@ -2761,7 +2812,7 @@ namespace Improvar.Controllers
                     {
                         Cn.Create_DOCCD(UNQSNO, "F", TTXN.DOCCD);
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
-                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD,VE.T_TXN.BLAMT.retDbl(),VE.Audit_REM);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD, VE.T_TXN.BLAMT.retDbl(), VE.Audit_REM);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 0;
                         if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
@@ -3562,7 +3613,7 @@ namespace Improvar.Controllers
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
-                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null,null,null,null,null,0,VE.Audit_REM);
+                    dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "S", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null, null, null, null, null, 0, VE.Audit_REM);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 
@@ -3764,6 +3815,13 @@ namespace Improvar.Controllers
 
                 }
                 VE.TBATCHDTL = ITEMSIZE;
+                VE.Rec_UomTotal = string.Join(", ", (from x in VE.TBATCHDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTRECPROCESS_Receive", VE);

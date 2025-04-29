@@ -197,5 +197,11 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? P_T_SHORTQNTY { get; set; }
         public double? M_SLIP_NO { get; set; }
+        public string Prog_UomTotal { get; set; }
+        public string Rec_UomTotal { get; set; }
+        public string Det_UomTotal { get; set; }
+
+
+
     }
 }

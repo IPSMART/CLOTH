@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.ItemMasterEntry
 
-<div style="width: 600px;" overflow-y:auto;">
+<div style="overflow-y:auto;">
     <div class="table-responsive">
 
         @if (Model.DefaultView == true)
@@ -18,14 +18,14 @@
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Ledger tagging Details</b></center>
             </div>
 
-            <table id="exampleItemSize" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+            <table id="exampleItemSize" class="resizable grid_table" cellpadding="0px" cellspacing="0px" style="width: 600px;">
                 <thead>
                     <tr style="height:30px;">
                         <th class="grid_th" style="width:27px;"></th>
                         <th class="grid_th" style="width:27px;">SL. No.</th>
                         <th class="grid_th" style="width:50px;">Ledger CODE</th>
                         <th class="grid_th" style="width:100px;">Ledger NAME</th>
-                        <th class="grid_th" style="width:40px">Rate</th>
+                        <th class="grid_th" style="width:40px;text-align:right;">Rate</th>
                         <th class="grid_th" style="width:100px">PDESIGN</th>
                     </tr>
                 </thead>

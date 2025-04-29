@@ -201,6 +201,9 @@ namespace Improvar.ViewModels
         public string ITSTYLENO { get; set; }
         public int SERIAL { get; set; }
         public string M_SLIP_NO { get; set; }
+        public string Prog_UomTotal { get; set; }
+        public string Mi_UomTotal { get; set; }
+        public string Det_UomTotal { get; set; }
 
     }
 }

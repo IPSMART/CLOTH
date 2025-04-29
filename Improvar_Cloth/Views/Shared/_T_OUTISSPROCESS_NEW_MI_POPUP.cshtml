@@ -188,13 +188,13 @@
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
+                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateMiQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
+                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateMiQnty('_T_SALE_PRODUCT_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty('_T_SALE_PRODUCT_GRID', " + i + ");IssueQntyChk('B_BALSTOCK_" + i + "', 'B_BOMQNTY_" + i + "', 'B_NEGSTOCK_" + i + "', 'B_QNTY_" + i + "', 'B_ITCD_" + i + "', 'B_SLNO_" + i + "','GRID');", @class = " atextBoxFor", maxlength = 12 } })
+                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateMiQnty('_T_SALE_PRODUCT_GRID', " + i + ");IssueQntyChk('B_BALSTOCK_" + i + "', 'B_BOMQNTY_" + i + "', 'B_NEGSTOCK_" + i + "', 'B_QNTY_" + i + "', 'B_ITCD_" + i + "', 'B_SLNO_" + i + "','GRID');", @class = " atextBoxFor", maxlength = 12 } })
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].BOMQNTY, new { id = "B_BOMQNTY_" + i })
                                                 </td>
                                                 <td class="">
@@ -235,7 +235,9 @@
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td>
+                                            @Html.EditorFor(model => Model.Mi_UomTotal, new { htmlAttributes = new { id = "Mi_UomTotal", @class = "atextBoxFor ", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                        </td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

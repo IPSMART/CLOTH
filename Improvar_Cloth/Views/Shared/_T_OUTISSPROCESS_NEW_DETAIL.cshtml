@@ -254,7 +254,11 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td>
+                                    @Html.EditorFor(model => Model.Det_UomTotal, new { htmlAttributes = new { id = "Det_UomTotal", @class = "atextBoxFor ", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+
+
+                                </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />

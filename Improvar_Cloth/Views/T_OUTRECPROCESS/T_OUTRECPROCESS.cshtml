@@ -653,6 +653,7 @@
 
     }
     function CalculateTotalProgramme() {
+        var strArray = [];
         var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
         var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
         var T_SHORTQNTY = 0;
@@ -665,16 +666,36 @@
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
             else { T_QNTY = T_QNTY + parseFloat(0); }
             T_SHORTQNTY += retFloat($("#P_SHORTQNTY_" + i).val());
+            if ($("#P_UOM_" + i).val() != "") {
+                strArray.push({ Uom: $("#P_UOM_" + i).val(), Qnty: retFloat($("#P_QNTY_" + i).val()) });
+            }
 
         }
         document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
         document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(3);
         document.getElementById("P_T_SHORTQNTY").value = parseFloat(T_SHORTQNTY).toFixed(3);
+
+        //uom wise total
+        const grouped = {};
+
+        $.each(strArray, function (_, item) {
+            if (grouped[item.Uom]) {
+                grouped[item.Uom] += item.Qnty;
+            } else {
+                grouped[item.Uom] = item.Qnty;
+            }
+        });
+
+        const result = $.map(grouped, function (value, key) {
+            return key + ': ' + value;
+        }).join(', ');
+
+        $("#Prog_UomTotal").val(result);
     }
 </script>@*Programme calculation*@
 <script>
     function CalculateTotal_Barno() {
-
+        var strArray = [];
         var T_QNTY = 0, T_NOS = 0, T_SHORTQNTY = 0;
         var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -683,10 +704,31 @@
             var NOS = $("#B_NOS_" + i).val();
             if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
             T_SHORTQNTY += retFloat($("#B_SHORTQNTY_" + i).val());
+            if ($("#B_UOM_" + i).val() != "") {
+                strArray.push({ Uom: $("#B_UOM_" + i).val(), Qnty: retFloat($("#B_QNTY_" + i).val()) });
+            }
         }
         $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(3));
         $("#B_T_SHORTQNTY").val(parseFloat(T_SHORTQNTY).toFixed(3));
         $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
+
+        //uom wise total
+        const grouped = {};
+
+        $.each(strArray, function (_, item) {
+            if (grouped[item.Uom]) {
+                grouped[item.Uom] += item.Qnty;
+            } else {
+                grouped[item.Uom] = item.Qnty;
+            }
+        });
+
+        const result = $.map(grouped, function (value, key) {
+            return key + ': ' + value;
+        }).join(', ');
+
+        $("#Rec_UomTotal").val(result);
+
 
     }
 </script>@*receive calculation*@

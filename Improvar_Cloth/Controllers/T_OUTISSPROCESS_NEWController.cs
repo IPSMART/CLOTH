@@ -414,6 +414,13 @@ namespace Improvar.Controllers
                 //var imgdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
                 var imgdata = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
 
+                VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
+                                                      where x.UOM.retStr() != ""
+                                                      group x by new
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
 
                 #region batch and detail data
                 string str1 = "";
@@ -708,6 +715,13 @@ namespace Improvar.Controllers
 
                     }
                 }
+                VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                    {
+                                                        x.UOM
+                                                    } into P
+                                                    select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 #endregion
 
                 foreach (var q in VE.TPROGDTL)
@@ -1824,6 +1838,14 @@ namespace Improvar.Controllers
                         VE.TTXNDTL[p].SGSTPER = 0;
                     }
                 }
+                VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
+                                                     where x.UOM.retStr() != ""
+                                                     group x by new
+                                                   {
+                                                       x.UOM
+                                                   } into P
+                                                   select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+
                 ModelState.Clear();
                 VE.DefaultView = true;
 
@@ -4494,6 +4516,13 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                             if (helpM1.Count > 0)
                             {
                                 VE.TBATCHDTL = helpM1;
+                                VE.Mi_UomTotal = string.Join(", ", (from x in VE.TBATCHDTL
+                                                                    where x.UOM.retStr() != ""
+                                                                    group x by new
+                                                                     {
+                                                                         x.UOM
+                                                                     } into P
+                                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                             }
                         }
                     }
