@@ -271,6 +271,12 @@
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].FABITNM, new { id = "B_FABITNM_" + i })
                                     @Html.HiddenFor(model => model.TBATCHDTL[i].FABITCD, new { id = "B_FABITCD_" + i })
                                     }
+@if (Model.MENU_PARA == "SB")
+{
+    @Html.HiddenFor(model => model.TBATCHDTL[i].ORDAUTONO, new { id = "B_ORDAUTONO_" + i })
+    @Html.HiddenFor(model => model.TBATCHDTL[i].ORDSLNO, new { id = "B_ORDSLNO_" + i })
+
+}
                                 </td>
                                 <td class="sticky-cell" style="left:20px;">
                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
