@@ -1921,12 +1921,14 @@ namespace Improvar
 
             //Pslip or Bill
             sql += "( select a.ordautono, a.ordslno, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
+            //sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
+            sql += "sum(case a.stkdrcr when 'C' then a.qnty  when 'N' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".m_doctype d ";
             sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd(+) and ";
             if (OnlyBal == false) sql += "a.autono='xx' and ";
             if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-            sql += "d.doctype in ('SPSLP','SBILL','SBILD','SBCM','SBEXP','SPBL') and ";
+            //sql += "d.doctype in ('SPSLP','SBILL','SBILD','SBCM','SBEXP','SPBL') and ";
+            sql += "d.doctype in ('SPSLP','SBILD','SBCM','SBEXP','SPBL') and ";
             sql += sqlc;
             sql += "group by a.ordautono, a.ordslno ) c, ";
 

@@ -6120,7 +6120,7 @@ namespace Improvar.Controllers
                                 //TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.BALEYR;// VE.TBATCHDTL[i].BALEYR;
                                 TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.TBATCHDTL[i].BALEYR.retStr() == "" ? VE.BALEYR : VE.TBATCHDTL[i].BALEYR.retStr();
                                 TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
-                                if (VE.MENU_PARA == "SBPCK")
+                                if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB")
                                 {
                                     TBATCHDTL.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                     TBATCHDTL.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
