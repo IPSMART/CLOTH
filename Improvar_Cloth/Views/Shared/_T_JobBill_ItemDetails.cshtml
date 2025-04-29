@@ -95,17 +95,17 @@
                                             @Html.HiddenFor(model => model.ItemDetails[i].AUTONO, new { id = "AUTONO_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.ItemDetails[i].RECQNTY_DISPLAY, new { id = "RECQNTY_DISPLAY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @TabIndex = -1, @readonly = "readonly", @onkeypress = "return numericOnly(this,2);" })
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].RECQNTY_DISPLAY, new { id = "RECQNTY_DISPLAY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @TabIndex = -1, @readonly = "readonly", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateTotalItem()" })
                                             @Html.HiddenFor(model => model.ItemDetails[i].RECQNTY, new { id = "RECQNTY_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.ItemDetails[i].BillQNTY, new { id = "BillQNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ",'" + "NOS_" + i + "');" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.ItemDetails[i].PASSQNTY, new { id = "PASSQNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,2);" })
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].PASSQNTY, new { id = "PASSQNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,2);" ,onblur = "CalculateTotalItem()" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.ItemDetails[i].NOS, new { id = "NOS_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,0);" })
+                                            @Html.TextBoxFor(model => Model.ItemDetails[i].NOS, new { id = "NOS_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 10, autocomplete = "off", @onkeypress = "return numericOnly(this,0);", onblur = "CalculateTotalItem()" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.ItemDetails[i].RATE, new { htmlAttributes = new { id = "RATE_" + i, @class = " atextBoxFor", @style = "text-align: right;", autocomplete = "off", maxlength = 12, @onkeypress = "return numericOnly(this,2);", onblur = "CalculateRowAmt('" + "RATE_" + i + "','" + "BillQNTY_" + i + "','" + "AMOUNT_" + i + "','" + "DISCPER_" + i + "','" + "DISCAMT_" + i + "','" + "TAXABLE_" + i + "','" + "igstper_" + i + "','" + "igstamt_" + i + "','" + "cgstper_" + i + "','" + "cgstamt_" + i + "','" + "sgstper_" + i + "','" + "sgstamt_" + i + "','" + "cessper_" + i + "','" + "cessamt_" + i + "','" + "NETAMOUNT_" + i + "'," + i + ",'" + "NOS_" + i + "');" } })
@@ -185,6 +185,70 @@
                                 }
                             }
                         </tbody>
+                        <tfoot>
+                            <tr class="sticky-footer">
+                                <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td class="sticky-cell" style="left:27px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>                                 
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_RECEVEQNTY, new { htmlAttributes = new { id = "Total_RECEVEQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>   
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_BillQNTY, new { htmlAttributes = new { id = "Total_BillQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_PASSQNTY, new { htmlAttributes = new { id = "Total_PASSQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_NOS, new { htmlAttributes = new { id = "Total_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_AMOUNT, new { htmlAttributes = new { id = "Total_AMOUNT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_ShortQNTY, new { htmlAttributes = new { id = "Total_ShortQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_DISCAMT, new { htmlAttributes = new { id = "Total_DISCAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_addless, new { htmlAttributes = new { id = "Total_addless", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_TAXABLE, new { htmlAttributes = new { id = "Total_TAXABLE", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_igstamt, new { htmlAttributes = new { id = "Total_igstamt", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_cgstamt, new { htmlAttributes = new { id = "Total_cgstamt", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_sgstamt, new { htmlAttributes = new { id = "Total_sgstamt", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_cessamt, new { htmlAttributes = new { id = "Total_cessamt", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.Total_NETAMOUNT, new { htmlAttributes = new { id = "Total_NETAMOUNT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+
+                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

@@ -772,6 +772,7 @@
         var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
         netamount = parseFloat(netamount).toFixed(2);
         $("#" + netamt).val(netamount);
+        CalculateTotalItem();
         BillAmount();
     }
     function CalculateRowAmtDrCr(rateid, qtnid, amtid, taxableid, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, netamt, roundoff, index) {
@@ -1416,6 +1417,42 @@
             }
             BillAmount();
         }
+    }
+    function CalculateTotalItem() {
+        var Total_RECEVEQNTY = 0; var Total_BillQNTY = 0; var Total_PASSQNTY = 0; var Total_NOS = 0; var Total_AMOUNT = 0; var Total_ShortQNTY = 0; var Total_DISCAMT = 0; var Total_addless = 0;
+        var Total_TAXABLE = 0; var Total_igstamt = 0; var Total_cgstamt = 0; var Total_sgstamt = 0; var Total_cessamt = 0;
+        var Total_NETAMOUNT = 0;
+        var GridRow = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            Total_RECEVEQNTY += retFloat($("#RECQNTY_DISPLAY_" + i).val());
+            Total_BillQNTY += retFloat($("#BillQNTY_" + i).val());
+            Total_PASSQNTY += retFloat($("#PASSQNTY_" + i).val());
+            Total_NOS += retFloat($("#NOS_" + i).val());
+            Total_AMOUNT += retFloat($("#AMOUNT_" + i).val());
+            Total_ShortQNTY += retFloat($("#ShortQNTY_DISPLAY_" + i).val());
+            Total_DISCAMT += retFloat($("#DISCAMT_" + i).val());
+            Total_addless += retFloat($("#addless_" + i).val());
+            Total_TAXABLE += retFloat($("#TAXABLE_" + i).val());
+            Total_igstamt += retFloat($("#igstamt_" + i).val());
+            Total_cgstamt += retFloat($("#cgstamt_" + i).val());
+            Total_sgstamt += retFloat($("#sgstamt_" + i).val());
+            Total_cessamt += retFloat($("#cessamt_" + i).val());              
+            Total_NETAMOUNT += retFloat($("#NETAMOUNT_" + i).val());
+        }
+        $("#Total_RECEVEQNTY").val(parseFloat(Total_RECEVEQNTY).toFixed(2));
+        $("#Total_BillQNTY").val(parseFloat(Total_BillQNTY).toFixed(2));
+        $("#Total_PASSQNTY").val(parseFloat(Total_PASSQNTY).toFixed(2));
+        $("#Total_NOS").val(parseFloat(Total_NOS).toFixed(0));
+        $("#Total_AMOUNT").val(parseFloat(Total_AMOUNT).toFixed(2));
+        $("#Total_ShortQNTY").val(parseFloat(Total_ShortQNTY).toFixed(2));
+        $("#Total_DISCAMT").val(parseFloat(Total_DISCAMT).toFixed(2));
+        $("#Total_addless").val(parseFloat(Total_addless).toFixed(2));
+        $("#Total_TAXABLE").val(parseFloat(Total_TAXABLE).toFixed(2));
+        $("#Total_igstamt").val(parseFloat(Total_igstamt).toFixed(2));
+        $("#Total_cgstamt").val(parseFloat(Total_cgstamt).toFixed(2));
+        $("#Total_sgstamt").val(parseFloat(Total_cessamt).toFixed(2));
+        $("#Total_cessamt").val(parseFloat(Total_cessamt).toFixed(2));
+        $("#Total_NETAMOUNT").val(parseFloat(Total_NETAMOUNT).toFixed(2));
     }
 </script>
 @using (Html.BeginForm())
