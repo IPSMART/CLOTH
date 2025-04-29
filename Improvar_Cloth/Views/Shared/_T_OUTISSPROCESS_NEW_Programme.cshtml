@@ -49,6 +49,7 @@
                                     <th class="" style="width:25px;text-align:right;">Quantity</th>
                                     <th class="" style="width:30px;text-align:right;">MI Qty.</th>
                                     <th class="" style="width:50px;">Order No.</th>
+                                    <th class="" style="width:30px;">Order Slno.</th>
                                     <th class="" style="width:50px;">Color Code</th>
                                     <th class="" style="width:50px;">Color Name</th>
                                     <th class="" style="width:50px;">Make StyleNo.</th>
@@ -60,12 +61,11 @@
                                     <th class="" style="width:47px;">UOM</th>
                                     <th class="" style="width: 54px;">Material Job Code <b style="color:Red;">*</b></th>
                                     <th class="" style="width:50px;">Material Job Name</th>
-                                    <th class="" style="width:50px;">Part</th>                                    
+                                    <th class="" style="width:50px;">Part</th>
                                     <th class="" style="width:50px;">Size</th>
-                                    <th class="" style="width:50px;">Shade</th>                                   
-                                    <th class="" style="width:30px;">Order Slno.</th>                                    
+                                    <th class="" style="width:50px;">Shade</th>
                                     <th class="" style="width:30px; text-align:center">Img</th>
-                                    
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,7 +77,7 @@
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                                 @if (Model.TPROGDTL[i].ChildProgData.retStr() == "Y")
                                                 {
-                                                    @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new  { id = "P_chkid_" + i ,style = "pointer-events:none;background-color:#eee" } )
+                                                    @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, style = "pointer-events:none;background-color:#eee" })
                                                 }
                                                 else
                                                 {
@@ -85,7 +85,7 @@
                                                 }
                                                 @*@Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })*@
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].ChildProgData, new { id = "P_ChildProgData_" + i })
-                                             </td>
+                                            </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                             </td>
@@ -112,8 +112,8 @@
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].ITNM, new { id = "P_ITNM_" + i, maxlength = 20, onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS_NEW") + "','Design No Details','P_ITNM_" + i + "','P_ITNM_" + i + "=ITSTYLE=3/P_BARNO_" + i + "=BARNO=0/P_MTRLJOBCD_" + i + "=MTRLJOBCD=2/P_PARTCD_" + i + "=PARTCD=5/P_ITCD_" + i + "=ITCD/P_UOM_" + i + "=UOMCD/P_ITGRPCD_" + i + "=ITGRPCD/P_ITGRPNM_" + i + "=ITGRPNM/P_COLRCD_" + i + " =COLRCD/P_SIZECD_" + i + " =SIZECD/P_COLRNM_" + i + "=COLRNM/P_MTRLJOBNM_" + i + "=MTRLJOBNM/P_BarImages_" + i + "=BARIMAGE/BarImagesCount_" + i + "=barimagecount/P_DECIMALS_" + i + "=DECIMALS/P_CLRBARCODE_" + i + "=clrbarcode/P_SZBARCODE_" + i + "=szbarcode','P_MTRLJOBCD_" + i + "/P_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "/P_MTRLJOBCD_" + i + "/callfrmstyle');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "Program_GetBarnoDetails(this.value,'" + "P_BARNO_" + i + "','" + "P_MTRLJOBCD_" + i + "','" + "P_PARTCD_" + i + "','" + "P_ITCD_" + i + "','" + "P_ITNM_" + i + "','" + "P_UOM_" + i + "','" + "P_ITGRPCD_" + i + "','" + "P_ITGRPNM_" + i + "','" + "P_COLRCD_" + i + "','" + "P_SIZECD_" + i + "','" + "P_COLRNM_" + i + "','" + "P_MTRLJOBNM_" + i + "','" + "P_BarImages_" + i + "','" + "BarImagesCount_" + i + "','" + "P_DECIMALS_" + i + "','" + "P_CLRBARCODE_" + i + "','" + "P_SZBARCODE_" + i + "','','style');", @placeholder = "Design No", @class = " atextBoxFor textbox_image" })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS_NEW")','Design No Details','P_ITNM_@i','P_ITNM_@i=ITSTYLE=3/P_BARNO_@i=BARNO=0/P_MTRLJOBCD_@i=MTRLJOBCD=2/P_PARTCD_@i=PARTCD=5/P_ITCD_@i=ITCD/P_UOM_@i=UOMCD/P_ITGRPCD_@i=ITGRPCD/P_ITGRPNM_@i=ITGRPNM/P_COLRCD_@i =COLRCD/P_SIZECD_@i =SIZECD/P_COLRNM_@i=COLRNM/P_MTRLJOBNM_@i=MTRLJOBNM/P_BarImages_@i=BARIMAGE/BarImagesCount_@i=barimagecount/P_DECIMALS_@i=DECIMALS/P_CLRBARCODE_@i=clrbarcode/P_SZBARCODE_@i=szbarcode','P_MTRLJOBCD_@i/P_PARTCD_@i/DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_@i/P_MTRLJOBCD_@i/callfrmstyle');" />
                                             </td>
-                                            <td class="">                                                
-                                              @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @style = "cursor:pointer" })
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", @style = "cursor:pointer" })
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", onblur = "CalculateProgQnty('" + i + "');", @style = "text-align:right;" })
@@ -135,6 +135,9 @@
                                                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_OUTISSPROCESS_NEW")','Order Details','P_ORDDOCNO_@i','P_ORDDOCNO_@i=docno=0/P_ORDAUTONO_@i=autono=7/P_ORDSLNO_@i=SLNO=1','P_ORDAUTONO_@i/P_ORDSLNO_@i/SLCD')" />
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].ORDAUTONO, new { id = "P_ORDAUTONO_" + i })
                                                 @*@Html.HiddenFor(model => model.TPROGDTL[i].ORDSLNO, new { id = "P_ORDSLNO_" + i })*@
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].ORDSLNO, new { id = "P_ORDSLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                             <td class="">
                                                 @if (Model.MENU_PARA == "DY")
@@ -180,7 +183,7 @@
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].UOM, new { id = "P_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].DECIMALS, new { id = "P_DECIMALS_" + i })
                                             </td>
-                                            
+
                                             <td class="">
                                                 @*@Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS_NEW") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS_NEW") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "MTRLJOBCD", @class = " atextBoxFor textbox_image" })
@@ -198,8 +201,8 @@
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_OUTISSPROCESS_NEW")','Part Details','P_PARTCD_@i','P_PARTCD_@i=PARTCD=1')" />*@
 
                                             </td>
-                                            
-                                            
+
+
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].SIZECD, new { id = "P_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                                 @*@Html.TextBoxFor(model => Model.TPROGDTL[i].SIZECD, new { id = "P_SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTISSPROCESS_NEW") + "','Size Details','" + "P_SIZECD_" + i + "','" + "P_SIZECD_" + i + "=SIZECD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTISSPROCESS_NEW") + "','Size Details','" + "P_SIZECD_" + i + "','" + "P_SIZECD_" + i + "=SIZECD=1');", @placeholder = "SIZECD", @class = " atextBoxFor textbox_image" })
@@ -211,16 +214,14 @@
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].SHADE, new { id = "P_SHADE_" + i, @class = " atextBoxFor " })
                                             </td>
 
-                                           
-                                            <td class="">
-                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].ORDSLNO, new { id = "P_ORDSLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            </td>
-                                           
+
+                                          
+
                                             <td class="">
                                                 <input type="button" onclick="FillImageModal('P_BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="TBATCHDTL[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.TPROGDTL[i].BarImagesCount" />
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].BarImages, new { id = "P_BarImages_" + i })
                                             </td>
-                                            
+
                                         </tr>
                                     }
                                 }
@@ -248,6 +249,7 @@
                                     </td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -257,7 +259,6 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
 
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

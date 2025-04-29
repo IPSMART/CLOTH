@@ -268,6 +268,7 @@ namespace Improvar.Controllers
                                                   ShortQNTY_DISPLAY = ((double)(i.DNCNQNTY == null ? 0 : i.DNCNQNTY)),
                                                   ITCD = i.ITCD,
                                                   ITNM = p.ITNM,
+                                                  UOM = p.UOMCD,
                                                   ITREM = i.ITREM,
                                                   STYLENO = p.STYLENO,
                                                   PARTCD = i.PARTCD,
@@ -516,6 +517,13 @@ namespace Improvar.Controllers
                                 i.ShortQNTY_DISPLAY = UOMCOnvertionFromPices(i.qtncalcon, i.ShortQNTY_DISPLAY);
                             }
                         }
+                        VE.Item_UomTotal = string.Join(", ", (from x in VE.ItemDetails
+                                                              where x.UOM.retStr() != ""
+                                                              group x by new
+                                                              {
+                                                                  x.UOM
+                                                              } into P
+                                                              select P.Key.UOM.retStr() + " : " + P.Sum(A => A.BillQNTY.retDbl()).retDbl()).ToList());
                         VE.Total_RECEVEQNTY = VE.ItemDetails.Sum(a => a.RECQNTY_DISPLAY).retDbl();
                         VE.Total_BillQNTY = VE.ItemDetails.Sum(a => a.BillQNTY).retDbl(); 
                         VE.Total_PASSQNTY = VE.ItemDetails.Sum(a => a.PASSQNTY).retDbl();
@@ -946,6 +954,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 VE.MSG = "";
                 string sql = "";
                 sql += "select a.effdt, a.prodgrpcd, a.igstper, a.cgstper, a.sgstper, a.cessper from ";
@@ -1050,6 +1059,7 @@ namespace Improvar.Controllers
                         PC.SLNO = SLNO;
                         PC.HSNSACCD = i.HSNSACCD;
                         PC.RATE = i.RATE;
+                        PC.UOM = (from a in DB.M_SITEM where a.ITCD == PC.ITCD select a.UOMCD).FirstOrDefault();
                         if (Dt != null && Dt.Rows.Count > 0)
                         {
                             PC.EFFDT = Cn.convstr2date(Dt.Rows[0]["effdt"].ToString());
@@ -1096,6 +1106,15 @@ namespace Improvar.Controllers
                 VE.TOTALBILLAMT_sbill = 0;
                 VE.Roundoff_Item = true;
                 VE.Roundoff_sbill = true;
+
+                VE.Item_UomTotal = string.Join(", ", (from x in VE.ItemDetails
+                                                      where x.UOM.retStr() != ""
+                                                      group x by new
+                                                      {
+                                                          x.UOM
+                                                      } into P
+                                                      select P.Key.UOM.retStr() + " : " + P.Sum(A => A.BillQNTY.retDbl()).retDbl()).ToList());
+
                 ModelState.Clear();
                 var Itemdetails = RenderRazorViewToString(ControllerContext, "_T_JobBill_ItemDetails", VE);
                 var SbillDetails = RenderRazorViewToString(ControllerContext, "_T_JobBill_SBillDetails", VE);

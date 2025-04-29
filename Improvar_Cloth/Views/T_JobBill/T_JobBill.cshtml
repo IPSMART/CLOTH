@@ -1419,6 +1419,7 @@
         }
     }
     function CalculateTotalItem() {
+        var strArray = [];
         var Total_RECEVEQNTY = 0; var Total_BillQNTY = 0; var Total_PASSQNTY = 0; var Total_NOS = 0; var Total_AMOUNT = 0; var Total_ShortQNTY = 0; var Total_DISCAMT = 0; var Total_addless = 0;
         var Total_TAXABLE = 0; var Total_igstamt = 0; var Total_cgstamt = 0; var Total_sgstamt = 0; var Total_cessamt = 0;
         var Total_NETAMOUNT = 0;
@@ -1438,6 +1439,10 @@
             Total_sgstamt += retFloat($("#sgstamt_" + i).val());
             Total_cessamt += retFloat($("#cessamt_" + i).val());              
             Total_NETAMOUNT += retFloat($("#NETAMOUNT_" + i).val());
+
+            if ($("#UOM_" + i).val() != "") {
+                strArray.push({ Uom: $("#UOM_" + i).val(), Qnty: retFloat($("#BillQNTY_" + i).val()) });
+            }
         }
         $("#Total_RECEVEQNTY").val(parseFloat(Total_RECEVEQNTY).toFixed(2));
         $("#Total_BillQNTY").val(parseFloat(Total_BillQNTY).toFixed(2));
@@ -1453,6 +1458,23 @@
         $("#Total_sgstamt").val(parseFloat(Total_cessamt).toFixed(2));
         $("#Total_cessamt").val(parseFloat(Total_cessamt).toFixed(2));
         $("#Total_NETAMOUNT").val(parseFloat(Total_NETAMOUNT).toFixed(2));
+
+        //uom wise total
+        const grouped = {};
+
+        $.each(strArray, function (_, item) {
+            if (grouped[item.Uom]) {
+                grouped[item.Uom] += item.Qnty;
+            } else {
+                grouped[item.Uom] = item.Qnty;
+            }
+        });
+
+        const result = $.map(grouped, function (value, key) {
+            return key + ': ' + value;
+        }).join(', ');
+
+        $("#Item_UomTotal").val(result);
     }
 </script>
 @using (Html.BeginForm())

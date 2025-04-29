@@ -116,6 +116,7 @@ namespace Improvar.ViewModels
         public double Total_cessamt { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double Total_NETAMOUNT { get; set; }
+        public string Item_UomTotal { get; set; }
     }
     public class PendingChallanItemDetails
     {
@@ -158,6 +159,7 @@ namespace Improvar.ViewModels
         public string HSNSACCD { get; set; }
         public double addless { get; set; }
         public double? NOS { get; set; }
+        public string UOM { get; set; }
     }
     public class PendingChallanDr_Cr_NoteDetails
     {
