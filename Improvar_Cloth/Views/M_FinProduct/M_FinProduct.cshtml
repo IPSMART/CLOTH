@@ -1050,6 +1050,78 @@
                     </div>
                 </div>
             }
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Item Code")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field" style="">
+                        @Html.EditorFor(model => model.M_SITEM.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @style = "text-transform:uppercase;", maxlength = 10, @placeholder = "Code", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Design No")
+                        @if (Model.MENU_PARA != "C")
+                        {<b style="color:Red;">*</b>}
+
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 30, @onkeyup = "toUpper(this);", @placeholder = "Design", onblur = "CheckDesignNumber();" } })
+                    </div>
+                </div>
+
+                @if (Model.DefaultAction == "V")
+                {
+                    <div class="col-md-7">
+                        @if (Model.isPresentinLastYrSchema == "")
+                        {
+
+                        }
+                        @if (Model.isPresentinLastYrSchema == "ADD")
+                        {
+                            <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
+                        }
+                        @if (Model.isPresentinLastYrSchema == "EDIT")
+                        {
+                            <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
+                        }
+                    </div>
+                }
+
+
+
+                @*<div class="row">*@
+                @if (Model.DefaultAction == "A")
+                {
+                    <div class="col-md-6">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Copy from another")
+                        </div>
+                    </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @*@Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
+                                        @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd');", @placeholder = "Code", maxlength = 10 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
+                                    </div>
+                                </div>
+                }
+                @*</div>*@
+            </div>
+
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
                 <li><a data-toggle="tab" href="#Parts">Parts</a></li>
@@ -1062,76 +1134,7 @@
             <div class="tab-content">
                 <div id="Standard" class="tab-pane fade in active" style="margin-top: 10px;">
                     <div class="col-lg-9">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Item Code")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field" style="">
-                                    @Html.EditorFor(model => model.M_SITEM.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @style = "text-transform:uppercase;", maxlength = 10, @placeholder = "Code", @readonly = "readonly", @TabIndex = -1 } })
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Design No")
-                                    @if (Model.MENU_PARA != "C")
-                                    {<b style="color:Red;">*</b>}
-
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 30, @onkeyup = "toUpper(this);", @placeholder = "Design", onblur = "CheckDesignNumber();" } })
-                                </div>
-                            </div>
-
-                            @if (Model.DefaultAction == "V")
-                            {
-                                <div class="col-md-7">
-                                    @if (Model.isPresentinLastYrSchema == "")
-                                    {
-
-                                    }
-                                    @if (Model.isPresentinLastYrSchema == "ADD")
-                                    {
-                                        <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
-                                    }
-                                    @if (Model.isPresentinLastYrSchema == "EDIT")
-                                    {
-                                        <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
-                                    }
-                                </div>
-                            }
-
-
-
-                            @*<div class="row">*@
-                            @if (Model.DefaultAction == "A")
-                            {
-                                <div class="col-md-6">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Copy from another")
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @*@Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
-                                        @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd');", @placeholder = "Code", maxlength = 10 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="editor-field">
-                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
-                                    </div>
-                                </div>
-                            }
-                            @*</div>*@
-                        </div>
+                  
 
 
                         <div class="row">
