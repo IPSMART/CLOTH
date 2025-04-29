@@ -1624,7 +1624,7 @@
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field">
                                 @if (Model.DefaultAction == "A")
                                 {
@@ -1636,7 +1636,7 @@
                                 }
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Document Date")
                                 <b style="color:Red;">*</b>
@@ -1647,12 +1647,12 @@
                                 @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-1" style="width:auto";>
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Document No.")
                             </div>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-3">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                             </div>
@@ -1660,19 +1660,19 @@
 
                         @if (Model.DefaultAction == "A")
                     {
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Manual Document No")
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SLIP_NO, new { htmlAttributes = new { @class = "form-control", id = "M_SLIP_NO", maxlength = 6, @onkeypress = "return numericOnly(this);", @placeholder = "Manual Document No" } })
                                 </div>
                             </div>
                         }
-                        <div class="col-md-1">
-                            <div class="editor-label" style="margin-top: 6px;">
+                        <div class="col-md-1" style="width:auto";>
+                            <div class="editor-label" style="margin-top:6px;">
                                 @Html.Label("", "Job")
                                 <b style="color:Red;">*</b>
                             </div>
@@ -1683,7 +1683,7 @@
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
                             </div>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-7">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
                             </div>
