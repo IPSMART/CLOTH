@@ -493,7 +493,9 @@
                     $("#B_NOS_" + i).val($("#P_NOS_" + J).val());
                     $("#B_QNTY_" + i).val($("#P_QNTY_" + J).val());
                     $("#B_MTRLJOBCD_" + i).val($("#P_MTRLJOBCD_" + J).val());
-                    $("#B_BARNO_" + i).blur();
+                    var BARNO = $("#P_BARNO_" + J).val();
+                    Program_GetBarnoDetails(BARNO,"B_BARNO_" + i,"B_MTRLJOBCD_" + i ,"B_PARTCD_" + i,"B_ITCD_" + i ,"B_ITSTYLE_" + i,"B_UOM_" + i ,"B_ITGRPCD_" + i ,"B_ITGRPNM_" + i,"B_COLRCD_" + i,"B_SIZECD_" + i ,"B_COLRNM_" + i,"B_MTRLJOBNM_" + i ,'','','','','','QTYPROG','bar',i);           
+                    $("#B_QNTY_" + i).focus();
                 }
             }
         }
@@ -699,7 +701,7 @@
         debugger;
         if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
-            if (tag == "QTY") {
+            if (tag == "QTY" || tag == "QTYPROG") {
                 ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i);
             }
             else {
@@ -727,7 +729,7 @@
                 success: function (result) {
                     var MSG = result.indexOf('#helpDIV');
                     if (MSG >= 0) {
-                        if (tag == "QTY") {
+                        if (tag == "QTY" || tag == "QTYPROG") {
                             ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i);
                         }
                         else {
@@ -752,13 +754,15 @@
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
-                            if (tag == "QTY") {
+                            if (tag == "QTY" || tag == "QTYPROG") {
                                 $("#B_BARCODE_" + i).val(returncolvalue(result, "BARNO"));
                                 $("#B_ITGRPCD_" + i).val(returncolvalue(result, "ITGRPCD"));
                                 $("#B_ITGRPNM_" + i).val(returncolvalue(result, "ITGRPNM"));
-                                $("#B_MTRLJOBCD_" + i).val(returncolvalue(result, "MTRLJOBCD"));
-                                $("#B_MTRLJOBNM_" + i).val(returncolvalue(result, "MTRLJOBNM"));
-                                $("#B_MTBARCODE_" + i).val(returncolvalue(result, "MTBARCODE"));
+                                if (tag != "QTYPROG") {
+                                    $("#B_MTRLJOBCD_" + i).val(returncolvalue(result, "MTRLJOBCD"));
+                                    $("#B_MTRLJOBNM_" + i).val(returncolvalue(result, "MTRLJOBNM"));
+                                    $("#B_MTBARCODE_" + i).val(returncolvalue(result, "MTBARCODE"));
+                                }
                                 $("#B_ITCD_" + i).val(returncolvalue(result, "ITCD"));
                                 $("#B_ITSTYLE_" + i).val(returncolvalue(result, "STYLENO"));
                                 $("#B_STYLENO_" + i).val(returncolvalue(result, "STYLENO"));
@@ -778,16 +782,18 @@
                                 if ($("#B_BOMQNTY_" + i).val() != "") {
                                     bomqnty = retFloat($("#B_BOMQNTY_" + i).val().split('~~')[0]);
                                 }
-
-                                //if (stock < bomqnty) {
-                                //    $("#B_QNTY_" + i).val(stock);
-                                //}
-                                //else {
-                                //    $("#B_QNTY_" + i).val(bomqnty);
-                                //}
-
+                                if (tag != "QTYPROG") {
+                                    if (stock < bomqnty) {
+                                        $("#B_QNTY_" + i).val(stock);
+                                    }
+                                    else {
+                                        $("#B_QNTY_" + i).val(bomqnty);
+                                    }
+                                }
                                 $("#B_UOM_" + i).val(returncolvalue(result, "uomcd"));
-                                //$("#B_NOS_" + i).val(returncolvalue(result, "NOS"));
+                                if (tag != "QTYPROG") {
+                                    $("#B_NOS_" + i).val(returncolvalue(result, "NOS"));
+                                }
                                 $("#B_FLAGMTR_" + i).val(returncolvalue(result, "FLAGMTR"));
                                 var RATE = returncolvalue(result, "RATE");
                                 var PRODGRPGSTPER = returncolvalue(result, "PRODGRPGSTPER");
@@ -816,7 +822,10 @@
                                 $("#B_BARGENTYPETEMP_" + i).val(returncolvalue(result, "BARGENTYPE"));
                                 $("#B_NEGSTOCK_" + i).val(returncolvalue(result, "NEGSTOCK"));
                                 $("#B_BarImages_" + i).val(returncolvalue(result, "BARIMAGE"));
-                                CalculateMiQnty('_T_SALE_PRODUCT_GRID',i);
+                                if (tag == "QTYPROG") {
+                                    CalculateMiQnty('_T_SALE_PRODUCT_GRID', i);
+                                    $("#B_QNTY_" + i).focus();
+                                }
                             }
                             else {
                                 var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
@@ -845,7 +854,7 @@
                         }
                         else {
                             msgInfo("" + result + " !");
-                            if (tag == "QTY") {
+                            if (tag == "QTY" || tag == "QTYPROG") {
                                 ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i);
                             }
                             else {
@@ -2435,6 +2444,9 @@
                     CalculateMiQnty('_T_SALE_PRODUCT_GRID', i)
                 }
                 Checked_Disable();
+                if ("@Model.DefaultAction" == "A") {
+                    $("#B_TXNSLNO_0").focus();
+                }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();

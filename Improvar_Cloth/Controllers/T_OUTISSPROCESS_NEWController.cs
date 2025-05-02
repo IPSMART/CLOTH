@@ -893,7 +893,7 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
-                if (data.Length > 9 && data[9].retStr() == "QTY")
+                if (data.Length > 9 && (data[9].retStr() == "QTY" || data[9].retStr() == "QTYPROG"))
                 {
                     menupara = "SB";
                 }
