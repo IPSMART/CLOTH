@@ -90,7 +90,7 @@ namespace Improvar.ViewModels
         public string ITCD { get; set; }
         public string ITSTYLE { get; set; }
         [StringLength(30)]
-        public string PDESIGN { get; set; }
+        public string PDESIGN { get; set; }       
 
     }
 }

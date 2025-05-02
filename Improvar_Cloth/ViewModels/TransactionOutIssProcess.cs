@@ -204,6 +204,7 @@ namespace Improvar.ViewModels
         public string Prog_UomTotal { get; set; }
         public string Mi_UomTotal { get; set; }
         public string Det_UomTotal { get; set; }
+        public double ACTFRGHTPAID { get; set; }
 
     }
 }

@@ -3031,6 +3031,7 @@ namespace Improvar.Controllers
                     TXNTRANS.LRDT = VE.T_TXNTRANS.LRDT;
                     TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
                     TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
+                    TXNTRANS.ACTFRGHTPAID = VE.T_TXNTRANS.ACTFRGHTPAID;
                     TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
                     TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
                     TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
@@ -3079,6 +3080,8 @@ namespace Improvar.Controllers
                     TTXNOTH.TDSON = VE.T_TXNOTH.TDSON;
                     TTXNOTH.TDSPER = VE.T_TXNOTH.TDSPER;
                     TTXNOTH.TDSAMT = VE.T_TXNOTH.TDSAMT;
+                    TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
+                    TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
                     //----------------------------------------------------------//
 
                     //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
@@ -3595,70 +3598,71 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    //-------------------------Transport--------------------------//
-                    TXNTRANS.AUTONO = TTXN.AUTONO;
-                    TXNTRANS.EMD_NO = TTXN.EMD_NO;
-                    TXNTRANS.CLCD = TTXN.CLCD;
-                    TXNTRANS.DTAG = TTXN.DTAG;
-                    TXNTRANS.TRANSLCD = VE.T_TXNTRANS.TRANSLCD;
-                    TXNTRANS.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                    TXNTRANS.CRSLCD = VE.T_TXNTRANS.CRSLCD;
-                    TXNTRANS.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                    TXNTRANS.LRNO = VE.T_TXNTRANS.LRNO;
-                    TXNTRANS.LRDT = VE.T_TXNTRANS.LRDT;
-                    TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                    TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
-                    TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
-                    TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
-                    TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
-                    TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
-                    TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                    TXNTRANS.GATEENTNO = VE.T_TXNTRANS.GATEENTNO;
-                    //----------------------------------------------------------//
-                    //-------------------------Other Info--------------------------//
-                    TTXNOTH.AUTONO = TTXN.AUTONO;
-                    TTXNOTH.EMD_NO = TTXN.EMD_NO;
-                    TTXNOTH.CLCD = TTXN.CLCD;
-                    TTXNOTH.DTAG = TTXN.DTAG;
-                    TTXNOTH.DOCREM = VE.T_TXNOTH.DOCREM;
-                    TTXNOTH.DNCNCD = VE.T_TXNOTH.DNCNCD;
-                    TTXNOTH.DNSALPUR = VE.T_TXNOTH.DNSALPUR;
-                    TTXNOTH.AGSLCD = VE.T_TXNOTH.AGSLCD;
-                    TTXNOTH.SAGSLCD = VE.T_TXNOTH.SAGSLCD;
-                    TTXNOTH.BLTYPE = VE.T_TXNOTH.BLTYPE;
-                    TTXNOTH.DESTN = VE.T_TXNOTH.DESTN;
-                    TTXNOTH.PLSUPPLY = VE.T_TXNOTH.PLSUPPLY;
-                    TTXNOTH.OTHADD1 = VE.T_TXNOTH.OTHADD1;
-                    TTXNOTH.OTHADD2 = VE.T_TXNOTH.OTHADD2;
-                    TTXNOTH.OTHADD3 = VE.T_TXNOTH.OTHADD3;
-                    TTXNOTH.OTHADD4 = VE.T_TXNOTH.OTHADD4;
-                    TTXNOTH.INSBY = VE.T_TXNOTH.INSBY;
-                    TTXNOTH.PAYTERMS = VE.T_TXNOTH.PAYTERMS;
-                    TTXNOTH.CASENOS = VE.T_TXNOTH.CASENOS;
-                    TTXNOTH.NOOFCASES = VE.T_TXNOTH.NOOFCASES;
-                    TTXNOTH.PRCCD = VE.T_TXNOTH.PRCCD;
-                    TTXNOTH.OTHNM = VE.T_TXNOTH.OTHNM;
-                    TTXNOTH.COD = VE.T_TXNOTH.COD;
-                    TTXNOTH.DOCTH = VE.T_TXNOTH.DOCTH;
-                    TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
-                    TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
-                    TTXNOTH.ECOMM = VE.T_TXNOTH.ECOMM;
-                    TTXNOTH.EXPCD = VE.T_TXNOTH.EXPCD;
-                    TTXNOTH.GSTNO = VE.T_TXNOTH.GSTNO;
-                    TTXNOTH.PNM = VE.T_TXNOTH.PNM;
-                    TTXNOTH.POS = VE.T_TXNOTH.POS;
-                    TTXNOTH.PACKBY = VE.T_TXNOTH.PACKBY;
-                    TTXNOTH.SELBY = VE.T_TXNOTH.SELBY;
-                    TTXNOTH.DEALBY = VE.T_TXNOTH.DEALBY;
-                    TTXNOTH.DESPBY = VE.T_TXNOTH.DESPBY;
-                    TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
-                    TTXNOTH.TDSHD = VE.T_TXNOTH.TDSHD;
-                    TTXNOTH.TDSON = VE.T_TXNOTH.TDSON;
-                    TTXNOTH.TDSPER = VE.T_TXNOTH.TDSPER;
-                    TTXNOTH.TDSAMT = VE.T_TXNOTH.TDSAMT;
-                    TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
-                    TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
-                    //----------------------------------------------------------//
+                    ////-------------------------Transport--------------------------//
+                    //TXNTRANS.AUTONO = TTXN.AUTONO;
+                    //TXNTRANS.EMD_NO = TTXN.EMD_NO;
+                    //TXNTRANS.CLCD = TTXN.CLCD;
+                    //TXNTRANS.DTAG = TTXN.DTAG;
+                    //TXNTRANS.TRANSLCD = VE.T_TXNTRANS.TRANSLCD;
+                    //TXNTRANS.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
+                    //TXNTRANS.CRSLCD = VE.T_TXNTRANS.CRSLCD;
+                    //TXNTRANS.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
+                    //TXNTRANS.LRNO = VE.T_TXNTRANS.LRNO;
+                    //TXNTRANS.LRDT = VE.T_TXNTRANS.LRDT;
+                    //TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
+                    //TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
+                    //TXNTRANS.ACTFRGHTPAID = VE.T_TXNTRANS.ACTFRGHTPAID;
+                    //TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
+                    //TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
+                    //TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
+                    //TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
+                    //TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
+                    //TXNTRANS.GATEENTNO = VE.T_TXNTRANS.GATEENTNO;
+                    ////----------------------------------------------------------//
+                    ////-------------------------Other Info--------------------------//
+                    //TTXNOTH.AUTONO = TTXN.AUTONO;
+                    //TTXNOTH.EMD_NO = TTXN.EMD_NO;
+                    //TTXNOTH.CLCD = TTXN.CLCD;
+                    //TTXNOTH.DTAG = TTXN.DTAG;
+                    //TTXNOTH.DOCREM = VE.T_TXNOTH.DOCREM;
+                    //TTXNOTH.DNCNCD = VE.T_TXNOTH.DNCNCD;
+                    //TTXNOTH.DNSALPUR = VE.T_TXNOTH.DNSALPUR;
+                    //TTXNOTH.AGSLCD = VE.T_TXNOTH.AGSLCD;
+                    //TTXNOTH.SAGSLCD = VE.T_TXNOTH.SAGSLCD;
+                    //TTXNOTH.BLTYPE = VE.T_TXNOTH.BLTYPE;
+                    //TTXNOTH.DESTN = VE.T_TXNOTH.DESTN;
+                    //TTXNOTH.PLSUPPLY = VE.T_TXNOTH.PLSUPPLY;
+                    //TTXNOTH.OTHADD1 = VE.T_TXNOTH.OTHADD1;
+                    //TTXNOTH.OTHADD2 = VE.T_TXNOTH.OTHADD2;
+                    //TTXNOTH.OTHADD3 = VE.T_TXNOTH.OTHADD3;
+                    //TTXNOTH.OTHADD4 = VE.T_TXNOTH.OTHADD4;
+                    //TTXNOTH.INSBY = VE.T_TXNOTH.INSBY;
+                    //TTXNOTH.PAYTERMS = VE.T_TXNOTH.PAYTERMS;
+                    //TTXNOTH.CASENOS = VE.T_TXNOTH.CASENOS;
+                    //TTXNOTH.NOOFCASES = VE.T_TXNOTH.NOOFCASES;
+                    //TTXNOTH.PRCCD = VE.T_TXNOTH.PRCCD;
+                    //TTXNOTH.OTHNM = VE.T_TXNOTH.OTHNM;
+                    //TTXNOTH.COD = VE.T_TXNOTH.COD;
+                    //TTXNOTH.DOCTH = VE.T_TXNOTH.DOCTH;
+                    //TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
+                    //TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
+                    //TTXNOTH.ECOMM = VE.T_TXNOTH.ECOMM;
+                    //TTXNOTH.EXPCD = VE.T_TXNOTH.EXPCD;
+                    //TTXNOTH.GSTNO = VE.T_TXNOTH.GSTNO;
+                    //TTXNOTH.PNM = VE.T_TXNOTH.PNM;
+                    //TTXNOTH.POS = VE.T_TXNOTH.POS;
+                    //TTXNOTH.PACKBY = VE.T_TXNOTH.PACKBY;
+                    //TTXNOTH.SELBY = VE.T_TXNOTH.SELBY;
+                    //TTXNOTH.DEALBY = VE.T_TXNOTH.DEALBY;
+                    //TTXNOTH.DESPBY = VE.T_TXNOTH.DESPBY;
+                    //TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
+                    //TTXNOTH.TDSHD = VE.T_TXNOTH.TDSHD;
+                    //TTXNOTH.TDSON = VE.T_TXNOTH.TDSON;
+                    //TTXNOTH.TDSPER = VE.T_TXNOTH.TDSPER;
+                    //TTXNOTH.TDSAMT = VE.T_TXNOTH.TDSAMT;
+                    //TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
+                    //TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
+                    ////----------------------------------------------------------//
 
 
 

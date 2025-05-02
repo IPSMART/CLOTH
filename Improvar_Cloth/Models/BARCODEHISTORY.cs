@@ -31,6 +31,9 @@ namespace Improvar.Models
         public bool Checked { get; set; }
         public string STKDRCR { get; set; }
         public double? QNTY { get; set; }
+        public string itstyleno { get; set; }
+        public string itremarks { get; set; }
+        public string colornm { get; set; }
 
 
     }

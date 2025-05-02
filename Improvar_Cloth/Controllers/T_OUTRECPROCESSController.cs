@@ -2719,6 +2719,7 @@ namespace Improvar.Controllers
                     TXNTRANS.LRDT = VE.T_TXNTRANS.LRDT;
                     TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
                     TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
+                    TXNTRANS.ACTFRGHTPAID = VE.T_TXNTRANS.ACTFRGHTPAID;
                     TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
                     TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
                     TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;

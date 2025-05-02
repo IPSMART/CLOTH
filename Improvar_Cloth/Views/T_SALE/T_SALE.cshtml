@@ -3140,7 +3140,7 @@
                                     @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES_REM, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", maxlength = 20, @placeholder = "No of Cases_Rem" } })
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-2">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "No of Cases")
                                 </div>
@@ -3150,22 +3150,24 @@
                                     @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
                                 </div>
                             </div>
-                        </div>
-                        @if (Model.DefaultAction != "V")
-                        {
-                            <div class="row">
-                                <p class="text-info">
-                                    * Press <b>F4</b> on <b>Transporter</b> to get last Transporter respect of @ViewBag.Partycaption<br />
-                                </p>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Actual Freight")
+                                </div>
                             </div>
-                        }
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.ACTFRGHTPAID, new { htmlAttributes = new { @class = "form-control", id = "ACTFRGHTPAID", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Actual Freight" } })
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "To Pay")
                                 </div>
                             </div>
-                            
+
                             <div class="Transportdiv col-md-10">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.TOPAY, new { htmlAttributes = new { @class = "form-control", id = "TOPAY", @placeholder = "To Pay", maxlength = 50, @list = "TOPAYTYPE_List" } })
@@ -3178,7 +3180,17 @@
                                 </div>
                             </div>
 
+                        </div>
+
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <p class="text-info">
+                                    * Press <b>F4</b> on <b>Transporter</b> to get last Transporter respect of @ViewBag.Partycaption<br />
+                                </p>
                             </div>
+                        }
+                        
                         </div>
                     <div id="OtherAddress" class="tab-pane fade" style="margin-top: 10px;">
                         <div class="row">
