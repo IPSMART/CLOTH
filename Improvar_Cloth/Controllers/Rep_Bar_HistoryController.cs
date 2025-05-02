@@ -124,15 +124,16 @@ namespace Improvar.Controllers
                     { return Content(str = ""); }
                     else {
                         string barno = str.retCompValue("BARNO").retStr();
-                        string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
-                        sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel, ";
-                        sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm ";
-                        sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
-                        sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i ";
-                        sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+)and ";
-                        sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
-                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barno.ToUpper() + "' ";
-                        sql1 += "order by b.DOCDT,b.DOCNO ";
+                        string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,f.docno tchdocno ,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, "+Environment.NewLine;
+                        sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel,a.ITREM, k.COLRNM, j.itcd, l.styleno, j.COLRCD, k.colrcd,l.itnm, " + Environment.NewLine;
+                        sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm " + Environment.NewLine;
+                        sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, " ;
+                        sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i, " + scm + ".t_batchmst j, " + scm + ".M_COLOR k, " + scm + ".M_SITEM l " + Environment.NewLine;
+                        sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+) and a.barno = j.barno(+) and j.COLRCD = k.colrcd(+) and j.itcd = l.itcd(+) and" + Environment.NewLine;
+                        sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and " + Environment.NewLine;
+                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barno.ToUpper() + "' " + Environment.NewLine;
+                        sql1 += "order by b.DOCDT,b.DOCNO " + Environment.NewLine;
+
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
                         sql2 += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
                         sql2 += "from(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
@@ -157,7 +158,7 @@ namespace Improvar.Controllers
                                                  SLNO = dr["SLNO"].retShort(),
                                                  AUTONO = dr["AUTONO"].retStr(),
                                                  DOCDT = dr["DOCDT"].retDateStr(),
-                                                 DOCNO = dr["cancel"].retStr() == "N" ? dr["DOCNO"].retStr() : dr["DOCNO"].retStr() + " (Record Cancelled)",
+                                                 DOCNO = dr["cancel"].retStr() == "N" ? dr["tchdocno"].retStr() : dr["tchdocno"].retStr() + " (Record Cancelled)",
                                                  PREFNO = dr["PREFNO"].retStr(),
                                                  SLNM = dr["doccd"].retStr() == "SCM" ? dr["RTDEBCD"].retStr() == "" ? "" : dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
                                                  LOCNM = dr["LOCANM"].retStr(),
@@ -169,6 +170,9 @@ namespace Improvar.Controllers
                                                  DISCPER = dr["cancel"].retStr() == "N" ? (dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr()) : 0.retStr(),
                                                  INQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl()) : 0,
                                                  OUTQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl()) : 0,
+                                                 itremarks = dr["ITREM"].retStr(),
+                                                 colornm = dr["COLRNM"].retStr(),
+                                                 itstyleno = dr["styleno"].retStr()+" "+ dr["itnm"].retStr(),
                                              }).Distinct().ToList();
                         //}).OrderBy(a => a.SLNO).Distinct().ToList();
 
