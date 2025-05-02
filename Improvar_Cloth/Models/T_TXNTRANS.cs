@@ -62,5 +62,8 @@ namespace Improvar.Models
 
         [StringLength(30)]
         public string GATEENTNO { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? ACTFRGHTPAID { get; set; }
     }
 }
