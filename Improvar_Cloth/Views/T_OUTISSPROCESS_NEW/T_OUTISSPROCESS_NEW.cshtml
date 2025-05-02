@@ -184,8 +184,7 @@
 
                 var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
                 var MSG = result.indexOf('_T_OUTISSPROCESS_Programme_GRID');
-                if (MSG >= 0)
-                {
+                if (MSG >= 0) {
                     $("#partialdivProgramme").html(res[0]);
                     $("#partialdivDetail").html(res[1]);
                     $("li").removeClass("active").addClass("");
@@ -205,8 +204,8 @@
                     $("#WaitingMode").hide();
                     return false;
                 }
-              
-               
+
+
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -479,43 +478,24 @@
             var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
             for (var J = 0; J <= GridRow - 1; J++) {
                 var pslno = $("#P_SLNO_" + J).val();
-                var qslno = $("#Q_SLNO_" + i).val();
+                var qslno = $("#B_ParentSerialNo_" + i).val();
                 if (parseInt(pslno) == parseInt(qslno)) {
-                    $("#Q_BARNO_" + i).val($("#P_BARNO_" + J).val());
-                    $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
-                    $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
-                    $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
-                    $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
-                    $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
-                    $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
-                    $("#Q_BOMQNTY_" + i).val($("#P_QNTY_" + J).val());
-                    if ("@Model.MENU_PARA" == "DY") {
-                        $("#Q_MTRLJOBCD_" + i).val("PL");
-                    }
-                    else {
-                        $("#Q_MTRLJOBCD_" + i).val("DY");
-                    }
+                    $("#B_BARNO_" + i).val($("#P_BARNO_" + J).val());
+                    $("#B_ITCD_" + i).val($("#P_ITCD_" + J).val());
+                    $("#B_ITSTYLE_" + i).val($("#P_ITNM_" + J).val());
+                    $("#B_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
+                    $("#B_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());                  
+                    $("#B_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
+                    $("#B_COLRNM_" + i).val($("#P_COLRNM_" + J).val());
+                    $("#B_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
+                    $("#B_PARTCD_" + i).val($("#P_PARTCD_" + J).val());
+                    $("#B_CUTLENGTH_" + i).val($("#P_CUTLENGTH_" + J).val());
+                    $("#B_NOS_" + i).val($("#P_NOS_" + J).val());
+                    $("#B_QNTY_" + i).val($("#P_QNTY_" + J).val());
+                    $("#B_MTRLJOBCD_" + i).val($("#P_MTRLJOBCD_" + J).val());
+                    $("#B_BARNO_" + i).blur();
                 }
             }
-        }
-        if (event.key == "F8" && i > 0) {
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
-                beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&RowIndex=" + i,
-                success: function (result) {
-                    $("#WaitingMode").hide();
-                    //$("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
-                    $("#partialdivQtyRequirement").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-
         }
     }
 </script>
@@ -799,15 +779,15 @@
                                     bomqnty = retFloat($("#B_BOMQNTY_" + i).val().split('~~')[0]);
                                 }
 
-                                if (stock < bomqnty) {
-                                    $("#B_QNTY_" + i).val(stock);
-                                }
-                                else {
-                                    $("#B_QNTY_" + i).val(bomqnty);
-                                }
+                                //if (stock < bomqnty) {
+                                //    $("#B_QNTY_" + i).val(stock);
+                                //}
+                                //else {
+                                //    $("#B_QNTY_" + i).val(bomqnty);
+                                //}
 
                                 $("#B_UOM_" + i).val(returncolvalue(result, "uomcd"));
-                                $("#B_NOS_" + i).val(returncolvalue(result, "NOS"));
+                                //$("#B_NOS_" + i).val(returncolvalue(result, "NOS"));
                                 $("#B_FLAGMTR_" + i).val(returncolvalue(result, "FLAGMTR"));
                                 var RATE = returncolvalue(result, "RATE");
                                 var PRODGRPGSTPER = returncolvalue(result, "PRODGRPGSTPER");
@@ -836,6 +816,7 @@
                                 $("#B_BARGENTYPETEMP_" + i).val(returncolvalue(result, "BARGENTYPE"));
                                 $("#B_NEGSTOCK_" + i).val(returncolvalue(result, "NEGSTOCK"));
                                 $("#B_BarImages_" + i).val(returncolvalue(result, "BARIMAGE"));
+                                CalculateMiQnty('_T_SALE_PRODUCT_GRID',i);
                             }
                             else {
                                 var _mtrljbcd = $("#" + P_MTRLJOBCD_).val();
@@ -2529,11 +2510,10 @@
                 var strArray = [];
                 var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
                 for (var i = 0; i <= GridRow - 1; i++) {
-                    if ($("#B_UOM_" + i).val() != "")
-                    {
+                    if ($("#B_UOM_" + i).val() != "") {
                         strArray.push({ Uom: $("#B_UOM_" + i).val(), Qnty: retFloat($("#B_QNTY_" + i).val()) });
                     }
-                    }
+                }
 
                 //uom wise total
                 const grouped = {};
@@ -2572,7 +2552,7 @@
                 if ($("#B_UOM_" + i).val() != "") {
                     strArray.push({ Uom: $("#B_UOM_" + i).val(), Qnty: retFloat($("#B_QNTY_" + i).val()) });
                 }
-                }
+            }
 
             //uom wise total
             const grouped = {};
@@ -2621,7 +2601,7 @@
         <input type="hidden" id="RoundOff" />
         <input type="hidden" id="DISPBLAMT" />
         <input type="hidden" id="callfrmmigrid" value="QTY" />
- <input type="hidden" id="callfrmbar" value="bar" />
+        <input type="hidden" id="callfrmbar" value="bar" />
         <input type="hidden" id="callfrmstyle" value="style" />
         <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         @Html.HiddenFor(s => s.DefaultAction)
@@ -2847,7 +2827,7 @@
                                 <b>(Quantity=Nos)</b>
                             </p>
                             <p class="text-info" style="margin-top:-10px;">
-                                *** Press <b>F2/Click</b> on <b>MI Qty</b> column to Open <b>Material Issue Details</b> 
+                                *** Press <b>F2/Click</b> on <b>MI Qty</b> column to Open <b>Material Issue Details</b>
                             </p>
 
                         </div>
@@ -2999,6 +2979,16 @@
                             <div class="col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Actual Freight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.ACTFRGHTPAID, new { htmlAttributes = new { @class = "form-control", id = "ACTFRGHTPAID", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Actual Freight" } })
                                 </div>
                             </div>
                         </div>
