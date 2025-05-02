@@ -51,7 +51,14 @@
                 </div>
             </div>
         }
-
+        @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
+        {
+            <div class="col-md-2">
+                <div class="editor-field">
+                    <input class="btn btn-success" type="button" value="Get All Data" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="fillPricesGrid('All');" />
+                </div>
+            </div>
+        }
     </div>
 
 </div>

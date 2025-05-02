@@ -601,12 +601,10 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GeneratePrices(ItemMasterEntry VE)
+        public ActionResult GeneratePrices(ItemMasterEntry VE, string Tag)
         {
             try
             {
-                VE.DTPRICES = GetPrices(VE);
-                TempData["DTPRICES"] = VE.DTPRICES;
                 string barnosql = getmasterbarno(VE.M_SITEM.ITCD.retStr()).retSqlformat();
                 if (barnosql != "")
                 {
@@ -616,6 +614,8 @@ namespace Improvar.Controllers
                 {
                     VE.DropDown_list1 = new List<DropDown_list1>();
                 }
+                VE.DTPRICES = GetPrices(VE, Tag);
+                TempData["DTPRICES"] = VE.DTPRICES;
 
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -685,14 +685,15 @@ namespace Improvar.Controllers
             return VE.DropDown_list1;
 
         }
-        public DataTable GetPrices(ItemMasterEntry VE)
+        public DataTable GetPrices(ItemMasterEntry VE, string Tag = "")
         {
             DataTable dt = new DataTable();
             try
             {
                 string sql = "";
-                sql += " select a.rate,prccd,SIZECD,COLRCD from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst b ";
-                sql += "where a.barno=b.barno and b.itcd='" + VE.M_SITEM.ITCD + "' and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy')  ";
+                sql += " select a.rate,prccd,SIZECD,COLRCD,to_char(a.effdt,'dd/mm/yyyy')effdt from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst b ";
+                sql += "where a.barno=b.barno and b.itcd='" + VE.M_SITEM.ITCD + "' ";
+                if (Tag != "All") sql += "and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy')  ";
                 sql += "order by EFFDT desc ";
                 DataTable dt_prcrt = masterHelp.SQLquery(sql);
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -704,6 +705,8 @@ namespace Improvar.Controllers
                                     SEQNO = p.SEQNO
                                 }).OrderBy(S => S.SEQNO).ToList();
                 DataColumn column;
+
+                column = dt.Columns.Add("effdt", typeof(string)); column.Caption = "Effective Date";
                 column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
                 column = dt.Columns.Add("COLRNM", typeof(string)); column.Caption = "COLRNM";
                 column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
@@ -716,27 +719,46 @@ namespace Improvar.Controllers
                 {
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
+
+                List<string> effdt = new List<string>();
+                if (Tag == "All")
+                {
+                    for (int i = 0; i <= VE.DropDown_list1.Count - 1; i++)
+                    {
+                        effdt.Add(VE.DropDown_list1[i].value);
+                    }
+
+                }
+                else
+                {
+                    effdt.Add(VE.PRICES_EFFDTDROP);
+                }
                 foreach (MSITEMBARCODE bar in VE.MSITEMBARCODE)
                 {
                     if (bar.SRLNO == 1 || bar.SIZECD != null || bar.COLRCD != null)
                     {
-                        dt.Rows.Add("");
-                        int rNo = dt.Rows.Count - 1;
-                        dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
-                        dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
-                        dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
-                        dt.Rows[rNo]["COLRCD"] = bar.COLRCD.retStr();
-                        dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
-                        dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
-                        dt.Rows[rNo]["BARNO"] = bar.BARNO;
-                        if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
+                        foreach (var e in effdt)
                         {
-                            foreach (var plist in M_PRCLST)
+                            dt.Rows.Add("");
+                            int rNo = dt.Rows.Count - 1;
+
+                            dt.Rows[rNo]["effdt"] = e.retStr();
+                            dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
+                            dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
+                            dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
+                            dt.Rows[rNo]["COLRCD"] = bar.COLRCD.retStr();
+                            dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
+                            dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
+                            dt.Rows[rNo]["BARNO"] = bar.BARNO;
+                            if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
                             {
-                                string rate = (from DataRow dr in dt_prcrt.Rows
-                                               where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr()
-                                               select dr["rate"].retStr()).FirstOrDefault();
-                                dt.Rows[rNo][plist.PRCCD] = rate;
+                                foreach (var plist in M_PRCLST)
+                                {
+                                    string rate = (from DataRow dr in dt_prcrt.Rows
+                                                   where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr() && dr["effdt"].retStr() == e.retStr()
+                                                   select dr["rate"].retStr()).FirstOrDefault();
+                                    dt.Rows[rNo][plist.PRCCD] = rate;
+                                }
                             }
                         }
                     }
