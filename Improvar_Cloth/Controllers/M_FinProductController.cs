@@ -1946,13 +1946,13 @@ namespace Improvar.Controllers
                         for (int i = 0; i <= prcRows.Length - 1; i++)
                         {
                             var prcCols = prcRows[i].Split(',');
-                            for (int j = 7; j < prcCols.Length; j++)
+                            for (int j = 8; j < prcCols.Length; j++)
                             {
-                                string colorbarno = prcCols[2];
-                                string sizebarno = prcCols[5];
-                                string colorcd = prcCols[0];
-                                string sizecd = prcCols[3];
-                                string barno = prcCols[6];
+                                string colorbarno = prcCols[3];// prcCols[2];
+                                string sizebarno = prcCols[6];// prcCols[5];
+                                string colorcd = prcCols[1];// prcCols[0];
+                                string sizecd = prcCols[4];//prcCols[3];
+                                string barno = prcCols[7];// prcCols[6];
                                 var varcode = VE.MSITEMBARCODE.Where(d => d.SIZECD.retStr() == sizecd && d.COLRCD.retStr() == colorcd).FirstOrDefault();
                                 if (varcode == null)
                                 {

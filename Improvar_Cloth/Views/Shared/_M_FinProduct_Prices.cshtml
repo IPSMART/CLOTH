@@ -80,12 +80,12 @@
                         {
                             <thead>
                                 <tr class="sticky-header">
-                                    @for (int i = 0; i < 7; i++)
+                                    @for (int i = 0; i < 8; i++)
                                     {
                                         <th class="grid_th text-right" style="width:70px;">@Model.DTPRICES.Columns[i].Caption</th>
                                         @*<th class="grid_th">@Model.DTPRICES.Columns[i].Caption</th>*@
                                     }
-                                    @for (int i = 7; i < Model.DTPRICES.Columns.Count; i++)
+                                    @for (int i = 8; i < Model.DTPRICES.Columns.Count; i++)
                                     {
                                         <th class="grid_th">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer;color: mistyrose;">Same Rate(F8)</a></th>
                                     }
@@ -97,7 +97,7 @@
                                     <tr>
                                         @for (int j = 0; j < Model.DTPRICES.Columns.Count; j++)
                                         {
-                                            if (j < 7)
+                                            if (j < 8)
                                             {
                                                 <td>
                                                     @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", style = "background-color:lightgrey;", @Readonly = "Readonly" })
