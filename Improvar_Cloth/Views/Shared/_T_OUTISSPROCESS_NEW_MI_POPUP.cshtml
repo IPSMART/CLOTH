@@ -98,9 +98,16 @@
                                     {
                                         for (int i = 0; i <= Model.TBATCHDTL.Count - 1; i++)
                                         {
-                                            <tr style="font-size:12px; font-weight:bold;">
+                                            <tr id="Mitr_@i" style="font-size:12px; font-weight:bold;">
                                                 <td class="sticky-cell">
-                                                    @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
+                                                    @if (Model.TBATCHDTL[i].ChildData.retStr() == "Y")
+                                                    {
+                                                        @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, style = "pointer-events:none;background-color:#eee" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
+                                                    }
                                                     @*@Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })*@
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
@@ -121,15 +128,15 @@
                                                     @Html.HiddenFor(model => Model.TBATCHDTL[i].RECPROGITSTYLE, new { id = "B_RECPROGITSTYLE_" + i })
                                                     @Html.HiddenFor(model => Model.TBATCHDTL[i].RECPROGITCD, new { id = "B_RECPROGITCD_" + i })
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].ParentSerialNo, new { id = "B_ParentSerialNo_" + i })
-  </td>
+                                                </td>
                                                 <td class="sticky-cell" style="left:17px;">
                                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                                 </td>
                                                 <td class="sticky-cell" style="left:40px">
-                                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();" , onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); "})
-                                                  </td>
+                                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
+                                                </td>
                                                 <td class="">
-                                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i, maxlength = 20, onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS_NEW") + "','Barno Details','B_BARNO_" + i + "','B_BARNO_" + i + "=BARNO=0/B_MTRLJOBCD_" + i + "=MTRLJOBCD=2/B_PARTCD_" + i + "=PARTCD=5/B_ITCD_" + i + "=ITCD/B_ITSTYLE_" + i + "=ITSTYLE=3/B_UOM_" + i + "=UOMCD/B_ITGRPCD_" + i + "=ITGRPCD/B_ITGRPNM_" + i + "=ITGRPNM/B_COLRCD_" + i + " =COLRCD/B_SIZECD_" + i + " =SIZECD/B_COLRNM_" + i + "=COLRNM','B_MTRLJOBCD_" + i + "/B_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/B_MTRLJOBCD_" + i + "/B_MTRLJOBCD_" + i + "/callfrmbar/callfrmmigrid');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "Program_GetBarnoDetails(this.value,'" + "B_BARNO_" + i + "','" + "B_MTRLJOBCD_" + i + "','" + "B_PARTCD_" + i + "','" + "B_ITCD_" + i + "','" + "B_ITSTYLE_" + i + "','" + "B_UOM_" + i + "','" + "B_ITGRPCD_" + i + "','" + "B_ITGRPNM_" + i + "','" + "B_COLRCD_" + i + "','" + "B_SIZECD_" + i + "','" + "B_COLRNM_" + i + "','" + "B_MTRLJOBNM_" + i + "','','','','','','QTY','bar',"+i+");", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
+                                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i, maxlength = 20, onkeydown = "toUpper(this);GetHelpBlur('" + @Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS_NEW") + "','Barno Details','B_BARNO_" + i + "','B_BARNO_" + i + "=BARNO=0/B_MTRLJOBCD_" + i + "=MTRLJOBCD=2/B_PARTCD_" + i + "=PARTCD=5/B_ITCD_" + i + "=ITCD/B_ITSTYLE_" + i + "=ITSTYLE=3/B_UOM_" + i + "=UOMCD/B_ITGRPCD_" + i + "=ITGRPCD/B_ITGRPNM_" + i + "=ITGRPNM/B_COLRCD_" + i + " =COLRCD/B_SIZECD_" + i + " =SIZECD/B_COLRNM_" + i + "=COLRNM','B_MTRLJOBCD_" + i + "/B_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/B_MTRLJOBCD_" + i + "/B_MTRLJOBCD_" + i + "/callfrmbar/callfrmmigrid');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "Program_GetBarnoDetails(this.value,'" + "B_BARNO_" + i + "','" + "B_MTRLJOBCD_" + i + "','" + "B_PARTCD_" + i + "','" + "B_ITCD_" + i + "','" + "B_ITSTYLE_" + i + "','" + "B_UOM_" + i + "','" + "B_ITGRPCD_" + i + "','" + "B_ITGRPNM_" + i + "','" + "B_COLRCD_" + i + "','" + "B_SIZECD_" + i + "','" + "B_COLRNM_" + i + "','" + "B_MTRLJOBNM_" + i + "','','','','','','QTY','bar'," + i + ");", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS_NEW")','Barno Details','B_BARNO_@i','B_BARNO_@i=BARNO=0/B_MTRLJOBCD_@i=MTRLJOBCD=2/B_PARTCD_@i=PARTCD=5/B_ITCD_@i=ITCD/B_ITSTYLE_@i=ITSTYLE=3/B_UOM_@i=UOMCD/B_ITGRPCD_@i=ITGRPCD/B_ITGRPNM_@i=ITGRPNM/B_COLRCD_@i =COLRCD/B_SIZECD_@i =SIZECD/B_COLRNM_@i=COLRNM','B_MTRLJOBCD_@i/B_PARTCD_@i/DOCDT/TAXGRPCD/GOCD/PRCCD/B_MTRLJOBCD_@i/B_MTRLJOBCD_@i/callfrmbar/callfrmmigrid');" />
                                                 </td>
                                                 <td class="">
@@ -148,7 +155,7 @@
                                                 <td class="">
                                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i, maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTISSPROCESS_NEW") + "','Item Details','" + "B_ITCD_" + i + "','" + "B_ITCD_" + i + "=ITCD=2/" + "B_ITSTYLE_" + i + "=ITNM=1/" + "B_UOM_" + i + "=UOMCD=3/" + "B_ITSTYLE_" + i + "=ITSTYLE/" + "B_ITGRPCD_" + i + "=ITGRPCD=5/" + "B_ITGRPNM_" + i + "=ITGRPNM=4','B_ITGRPCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTISSPROCESS_NEW") + "','Item Details','" + "B_ITCD_" + i + "','" + "B_ITCD_" + i + "=ITCD=2/" + "B_ITSTYLE_" + i + "=ITNM=1/" + "B_UOM_" + i + "=UOMCD=3/" + "B_ITSTYLE_" + i + "=ITSTYLE/" + "B_ITGRPCD_" + i + "=ITGRPCD=5/" + "B_ITGRPNM_" + i + "=ITGRPNM=4','B_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGridItemDetails", "T_OUTISSPROCESS_NEW")','Item Details','B_ITCD_@i','B_ITCD_@i=ITCD=2/B_ITSTYLE_@i=ITNM=1/B_UOM_@i=UOMCD=3/B_ITSTYLE_@i=ITSTYLE/B_ITGRPCD_@i=ITGRPCD=5/B_ITGRPNM_@i=ITGRPNM=4','B_ITGRPCD_@i')" />
-                                                </td>                                              
+                                                </td>
                                                 <td class="">
                                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS_NEW") + "','Material Job Details','" + "B_MTRLJOBCD_" + i + "','" + "B_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "B_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS_NEW") + "','Material Job Details','" + "B_MTRLJOBCD_" + i + "','" + "B_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "B_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "MTRLJOBCD", @class = " atextBoxFor textbox_image" })
                                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_OUTISSPROCESS_NEW")','Material Job Details','B_MTRLJOBCD_@i','B_MTRLJOBCD_@i=MTRLJOBCD=1/B_MTRLJOBNM_@i=MTRLJOBNM=0')" />
@@ -246,7 +253,7 @@
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
- <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td style="text-align:right;">
                                             <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />

@@ -38,7 +38,7 @@
             modeView();
         }
         else if ("@Model.DefaultAction" == "E") {
-
+            Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -400,6 +400,7 @@
                 $("#WaitingMode").hide();
                 //$("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivProgramme").html(result);
+                Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -418,6 +419,7 @@
             success: function (result) {
                 //$("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
                 $("#partialdivProgramme").html(result);
+                Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
                 CalculateTotal();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -2443,7 +2445,7 @@
                 for (var i = 0; i <= GridRow - 1; i++) {
                     CalculateMiQnty('_T_SALE_PRODUCT_GRID', i)
                 }
-                Checked_Disable();
+                Checked_Disable('_T_SALE_PRODUCT_GRID');
                 if ("@Model.DefaultAction" == "A") {
                     $("#B_TXNSLNO_0").focus();
                 }
@@ -2468,6 +2470,7 @@
                 $("#WaitingMode").hide();
                 $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
                 $('#partialdivProgramme').html(result);
+                Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -2494,7 +2497,7 @@
                 $("#WaitingMode").hide();
                 $("#popupMI").animate({ marginTop: '-10px' }, 50);
                 $("#popupMI").html(result);
-                Checked_Disable();
+                Checked_Disable('_T_SALE_PRODUCT_GRID');
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -2516,7 +2519,7 @@
             success: function (result) {
                 $("#popupMI").animate({ marginTop: '0px' }, 50);
                 $("#popupMI").html(result);
-                Checked_Disable();
+                Checked_Disable('_T_SALE_PRODUCT_GRID');
                 CalculateTotal_Barno();
                 HasChangeBarSale();
                 var strArray = [];
@@ -2582,6 +2585,39 @@
             }).join(', ');
 
             $("#Mi_UomTotal").val(result);
+        }
+    }
+</script>
+<script>
+    function Checked_Disable(tblnm) {
+        debugger;
+        if (tblnm == "_T_OUTISSPROCESS_Programme_GRID") {
+            var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if ($("#P_ChildProgData_" + i).val() == "Y") {
+                    $('#Prgtr_' + i + ' input').attr('readonly', 'readonly');
+                    $('#Prgtr_' + i + ' input').removeAttr("onblur");
+                    $('#Prgtr_' + i + ' input').attr('TabIndex', '-1');
+                    $('#Prgtr_' + i).find(".Help_image_button_grid").hide();
+                    $('#Prgtr_' + i + ' input').removeAttr("onkeydown");
+                    $("#Prgtr_" + i + " input[type='checkbox']").css('pointer-events', 'none');
+                    $("#Prgtr_" + i + " input[type='checkbox']").css('background-color', '#eeeeee');
+                }
+            }
+        }
+        else if (tblnm == "_T_SALE_PRODUCT_GRID") {
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if ($("#B_ChildData_" + i).val() == "Y") {
+                    $('#Mitr_' + i + ' input').attr('readonly', 'readonly');
+                    $('#Mitr_' + i + ' input').removeAttr("onblur");
+                    $('#Mitr_' + i + ' input').attr('TabIndex', '-1');
+                    $('#Mitr_' + i).find(".Help_image_button_grid").hide();
+                    $('#Mitr_' + i + ' input').removeAttr("onkeydown");
+                    $("#Mitr_" + i + " input[type='checkbox']").css('pointer-events', 'none');
+                    $("#Mitr_" + i + " input[type='checkbox']").css('background-color', '#eeeeee');
+                }
+            }
         }
     }
 </script>
