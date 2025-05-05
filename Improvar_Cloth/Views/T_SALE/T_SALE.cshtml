@@ -1557,8 +1557,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @if (Model.Delete == "D" && Model.DefaultAction == "A")
-                                    {
+@if (Model.Delete == "D" && Model.DefaultAction == "A")
+{
                                         @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetPrice();", @placeholder = "Code", maxlength = 4 } })
                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" id="PRCCD_HELP" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')" />
                                     }
@@ -3155,7 +3155,7 @@
                                     @Html.Label("", "Actual Freight")
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class= "Transportdiv col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.ACTFRGHTPAID, new { htmlAttributes = new { @class = "form-control", id = "ACTFRGHTPAID", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Actual Freight" } })
                                 </div>

@@ -2281,6 +2281,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("colrnm", typeof(string), "");
                 IR.Columns.Add("sizecd", typeof(string), "");
                 IR.Columns.Add("sizenm", typeof(string), "");
+                IR.Columns.Add("cutlength", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2978,10 +2979,13 @@ namespace Improvar.Controllers
                                 dr1["listdiscper"] = tbl.Rows[i]["listdiscper"].retDbl().ToString("0.00");
                                 #region pcsdescn
                                 var batch_data = rsStkPrcDesc.Select("autono='" + auto1 + "' and txnslno = " + tbl.Rows[i]["slno"].ToString());
-                                string pcsdesc = "";
+                                string pcsdesc = ""; string cutlength = "";
                                 for (int a = 0; a <= batch_data.Count() - 1; a++)
                                 {
                                     pcsdesc += pcsdesc == "" ? "" : ",";
+                                    cutlength += cutlength == "" ? "" : ",";
+                                    cutlength += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retDbl().ToString("0.00");
+
                                     pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
 
                                     if (batch_data[a]["nos"].retDbl() == 1)
@@ -2999,7 +3003,7 @@ namespace Improvar.Controllers
                                             {
                                                 pcsdesc += v == 0 ? "" : "+";
                                                 pcsdesc += batch_data[a]["cutlength"].retDbl().ToString("0.00");
-                                            }
+                                                                                        }
                                         }
                                         else
                                         {
@@ -3028,6 +3032,7 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 dr1["pcsdesc"] = pcsdesc;
+                                dr1["cutlength"] = cutlength;
                                 #endregion
                                 dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                                 string strdsc = "";

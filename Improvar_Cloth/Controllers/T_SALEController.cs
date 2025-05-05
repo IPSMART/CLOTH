@@ -3942,7 +3942,7 @@ namespace Improvar.Controllers
                     sql += " CRSLCD ='" + VE.T_TXNTRANS.CRSLCD + "',EWAYBILLNO ='" + VE.T_TXNTRANS.EWAYBILLNO + "',LRNO ='" + VE.T_TXNTRANS.LRNO + "', ";
                     sql += " LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy'),LORRYNO ='" + VE.T_TXNTRANS.LORRYNO + "',GRWT ='" + VE.T_TXNTRANS.GRWT + "', ";
                     sql += " TRWT ='" + VE.T_TXNTRANS.TRWT + "',NTWT ='" + VE.T_TXNTRANS.NTWT + "',DESTN ='" + VE.T_TXNTRANS.DESTN + "', ";
-                    sql += " RECVPERSON ='" + VE.T_TXNTRANS.RECVPERSON + "',VECHLTYPE ='" + VE.T_TXNTRANS.VECHLTYPE + "',GATEENTNO ='" + VE.T_TXNTRANS.GATEENTNO + "'  "
+                    sql += " RECVPERSON ='" + VE.T_TXNTRANS.RECVPERSON + "',VECHLTYPE ='" + VE.T_TXNTRANS.VECHLTYPE + "',GATEENTNO ='" + VE.T_TXNTRANS.GATEENTNO + "',ACTFRGHTPAID =" + VE.T_TXNTRANS.ACTFRGHTPAID + "  "
                          + " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
@@ -5376,7 +5376,7 @@ namespace Improvar.Controllers
                     TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
                     TXNTRANS.ACTFRGHTPAID = VE.T_TXNTRANS.ACTFRGHTPAID;
                     TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
-                    TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
+                    TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;                    
                     TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
                     TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
                     TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
