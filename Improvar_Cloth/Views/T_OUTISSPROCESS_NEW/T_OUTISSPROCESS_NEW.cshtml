@@ -2621,6 +2621,50 @@
         }
     }
 </script>
+<script>
+    function Edit_Remarks() {
+        debugger;
+        var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+        if (GridRow != 0) {
+            for (var i = 0; i <= GridRow - 1; i++) {
+                $("#P_ITREMARK_" + i).attr("readonly", false);
+                $("#txtZoomTextBoxModal").attr("readonly", false);
+                if (i == 0) $("#P_ITREMARK_" + i).focus();
+            }
+        } 
+        $("#edit_Remarks").hide();
+        $("#update_Remarks").show();
+        $("#cancel_Remarks").show();
+        $("#update_Remarks").prop("disabled", false);
+    }
+
+    function Cancel_Remarks() {
+        location.reload();
+    }
+    function Update_Remarks() {
+        debugger;
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url:"@Url.Action("Update_Remarks", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Update Successfully !");
+                }
+                else {
+                    msgWarning(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -3059,6 +3103,16 @@
                             </div>
                         </div>
                     </div>
+                    @if (Model.DefaultAction == "V" && Model.Delete == "D")
+                            {
+                                <div class="row">
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Remarks" id="edit_Remarks" value="Update Remarks(Alt+J)" title="Click here for edit Remarks Tab" onclick="Edit_Remarks()" />
+                                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="update" id="update_Remarks" value="Update(Alt+O)" accesskey="O" title="Click to Update Remarks Tab" onclick="Update_Remarks()" />
+                                        <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="cancel" id="cancel_Remarks" value="Cancel" title="Click to Cancel for Remarks Tab" onclick="Cancel_Remarks()" />
+                                    </div>
+                                </div>
+                            }
                     @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                             <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                                 <div>

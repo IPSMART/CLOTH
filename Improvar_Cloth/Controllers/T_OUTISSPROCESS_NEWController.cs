@@ -4590,6 +4590,49 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
             ModelState.Clear();
             return PartialView("_T_OUTISSPROCESS_NEW_Programme", VE);
         }
+        public ActionResult Update_Remarks(TransactionOutIssProcess VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    short EMD_NO = Convert.ToInt16((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
+                    for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
+                    {
+                        sql = " update " + schnm + ". T_PROGMAST set ITREMARK='" + VE.TPROGDTL[i].ITREMARK
+                             + "' where AUTONO ='" + VE.T_TXN.AUTONO + "' and SLNO ='" + VE.TPROGDTL[i].SLNO + "'   ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    }
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
+        }
 
     }
 }

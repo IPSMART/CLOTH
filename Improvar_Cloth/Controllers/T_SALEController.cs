@@ -3942,12 +3942,12 @@ namespace Improvar.Controllers
                     sql += " CRSLCD ='" + VE.T_TXNTRANS.CRSLCD + "',EWAYBILLNO ='" + VE.T_TXNTRANS.EWAYBILLNO + "',LRNO ='" + VE.T_TXNTRANS.LRNO + "', ";
                     sql += " LRDT =to_date('" + VE.T_TXNTRANS.LRDT.retDateStr() + "', 'dd/mm/yyyy'),LORRYNO ='" + VE.T_TXNTRANS.LORRYNO + "',GRWT ='" + VE.T_TXNTRANS.GRWT + "', ";
                     sql += " TRWT ='" + VE.T_TXNTRANS.TRWT + "',NTWT ='" + VE.T_TXNTRANS.NTWT + "',DESTN ='" + VE.T_TXNTRANS.DESTN + "', ";
-                    sql += " RECVPERSON ='" + VE.T_TXNTRANS.RECVPERSON + "',VECHLTYPE ='" + VE.T_TXNTRANS.VECHLTYPE + "',GATEENTNO ='" + VE.T_TXNTRANS.GATEENTNO + "',ACTFRGHTPAID =" + VE.T_TXNTRANS.ACTFRGHTPAID + "  "
+                    sql += " RECVPERSON ='" + VE.T_TXNTRANS.RECVPERSON + "',VECHLTYPE ='" + VE.T_TXNTRANS.VECHLTYPE + "',GATEENTNO ='" + VE.T_TXNTRANS.GATEENTNO + "',ACTFRGHTPAID ='" + VE.T_TXNTRANS.ACTFRGHTPAID + "' "
                          + " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     //update to T_TXNOTH//
-                    sql = "update " + schnm + ". T_TXNOTH set CASENOS='" + VE.T_TXNOTH.CASENOS + "', NOOFCASES='" + VE.T_TXNOTH.NOOFCASES + "', MUTSLCD='" + VE.T_TXNOTH.MUTSLCD + "', TOPAY='" + VE.T_TXNOTH.TOPAY + "' ";
+                    sql = "update " + schnm + ". T_TXNOTH set CASENOS='" + VE.T_TXNOTH.CASENOS + "', NOOFCASES='" + VE.T_TXNOTH.NOOFCASES + "', MUTSLCD='" + VE.T_TXNOTH.MUTSLCD + "', TOPAY='" + VE.T_TXNOTH.TOPAY + "', NOOFCASES_REM ='" + VE.T_TXNOTH.NOOFCASES_REM + "' ";
                     sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
