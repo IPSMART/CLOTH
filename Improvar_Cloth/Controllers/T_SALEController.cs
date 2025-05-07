@@ -641,7 +641,7 @@ namespace Improvar.Controllers
             string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
 
-            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO(); VCHGST = new T_VCH_GST(); TSTKTRNF = new T_STKTRNF(); TVCHBL = new T_VCH_BL(); 
+            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO(); VCHGST = new T_VCH_GST(); TSTKTRNF = new T_STKTRNF(); TVCHBL = new T_VCH_BL();
 
             if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
             {
@@ -689,7 +689,7 @@ namespace Improvar.Controllers
                     TXNTRN = tempTXNTRN;
                 }
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
-                TVCHBL = DBF.T_VCH_BL.Find(TXN.AUTONO,1);  
+                TVCHBL = DBF.T_VCH_BL.Find(TXN.AUTONO, 1);
                 if (TXNOTH == null)
                 {
                     T_TXNOTH tempTXNOTH = new T_TXNOTH();
@@ -5378,7 +5378,7 @@ namespace Improvar.Controllers
                     TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
                     TXNTRANS.ACTFRGHTPAID = VE.T_TXNTRANS.ACTFRGHTPAID;
                     TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
-                    TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;                    
+                    TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
                     TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
                     TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
                     TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
@@ -6176,7 +6176,8 @@ namespace Improvar.Controllers
                             {
                                 if (taxcheck == true)
                                 {
-                                    if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                    //if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                    if (VE.TTXNAMT[i].IGSTAMT.retDbl() + VE.TTXNAMT[i].CGSTAMT.retDbl() + VE.TTXNAMT[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "PB")//ANKAN WHATSAPP 06/05/2025 SHIPPING AMT W/O GST
                                     {
                                         ContentFlg = "TAX amount not found at amount tab. Please add tax at slno " + VE.TTXNAMT[i].SLNO;
                                         goto dbnotsave;
