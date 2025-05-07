@@ -6510,6 +6510,11 @@ namespace Improvar.Controllers
                         if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
                         if (blconslcd == sslcd) blconslcd = "";
                         string blrem = "";
+                        double CASHDISCPR = 0;
+                        if (VE.T_VCH_BL != null)
+                        {
+                            CASHDISCPR = VE.T_VCH_BL.CASHDISCPR.retDbl();
+                        }
                         if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") blrem = VE.T_TXNOTH.DOCREM;
                         dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, dr,
                            tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, TTXNOTH.AGSLCD, tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(Partyisl),
@@ -6517,7 +6522,7 @@ namespace Improvar.Controllers
                            TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
                            //VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "",
                            VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TRANSLNM, "", "",
-                           VE.T_TXNOTH.BLTYPE, blrem, VE.T_TXNOTH.SAGSLCD, VE.T_VCH_BL.CASHDISCPR.retDbl());
+                           VE.T_TXNOTH.BLTYPE, blrem, VE.T_TXNOTH.SAGSLCD, CASHDISCPR);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
 
