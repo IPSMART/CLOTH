@@ -19,7 +19,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl(); DropDownHelp dropDownHelp = new DropDownHelp();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS; T_TXNMEMO TXNMEMO; T_VCH_GST VCHGST; T_STKTRNF TSTKTRNF;
+        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO; T_TXNEINV TTXNEINV; T_TDSTXN TTDS; T_TXNMEMO TXNMEMO; T_VCH_GST VCHGST; T_STKTRNF TSTKTRNF; T_VCH_BL TVCHBL;
         SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         DataTable ITEMDT = new DataTable();
@@ -214,6 +214,7 @@ namespace Improvar.Controllers
                             VE.T_TXN = TXN;
                             VE.T_TXNTRANS = TXNTRN;
                             VE.T_TXNOTH = TXNOTH;
+                            VE.T_VCH_BL = TVCHBL;
                             VE.T_CNTRL_HDR = TCH;
                             VE.T_CNTRL_HDR_REM = SLR;
                             VE.T_TXN_LINKNO = TTXNLINKNO;
@@ -640,7 +641,7 @@ namespace Improvar.Controllers
             string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
 
-            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO(); VCHGST = new T_VCH_GST(); TSTKTRNF = new T_STKTRNF();
+            TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO(); TTXNEINV = new T_TXNEINV(); TTDS = new T_TDSTXN(); TXNMEMO = new T_TXNMEMO(); VCHGST = new T_VCH_GST(); TSTKTRNF = new T_STKTRNF(); TVCHBL = new T_VCH_BL(); 
 
             if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
             {
@@ -688,6 +689,7 @@ namespace Improvar.Controllers
                     TXNTRN = tempTXNTRN;
                 }
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
+                TVCHBL = DBF.T_VCH_BL.Find(TXN.AUTONO,1);  
                 if (TXNOTH == null)
                 {
                     T_TXNOTH tempTXNOTH = new T_TXNOTH();
@@ -6514,7 +6516,7 @@ namespace Improvar.Controllers
                            TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
                            //VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName, "", "",
                            VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TRANSLNM, "", "",
-                           VE.T_TXNOTH.BLTYPE, blrem, VE.T_TXNOTH.SAGSLCD);
+                           VE.T_TXNOTH.BLTYPE, blrem, VE.T_TXNOTH.SAGSLCD, VE.T_VCH_BL.CASHDISCPR.retDbl());
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
 

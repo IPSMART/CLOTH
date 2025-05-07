@@ -88,5 +88,8 @@ namespace Improvar.Models
         public string FLAG { get; set; }
         [StringLength(8)]
         public string SAGSLCD { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? CASHDISCPR { get; set; }
     }
 }
