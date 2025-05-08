@@ -1795,7 +1795,9 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
-                    if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                    //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                    if (rptfile == "CashMemo_DIWH.rpt") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+
                     if (printemail == "PDF")
                     {
 
