@@ -15,7 +15,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? OUTQNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double? INQNTY { get; set; }
+        public double? INQNTY { get; set; }        
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
@@ -34,6 +34,7 @@ namespace Improvar.Models
         public string itstyleno { get; set; }
         public string itremarks { get; set; }
         public string colornm { get; set; }
+        public string UOM { get; set; }
 
 
     }

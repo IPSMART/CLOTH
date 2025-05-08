@@ -57,7 +57,7 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? T_INQNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? T_OUTQNTY { get; set; }
+        public double? T_OUTQNTY { get; set; }       
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? T_NOS { get; set; }
         public List<UploadDOC> UploadBarImages { get; set; }
@@ -75,6 +75,9 @@ namespace Improvar.ViewModels
         public NEWBARDATA NEWPRICEDATA { get; set; }
         public string STYLENO { get; set; }
         public string listprccd { get; set; }
+        public string T_UomTotalIn { get; set; }
+        public string T_UomTotalOut { get; set; }
+
         public List<DropDown_list1> DropDown_list1 { get; set; }
 
 

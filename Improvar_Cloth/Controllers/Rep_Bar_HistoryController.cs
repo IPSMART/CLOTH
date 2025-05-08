@@ -124,10 +124,10 @@ namespace Improvar.Controllers
                     { return Content(str = ""); }
                     else {
                         string barno = str.retCompValue("BARNO").retStr();
-                        string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,f.docno tchdocno ,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, "+Environment.NewLine;
-                        sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel,a.ITREM, k.COLRNM, j.itcd, l.styleno, j.COLRCD, k.colrcd,l.itnm, " + Environment.NewLine;
+                        string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,f.docno tchdocno ,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, " + Environment.NewLine;
+                        sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel,a.ITREM, k.COLRNM, j.itcd, l.styleno, j.COLRCD, k.colrcd,l.itnm,l.UOMCD, " + Environment.NewLine;
                         sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm " + Environment.NewLine;
-                        sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, " ;
+                        sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
                         sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i, " + scm + ".t_batchmst j, " + scm + ".M_COLOR k, " + scm + ".M_SITEM l " + Environment.NewLine;
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+) and a.barno = j.barno(+) and j.COLRCD = k.colrcd(+) and j.itcd = l.itcd(+) and" + Environment.NewLine;
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and " + Environment.NewLine;
@@ -172,7 +172,8 @@ namespace Improvar.Controllers
                                                  OUTQNTY = dr["cancel"].retStr() == "N" ? (dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl()) : 0,
                                                  itremarks = dr["ITREM"].retStr(),
                                                  colornm = dr["COLRNM"].retStr(),
-                                                 itstyleno = dr["styleno"].retStr()+" "+ dr["itnm"].retStr(),
+                                                 itstyleno = dr["styleno"].retStr() + " " + dr["itnm"].retStr(),
+                                                 UOM = dr["UOMCD"].retStr()
                                              }).Distinct().ToList();
                         //}).OrderBy(a => a.SLNO).Distinct().ToList();
 
@@ -191,6 +192,20 @@ namespace Improvar.Controllers
                             TOUTQTY = TOUTQTY + VE.BARCODEHISTORY[p].OUTQNTY.retDbl();
                             TNOS = TNOS + VE.BARCODEHISTORY[p].NOS.retDbl();
                         }
+                        VE.T_UomTotalIn = "In - " + string.Join(", ", (from x in VE.BARCODEHISTORY
+                                                                       where x.UOM.retStr() != ""
+                                                                       group x by new
+                                                                       {
+                                                                           x.UOM
+                                                                       } into P
+                                                                       select P.Key.UOM.retStr() + " : " + P.Sum(A => A.INQNTY.retDbl()).retDbl()).ToList());
+                        VE.T_UomTotalOut = "Out - " + string.Join(", ", (from x in VE.BARCODEHISTORY
+                                                                         where x.UOM.retStr() != ""
+                                                                         group x by new
+                                                                         {
+                                                                             x.UOM
+                                                                         } into P
+                                                                         select P.Key.UOM.retStr() + " : " + P.Sum(A => A.OUTQNTY.retDbl()).retDbl()).ToList());
                         VE.T_INQNTY = TINQTY; VE.T_OUTQNTY = TOUTQTY; VE.T_NOS = TNOS;
                         //VE.TOTALIN = TINQTY;VE.TOTALOUT = TOUTQTY;VE.TOTINOUT = (TINQTY - TOUTQTY).retDbl();
                         string tinqty = TINQTY.retStr(); string toutqty = TOUTQTY.retStr();
