@@ -250,7 +250,7 @@ namespace Improvar.Controllers
                     string fld = "autoslno";
                     if (ReportType == "Date Wise Summary")
                     {
-                        fld = "docdt";
+                        fld = "docdt";                        
                     }
                     else if (ReportType == "Super Summary")
                     {
@@ -263,7 +263,7 @@ namespace Improvar.Controllers
                         if (ReportType == "Date Wise Summary")
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["Dammy"] = "<span style='font-weight:bold;'>" + "Date :  " + tbl.Rows[i]["docdt"].retDateStr();
+                            IR.Rows[rNo]["Dammy"] = "<span style='font-weight:bold;'>" + "DOC NO :  " + tbl.Rows[i]["docno"].retStr() + " Date :  " + tbl.Rows[i]["docdt"].retDateStr();
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                         }
                         double tgrpnos = 0, tgrpqnty = 0;
