@@ -1099,7 +1099,7 @@ namespace Improvar.Controllers
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -2435,7 +2435,7 @@ namespace Improvar.Controllers
                 {
                     if (VE.TTXNDTL[p].PRODGRPGSTPER.retStr() != "")
                     {
-                        var gstdata = salesfunc.retGstPer(VE.TTXNDTL[p].PRODGRPGSTPER.retStr(), VE.TTXNDTL[p].RATE.retDbl());
+                        var gstdata = salesfunc.retGstPer(VE.TTXNDTL[p].PRODGRPGSTPER.retStr(), VE.TTXNDTL[p].RATE.retDbl(), VE.TTXNDTL[p].SCMDISCTYPE.retStr(), VE.TTXNDTL[p].SCMDISCRATE.retDbl());
                         if (gstdata.retStr() != "")
                         {
                             var gst = gstdata.Split(',');
@@ -3305,15 +3305,16 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
-        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string ITNM, string TAG)
+        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string ITNM, string TAG, string BARNO)
         {
             try
             {
                 RateHistory RH = new RateHistory();
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
-                string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET'";
+                string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET','PROF'";
                 var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), PARTYCD.retStr().retSqlformat(), doctype, ITCD.retStr().retSqlformat());
+                DataTable dt = salesfunc.GetLastPriceFrmMaster(BARNO);
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {
@@ -3332,6 +3333,16 @@ namespace Improvar.Controllers
                 if (TAG == "GRID")
                 {
                     ViewBag.ITEM = ITCD.retStr() == "" ? "" : ITNM + " (" + ITCD + ")";
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        ViewBag.MASTERRATE += "[" + dt.Rows[0]["effdt"].retDateStr() + " ";
+                        for (int p = 0; p <= dt.Rows.Count - 1; p++)
+                        {
+                            if (p != 0) ViewBag.MASTERRATE += ", ";
+                            ViewBag.MASTERRATE += dt.Rows[p]["prccd"].retStr() + " : " + dt.Rows[p]["rate"].retStr();
+                        }
+                        ViewBag.MASTERRATE += "]";
+                    }
                     VE.RateHistoryGrid = doctP.Take(5).ToList();
                     ModelState.Clear();
                     return PartialView("_T_SALE_RateHistoryGrid", VE);
@@ -4272,7 +4283,7 @@ namespace Improvar.Controllers
                                 PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                 if (PRODGRPGSTPER != "")
                                 {
-                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
                                     if (ALL_GSTPER.retStr() != "")
                                     {
                                         var gst = ALL_GSTPER.Split(',').ToList();
@@ -4536,7 +4547,7 @@ namespace Improvar.Controllers
                                     PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
                                     if (PRODGRPGSTPER != "")
                                     {
-                                        ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
+                                        ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl(), v.SCMDISCTYPE, v.SCMDISCRATE.retDbl());
                                         if (ALL_GSTPER.retStr() != "")
                                         {
                                             var gst = ALL_GSTPER.Split(',').ToList();
@@ -6345,9 +6356,12 @@ namespace Improvar.Controllers
                                     OraCmd.ExecuteNonQuery();
                                     if (cr == "D") dbDrAmt = dbDrAmt + dbamt;
                                     else dbCrAmt = dbCrAmt + dbamt;
-                                    dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
+                                    if (salesfunc.IsClassMandatoryInGlcd(AMTGLCD[i].GLCD) == "Y")
+                                    {
+                                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
                                             AMTGLCD[i].CLASS1CD, "", AMTGLCD[i].TXBLVAL.retDbl(), 0, strrem);
-                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    }
                                     itamt = itamt + AMTGLCD[i].TXBLVAL.retDbl();
                                     expglcd = AMTGLCD[i].GLCD;
                                 }
@@ -6390,9 +6404,12 @@ namespace Improvar.Controllers
                                 OraCmd.ExecuteNonQuery();
                                 if (cr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
                                 else dbCrAmt = dbCrAmt + gstpostamt[gt];
-                                dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
+                                if (salesfunc.IsClassMandatoryInGlcd(gstpostcd[gt]) == "Y")
+                                {
+                                    dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
                                         tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), gstpostamt[gt], 0, strrem);
-                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                }
                             }
                         }
                         if (revcharge == "Y")
@@ -6414,9 +6431,12 @@ namespace Improvar.Controllers
                                     OraCmd.ExecuteNonQuery();
                                     if (dr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
                                     else dbCrAmt = dbCrAmt + gstpostamt[gt];
-                                    dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), null,
+                                    if (salesfunc.IsClassMandatoryInGlcd(gstpostcd[gt]) == "Y")
+                                    {
+                                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), null,
                                             tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), gstpostamt[gt], 0, strrem);
-                                    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    }
                                 }
                             }
                         }
@@ -6434,9 +6454,12 @@ namespace Improvar.Controllers
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                             if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
                             else dbCrAmt = dbCrAmt + dbamt;
-                            dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
+                            if (salesfunc.IsClassMandatoryInGlcd(TCSGLCD) == "Y")
+                            {
+                                dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
                                     null, null, Convert.ToDouble(VE.T_TXN.TCSAMT), 0, strrem + " TCS @ " + VE.T_TXN.TCSPER.ToString() + "%");
-                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                            }
                         }
 
 
@@ -6463,10 +6486,12 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                         if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
                         else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
-                        dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(Partyisl), sslcd,
+                        if (salesfunc.IsClassMandatoryInGlcd(tbl.Rows[0]["parglcd"].ToString()) == "Y")
+                        {
+                            dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(Partyisl), sslcd,
                                 tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), Convert.ToDouble(VE.T_TXN.BLAMT), dbcurramt, strrem);
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
+                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                        }
                         strblno = ""; strbldt = ""; strduedt = ""; strvtype = ""; strrefno = "";
                         if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "PJBR")
                         {
@@ -6551,20 +6576,22 @@ namespace Improvar.Controllers
                             dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToInt16(isl), dr, tdsglcd, sslcd,
                                     dbamt, strrem + " TDS @ " + VE.T_TDSTXN.TDSPER.ToString() + "%", tbl.Rows[0]["parglcd"].ToString(), TTXN.SLCD, 0, 0, 0);
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
-                            dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToInt16(isl), sslcd,
+                            if (salesfunc.IsClassMandatoryInGlcd(tdsglcd) == "Y")
+                            {
+                                dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToInt16(isl), sslcd,
                                     null, null, dbamt, 0, strrem + " TDS @ " + VE.T_TDSTXN.TDSPER.ToString() + "%");
-                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                            }
                             isl = isl + 1;
                             dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToInt16(isl), cr, tbl.Rows[0]["parglcd"].ToString(), sslcd,
                                     dbamt, strrem + " TDS @ " + VE.T_TDSTXN.TDSPER.ToString() + "%", tdsglcd, TTXN.SLCD, 0, 0, 0);
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
-                            dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToInt16(isl), sslcd,
+                            if (salesfunc.IsClassMandatoryInGlcd(tbl.Rows[0]["parglcd"].ToString()) == "Y")
+                            {
+                                dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToInt16(isl), sslcd,
                                     null, null, dbamt, 0, strrem + " TDS @ " + VE.T_TDSTXN.TDSPER.ToString() + "%");
-                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                            }
 
                             string blconslcd1 = TTXN.CONSLCD;
                             if (TTXN.SLCD != sslcd) blconslcd1 = TTXN.SLCD;

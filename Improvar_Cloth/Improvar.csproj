@@ -339,6 +339,7 @@
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
+    <Compile Include="Controllers\T_ITC4_GenController.cs" />
     <Compile Include="Controllers\T_JobBillController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESS_NEWController.cs" />
@@ -585,6 +586,7 @@
     <Compile Include="Models\TBILTY_POPUP.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
+    <Compile Include="Models\TITC4DTL.cs" />
     <Compile Include="Models\TMOBDTL.cs" />
     <Compile Include="Models\TPHYSTK.cs" />
     <Compile Include="Models\TPROGBOM.cs" />
@@ -631,10 +633,13 @@
     <Compile Include="Models\T_DODTL.cs" />
     <Compile Include="Models\T_DO_CANC.cs" />
     <Compile Include="Models\T_GENTRY.cs" />
+    <Compile Include="Models\T_GSTITC4_REC.cs" />
     <Compile Include="Models\T_INHISS.cs" />
     <Compile Include="Models\T_INHISSMST.cs" />
     <Compile Include="Models\T_INHISSMSTSJOB.cs" />
     <Compile Include="Models\T_INHRECMST.cs" />
+    <Compile Include="Models\T_ITC4_DTL.cs" />
+    <Compile Include="Models\T_ITC4_HDR.cs" />
     <Compile Include="Models\T_JBILL.cs" />
     <Compile Include="Models\T_JBILLDTL.cs" />
     <Compile Include="Models\T_KARDTL.cs" />
@@ -950,6 +955,7 @@
     <Compile Include="ViewModels\GenEinvIRN.cs" />
     <Compile Include="ViewModels\GenEinvIRNCancel.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
+    <Compile Include="ViewModels\ITC4Generation.cs" />
     <Compile Include="ViewModels\OrderCancelEntry.cs" />
     <Compile Include="ViewModels\PackingSlipEntry.cs" />
     <Compile Include="ViewModels\RateHistory.cs" />
@@ -1603,6 +1609,8 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_NEW_MI_POPUP.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_NEW_DETAIL.cshtml" />
     <Content Include="Views\Rep_OrdReg\Rep_OrdReg.cshtml" />
+    <Content Include="Views\Shared\_T_ITC4_Gen.cshtml" />
+    <Content Include="Views\T_ITC4_Gen\T_ITC4_Gen.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

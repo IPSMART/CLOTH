@@ -312,7 +312,7 @@ namespace Improvar.Controllers
                         if (VE.MENU_PARA == "JB")
                         {
                             //DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true);
-                            DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true,"","","","",true);
+                            DataTable Attached_CHALLANS = SALES_FUNC.GetPendChallans(TJBILL.JOBCD, TJBILL.SLCD, TJBILL.DOCDT.ToString().retDateStr(), TJBILL.AUTONO, "", "", false, true, "", "", "", "", true);
                             var temptable = (from DataRow dr in Attached_CHALLANS.Rows
                                              select new Pending_Challan_SLIP
                                              {
@@ -525,7 +525,7 @@ namespace Improvar.Controllers
                                                               } into P
                                                               select P.Key.UOM.retStr() + " : " + P.Sum(A => A.BillQNTY.retDbl()).retDbl()).ToList());
                         VE.Total_RECEVEQNTY = VE.ItemDetails.Sum(a => a.RECQNTY_DISPLAY).retDbl();
-                        VE.Total_BillQNTY = VE.ItemDetails.Sum(a => a.BillQNTY).retDbl(); 
+                        VE.Total_BillQNTY = VE.ItemDetails.Sum(a => a.BillQNTY).retDbl();
                         VE.Total_PASSQNTY = VE.ItemDetails.Sum(a => a.PASSQNTY).retDbl();
                         VE.Total_NOS = VE.ItemDetails.Sum(a => a.NOS).retDbl();
                         VE.Total_AMOUNT = VE.ItemDetails.Sum(a => a.AMOUNT).retDbl();
@@ -818,7 +818,7 @@ namespace Improvar.Controllers
                 using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
                 {
                     //DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true);
-                    DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true,"","","","",true);
+                    DataTable PENDING_CHALLANS = SALES_FUNC.GetPendChallans(JOB, PARTY, DOCDT, "", "", VE.T_JBILL.AUTONO, true, true, "", "", "", "", true);
                     var temptable = (from DataRow dr in PENDING_CHALLANS.Rows
                                      select new Pending_Challan_SLIP
                                      {
@@ -1029,7 +1029,7 @@ namespace Improvar.Controllers
                                    STYLENO = dr.STYLENO,
                                    HSNSACCD = dr.HSNSACCD,
                                    RATE = dr.RATE,
-                                   PREFNO=  dr.PREFNO,
+                                   PREFNO = dr.PREFNO,
                                    PREFDT = dr.PREFDT,
 
                                }).ToList();
@@ -2211,7 +2211,7 @@ namespace Improvar.Controllers
                                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                         if (cr == "D") dbDrAmt = dbDrAmt + dbamt;
                                         else dbCrAmt = dbCrAmt + dbamt;
-                                        if (IsClassMandatoryInGlcd(expglcd) == "Y")
+                                        if (SALES_FUNC.IsClassMandatoryInGlcd(expglcd) == "Y")
                                         {
                                             dbsql = Master_Help.InsVch_Class(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(1), Convert.ToSByte(isl), sslcd,
                                                                                           tbl.Rows[0]["class1cd"].ToString(), tbl.Rows[0]["class2cd"].ToString(), dbamt, dbcurramt, strrem);
@@ -2228,7 +2228,7 @@ namespace Improvar.Controllers
 
                                             dberrmsg = "tcsglcd Should not empty."; goto dbnotsave;
                                         }
-                                        if (IsClassMandatoryInGlcd(expglcd) == "Y")
+                                        if (SALES_FUNC.IsClassMandatoryInGlcd(expglcd) == "Y")
                                         {
                                             IsClassMandatInGlcd = true;
                                         }
@@ -2369,9 +2369,14 @@ namespace Improvar.Controllers
                                         if (TJB[j].SLCD != sslcd) blconslcd = TJB[j].SLCD;
                                         blconslcd = "";
                                         if (blconslcd == sslcd) blconslcd = "";
+                                        string class1cd = IsClassMandatInGlcd == true ? tbl.Rows[0]["class1cd"].ToString() : "";
                                         dbsql = Master_Help.InsVch_Bl(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, dr,
-                                                tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(1),
-                                                Convert.ToDouble(TJB[j].BLAMT), strblno, strbldt, strrefno, strduedt, strvtype, TJB[j].CRDAYS == null ? 0 : Convert.ToDouble(TJB[j].CRDAYS), itamt);
+                                             tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", class1cd, Convert.ToSByte(1),
+                                             Convert.ToDouble(TJB[j].BLAMT), strblno, strbldt, strrefno, strduedt, strvtype, TJB[j].CRDAYS == null ? 0 : Convert.ToDouble(TJB[j].CRDAYS), itamt);
+
+                                        //dbsql = Master_Help.InsVch_Bl(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, dr,
+                                        //        tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(1),
+                                        //        Convert.ToDouble(TJB[j].BLAMT), strblno, strbldt, strrefno, strduedt, strvtype, TJB[j].CRDAYS == null ? 0 : Convert.ToDouble(TJB[j].CRDAYS), itamt);
                                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                         if (VE.MENU_PARA == "JB" && TJB[j].DOCTAG != "JB")
                                         {
@@ -2522,9 +2527,14 @@ namespace Improvar.Controllers
                                             if (TJB[j].SLCD != sslcd) blconslcd = TJB[j].SLCD;
                                             blconslcd = "";
                                             if (blconslcd == sslcd) blconslcd = "";
+                                            string class1cd = IsClassMandatInGlcd == true ? tbl.Rows[0]["class1cd"].ToString() : "";
                                             dbsql = Master_Help.InsVch_Bl(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, cr,
-                                                    tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(isl - 1),
-                                                    Convert.ToDouble(TJB[j].TDSAMT), strblno, strbldt, strrefno, strduedt, "TD");
+                                                  tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", class1cd, Convert.ToSByte(isl - 1),
+                                                  Convert.ToDouble(TJB[j].TDSAMT), strblno, strbldt, strrefno, strduedt, "TD");
+
+                                            //dbsql = Master_Help.InsVch_Bl(TJB[j].AUTONO, TJB[j].DOCCD, TJB[j].DOCNO, TJB[j].DOCDT.ToString(), TJB[j].EMD_NO.Value, TJB[j].DTAG, cr,
+                                            //        tbl.Rows[0]["parglcd"].ToString(), sslcd, blconslcd, "", tbl.Rows[0]["class1cd"].ToString(), Convert.ToSByte(isl - 1),
+                                            //        Convert.ToDouble(TJB[j].TDSAMT), strblno, strbldt, strrefno, strduedt, "TD");
                                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                                             dbsql = Master_Help.InsVch_Bl_Adj(TJB[j].AUTONO, TJB[j].EMD_NO.Value, TJB[j].DTAG, Convert.ToSByte(1),
@@ -2694,17 +2704,6 @@ namespace Improvar.Controllers
             }
             TempData["printparameter"] = ind;
             return Content("");
-        }
-        private string IsClassMandatoryInGlcd(string glcd)
-        {
-            string sql = "";
-            sql = "select CLASS1CDMUST from " + CommVar.FinSchema(UNQSNO) + ".M_genleg where glcd='" + glcd + "'";
-            DataTable gldt = Master_Help.SQLquery(sql);
-            if (gldt.Rows.Count > 0)
-            {
-                return gldt.Rows[0]["CLASS1CDMUST"].retStr();
-            }
-            return "";
         }
     }
 }

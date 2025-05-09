@@ -65,7 +65,7 @@ namespace Improvar.Controllers
                     {
                         VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     }
-                    
+
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
 
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
@@ -90,12 +90,14 @@ namespace Improvar.Controllers
                         RT1.value = "Sales";
                         RT1.text = "Sales";
                         RT.Add(RT1);
+
                         DropDown_list1 RT2 = new DropDown_list1();
                         RT2.value = "Sales Return";
                         RT2.text = "Sales Return";
                         RT.Add(RT2);
                         RT.Add(new DropDown_list1 { value = "SDWOQ", text = "Sales Debit Note (W/O Qnty)" });
                         RT.Add(new DropDown_list1 { value = "SCWOQ", text = "Sales Credit Note (W/O Qnty)" });
+                        RT.Add(new DropDown_list1 { value = "Packing Slip", text = "Packing Slip" });
                         RT.Add(new DropDown_list1 { value = "Proforma", text = "Proforma Invoice" });
                         RT.Add(new DropDown_list1 { value = "Sales Cash Memo", text = "Sales Cash Memo" });
                         RT.Add(new DropDown_list1 { value = "Cash Memo Credit Note", text = "Cash Memo Credit Note" });
@@ -263,7 +265,7 @@ namespace Improvar.Controllers
                 bool con_print = VE.Checkbox9;
                 //bool saprefnoprint = VE.Checkbox5;
                 bool orddetprint = VE.Checkbox7;
-                bool SeparateAchead = VE.Checkbox8;
+                bool SeparateAchead = dtlsumm == "D" ? true : false;// VE.Checkbox8;
                 if (VE.TEXTBOX8.retStr() != "")
                 {
                     switch (VE.TEXTBOX8)
@@ -281,7 +283,10 @@ namespace Improvar.Controllers
                     {
                         case "Sales":
                             txntag = "'SB'";
-                            doctype = "'SBILD','SPSLP'"; break;
+                            doctype = "'SBILD','SBILL'"; break;
+                        case "Packing Slip":
+                            txntag = "'SB'";
+                            doctype = "'SPSLP'"; break;
                         case "Purchase":
                             txntag = "'PB'";
                             doctype = "'SPBL'"; break;
@@ -440,7 +445,7 @@ namespace Improvar.Controllers
                 sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b, " + scm1 + ".t_cntrl_hdr c, " + scm1 + ".m_doctype d " + Environment.NewLine;
                 sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
                 sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
-                sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
+                sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scm1 + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
                 sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o, " + scmf + ".M_RETDEB p " + Environment.NewLine;
                 sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
                 sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
@@ -456,7 +461,7 @@ namespace Improvar.Controllers
                     if (selslcd != "") sql += " and a.slcd in (" + selslcd + ") " + Environment.NewLine;
                     if (unselslcd != "") sql += " and a.slcd not in (" + unselslcd + ") " + Environment.NewLine;
                 }
-                
+
                 if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
                 if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
@@ -675,7 +680,7 @@ namespace Improvar.Controllers
 
                         while (auto1 == tbl.Rows[i]["autono"].ToString())
                         {
-                            string itcd = tbl.Rows[i]["itcd"].ToString();
+                            //string itcd = tbl.Rows[i]["itcd"].ToString();
                             double bnos = 0; double bqnty = 0; double bbasamt = 0; double bdisc1 = 0; double bdisc2 = 0; double btaxable = 0, blqnty = 0;
                             double bigstamt = 0; double bcgstamt = 0; double bsgstamt = 0;
                             double bigstper = 0; double bcgstper = 0; double bsgstper = 0;
@@ -688,6 +693,8 @@ namespace Improvar.Controllers
 
                             while (auto1 == tbl.Rows[i]["autono"].ToString())
                             {
+                                string itcd = tbl.Rows[i]["itcd"].ToString();
+
                                 double mult = 1;
                                 if (tbl.Rows[i]["cancel"].ToString() != "Y")
                                 {

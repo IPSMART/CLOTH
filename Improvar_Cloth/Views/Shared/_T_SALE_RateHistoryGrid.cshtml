@@ -5,16 +5,17 @@
 
         @Html.ValidationSummary(true)
         <div class="grid_title" style="height:15px;">
-            <div class="col-md-10">
-                @*<input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_RateHistoryGrid');" />
-                <img src="~/Image/search.png" title="Help" />*@
-            </div>
+            @*<div class="col-md-10">
+                <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_RateHistoryGrid');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>*@
             <center style="font-size: 11px;color: darkmagenta; border: 1px inset;">
                 <b>Rate History</b>
                 <b><span style="font-variant:petite-caps;color: red;">Item :- </span></b>
                 <span>
                     @ViewBag.ITEM
                 </span>
+                <b><span>@ViewBag.MASTERRATE</span></b>
             </center>
         </div>
         <div class="sticky-table sticky-ltr-cells">

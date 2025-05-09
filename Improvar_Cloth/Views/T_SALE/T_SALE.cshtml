@@ -2543,13 +2543,13 @@
                                                 }
                                                 <div class="col-md-1">
                                                     <div class="editor-field">
-                                                        @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc. Type" })
+                                                        @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc. Type", @onchange = "Sale_GetGstPer('','');" })
                                                     </div>
                                                 </div>
                                                 <div class="col-md-1">
                                                     <div class="editor-field input-group" style="width:-webkit-fill-available;">
                                                         <span class="has-float-label">
-                                                            @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE", @title = "Disc. Rate" } })
+                                                            @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE", @title = "Disc. Rate", @onchange = "Sale_GetGstPer('','');" } })
                                                             <label for="SCMDISCRATE" style="font-size: 87%;color: darkgreen;">Disc. Rate</label>
                                                         </span>
                                                     </div>

@@ -1,0 +1,236 @@
+﻿@model Improvar.ViewModels.ITC4Generation
+
+@{
+    ViewBag.Title = "Generate ITC4";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "T_ITC4_Gen";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            //$("#floppy_remove_nav").remove();
+            //$("#print_nav").remove();
+            //$("#user_nav").remove();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $('#DOCNO').attr('readonly', true);
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_ITC4_HDR != null)
+        {
+            if (@Model.T_ITC4_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_ITC4_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#FROMDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#TODT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+
+        }
+    });
+</script>
+<script>
+    function getDataGather() {
+        if (!emptyFieldCheck("Please Select From Date", "FROMDT")) { return false; }
+        if (!emptyFieldCheck("Please Select To Date", "TODT")) { return false; }
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("DataGather", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#WaitingMode").hide();
+                //$("#partialdivITC4GEN").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivITC4GEN").html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.HiddenFor(a => Model.T_ITC4_HDR.AUTONO)
+        @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
+<div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @if (Model.DefaultAction == "E")
+            {
+                @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+            }
+            <div class="row" style="margin-top:-15px;">
+                <ul class="nav nav-tabs" style="margin-top: 14px;">
+                    <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                    <li class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Document Type")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7" style="width:auto;">
+                                <div class="editor-field">
+                                    @if (Model.DefaultAction == "A")
+                                    {
+                                        @Html.DropDownListFor(model => model.T_ITC4_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(model => model.T_ITC4_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;" })
+                                    }
+                                </div>
+
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;text-align:right">
+                                    @Html.Label("", "Document No.")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_ITC4_HDR.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", maxlength = 6, @placeholder = "Doc. No.", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;text-align:right">
+                                    @Html.Label("", "Document Date")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_ITC4_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", autocomplete = "off", @placeholder = "dd/mm/yyyy", onblur = "DocumentDateCHK(this)" } })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "From Date")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_ITC4_HDR.FROMDT, new { htmlAttributes = new { @class = "form-control", id = "FROMDT", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;text-align:right">
+                                    @Html.Label("", "To Date")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_ITC4_HDR.TODT, new { htmlAttributes = new { @class = "form-control", id = "TODT", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                            @*@if (Model.DefaultAction == "A")*@
+                            @*{*@
+                            <div class="col-md-7">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Washing Rate for this Qtr")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_ITC4_HDR.WASHRT, new { htmlAttributes = new { @class = "form-control", id = "WASHRT", maxlength = 12, @onkeypress = "return numericOnly(this);", @placeholder = "Washing Rate for this Qtr" } })
+                                </div>
+                            </div>
+                            @*  }*@
+                            @if (Model.DefaultAction != "V")
+                            {
+                                <div class="col-md-2">
+                                    <input type="button" class="btn btn-sm" value="Data Gather" name="DataGather" onclick="getDataGather();">
+                                </div>
+                            }
+                        </div>
+                        <div class="row" style="margin-top: 11px;width:auto;height:auto;background-color:#c4b9b9">
+                            <div id="partialdivITC4GEN">
+                                @Html.Partial("_T_ITC4_Gen")
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                            <div id="partialdivDocument">
+                                @Html.Partial("_UPLOADDOCUMENTS")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+        <div id="Msgdiv">
+            @(new HtmlString(ViewBag.Message))
+        </div>
+    </div>
+}
+
+
+

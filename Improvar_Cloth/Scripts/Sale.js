@@ -109,7 +109,7 @@ function GetBarnoDetails(id, HelpFrom) {
                                 changeBARGENTYPE();
                                 var value = modify_check();
                                 if (value == "true") {
-                                    RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                                    RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
                                 }
                                 //if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
                                 if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "ISS" || MENU_PARA == "PI" || MENU_PARA == "SBPCK" || MENU_PARA == "PR" || MENU_PARA == "SBPOS") && ($("#QNTY").val() != "")) {
@@ -165,7 +165,7 @@ function GetBarnoDetails(id, HelpFrom) {
             $("#Barnohelpopen").val("Y");
             var value = modify_check();
             if (value == "true") {
-                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
             }
         }
     }
@@ -277,7 +277,10 @@ function FillBarcodeArea(str, Table, i) {
         $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
         var RATE = returncolvalue(str, "RATE");
         var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
-        var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
+        var SCMDISCTYPE = returncolvalue(str, "SCMDISCTYPE");
+        var SCMDISCRATE = returncolvalue(str, "SCMDISCRATE");
+
+        var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE, SCMDISCTYPE, SCMDISCRATE);
         var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
         $.each(GSTPERarr, function () {
             GSTPER += parseFloat(this) || 0;
@@ -549,7 +552,7 @@ function FillBarcodeArea(str, Table, i) {
     if (event.key == "F8" || str == "") {
         var value = modify_check();
         if (value == "true") {
-            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
         }
     }
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR") && ModuleCode == "SALESSAREE") {
@@ -1513,19 +1516,26 @@ function Sale_GetGstPer(i, FieldidStarting) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
 
-    var prodgrpgstper = "";
-    var rate = 0;
+    var prodgrpgstper = "",SCMDISCTYPE="";
+    var rate = 0,SCMDISCRATE=0;
     if (FieldidStarting == "") {
         prodgrpgstper = $("#PRODGRPGSTPER").val();
         rate = $("#RATE").val();
         if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
+
+        SCMDISCTYPE = $("#SCMDISCTYPE").val();
+        SCMDISCRATE = retFloat($("#SCMDISCRATE").val());
     }
     else {
         prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_" + i).val();
         rate = $(FieldidStarting + "RATE_" + i).val();
         if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
+
+        SCMDISCTYPE = $(FieldidStarting + "SCMDISCTYPE_" + i).val();
+        SCMDISCRATE = retFloat($(FieldidStarting + "SCMDISCRATE_" + i).val());
     }
-    var allgst = retGstPerstr(prodgrpgstper, rate);
+   
+    var allgst = retGstPerstr(prodgrpgstper, rate,SCMDISCTYPE,SCMDISCRATE);
     if (allgst != "") {
         var str = allgst.split(',');
         if (str.length > 0) {
@@ -1739,7 +1749,9 @@ function UpdateTaxPer() {
         for (i = 0; i <= GridRowMain - 1; i++) {
             var rate = retFloat($("#B_RATE_" + i).val());
             var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
-            var allgst = retGstPerstr(prodgrpgstper, rate);
+            var SCMDISCTYPE = $("#B_SCMDISCTYPE_" + i).val();
+            var SCMDISCRATE = $("#B_SCMDISCRATE_" + i).val();
+            var allgst = retGstPerstr(prodgrpgstper, rate,SCMDISCTYPE,SCMDISCRATE);
             var tax = null;
             if (allgst != "") {
                 tax = allgst.split(',');
@@ -1824,7 +1836,10 @@ function ReverceCharges() {
             prodgrpgstper = $("#D_PRODGRPGSTPER_" + i).val();
             rate = $("#D_RATE_" + i).val();
             if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
-            var allgst = retGstPerstr(prodgrpgstper, rate);
+
+            var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
+            var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
+            var allgst = retGstPerstr(prodgrpgstper, rate,SCMDISCTYPE,SCMDISCRATE);
             if (allgst != "") {
                 var str = allgst.split(',');
                 if (str.length > 0) {
@@ -1879,7 +1894,9 @@ function ReverceCharges() {
             prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
             rate = $("#B_RATE_" + i).val();
             if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
-            var allgst = retGstPerstr(prodgrpgstper, rate);
+            var SCMDISCTYPE = $("#B_SCMDISCTYPE_" + i).val();
+            var SCMDISCRATE = $("#B_SCMDISCRATE_" + i).val();
+            var allgst = retGstPerstr(prodgrpgstper, rate, SCMDISCTYPE, SCMDISCRATE);
             if (allgst != "") {
                 var str = allgst.split(',');
                 if (str.length > 0) {
@@ -2869,7 +2886,7 @@ function AddBarCodeGrid() {
         tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + SCMDISCRATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_SCMDISCTYPE_' + rowindex + '.value,\'B_SCMDISCRATE_\',\'B_SCMDISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_SCMDISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + SCMDISCRATE + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="Sale_GetGstPer(' + rowindex + ',\'#B_\');HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_SCMDISCTYPE_' + rowindex + '.value,\'B_SCMDISCRATE_\',\'B_SCMDISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_SCMDISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + SCMDISCRATE + '">';
         tr += '    </td>';
         if (MNTNDISC1 == "Y") {
             tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
@@ -3569,17 +3586,22 @@ function SelectPendOrder(btnid) {
 
 
 
-function RateHistoryDetails(ITCDId, ITNMId, TAG) {
+function RateHistoryDetails(ITCDId, ITNMId, TAG,BARNOId) {
     debugger;
     SLCD = $("#SLCD").val();
     PARTYCD = $("#PARTYCD").val();
     ITCD = $("#" + ITCDId).val();
     ITNM = $("#" + ITNMId).val();
+    var BARNO = "";
+    if (BARNOId != "" && BARNOId != "undefined") {
+        BARNO = $("#" + BARNOId).val();
+    }
+   
     $.ajax({
         type: 'get',
         beforesend: $("#WaitingMode").show(),
         url: $("#UrlRateHistory").val(),//GetRateHistoryDetails
-        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG,
+        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG + "&BARNO=" + BARNO,
         success: function (result) {
             $("#WaitingMode").hide();
             if (TAG == "GRID") {
@@ -3990,7 +4012,7 @@ function GetItcd(id) {
                         }
                         var value = modify_check();
                         if (value == "true") {
-                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID', 'BARCODE');
                         }
                         if (ModuleCode.indexOf("SALESCLOTH") != -1) {
                             if (MENU_PARA == "PB" || MENU_PARA == "OP" || MENU_PARA == "OTH" || MENU_PARA == "PJRC") {

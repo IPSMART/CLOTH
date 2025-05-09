@@ -1,0 +1,110 @@
+﻿@model Improvar.ViewModels.ITC4Generation
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+                modeView();
+            }
+            else if ("@Model.DefaultAction" == "A") {
+                $('form :input:enabled:visible:not([readonly]):first').focus();
+            }
+            resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_ITC4_MAIN_GRID'));
+            $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        });
+    </script>*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) {
+            var titlee = $(this).find("input").val();
+            $(this).attr('title', titlee);
+        });
+        $(this).on('keydown', 'input,select,text,button', function (e) {
+            if (e.which == 40) { // down arrow
+                e.preventDefault();
+                $(this).closest('tr').next().find('td:eq(' + $(this).closest('td').index() + ')').find('input').filter(':visible:not([readonly])').select();
+                //    $('#nextElementId').click();
+
+            }
+            else if (e.which == 38) { // up arrow
+                e.preventDefault();
+                $(this).closest('tr').prev().find('td:eq(' + $(this).closest('td').index() + ')').find('input').filter(':visible:not([readonly])').select();
+            }
+        });
+    });
+</script>
+
+<div>
+    <div class="table-responsive">
+        @Html.ValidationSummary(true)
+        <div class="grid_title">
+            @*<img src="~/Image/Plus.png" id="btnAddMain" class="Help_image_buttonAddRemove" title="Add Row" onclick="AddRow()" />
+                <img src="~/Image/Minus.png" id="btnDeleteMain" class="Help_image_buttonAddRemove" title="Delete Row" onclick="DeleteRow()" />*@
+            <div class="col-md-8">
+                <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_ITC4_MAIN_GRID');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Data Details</b></center>
+        </div>
+        <div class="sticky-table sticky-ltr-cells">
+            <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:337px;">
+                <table id="_T_ITC4_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="">
+                    <thead>
+                        <tr class="sticky-header" style="height:20px;">
+                            <th class="sticky-cell" style="width: 27px;"></th>
+                            <th class="" style="width: 27px;text-align:center;">SlNo</th>
+                            <th class="" style="width: 70px;">Jobcd</th>
+                            <th class="" style="width: 170px;">Job Name</th>
+                            <th class="" style="">DOCCD</th>
+                            <th class="" style="">DOCNM</th>
+                            <th class="" style="text-align:right;">QNTY</th>
+                            <th class="" style="text-align:right;">short/excess(-)</th>
+                            <th class="" style="">UOM</th>
+                            <th class="" style="text-align:right;">Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.TITC4DTL != null)
+                        {
+                            for (int i = 0; i <= Model.TITC4DTL.Count - 1; i++)
+                            {
+                                @Html.HiddenFor(model => model.TITC4DTL[i].JOBSEQ, new { id = "JOBSEQ_" + i })
+                                @Html.HiddenFor(model => model.TITC4DTL[i].FLAG1, new { id = "FLAG1_" + i })
+                                <tr style="font-size:12px; font-weight:bold;">
+                                    <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                        @Html.CheckBoxFor(model => model.TITC4DTL[i].Checked, new { id = "Checked_" + i })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TITC4DTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => model.TITC4DTL[i].JOBCD, new { id = "JOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => model.TITC4DTL[i].JOBNM, new { id = "JOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => model.TITC4DTL[i].DOCCD, new { id = "DOCCD_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => model.TITC4DTL[i].DOCNM, new { id = "DOCNM_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TITC4DTL[i].QNTY, new { id = "QNTY_" + i, @class = " atextBoxFor", @TabIndex = -1, @style = "text-align: right;", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TITC4DTL[i].SHORTQNTY, new { id = "SHORTQNTY_" + i, @class = " atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.EditorFor(model => Model.TITC4DTL[i].UOM, new { htmlAttributes = new { id = "UOM_" + i, @class = " atextBoxFor", @readonly = "readonly" } })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TITC4DTL[i].RATE, new { id = "ALL_SIZE_" + i, @class = "atextBoxFor", @style = "text-align: right;" })
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

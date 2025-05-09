@@ -197,7 +197,9 @@ namespace Improvar.Models
         public virtual DbSet<T_MOBDTL> T_MOBDTL { get; set; }
         public virtual DbSet<M_SCMITMGRP> M_SCMITMGRP { get; set; }
         public virtual DbSet<M_SCMITMGRP_HDR> M_SCMITMGRP_HDR { get; set; }
-
+        public virtual DbSet<T_ITC4_HDR> T_ITC4_HDR { get; set; }
+        public virtual DbSet<T_ITC4_DTL> T_ITC4_DTL { get; set; }
+        public virtual DbSet<T_GSTITC4_REC> T_GSTITC4_REC { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)

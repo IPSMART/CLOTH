@@ -4018,6 +4018,42 @@ namespace Improvar
                 return false;
             }
         }
+        public string IsClassMandatoryInGlcd(string glcd)
+        {
+            string sql = "";
+            sql = "select CLASS1CDMUST from " + CommVar.FinSchema(UNQSNO) + ".M_genleg where glcd='" + glcd + "'";
+            DataTable gldt = masterHelpFa.SQLquery(sql);
+            if (gldt.Rows.Count > 0)
+            {
+                return gldt.Rows[0]["CLASS1CDMUST"].retStr();
+            }
+            return "";
+        }
+
+        public DataTable GetLastPriceFrmMaster(string barno)
+        {
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string scm_prevyr = CommVar.LastYearSchema(UNQSNO), scmf_prevyr = CommVar.FinSchemaPrevYr(UNQSNO);
+            string sql = "";
+            sql += " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
+            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate ";
+            sql += "from(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
+            sql += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".T_BATCHMST_PRICE a where nvl(a.rate, 0) <> 0 ) a, ";
+            sql += "" + scm + ".T_BATCHMST_PRICE b, " + scm + ".T_BATCHmst c where a.barno = b.barno(+) and a.prccd = b.prccd(+) and ";
+            sql += "a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.rn = 1 ";
+            sql += "union all ";
+            sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate ";
+            sql += "from(select a.barno, a.prccd, a.effdt, row_number() over(partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate, 0) <> 0 ) a, ";
+            sql += "" + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c, " + scm + ".T_BATCHmst d where a.barno = b.barno(+) and ";
+            sql += "a.prccd = b.prccd(+) and a.effdt = b.effdt(+) and a.barno = c.barno(+) and a.barno = d.barno(+) and d.barno is null) a ";
+            sql += ") a, ";
+            sql += "" + scmf + ".m_prclst b ";
+            sql += "where a.prccd = b.prccd(+) and upper(a.barno) = '" + barno.ToUpper() + "' ";
+            var dt = masterHelpFa.SQLquery(sql);
+            return dt;
+        }
 
     }
 }
