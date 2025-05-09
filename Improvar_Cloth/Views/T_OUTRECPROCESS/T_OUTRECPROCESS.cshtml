@@ -289,7 +289,7 @@
                         $("#" + B_RATE_.id).val("");
                         $("#" + B_WPRATE_.id).val("");
                         $("#" + B_BARNO_.id).val("");
-
+                        RateHistoryDetails(B_ITCD_.id, B_ITSTYLE_.id, 'GRID');
                         $('#SearchFldValue').val(B_ITSTYLE_.id);
                         $('#helpDIV').html(result);
                         $('#ReferanceFieldID').val(B_ITSTYLE_.id + "/" + B_ITGRPNM_.id + "/" + B_BARNO_.id);
@@ -312,7 +312,7 @@
                             document.getElementById(B_RATE_.id).value = returncolvalue(result, "JOBPRATE");
                             document.getElementById(B_WPRATE_.id).value = returncolvalue(result, "WPRATE");
                             document.getElementById(B_BARNO_.id).value = returncolvalue(result, "BARNO");
-
+                            RateHistoryDetails(B_ITCD_.id, B_ITSTYLE_.id, 'GRID');
                         }
                         else {
                             $("#" + B_ITCD_.id).val("");
@@ -323,6 +323,7 @@
                             $("#" + B_RATE_.id).val("");
                             $("#" + B_WPRATE_.id).val("");
                             $("#" + B_BARNO_.id).val("");
+                            RateHistoryDetails(B_ITCD_.id, B_ITSTYLE_.id, 'GRID');
                             msgInfo(result);
                             message_value = B_ITSTYLE_.id;
                         }
@@ -1548,6 +1549,35 @@
         });
     }
 </script>
+<script>
+    function RateHistoryDetails(ITCDId, ITNMId, TAG) {
+        debugger;
+        SLCD = $("#SLCD").val();
+       
+        ITCD = $("#" + ITCDId).val();
+        ITNM = $("#" + ITNMId).val();
+        $.ajax({
+            type: 'get',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#UrlRateHistory").val(),//GetRateHistoryDetails
+            data: "SLCD=" + SLCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (TAG == "GRID") {
+                    $("#partialdivRateHistoryGrid").html(result);
+                }
+                else {
+                    $("#RateHistoryModal").html(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @*<script>
         function pageprinting() {
             var ty = $("#DOCCD").val();
@@ -1596,6 +1626,7 @@
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="hidden" id="UrlRateHistory" value="@Url.Action("GetRateHistoryDetails", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
             <input type="hidden" id="courierlinkcd" value="U" />
@@ -2044,7 +2075,7 @@
                                         @Html.Partial("_T_OUTRECPROCESS_Receive")
                                     </div>
                                 </div>
-                            </div>
+                            </div>                            
                             <div class="panel panel-info">
                                 <div class="panel-heading ui-icon-note">Rules</div>
                                 <div class="panel-body">
@@ -2055,14 +2086,24 @@
 
                                 </div>
                             </div>
-                            @if (Model.DefaultAction != "V")
-                            {
-                                <div class="row">
+                           
+                            <div class="row">
+                                @if (Model.DefaultAction != "V")
+                                {
+
                                     <div class="col-md-1" style="width:auto;">
                                         <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
                                     </div>
-                                </div>
-                            }
+
+                                }
+                                @*<div class="col-lg-6">
+                                    <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;width:fit-content;align-content: center">
+                                        <div id="partialdivRateHistoryGrid">
+                                            @Html.Partial("_T_OUTRECPROCESS_Receive_RateHistoryGrid")
+                                        </div>
+                                    </div>
+                                </div>*@
+                            </div>
                         </div>
 
                         <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
@@ -2244,6 +2285,9 @@
                             </div>*@
                     </div>
 
+                </div>
+
+                <div class="modal fade" id="RateHistoryModal" role="dialog">
                 </div>
             </div>
 

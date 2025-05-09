@@ -19,7 +19,7 @@ namespace Improvar.ViewModels
         public T_TXNPYMT T_TXNPYMT { get; set; }
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
-        public List<TTXNAMT> TTXNAMT { get; set; }
+        public List<TTXNAMT> TTXNAMT { get; set; }        
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
         public List<TPROGDTL> TPROGDTL { get; set; }
@@ -35,6 +35,8 @@ namespace Improvar.ViewModels
         public List<DISC_TYPE> DISC_TYPE { get; set; }
         public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
+        public List<RateHistoryGrid> RateHistoryGrid { get; set; }
+
         public string SLNM { get; set; }
         public string SLCD { get; set; }
         public string GSTNO { get; set; }

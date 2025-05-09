@@ -4655,6 +4655,50 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetRateHistoryDetails(string SLCD,  string ITCD, string ITNM, string TAG)
+        {
+            try
+            {
+                RateHistory RH = new RateHistory();
+                TransactionOutRecProcess VE = new TransactionOutRecProcess();
+                Cn.getQueryString(VE);
+                string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET'";
+                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), "", doctype, ITCD.retStr().retSqlformat());
+                var doctP = (from DataRow dr in DTRateHistory.Rows
+                             select new RateHistoryGrid()
+                             {
+                                 AUTONO = dr["AUTONO"].ToString(),
+                                 DOCDT = dr["DOCDT"].retDateStr(),
+                                 DOCNO = dr["DOCNO"].ToString(),
+                                 QNTY = dr["QNTY"].ToString(),
+                                 RATE = dr["RATE"].ToString(),
+                                 SLCD = dr["SLCD"].ToString(),
+                                 SLNM = dr["SLNM"].ToString(),
+                                 CITY = dr["CITY"].ToString(),
+                                 SCMDISCTYPE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["SCMDISCTYPE"].ToString(),
+                                 SCMDISCRATE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["scmdiscrate"].retStr(),
+                             }).ToList();
+
+                if (TAG == "GRID")
+                {
+                    ViewBag.ITEM = ITCD.retStr() == "" ? "" : ITNM + " (" + ITCD + ")";
+                    VE.RateHistoryGrid = doctP.Take(5).ToList();
+                    ModelState.Clear();
+                    return PartialView("_T_OUTRECPROCESS_Receive_RateHistoryGrid", VE);
+                }
+                else
+                {
+                    RH.RateHistoryGrid = doctP;
+                    ModelState.Clear();
+                    return PartialView("_T_OUTRECPROCESS_RateHistory", RH);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
 
     }
 }

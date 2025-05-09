@@ -1611,6 +1611,8 @@
     <Content Include="Views\Rep_OrdReg\Rep_OrdReg.cshtml" />
     <Content Include="Views\Shared\_T_ITC4_Gen.cshtml" />
     <Content Include="Views\T_ITC4_Gen\T_ITC4_Gen.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_RateHistory.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Receive_RateHistoryGrid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
