@@ -4662,7 +4662,7 @@ namespace Improvar.Controllers
                 RateHistory RH = new RateHistory();
                 TransactionOutRecProcess VE = new TransactionOutRecProcess();
                 Cn.getQueryString(VE);
-                string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET'";
+                string doctype = "'" + VE.DOC_CODE.retStr() + "'" + ",'SRET','PROF'";
                 var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr().retSqlformat(), "", doctype, ITCD.retStr().retSqlformat());
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()

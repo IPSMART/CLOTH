@@ -28,6 +28,7 @@
 </script>
 <script>
     function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Washing Rate for this Qtr", "WASHRT")) { return false; }
         return true;
     }
 </script>
@@ -185,7 +186,8 @@
                             <div class="col-md-7">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Washing Rate for this Qtr")
-                                </div>
+                                    <b style="color:Red;">*</b>
+  </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
@@ -196,7 +198,7 @@
                             @if (Model.DefaultAction != "V")
                             {
                                 <div class="col-md-2">
-                                    <input type="button" class="btn btn-sm" value="Data Gather" name="DataGather" onclick="getDataGather();">
+                                    <input type="button" class="btn btn-primary btn-sm" value="Data Gather" name="DataGather" onclick="getDataGather();">
                                 </div>
                             }
                         </div>

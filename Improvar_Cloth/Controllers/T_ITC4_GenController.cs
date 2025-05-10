@@ -271,8 +271,8 @@ namespace Improvar.Controllers
                 string linkslcd = string.Join(",", (from DataRow dr in tbllink.Rows select dr["slcd"].ToString()).Distinct());
                 linkslcd = linkslcd.retSqlformat();
 
-                issdoctype = "'OKTI', 'OFPI', 'OCTI', 'OPRI', 'OSTI', 'OOJI', 'OIRI', 'ODYI', 'OBLI', 'OWAI', 'OEMI', 'OJWI','OYDI'";
-                recdoctype = "'OKTR', 'OKTU', 'OFPR', 'OFPU', 'OCTR', 'OCTU', 'OPRR', 'OPRU', 'OSTR', 'OSTU', 'OOJR', 'OOJU', 'OIRR', 'OOIU', 'ODYR', 'ODYU', 'OBLR', 'OBLU', 'OWAR', 'OWAU', 'OEMR', 'OEMU', 'OJWR', 'OJWU','OYDR','OYDU'";
+                issdoctype = "'OPRI','OEMI','OJWI','OSTI','OIRI'";
+                recdoctype = "'ODYR','ODYU','OPRR','OPRU','OEMR','OEMU','OJWR','OJWU','OSTR','OSTU','OIRR','OOIU' ";
                 mergedoctype = issdoctype + "," + recdoctype;
 
                 sql = "select nvl(jobseq,0) jobseq, jobcd, jobnm, flag1, doccd, docnm, uomcd, sum(qnty)qnty, sum(shortqnty) shortqnrty  from( ";
@@ -283,8 +283,9 @@ namespace Improvar.Controllers
                 sql += "group by a.autono, a.itcd) a, ";
                 sql += scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d, " + scm + ".m_sitem e, ";
                 sql += scm + ".m_jobmst f, " + scm + ".m_dtype g ";
-                sql += "where d.doctype in (" + mergedoctype + ") and b.jobcd=f.jobcd(+) and d.doctype=g.dcd(+) and b.slcd not in (" + linkslcd + ") and ";
-                sql += "a.autono = b.autono and a.autono = c.autono and c.doccd = d.doccd and nvl(d.pro, 'I') <> 'I' and a.itcd = e.itcd(+) and ";
+                sql += "where d.doctype in (" + mergedoctype + ") and b.jobcd=f.jobcd(+) and d.doctype=g.dcd(+)   ";
+                if (linkslcd.retStr() != "") sql += "and b.slcd not in (" + linkslcd + ") ";
+                sql += "and a.autono = b.autono and a.autono = c.autono and c.doccd = d.doccd and nvl(d.pro, 'I') <> 'I' and a.itcd = e.itcd(+) and ";
                 sql += "c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and nvl(c.cancel, 'N') = 'N' and ";
                 sql += "c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) ";
                 sql += "group by jobseq, jobcd, jobnm, flag1, doccd, docnm, uomcd ";
@@ -361,13 +362,13 @@ namespace Improvar.Controllers
                                 //Oracle Queries
                                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                                 string dbsql = "";
-                                sql = "select slcd from " + scmf + ".m_subleg_link a where a.linkcd='I'";
-                                DataTable tbllink = masterHelp.SQLquery(sql);
-                                string linkslcd = string.Join(",", (from DataRow dr in tbllink.Rows select dr["slcd"].ToString()).Distinct());
-                                linkslcd = linkslcd.retSqlformat();
+                                //sql = "select slcd from " + scmf + ".m_subleg_link a where a.linkcd='I'";
+                                //DataTable tbllink = masterHelp.SQLquery(sql);
+                                //string linkslcd = string.Join(",", (from DataRow dr in tbllink.Rows select dr["slcd"].ToString()).Distinct());
+                                //linkslcd = linkslcd.retSqlformat();
 
-                                if (CommVar.Compcd(UNQSNO) == "REFA") linkslcd = "'xx'";
-
+                                //if (CommVar.Compcd(UNQSNO) == "REFA") linkslcd = "'xx'";
+                                string linkslcd = "";
                                 Cn.getQueryString(VE);
                                 DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
                                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
@@ -477,26 +478,27 @@ namespace Improvar.Controllers
                                     //#region Update in finance table
 
                                     #region Issue for Job work
-                                    issdoctype = "'OKTI', 'OFPI', 'OCTI', 'OPRI', 'OSTI', 'OOJI', 'OIRI', 'ODYI', 'OBLI', 'OWAI', 'OEMI', 'OJWI','OYDI'";
+                                    issdoctype = "'OPRI','OEMI','OJWI','OSTI','OIRI'";
 
                                     sql = "";
                                     sql += "select a.autono, c.docno, c.doconlyno, c.docdt, c.mnthcd, c.vchrno, c.yr_cd, c.usr_id, c.usr_entdt, ";
                                     sql += "b.jobcd, g.jobnm, g.jobseq, h.flag1, c.doccd, d.docnm, b.slcd, e.gstno, ";
-                                    sql += "a.itgrpcd, a.partcd, f.itgrpnm, f.hsnsaccd, f.prodgrpcd, a.uomcd, a.mtrljobcd, ";
+                                    sql += "a.itgrpcd, a.partcd, f.itgrpnm, f.hsncode hsnsaccd, f.prodgrpcd, a.uomcd, a.mtrljobcd, ";
                                     sql += "nvl(a.qnty, 0) qnty, nvl(a.shortqnty, 0) shortqnty from ";
 
                                     sql += "(select autono, uomcd, itgrpcd, partcd, mtrljobcd, sum(qnty) qnty, sum(shortqnty) shortqnty from ";
                                     sql += "(select a.autono, b.uomcd, b.itgrpcd, a.partcd, a.mtrljobcd, ";
                                     sql += "(select max(a.jobcd) jobcd from " + scm + ".t_batchdtl x, " + scm + ".t_batchmst y ";
-                                    sql += "where x.batchautono=y.batchautono and x.autono=a.autono ) xmtrljobcd, ";
+                                    sql += "where x.barno=y.barno and x.autono=a.autono ) xmtrljobcd, ";
                                     sql += "a.qnty, a.shortqnty ";
                                     sql += "from " + scm + ".t_txndtl a, " + scm + ".m_sitem b where a.itcd=b.itcd(+) )  ";
                                     sql += "group by autono, uomcd, itgrpcd, partcd, mtrljobcd) a, ";
 
                                     sql += scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d, " + scmf + ".m_subleg e, ";
                                     sql += scm + ".m_group f, " + scm + ".m_jobmst g, " + scm + ".m_dtype h ";
-                                    sql += "where d.doctype in (" + issdoctype + ") and b.slcd=e.slcd(+) and b.slcd not in (" + linkslcd + ") and ";
-                                    sql += "b.jobcd=g.jobcd(+) and d.doctype=h.dcd(+) and ";
+                                    sql += "where d.doctype in (" + issdoctype + ") and b.slcd=e.slcd(+)   ";
+                                    if (linkslcd.retStr() != "") sql += "and b.slcd not in (" + linkslcd + ") ";
+                                    sql += "and b.jobcd=g.jobcd(+) and d.doctype=h.dcd(+) and ";
                                     sql += "a.autono = b.autono and a.autono = c.autono and c.doccd = d.doccd and nvl(d.pro, 'I') <> 'I' and a.itgrpcd = f.itgrpcd(+) and ";
                                     sql += "c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and nvl(c.cancel, 'N') = 'N' and ";
                                     sql += "c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
@@ -557,24 +559,26 @@ namespace Improvar.Controllers
                                     }
                                     #endregion
                                     #region Receive/Return from Job work
-                                    recdoctype = "'OKTR', 'OKTU', 'OFPR', 'OFPU', 'OCTR', 'OCTU', 'OPRR', 'OPRU', 'OSTR', 'OSTU', 'OOJR', 'OOJU', 'OIRR', 'OOIU', 'ODYR', 'ODYU', 'OBLR', 'OBLU', 'OWAR', 'OWAU', 'OEMR', 'OEMU', 'OJWR', 'OJWU','OYDR','OYDU'";
+                                    recdoctype = "'ODYR','ODYU','OPRR','OPRU','OEMR','OEMU','OJWR','OJWU','OSTR','OSTU','OIRR','OOIU' ";
                                     string qtyfld = "nvl(a.qnty,b.qnty)-nvl(b.shortqnty,0)";
 
                                     sql = "select a.autono, c.docno, c.doconlyno, c.docdt, b.jobcd, g.jobnm, g.jobseq, h.flag1, c.doccd, d.docnm, b.slcd, e.gstno, ";
-                                    sql += "a.itgrpcd, a.partcd, f.itgrpnm, f.hsnsaccd, f.prodgrpcd, a.uomcd, i.docno orgdocno, i.docdt orgdocdt, ";
+                                    sql += "a.itgrpcd, a.partcd, f.itgrpnm, f.hsncode hsnsaccd, f.prodgrpcd, a.uomcd, i.docno orgdocno, i.docdt orgdocdt, ";
                                     sql += "nvl(a.qnty, 0) qnty, nvl(a.shortqnty, 0) shortqnty from ";
                                     sql += "(select a.autono, a.progautono, d.uomcd, d.itgrpcd, b.partcd, sum(nvl(b.shortqnty,0)) shortqnty, ";
                                     sql += "sum(nvl((case e.jobcd when 'DY' then " + qtyfld + " when 'BL' then " + qtyfld + " ";
                                     sql += "when 'KT' then " + qtyfld + " when 'YD' then " + qtyfld + " else ";
                                     sql += "nvl(b.qnty,a.qnty) end ),0)) qnty ";
                                     sql += "from " + scm + ".t_progdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".m_sitem d, " + scm + ".t_batchmst e ";
-                                    sql += "where a.autono=b.recprogautono(+) and a.slno=b.recprogslno(+) and ";
+                                    sql += "where a.autono=b.autono(+) and a.slno=b.slno(+) and ";
+                                    //sql += "where a.autono=b.recprogautono(+) and a.slno=b.recprogslno(+) and ";
                                     sql += "a.autono=c.autono(+) and b.itcd=d.itcd and a.progautono=e.autono(+) and a.progslno=e.slno(+) ";
                                     sql += "group by a.autono, a.progautono, d.uomcd, d.itgrpcd, b.partcd) a, ";
                                     sql += scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d, " + scmf + ".m_subleg e, ";
                                     sql += scm + ".m_group f, " + scm + ".m_jobmst g, " + scm + ".m_dtype h, " + scm + ".t_cntrl_hdr i ";
-                                    sql += "where d.doctype in (" + recdoctype + ") and b.slcd=e.slcd(+) and b.slcd not in (" + linkslcd + ") and ";
-                                    sql += "b.jobcd=g.jobcd(+) and d.doctype=h.dcd(+) and ";
+                                    sql += "where d.doctype in (" + recdoctype + ") and b.slcd=e.slcd(+)   ";
+                                    if (linkslcd.retStr() != "") sql += "and b.slcd not in (" + linkslcd + ") ";
+                                    sql += "and b.jobcd=g.jobcd(+) and d.doctype=h.dcd(+) and ";
                                     sql += "a.autono = b.autono and a.autono = c.autono and c.doccd = d.doccd and ";
                                     sql += "nvl(d.pro, 'I') <> 'I' and a.itgrpcd = f.itgrpcd(+) and a.progautono=i.autono(+) and ";
                                     sql += "c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and nvl(c.cancel, 'N') = 'N' and ";
@@ -639,199 +643,199 @@ namespace Improvar.Controllers
                                     }
                                     #endregion
                                     #region Cutter Receive voucher adjust on FIFO
-                                    sql = "select a.autono, a.partcd, c.docdt, c.docno, c.doconlyno, c.doccd, b.doctag, b.slcd, g.slnm, g.gstno, ";
-                                    sql += "a.itgrptype, a.itgrpcd, f.itgrpnm, f.hsnsaccd, a.stkdrcr, a.uomcd, b.jobcd, h.jobnm, ";
-                                    sql += "nvl(b.cloth_used,0) cloth_used, nvl(b.cloth_was,0) cloth_was, ";
-                                    sql += "nvl(a.wght, 0) wght, nvl(decode(f.itgrptype, 'F', a.qnty, 0),0) pcs, ";
-                                    sql += "(case f.itgrptype when 'T' then 0 when 'W' then 0 when 'F' then 0 else nvl(a.qnty, 0) end) qnty, ";
-                                    sql += "nvl(decode(f.itgrptype, 'T', a.qnty,0),0) foldwt, nvl(decode(f.itgrptype, 'W', a.qnty),0) waswt from ";
+                                    //sql = "select a.autono, a.partcd, c.docdt, c.docno, c.doconlyno, c.doccd, b.doctag, b.slcd, g.slnm, g.gstno, ";
+                                    //sql += "a.itgrptype, a.itgrpcd, f.itgrpnm, f.hsnsaccd, a.stkdrcr, a.uomcd, b.jobcd, h.jobnm, ";
+                                    //sql += "nvl(b.cloth_used,0) cloth_used, nvl(b.cloth_was,0) cloth_was, ";
+                                    //sql += "nvl(a.wght, 0) wght, nvl(decode(f.itgrptype, 'F', a.qnty, 0),0) pcs, ";
+                                    //sql += "(case f.itgrptype when 'T' then 0 when 'W' then 0 when 'F' then 0 else nvl(a.qnty, 0) end) qnty, ";
+                                    //sql += "nvl(decode(f.itgrptype, 'T', a.qnty,0),0) foldwt, nvl(decode(f.itgrptype, 'W', a.qnty),0) waswt from ";
 
-                                    sql += "( select a.autono, e.itgrpcd, e.uomcd, f.itgrptype, a.partcd, a.stkdrcr, sum(a.wght) wght, sum(a.qnty) qnty ";
-                                    sql += "from " + scm + ".t_txndtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".m_doctype c, " + scm + ".t_txn d, ";
-                                    sql += scm + ".m_sitem e, " + scm + ".m_group f ";
-                                    sql += "where a.autono=b.autono(+) and b.doccd=c.doccd(+) and a.autono=d.autono(+) and ";
-                                    sql += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and nvl(b.cancel,'N')='N' and nvl(c.pro,'O') <> 'I' and ";
-                                    sql += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and a.itcd=e.itcd and e.itgrpcd=f.itgrpcd(+) and ";
-                                    sql += "c.doctype in ('OCTI','OCTR','OCTU') and d.doctag in ('JC','JR','JU') and b.slcd not in (" + linkslcd + ") ";
-                                    sql += "group by a.autono, e.itgrpcd, e.uomcd, f.itgrptype, a.partcd, a.stkdrcr ) a, ";
-                                    sql += "" + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_parts e, ";
-                                    sql += "" + scm + ".m_group f, " + scmf + ".m_subleg g, " + scm + ".m_jobmst h ";
-                                    sql += "where a.autono=b.autono and b.autono=c.autono and a.itgrpcd=f.itgrpcd and ";
-                                    sql += "a.partcd=e.partcd(+) and b.slcd=g.slcd(+) and b.jobcd=h.jobcd(+) ";
-                                    sql += "order by slcd, docdt, docno ";
+                                    //sql += "( select a.autono, e.itgrpcd, e.uomcd, f.itgrptype, a.partcd, a.stkdrcr, sum(a.wght) wght, sum(a.qnty) qnty ";
+                                    //sql += "from " + scm + ".t_txndtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".m_doctype c, " + scm + ".t_txn d, ";
+                                    //sql += scm + ".m_sitem e, " + scm + ".m_group f ";
+                                    //sql += "where a.autono=b.autono(+) and b.doccd=c.doccd(+) and a.autono=d.autono(+) and ";
+                                    //sql += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and nvl(b.cancel,'N')='N' and nvl(c.pro,'O') <> 'I' and ";
+                                    //sql += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and a.itcd=e.itcd and e.itgrpcd=f.itgrpcd(+) and ";
+                                    //sql += "c.doctype in ('OCTI','OCTR','OCTU') and d.doctag in ('JC','JR','JU') and b.slcd not in (" + linkslcd + ") ";
+                                    //sql += "group by a.autono, e.itgrpcd, e.uomcd, f.itgrptype, a.partcd, a.stkdrcr ) a, ";
+                                    //sql += "" + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_parts e, ";
+                                    //sql += "" + scm + ".m_group f, " + scmf + ".m_subleg g, " + scm + ".m_jobmst h ";
+                                    //sql += "where a.autono=b.autono and b.autono=c.autono and a.itgrpcd=f.itgrpcd and ";
+                                    //sql += "a.partcd=e.partcd(+) and b.slcd=g.slcd(+) and b.jobcd=h.jobcd(+) ";
+                                    //sql += "order by slcd, docdt, docno ";
 
-                                    DataTable rsiss = new DataTable("stock");
-                                    rsiss.Columns.Add("autono", typeof(string), "");
-                                    rsiss.Columns.Add("uomcd", typeof(string), "");
-                                    rsiss.Columns.Add("itgrpcd", typeof(string), "");
-                                    rsiss.Columns.Add("itgrpnm", typeof(string), "");
-                                    rsiss.Columns.Add("slcd", typeof(string), "");
-                                    rsiss.Columns.Add("gstno", typeof(string), "");
-                                    rsiss.Columns.Add("docno", typeof(string), "");
-                                    rsiss.Columns.Add("docdt", typeof(string), "");
-                                    rsiss.Columns.Add("balqnty", typeof(double), "");
-                                    rsiss.Columns.Add("qnty", typeof(double), "");
-                                    rsiss.Columns.Add("befrecqnty", typeof(double), "");
-                                    rsiss.Columns.Add("recqnty", typeof(double), "");
-                                    rsiss.Columns.Add("shortuomcd", typeof(string), "");
-                                    rsiss.Columns.Add("shortqnty", typeof(double), "");
-                                    rsiss.Columns.Add("recautono", typeof(string), "");
+                                    //DataTable rsiss = new DataTable("stock");
+                                    //rsiss.Columns.Add("autono", typeof(string), "");
+                                    //rsiss.Columns.Add("uomcd", typeof(string), "");
+                                    //rsiss.Columns.Add("itgrpcd", typeof(string), "");
+                                    //rsiss.Columns.Add("itgrpnm", typeof(string), "");
+                                    //rsiss.Columns.Add("slcd", typeof(string), "");
+                                    //rsiss.Columns.Add("gstno", typeof(string), "");
+                                    //rsiss.Columns.Add("docno", typeof(string), "");
+                                    //rsiss.Columns.Add("docdt", typeof(string), "");
+                                    //rsiss.Columns.Add("balqnty", typeof(double), "");
+                                    //rsiss.Columns.Add("qnty", typeof(double), "");
+                                    //rsiss.Columns.Add("befrecqnty", typeof(double), "");
+                                    //rsiss.Columns.Add("recqnty", typeof(double), "");
+                                    //rsiss.Columns.Add("shortuomcd", typeof(string), "");
+                                    //rsiss.Columns.Add("shortqnty", typeof(double), "");
+                                    //rsiss.Columns.Add("recautono", typeof(string), "");
 
-                                    string sqld = "select autono, slcd, gstno, itgrpcd, itgrpnm, partcd, uomcd, qnty, docno, docdt, doccd ";
-                                    sqld += "from ( " + sql + ") where doctag='JC' ";
-                                    sqld += "order by slcd, uomcd, docdt, docno ";
-                                    DataTable fifotbl = masterHelp.SQLquery(sqld);
-                                    Int32 f = 0, rNo = 0, oldf = 0;
-                                    maxR = fifotbl.Rows.Count - 1;
-                                    while (f <= maxR)
-                                    {
-                                        rsiss.Rows.Add(); rNo = rsiss.Rows.Count - 1;
-                                        rsiss.Rows[rNo]["autono"] = fifotbl.Rows[f]["autono"];
-                                        rsiss.Rows[rNo]["slcd"] = fifotbl.Rows[f]["slcd"];
-                                        rsiss.Rows[rNo]["gstno"] = fifotbl.Rows[f]["gstno"];
-                                        rsiss.Rows[rNo]["uomcd"] = fifotbl.Rows[f]["uomcd"];
-                                        rsiss.Rows[rNo]["itgrpcd"] = fifotbl.Rows[f]["itgrpcd"];
-                                        rsiss.Rows[rNo]["itgrpnm"] = fifotbl.Rows[f]["itgrpnm"];
-                                        rsiss.Rows[rNo]["docno"] = fifotbl.Rows[f]["docno"];
-                                        rsiss.Rows[rNo]["docdt"] = fifotbl.Rows[f]["docdt"].ToString().retDateStr();
-                                        rsiss.Rows[rNo]["qnty"] = fifotbl.Rows[f]["qnty"].retDbl();
-                                        rsiss.Rows[rNo]["balqnty"] = fifotbl.Rows[f]["qnty"].retDbl();
-                                        rsiss.Rows[rNo]["befrecqnty"] = 0;
-                                        rsiss.Rows[rNo]["recqnty"] = 0;
-                                        rsiss.Rows[rNo]["shortqnty"] = 0;
-                                        f++;
-                                    }
+                                    //string sqld = "select autono, slcd, gstno, itgrpcd, itgrpnm, partcd, uomcd, qnty, docno, docdt, doccd ";
+                                    //sqld += "from ( " + sql + ") where doctag='JC' ";
+                                    //sqld += "order by slcd, uomcd, docdt, docno ";
+                                    //DataTable fifotbl = masterHelp.SQLquery(sqld);
+                                    //Int32 f = 0, rNo = 0, oldf = 0;
+                                    //maxR = fifotbl.Rows.Count - 1;
+                                    //while (f <= maxR)
+                                    //{
+                                    //    rsiss.Rows.Add(); rNo = rsiss.Rows.Count - 1;
+                                    //    rsiss.Rows[rNo]["autono"] = fifotbl.Rows[f]["autono"];
+                                    //    rsiss.Rows[rNo]["slcd"] = fifotbl.Rows[f]["slcd"];
+                                    //    rsiss.Rows[rNo]["gstno"] = fifotbl.Rows[f]["gstno"];
+                                    //    rsiss.Rows[rNo]["uomcd"] = fifotbl.Rows[f]["uomcd"];
+                                    //    rsiss.Rows[rNo]["itgrpcd"] = fifotbl.Rows[f]["itgrpcd"];
+                                    //    rsiss.Rows[rNo]["itgrpnm"] = fifotbl.Rows[f]["itgrpnm"];
+                                    //    rsiss.Rows[rNo]["docno"] = fifotbl.Rows[f]["docno"];
+                                    //    rsiss.Rows[rNo]["docdt"] = fifotbl.Rows[f]["docdt"].ToString().retDateStr();
+                                    //    rsiss.Rows[rNo]["qnty"] = fifotbl.Rows[f]["qnty"].retDbl();
+                                    //    rsiss.Rows[rNo]["balqnty"] = fifotbl.Rows[f]["qnty"].retDbl();
+                                    //    rsiss.Rows[rNo]["befrecqnty"] = 0;
+                                    //    rsiss.Rows[rNo]["recqnty"] = 0;
+                                    //    rsiss.Rows[rNo]["shortqnty"] = 0;
+                                    //    f++;
+                                    //}
 
-                                    sqld = "select autono, itgrpcd, itgrpnm, partcd, uomcd, qnty, slcd, docno, docdt, doccd, jobnm, ";
-                                    sqld += "hsnsaccd, doconlyno, wght, pcs, waswt, foldwt, cloth_used, cloth_was ";
-                                    sqld += "from ( " + sql + ") where doctag <> 'JC' and docdt >= to_date('" + CommVar.FinStartDate(UNQSNO) + "','dd/mm/yyyy') ";
-                                    sqld += "order by slcd, docdt, docno, partcd ";
-                                    DataTable fiforec = masterHelp.SQLquery(sqld);
-                                    f = 0; maxR = fiforec.Rows.Count - 1; rNo = 0;
-                                    while (f <= maxR)
-                                    {
-                                        string autono = fiforec.Rows[f]["autono"].ToString();
-                                        string slcd = fiforec.Rows[f]["slcd"].ToString();
-                                        string partcd = "";
-                                        DateTime recdt = Convert.ToDateTime(fiforec.Rows[f]["docdt"].retStr());
-                                        double cl_used = fiforec.Rows[f]["cloth_used"].retDbl();
-                                        double cl_was = fiforec.Rows[f]["cloth_was"].retDbl();
-                                        double r_qty = 0, w_qty = 0;
-                                        bool hdrrecoins = true;
+                                    //sqld = "select autono, itgrpcd, itgrpnm, partcd, uomcd, qnty, slcd, docno, docdt, doccd, jobnm, ";
+                                    //sqld += "hsnsaccd, doconlyno, wght, pcs, waswt, foldwt, cloth_used, cloth_was ";
+                                    //sqld += "from ( " + sql + ") where doctag <> 'JC' and docdt >= to_date('" + CommVar.FinStartDate(UNQSNO) + "','dd/mm/yyyy') ";
+                                    //sqld += "order by slcd, docdt, docno, partcd ";
+                                    //DataTable fiforec = masterHelp.SQLquery(sqld);
+                                    //f = 0; maxR = fiforec.Rows.Count - 1; rNo = 0;
+                                    //while (f <= maxR)
+                                    //{
+                                    //    string autono = fiforec.Rows[f]["autono"].ToString();
+                                    //    string slcd = fiforec.Rows[f]["slcd"].ToString();
+                                    //    string partcd = "";
+                                    //    DateTime recdt = Convert.ToDateTime(fiforec.Rows[f]["docdt"].retStr());
+                                    //    double cl_used = fiforec.Rows[f]["cloth_used"].retDbl();
+                                    //    double cl_was = fiforec.Rows[f]["cloth_was"].retDbl();
+                                    //    double r_qty = 0, w_qty = 0;
+                                    //    bool hdrrecoins = true;
 
-                                        while (fiforec.Rows[f]["autono"].ToString() == autono)
-                                        {
-                                            bool recins = true;
-                                            if (recins == true)
-                                            {
-                                                r_qty = r_qty + fiforec.Rows[f]["wght"].retDbl() + fiforec.Rows[f]["foldwt"].retDbl();
-                                                w_qty = w_qty + fiforec.Rows[f]["waswt"].retDbl();
-                                            }
-                                            f++;
-                                            if (f > maxR) break;
-                                        }
-                                        oldf = f;
-                                        f = f - 1;
-                                        Int32 maxl = 0;
-                                        if (cl_used + cl_was > 0) maxl = 1;
-                                        for (Int32 l = 0; l <= maxl; l++)
-                                        {
-                                            Int16 isnlo = 1;
-                                            string chkuomcd = "KGS";
-                                            double chkqty = r_qty, chkwas = w_qty;
+                                    //    while (fiforec.Rows[f]["autono"].ToString() == autono)
+                                    //    {
+                                    //        bool recins = true;
+                                    //        if (recins == true)
+                                    //        {
+                                    //            r_qty = r_qty + fiforec.Rows[f]["wght"].retDbl() + fiforec.Rows[f]["foldwt"].retDbl();
+                                    //            w_qty = w_qty + fiforec.Rows[f]["waswt"].retDbl();
+                                    //        }
+                                    //        f++;
+                                    //        if (f > maxR) break;
+                                    //    }
+                                    //    oldf = f;
+                                    //    f = f - 1;
+                                    //    Int32 maxl = 0;
+                                    //    if (cl_used + cl_was > 0) maxl = 1;
+                                    //    for (Int32 l = 0; l <= maxl; l++)
+                                    //    {
+                                    //        Int16 isnlo = 1;
+                                    //        string chkuomcd = "KGS";
+                                    //        double chkqty = r_qty, chkwas = w_qty;
 
-                                            if (l == 1)
-                                            {
-                                                isnlo = 51;
-                                                chkuomcd = "MTR";
-                                                chkqty = cl_used; chkwas = cl_was;
-                                            }
-                                            double checkqnty = chkqty + chkwas, rplqnty = 0;
-                                            for (Int32 z = 0; z <= rsiss.Rows.Count - 1; z++)
-                                            {
-                                                double balqnty = rsiss.Rows[z]["balqnty"].retDbl();
-                                                if (rsiss.Rows[z]["slcd"].ToString() == slcd && rsiss.Rows[z]["uomcd"].ToString() == chkuomcd && balqnty > 0)
-                                                {
-                                                    if (balqnty <= checkqnty)
-                                                    {
-                                                        checkqnty = checkqnty - balqnty; rplqnty = balqnty; balqnty = 0;
-                                                        balqnty = 0;
-                                                    }
-                                                    else
-                                                    {
-                                                        balqnty = balqnty - checkqnty; rplqnty = checkqnty; checkqnty = 0;
-                                                    }
-                                                    rsiss.Rows[z]["balqnty"] = balqnty;
-                                                    if (recdt < Convert.ToDateTime(fdt))
-                                                    {
-                                                        rsiss.Rows[z]["befrecqnty"] = rsiss.Rows[z]["befrecqnty"].retDbl() + rplqnty;
-                                                    }
-                                                    else
-                                                    {
-                                                        rsiss.Rows[z]["recqnty"] = rsiss.Rows[z]["recqnty"].retDbl() + rplqnty;
-                                                        //
-                                                        //DataTable tblold = masterHelp.SQLquery("select * from " + scmf + ".t_cntrl_hdr where autono='" + autono + "'");
-                                                        if (hdrrecoins == true)
-                                                        {
+                                    //        if (l == 1)
+                                    //        {
+                                    //            isnlo = 51;
+                                    //            chkuomcd = "MTR";
+                                    //            chkqty = cl_used; chkwas = cl_was;
+                                    //        }
+                                    //        double checkqnty = chkqty + chkwas, rplqnty = 0;
+                                    //        for (Int32 z = 0; z <= rsiss.Rows.Count - 1; z++)
+                                    //        {
+                                    //            double balqnty = rsiss.Rows[z]["balqnty"].retDbl();
+                                    //            if (rsiss.Rows[z]["slcd"].ToString() == slcd && rsiss.Rows[z]["uomcd"].ToString() == chkuomcd && balqnty > 0)
+                                    //            {
+                                    //                if (balqnty <= checkqnty)
+                                    //                {
+                                    //                    checkqnty = checkqnty - balqnty; rplqnty = balqnty; balqnty = 0;
+                                    //                    balqnty = 0;
+                                    //                }
+                                    //                else
+                                    //                {
+                                    //                    balqnty = balqnty - checkqnty; rplqnty = checkqnty; checkqnty = 0;
+                                    //                }
+                                    //                rsiss.Rows[z]["balqnty"] = balqnty;
+                                    //                if (recdt < Convert.ToDateTime(fdt))
+                                    //                {
+                                    //                    rsiss.Rows[z]["befrecqnty"] = rsiss.Rows[z]["befrecqnty"].retDbl() + rplqnty;
+                                    //                }
+                                    //                else
+                                    //                {
+                                    //                    rsiss.Rows[z]["recqnty"] = rsiss.Rows[z]["recqnty"].retDbl() + rplqnty;
+                                    //                    //
+                                    //                    //DataTable tblold = masterHelp.SQLquery("select * from " + scmf + ".t_cntrl_hdr where autono='" + autono + "'");
+                                    //                    if (hdrrecoins == true)
+                                    //                    {
 
-                                                            T_CNTRL_HDR TCHOLD = TCHOLDlist.Where(m => m.AUTONO == autono).FirstOrDefault();
-                                                            TCHOLD.DOCCD = TITC4HDR.DOCCD;
+                                    //                        T_CNTRL_HDR TCHOLD = TCHOLDlist.Where(m => m.AUTONO == autono).FirstOrDefault();
+                                    //                        TCHOLD.DOCCD = TITC4HDR.DOCCD;
 
-                                                            //T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
-                                                            //TCHOLD = DB.T_CNTRL_HDR.Find(autono);
-                                                            //TCHOLD.DOCCD = TITC4HDR.DOCCD;
+                                    //                        //T_CNTRL_HDR TCHOLD = new T_CNTRL_HDR();
+                                    //                        //TCHOLD = DB.T_CNTRL_HDR.Find(autono);
+                                    //                        //TCHOLD.DOCCD = TITC4HDR.DOCCD;
 
-                                                            sql = "select autono from " + scmf + ".t_cntrl_hdr where autono='" + autono + "'";
-                                                            OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                                                            if (OraReco.HasRows == false)
-                                                            {
-                                                                //dbsql = Master_HelpFa.Instcntrl_hdr(autono, "A", "F", TCHOLD.MNTHCD, TITC4HDR.DOCCD, TCHOLD.DOCNO, TCHOLD.DOCDT.ToString(), TCHOLD.EMD_NO.Value, TCHOLD.DTAG, TCHOLD.DOCONLYNO, TCHOLD.VCHRNO, "Y", TCHOLD.VCHRSUFFIX, TCHOLD.GLCD, TCHOLD.SLCD, TCHOLD.DOCAMT.Value);
-                                                                dbsql = Master_HelpFa.Instcntrl_hdr(autono, "A", "F", TCHOLD.MNTHCD, TITC4HDR.DOCCD, TCHOLD.DOCNO, TCHOLD.DOCDT.ToString(), TCHOLD.EMD_NO.retShort(), TCHOLD.DTAG, TCHOLD.DOCONLYNO, TCHOLD.VCHRNO, "Y", TCHOLD.VCHRSUFFIX, TCHOLD.GLCD, TCHOLD.SLCD, TCHOLD.DOCAMT.Value, null, VE.Audit_REM);
-                                                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                                                            }
-                                                            OraReco.Close();
-                                                            hdrrecoins = false;
-                                                        }
-                                                        //DBF.T_CNTRL_HDR.Add(TCHOLD);
+                                    //                        sql = "select autono from " + scmf + ".t_cntrl_hdr where autono='" + autono + "'";
+                                    //                        OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                                    //                        if (OraReco.HasRows == false)
+                                    //                        {
+                                    //                            //dbsql = Master_HelpFa.Instcntrl_hdr(autono, "A", "F", TCHOLD.MNTHCD, TITC4HDR.DOCCD, TCHOLD.DOCNO, TCHOLD.DOCDT.ToString(), TCHOLD.EMD_NO.Value, TCHOLD.DTAG, TCHOLD.DOCONLYNO, TCHOLD.VCHRNO, "Y", TCHOLD.VCHRSUFFIX, TCHOLD.GLCD, TCHOLD.SLCD, TCHOLD.DOCAMT.Value);
+                                    //                            dbsql = Master_HelpFa.Instcntrl_hdr(autono, "A", "F", TCHOLD.MNTHCD, TITC4HDR.DOCCD, TCHOLD.DOCNO, TCHOLD.DOCDT.ToString(), TCHOLD.EMD_NO.retShort(), TCHOLD.DTAG, TCHOLD.DOCONLYNO, TCHOLD.VCHRNO, "Y", TCHOLD.VCHRSUFFIX, TCHOLD.GLCD, TCHOLD.SLCD, TCHOLD.DOCAMT.Value, null, VE.Audit_REM);
+                                    //                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    //                        }
+                                    //                        OraReco.Close();
+                                    //                        hdrrecoins = false;
+                                    //                    }
+                                    //                    //DBF.T_CNTRL_HDR.Add(TCHOLD);
 
-                                                        if (rplqnty != 0)
-                                                        {
-                                                            double rate = getRate(fiforec.Rows[f]["doccd"].ToString(), chkuomcd, VE);
-                                                            T_GSTITC4_REC TITC4ISS = new T_GSTITC4_REC();
-                                                            double amt = (rplqnty * rate).toRound(2);
+                                    //                    if (rplqnty != 0)
+                                    //                    {
+                                    //                        double rate = getRate(fiforec.Rows[f]["doccd"].ToString(), chkuomcd, VE);
+                                    //                        T_GSTITC4_REC TITC4ISS = new T_GSTITC4_REC();
+                                    //                        double amt = (rplqnty * rate).toRound(2);
 
-                                                            double shortqnty = chkwas, qnty = rplqnty;
-                                                            string shortuomcd = "";
-                                                            if (shortqnty > rplqnty)
-                                                            {
-                                                                shortqnty = 0;
-                                                            }
-                                                            else
-                                                            {
-                                                                rplqnty = rplqnty - shortqnty;
-                                                                chkwas = 0;
-                                                            }
-                                                            qnty = rplqnty;
-                                                            if (shortqnty < 0)
-                                                            {
-                                                                //qnty = rplqnty + Math.Abs(shortqnty);
-                                                                shortqnty = 0;
-                                                            }
+                                    //                        double shortqnty = chkwas, qnty = rplqnty;
+                                    //                        string shortuomcd = "";
+                                    //                        if (shortqnty > rplqnty)
+                                    //                        {
+                                    //                            shortqnty = 0;
+                                    //                        }
+                                    //                        else
+                                    //                        {
+                                    //                            rplqnty = rplqnty - shortqnty;
+                                    //                            chkwas = 0;
+                                    //                        }
+                                    //                        qnty = rplqnty;
+                                    //                        if (shortqnty < 0)
+                                    //                        {
+                                    //                            //qnty = rplqnty + Math.Abs(shortqnty);
+                                    //                            shortqnty = 0;
+                                    //                        }
 
-                                                            if (shortqnty > 0) shortuomcd = rsiss.Rows[z]["uomcd"].ToString();
-                                                            dbsql = Master_HelpFa.InsITC4_Rec(autono, fiforec.Rows[f]["doccd"].ToString(), fiforec.Rows[f]["doconlyno"].ToString(), fiforec.Rows[f]["docdt"].ToString(), isnlo, "5A", TITC4HDR.AUTONO, slcd, rsiss.Rows[z]["gstno"].ToString(), fiforec.Rows[f]["jobnm"].ToString(), rsiss.Rows[z]["docno"].ToString(), rsiss.Rows[z]["docdt"].ToString(), fiforec.Rows[f]["docno"].ToString(), fiforec.Rows[f]["docdt"].ToString(), fiforec.Rows[z]["hsnsaccd"].ToString(), rsiss.Rows[z]["itgrpnm"].ToString(), rsiss.Rows[z]["uomcd"].ToString(), qnty, amt, shortqnty, shortuomcd);
-                                                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                                                            isnlo++;
-                                                        }
-                                                        //
-                                                    }
-                                                    if (checkqnty == 0) break;
-                                                }
-                                            }
-                                        } //kgs/mtr loop
-                                        f++;
-                                        if (f > maxR) break;
-                                    }
+                                    //                        if (shortqnty > 0) shortuomcd = rsiss.Rows[z]["uomcd"].ToString();
+                                    //                        dbsql = Master_HelpFa.InsITC4_Rec(autono, fiforec.Rows[f]["doccd"].ToString(), fiforec.Rows[f]["doconlyno"].ToString(), fiforec.Rows[f]["docdt"].ToString(), isnlo, "5A", TITC4HDR.AUTONO, slcd, rsiss.Rows[z]["gstno"].ToString(), fiforec.Rows[f]["jobnm"].ToString(), rsiss.Rows[z]["docno"].ToString(), rsiss.Rows[z]["docdt"].ToString(), fiforec.Rows[f]["docno"].ToString(), fiforec.Rows[f]["docdt"].ToString(), fiforec.Rows[z]["hsnsaccd"].ToString(), rsiss.Rows[z]["itgrpnm"].ToString(), rsiss.Rows[z]["uomcd"].ToString(), qnty, amt, shortqnty, shortuomcd);
+                                    //                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                                    //                        isnlo++;
+                                    //                    }
+                                    //                    //
+                                    //                }
+                                    //                if (checkqnty == 0) break;
+                                    //            }
+                                    //        }
+                                    //    } //kgs/mtr loop
+                                    //    f++;
+                                    //    if (f > maxR) break;
+                                    //}
                                     #endregion
 
                                     transaction.Commit();
