@@ -67,6 +67,14 @@ namespace Improvar.Controllers
                     string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), linkcode = "J";
                     VE.TEXTBOX4 = MasterHelp.ComboFill("recslcd", VE.DropDown_list_SLCD, 0, 1);
 
+                    var locnmlist = (from a in DBF.M_LOCA
+                                     select new DropDown_list2()
+                                     {
+                                         value = a.LOCCD,
+                                         text = a.LOCNM
+                                     }).Distinct().ToList();
+                    VE.Locnm = MasterHelp.ComboFill("loccd", locnmlist, 0, 1);
+
                     //VE.DropDown_list4 = (from a in DBF.M_SUBLEG
                     //          join b in DBF.M_SUBLEG_LINK on a.SLCD equals b.SLCD into x
                     //          from b in x.DefaultIfEmpty()
@@ -141,6 +149,8 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                string LOCCD = "";
+                if (FC.AllKeys.Contains("loccdvalue")) LOCCD = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "", stktype = "", brandcd = "", unselslcd = "", recslcd = "";
                 fdt = VE.FDT;
@@ -178,7 +188,7 @@ namespace Improvar.Controllers
                     stktype = FC["STKTYPE"].ToString().retSqlformat();
                 }
 
-                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd);
+                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd, "", LOCCD);
                 //if (VE.Checkbox4 == true) tbl.DefaultView.Sort = "slnm, slcd, linenm, linecd, docdt, docno, batchno, styleno, itnm, itcd, partnm, partcd, print_seq, sizenm";
                 //else tbl.DefaultView.Sort = "slnm, slcd, linenm, linecd, docdt, docno, styleno, itnm, itcd, partnm, partcd, print_seq, sizenm";
                 if (VE.Checkbox4 == true) tbl.DefaultView.Sort = "slnm, slcd, docdt, docno, batchno, styleno, itnm, itcd, print_seq, sizenm";
@@ -459,7 +469,8 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-
+                string LOCCD = "";
+                if (FC.AllKeys.Contains("loccdvalue")) LOCCD = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string brandcd = "", itgrpcd = "", itcd = "", tdt = "", gocd = "", stktype = "", slcd = "", linecd = "", recslcd = "";
                 bool stockval = VE.Checkbox1;
@@ -503,7 +514,7 @@ namespace Improvar.Controllers
                 string mtrljobcd = "'FS'";
                 if (VE.TEXTBOX3 != null) mtrljobcd = "'" + VE.TEXTBOX3 + "'";
 
-                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd);
+                DataTable tbl = Salesfunc.getPendProg(tdt, tdt, slcd, itcd, "'" + jobcd + "'", "", "", linecd,"", LOCCD);
                 tbl.DefaultView.Sort = "brandnm, brandcd, itgrpnm, itgrpcd, styleno, itcd, partcd, print_seq, sizenm";//sizecdgrp
                 //var data = from d in tbl.AsEnumerable()
                 //           orderby d.Field<string>("brandnm") + d.Field<string>("brandcd") + d.Field<string>("itgrpnm") + d.Field<string>("itgrpcd") +

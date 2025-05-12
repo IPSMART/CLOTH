@@ -228,7 +228,7 @@ namespace Improvar
             else { DISC_AMT = 0; }
             return DISC_AMT;
         }
-        public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string linecd = "", string curschema = "")
+        public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string linecd = "", string curschema = "",string loccd="")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
@@ -250,7 +250,10 @@ namespace Improvar
             if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
             if (jobcd.retStr() != "") sql += "b.jobcd in (" + jobcd + ") and ";
             if (txnupto.retStr() != "") sql += "a.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
-            sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
+            //sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
+            sql += "c.compcd='" + COM + "' and nvl(c.cancel,'N')='N' ";
+            if (loccd != "") { sql += "and c.loccd in(" + loccd + ")  "; } else { sql += "and c.loccd='" + LOC + "' "; }
+
             sql += "group by a.progautono, a.progslno, a.progautono||a.progslno,o.stktype,o.txnslno  ) a, ";
 
             sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";

@@ -259,6 +259,16 @@
                 </select>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Location")
+                </div>
+            </div>
+            <div class="col-md-6">
+                @(new HtmlString(Model.Locnm))
+            </div>
+        </div>
         @*<div class="row" style="margin-top: 8px;">
             <div class="col-md-6">
                 <div class="editor-label" style="margin-top: 6px;">
