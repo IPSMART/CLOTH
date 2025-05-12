@@ -256,7 +256,8 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
 
                 string qtydsp = "n,13,2:##,##,##,##0";
-                string stkcalcon = VE.TEXTBOX2, qty1hd = "Box";
+                string stkcalcon = "P";// VE.TEXTBOX2,
+                string qty1hd = "Box";
                 if (stkcalcon == "S") qty1hd = "Sets";
                 bool groupondate = false, showothrunit = true, showraka = true;
                 if (showitem == false && showparty == false) groupondate = true;
@@ -292,12 +293,13 @@ namespace Improvar.Controllers
                 if (showothrunit == true) HC.GetPrintHeader(IR, "issqnty1", "double", "n,13,2:##,##,##,##0", "Iss." + qty1hd);
                 HC.GetPrintHeader(IR, "recqnty", "double", qtydsp, "Rec.Qty");
                 if (showothrunit == true) HC.GetPrintHeader(IR, "recqnty1", "double", "n,13,2:##,##,##,##0", "Rec." + qty1hd);
-                HC.GetPrintHeader(IR, "shrqnty", "double", qtydsp, "Shortage");
-                HC.GetPrintHeader(IR, "excqnty", "double", qtydsp, "Excess");
+                HC.GetPrintHeader(IR, "shrqnty", "double", qtydsp, "Shortage/Excess");
+                //HC.GetPrintHeader(IR, "shrqnty", "double", qtydsp, "Shortage");
+                //HC.GetPrintHeader(IR, "excqnty", "double", qtydsp, "Excess");
                 if (showraka == true)
                 {
-                    HC.GetPrintHeader(IR, "losqnty", "double", qtydsp, "Loose");
-                    HC.GetPrintHeader(IR, "rakqnty", "double", qtydsp, "Raka");
+                    //HC.GetPrintHeader(IR, "losqnty", "double", qtydsp, "Loose");
+                    //HC.GetPrintHeader(IR, "rakqnty", "double", qtydsp, "Raka");
                 }
                 HC.GetPrintHeader(IR, "retqnty", "double", qtydsp, "Ret.Qty");
                 HC.GetPrintHeader(IR, "balqnty", "double", qtydsp, "Bal.Qty");
@@ -448,8 +450,8 @@ namespace Improvar.Controllers
                                 tissqty = tissqty + issqty;
                                 trecqty = trecqty + recqty;
                                 tretqty = tretqty + retqty;
-                                tshrqty = tshrqty + shrqty;
-                                texcqty = texcqty + excqty;
+                                tshrqty = tshrqty + shrqty + excqty;
+                                //texcqty = texcqty + excqty;
                                 tlosqty = tlosqty + losqty;
                                 trakqty = trakqty + rakqty;
                                 tissqty1 = tissqty1 + issqty1;
@@ -465,14 +467,14 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["issqnty"] = issqty;
                                     IR.Rows[rNo]["recqnty"] = recqty;
                                     IR.Rows[rNo]["retqnty"] = retqty;
-                                    IR.Rows[rNo]["shrqnty"] = shrqty;
-                                    IR.Rows[rNo]["excqnty"] = excqty;
+                                    IR.Rows[rNo]["shrqnty"] = shrqty + excqty;
+                                    //IR.Rows[rNo]["excqnty"] = excqty;
                                     if (showraka == true)
                                     {
                                         if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = issqty1;
                                         if (showothrunit == true) IR.Rows[rNo]["recqnty1"] = recqty1;
-                                        IR.Rows[rNo]["losqnty"] = losqty;
-                                        IR.Rows[rNo]["rakqnty"] = rakqty;
+                                        //IR.Rows[rNo]["losqnty"] = losqty;
+                                        //IR.Rows[rNo]["rakqnty"] = rakqty;
                                     }
                                     IR.Rows[rNo]["balqnty"] = cl;
                                 }
@@ -491,12 +493,12 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["issqnty"] = tissqty;
                                 IR.Rows[rNo]["recqnty"] = trecqty;
                                 IR.Rows[rNo]["retqnty"] = tretqty;
-                                IR.Rows[rNo]["shrqnty"] = tshrqty;
-                                IR.Rows[rNo]["excqnty"] = texcqty;
+                                IR.Rows[rNo]["shrqnty"] = tshrqty + texcqty;
+                                //IR.Rows[rNo]["excqnty"] = texcqty;
                                 if (showraka == true)
                                 {
-                                    IR.Rows[rNo]["losqnty"] = tlosqty;
-                                    IR.Rows[rNo]["rakqnty"] = trakqty;
+                                    //IR.Rows[rNo]["losqnty"] = tlosqty;
+                                    //IR.Rows[rNo]["rakqnty"] = trakqty;
                                     if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = tissqty1;
                                     if (showothrunit == true) IR.Rows[rNo]["recqnty1"] = trecqty1;
                                 }
@@ -506,7 +508,7 @@ namespace Improvar.Controllers
                             sissqty = sissqty + tissqty;
                             srecqty = srecqty + trecqty;
                             sretqty = sretqty + tretqty;
-                            sshrqty = sshrqty + tshrqty;
+                            sshrqty = sshrqty + tshrqty + texcqty;
                             sexcqty = sexcqty + texcqty;
                             slosqty = slosqty + tlosqty;
                             srakqty = srakqty + trakqty;
@@ -519,7 +521,7 @@ namespace Improvar.Controllers
                         pissqty = pissqty + sissqty;
                         precqty = precqty + srecqty;
                         pretqty = pretqty + sretqty;
-                        pshrqty = pshrqty + sshrqty;
+                        pshrqty = pshrqty + sshrqty + sexcqty;
                         pexcqty = pexcqty + sexcqty;
                         pbalqty = pbalqty + sbalqty;
                         plosqty = plosqty + slosqty;
@@ -532,7 +534,7 @@ namespace Improvar.Controllers
                     gissqty = gissqty + pissqty;
                     grecqty = grecqty + precqty;
                     gretqty = gretqty + pretqty;
-                    gshrqty = gshrqty + pshrqty;
+                    gshrqty = gshrqty + pshrqty + pexcqty;
                     gexcqty = gexcqty + pexcqty;
                     gbalqty = gbalqty + pbalqty;
                     glosqty = glosqty + plosqty;
@@ -580,12 +582,12 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["issqnty"] = pissqty;
                     IR.Rows[rNo]["recqnty"] = precqty;
                     IR.Rows[rNo]["retqnty"] = pretqty;
-                    IR.Rows[rNo]["shrqnty"] = pshrqty;
-                    IR.Rows[rNo]["excqnty"] = pexcqty;
+                    IR.Rows[rNo]["shrqnty"] = pshrqty + pexcqty;
+                    //IR.Rows[rNo]["excqnty"] = pexcqty;
                     if (showraka == true)
                     {
-                        IR.Rows[rNo]["losqnty"] = plosqty;
-                        IR.Rows[rNo]["rakqnty"] = prakqty;
+                        //IR.Rows[rNo]["losqnty"] = plosqty;
+                        //IR.Rows[rNo]["rakqnty"] = prakqty;
                         if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = pissqty1;
                         if (showothrunit == true) IR.Rows[rNo]["recqnty1"] = precqty1;
                     }
@@ -600,12 +602,12 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["issqnty"] = gissqty;
                 IR.Rows[rNo]["recqnty"] = grecqty;
                 IR.Rows[rNo]["retqnty"] = gretqty;
-                IR.Rows[rNo]["shrqnty"] = gshrqty;
-                IR.Rows[rNo]["excqnty"] = gexcqty;
+                IR.Rows[rNo]["shrqnty"] = gshrqty + gexcqty;
+                //IR.Rows[rNo]["excqnty"] = gexcqty;
                 if (showraka == true)
                 {
-                    IR.Rows[rNo]["losqnty"] = glosqty;
-                    IR.Rows[rNo]["rakqnty"] = grakqty;
+                    //IR.Rows[rNo]["losqnty"] = glosqty;
+                    //IR.Rows[rNo]["rakqnty"] = grakqty;
                     if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = gissqty1;
                     if (showothrunit == true) IR.Rows[rNo]["recqnty1"] = grecqty1;
                 }

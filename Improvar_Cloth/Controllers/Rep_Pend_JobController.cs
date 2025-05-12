@@ -225,11 +225,12 @@ namespace Improvar.Controllers
                 if (VE.Checkbox3 == true) HC.GetPrintHeader(IR, "recslnm", "string", "c,20", "Recd from");
                 HC.GetPrintHeader(IR, "issqnty", "double", qtydsp, "Bal.Qty");
                 if (showothrunit == true) HC.GetPrintHeader(IR, "issqnty1", "double", qtydspo, "Iss." + qty1hd);
-                if (showraka == true)
-                {
-                    HC.GetPrintHeader(IR, "losqnty", "double", qtydsp, "Loose");
-                    HC.GetPrintHeader(IR, "rakqnty", "double", qtydsp, "Raka");
-                }
+
+                //if (showraka == true)
+                //{
+                //    HC.GetPrintHeader(IR, "losqnty", "double", qtydsp, "Loose");
+                //    HC.GetPrintHeader(IR, "rakqnty", "double", qtydsp, "Raka");
+                //}
 
                 double gopqty = 0, gissqty = 0, grecqty = 0, gretqty = 0, gshrqty = 0, gbalqty = 0, glosqty = 0, grakqty = 0;
                 double gissqty1 = 0, grecqty1 = 0, gretqty1 = 0, gshrqty1 = 0;
@@ -344,8 +345,8 @@ namespace Improvar.Controllers
                                     if (showraka == true)
                                     {
                                         if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = issqty1;
-                                        IR.Rows[rNo]["losqnty"] = losqty;
-                                        IR.Rows[rNo]["rakqnty"] = rakqty;
+                                        //IR.Rows[rNo]["losqnty"] = losqty;
+                                        //IR.Rows[rNo]["rakqnty"] = rakqty;
                                         if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = issqty1;
                                     }
                                 }
@@ -420,8 +421,8 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["issqnty"] = pissqty;
                         if (showraka == true)
                         {
-                            IR.Rows[rNo]["losqnty"] = plosqty;
-                            IR.Rows[rNo]["rakqnty"] = prakqty;
+                            //IR.Rows[rNo]["losqnty"] = plosqty;
+                            //IR.Rows[rNo]["rakqnty"] = prakqty;
                             if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = pissqty1;
                         }
                     }
@@ -434,8 +435,8 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["issqnty"] = gissqty;
                 if (showraka == true)
                 {
-                    IR.Rows[rNo]["losqnty"] = glosqty;
-                    IR.Rows[rNo]["rakqnty"] = grakqty;
+                    //IR.Rows[rNo]["losqnty"] = glosqty;
+                    //IR.Rows[rNo]["rakqnty"] = grakqty;
                     if (showothrunit == true) IR.Rows[rNo]["issqnty1"] = gissqty1;
                 }
 
@@ -554,15 +555,15 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "itnm", "string", "c,25", "Item");
                 if (showitem == true && qtystock == "N")
                 {
-                    HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "P/Box");
+                    //HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "P/Box");
                     HC.GetPrintHeader(IR, "sizedsp", "string", "c,50", "Sizes");
                     //HC.GetPrintHeader(IR, "boxdsp", "string", "c,30", "Boxes");
                 }
                 HC.GetPrintHeader(IR, "qnty", "double", qtydsp, "Total " + qtyhd);
                 if (qtystock == "N")
                 {
-                    HC.GetPrintHeader(IR, "box", "double", "n,12,2:##,##,##0.00", "Total Boxes");
-                    HC.GetPrintHeader(IR, "set", "double", "n,10,2:##,##,##0.00", "Total Set");
+                    //HC.GetPrintHeader(IR, "box", "double", "n,12,2:##,##,##0.00", "Total Boxes");
+                    //HC.GetPrintHeader(IR, "set", "double", "n,10,2:##,##,##0.00", "Total Set");
                 }
                 if (stockval == true) HC.GetPrintHeader(IR, "amt", "double", "n,17,2:####,##,##,##0.00", "Stock Val");
 
@@ -605,7 +606,7 @@ namespace Improvar.Controllers
                                 if (qtystock == "N")
                                 {
                                     IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
-                                    IR.Rows[rNo]["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"]);
+                                    //IR.Rows[rNo]["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"]);
                                 }
                             }
 
@@ -633,10 +634,11 @@ namespace Improvar.Controllers
                                     if (i > maxR) break;
                                 }
                                 //sizedata += tbl.Rows[i - 1]["sizenm"] + "=" + sizepcs.ToString() + "^";
-                                double dbboxes = Salesfunc.ConvPcstoBox(cpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                //double dbboxes = Salesfunc.ConvPcstoBox(cpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                 if (sizes != "") sizes += ", ";
                                 //sizes += tbl.Rows[i - 1]["sizenm"]+"="+dbboxes.ToString();
-                                sizes += Salesfunc.retsizemaxmin(chk2) + "=" + dbboxes.ToString();
+                                //sizes += Salesfunc.retsizemaxmin(chk2) + "=" + dbboxes.ToString();
+                                sizes += Salesfunc.retsizemaxmin(chk2);
                                 //if (boxes != "") boxes += "+";
                                 //boxes += dbboxes.ToString();
                                 ctpcs = ctpcs + cpcs;
@@ -644,7 +646,7 @@ namespace Improvar.Controllers
                                 if (i > maxR) break;
                             }
                             //string sizedsp = Sales_func.retsizedata(tblsizedata, itcd, tbl.Rows[i-1]["mixsize"].ToString(), sizes, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                            ctbox = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                            //ctbox = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                             ctset = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
                             if (showitem == true)
                             {
@@ -652,8 +654,8 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["qnty"] = ctpcs;
                                 if (qtystock == "N")
                                 {
-                                    IR.Rows[rNo]["box"] = ctbox;
-                                    IR.Rows[rNo]["set"] = ctset;
+                                    //IR.Rows[rNo]["box"] = ctbox;
+                                    //IR.Rows[rNo]["set"] = ctset;
                                 }
                                 if (stockval == true) IR.Rows[rNo]["amt"] = ctamt;
                             }
@@ -684,8 +686,8 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["qnty"] = tspcs;
                         if (qtystock == "N")
                         {
-                            IR.Rows[rNo]["box"] = tsbox;
-                            IR.Rows[rNo]["set"] = tsset;
+                            //IR.Rows[rNo]["box"] = tsbox;
+                            //IR.Rows[rNo]["set"] = tsset;
                         }
                         if (stockval == true) IR.Rows[rNo]["amt"] = tsamt;
 
@@ -701,8 +703,8 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["qnty"] = tapcs;
                     if (qtystock == "N")
                     {
-                        IR.Rows[rNo]["box"] = tabox;
-                        IR.Rows[rNo]["set"] = taset;
+                        //IR.Rows[rNo]["box"] = tabox;
+                        //IR.Rows[rNo]["set"] = taset;
                     }
                     if (stockval == true) IR.Rows[rNo]["amt"] = taamt;
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
@@ -714,8 +716,8 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["qnty"] = tpcs;
                 if (qtystock == "N")
                 {
-                    IR.Rows[rNo]["box"] = tbox;
-                    IR.Rows[rNo]["set"] = tset;
+                    //IR.Rows[rNo]["box"] = tbox;
+                    //IR.Rows[rNo]["set"] = tset;
                 }
                 if (stockval == true) IR.Rows[rNo]["amt"] = tamt;
                 IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
