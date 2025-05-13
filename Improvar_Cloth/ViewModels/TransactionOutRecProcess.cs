@@ -203,6 +203,7 @@ namespace Improvar.ViewModels
         public string Rec_UomTotal { get; set; }
         public string Det_UomTotal { get; set; }
 
+        public List<DropDown_list2> RETURN_TYPE { get; set; }
 
 
     }
