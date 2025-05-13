@@ -2905,7 +2905,7 @@ namespace Improvar.Controllers
                     
                     if (printemail == "Excel")
                     {
-                        string path_Save = @"C:\improvar\" + doccd + VE.FDOCNO + ".xls";
+                        string path_Save = @"C:\ipsmart\" + doccd + VE.FDOCNO + ".xls";
                         string exlfile = doccd + VE.FDOCNO + ".xls";
                         if (System.IO.File.Exists(path_Save))
                         {
