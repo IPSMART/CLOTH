@@ -136,14 +136,14 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult Rep_DnCn_Print(ReportViewinHtml VE, FormCollection FC)
+        public ActionResult Rep_DnCn_Print(ReportViewinHtml VE, FormCollection FC, string submitbutton)
         {
             try
             {
                 string ReportType = VE.TEXTBOX7;
                 if(ReportType== "With Item")
                 {
-                    return Rep_BillWithItem_Print(VE,FC);
+                    return Rep_BillWithItem_Print(VE,FC,submitbutton);
                 }
                 else
                 {
@@ -1383,9 +1383,10 @@ namespace Improvar.Controllers
                 return Content(ex.Message + " " + ex.InnerException);
             }
         }
-        public ActionResult Rep_BillWithItem_Print(ReportViewinHtml VE, FormCollection FC)
+        public ActionResult Rep_BillWithItem_Print(ReportViewinHtml VE, FormCollection FC, string submitbutton)
         {
             string fdate = "", tdate = "", slcd = "", blhead = "", gocd = "", grpemailid = "", Scm1 = "", Scmf = "", scmI = "", rptname = "", printemail = "", docnm = "";
+            printemail = submitbutton.ToString();
             int maxR = 0;
             string hddsp = "";
             string mp = "";// VE.OtherPara.Split(',')[0];
@@ -2901,26 +2902,48 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("chlntype", hddsp);
                     if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
 
+                    
                     if (printemail == "Excel")
                     {
-                        // string path_Save = @"C:\Ipsmart\" + doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
-                        // string exlfile = doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
-                        //if (System.IO.File.Exists(path_Save))
-                        //{
-                        //    System.IO.File.Delete(path_Save);
-                        //}
-                        //reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.Excel, path_Save);
-                        //byte[] buffer = System.IO.File.ReadAllBytes(path_Save);
-                        Response.ClearContent();
-                        Response.Buffer = true;
-                        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                        // Response.AddHeader("Content-Disposition", "attachment; filename=" + exlfile);
-                        //Response.BinaryWrite(buffer);
+                        string path_Save = @"C:\improvar\" + doccd + VE.FDOCNO + ".xls";
+                        string exlfile = doccd + VE.FDOCNO + ".xls";
+                        if (System.IO.File.Exists(path_Save))
+                        {
+                            System.IO.File.Delete(path_Save);
+                        }
+                        reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.Excel, path_Save);
+                        byte[] buffer = System.IO.File.ReadAllBytes(path_Save);
+                        System.Web.HttpContext.Current.Response.ClearContent();
+                        System.Web.HttpContext.Current.Response.Buffer = true;
+                        System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        System.Web.HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + exlfile);
+                        System.Web.HttpContext.Current.Response.BinaryWrite(buffer);
                         reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
-                        Response.Flush();
-                        Response.End();
+                        System.Web.HttpContext.Current.Response.Flush();
+                        System.Web.HttpContext.Current.Response.End();
                         return Content("Excel exported sucessfully");
                     }
+
+                    //if (printemail == "Excel")
+                    //{
+                    //    // string path_Save = @"C:\Ipsmart\" + doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
+                    //    // string exlfile = doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
+                    //    //if (System.IO.File.Exists(path_Save))
+                    //    //{
+                    //    //    System.IO.File.Delete(path_Save);
+                    //    //}
+                    //    //reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.Excel, path_Save);
+                    //    //byte[] buffer = System.IO.File.ReadAllBytes(path_Save);
+                    //    Response.ClearContent();
+                    //    Response.Buffer = true;
+                    //    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    //    // Response.AddHeader("Content-Disposition", "attachment; filename=" + exlfile);
+                    //    //Response.BinaryWrite(buffer);
+                    //    reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                    //    Response.Flush();
+                    //    Response.End();
+                    //    return Content("Excel exported sucessfully");
+                    //}
                     else
                     {
                         Response.Buffer = false;
