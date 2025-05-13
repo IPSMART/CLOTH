@@ -664,8 +664,8 @@ namespace Improvar.Controllers
                     }
 
                     //checking childdata exist against barno
-                    short slno = v.SLNO;
-                    var chk_child = (from a in DB.T_BATCHDTL where a.RECPROGAUTONO == TXN.AUTONO && a.RECPROGSLNO == slno && a.AUTONO != TXN.AUTONO select a).ToList();
+                    int slno = v.ParentSerialNo;
+                    var chk_child = (from a in DB.T_PROGDTL where a.PROGAUTONO == TXN.AUTONO && a.PROGSLNO == slno && a.AUTONO != TXN.AUTONO select a).ToList();
                     if (chk_child.Count() > 0)
                     {
                         v.ChildData = "Y";

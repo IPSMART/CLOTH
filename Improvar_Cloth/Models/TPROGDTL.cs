@@ -114,7 +114,9 @@ namespace Improvar.Models
         public double  MIQNTY { get; set; }
         public string ChildMIData { get; set; }
         public string ChildProgData { get; set; }
-
+        [StringLength(1)]
+        public string JOBTXNTY { get; set; }
+        public bool CheckedJOBTXNTY { get; set; }
 
     }
 }

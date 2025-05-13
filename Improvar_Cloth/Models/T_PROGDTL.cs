@@ -60,7 +60,8 @@ namespace Improvar.Models
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
-
+        [StringLength(1)]
+        public string JOBTXNTY { get; set; }
 
     }
 }
