@@ -244,6 +244,7 @@ namespace Improvar.Controllers
                                     {
                                         VE.T_STKTRNF.OTHAUTONO = VE.T_TXN.AUTONO;
                                         VE.T_TXN.SLCD = "";
+                                        VE.Last_SLCD = "";
                                         VE.SLNM = "";
                                         VE.SLAREA = "";
                                         VE.GSTNO = "";
@@ -1650,13 +1651,18 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetGodownDetails(string val)
+        public ActionResult GetGodownDetails(string val, string Code)
         {
             try
             {
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 string SkipGocd = (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SR") ? "'TR'" : "";
+                if ((VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") && Code.retStr() != "")
+                {
+                    SkipGocd += SkipGocd == "" ? "" : ",";
+                    SkipGocd += Code.retSqlformat();
+                }
                 var str = masterHelp.GOCD_help(val, SkipGocd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -7862,7 +7868,7 @@ namespace Improvar.Controllers
             try
             {
 
-                var str = masterHelp.COMPCDLOCCD_help(val, Code, CommVar.Compcd(UNQSNO));
+                var str = masterHelp.COMPCDLOCCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
