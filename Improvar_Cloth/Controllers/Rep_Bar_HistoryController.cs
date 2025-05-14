@@ -131,7 +131,7 @@ namespace Improvar.Controllers
                         sql1 += "" + scmf + ".m_subleg d, " + scmf + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g," + scm + ".t_txnmemo h," + scmf + ".M_RETDEB i, " + scm + ".t_batchmst j, " + scm + ".M_COLOR k, " + scm + ".M_SITEM l " + Environment.NewLine;
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+) and a.barno = j.barno(+) and j.COLRCD = k.colrcd(+) and j.itcd = l.itcd(+) and" + Environment.NewLine;
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and " + Environment.NewLine;
-                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and A.STKDRCR in ('D','C') and upper(a.BARNO) = '" + barno.ToUpper() + "' " + Environment.NewLine;
+                        sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and (A.STKDRCR in ('D','C') or b.doctag in ('PI')) and upper(a.BARNO) = '" + barno.ToUpper() + "' " + Environment.NewLine;
                         sql1 += "order by b.DOCDT,b.DOCNO " + Environment.NewLine;
 
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
@@ -162,7 +162,8 @@ namespace Improvar.Controllers
                                                  PREFNO = dr["PREFNO"].retStr(),
                                                  SLNM = dr["doccd"].retStr() == "SCM" ? dr["RTDEBCD"].retStr() == "" ? "" : dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
                                                  LOCNM = dr["LOCANM"].retStr(),
-                                                 NOS = dr["cancel"].retStr() == "N" ? dr["NOS"].retDbl() : 0,
+                                                 //NOS = dr["cancel"].retStr() == "N" ? dr["NOS"].retDbl() : 0,
+                                                 NOS = (dr["cancel"].retStr() == "N" && (dr["STKDRCR"].retStr() == "D" || dr["STKDRCR"].retStr() == "C")) ? dr["NOS"].retDbl() : 0,
                                                  RATE = dr["cancel"].retStr() == "N" ? dr["RATE"].retDbl() : 0,
                                                  STKDRCR = dr["STKDRCR"].retStr(),
                                                  QNTY = dr["cancel"].retStr() == "N" ? dr["QNTY"].retDbl() : 0,
