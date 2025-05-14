@@ -538,6 +538,9 @@ namespace Improvar.Controllers
                         VE.Total_sgstamt = VE.ItemDetails.Sum(a => a.sgstamt).retDbl();
                         VE.Total_cessamt = VE.ItemDetails.Sum(a => a.cessamt).retDbl();
                         VE.Total_NETAMOUNT = VE.ItemDetails.Sum(a => a.NETAMOUNT).retDbl();
+                        VE.TDISAMT = VE.ItemDetails.Sum(a => a.DISCAMT).retDbl();
+                        VE.TGSTAMT = VE.ItemDetails.Sum(a => a.igstamt + a.cgstamt + a.sgstamt + a.cessamt).retDbl();
+
                         string DOCDT = TJBILL.DOCDT.Value.ToString("dd/MM/yyyy");
                         string sql = "";
                         sql += "select a.effdt, a.prodgrpcd, a.igstper, a.cgstper, a.sgstper, a.cessper from ";

@@ -117,6 +117,10 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double Total_NETAMOUNT { get; set; }
         public string Item_UomTotal { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TDISAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double TGSTAMT { get; set; }
     }
     public class PendingChallanItemDetails
     {
