@@ -743,7 +743,7 @@ namespace Improvar.Controllers
                 DataTable tblprgrm = masterHelp.SQLquery(str);
 
                 string str1 = "";
-                str1 += "select i.autono,i.SLNO,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
+                str1 += "select i.autono,i.SLNO,i.recprogautono,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
                 str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,s.itnm fabitnm,i.cutlength,t.TXBLVAL,t.CGSTPER,t.SGSTPER,t.IGSTPER ";
                 str1 += "from " + scm1 + ".T_BATCHDTL i, " + scm1 + ".T_BATCHMST j, " + scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
@@ -927,6 +927,7 @@ namespace Improvar.Controllers
 
                         maxR = tbl.Rows.Count - 1; i = 0; sln = 0;
                         t_nos = 0; t_qnty = 0; t_issnos = 0; t_issqnty = 0; t_value = 0; int progslno = 0;
+                        string progautono = "";
                         while (i <= maxR)
                         {
                             t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
@@ -970,7 +971,8 @@ namespace Improvar.Controllers
                             {
                                 IR_PROG.Rows[rNo]["blremarks"] = blrem;
                                 progslno = tbl.Rows[i]["progslno"].retInt();
-                                tbleiss = (from DataRow dr in tbliss.Rows where dr["autono"].ToString() == autono && dr["RECPROGSLNO"].retInt() == progslno select dr).ToList().CopyToDataTable();
+                                progautono = tbl.Rows[i]["progautono"].retStr();
+                                tbleiss = (from DataRow dr in tbliss.Rows where dr["autono"].ToString() == autono && dr["RECPROGSLNO"].retInt() == progslno && dr["recprogautono"].retStr() == progautono select dr).ToList().CopyToDataTable();
 
                                 if (tbleiss.Rows.Count > 0)
                                 {
