@@ -118,6 +118,8 @@
                             document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
                             document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
                             document.getElementById("STYLENO").value = returncolvalue(res[0], "STYLENO");
+                            document.getElementById("mtrljobcd").value = returncolvalue(res[0], "mtrljobcd");
+                            document.getElementById("mtrljobnm").value = returncolvalue(res[0], "mtrljobnm");
 
                             if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
                                 $("#PDESIGN").prop('readonly', false);
@@ -433,6 +435,31 @@
         <div class="col-md-1">
             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Add_Barcode" value="Add Price" title="Click to Add Price" onclick="PriceOpen()" />
         </div>
+        <div class="col-md-4"></div>
+        <div class="col-lg-1" id="divmtrljobcd">
+            <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
+                <table id="exampleMTRL" border="1" style="width: auto;">
+                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
+                    {
+                        <tr>
+                            <td align="center">
+                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
+                            </td>
+                            <td align="center">
+                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                @Html.DisplayFor(model => STRC)
+                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
+                            </td>
+                            <td align="center">
+                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                @Html.DisplayFor(model => STRC1)
+                            </td>
+                        </tr>
+                                    }
+                </table>
+            </div>
+            @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
+        </div>
     </div>
     <div class="row">
         <div class="col-md-1">
@@ -479,31 +506,7 @@
                 @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
-        <div class="col-md-4"></div>
-        <div class="col-lg-1" id="divmtrljobcd">
-            <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
-                <table id="exampleMTRL" border="1" style="width: auto;">
-                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
-                    {
-                        <tr>
-                            <td align="center">
-                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
-                            </td>
-                            <td align="center">
-                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                @Html.DisplayFor(model => STRC)
-                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
-                            </td>
-                            <td align="center">
-                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                @Html.DisplayFor(model => STRC1)
-                            </td>
-                        </tr>
-                                    }
-                </table>
-            </div>
-            @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
-        </div>
+        
 
     </div>
     <div class="row">
@@ -540,6 +543,21 @@
         <div class="col-md-5">
             <div class="editor-field">
                 @Html.EditorFor(model => model.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "UOMCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Metirial")
+            </div>
+        </div>
+        <div class="col-md-5" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.mtrljobcd, new { htmlAttributes = new { @class = "form-control", id = "mtrljobcd", @placeholder = "mtrljobcd", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.mtrljobnm, new { htmlAttributes = new { @class = "form-control", id = "mtrljobnm", @placeholder = "mtrljobnm", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
     </div>
