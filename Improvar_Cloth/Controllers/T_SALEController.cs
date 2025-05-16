@@ -269,7 +269,7 @@ namespace Improvar.Controllers
                                 {
                                     TTXN.DOCCD = VE.DocumentType[0].value;
                                 }
-                                Cn.getdocmaxmindate(TTXN.DOCCD, "", VE.DefaultAction, "", VE);
+                                Cn.getdocmaxmindate(TTXN.DOCCD, "", VE.DefaultAction, "", VE, VE.MENU_PARA == "OP" ? true : false, TTXN.AUTONO);
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                                 {
@@ -573,7 +573,7 @@ namespace Improvar.Controllers
                     }
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
-                    Cn.getdocmaxmindate(VE.T_TXN.DOCCD, docdt, VE.DefaultAction, VE.T_TXN.DOCNO, VE);
+                    Cn.getdocmaxmindate(VE.T_TXN.DOCCD, docdt, VE.DefaultAction, VE.T_TXN.DOCNO, VE, VE.MENU_PARA == "OP" ? true : false, VE.T_TXN.AUTONO);
                     if ((op.ToString() == "A" && loadOrder == "N" && parkID == "") || ((op == "E" || op == "D" || op == "V") && loadOrder.retStr().Length > 1))
                     {
                         VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
@@ -7919,6 +7919,58 @@ namespace Improvar.Controllers
                     Cn.SaveException(ex, "");
                     return Content(ex.Message + ex.InnerException);
                 }
+            }
+        }
+        public ActionResult CheckAuthRecord(TransactionSaleEntry VE, string callingfor, string remarks)
+        {
+            try
+            {
+                if (callingfor == "Check")
+                {
+                    T_TXNSTATUS t_TXNSTATUS = new T_TXNSTATUS();
+                    t_TXNSTATUS.AUTONO = VE.T_TXN.AUTONO;
+                    t_TXNSTATUS.CLCD = CommVar.ClientCode(UNQSNO);
+                    t_TXNSTATUS.STSREM = remarks;
+                    t_TXNSTATUS.USR_ID = CommVar.UserID();
+                    t_TXNSTATUS.USR_ENTDT = System.DateTime.Now;
+                    string sql = "";
+                    t_TXNSTATUS.FLAG1 = "Check";
+                    t_TXNSTATUS.STSTYPE = "K";
+                    sql = "delete from  " + CommVar.CurSchema(UNQSNO) + ".t_txnstatus where autono='" + t_TXNSTATUS.AUTONO + "'  and ststype='U' ";
+                    masterHelp.SQLNonQuery(sql);
+                    sql = masterHelp.RetModeltoSql(t_TXNSTATUS, "A");
+                    masterHelp.SQLNonQuery(sql);
+                }
+                else if (callingfor == "UnCheck")
+                {
+                    T_TXNSTATUS t_TXNSTATUS = new T_TXNSTATUS();
+                    t_TXNSTATUS.AUTONO = VE.T_TXN.AUTONO;
+                    t_TXNSTATUS.CLCD = CommVar.ClientCode(UNQSNO);
+                    t_TXNSTATUS.STSREM = remarks;
+                    t_TXNSTATUS.USR_ID = CommVar.UserID();
+                    t_TXNSTATUS.USR_ENTDT = System.DateTime.Now;
+                    string sql = "";
+                    t_TXNSTATUS.FLAG1 = "UnChk";
+                    t_TXNSTATUS.STSTYPE = "U";
+                    sql = "delete from  " + CommVar.CurSchema(UNQSNO) + ".t_txnstatus where autono='" + t_TXNSTATUS.AUTONO + "'  and ststype='K' ";
+                    masterHelp.SQLNonQuery(sql);
+                    sql = masterHelp.RetModeltoSql(t_TXNSTATUS, "A");
+                    masterHelp.SQLNonQuery(sql);
+                }
+                else if (callingfor == "Authorise")
+                {
+                    Cn.DocumentAuthorisation_Save(VE.T_TXN.DOCCD, VE.T_TXN.AUTONO, 1, VE.T_TXN.BLAMT.retDbl(), VE.T_CNTRL_HDR.EMD_NO.retShort(), "Auth", remarks, Convert.ToByte(VE.AuthorisationLVL.retInt()), "A");
+                }
+                else if (callingfor == "Unauthorise")
+                {
+                    Cn.DocumentAuthorisation_Save(VE.T_TXN.DOCCD, VE.T_TXN.AUTONO, 1, VE.T_TXN.BLAMT.retDbl(), VE.T_CNTRL_HDR.EMD_NO.retShort(), "UnAth", remarks, Convert.ToByte(VE.AuthorisationLVL.retInt()), "N");
+                }
+                return Content(callingfor);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
 
