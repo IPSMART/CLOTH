@@ -517,9 +517,10 @@ namespace Improvar.Controllers
                                 if (tbleiss.Rows.Count > 0)
                                 {
 
-                                    IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
+                                    //IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
                                     for (int j = 0; j <= tbleiss.Rows.Count - 1; j++)
                                     {
+                                        IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
                                         IR_PROG.Rows[rNo]["blremarks"] = blrem;
                                         IR_PROG.Rows[rNo]["autono"] = tbleiss.Rows[j]["autono"].ToString() + ic.ToString();
                                         IR_PROG.Rows[rNo]["copymode"] = copymode;
