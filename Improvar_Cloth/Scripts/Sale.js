@@ -5061,6 +5061,8 @@ function Edit_Agent() {
     $("#update_Agent").show();
     $("#cancel_Agent").show();
     $("#update_Agent").prop("disabled", false);
+    $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+
 }
 
 function Cancel_Agent() {

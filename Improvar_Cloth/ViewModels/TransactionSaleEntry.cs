@@ -11,7 +11,7 @@ namespace Improvar.ViewModels
     public class TransactionSaleEntry : Permission
     {
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
-        public T_TXN T_TXN { get; set; }
+        public T_TXN T_TXN { get; set; }       
         public T_VCH_BL T_VCH_BL { get; set; }
 
         public M_SYSCNFG M_SYSCNFG { get; set; }
@@ -245,6 +245,8 @@ namespace Improvar.ViewModels
         public string Last_TDT { get; set; }
         public string Last_R_DOCNO { get; set; }
         public string Last_BARNO { get; set; }
+        public string Last_PREFNO { get; set; }
+        public string Last_PREFDT { get; set; }
         public string Last_BARCODE { get; set; }
         public string Last_STYLENO { get; set; }
         public bool TCSAUTOCAL { get; set; }
@@ -307,7 +309,7 @@ namespace Improvar.ViewModels
         public string Modify { get; set; }
         public double BuyerTotTurnover { get; set; }
         public List<PAYMENT_DETAILS> PAYMENT_DETAILS { get; set; }
-
+       
     }
 
     public class PAYMENT_DETAILS

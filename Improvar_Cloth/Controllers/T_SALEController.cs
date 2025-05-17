@@ -663,6 +663,8 @@ namespace Improvar.Controllers
                 TXNTRN = DB.T_TXNTRANS.Find(TXN.AUTONO);
 
                 TSTKTRNF = DB.T_STKTRNF.Find(TXN.AUTONO);
+                VE.Last_PREFNO = TXN.PREFNO;
+                VE.Last_PREFDT = TXN.PREFDT.retDateStr();
                 if (VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC")
                 {
                     if (VE.MENU_PARA == "REC")
@@ -1658,11 +1660,11 @@ namespace Improvar.Controllers
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 string SkipGocd = (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "SR") ? "'TR'" : "";
-                if ((VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") && Code.retStr() != "")
-                {
-                    SkipGocd += SkipGocd == "" ? "" : ",";
-                    SkipGocd += Code.retSqlformat();
-                }
+                //if ((VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") && Code.retStr() != "")
+                //{
+                //    SkipGocd += SkipGocd == "" ? "" : ",";
+                //    SkipGocd += Code.retSqlformat();
+                //}
                 var str = masterHelp.GOCD_help(val, SkipGocd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -4039,6 +4041,24 @@ namespace Improvar.Controllers
                     var fschnm = CommVar.FinSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
 
+                    //update to T_TXN//
+                    sql = "update " + schnm + ". T_TXN set PREFNO='" + VE.T_TXN.PREFNO + "', PREFDT=to_date('" + VE.T_TXN.PREFDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    //update to t_vch_gst//
+                    sql = "update " + fschnm + ". t_vch_gst set BLNO='" + VE.T_TXN.PREFNO + "', BLDT=to_date('" + VE.T_TXN.PREFDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    //update to t_vch_bl//
+                    sql = "update " + fschnm + ". t_vch_bl set BLNO='" + VE.T_TXN.PREFNO + "', BLDT=to_date('" + VE.T_TXN.PREFDT.retDateStr() + "', 'dd/mm/yyyy') ";
+                    sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    if (VE.Last_PREFNO.retStr() != "")
+                    {
+                        sql = "update " + fschnm + ". t_vch_det set T_REM=replace(replace(T_REM, '" + VE.Last_PREFNO + "', '" + VE.T_TXN.PREFNO + "'),'" + VE.Last_PREFDT + "','" + VE.T_TXN.PREFDT.retDateStr() + "') ";
+                        sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
                     //update to T_TXNOTH//
                     sql = "update " + schnm + ". T_TXNOTH set AGSLCD='" + VE.T_TXNOTH.AGSLCD + "', SAGSLCD='" + VE.T_TXNOTH.SAGSLCD + "' ";
                     sql += " where AUTONO='" + VE.T_TXN.AUTONO + "'  ";

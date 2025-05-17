@@ -25,7 +25,7 @@
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
-                <div style="overflow-y:scroll;max-height:235px;">
+                <div style="overflow-y:scroll;max-height:350px;">
                     <div style="width:1126px">
                         <table id="_REP_BAR_HISTORY_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1116px">
                             <thead>
@@ -85,7 +85,7 @@
                                                 @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].LOCNM, new { id = "D_LOCNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].itstyleno, new { id = "D_itstyleno_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].itstyleno, new { id = "D_itstyleno_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly",@style = "font-weight:bold" })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.BARCODEHISTORY[i].UOM, new { htmlAttributes = new { id = "D_UOM_" + i, @style = "text-align: left;", @class = " atextBoxFor", maxlength = 6, @TabIndex = -1, @readonly = "readonly" } })

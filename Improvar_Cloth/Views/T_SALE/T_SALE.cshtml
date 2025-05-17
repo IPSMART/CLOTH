@@ -389,6 +389,21 @@
             if (!emptyFieldCheck("Please Select / Enter From Godown", "SGOCD")) { return false; }
             if (!emptyFieldCheck("Please Select / Enter To Cmpany Code", "TOCOMPCD")) { return false; }
         }
+        debugger;
+        if ("@Model.MENU_PARA" == "ISS" || "@Model.MENU_PARA" == "REC")
+        {
+            var SCOMPCD = $("#SCOMPCD").val();
+            var SLOCCD = $("#SLOCCD").val();
+            var SGOCD = $("#GOCD").val();
+            var TOCOMPCD = $("#TOCOMPCD").val();
+            var TOLOCCD = $("#TOLOCCD").val();
+            var TOGOCD = $("#TOGOCD").val();
+            if ((SCOMPCD + SLOCCD + SGOCD) == (TOCOMPCD + TOLOCCD + TOGOCD))
+            {
+                msgInfo(" From Company ,From Location,From Godown and To Company ,To Location,To Godown Cannot be same")
+                return false;
+            }
+        }
         //}
         //AMT TAB HSN CHECK
         if ("@Model.MENU_PARA" == "SCN" || "@Model.MENU_PARA" == "SDN" || "@Model.MENU_PARA" == "PCN" || "@Model.MENU_PARA" == "PDN") {
@@ -1405,9 +1420,10 @@
                                         }
                                     </div>
                                 </div>
-                                <div class="col-md-10">
+                                <div class="Agentdiv col-md-10">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO", onblur = "CheckBillNumber();" } })
+                                        @Html.HiddenFor(model => model.Last_PREFNO, new { id = "Last_PREFNO" })
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -1420,9 +1436,10 @@
                                         }
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="Agentdiv col-md-3">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                        @Html.HiddenFor(model => model.Last_PREFDT, new { id = "Last_PREFDT" })
                                     </div>
                                 </div>
                                 if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "REC") && Model.DefaultAction == "V")
@@ -1537,7 +1554,7 @@
                             @if (Model.DefaultAction == "V")
                             {
                                 <div class="col-md-1" style="width:auto;">
-                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Agent" id="edit_Agent" value="Update Agent" title="Click to Update Agent button for edit Agent Tab" onclick="Edit_Agent()" />
+                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Agent" id="edit_Agent" value="Update Agent/party bill no" title="Click to Update Agent button for edit Agent Tab" onclick="Edit_Agent()" />
                                     <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="update" id="update_Agent" value="Update" title="Click to Update Agent Tab" disabled onclick="Update_Agent()" />
                                     <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none" name="cancel" id="cancel_Agent" value="Cancel" title="Click to Cancel" onclick="Cancel_Agent()" />
                                 </div>
