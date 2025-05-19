@@ -414,7 +414,7 @@
 
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <div class="editor-label" style="margin-top: 6px;">
                 @Html.Label("", "Design No./Item")
             </div>
@@ -526,13 +526,13 @@
             </div>
         </div>
         <div class="col-md-1" style="width:auto;">
-            <div class="editor-field" style="margin-top: 6px;">
-                @Html.Label("", "Design")
+            <div class="editor-field" style="font-weight: bold;margin-top: 6px;">
+                @Html.Label("", "Design", htmlAttributes: new { style = "font-weight:bold;" })
             </div>
         </div>
         <div class="col-md-5">
             <div class="editor-field">
-                @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
+                @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @style = "font-weight:bold", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
         <div class="col-md-1" style="width:auto;">

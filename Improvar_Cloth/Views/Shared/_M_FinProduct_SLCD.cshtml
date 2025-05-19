@@ -18,7 +18,7 @@
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Ledger tagging Details</b></center>
             </div>
 
-            <table id="exampleItemSize" class="resizable grid_table" cellpadding="0px" cellspacing="0px" style="width: 1156px;">
+            <table id="exampleItemSize" class="resizable grid_table" cellpadding="0px" cellspacing="0px" style="width: 1070px;">
                 <thead>
                     <tr style="height:30px;">
                         <th class="grid_th" style="width:27px;"></th>
@@ -26,7 +26,7 @@
                         <th class="grid_th" style="width:85px;">Ledger CODE</th>
                         <th class="grid_th" >Ledger NAME</th>
                         <th class="grid_th" style="width:105px;text-align:right;">Rate</th>
-                        <th class="grid_th" style="width:278px">PDESIGN</th>
+                        <th class="grid_th" style="width:290px">PDESIGN</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,7 +55,7 @@
                                     @Html.TextBoxFor(model => Model.MSITEMSLCD[i].JOBRT, new { id = "JOBRT_" + i, maxlength = 12, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].PDESIGN, new { id = "PDESIGN_" + i, maxlength = 30, @class = " atextBoxFor " })
+                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].PDESIGN, new { id = "PDESIGN_" + i, maxlength = 40, @class = " atextBoxFor " })
                                 </td>
                                
 

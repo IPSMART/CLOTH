@@ -32,7 +32,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string SLCD { get; set; }
 
-        [StringLength(30)]
+        [StringLength(40)]
         public string PDESIGN { get; set; }
 
          public double? JOBRT { get; set; }
