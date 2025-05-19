@@ -426,34 +426,35 @@
 
         //
         @*if ("@Model.MENU_PARA" != "SBPCK" && "@Model.MENU_PARA" != "SB" && "@Model.MENU_PARA" != "SBDIR" && "@Model.MENU_PARA" != "SBEXP") {*@//bhura w/o rate bill not save
-
-        var rateblank = false;
-        if (GridRow_bar != 0) {
-            for (var i = 0; i <= GridRow_bar - 1; i++) {
-                if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
-                    if ("@Model.MENU_PARA" == "PJBL" || "@Model.MENU_PARA" == "PJBR") {
-                        if ($("#B_FREESTK_" + i).val() != "Y") {
+              
+                var rateblank = false;
+                if (GridRow_bar != 0) {
+                    for (var i = 0; i <= GridRow_bar - 1; i++) {
+                        if ($("#B_ITCD_" + i).val() != "" && retFloat($("#B_RATE_" + i).val()) == 0) {
+                        if ("@Model.MENU_PARA" == "PJBL" || "@Model.MENU_PARA" == "PJBR") {
+                            if ($("#B_FREESTK_" + i).val() != "Y") {
+                                rateblank = true;
+                            }
+                        }
+                        else {
                             rateblank = true;
                         }
-                    }
-                    else {
-                        rateblank = true;
-                    }
 
-                    break;
+                        break;
+                    }
                 }
-            }
-            if (rateblank == true) {
-                var slno = $("#B_SLNO_" + i).val();
-                msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
+
+                if (rateblank == true && "@Model.MENU_PARA" != "ISS" && "@Model.MENU_PARA" != "REC") {
+                    var slno = $("#B_SLNO_" + i).val();
+                    msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(2)").addClass('active');
                 //below set the  child sequence
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                message_value = "B_RATE_" + i;
-                return false;
-            }
+                    message_value = "B_RATE_" + i;
+                    return false;
+                }            
         }
         //}
         //start of finalise

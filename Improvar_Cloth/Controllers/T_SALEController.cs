@@ -5659,7 +5659,7 @@ namespace Improvar.Controllers
                                 if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT") taxchking = false;
                                 if (taxchking == true)
                                 {
-                                    if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
+                                    if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "ISS" && VE.MENU_PARA != "REC")
                                     {
                                         ContentFlg = "TAX amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
                                         goto dbnotsave;
@@ -7067,7 +7067,7 @@ namespace Improvar.Controllers
                             ContentFlg = "We can't add igst+cgst+sgst for the same party.";
                             goto dbnotsave;
                         }
-                        else if (igst + cgst + sgst == 0 && VE.T_TXN.REVCHRG != "N")
+                        else if (igst + cgst + sgst == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "ISS" && VE.MENU_PARA != "REC")
                         {
                             //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
                             //{
