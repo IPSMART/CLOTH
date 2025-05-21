@@ -40,6 +40,9 @@ namespace Improvar.Controllers
                         case "CM":
                             ViewBag.formname = "Cash Memo Registers"; break;
                         default: ViewBag.formname = ""; break;
+                        case "STRF":
+                            ViewBag.formname = "Cash Memo Registers"; break;
+                        
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -110,6 +113,13 @@ namespace Improvar.Controllers
                     {
                         RT.Add(new DropDown_list1 { value = "Sales Cash Memo", text = "Sales Cash Memo" });
                         RT.Add(new DropDown_list1 { value = "Cash Memo Credit Note", text = "Cash Memo Credit Note" });
+                        VE.DropDown_list1 = RT;
+                    }
+                    else if (VE.MENU_PARA == "STRF")
+                    {
+                        RT.Add(new DropDown_list1 { value = "All", text = "All" });
+                        RT.Add(new DropDown_list1 { value = "Stk Trnf Out", text = "Stk Trnf Out" });
+                        RT.Add(new DropDown_list1 { value = "Stk Trnf In", text = "Stk Trnf In" });
                         VE.DropDown_list1 = RT;
                     }
                     else
@@ -255,7 +265,14 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    regdsp = VE.TEXTBOX1.ToString() + " Register";
+                    if (VE.TEXTBOX1 == "All" && VE.MENU_PARA == "STRF")
+                    {
+                        regdsp = "Stock Transfer Register";
+                    }
+                    else
+                    {
+                        regdsp = VE.TEXTBOX1.ToString() + " Register";
+                    }
                 }
                 var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
 
@@ -318,6 +335,14 @@ namespace Improvar.Controllers
                             txntag = "'PD'"; break;
                         case "PCWOQ":
                             txntag = "'PC'"; break;
+
+                        case "All":
+                            txntag = "'TI','TO'"; break;
+
+                        case "Stk Trnf In":
+                            txntag = "'TI'"; break; 
+                        case "Stk Trnf Out":
+                            txntag = "'TO'"; break;
                         case "Job Bill raised to Party":
                             txntag = "'JB'"; break;
                         default: txntag = ""; break;

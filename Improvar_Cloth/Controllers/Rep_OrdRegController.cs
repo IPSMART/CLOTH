@@ -131,7 +131,7 @@ namespace Improvar.Controllers
                 }
                 string sort = "agslnm, agslcd ";
                 if (ReportType == "Details") sort += ",slcd,slnm";
-                sort += ",docdt, docno,  itnm, itcd,rate";
+                sort += ",docdt, docno,STYLENO,  itnm, itcd,rate";
                 if (showcolor == true) sort += ",colrcd";
                 if (ReportType == "Supper Summary") sort = "agslnm, agslcd,slnm,slcd";
 
@@ -192,9 +192,10 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "district", "string", "c,20", "Area");
                     }
                     HC.GetPrintHeader(IR, "prefno", "string", "c,20", "Party Ref");
+                    HC.GetPrintHeader(IR, "PREFDT", "string", "c,20", "Party Ref Date"); 
                     if (ReportType == "Details")
                     {
-                        HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
+                        HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");                        
                         if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
 
                     }
@@ -225,8 +226,13 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3:##,##,##,##0.000", "Total Qnty");
+                            HC.GetPrintHeader(IR, "balordqnty", "double", "n,12,3:##,##,##,##0.000", "Total Qnty");                            
                         }
+                        if (ReportType == "Details")
+                        {                          
+                            HC.GetPrintHeader(IR, "DELVDT", "string", "c,20", "Delivary Date");                           
+                        }
+
                     }
 
 
@@ -267,7 +273,9 @@ namespace Improvar.Controllers
                                         IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
                                         IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
                                         IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
-                                        IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["itcd"].ToString() + "]";
+                                        IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr();
+                                        IR.Rows[rNo]["DELVDT"] = tbl.Rows[i]["DELVDT"].retDateStr();
+                                        IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " "+tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["itcd"].ToString() + "]";
 
                                         double cnt = 0;
                                         while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["slcd"].ToString() == party && tbl.Rows[i]["autono"].ToString() == chk1 && tbl.Rows[i]["itcd"].ToString() == ichk)
@@ -431,7 +439,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
                                 IR.Rows[rNo]["district"] = tbl.Rows[i]["district"].ToString();
                                 IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
-
+                                IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr(); 
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
 
