@@ -1151,8 +1151,8 @@
                                 <div class="editor-field">
                                     @if (Model.HASTRANSACTION != true)
                                     {
-                                        @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/PRODGRPCD=PRODGRPCD/PRODGRPNM=prodgrpnm');", @placeholder = "Code", maxlength = 4 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0')" />
+                                        @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/BARGENTYPE1=BARGENTYPE')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/PRODGRPCD=PRODGRPCD/PRODGRPNM=prodgrpnm/BARGENTYPE1=BARGENTYPE');", @placeholder = "Code", maxlength = 4 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/BARGENTYPE1=BARGENTYPE')" />
                                     }
                                     else
                                     {
@@ -1163,7 +1163,9 @@
                             <div class="col-md-10">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
-                                </div>
+                                    @Html.HiddenFor(a => a.M_GROUP.BARGENTYPE, new { id = "BARGENTYPE1" })
+                                    @Html.HiddenFor(a => a.COMMONUIQBAR, new { id = "COMMONUIQBAR" })
+                                 </div>
                             </div>
                         </div>
                         @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
@@ -1717,6 +1719,7 @@
                 </div>
                 <div id="BarCode" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row" style="margin-top: 11px;width:fit-content;height:auto;">
+                       
                         <div class="col-lg-8" id="partialdivINVCD">
                             @Html.Partial("_M_FinProduct_BARCD")
                         </div>

@@ -49,5 +49,6 @@ namespace Improvar.ViewModels
         public bool PreviousYrUpload { get; set; }
         public string LINKITNM { get; set; }
         public string LINKUOMCD { get; set; }
+        public string COMMONUIQBAR { get; set; }
     }
 }
