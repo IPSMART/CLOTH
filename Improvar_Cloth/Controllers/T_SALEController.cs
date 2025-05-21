@@ -626,8 +626,8 @@ namespace Improvar.Controllers
             dt.Rows.Add("PJBL", "Job Bill raised to Party", "SALGLCD", "", "", "", "", "", "D", "JB");
             dt.Rows.Add("PJBR", "Job Bill Return to Party", "SALGLCD", "", "", "", "", "", "D", "JQ");
             dt.Rows.Add("SBPOS", "Cash Sales", "SALGLCD", "", "", "", "", "", "D", "SB");
-            dt.Rows.Add("ISS", "Stock Transfer Issue", "SALGLCD", "", "", "", "", "", "D", "SB");//sales
-            dt.Rows.Add("REC", "Stock Transfer Receive", "PURGLCD", "", "", "", "", "", "C", "PB");//purchase
+            dt.Rows.Add("ISS", "Stock Transfer Issue", "SALGLCD", "", "", "", "", "", "D", "TO");//sales
+            dt.Rows.Add("REC", "Stock Transfer Receive", "PURGLCD", "", "", "", "", "", "C", "TI");//purchase
 
             var dr = dt.Select("MENUPARA='" + MENU_PARA + "'");
             if (dr != null && dr.Count() > 0) return dr.CopyToDataTable(); else return dt;
@@ -783,7 +783,7 @@ namespace Improvar.Controllers
                 {
                     VE.TDSNM1 = DBF.M_TDS_CNTRL.Where(e => e.TDSCODE == TTDS.TDSCODE).FirstOrDefault()?.TDSNM;
                 }
-                if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC")
                 {
                     VE.EXPGLCD = DBF.T_VCH_GST.Where(a => a.AUTONO == TXN.AUTONO).Select(b => b.EXPGLCD).FirstOrDefault();
                     VE.EXPGLNM = VE.EXPGLCD.retStr() == "" ? "" : DBF.M_GENLEG.Where(a => a.GLCD == VE.EXPGLCD).Select(b => b.GLNM).FirstOrDefault();
@@ -5117,7 +5117,18 @@ namespace Improvar.Controllers
                         case "SBPOS":
                             stkdrcr = "C"; trcd = "SB"; strrem = "Cash Sale" + strqty; break;
                     }
+                    if (VE.GSTNO.retStr() == CommVar.GSTNO(UNQSNO))
+                    {
+                        if (VE.MENU_PARA == "REC")
+                        {
+                            blactpost = false; blgstpost = false;
+                        }
+                        else if (VE.MENU_PARA == "ISS")
+                        {
+                            blactpost = false; blgstpost = true;
+                        }
 
+                    }
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
                     if (VE.MENU_PARA == "PR") slcdpara = "PB";
                     //M_SYSCNFG MSYSCNFG = DB.M_SYSCNFG.FirstOrDefault();
@@ -6749,7 +6760,8 @@ namespace Improvar.Controllers
                                     //TVCHGST.UOM = VE.TTXNDTL[i].BLUOMCD.retStr() != "" ? VE.TTXNDTL[i].BLUOMCD : VE.TTXNDTL[i].UOM;
                                     TVCHGST.AGSTDOCNO = VE.TTXNDTL[i].AGDOCNO;
                                     TVCHGST.AGSTDOCDT = VE.TTXNDTL[i].AGDOCDT;
-                                    TVCHGST.SALPUR = salpur;
+                                    //TVCHGST.SALPUR = salpur;
+                                    TVCHGST.SALPUR = ((VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") && VE.GSTNO.retStr() == CommVar.GSTNO(UNQSNO)) ? "" : salpur;
                                     TVCHGST.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
                                     TVCHGST.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
@@ -6765,7 +6777,7 @@ namespace Improvar.Controllers
                                     TVCHGST.APPLTAXRATE = 0;
                                     TVCHGST.EXEMPTEDTYPE = exemptype;
                                     //TVCHGST.EXPGLCD = expglcd;
-                                    TVCHGST.EXPGLCD = (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") ? VE.EXPGLCD : expglcd;
+                                    TVCHGST.EXPGLCD = (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") ? VE.EXPGLCD : expglcd;
                                     TVCHGST.INPTCLAIM = "Y";
                                     TVCHGST.LUTNO = VE.T_VCH_GST.LUTNO;
                                     TVCHGST.LUTDT = VE.T_VCH_GST.LUTDT;
@@ -7019,7 +7031,8 @@ namespace Improvar.Controllers
                                     {
                                         TVCHGST1.AGSTDOCDT = VE.TTXNDTL[0].AGDOCDT;
                                     }
-                                    TVCHGST1.SALPUR = salpur;
+                                    //TVCHGST1.SALPUR = salpur;
+                                    TVCHGST1.SALPUR = ((VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") && VE.GSTNO.retStr() == CommVar.GSTNO(UNQSNO)) ? "" : salpur;
                                     TVCHGST1.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;
                                     TVCHGST1.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST1.EXPCD = VE.T_VCH_GST.EXPCD;
@@ -7036,7 +7049,7 @@ namespace Improvar.Controllers
                                     TVCHGST1.EXEMPTEDTYPE = exemptype;
                                     TVCHGST1.GOOD_SERV = (VE.MENU_PARA == "PJBL" || VE.MENU_PARA == "PJBR") ? "S" : good_serv;
                                     //TVCHGST1.EXPGLCD = ((VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") && (VE.TBATCHDTL == null && VE.TTXNDTL == null)) ? VE.TTXNAMT[0].GLCD : expglcd;
-                                    TVCHGST1.EXPGLCD = (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") ? VE.EXPGLCD : expglcd;
+                                    TVCHGST1.EXPGLCD = (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") ? VE.EXPGLCD : expglcd;
                                     TVCHGST1.INPTCLAIM = "Y";
                                     TVCHGST1.LUTNO = VE.T_VCH_GST.LUTNO;
                                     TVCHGST1.LUTDT = VE.T_VCH_GST.LUTDT;
@@ -7839,7 +7852,7 @@ namespace Improvar.Controllers
                 {
                     linkcd = code_data[0];
                     caption = code_data[1];
-                    if ((VE.MENU_PARA == "STI" || VE.MENU_PARA == "STR") && caption == "Party Gen.Leder")
+                    if ((VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC") && caption == "Party Gen.Leder")
                     {
                         linkcd += ",O";
                     }
