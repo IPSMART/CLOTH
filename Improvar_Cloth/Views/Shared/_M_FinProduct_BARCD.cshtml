@@ -1,7 +1,6 @@
 ﻿@model Improvar.ViewModels.ItemMasterEntry
 <script type="text/javascript">
-    $(document).ready(function ()
-    {
+    $(document).ready(function () {
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('FINPRODUCT_INVCD'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
@@ -35,6 +34,7 @@
                         <th class="grid_th">SIZE NAME</th>
                         <th class="grid_th" style="width:125px;">SIZE BAR CODE</th>
                         <th class="grid_th" style="width:133px;">BAR CODE</th>
+                        <th class="grid_th" style="width:133px;">PDesign</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,7 +46,7 @@
                             {
                                 <tr style="font-size:12px; font-weight:bold;">
                                     <td class="grid_td" style="padding-left:7px;padding-right:7px;">
-                                        @Html.CheckBoxFor(model => model.MSITEMBARCODE[i].Checked, new { htmlAttributes = new { id = "chkid_" + i }, @style= "disabled:disabled" })
+                                        @Html.CheckBoxFor(model => model.MSITEMBARCODE[i].Checked, new { htmlAttributes = new { id = "chkid_" + i }, @style = "disabled:disabled" })
                                     </td>
                                     <td class="grid_td">
                                         @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].SRLNO, new { id = "ISRLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
@@ -77,6 +77,16 @@
                                         else
                                         {
                                             @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].BARNO, new { id = "IBARCODE_" + i, maxlength = 20, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                        }
+                                    </td>
+                                    <td class="grid_td">
+                                        @if (!(Model.M_GROUP.BARGENTYPE == "E" || Model.COMMONUIQBAR == "E") && Model.DefaultAction == "E")
+                                        {
+                                            @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].PDESIGN, new { id = "IPDESIGN_" + i, maxlength = 40, @class = " atextBoxFor " })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].PDESIGN, new { id = "IPDESIGN_" + i, maxlength = 40, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         }
                                     </td>
                                 </tr>
@@ -119,6 +129,9 @@
                                         {
                                             @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].BARNO, new { id = "IBARCODE_" + i, maxlength = 20, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         }
+                                    </td>
+                                    <td class="grid_td">
+                                        @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].PDESIGN, new { id = "IPDESIGN_" + i, maxlength = 40, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                     </td>
                                 </tr>
                             }

@@ -262,6 +262,11 @@ namespace Improvar.Controllers
                             VE.UploadDOC = UploadDOC1;
 
                         }
+                        var MSYSCNFG = salesfunc.M_SYSCNFG(System.DateTime.Now.Date.retDateStr());
+                        if (MSYSCNFG != null)
+                        {
+                            VE.COMMONUIQBAR = MSYSCNFG.COMMONUNIQBAR;
+                        }
                         return View(VE);
                     }
                     else
@@ -408,7 +413,7 @@ namespace Improvar.Controllers
                     }
                 }
                 sql = "";
-                sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE, ";
+                sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE,i.PDESIGN, ";
                 sql += "case when exists (select autono from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHdtl a where a.BARNO = i.BARNO) then 'Y' else '' end as HASTRANSACTION ";
                 sql += "FROM " + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst i, " + CommVar.CurSchema(UNQSNO) + ".M_COLOR j, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k ";
                 sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.COMMONUNIQBAR='C' and i.itcd = '" + sl.ITCD + "' ";
@@ -423,6 +428,7 @@ namespace Improvar.Controllers
                                         COLRCD = dr["COLRCD"].ToString(),
                                         COLRNM = dr["COLRNM"].ToString(),
                                         BARNO = dr["BARNO"].ToString(),
+                                        PDESIGN = dr["PDESIGN"].ToString(),
                                         CLRBARCODE = dr["CLRBARCODE"].ToString(),
                                         HASTRANSACTION = dr["HASTRANSACTION"].ToString() == "Y" ? true : false
                                     }).ToList();
@@ -1877,6 +1883,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.FABITCD = MSITEM.FABITCD;
                                     TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                    TBATCHMST.PDESIGN = VE.MSITEMBARCODE[i].PDESIGN;
                                     TBATCHMST.COMMONUNIQBAR = "C";
 
                                     DB.T_BATCHMST.Add(TBATCHMST);
