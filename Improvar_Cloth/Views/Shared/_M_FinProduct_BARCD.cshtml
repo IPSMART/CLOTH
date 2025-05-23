@@ -80,7 +80,7 @@
                                         }
                                     </td>
                                     <td class="grid_td">
-                                        @if (!(Model.M_GROUP.BARGENTYPE == "E" || Model.COMMONUIQBAR == "E") && Model.DefaultAction == "E")
+                                        @if (Model.DefaultAction == "A" || (Model.DefaultAction == "E" && !(Model.M_GROUP.BARGENTYPE == "E" || Model.COMMONUIQBAR == "E")))
                                         {
                                             @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].PDESIGN, new { id = "IPDESIGN_" + i, maxlength = 40, @class = " atextBoxFor " })
                                         }
