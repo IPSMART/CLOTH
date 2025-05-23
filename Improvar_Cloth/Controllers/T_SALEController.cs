@@ -626,8 +626,8 @@ namespace Improvar.Controllers
             dt.Rows.Add("PJBL", "Job Bill raised to Party", "SALGLCD", "", "", "", "", "", "D", "JB");
             dt.Rows.Add("PJBR", "Job Bill Return to Party", "SALGLCD", "", "", "", "", "", "D", "JQ");
             dt.Rows.Add("SBPOS", "Cash Sales", "SALGLCD", "", "", "", "", "", "D", "SB");
-            dt.Rows.Add("ISS", "Stock Transfer Issue", "SALGLCD", "", "", "", "", "", "D", "TO");//sales
-            dt.Rows.Add("REC", "Stock Transfer Receive", "PURGLCD", "", "", "", "", "", "C", "TI");//purchase
+            dt.Rows.Add("ISS", "Stock Transfer Issue", "SALGLCD", "", "", "", "", "", "S", "TO");//sales
+            dt.Rows.Add("REC", "Stock Transfer Receive", "PURGLCD", "", "", "", "", "", "S", "TI");//purchase
 
             var dr = dt.Select("MENUPARA='" + MENU_PARA + "'");
             if (dr != null && dr.Count() > 0) return dr.CopyToDataTable(); else return dt;
