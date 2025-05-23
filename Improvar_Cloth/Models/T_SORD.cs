@@ -82,7 +82,8 @@ namespace Improvar.Models
         [StringLength(1)]
         public string COD { get; set; }
 
-         public double? APROXVAL { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? APROXVAL { get; set; }
 
         [StringLength(300)]
         public string SPLNOTE { get; set; }
