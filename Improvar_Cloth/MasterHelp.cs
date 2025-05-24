@@ -671,7 +671,7 @@ namespace Improvar
             else if (LINKCD == "A") { Caption = "Agent"; }
             else if (LINKCD == "C") { Caption = "Creditor"; }
             else if (LINKCD == "E") { Caption = "Employee"; } else { Caption = "Subledger"; }
-            if (val == null)
+            if (val.retStr() == "")
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)

@@ -68,13 +68,15 @@ namespace Improvar.Controllers
                     {
                         VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     }
-
+                   
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
 
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
                     VE.Agslnm = MasterHelp.ComboFill("agslcd", VE.DropDown_list_SLCD, 0, 1);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("A");
-                    VE.SubAgent = MasterHelp.ComboFill("sagslcd", VE.DropDown_list_SLCD, 0, 1);
+                    VE.SubAgent = MasterHelp.ComboFill("sagslcd", VE.DropDown_list_SLCD, 0, 1);                                       
+                    VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
+                    VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
                     var bltypelst = DropDownHelp.DropDownBLTYPE();
                     VE.BlType = MasterHelp.ComboFill("bltype", bltypelst, 0, 1);
                     if (VE.MENU_PARA != "CM")
@@ -249,7 +251,7 @@ namespace Improvar.Controllers
                 string itgrpcd = "";
 
                 //string reptype = FC["reptype"].ToString();
-                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "", selSagslcd = "";
+                string selslcd = "", unselslcd = "", selloccd = "", selagslcd = "", bltype = "", selSagslcd = "", selitcd = "";
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
                 if (FC.AllKeys.Contains("ITGRPCDvalue")) itgrpcd = CommFunc.retSqlformat(FC["ITGRPCDvalue"].ToString());
@@ -257,6 +259,7 @@ namespace Improvar.Controllers
                 if (FC.AllKeys.Contains("agslcdvalue")) selagslcd = CommFunc.retSqlformat(FC["agslcdvalue"].ToString());
                 if (FC.AllKeys.Contains("sagslcdvalue")) selSagslcd = CommFunc.retSqlformat(FC["sagslcdvalue"].ToString());
                 if (FC.AllKeys.Contains("bltypevalue")) bltype = CommFunc.retSqlformat(FC["bltypevalue"].ToString());
+                if (FC.AllKeys.Contains("itcdvalue")) selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
                 string txntag = "", doctype = ""; string regdsp = "";
                 txntag = "SALES";
                 if (VE.TEXTBOX8.retStr() != "")
@@ -488,9 +491,10 @@ namespace Improvar.Controllers
                 }
 
                 if (selagslcd != "") sql += " and h.agslcd in (" + selagslcd + ") " + Environment.NewLine;
-                if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;
+                if (selSagslcd != "") sql += " and h.sagslcd in (" + selSagslcd + ") " + Environment.NewLine;               
                 if (bltype != "") sql += " and h.bltype in (" + bltype + ") " + Environment.NewLine;
                 if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+                if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") " + Environment.NewLine;
                 if (VE.Checkbox12 == true)
                 {
                     sql += "and f.translcd is null and k.autono is not null " + Environment.NewLine;
@@ -1089,7 +1093,7 @@ namespace Improvar.Controllers
                 ColumnNameObj.SLCD = true;
                 ColumnNameObj.SLNM = true;
                 ColumnNameObj.SLAREA = true;
-                ColumnNameObj.AGSLNM = true;
+                ColumnNameObj.AGSLNM = true;               
                 ColumnNameObj.NM = true;
                 ColumnNameObj.MOBILE = true;
                 ColumnNameObj.GSTNO = true;
@@ -1270,7 +1274,7 @@ namespace Improvar.Controllers
                 bool AGSLNM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "AGSLNM", Server.MapPath("~/Ipsmart.ini")));
                 ColumnNameObj.AGSLNM = AGSLNM;
                 columnnm += AGSLNM == true ? "AGSLNM," : "";
-
+                               
                 bool NM = Convert.ToBoolean(Handel_Ini.IniReadValue(SectionNm, "NM", Server.MapPath("~/Ipsmart.ini")));
                 ColumnNameObj.NM = NM;
                 columnnm += NM == true ? "NM," : "";

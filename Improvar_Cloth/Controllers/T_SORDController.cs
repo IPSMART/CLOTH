@@ -40,7 +40,7 @@ namespace Improvar.Controllers
                         case "PORD": ViewBag.formname = "Purchase Order Entry"; break;
                         case "SORDC": ViewBag.formname = "Sales Order Retail"; break;
                         default: ViewBag.formname = "Menupara not found in appl_menu"; break;
-                    }
+                    }                    
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     string COMP = CommVar.Compcd(UNQSNO);
                     string LOC = CommVar.Loccd(UNQSNO);
@@ -117,6 +117,7 @@ namespace Improvar.Controllers
                             VE.T_CNTRL_HDR_REM = TCHR;
                             VE.M_DOCTYPE = DOCTYP;
                         }
+                        if (VE.T_SORD != null && VE.T_SORD.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_SORD.DOCNO + ")";
                         if (op.ToString() == "A" && loadOrder == "N")
                         {
                             if (parkID == "")
