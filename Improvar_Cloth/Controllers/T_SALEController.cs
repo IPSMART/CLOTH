@@ -5667,7 +5667,7 @@ namespace Improvar.Controllers
                                 //if (!(VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y"))
                                 bool taxchking = true;
                                 if (VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y") taxchking = false;
-                                if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT") taxchking = false;
+                                if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT" || VE.MENU_PARA == "SBEXP") taxchking = false;
                                 if (taxchking == true)
                                 {
                                     if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "ISS" && VE.MENU_PARA != "REC")
@@ -7073,7 +7073,7 @@ namespace Improvar.Controllers
 
                         #endregion
                     }
-                    if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "PJBL" && VE.MENU_PARA != "PJBR")
+                    if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "PJBL" && VE.MENU_PARA != "PJBR" && VE.MENU_PARA != "SBEXP")
                     {
                         if (igst != 0 && (cgst + sgst) != 0)
                         {
