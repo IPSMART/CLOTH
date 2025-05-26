@@ -117,7 +117,7 @@ namespace Improvar.Controllers
                             VE.T_CNTRL_HDR_REM = TCHR;
                             VE.M_DOCTYPE = DOCTYP;
                         }
-                        if (VE.T_SORD != null && VE.T_SORD.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_SORD.DOCNO + ")";
+                        if (sll != null && sll.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + sll.DOCNO + ")";
                         if (op.ToString() == "A" && loadOrder == "N")
                         {
                             if (parkID == "")
