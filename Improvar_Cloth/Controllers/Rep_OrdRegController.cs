@@ -165,8 +165,16 @@ namespace Improvar.Controllers
 
                 sql += "where a.autono = b.linkautono(+) and a.slno = b.slno(+) and a.txnslno = b.txnslno(+) and a.autono = c.autono(+) and c.doccd = d.doccd(+) ";
                 sql += "and c.compcd = '" + COM + "'  " + Environment.NewLine;
-                sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SPSLP') " + Environment.NewLine;
+                sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SPSLP') and b.billautono is not null " + Environment.NewLine;
 
+                sql += "union all " + Environment.NewLine;
+                sql += "select '' pslipdocno,c.docdt pslipdocdt,'' pslipautono,b.ordautono,b.ordslno,0 pslipqnty, " + Environment.NewLine;
+                sql += "c.docno billdocno,c.docdt billdocdt,sum(b.qnty) billqnty,c.autono billautono,b.slno  " + Environment.NewLine;
+
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_batchdtl b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d " + Environment.NewLine;
+                sql += "where a.autono = b.autono and b.autono = c.autono and c.doccd = d.doccd and c.compcd = '" + COM + "'  " + Environment.NewLine;
+                sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SBEXP') " + Environment.NewLine;
+                sql += "group by b.ordautono,b.ordslno,c.docno ,c.docdt ,c.autono ,b.slno " + Environment.NewLine;
                 tbl1 = MasterHelp.SQLquery(sql);
 
                 Int32 maxR = 0, i = 0, rNo = 0;
@@ -340,7 +348,7 @@ namespace Improvar.Controllers
                                             string slno = tbl.Rows[i - 1]["slno"].ToString();
 
                                             string sqlcon = "ordautono = '" + autono + "'";
-                                            if (ReportType == "Details") sqlcon += "and slno = " + slno + "";
+                                            if (ReportType == "Details") sqlcon += " and ordslno = " + slno + "";
 
                                             var tempbill = tbl1.Select(sqlcon, "billdocdt,billautono");
                                             if (tempbill != null && tempbill.Count() > 0)

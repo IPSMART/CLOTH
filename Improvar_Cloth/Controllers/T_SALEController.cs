@@ -6000,7 +6000,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTHRAMT;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
                                     TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
-                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
+                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "SBEXP")
                                     {
                                         TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                         TBATCHMST.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
@@ -6171,7 +6171,7 @@ namespace Improvar.Controllers
                                 //TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.BALEYR;// VE.TBATCHDTL[i].BALEYR;
                                 TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALENO.retStr() == "" ? "" : VE.TBATCHDTL[i].BALEYR.retStr() == "" ? VE.BALEYR : VE.TBATCHDTL[i].BALEYR.retStr();
                                 TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
-                                if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB")
+                                if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBEXP")
                                 {
                                     TBATCHDTL.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                     TBATCHDTL.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
