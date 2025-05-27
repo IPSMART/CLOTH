@@ -249,13 +249,38 @@ namespace Improvar.Controllers
                                         VE.SLAREA = "";
                                         VE.GSTNO = "";
                                         VE.SLDISCDESC = "";
+
+                                        string doccd1 = VE.DocumentType.Count() == 0 ? "" : VE.DocumentType.FirstOrDefault().value;
+                                        var T_TXN = (from a in DB.T_TXN
+                                                     join b in DB.T_CNTRL_HDR on a.AUTONO equals b.AUTONO
+                                                     where a.DOCCD == doccd1 && b.LOCCD == LOC && b.COMPCD == COM
+                                                     orderby a.AUTONO descending
+                                                     select a).FirstOrDefault();
+                                        VE.T_TXN.PARGLCD = TempData["LASTPARGLCD" + VE.MENU_PARA].retStr();
+
+                                        if (T_TXN != null)
+                                        {
+                                            if (VE.T_TXN.PARGLCD.retStr() == "")
+                                            {
+                                                VE.T_TXN.PARGLCD = T_TXN.PARGLCD;
+
+                                            }
+                                        }
+                                        string PARGLCD = VE.T_TXN.PARGLCD.retStr();
+                                        if (PARGLCD != "")
+                                        {
+                                            VE.PARGLNM = DBF.M_GENLEG.Where(a => a.GLCD == PARGLCD).Select(b => b.GLNM).FirstOrDefault();
+                                        }
                                     }
                                     VE.T_TXN.AUTONO = "";
                                 }
                                 if (VE.T_TXN_LINKNO == null) VE.T_TXN_LINKNO = new T_TXN_LINKNO();
                                 VE.LINKDOCNO = loadOrder.retStr();
                                 VE.T_TXN_LINKNO.LINKAUTONO = searchValue.retStr();
-                                VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                if (VE.MENU_PARA != "REC")
+                                {
+                                    VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                }
                             }
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
                         }

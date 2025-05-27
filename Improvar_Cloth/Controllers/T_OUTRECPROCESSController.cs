@@ -2859,7 +2859,7 @@ namespace Improvar.Controllers
                             TPROGDTL.DOCNO = TTXN.DOCNO;
                             TPROGDTL.PROGAUTONO = VE.TPROGDTL[i].PROGAUTONO;
                             TPROGDTL.PROGSLNO = VE.TPROGDTL[i].PROGSLNO;
-                            TPROGDTL.STKDRCR = VE.TPROGDTL[i].CheckedJOBTXNTY == true ? "N" : stkdrcr;
+                            TPROGDTL.STKDRCR = stkdrcr;// VE.TPROGDTL[i].CheckedJOBTXNTY == true ? "N" : stkdrcr;
                             TPROGDTL.NOS = VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.retDbl();
                             TPROGDTL.QNTY = VE.TPROGDTL[i].QNTY.retDbl();
                             TPROGDTL.SHORTQNTY = VE.TPROGDTL[i].SHORTQNTY.retDbl();
