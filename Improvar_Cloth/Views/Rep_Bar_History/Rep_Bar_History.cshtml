@@ -145,7 +145,7 @@
                             $("#MTRLJOBCD").val("");
                             hlpblurval = id;
                             document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
-                            FillImageModal();
+                            FillImageModal(returncolvalue(res[0], "BARIMAGEPATH"));
 
                             $("#" + BARNO.id).val("");
                             $("#STYLENO").val("");
@@ -203,10 +203,10 @@
         $('#div_carousel_inner div').removeClass('active');
         nextTarget.addClass('active');
     });
-    function FillImageModal() {
+    function FillImageModal(BARIMAGEPATH) {
         debugger;
         var actt = ""; $("#div_carousel_inner").html('');
-        var arr = $("#BarImages").val();
+        var arr = BARIMAGEPATH;//$("#BarImages").val();
         arr = arr.split(String.fromCharCode(179));
         $.each(arr, function (index, value) {
             var imgname = (value.split('~')[0]);
@@ -214,7 +214,7 @@
             var ImageDesc = (value.split('~')[1]);
             var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
             htm += '<div id="' + id + '" class="item ' + actt + '">';
-            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
+            htm += '    <img src="' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
             htm += '    <span class="carousel-caption">';
             htm += '    <p> ' + ImageDesc + ' </p>';
             htm += '    </span>';
