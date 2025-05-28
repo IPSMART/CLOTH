@@ -222,7 +222,7 @@ namespace Improvar.Controllers
             return new FileStreamResult(stream, "application/pdf");
         }
         [HttpPost]
-        public ActionResult Rep_IssueChallan_Print(Rep_Doc_Print VE)
+        public ActionResult Rep_IssueChallan_Print(Rep_Doc_Print VE, string submitbutton)
         {
             try
             {
@@ -524,7 +524,7 @@ namespace Improvar.Controllers
                                         IR_PROG.Rows[rNo]["blremarks"] = blrem;
                                         IR_PROG.Rows[rNo]["autono"] = tbleiss.Rows[j]["autono"].ToString() + ic.ToString();
                                         IR_PROG.Rows[rNo]["copymode"] = copymode;
-                                        IR_PROG.Rows[rNo]["itdescn"] = tbleiss.Rows[j]["itgrpnm"].ToString() + " " + tbl.Rows[j]["fabitnm"].ToString() + " " + tbl.Rows[j]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
+                                        IR_PROG.Rows[rNo]["itdescn"] = tbleiss.Rows[j]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
                                         IR_PROG.Rows[rNo]["styleno"] = tbleiss.Rows[j]["styleno"];
                                         IR_PROG.Rows[rNo]["hsncode"] = tbleiss.Rows[j]["HSNCODE"];
                                         IR_PROG.Rows[rNo]["issu_qnty"] = tbleiss.Rows[j]["qnty"];
@@ -642,6 +642,27 @@ namespace Improvar.Controllers
                 reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
                 //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
                 reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+                if (submitbutton == "Excel")
+                {
+                    string path_Save = @"C:\ipsmart\" + VE.DOCCD + VE.FDOCNO + ".xls";
+                    string exlfile = VE.DOCCD + VE.FDOCNO + ".xls";
+                    if (System.IO.File.Exists(path_Save))
+                    {
+                        System.IO.File.Delete(path_Save);
+                    }
+                    reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.Excel, path_Save);
+                    byte[] buffer = System.IO.File.ReadAllBytes(path_Save);
+                    System.Web.HttpContext.Current.Response.ClearContent();
+                    System.Web.HttpContext.Current.Response.Buffer = true;
+                    System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    System.Web.HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + exlfile);
+                    System.Web.HttpContext.Current.Response.BinaryWrite(buffer);
+                    reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                    System.Web.HttpContext.Current.Response.Flush();
+                    System.Web.HttpContext.Current.Response.End();
+                    return Content("Excel exported sucessfully");
+                }
+                else { 
                 Response.Buffer = false;
                 Response.ClearContent();
                 Response.ClearHeaders();
@@ -650,6 +671,7 @@ namespace Improvar.Controllers
                 reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
                 return new FileStreamResult(stream, "application/pdf");
             }
+            }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
@@ -657,7 +679,7 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult Rep_RecChallan_Print(Rep_Doc_Print VE)
+        public ActionResult Rep_RecChallan_Print(Rep_Doc_Print VE , string submitbutton)
         {
             try
             {
@@ -984,7 +1006,7 @@ namespace Improvar.Controllers
                                         IR_PROG.Rows[rNo]["blremarks"] = blrem;
                                         IR_PROG.Rows[rNo]["autono"] = tbleiss.Rows[j]["autono"].ToString() + ic.ToString();
                                         IR_PROG.Rows[rNo]["copymode"] = copymode;
-                                        IR_PROG.Rows[rNo]["itdescn"] = tbleiss.Rows[j]["itgrpnm"].ToString() + " " + tbl.Rows[j]["fabitnm"].ToString() + " " + tbl.Rows[j]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
+                                        IR_PROG.Rows[rNo]["itdescn"] = tbleiss.Rows[j]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["mtrljobcd"].ToString() + "]";
                                         IR_PROG.Rows[rNo]["styleno"] = tbleiss.Rows[j]["styleno"];
                                         IR_PROG.Rows[rNo]["hsncode"] = tbleiss.Rows[j]["HSNCODE"];
                                         IR_PROG.Rows[rNo]["issu_qnty"] = tbleiss.Rows[j]["qnty"];
@@ -1102,13 +1124,38 @@ namespace Improvar.Controllers
                 reportdocument.SetParameterValue("reptype", VE.TEXTBOX1);
                 //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
                 reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
-                Response.Buffer = false;
-                Response.ClearContent();
-                Response.ClearHeaders();
-                Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-                stream.Seek(0, SeekOrigin.Begin);
-                reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
-                return new FileStreamResult(stream, "application/pdf");
+             
+
+                if (submitbutton == "Excel")
+                {
+                    string path_Save = @"C:\ipsmart\" + VE.DOCCD + VE.FDOCNO + ".xls";
+                    string exlfile = VE.DOCCD + VE.FDOCNO + ".xls";
+                    if (System.IO.File.Exists(path_Save))
+                    {
+                        System.IO.File.Delete(path_Save);
+                    }
+                    reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.Excel, path_Save);
+                    byte[] buffer = System.IO.File.ReadAllBytes(path_Save);
+                    System.Web.HttpContext.Current.Response.ClearContent();
+                    System.Web.HttpContext.Current.Response.Buffer = true;
+                    System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    System.Web.HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + exlfile);
+                    System.Web.HttpContext.Current.Response.BinaryWrite(buffer);
+                    reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                    System.Web.HttpContext.Current.Response.Flush();
+                    System.Web.HttpContext.Current.Response.End();
+                    return Content("Excel exported sucessfully");
+                }
+                else
+                {
+                    Response.Buffer = false;
+                    Response.ClearContent();
+                    Response.ClearHeaders();
+                    Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                    return new FileStreamResult(stream, "application/pdf");
+                }
             }
             catch (Exception ex)
             {

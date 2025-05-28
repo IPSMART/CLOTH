@@ -10,17 +10,14 @@
 }
 <script src="~/Scripts/jquery.min.js"></script>
 <script>
-    $(document).ready(function ()
-    {
-        if ("@Model.AskSlCd" == "False")
-        {
+    $(document).ready(function () {
+        if ("@Model.AskSlCd" == "False") {
             $("#DIV_SLCD").hide();
         }
     });
 </script>
 <script>
-    $(function ()
-    {
+    $(function () {
         $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
@@ -160,7 +157,7 @@
         });
     }
 </script>
-@using (Html.BeginForm(Model.ActionName,PageControllerName,FormMethod.Post))
+@using (Html.BeginForm(Model.ActionName, PageControllerName, FormMethod.Post))
 {
     if (Model.DefaultView == true)
     {
@@ -271,7 +268,7 @@
                         </div>
                     </div>
                 </div>
-              
+
                 <div class="row" style="margin-top:10PX">
                     <div class="col-md-8">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -303,11 +300,14 @@
                 </div>
                 <div class="row" style="margin-top:10PX">
 
-                    <div align="center" class="col-md-3">
+                    <div align="center" class="col-md-6">
                         <input type="submit" value="SHOW" name="COMMAND" class="btn " style="background-color:#5e8fcc;font-weight:bold" formtarget="_blank" />
                         @*<input type="submit" value="@Model.ActionName" name="COMMAND" class="btn " style="background-color:#5e8fcc;font-weight:bold" formtarget="_blank" />*@
-               
-                         </div>
+                    </div>
+                    <div align="center" class="col-md-3">
+                        <input type="submit" value="Excel" name="submitbutton" class="btn " style="background-color:#5e8fcc;font-weight:bold" formtarget="_blank" />
+                    </div>
+
                 </div>
             </div>
         </div>
