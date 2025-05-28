@@ -212,6 +212,21 @@ namespace Improvar.Controllers
                         string tinqty = TINQTY.retStr(); string toutqty = TOUTQTY.retStr();
                         str += "^TOTALIN=^" + tinqty + Cn.GCS();
                         str += "^TOTALOUT=^" + toutqty + Cn.GCS();
+                        var BarImages = str.retCompValue("BARIMAGE").retStr().Split((char)179);
+                        string BARIMAGEPATH = "";
+                        foreach (var v in BarImages)
+                        {
+                            if (v.retStr() != "")
+                            {
+                                if (BARIMAGEPATH != "")
+                                {
+                                    BARIMAGEPATH += (char)179;
+                                }
+                                var temp = v.Split('~');
+                                BARIMAGEPATH += CommVar.WebUploadDocURL(temp[0]) + "~" + temp[1];
+                            }
+                        }
+                        str += "^BARIMAGEPATH=^" + BARIMAGEPATH + Cn.GCS();
 
                         VE.BARCODEPRICE = (from DataRow dr in itempricedtl.Rows
                                            select new BARCODEPRICE
