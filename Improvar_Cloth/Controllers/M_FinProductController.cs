@@ -574,7 +574,7 @@ namespace Improvar.Controllers
                 string MNUP = VE.MENU_PARA;
 
                 string scm = CommVar.CurSchema(UNQSNO);
-                string str = "select distinct a.itcd, d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, d.uomcd, nvl(b.rate, 0) wprate, nvl(c.rate, 0) rprate from ";
+                string str = "select distinct a.itcd, d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.COLLNM, d.uomcd, nvl(b.rate, 0) wprate, nvl(c.rate, 0) rprate from ";
                 str += "(select a.itcd, b.barno ";
                 str += "from " + scm + ".m_sitem a, " + scm + ".T_BATCHmst b ";
                 str += "where a.itcd = b.itcd(+) ) a, ";
@@ -596,20 +596,20 @@ namespace Improvar.Controllers
                 if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'RP'  ) ";//for diwans/SN FABRIC max effdt rate comes
                 str += ") where rn = 1 ) c, ";
 
-                str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
-                str += "where a.barno = b.barno(+) and a.barno = c.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
+                str += "" + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".M_COLLECTIONT f ";
+                str += "where a.barno = b.barno(+) and a.barno = c.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) and d.COLLCD = f.COLLCD(+) ";
                 if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "' ";
                 else str += " and e.itgrptype NOT IN ('F','C') ";
                 if (SRC_FLAG.retStr() != "") str += "and(upper(d.styleno) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(d.itcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' ) ";
                 DataTable MDT = masterHelp.SQLquery(str);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Design No" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group" + Cn.GCS() + "Item Name" + Cn.GCS() + "WP Rate" + Cn.GCS() + "Retail Rate" + Cn.GCS() + "Item Code";
+                var hdr = "Design No" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group" + Cn.GCS() + "Item Name" + Cn.GCS() + "WP Rate" + Cn.GCS() + "Retail Rate" + Cn.GCS() + "Collection Name" + Cn.GCS() + "Item Code";
                 for (int j = 0; j <= MDT.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + MDT.Rows[j]["STYLENO"].retStr() + "</td><td>" + MDT.Rows[j]["ITGRPNM"].retStr() + " </td><td> " + MDT.Rows[j]["ITGRPCD"].retStr() + "</td><td>" + MDT.Rows[j]["ITNM"].retStr() + " </td><td> " + MDT.Rows[j]["wprate"].retStr() + "</td><td> " + MDT.Rows[j]["rprate"].retStr() + "</td><td>" + MDT.Rows[j]["ITCD"].retStr() + "</td></tr>");
+                    SB.Append("<tr><td>" + MDT.Rows[j]["STYLENO"].retStr() + "</td><td>" + MDT.Rows[j]["ITGRPNM"].retStr() + " </td><td> " + MDT.Rows[j]["ITGRPCD"].retStr() + "</td><td>" + MDT.Rows[j]["ITNM"].retStr() + " </td><td> " + MDT.Rows[j]["wprate"].retStr() + "</td><td> " + MDT.Rows[j]["rprate"].retStr() + "</td><td> " + MDT.Rows[j]["COLLNM"].retStr() + "</td><td>" + MDT.Rows[j]["ITCD"].retStr() + "</td></tr>");
                 }
-                return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "6"));
+                return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "7"));
             }
             catch (Exception ex)
             {
