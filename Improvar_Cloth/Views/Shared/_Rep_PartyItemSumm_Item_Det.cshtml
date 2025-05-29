@@ -11,15 +11,8 @@
             });
         });
     </script>
-    <div style="margin-top: 7px;margin-left:13px;font-size: 14px;font-weight: bold;">
-        @if (Model.ItemDet != null)
-        {
-            <span>Number of Tag Items : @Model.ItemDet.Count</span>
-        }
-        else
-        {
-            <span>Number of Tag Items : 0</span>
-        }
+    <div style="margin-top: 7px;margin-left:13px;font-size: 14px;font-weight: bold;">       
+            <span>Item : @ViewBag.ITNM</span>       
     </div>
     <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100;">
         <div style="height:auto;overflow-y:auto;max-height:58vh">
@@ -32,12 +25,12 @@
                         </th>*@
                         <th class="" style="width:60px;">Refdt</th>
                         <th class="" style="width:250px;">Refno</th>
-                        <th class="" style="width:60px;">Sl_nm</th>
-                        <th class="" style="width:150px;">Txtype</th>
-                        <th class="" style="width:60px;">Salpcs</th>
-                        <th class="" style="width:250px;">Salamt</th>
-                        <th class="" style="width:60px;">Retpcs</th>
-                        <th class="" style="width:150px;">Retamt</th>
+                        <th class="" style="width:60px;">Party</th>
+                        <th class="" style="width:150px;">Doctype</th>
+                        <th class="" style="width:60px;">Sal.Qnty</th>
+                        <th class="" style="width:250px;">Sal.Amt</th>
+                        <th class="" style="width:60px;">Ret.Qnty</th>
+                        <th class="" style="width:150px;">Ret.Amt</th>
                     </tr>
                 </thead>
                 <tbody>

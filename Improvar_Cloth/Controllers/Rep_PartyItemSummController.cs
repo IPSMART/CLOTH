@@ -18,9 +18,9 @@ namespace Improvar.Controllers
         MasterHelp masterHelp = new MasterHelp();
         DropDownHelp dropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        public ActionResult Rep_PartyItemSumm(string SLCD = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "")
+        public ActionResult Rep_PartyItemSumm(string SLCD = "", string SLNM = "", string FDT = "", string TDT = "", string CHECK = "", string ITGRPCD = "")
         {
-            
+
             try
             {
                 if (Session["UR_ID"] == null)
@@ -34,30 +34,24 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     string scmf = CommVar.FinSchema(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                    VE.DropDown_list_ITGRP = dropDownHelp.GetItgrpcdforSelection();
-                    VE.ITGRPCD = masterHelp.ComboFill("ITGRPCD", VE.DropDown_list_ITGRP, 0, 1);
-                    if (SLCD == "" && FDT == "" && TDT == "" && CHECK == "" && ITGRPCD == "")
+                   
+                    if (SLCD.retStr() == "")
                     {
-                        //VE.MGRPLIST = (from i in DB.M_TMGRP
-                        //               select new MGRPLIST()
-                        //               {
-                        //                   MGRPCD = i.SLCD,
-                        //                   MGRPNM = i.MGRPNM,
-                        //                   MGRPTYPE = i.MGRPTYPE
-                        //               }).OrderBy(x => x.MGRPNM).ToList();
+                        VE.DropDown_list_ITGRP = dropDownHelp.GetItgrpcdforSelection();
+                        VE.ITGRPCD = masterHelp.ComboFill("ITGRPCD", VE.DropDown_list_ITGRP, 0, 1);
                     }
                     else
-                    {                                    
-                        VE.SLCD = SLCD; VE.FDT = FDT; VE.TDT = TDT;  VE.ITGRPCD = ITGRPCD;
+                    {
+                        VE.SLCD = SLCD; VE.FDT2 = FDT; VE.TDT2 = TDT; VE.ITGRPCD = ITGRPCD;
                         if (CHECK == "Y")
                         {
                             VE.CHECK = true;
                         }
                         else
                         {
-                            VE.CHECK =false;
+                            VE.CHECK = false;
                         }
-
+                        ViewBag.SLNM = SLNM+" ["+SLCD+"]";
                         //VE.MGRPNM = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPNM).SingleOrDefault();
                         //var base64 = DB.M_TGRP.Where(a => a.MGRPCD == MGRPCD).ToList();
                         //if (base64.Any())
@@ -68,55 +62,55 @@ namespace Improvar.Controllers
                         //             where (i.MGRPCD == MGRPCD && i.GLCD == null)
                         //             select i).OrderBy(a => a.ROOTCD).ThenBy(a => a.GRPCDFULL).ToList();
 
-                            //if (group.Any())
-                            //{
-                            //    List<Temp_TGRP> MLIST = new List<Temp_TGRP>();
-                            //    VE.Tree = GenerateTree(group, ref MLIST);
-                            //    VE.MLIST = MLIST;
-                            //}
-                            //var Mtype = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPTYPE).SingleOrDefault();
-                            //DataTable dt = new DataTable();
-                            //if (Mtype == "SL")
-                            //{
-                            //    //string str = "select * from (select glcd, '' slcd, '' class1cd, glnm,'' slnm, '' class1nm from " + scmf + ".m_genleg where nvl(slcdmust,'N') = 'N' union all ";
-                            //    //str = str + " select a.glcd, '', '' class1cd, a.glnm, c.slnm, '' class1nm from " + CommVar.CurSchema(UNQSNO) + ".m_genleg a, " + scmf + ".m_subleg_gl b, " + scmf + ".m_subleg c where a.glcd = b.glcd ";
-                            //    //str = str + " and nvl(slcdmust,'N') = 'Y' and b.slcd = c.slcd) where glcd||slcd||class1cd not in (select glcd||slcd||class1cd from " + CommVar.CurSchema(UNQSNO) + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd||slcd||class1cd is not null)";
-                            //    //DataTable dt = masterHelp.SQLquery(str);
-                            //    //VE.AvailableGroup = (from i in dt.AsEnumerable()
-                            //    //                     select new AvailableACGroup()
-                            //    //                     {
-                            //    //                         Checked = false,
-                            //    //                         CLASS1CD = i.Field<string>("class1cd"),
-                            //    //                         CLASS1NM = i.Field<string>("class1nm"),
-                            //    //                         GLCD = i.Field<string>("glcd"),
-                            //    //                         GLNM = i.Field<string>("glnm"),
-                            //    //                         SLCD = i.Field<string>("slcd"),
-                            //    //                         SLNM = i.Field<string>("slnm"),
-                            //    //                     }).ToList();
-                            //}
-                            //else if (Mtype == "GL")
-                            //{
-                            //    string str = "select glcd, '' class1cd, glnm, '' class1nm from " + scmf + ".m_genleg where glcd not in (select glcd from " + scmf + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd is not null) order by glnm";
-                            //    dt = masterHelp.SQLquery(str);
-                            //}
-                            //else if (Mtype == "CL" || Mtype == "SL")
-                            //{
-                            //    string str = "select * from (select glcd, '' class1cd, glnm, '' class1nm from " + scmf + ".m_genleg where nvl(class1cdmust,'N') = 'N' union all ";
-                            //    str = str + "select distinct a.glcd, b.class1cd, c.glnm, e.class1nm from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_class b, " + scmf + ".m_genleg c, ";
-                            //    str = str + scmf + ".m_class1 e where a.autono = b.autono and a.slno = b.dslno and a.glcd = c.glcd and b.class1cd = e.class1cd and nvl(c.class1cdmust, 'N')= 'Y' order by glcd,class1cd) ";
-                            //    str = str + " where glcd|| class1cd not in (select glcd || class1cd from " + scmf + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd|| class1cd is not null)";
-                            //    dt = masterHelp.SQLquery(str);
-                            //}
-                            //VE.AvailableGroup = (from i in dt.AsEnumerable()
-                            //                     select new AvailableACGroup()
-                            //                     {
-                            //                         Checked = false,
-                            //                         CLASS1CD = i.Field<string>("class1cd"),
-                            //                         CLASS1NM = i.Field<string>("class1nm"),
-                            //                         GLCD = i.Field<string>("glcd"),
-                            //                         GLNM = i.Field<string>("glnm"),
-                            //                     }).ToList();
-                        }
+                        //if (group.Any())
+                        //{
+                        //    List<Temp_TGRP> MLIST = new List<Temp_TGRP>();
+                        //    VE.Tree = GenerateTree(group, ref MLIST);
+                        //    VE.MLIST = MLIST;
+                        //}
+                        //var Mtype = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPTYPE).SingleOrDefault();
+                        //DataTable dt = new DataTable();
+                        //if (Mtype == "SL")
+                        //{
+                        //    //string str = "select * from (select glcd, '' slcd, '' class1cd, glnm,'' slnm, '' class1nm from " + scmf + ".m_genleg where nvl(slcdmust,'N') = 'N' union all ";
+                        //    //str = str + " select a.glcd, '', '' class1cd, a.glnm, c.slnm, '' class1nm from " + CommVar.CurSchema(UNQSNO) + ".m_genleg a, " + scmf + ".m_subleg_gl b, " + scmf + ".m_subleg c where a.glcd = b.glcd ";
+                        //    //str = str + " and nvl(slcdmust,'N') = 'Y' and b.slcd = c.slcd) where glcd||slcd||class1cd not in (select glcd||slcd||class1cd from " + CommVar.CurSchema(UNQSNO) + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd||slcd||class1cd is not null)";
+                        //    //DataTable dt = masterHelp.SQLquery(str);
+                        //    //VE.AvailableGroup = (from i in dt.AsEnumerable()
+                        //    //                     select new AvailableACGroup()
+                        //    //                     {
+                        //    //                         Checked = false,
+                        //    //                         CLASS1CD = i.Field<string>("class1cd"),
+                        //    //                         CLASS1NM = i.Field<string>("class1nm"),
+                        //    //                         GLCD = i.Field<string>("glcd"),
+                        //    //                         GLNM = i.Field<string>("glnm"),
+                        //    //                         SLCD = i.Field<string>("slcd"),
+                        //    //                         SLNM = i.Field<string>("slnm"),
+                        //    //                     }).ToList();
+                        //}
+                        //else if (Mtype == "GL")
+                        //{
+                        //    string str = "select glcd, '' class1cd, glnm, '' class1nm from " + scmf + ".m_genleg where glcd not in (select glcd from " + scmf + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd is not null) order by glnm";
+                        //    dt = masterHelp.SQLquery(str);
+                        //}
+                        //else if (Mtype == "CL" || Mtype == "SL")
+                        //{
+                        //    string str = "select * from (select glcd, '' class1cd, glnm, '' class1nm from " + scmf + ".m_genleg where nvl(class1cdmust,'N') = 'N' union all ";
+                        //    str = str + "select distinct a.glcd, b.class1cd, c.glnm, e.class1nm from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_class b, " + scmf + ".m_genleg c, ";
+                        //    str = str + scmf + ".m_class1 e where a.autono = b.autono and a.slno = b.dslno and a.glcd = c.glcd and b.class1cd = e.class1cd and nvl(c.class1cdmust, 'N')= 'Y' order by glcd,class1cd) ";
+                        //    str = str + " where glcd|| class1cd not in (select glcd || class1cd from " + scmf + ".m_tgrp where mgrpcd = '" + MGRPCD + "' and glcd|| class1cd is not null)";
+                        //    dt = masterHelp.SQLquery(str);
+                        //}
+                        //VE.AvailableGroup = (from i in dt.AsEnumerable()
+                        //                     select new AvailableACGroup()
+                        //                     {
+                        //                         Checked = false,
+                        //                         CLASS1CD = i.Field<string>("class1cd"),
+                        //                         CLASS1NM = i.Field<string>("class1nm"),
+                        //                         GLCD = i.Field<string>("glcd"),
+                        //                         GLNM = i.Field<string>("glnm"),
+                        //                     }).ToList();
+                    }
                     VE.DefaultView = true;
                     //List<DropDown_list1> drplist = new List<DropDown_list1>();
                     //DropDown_list1 drop1 = new DropDown_list1();
@@ -185,7 +179,7 @@ namespace Improvar.Controllers
             }
         }
 
-        public string BtnSubmit(string slcd, string fdt, string tdt, string check, string itgrpcd)
+        public string BtnSubmit(string slcd, string slnm, string fdt, string tdt, string check, string itgrpcd)
         {
             try
             {
@@ -193,16 +187,16 @@ namespace Improvar.Controllers
                 var PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer.AbsoluteUri;
                 var uri = new Uri(PreviousUrl);//Create Virtually Query String
                 var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                if (queryString.Get("SLCD").retStr() == "" && queryString.Get("FDT").retStr() == "" && queryString.Get("TDT").retStr() == "" && queryString.Get("CHECK").retStr() == "" && queryString.Get("ITGRPCD").retStr() == "")
+                if (queryString.Get("SLCD") == null)
                 {
-                    url = Request.UrlReferrer.ToString() + "&SLCD=" + slcd + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd;
+                    url = Request.UrlReferrer.ToString() + "&SLCD=" + slcd + "&SLNM=" + slnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd;
                 }
                 else
                 {
                     string dd = Request.UrlReferrer.ToString();
                     int pos = Request.UrlReferrer.ToString().IndexOf("&SLCD=");
                     url = dd.Substring(0, pos);
-                    url = url + "&SLCD=" + slcd;
+                    url = url + "&SLCD=" + slcd + "&SLNM=" + slnm + "&FDT=" + fdt + "&TDT=" + tdt + "&CHECK=" + check + "&ITGRPCD=" + itgrpcd;
                 }
                 return url;
             }

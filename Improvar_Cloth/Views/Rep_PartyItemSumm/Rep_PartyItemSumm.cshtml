@@ -571,7 +571,10 @@
 </script>
 <script>
     function btn_submit() {
+        if (!emptyFieldCheck("Please Select / Enter Party Code", "SLCD")) { return false; }
+
         var party = $("#SLCD").val(), frmdt = $("#FDT").val(), todt = $("#TDT").val(), group = $("#ITGRPCD").val();
+        var partynm = $("#SLNM").val();
         var chkbx = "";
         var CHECK = document.getElementById("CHECK").checked;
         if (CHECK == true) {
@@ -582,7 +585,7 @@
             url: $("#urlbtnsubmit").val(),
             beforesend: $("#WaitingMode").show(),
             data: {
-                slcd: party, fdt: frmdt, tdt: todt, check: chkbx, itgrpcd: group
+                slcd: party, fdt: frmdt, tdt: todt, check: chkbx, itgrpcd: group, slnm: partynm
             },
             success: function (result) {
                 result = result;
@@ -1437,7 +1440,7 @@
         <input type="hidden" id="ParameterVal" value="" />
         <input type="hidden" id="ParameterVal1" value="" />
         <input type="hidden" id="partylinkcd" value="party" />
-        if (Model.SLCD == null && Model.FDT == null && Model.TDT == null && Model.CHECK == false)
+        if (Model.SLCD.retStr() == "")
         {
             <div id="outer">
                 <div id="inner" style="height:300px;width:400px;">
@@ -1454,7 +1457,8 @@
                                 <div class="col-lg-3">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Party Code")
-                                    </div>
+                                        <b style="color:Red;">*</b>
+                                        </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="editor-field">
@@ -1639,7 +1643,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.FDT2, new { htmlAttributes = new { @class = "form-control", id = "FDT", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.FDT2, new { htmlAttributes = new { @class = "form-control", id = "FDT2", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
                         </div>
                     </div>
                 </div>
@@ -1652,7 +1656,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.TDT2, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.TDT2, new { htmlAttributes = new { @class = "form-control", id = "TDT2", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
                         </div>
                     </div>
                 </div>
@@ -1668,12 +1672,12 @@
                 </div>
                 </div>               
                 
-                    <div style="width:60%;display:inline-block;margin-top:20px;float:left">
+                    <div style="width:60%;display:inline-block;float:left">
                         @*<input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />*@
                         @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
                         <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
                             <div class="tabtitle">
-                                Party Details
+                                Item Details
                             </div>
                             <div style="margin-top: 7px;margin-left: 20px;font-size: 14px;font-weight: bold;">
                                 @*@if (Model.AvailableGroup != null)
@@ -1684,7 +1688,7 @@
                                     {
                                         <span>Number of Available Accounts : 0</span>
                                     }*@
-                                <span>Party Name</span>
+                                <span>Party : @ViewBag.SLNM</span>
                             </div>
                             @*@if (Model.AvailableGroup != null)
                                 {*@
@@ -1698,17 +1702,17 @@
                                                         <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterCUSTOM(this, 'available_GRP', 'Checked_', 'searchAV')" />
                                                     </th>*@
                                                 <th class="" style="width:50px;">Design</th>
-                                                <th class="" style="width:250px;">Subsecnm</th>
-                                                <th class="" style="width:50px;">Itnm</th>
-                                                <th class="" style="width:150px;">Salpc</th>
-                                                <th class="" style="width:50px;">Salamt</th>
-                                                <th class="" style="width:250px;">Savr</th>
-                                                <th class="" style="width:50px;">Retpc</th>
-                                                <th class="" style="width:150px;">Retamt</th>
-                                                <th class="" style="width:250px;">Ravr</th>
-                                                <th class="" style="width:50px;">Netpc</th>
-                                                <th class="" style="width:150px;">Netamt</th>
-                                                <th class="" style="width:150px;">Navr</th>
+                                                <th class="" style="width:250px;">Group</th>
+                                                <th class="" style="width:50px;">Item</th>
+                                                <th class="" style="width:150px;">Sal.Qnty</th>
+                                                <th class="" style="width:50px;">Sal.Amt</th>
+                                                <th class="" style="width:250px;">S.Av.Rate</th>
+                                                <th class="" style="width:50px;">Ret.Qnty</th>
+                                                <th class="" style="width:150px;">Ret.Amt</th>
+                                                <th class="" style="width:250px;">R.Av.Rate</th>
+                                                <th class="" style="width:50px;">Net.Qnty</th>
+                                                <th class="" style="width:150px;">Net.Amt</th>
+                                                <th class="" style="width:150px;">N.Av.Rate</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1794,9 +1798,9 @@
                             @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />*@                        
                             @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
                         @*<div style="height:66vh;margin-top:28px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#d9ebf1">*@
-                            <div style="height:66vh;margin-top:30px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
+                            <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
                                 <div class="tabtitle">
-                                    Item Details
+                                    Bill Details
                                 </div>
                                 <div id="partial_existing">
                                     @Html.Partial("_Rep_PartyItemSumm_Item_Det")

@@ -847,7 +847,7 @@ namespace Improvar.Controllers
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
                 string sql = "";
 
-                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district,c.gstno,a.jobcd,d.jobnm,e.AUTONO,e.ITCD,e.ITREMARK,e.QNTY,e.ORDAUTONO,f.ITCD,f.ITNM,f.STYLENO,g.PREFNO, nvl(a.blamt,0) blamt, nvl(b.cancel,'N')cancel ";
+                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district,c.gstno,a.jobcd,d.jobnm,e.AUTONO,e.ITCD,e.ITREMARK,e.QNTY,e.ORDAUTONO,f.ITCD,f.ITNM,f.STYLENO,g.PREFNO, nvl(a.blamt,0) blamt, nvl(b.cancel,'N')cancel,b.docdt tchdocdt ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ," + scm + ".m_jobmst d ," + scm + ".T_PROGMAST e, " + scm + ".M_SITEM f, " + scm + ".T_SORD g ";
                 sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and a.jobcd=d.jobcd(+) and a.autono = e.AUTONO(+) and e.ITCD = f.ITCD(+) and e.ordAUTONO = g.AUTONO(+) and b.doccd in (" + doccd + ") and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -855,7 +855,7 @@ namespace Improvar.Controllers
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
                 if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-                sql += "order by docdt, docno,e.slno ";
+                sql += "order by b.docdt, docno,e.slno ";
                 DataTable tbl = masterHelp.SQLquery(sql);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
