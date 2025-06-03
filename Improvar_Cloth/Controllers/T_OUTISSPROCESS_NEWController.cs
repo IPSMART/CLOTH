@@ -417,10 +417,10 @@ namespace Improvar.Controllers
                 VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
                                                       where x.UOM.retStr() != ""
                                                       group x by new
-                                                     {
-                                                         x.UOM
-                                                     } into P
-                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+                                                      {
+                                                          x.UOM
+                                                      } into P
+                                                      select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
 
                 #region batch and detail data
                 string str1 = "";
@@ -647,17 +647,20 @@ namespace Improvar.Controllers
                                 }
                                 if (tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
-                                    v.BarImages = tax_data.Rows[0]["barimage"].retStr();
-                                    var brimgs = v.BarImages.retStr().Split((char)179);
+                                    //v.BarImages = tax_data.Rows[0]["barimage"].retStr();
+                                    var brimgs = tax_data.Rows[0]["barimage"].retStr().Split((char)179);
                                     v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                                     foreach (var barimg in brimgs)
                                     {
                                         string barfilename = barimg.Split('~')[0];
+                                        string barimgdesc = barimg.Split('~')[1];
+                                        v.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
+                                    v.BarImages = v.BarImages.retStr().TrimStart((char)179);
                                 }
                             }
                         }
@@ -719,10 +722,10 @@ namespace Improvar.Controllers
                 VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
                                                      where x.UOM.retStr() != ""
                                                      group x by new
-                                                    {
-                                                        x.UOM
-                                                    } into P
-                                                    select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                 #endregion
 
                 foreach (var q in VE.TPROGDTL)
@@ -747,8 +750,23 @@ namespace Improvar.Controllers
                     }).FirstOrDefault();
                     if (img != null)
                     {
-                        q.BarImages = img.BARIMAGE;
+                        //q.BarImages = img.BARIMAGE;
                         q.BarImagesCount = img.barimagecount.retStr();
+                        if (img.BARIMAGE.retStr() != "")
+                        {
+                            var brimgs = img.BARIMAGE.Split((char)179);
+                            foreach (var barimg in brimgs)
+                            {
+                                string barfilename = barimg.Split('~')[0];
+                                string barimgdesc = barimg.Split('~')[1];
+                                q.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                                string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                FROMpath = Path.Combine(FROMpath, "");
+                                string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                                Cn.CopyImage(FROMpath, TOPATH);
+                            }
+                            q.BarImages = q.BarImages.retStr().TrimStart((char)179);
+                        }
                     }
                     var TBATCHDTL = (from a in VE.TBATCHDTL where a.RECPROGSLNO == slno select a).ToList();
                     var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
@@ -955,6 +973,26 @@ namespace Improvar.Controllers
                     }
                     else { cd = mtrljobcd; mtrljobnm = str.retCompValue("MTRLJOBNM"); }
                     str += "^GLCD=^" + glcd + Cn.GCS() + "^MTRLJOBCD_NEW=^" + cd + Cn.GCS() + "^MTRLJOBNM_NEW=^" + mtrljobnm + Cn.GCS();
+
+                    string tnpBARIMAGE = str.retCompValue("BARIMAGE");
+                    if (tnpBARIMAGE != "")
+                    {// start Image section
+                        string newBarImgstr = "";
+                        string barimage = tnpBARIMAGE;
+                        var brimgs = barimage.Split((char)179);
+                        foreach (var barimg in brimgs)
+                        {//27600455_1.jpg~wew*27600455_1.jpg~wew*27600455_1.jpg~wew
+                            string barfilename = barimg.Split('~')[0];
+                            string barimgdesc = barimg.Split('~')[1];
+                            newBarImgstr += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                            FROMpath = Path.Combine(FROMpath, "");
+                            string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                            Cn.CopyImage(FROMpath, TOPATH);
+                        }
+                        newBarImgstr = newBarImgstr.TrimStart((char)179);
+                        str = str.Replace(tnpBARIMAGE, newBarImgstr);
+                    }// end Image section
 
                     #region rate from stock
                     if (menupara == "SB")
@@ -1842,10 +1880,10 @@ namespace Improvar.Controllers
                 VE.Det_UomTotal = string.Join(", ", (from x in VE.TTXNDTL
                                                      where x.UOM.retStr() != ""
                                                      group x by new
-                                                   {
-                                                       x.UOM
-                                                   } into P
-                                                   select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+                                                     {
+                                                         x.UOM
+                                                     } into P
+                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
 
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -4524,10 +4562,10 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                                 VE.Mi_UomTotal = string.Join(", ", (from x in VE.TBATCHDTL
                                                                     where x.UOM.retStr() != ""
                                                                     group x by new
-                                                                     {
-                                                                         x.UOM
-                                                                     } into P
-                                                                     select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+                                                                    {
+                                                                        x.UOM
+                                                                    } into P
+                                                                    select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
                             }
                         }
                     }
