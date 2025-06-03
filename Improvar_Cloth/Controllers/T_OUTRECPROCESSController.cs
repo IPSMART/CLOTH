@@ -664,15 +664,15 @@ namespace Improvar.Controllers
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                 //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
-                if (VE.MENU_PARA == "PB")
-                {
+                //if (VE.MENU_PARA == "PB")
+                //{
                     allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
-                }
-                else
-                {
-                    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
-                }
+                //}
+                //else
+                //{
+                //    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", TXN.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
+                //}
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
@@ -700,17 +700,20 @@ namespace Improvar.Controllers
                                 //}
                                 if (tax_data.Rows[0]["barimage"].retStr() != "")
                                 {
-                                    v.BarImages = tax_data.Rows[0]["barimage"].retStr();
-                                    var brimgs = v.BarImages.retStr().Split((char)179);
+                                    //v.BarImages = tax_data.Rows[0]["barimage"].retStr();
+                                    var brimgs = tax_data.Rows[0]["barimage"].retStr().Split((char)179);
                                     v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                                     foreach (var barimg in brimgs)
                                     {
                                         string barfilename = barimg.Split('~')[0];
+                                        string barimgdesc = barimg.Split('~')[1];
+                                        v.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
                                         string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
                                         FROMpath = Path.Combine(FROMpath, "");
-                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
                                         Cn.CopyImage(FROMpath, TOPATH);
                                     }
+                                    v.BarImages = v.BarImages.retStr().TrimStart((char)179);
                                 }
                             }
                         }
@@ -1950,7 +1953,23 @@ namespace Improvar.Controllers
                 for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
                 {
                     var img = barimgdata.AsEnumerable().Where(a => a.Field<string>("barno").retStr() == VE.TBATCHDTL[p].BARNO).Select(b => b.Field<string>("barimage")).FirstOrDefault();
-                    VE.TBATCHDTL[p].BarImages = img;
+                    //VE.TBATCHDTL[p].BarImages = img;
+                    if (img.retStr() != "")
+                    {
+                        var brimgs = img.Split((char)179);
+                        VE.TBATCHDTL[p].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                        foreach (var barimg in brimgs)
+                        {
+                            string barfilename = barimg.Split('~')[0];
+                            string barimgdesc = barimg.Split('~')[1];
+                            VE.TBATCHDTL[p].BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                            FROMpath = Path.Combine(FROMpath, "");
+                            string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                            Cn.CopyImage(FROMpath, TOPATH);
+                        }
+                        VE.TBATCHDTL[p].BarImages = VE.TBATCHDTL[p].BarImages.retStr().TrimStart((char)179);
+                    }
                     VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
                     VE.TBATCHDTL[p].TXNSLNO = Convert.ToInt16(p + 1);
                     //VE.TBATCHDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
