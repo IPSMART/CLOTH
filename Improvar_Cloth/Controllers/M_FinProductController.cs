@@ -27,6 +27,8 @@ namespace Improvar.Controllers
         MasterHelpFa Master_HelpFa = new MasterHelpFa(); Salesfunc salesfunc = new Salesfunc();
         M_SITEM sl; M_CNTRL_HDR sll; M_GROUP slll; M_SUBBRAND slsb; M_BRAND slb; M_COLLECTION slc; M_UOM sluom; M_PRODGRP sPROD;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
+        DropDownHelp DropDownHelp = new DropDownHelp();
+
         // GET: M_FinProduct
         public ActionResult M_FinProduct(string op = "", string key = "", int Nindex = 0, string searchValue = "", string loadItem = "N")
         {
@@ -62,6 +64,15 @@ namespace Improvar.Controllers
 
                     VE.Database_Combo2 = (from n in DB.M_SITEM_MEASURE
                                           select new Database_Combo2() { FIELD_VALUE = n.MDESC }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
+                    VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
+                    VE.Itgrpnm = masterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
+
+                    VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
+                    VE.Itnm = masterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
+
+                    VE.DropDown_list_COLLNM = DropDownHelp.GetCOLLNMforSelection();
+                    VE.collcd = masterHelp.ComboFill("collcd", VE.DropDown_list_COLLNM, 0, 1);
 
                     //=================For Gender================//
                     List<Gender> G = new List<Gender>();
@@ -585,6 +596,7 @@ namespace Improvar.Controllers
                 //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "where a.prccd = 'WP' ";
                 if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'WP'  ) ";//for diwans/SN FABRIC max effdt rate comes
+                else str += "and nvl(a.rate,0) !=0 ";
                 str += ") where rn = 1 ) b, ";
 
                 str += "(select barno, rate from ( ";
@@ -594,9 +606,10 @@ namespace Improvar.Controllers
                 //str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
                 str += "where a.prccd = 'RP' ";
                 if (CommVar.ClientCode(UNQSNO) == "DIWH" || CommVar.ClientCode(UNQSNO) == "SNFP") str += "and a.effdt=(select max(effdt) from " + scm + ".T_BATCHMST_PRICE  where barno = a.barno and prccd = 'RP'  ) ";//for diwans/SN FABRIC max effdt rate comes
-                str += ") where rn = 1 ) c, ";
+                else str += "and nvl(a.rate,0) !=0 ";
+                str += " ) where rn = 1 ) c, ";
 
-                str += "" + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".M_COLLECTIONT f ";
+                str += "" + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".M_COLLECTION f ";
                 str += "where a.barno = b.barno(+) and a.barno = c.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) and d.COLLCD = f.COLLCD(+) ";
                 if (MNUP == "F" || MNUP == "C") str += " and e.itgrptype='" + MNUP + "' ";
                 else str += " and e.itgrptype NOT IN ('F','C') ";
@@ -2167,18 +2180,24 @@ namespace Improvar.Controllers
                 //}
                 //Session["DtRepBarcodeImage"] = dt;
                 //return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage");
+                string itgrpcd = ""; string selitcd = ""; string collcd = "";
+                if (FC.AllKeys.Contains("itcdvalue")) selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
+                if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retStr());
+                if (FC.AllKeys.Contains("collcdvalue")) collcd = CommFunc.retSqlformat(FC["collcdvalue"].retStr());
                 Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
                 string dbname1 = CommVar.FinSchema(UNQSNO).ToString();
-                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM ";
+                string query = "SELECT distinct A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm ";
                 query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, ";
-                query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F, " + dbname1 + ".M_UOM G ";
+                query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F, " + dbname1 + ".M_UOM G, " + dbname + ".M_COLLECTION h ";
                 query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+)   AND ";
-                query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) AND A.UOMCD=G.UOMCD(+) ";
+                query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) AND A.UOMCD=G.UOMCD(+) AND A.collcd=h.collcd(+)";
                 // query = query + "A.M_AUTONO='" + VE.M_SITEM.M_AUTONO + "' ";
-                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM ";
+                if (itgrpcd.retStr() != "") query += "and B.itgrpcd in(" + itgrpcd + ") ";
+                if (selitcd.retStr() != "") query += "and a.itcd in (" + selitcd + ") ";
+                if (collcd.retStr() != "") query += "and h.collcd in (" + collcd + ") ";
+                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, G.UOMCD, G.UOMNM, h.collcd, h.collnm ";
                 query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
-
                 DataTable tbl = masterHelp.SQLquery(query);
                 if (tbl.Rows.Count == 0) return Content("No Records");
 
@@ -2187,15 +2206,16 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 HC.RepStart(IR, 3);
                 HC.GetPrintHeader(IR, "slno", "string", "c,5", "Sl.No");
-                HC.GetPrintHeader(IR, "itgrpnm", "string", "c,35", "Group Name");
+                HC.GetPrintHeader(IR, "itgrpnm", "string", "c,20", "Group Name");
                 HC.GetPrintHeader(IR, "styleno", "string", "c,15", "Design No");
                 HC.GetPrintHeader(IR, "itcd", "string", "c,10", "Item;Code");
-                HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item Name");
+                HC.GetPrintHeader(IR, "itnm", "string", "c,20", "Item Name");
                 HC.GetPrintHeader(IR, "uomnm", "string", "c,10", "UOM");
                 //HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "Pcs/;Box");
                 //HC.GetPrintHeader(IR, "sizes", "string", "c,25", "Sizes");
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
+                HC.GetPrintHeader(IR, "collnm", "string", "c,20", "Collection Name");
                 string lastgrpnm = ""; string lastbrandnm = ""; Int32 slno = 0;
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
@@ -2213,6 +2233,7 @@ namespace Improvar.Controllers
                     //dr["sizes"] = (tbl.Rows[i]["sizes"]);
                     dr["hsnsaccd"] = (tbl.Rows[i]["HSNCODE"]);
                     dr["brandnm"] = tbl.Rows[i]["brandnm"];
+                    dr["collnm"] = (tbl.Rows[i]["collnm"]);
                     dr["Flag"] = " class='grid_td'";
                     IR.Rows.Add(dr);
                     lastgrpnm = grpnm;

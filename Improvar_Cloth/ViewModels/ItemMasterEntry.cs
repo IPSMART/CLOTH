@@ -37,6 +37,10 @@ namespace Improvar.ViewModels
         //public string ITEM_BARCODE { get; set; }
         public string PRICES_EFFDTDROP { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        public List<DropDown_list_ITGRP> DropDown_list_ITGRP { get; set; }
+        public List<DropDown_list_ITEM> DropDown_list_ITEM { get; set; }
+        public List<DropDown_list_COLLNM> DropDown_list_COLLNM { get; set; }
+
         public List<UploadDOC> UploadBarImages { get; set; }
         public string BarImages { get; set; }
         public bool NEGSTOCK { get; set; }
@@ -50,5 +54,8 @@ namespace Improvar.ViewModels
         public string LINKITNM { get; set; }
         public string LINKUOMCD { get; set; }
         public string COMMONUIQBAR { get; set; }
+        public string Itgrpnm { get; set; }
+        public string Itnm { get; set; }
+        public string collcd { get; set; }
     }
 }

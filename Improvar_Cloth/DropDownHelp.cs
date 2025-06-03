@@ -279,6 +279,19 @@ namespace Improvar
                       }).OrderBy(A => A.text).ToList();
             return sllist;
         }
+        public List<DropDown_list_COLLNM> GetCOLLNMforSelection(string collnm = "")
+        {          
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            var LineList = (from c in DB.M_COLLECTION
+                            join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                            where i.INACTIVE_TAG == "N"
+                            select new DropDown_list_COLLNM
+                            {
+                                value = c.COLLCD,
+                                text = c.COLLNM
+                            }).ToList();
+            return LineList;
+        }
         public List<DropDown_list_ITGRP> GetItgrpcdforSelection(string itgrptype = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));

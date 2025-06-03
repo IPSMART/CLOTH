@@ -237,7 +237,7 @@ namespace Improvar.Models
     {
         public string text { get; set; }
         public string value { get; set; }
-        
+
     }
     public class DropDown_list_ITGRP
     {
@@ -347,5 +347,11 @@ namespace Improvar.Models
         public string value { get; set; }
         public string add { get; set; }
         public string mobile { get; set; }
+    }
+    public class DropDown_list_COLLNM
+    {
+        public string text { get; set; }
+        public string value { get; set; }
+
     }
 }

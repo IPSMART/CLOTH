@@ -1,0 +1,107 @@
+﻿
+@model Improvar.ViewModels.ItemMasterEntry
+<script>
+    $("#popupdtAgent").ready(function () { $("#dragclass").draggable({ cursor: "move" }); });
+</script>
+<div id="dragclass" style="max-height:380px;height:auto;background-color:#e5f2f5;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;left:5%;border:groove;">
+
+
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            <div class="grid_title">
+                <center style="font-size: 11px;color: darkmagenta; border: 1px dashed;">
+                    <b>
+                        Finish Product/Design Register
+                    </b>
+                </center>
+            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Item Group")
+                        @*<b style="color:Red;">*</b>*@
+                    </div>
+                </div>
+                <div class="col-lg-4">                   
+                    @(new HtmlString(Model.Itgrpnm))
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:6px">
+                <div class="col-lg-3">
+                    <div class="editor-label" style="margin-top:5px">
+                        @Html.Label("", "Item")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @(new HtmlString(Model.Itnm))
+                </div>
+            </div>
+            <div class="row" style="margin-top:6px">
+                <div class="col-lg-3">
+                    <div class="editor-label" style="margin-top:5px">
+                        @Html.Label("", "Collection")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @(new HtmlString(Model.collcd))
+                </div>
+            </div>
+            @*if (Model.MENU_PARA == "MTRL")
+            {
+                <div class="row" style="margin-top:6px;">
+
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top:6px">
+                                @Html.Label("", "Size Code")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <select id="Size" name="Size" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                                <optgroup label="Size">
+                                    @foreach (var i in Model.DropDown_list1)
+                                    {
+                                        <option value="@i.value">
+                                            @i.text
+                                        </option>
+                                    }
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                    <div class="row" style="margin-top:6px;">
+
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <div class="editor-label" style="margin-top:6px">
+                                    @Html.Label("", "RM/PM Item Code")
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <select id="Item" name="Item" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                                    <optgroup label="Item">
+                                        @foreach (var i in Model.DropDown_list2)
+                                        {
+                                            <option value="@i.value">
+                                                @i.text
+                                            </option>
+                                        }
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+            }*@
+            <div class="row" style="margin-top:10px;text-align:center;">
+                <input type="submit" formtarget="_blank" value="Show" name="savebutton" class="btn btn-success" style="width:66px;" onclick="ShowItemDtls()" />
+                <input type="button" value="Cancel" name="cancelbutton" class="btn btn-danger" style="width:66px;" onclick="CancelItemDtls()" />
+            </div>
+        }
+    </div>
+</div>
+

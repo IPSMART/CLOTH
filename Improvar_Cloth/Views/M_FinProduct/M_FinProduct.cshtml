@@ -1015,31 +1015,49 @@
             });
     }
 </script>
-@using (Html.BeginForm("M_FinProduct", "M_FinProduct", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<script>
+    function OpenItemDtls() {
+        debugger;
+        $('#PopupItemDtls').show();
+        $("#itgrpcdsrc").prop("readonly", false);
+        $("#itcdsrc").prop("readonly", false);
+        $("#collcdsrc").prop("readonly", false);
+    }
+
+    function CancelItemDtls() {
+        $('#PopupItemDtls').hide();
+    }
+
+    function ShowItemDtls() {
+        $("#form1").submit();
+    }
+
+</script>
+@using (Html.BeginForm("M_FinProduct", "M_FinProduct", FormMethod.Post, new {id = "form1", enctype = "multipart /form-data" }))
 {
-    if (Model.DefaultView == true)
-    {
+                if (Model.DefaultView == true)
+                {
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            <input type="button" id="btnprint" onclick="OpenItemDtls()" formtarget="_blank" style="display:none" />
             <input type="hidden" id="ImageName" value="" />
             <input type="hidden" id="ImageStr" value="" />
             @if (Model.MENU_PARA == "F")
-            {  <input type="hidden" id="fabitcdlinkcd" value="F" />}
+    {  <input type="hidden" id="fabitcdlinkcd" value="F" />}
             else if (Model.MENU_PARA == "C")
             { <input type="hidden" id="fabitcdlinkcd" value="C" />}
             else { <input type="hidden" id="fabitcdlinkcd" value="'A','S','P','Y','L','W','T'" /> }
             @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
-            {<input type="hidden" id="fabitGrpcd" value="C" /> }
-            @Html.HiddenFor(s => s.DefaultAction)
+{<input type="hidden" id="fabitGrpcd" value="C" /> }
+@Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO, new { id = "M_AUTONO" })
             @Html.HiddenFor(a => a.MENU_PARA)
             @Html.HiddenFor(a => a.STRPRICES)
             @Html.HiddenFor(model => model.Audit_REM, new { id = "Audit_REM" })
             @if (Model.DefaultAction == "V")
-            {
+{
                 <div class="row" style="border: 2px groove;background-color:#bddbf5;margin-top: 5px;">
                     <div class="row">
                         <div class="col-md-4" style="width:auto;">
@@ -1070,7 +1088,7 @@
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Design No")
                         @if (Model.MENU_PARA != "C")
-                        {<b style="color:Red;">*</b>}
+{<b style="color:Red;">*</b>}
 
                     </div>
                 </div>
@@ -1081,18 +1099,18 @@
                 </div>
 
                 @if (Model.DefaultAction == "V")
-                {
+{
                     <div class="col-md-7">
                         @if (Model.isPresentinLastYrSchema == "")
-                        {
+{
 
-                        }
+}
                         @if (Model.isPresentinLastYrSchema == "ADD")
-                        {
+{
                             <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
                         }
                         @if (Model.isPresentinLastYrSchema == "EDIT")
-                        {
+{
                             <button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
                         }
                     </div>
@@ -1775,6 +1793,11 @@
                         <div id="partialdivDocument">
                             @Html.Partial("_UPLOADDOCUMENTS")
                         </div>
+                    </div>
+                </div>
+                <div>
+                    <div id="PopupItemDtls" class="row" style="margin-top: 11px;top:25%;left:30%;position:absolute;display:none;">
+                        @Html.Partial("_M_FinProduct_Register")
                     </div>
                 </div>
             </div>
