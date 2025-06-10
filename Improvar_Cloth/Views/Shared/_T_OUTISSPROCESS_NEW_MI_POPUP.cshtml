@@ -128,7 +128,8 @@
                                                     @Html.HiddenFor(model => Model.TBATCHDTL[i].RECPROGITSTYLE, new { id = "B_RECPROGITSTYLE_" + i })
                                                     @Html.HiddenFor(model => Model.TBATCHDTL[i].RECPROGITCD, new { id = "B_RECPROGITCD_" + i })
                                                     @Html.HiddenFor(model => model.TBATCHDTL[i].ParentSerialNo, new { id = "B_ParentSerialNo_" + i })
-                                                </td>
+                                                    @Html.HiddenFor(model => model.TBATCHDTL[i].SAMPLE, new { id = "B_SAMPLE_" + i })
+  </td>
                                                 <td class="sticky-cell" style="left:17px;">
                                                     @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                                 </td>
@@ -211,7 +212,14 @@
                                                     <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ", '#B_');HasChangeBarSale();" } })
+                                                    @if (Model.TBATCHDTL[i].SAMPLE.retStr() == "Y")
+                                                    {
+                                                        @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ", '#B_');HasChangeBarSale();" } })
+                                                    }
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })

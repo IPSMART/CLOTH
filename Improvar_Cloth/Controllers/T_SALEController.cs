@@ -1117,7 +1117,7 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and MTRLJOBCD = '" + v.MTRLJOBCD + "' ");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
@@ -1172,7 +1172,7 @@ namespace Improvar.Controllers
                     //if purchase stock det
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
-                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and MTRLJOBCD = '" + v.MTRLJOBCD + "' ");
                         if (stkDATA != null && stkDATA.Count() > 0)
                         {
                             v.BALSTOCK = stkDATA[0]["BALQNTY"].retDbl();
@@ -2050,11 +2050,12 @@ namespace Improvar.Controllers
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string AUTONO = data[9].retStr() == "" ? "" : data[9].retStr().retSqlformat();
-                string SLCD = "";
+                string SLCD = "",slcdfrrt="";
                 if ((VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR") && data[11].retStr() == "E")
                 {
                     SLCD = data[10].retStr() == "" ? "" : data[10].retStr().retSqlformat();
                 }
+                slcdfrrt = data[10].retStr() == "" ? "" : data[10].retStr().retSqlformat();
 
                 if (data[7].retStr() == "Bar")
                 {
@@ -2069,7 +2070,8 @@ namespace Improvar.Controllers
                 {
                     MENU_PARA = "PB";
                 }
-                str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar, SLCD);
+                //str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar, SLCD);
+                str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO, showonlycommonbar, SLCD, false, false, slcdfrrt);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

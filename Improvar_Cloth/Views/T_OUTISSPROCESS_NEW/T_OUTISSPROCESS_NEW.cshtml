@@ -826,8 +826,9 @@
                                 var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
                                 var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
                                 $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
-
-                                $("#B_RATE_" + i).val(RATE);
+                                if ($("#B_SAMPLE_" + i).val() != "Y") {
+                                    $("#B_RATE_" + i).val(RATE);
+                                }
                                 $("#B_GSTPER_" + i).val(GSTPER);
                                 $("#B_PRODGRPGSTPER_" + i).val(PRODGRPGSTPER);
                                 $("#B_DISCRATE_" + i).val(returncolvalue(result, "DISCRATE"));
@@ -2800,7 +2801,7 @@
                     </div>
                     <div class="col-md-1">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly", @style = "font-weight:bold;font-size:15px;" } })
                         </div>
                     </div>
                     @if (Model.DefaultAction == "A")
