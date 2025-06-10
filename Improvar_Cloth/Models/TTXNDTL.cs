@@ -221,5 +221,7 @@ namespace Improvar.Models
         public string PROGITSTYLE { get; set; }
         public string PROGUOMNM { get; set; }
         public double PROGQNTY { get; set; }
+        public string SAMPLE { get; set; }
+
     }
 }

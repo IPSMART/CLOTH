@@ -2049,7 +2049,7 @@ function BillAmountCalculate(TAG) {
     if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
 
     var A_T_NET = $("#A_T_NET").val();
-    if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
+    if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + retFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + retFloat(0); }
 
     var T_AMT = $("#T_AMT").val();
     if (T_AMT != "") { D_TOTALAMT = D_TOTALAMT + parseFloat(T_AMT); } else { D_TOTALAMT = D_TOTALAMT + parseFloat(0); }

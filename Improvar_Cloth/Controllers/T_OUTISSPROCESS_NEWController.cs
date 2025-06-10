@@ -605,13 +605,15 @@ namespace Improvar.Controllers
                 //            }).ToList();
                 foreach (var v in VE.TBATCHDTL)
                 {
-                    var progdata = (from a in VE.TPROGDTL where a.SLNO == v.RECPROGSLNO select new { a.ITCD, a.ITNM, a.UOM, a.QNTY }).FirstOrDefault();
+                    var progdata = (from a in VE.TPROGDTL where a.SLNO == v.RECPROGSLNO select new { a.ITCD, a.ITNM, a.UOM, a.QNTY, a.SAMPLE }).FirstOrDefault();
                     if (progdata != null)
                     {
                         v.RECPROGITCD = progdata.ITCD;
                         v.RECPROGITSTYLE = progdata.ITNM;
                         v.RECPROGUOMNM = progdata.UOM;
                         v.RECPROGQNTY = progdata.QNTY.retDbl();
+                        v.SAMPLE = progdata.SAMPLE;
+
                     }
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
@@ -708,7 +710,8 @@ namespace Improvar.Controllers
                                         a.RECPROGSLNO,
                                         a.RECPROGITSTYLE,
                                         a.RECPROGUOMNM,
-                                        a.RECPROGQNTY
+                                        a.RECPROGQNTY,
+                                        a.SAMPLE
                                     }).FirstOrDefault();
                     if (progdata != null)
                     {
@@ -716,6 +719,7 @@ namespace Improvar.Controllers
                         v.PROGITSTYLE = progdata.RECPROGITSTYLE;
                         v.PROGUOMNM = progdata.RECPROGUOMNM;
                         v.PROGQNTY = progdata.RECPROGQNTY;
+                        v.SAMPLE = progdata.SAMPLE;
 
                     }
                 }
@@ -1786,6 +1790,7 @@ namespace Improvar.Controllers
                                   x.RECPROGITSTYLE,
                                   x.RECPROGUOMNM,
                                   x.RECPROGQNTY,
+                                  x.SAMPLE,
 
                               } into P
                               select new TTXNDTL
@@ -1836,6 +1841,8 @@ namespace Improvar.Controllers
                                   PROGITSTYLE = P.Key.RECPROGITSTYLE,
                                   PROGUOMNM = P.Key.RECPROGUOMNM,
                                   PROGQNTY = P.Key.RECPROGQNTY,
+                                  SAMPLE = P.Key.SAMPLE,
+
                               }).OrderBy(a => a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
@@ -3243,6 +3250,12 @@ namespace Improvar.Controllers
                         {
                             if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null && VE.TTXNDTL[i].MTRLJOBCD != null && VE.TTXNDTL[i].STKTYPE != null)
                             {
+                                short progslno = VE.TTXNDTL[i].PROGSLNO.retShort();
+                                bool sample = (from a in VE.TPROGDTL where a.SLNO == progslno select a.CheckedSample).FirstOrDefault();
+                                if (sample == true && VE.TTXNDTL[i].RATE.retDbl() != 0)
+                                {
+                                    dberrmsg = "Sample Rate should be 0 in Detail grid at slno : " + VE.TTXNDTL[i].SLNO; goto dbnotsave;
+                                }
                                 if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
                                 else
                                 {
@@ -3449,6 +3462,10 @@ namespace Improvar.Controllers
                                 {
                                     if (helpM[j].ITCD != null && helpM[j].QNTY != 0)
                                     {
+                                        if (VE.TPROGDTL[i].CheckedSample == true && helpM[j].RATE.retDbl() != 0)
+                                        {
+                                            dberrmsg = "Sample Rate should be 0 in MI Qty grid at slno : " + helpM[j].SLNO; goto dbnotsave;
+                                        }
                                         tempTBATCHDTL.Add(helpM[j]);
                                         bool flagbatch = false;
                                         string barno = "";
@@ -4539,6 +4556,7 @@ j in DB.T_BATCHDTL on i.AUTONO equals (j.AUTONO)
                             ReadyPopUp.RECPROGSLNO = query.SLNO;
                             ReadyPopUp.RECPROGITSTYLE = query.ITNM;
                             ReadyPopUp.RECPROGITCD = query.ITCD;
+                            ReadyPopUp.SAMPLE = query.CheckedSample == true ? "Y" : "N";
                             TBATCHDTL.Add(ReadyPopUp);
                         }
                         VE.TBATCHDTL = TBATCHDTL;
