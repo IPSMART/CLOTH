@@ -145,7 +145,7 @@ namespace Improvar.Controllers
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
                 //VE.DropDown_list1 = Salesfunc.Stock_Calc_Mehtod();
-                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO);
+                string LOC = CommVar.Loccd(UNQSNO).retSqlformat(), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO);
                 string asdt = VE.TDT.retDateStr();
                 string calctype = VE.TEXTBOX2;
                 string tdt = VE.TEXTBOX4.retDateStr();
@@ -178,6 +178,7 @@ namespace Improvar.Controllers
                 {
                     loccd = FC["loccdvalue"].ToString().retSqlformat();
                     pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
+                    LOC = loccd;
                 }
                 if (summary == "B") prccd = VE.PRCCD;
                 bool Onlynegativestock = VE.Checkbox10;
@@ -761,7 +762,7 @@ namespace Improvar.Controllers
                 query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
                 query += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
                 query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                query += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
+                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N') = 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D', 'C') and ";
                 query += "d.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') ";
                 if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") ";
                 query += "group by a.barno, 'OP' ";
@@ -771,7 +772,7 @@ namespace Improvar.Controllers
                 query += "sum(case a.stkdrcr when 'D' then nvl(a.othramt, 0) else nvl(a.othramt, 0) * -1 end) othramt ";
                 query += "    from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".m_doctype e ";
                 query += "where a.barno = b.barno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and d.doccd = e.doccd(+) and ";
-                query += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
+                query += "d.compcd = '" + COM + "' and d.loccd in (" + LOC + ") and nvl(d.cancel, 'N')= 'N' and e.doctype not in ('KHSR') and a.stkdrcr in ('D','C') and ";
                 query += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + ASDT + "', 'dd/mm/yyyy') ";
                 if (GOCD.retStr() != "") query += "and a.gocd in (" + GOCD + ") ";
                 query += "group by a.barno, c.doctag ) a, ";

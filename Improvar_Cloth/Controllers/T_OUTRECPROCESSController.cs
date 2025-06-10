@@ -666,7 +666,7 @@ namespace Improvar.Controllers
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 //if (VE.MENU_PARA == "PB")
                 //{
-                    allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+                allprodgrpgstper_data = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
 
                 //}
                 //else
@@ -762,6 +762,12 @@ namespace Improvar.Controllers
                 double IGST_PER = 0; double CGST_PER = 0; double SGST_PER = 0; double CESS_PER = 0; double DUTY_PER = 0;
                 foreach (var v in VE.TTXNDTL)
                 {
+                    v.SAMPLE = (from a in VE.TBATCHDTL
+                                where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
+                                && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
+                                 && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
+                                select a.SAMPLE).FirstOrDefault();
+
                     //string PRODGRPGSTPER = "", ALL_GSTPER = "";
                     //var tax_data = (from a in VE.TBATCHDTL
                     //                where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
@@ -2027,7 +2033,8 @@ namespace Improvar.Controllers
                                   x.DISCTYPE,
                                   x.UOM,
                                   x.RATE,
-                                  x.DISCRATE
+                                  x.DISCRATE,
+                                  x.SAMPLE
                               } into P
                               select new TTXNDTL
                               {
@@ -2042,7 +2049,8 @@ namespace Improvar.Controllers
                                   BLQNTY = P.Sum(A => A.BLQNTY),
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
-                                  DISCRATE = P.Key.DISCRATE
+                                  DISCRATE = P.Key.DISCRATE,
+                                  SAMPLE = P.Key.SAMPLE
                               }).ToList();
 
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
