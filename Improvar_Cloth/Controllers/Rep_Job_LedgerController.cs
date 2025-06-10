@@ -62,6 +62,9 @@ namespace Improvar.Controllers
 
                     VE.TEXTBOX4 = MasterHelp.ComboFill("recslcd", VE.DropDown_list_SLCD, 0, 1);
 
+                    VE.DropDown_list_LOCCD = DropDownHelp.DropDownLoccation();
+                    VE.Locnm = MasterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
+
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
@@ -109,7 +112,8 @@ namespace Improvar.Controllers
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "";
+                string slcd = "", linecd = "", itcd = "", itgrpcd = "", fdt, tdt = "", loccd = "";
+                string pghdr2 = "";
                 string unselslcd = "", recslcd = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
@@ -133,6 +137,11 @@ namespace Improvar.Controllers
                     itcd = FC["itcdvalue"].ToString().retSqlformat();
                 }
                 if (FC.AllKeys.Contains("linecdvalue")) linecd = FC["linecdvalue"].ToString().retSqlformat();
+                if (FC.AllKeys.Contains("loccdvalue"))
+                {
+                    loccd = FC["loccdvalue"].ToString().retSqlformat();
+                    pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
+                }
 
                 string sql = "";
                 //sql += "select a.autono, a.slno, a.progautono, a.progslno, b.proguniqno, b.dia, b.batchno, b.jobcd, ";
@@ -232,7 +241,14 @@ namespace Improvar.Controllers
                 sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and ";
                 sql += "a.autono=d.autono(+) and a.autono=e.autono(+) and a.slcd=k.slcd(+) and f.uomcd=l.uomcd(+) and d.linecd=m.linecd(+) and ";
                 sql += "e.compcd = '" + COM + "' and nvl(e.cancel,'N')='N' and b.jobcd='" + jobcd + "' and ";
-                if (VE.Checkbox3 == false) sql += "e.loccd = '" + LOC + "' and ";
+                if (loccd.retStr() != "")
+                {
+                    sql += "e.loccd in (" + loccd + ") and ";
+                }
+                else
+                {
+                    sql += "e.loccd = '" + LOC + "' and ";
+                }
                 sql += "b.recautono=o.autono(+) and o.slcd=p.slcd(+) and o.linecd=q.linecd(+) and o.autono=r.autono(+) and ";
                 sql += "e.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
                 if (slcd != "") sql += "a.slcd in (" + slcd + ") and ";
@@ -616,7 +632,7 @@ namespace Improvar.Controllers
                 string pghdr1 = "", repname = CommFunc.retRepname("rep_partyleg");
                 pghdr1 = "Party Ledger (" + jobnm + ") " + (VE.Checkbox3 == true ? " (Combine) " : "") + "from " + fdt + " to " + tdt;
 
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
                 return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
             }
             catch (Exception ex)

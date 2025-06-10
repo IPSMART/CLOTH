@@ -400,6 +400,17 @@ namespace Improvar
 
             return sllist;
         }
+        public List<DropDown_list_LOCCD> DropDownLoccation()
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            var locnmlist = (from a in DB.M_LOCA
+                             select new DropDown_list_LOCCD
+                             {
+                                 Value = a.LOCCD,
+                                 Text = a.LOCNM
+                             }).Distinct().ToList();
+            return locnmlist;
+        }
 
     }
 }

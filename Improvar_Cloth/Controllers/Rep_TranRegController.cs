@@ -28,14 +28,18 @@ namespace Improvar.Controllers
                 ReportViewinHtml VE = new ReportViewinHtml();
                 Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 ViewBag.formname = "Transporter Register";
-                ViewBag.Title = "Transporter Register";
-                VE.FDT = CommVar.FinStartDate(UNQSNO);
+                ViewBag.Title = "Transporter Register";                
+                VE.FDT = CommVar.FinStartDate(UNQSNO);                
                 VE.TDT = DateTime.Now.Date.ToShortDateString();
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 VE.DropDown_list_SLCD = dropDownHelp.DropDown_list_SLCD();
                 VE.Slnm = masterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
                 VE.DropDown_list_SLCD = dropDownHelp.GetSlcdforSelection("T");
                 VE.Translnm = masterHelp.ComboFill("translcd", VE.DropDown_list_SLCD, 0, 1);
+                
+                VE.DropDown_list_LOCCD = dropDownHelp.DropDownLoccation();
+                VE.Locnm = masterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
+
                 VE.DefaultView = true;
                 return View(VE);
             }
@@ -53,9 +57,13 @@ namespace Improvar.Controllers
 
                 string SLCD = "";
                 if (FC.AllKeys.Contains("slcdvalue")) SLCD = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
-                string TRANSLCD = "";
+                string TRANSLCD = "", loccd = "", pghdr2 = "";
                 if (FC.AllKeys.Contains("translcdvalue")) TRANSLCD = CommFunc.retSqlformat(FC["translcdvalue"].ToString());
-
+                if (FC.AllKeys.Contains("loccdvalue"))
+                {
+                    loccd = FC["loccdvalue"].ToString().retSqlformat();
+                    pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
+                }
                 DataTable IR = new DataTable("mstrep");
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
@@ -83,6 +91,10 @@ namespace Improvar.Controllers
                 if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy')  ";
                 if (SLCD != "") { sql += "and a.slcd in(" + SLCD + ")  "; }
                 if (TRANSLCD != "") { sql += "and b.translcd in(" + TRANSLCD + ") "; }
+                if (loccd.retStr() != "")
+                {
+                    sql += "and c.loccd in (" + loccd + ")  ";
+                }
                 sql += "and b.translcd is not null )a, ";
 
                 sql += "(select a.autono,a.amtcd,sum(nvl(a.amt,0))tranamt ";
@@ -124,7 +136,7 @@ namespace Improvar.Controllers
 
                 string pghdr1 = "Transporter Register  from " + fdt + " to " + tdt;
                 string repname = "Transporter Register" + System.DateTime.Now;
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
                 TempData[repname] = PV;
                 TempData[repname + "xxx"] = IR;
                 return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });

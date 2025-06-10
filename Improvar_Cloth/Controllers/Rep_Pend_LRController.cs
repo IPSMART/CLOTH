@@ -35,6 +35,11 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("T");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+                    string LOC = CommVar.Loccd(UNQSNO);
+
+                    VE.DropDown_list_LOCCD = DropDownHelp.DropDownLoccation();
+                    VE.Locnm = MasterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
+
                     VE.TDT = CommVar.CurrDate(UNQSNO);
                     VE.DefaultView = true;
                     return View(VE);
@@ -53,16 +58,22 @@ namespace Improvar.Controllers
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
-                string slcd = "", lrnoLike = "", BltyPending = "";
+                string slcd = "", lrnoLike = "", BltyPending = "", loccd = "";
                 if (FC.AllKeys.Contains("slcdvalue")) slcd = FC["slcdvalue"].ToString().retSqlformat();
+                string  pghdr2 = "";
+                if (FC.AllKeys.Contains("loccdvalue"))
+                {
+                    loccd = FC["loccdvalue"].ToString().retSqlformat();
+                    pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
+                }
                 lrnoLike = VE.TEXTBOX1;
                 BltyPending = FC["BltyPending"].ToString();
                 bool ShowOnlyAfterIssue = VE.Checkbox1;
                 bool ShowDocDate = VE.Checkbox2;
                 DataTable tbl = new DataTable();
                 if (BltyPending == "R")
-                { tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike, ShowOnlyAfterIssue); }
-                else { tbl = Salesfunc.getPendBiltytoIssue(tdt, "", "", "", slcd, lrnoLike); }
+                { tbl = Salesfunc.getPendRecfromMutia(tdt, slcd, "", "", "", lrnoLike, ShowOnlyAfterIssue, loccd); }
+                else { tbl = Salesfunc.getPendBiltytoIssue(tdt, "", "", "", slcd, lrnoLike, loccd); }
                 DataView dv = new DataView(tbl);
                 DataTable tbl1 = new DataTable();
                 if (BltyPending == "R" && ShowDocDate == true)
@@ -127,7 +138,7 @@ namespace Improvar.Controllers
                 string head = BltyPending == "R" ? "Receive from Mutia" : "Issue to Mutia";
                 string pghdr1 = "Pending " + head + " Register from " + fdt + " to " + tdt;
                 string repname = ("Pend " + head + " Reg").retRepname();
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
+                PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "L", false);
 
                 TempData[repname] = PV;
                 TempData[repname + "xxx"] = IR;

@@ -228,7 +228,7 @@ namespace Improvar
             else { DISC_AMT = 0; }
             return DISC_AMT;
         }
-        public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string linecd = "", string curschema = "",string loccd="")
+        public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string linecd = "", string curschema = "", string loccd = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
@@ -915,7 +915,7 @@ namespace Improvar
         //    return tbl;
 
         //}
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false, string fdt = "", bool exactstyleno = false)
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false, string doctag = "", string SLCD = "", bool IncludeBaleStock = false, bool ShowOnlyFavitem = false, bool Phystk = false, bool skipNegetivStock = false, string fdt = "", bool exactstyleno = false, string loccd = "", string slcdfrrt = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1118,11 +1118,19 @@ namespace Improvar
 
 
                 sql += "select a.gocd,m.gonm, (case when a.mtrljobcd is null and e.itgrptype = 'C' then 'PL' when a.mtrljobcd is null and e.itgrptype <> 'C' then 'FS' else a.mtrljobcd end) mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
-                sql += "c.slcd, g.slnm, h.docdt, h.docno,h.autono,p.doctag, b.prccd, b.effdt, b.rate,q.rate rprate, e.bargentype, " + Environment.NewLine;
+                sql += "c.slcd, g.slnm, h.docdt, h.docno,h.autono,p.doctag, b.prccd, b.effdt,q.rate rprate, e.bargentype, " + Environment.NewLine;
                 sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
                 sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
                 sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen,x.scmdiscrate,x.scmdisctype,c.commonuniqbar " + Environment.NewLine;
                 sql += ",p.conslcd,p.prefno,p.prefdt,c.slno,d.favcolr,r.discper, r.discrate, r.disccalctype " + Environment.NewLine;
+                if (slcdfrrt.retStr() != "")
+                {
+                    sql += ",nvl(s.jobrt, b.rate)rate ";
+                }
+                else
+                {
+                    sql += ",b.rate ";
+                }
                 sql += "from " + Environment.NewLine;
 
                 sql += "( " + Environment.NewLine;
@@ -1154,7 +1162,16 @@ namespace Improvar
 
                     sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + scm + ".t_bale g " + Environment.NewLine;
                     sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
-                    sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
+                    sql += "c.compcd='" + COM + "' ";
+                    if (loccd.retStr() != "")
+                    {
+                        sql += "and c.loccd in (" + loccd + ") ";
+                    }
+                    else
+                    {
+                        sql += " and c.loccd = '" + LOC + "' ";
+                    }
+                    sql += " and nvl(c.cancel,'N')='N' ";
                     //if (MSYSCNFG.STKINCLPINV == "Y")
                     //{
                     //    sql += " and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
@@ -1180,7 +1197,16 @@ namespace Improvar
                         sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scm + ".t_bale g " + Environment.NewLine;
                         sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                         sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and " + Environment.NewLine;
-                        sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' " + Environment.NewLine;
+                        sql += "c.compcd='" + COM + "'";
+                        if (loccd.retStr() != "")
+                        {
+                            sql += "and c.loccd in (" + loccd + ") ";
+                        }
+                        else
+                        {
+                            sql += "and c.loccd='" + LOC + "' ";
+                        }
+                        sql += " and nvl(c.cancel,'N')='N' " + Environment.NewLine;
                         //if (MSYSCNFG.STKINCLPINV == "Y")
                         //{
                         //    sql += "and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
@@ -1223,7 +1249,16 @@ namespace Improvar
 
                     sql += "from " + scm + ".t_txndtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, " + scm + ".t_bale g " + Environment.NewLine;
                     sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
-                    sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
+                    sql += "c.compcd='" + COM + "'";
+                    if (loccd.retStr() != "")
+                    {
+                        sql += "and c.loccd in (" + loccd + ") ";
+                    }
+                    else
+                    {
+                        sql += "and c.loccd='" + LOC + "' ";
+                    }
+                    sql += "and nvl(c.cancel,'N')='N' ";
                     //if (MSYSCNFG.STKINCLPINV == "Y")
                     //{
                     //    sql += " and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
@@ -1249,7 +1284,16 @@ namespace Improvar
                         sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scm + ".t_bale g " + Environment.NewLine;
                         sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and " + Environment.NewLine;
                         sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and " + Environment.NewLine;
-                        sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' " + Environment.NewLine;
+                        sql += "c.compcd='" + COM + "'";
+                        if (loccd.retStr() != "")
+                        {
+                            sql += "and c.loccd in (" + loccd + ") ";
+                        }
+                        else
+                        {
+                            sql += "and c.loccd='" + LOC + "'";
+                        }
+                        sql += "and nvl(c.cancel,'N')='N' " + Environment.NewLine;
                         //if (MSYSCNFG.STKINCLPINV == "Y")
                         //{
                         //    sql += "and a.stkdrcr in ('D','C','0') and " + Environment.NewLine;
@@ -1293,6 +1337,13 @@ namespace Improvar
                     sql += ") a where prccd='" + prccd + "' " + Environment.NewLine;
                     sql += ") " + sqlals;
                     if (x != 2) sql += ", ";
+                }
+                if (slcdfrrt.retStr() != "")
+                {
+                    sql += "(select a.itcd, a.slcd, a.jobrt " + Environment.NewLine;
+                    sql += "from " + scm + ".M_SITEM_SLCD a  " + Environment.NewLine;
+                    sql += "WHERE a.slcd in (" + slcdfrrt + ")  " + Environment.NewLine;
+                    sql += ") s, ";
                 }
                 sql += "(select a.barno, count(*) barimagecount," + Environment.NewLine;
                 sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) " + Environment.NewLine;
@@ -1395,6 +1446,10 @@ namespace Improvar
                 //if(MSYSCNFG.STKINCLPINV=="Y")  sql += "and p.doctag not in('PI')";
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
+                if (slcdfrrt.retStr() != "")
+                {
+                    sql += "and a.itcd = s.itcd(+) ";
+                }
             }
 
             tbl = masterHelpFa.SQLquery(sql);
@@ -1663,7 +1718,7 @@ namespace Improvar
         //    tbl = masterHelpFa.SQLquery(sql);
         //    return tbl;
         //}
-        public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "", string translcd = "", string lrnoLike = "")
+        public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "", string translcd = "", string lrnoLike = "", string loccd = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1680,7 +1735,16 @@ namespace Improvar
             sql += "(select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
             sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
-            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "d.compcd = '" + COM + "' ";
+            if (loccd.retStr() != "")
+            {
+                sql += "and d.loccd in (" + loccd + ") ";
+            }
+            else
+            {
+                sql += "and d.loccd = '" + LOC + "'";
+            }
+            sql += "and nvl(d.cancel, 'N') = 'N' and ";
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
             sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
             // sql += "a.autono not in (select blautono from " + schema + ".t_bale) and ";
@@ -1736,7 +1800,7 @@ namespace Improvar
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "", string lrnoLike = "", bool ShowOnlyAfterIssue = false)
+        public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "", string lrnoLike = "", bool ShowOnlyAfterIssue = false, string loccd = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
@@ -1754,7 +1818,17 @@ namespace Improvar
             sql += "select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,'Issued' status,d.docdt,d.docno ";
             sql += "from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
-            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
+            sql += "d.compcd = '" + COM + "' ";
+            if (loccd.retStr() != "")
+            {
+                sql += "and d.loccd in (" + loccd + ") ";
+            }
+            else
+            {
+                sql += "and d.loccd = '" + LOC + "' ";
+            }
+
+            sql += "and nvl(d.cancel, 'N') = 'N' and  ";
             sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ";
             if (ShowOnlyAfterIssue == false)
             {
@@ -1765,7 +1839,16 @@ namespace Improvar
                 sql += "from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d, " + schema + ".t_txntrans e ";
                 sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
                 sql += "a.autono not in (select distinct blautono from " + schema + ".t_bilty ) and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+                sql += "d.compcd = '" + COM + "' ";
+                    if (loccd.retStr() != "")
+                {
+                    sql += "and d.loccd in (" + loccd + ") ";
+                }
+                else
+                {
+                    sql += "and d.loccd = '" + LOC + "' ";
+                }
+                sql += "and nvl(d.cancel, 'N') = 'N' and ";
                 if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
                 sql += "d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
                 sql += "a.doctag in ('PB','OP') and b.baleno is not null  and b.gocd='TR' ";
@@ -3235,7 +3318,8 @@ namespace Improvar
 
                 sqlc = "";
                 sqlc += "where a.autono=b.autono and nvl(b.cancel,'N') = 'N' and a.autono=c.autono(+) and a.barno=h.barno(+) and " + Environment.NewLine;
-                sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and " + Environment.NewLine;
+                //sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and " + Environment.NewLine;
+                sqlc += "b.compcd='" + COM + "' and " + Environment.NewLine;
                 if (LOCCD != "") { sqlc += " b.loccd in (" + LOCCD + ") and " + Environment.NewLine; } else { sqlc += " b.loccd='" + LOC + "' and " + Environment.NewLine; }
                 if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and " + Environment.NewLine;
                 if (gocd.retStr() != "") sqlc += "a.gocd in (" + gocd + ") and " + Environment.NewLine;
@@ -3334,7 +3418,8 @@ namespace Improvar
 
                 sqlc = "";
                 sqlc += "where a.autono=b.autono and nvl(b.cancel,'N') = 'N' and a.autono=c.autono(+) and a.barno=h.barno(+) and " + Environment.NewLine;
-                sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and " + Environment.NewLine;
+                //sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and " + Environment.NewLine;
+                sqlc += "b.compcd='" + COM + "' and " + Environment.NewLine;
                 if (LOCCD != "") { sqlc += " b.loccd in (" + LOCCD + ") and " + Environment.NewLine; } else { sqlc += " b.loccd='" + LOC + "' and " + Environment.NewLine; }
                 if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and " + Environment.NewLine;
                 if (gocd.retStr() != "") sqlc += "a.gocd in (" + gocd + ") and " + Environment.NewLine;

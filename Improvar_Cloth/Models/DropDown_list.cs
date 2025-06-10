@@ -99,6 +99,11 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
+    public class DropDown_list_LOCCD
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+    }
 
     public class PAY_TAG
     {

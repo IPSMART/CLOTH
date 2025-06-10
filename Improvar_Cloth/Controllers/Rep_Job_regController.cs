@@ -54,6 +54,10 @@ namespace Improvar.Controllers
 
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
+
+                    VE.DropDown_list_LOCCD = DropDownHelp.DropDownLoccation();
+                    VE.Locnm = MasterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
+
                     VE.JOBCD = VE.MENU_PARA;
                     VE.DefaultView = true;
                     return View(VE);
@@ -78,12 +82,15 @@ namespace Improvar.Controllers
                 string ShowPending = VE.TEXTBOX2.retStr();
                 ReportType = VE.TEXTBOX3.retStr();
                 string RepFormat = VE.TEXTBOX4.retStr();
-                string jobslcd = "", itcd = "";
+                string jobslcd = "", itcd = "", loccd = "", pghdr2 = "";
                 string JOBCD = VE.JOBCD;
                 if (FC.AllKeys.Contains("slcdvalue")) jobslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("itcdvalue")) itcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
-
-
+                if (FC.AllKeys.Contains("loccdvalue"))
+                {
+                    loccd = FC["loccdvalue"].ToString().retSqlformat();
+                    pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
+                }
                 string sql = "";
                 DataTable IR = new DataTable("mstrep");
                 Models.PrintViewer PV = new Models.PrintViewer();
@@ -104,6 +111,10 @@ namespace Improvar.Controllers
                     if (jobslcd != "") sql += "a.slcd in(" + jobslcd + ") and " + Environment.NewLine;
                     if (itcd != "") sql += "a.itcd in(" + itcd + ") and " + Environment.NewLine;
                     if (fdt != "") sql += "b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
+                    if (loccd.retStr() != "")
+                    {
+                        sql += "b.loccd in (" + loccd + ") and ";
+                    }
                     sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ) a, " + Environment.NewLine;
 
                     sql += "(select a.progautono||a.progslno progautoslno,  " + Environment.NewLine;
@@ -296,7 +307,7 @@ namespace Improvar.Controllers
 
                         string repname = "Job Register".retRepname();
                         pghdr1 = (ShowPending == "PENDING" ? "Pending " : " ") + "Job Work register " + (ReportType == "SUMARRY" ? "Sumarry " : "Details ") + (recdt != "" ? " Received date: " + recdt + "" : " ") + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
-                        PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                        PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
                         TempData[repname] = PV;
                         return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
                         #endregion
@@ -494,6 +505,10 @@ namespace Improvar.Controllers
                     if (jobslcd != "") sql += "d.slcd in(" + jobslcd + ") and " + Environment.NewLine;
                     if (itcd != "") sql += "a.itcd in(" + itcd + ") and " + Environment.NewLine;
                     if (fdt != "") sql += "c.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and " + Environment.NewLine;
+                    if (loccd.retStr() != "")
+                    {
+                        sql += "e.loccd in (" + loccd + ") and ";
+                    }
                     sql += "c.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy')  " + Environment.NewLine;
                     sql += "order by c.docdt,c.docno,slnm,d.slcd,e.styleno||' '||e.itnm,a.itcd  " + Environment.NewLine;
 
@@ -549,7 +564,7 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["flag"] = "font-weight:bold";
                         IR.Rows[rNo]["doccd"] = maintbl.Rows[i]["doccode"].retStr();
                         IR.Rows[rNo]["docdt"] = maintbl.Rows[i]["docdt"].retDateStr();
-                        IR.Rows[rNo]["docno"] = maintbl.Rows[i]["docno"].retStr()+ cancrem;
+                        IR.Rows[rNo]["docno"] = maintbl.Rows[i]["docno"].retStr() + cancrem;
                         IR.Rows[rNo]["slnm"] = maintbl.Rows[i]["slnm"].retStr();
                         IR.Rows[rNo]["slarea"] = maintbl.Rows[i]["area"].retStr();
                         IR.Rows[rNo]["gstno"] = maintbl.Rows[i]["gstno"].retStr();
@@ -575,7 +590,7 @@ namespace Improvar.Controllers
                             cgstamt += maintbl.Rows[i]["cgstamt"].retDbl();
                             sgstamt += maintbl.Rows[i]["sgstamt"].retDbl();
 
-                            i++;                            
+                            i++;
                             if (i > maxR) break;
                         }
 
@@ -632,7 +647,7 @@ namespace Improvar.Controllers
 
                     string repname = "Job Register".retRepname();
                     pghdr1 = RegisterType + " Register " + " Jobcd:" + JOBCD + (fdt != "" ? " from " + fdt + " to " : " as on ") + tdt;
-                    PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                    PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
                     TempData[repname] = PV;
                     return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
                 }

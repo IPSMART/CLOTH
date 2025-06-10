@@ -2396,7 +2396,7 @@
                     </div>
                     <div class="col-md-1">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", @style = "font-weight:bold", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly"} })
                         </div>
                     </div>
                     <div class="col-md-1">
@@ -2451,7 +2451,7 @@
                         </div>
                     </div>
                     @if (Model.DefaultAction != "V" && Model.MENU_PARA == "JW")
-                    { <div class="col-md-1" style="width:auto;">
+                            { <div class="col-md-1" style="width:auto;">
                         <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Get Data From Cash Memo" title="Click to Get Data From Cash Memo" onclick="GetCashMemoDetails()" />
                     </div>
                     <div class="row">

@@ -13,6 +13,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list3> DropDown_list3 { get; set; }
         public List<DropDown_list4> DropDown_list4 { get; set; }
         public List<DropDown_list_text> DropDown_list_text { get; set; }
+        public List<DropDown_list_LOCCD> DropDown_list_LOCCD { get; set; }
         public bool Checkbox1 { get; set; }
         public bool Checkbox2 { get; set; }
         public bool Checkbox3 { get; set; }

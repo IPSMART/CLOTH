@@ -103,6 +103,12 @@
         else {
             $(".DivMergeBarItem").hide();
         }*@
+        $("li").removeClass("active").addClass("");
+        $(".nav-tabs li:nth-child(2)").addClass('active');
+        //below set the  child sequence
+        $(".tab-content div").removeClass("active");
+        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#update_page_slno").hide();

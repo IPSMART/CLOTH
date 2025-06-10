@@ -61,6 +61,9 @@ namespace Improvar.Controllers
                     VE.DropDown_list_DOCCD = DropDownHelp.GetDocCdforSelection("'SJBOR'");
                     VE.Docnm = MasterHelp.ComboFill("doccd", VE.DropDown_list_DOCCD, 0, 1);
 
+                    VE.DropDown_list_LOCCD = DropDownHelp.DropDownLoccation();
+                    VE.Locnm = MasterHelp.ComboFill("loccd", VE.DropDown_list_LOCCD, 1, 0);
+
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
@@ -84,7 +87,7 @@ namespace Improvar.Controllers
             try
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string slcd = "", agslcd = "", slmslcd = "", brandcd = "", fdt, tdt = "", colrcd = "", batchno = "", item = "", mtrlsupplby = "", seldoccd = "";
+                string slcd = "", agslcd = "", slmslcd = "", brandcd = "", fdt, tdt = "", colrcd = "", batchno = "", item = "", mtrlsupplby = "", seldoccd = "",loccd = "", pghdr2 = "";
                 fdt = VE.FDT;
                 tdt = VE.TDT;
                 string ReportType = VE.TEXTBOX3;
@@ -115,6 +118,11 @@ namespace Improvar.Controllers
                     {
                         item = FC["itcdvalue"].ToString().retSqlformat();
                     }
+                }
+                if (FC.AllKeys.Contains("loccdvalue"))
+                {
+                    loccd = FC["loccdvalue"].ToString().retSqlformat();
+                    pghdr2 += (pghdr2.retStr() == "" ? "" : "<br/>") + "Location :" + FC["loccdtext"].ToString();
                 }
 
                 if (FC.AllKeys.Contains("doccdvalue")) seldoccd = CommFunc.retSqlformat(FC["doccdvalue"].ToString());
@@ -152,19 +160,32 @@ namespace Improvar.Controllers
 
                 sql += "(select c.docno pslipdocno,c.docdt pslipdocdt,c.autono pslipautono,b.ordautono,b.ordslno,sum(b.qnty) pslipqnty,a.autono,b.slno,b.txnslno " + Environment.NewLine;
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_batchdtl b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d " + Environment.NewLine;
-                sql += "where a.autono = b.autono and b.autono = c.autono and c.doccd = d.doccd and c.compcd = '" + COM + "'  " + Environment.NewLine;
+                sql += "where a.autono = b.autono and b.autono = c.autono and c.doccd = d.doccd and " + Environment.NewLine;                
+                sql += "c.compcd = '" + COM + "'  " + Environment.NewLine;
+                if (loccd.retStr() != "")
+                {
+                    sql += "and c.loccd in (" + loccd + ") ";
+                }
                 sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SPSLP') " + Environment.NewLine;
                 sql += "group by c.docno,c.docdt,c.autono,b.ordautono,b.ordslno,a.autono,b.slno,b.txnslno)a, " + Environment.NewLine;
 
                 sql += "(select f.docno billdocno,f.docdt billdocdt,f.autono billautono,sum(g.qnty) billqnty,g.autono,g.slno,g.txnslno,e.linkautono " + Environment.NewLine;
                 sql += "from " + scm + ".t_txn_linkno e, " + scm + ".t_cntrl_hdr f, " + scm + ".t_batchdtl g " + Environment.NewLine;
                 sql += "where e.linkautono=f.autono(+) and f.autono=g.autono(+) and f.compcd = '" + COM + "' and nvl(f.cancel, 'N')= 'N'  " + Environment.NewLine;
+                if (loccd.retStr() != "")
+                {
+                    sql += "and f.loccd in (" + loccd + ") ";
+                }
                 sql += "group by f.docno ,f.docdt ,g.autono,g.slno,g.txnslno,e.linkautono,f.autono)b, " + Environment.NewLine;
 
                 sql += "" + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d " + Environment.NewLine;
 
                 sql += "where a.autono = b.linkautono(+) and a.slno = b.slno(+) and a.txnslno = b.txnslno(+) and a.autono = c.autono(+) and c.doccd = d.doccd(+) ";
                 sql += "and c.compcd = '" + COM + "'  " + Environment.NewLine;
+                if (loccd.retStr() != "")
+                {
+                    sql += "and c.loccd in (" + loccd + ") ";
+                }
                 sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SPSLP') and b.billautono is not null " + Environment.NewLine;
 
                 sql += "union all " + Environment.NewLine;
@@ -173,6 +194,10 @@ namespace Improvar.Controllers
 
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_batchdtl b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_doctype d " + Environment.NewLine;
                 sql += "where a.autono = b.autono and b.autono = c.autono and c.doccd = d.doccd and c.compcd = '" + COM + "'  " + Environment.NewLine;
+                if (loccd.retStr() != "")
+                {
+                    sql += "and c.loccd in (" + loccd + ") ";
+                }
                 sql += "and nvl(c.cancel, 'N')= 'N' and d.doctype in ('SBEXP') " + Environment.NewLine;
                 sql += "group by b.ordautono,b.ordslno,c.docno ,c.docdt ,c.autono ,b.slno " + Environment.NewLine;
                 tbl1 = MasterHelp.SQLquery(sql);
@@ -736,7 +761,7 @@ namespace Improvar.Controllers
                 else if (VE.Checkbox1 == true && showasperpslip == false) pghdr1 = "Pending Order (Bill) Register " + ReportType + " from " + fdt + " to " + tdt + " (" + txnupto + ")";
                 else pghdr1 = "Order Register " + ReportType + " from " + fdt + " to " + tdt;
 
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
+                PV = HC.ShowReport(IR, repname, pghdr1, pghdr2, true, true, "P", false);
                 return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
             }
             catch (Exception ex)
