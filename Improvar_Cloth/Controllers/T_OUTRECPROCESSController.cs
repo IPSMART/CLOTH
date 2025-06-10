@@ -1943,7 +1943,8 @@ namespace Improvar.Controllers
                 string GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD.retStr().retSqlformat();
                 string PRCCD = VE.T_TXNOTH.PRCCD.retStr();
                 string MTRLJOBCD = VE.MTRLJOBCD.retStr() == "" ? "" : VE.MTRLJOBCD.retStr().retSqlformat();
-                var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD);
+                //var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD);
+                var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD,"","",true,false,"","","",false,false,true,"",true,false, VE.T_TXN.SLCD.retStr().retSqlformat());
 
                 string progautoslno = VE.TBATCHDTL.Select(a => a.RECPROGAUTONO + a.RECPROGSLNO).Distinct().ToArray().retSqlfromStrarray();
                 string scm = CommVar.CurSchema(UNQSNO);
@@ -1958,6 +1959,10 @@ namespace Improvar.Controllers
 
                 for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
                 {
+                    if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y")
+                    {
+                        VE.TBATCHDTL[p].RATE = (from DataRow a in barimgdata.Rows where a["barno"].retStr() == VE.TBATCHDTL[p].BARNO select a["rate"].retDbl()).FirstOrDefault();
+                    }
                     var img = barimgdata.AsEnumerable().Where(a => a.Field<string>("barno").retStr() == VE.TBATCHDTL[p].BARNO).Select(b => b.Field<string>("barimage")).FirstOrDefault();
                     //VE.TBATCHDTL[p].BarImages = img;
                     if (img.retStr() != "")
