@@ -1430,7 +1430,7 @@ namespace Improvar.Controllers
                 VE.SHOWBLTYPE = dropDownHelp.DropDownBLTYPE().Count > 0 ? "Y" : "N";
                 string sql = "";
 
-                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,nvl(b.cancel,'N')cancel,b.doconlyno,b.docdt dt,g.docno issdocno,to_char(g.docdt,'dd/mm/yyyy') issdocdt ";
+                sql = "select distinct a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno,e.bltype,e.DOCREM,nvl(b.cancel,'N')cancel,b.doconlyno,b.docdt dt,g.docno issdocno,to_char(g.docdt,'dd/mm/yyyy') issdocdt ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm + ".t_txndtl d, " + scm + ".t_txnoth e, " + scm + ".T_STKTRNF f, " + scm + ".t_cntrl_hdr g ";
                 sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and a.autono=d.autono(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and f.othautono=g.autono(+) and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -1446,7 +1446,7 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "SR")
                 {
                     var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "Bill Amt"
-                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
+                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "Doc.Remarks"  + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
                         string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
@@ -1454,9 +1454,9 @@ namespace Improvar.Controllers
                             + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>"
                             + (tbl.Rows[j]["PREFDT"].retStr() == "" ? "" : tbl.Rows[j]["PREFDT"].retStr().Remove(10)) + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
                             + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
-                            + "<td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                            + "<td>" + tbl.Rows[j]["DOCREM"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                     }
-                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "7" : "6"), (VE.SHOWBLTYPE.retStr() == "Y" ? "7" : "6")));
+                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "8" : "7"), (VE.SHOWBLTYPE.retStr() == "Y" ? "8" : "7")));
                 }
                 else if (VE.MENU_PARA == "REC")
                 {
@@ -1476,7 +1476,7 @@ namespace Improvar.Controllers
                 else
                 {
                     var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt"
-                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "AUTO NO";
+                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "Doc.Remarks" + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
                         string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
@@ -1484,9 +1484,9 @@ namespace Improvar.Controllers
                             + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>"
                             + Convert.ToDouble(tbl.Rows[j]["blamt"]) + " </td>"
                             + (VE.SHOWBLTYPE.retStr() == "Y" ? "<td>" + tbl.Rows[j]["bltype"] + " </td>" : "")
-                            + "<td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                            + "<td>" + tbl.Rows[j]["DOCREM"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                     }
-                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "5" : "4"), (VE.SHOWBLTYPE.retStr() == "Y" ? "5" : "4")));
+                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), (VE.SHOWBLTYPE.retStr() == "Y" ? "6" : "5"), (VE.SHOWBLTYPE.retStr() == "Y" ? "6" : "5")));
                 }
             }
             catch (Exception ex)
