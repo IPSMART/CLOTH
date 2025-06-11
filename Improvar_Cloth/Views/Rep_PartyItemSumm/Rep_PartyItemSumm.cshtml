@@ -567,6 +567,7 @@
             start.style.backgroundColor = '';
             start.focus();
         }
+        GetItemDetails();
     }
 </script>
 <script>
@@ -599,6 +600,51 @@
             }
         });
         return false;
+    }
+
+    function GetItemDetails() {
+        debugger;
+        var party = $("#SLCD2").val(), frmdt = $("#FDT2").val(), todt = $("#TDT2").val(), group = $("#ITGRPCD2").val();
+        var CHECK = $("#ONLYSALES2").val();
+        var item = "",itemnm="";
+        var GridRow = $("#available_GRP > tbody > tr").length;
+        if (GridRow != 0) {
+            for (var i = 0; i <= GridRow - 1; i++) {
+                var chaked = document.getElementById("Checked_" + i).checked;
+                if (chaked == true) {
+                    if (item != "") {
+                        item += ",";
+                        itemnm += ",";
+                    }
+                    item += "'" + $("#itcd_" + i).val() + "'";
+                    itemnm += $("#styleno_" + i).val();
+                }
+            }
+        }
+        if (item == "") {
+            $("#ItemBody").html('');
+            $("#ItemFoot").html('');
+            $("#ItemHead").html('Item :');
+        }
+        else {
+            $.ajax({
+                type: 'get',
+                url: "@Url.Action("GetItemData", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    slcd: party, fdt: frmdt, tdt: todt, check: CHECK, itgrpcd: group, itcd: item, itnm: itemnm
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partial_existing").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+
     }
 
 </script>
@@ -1424,6 +1470,32 @@
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
 </script>
+<script>
+    function SetAllCheckBoxesFilterParty(obj, tablename, RowCheckID, FILTER_ID) {
+        var filter = $("#" + FILTER_ID).val() || '';
+        var rows = document.querySelector("#" + tablename + " tbody").rows;
+        for (var i = 0; i <= rows.length - 1; i++) {
+            var flag = 0;
+            for (var x = 0; x <= rows[i].cells.length - 1; x++) {
+                var firstCol = rows[i].cells[x].children[0].value.toUpperCase();
+                if (firstCol.indexOf(filter.toUpperCase()) > -1) {
+                    flag = 1;
+                }
+            }
+            if (flag == 1) {
+                if ($("#" + RowCheckID + i).is(":visible")) {
+                    var chkbox = document.getElementById(RowCheckID + i);
+                    var isdisable = chkbox.getAttribute("disabled");
+                    if (isdisable == null) {
+                        chkbox.checked = obj.checked;
+                    }
+                }
+            }
+        }
+        GetItemDetails();
+    }
+
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1458,7 +1530,7 @@
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Party Code")
                                         <b style="color:Red;">*</b>
-                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="editor-field">
@@ -1657,6 +1729,11 @@
                     <div class="col-lg-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.TDT2, new { htmlAttributes = new { @class = "form-control", id = "TDT2", maxlength = 10, @placeholder = "dd/mm/yyyy", @autocomplete = "off", @readonly = "readonly" } })
+                            @Html.HiddenFor(model => model.SLCD2, new { id = "SLCD2" })
+                            @Html.HiddenFor(model => model.ITGRPCD2, new { id = "ITGRPCD2" })
+                            @Html.HiddenFor(model => model.ONLYSALES2, new { id = "ONLYSALES2" })
+
+
                         </div>
                     </div>
                 </div>
@@ -1670,213 +1747,217 @@
                         </div>
                     </div>
                 </div>
-                </div>               
-                
-                    <div style="width:60%;display:inline-block;float:left">
-                        @*<input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />*@
-                        @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
-                        <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
-                            <div class="tabtitle">
-                                Item Details
-                            </div>
-                            <div style="margin-top: 7px;margin-left: 20px;font-size: 14px;font-weight: bold;">
-                                @*@if (Model.AvailableGroup != null)
+            </div>
+
+            <div style="width:60%;display:inline-block;float:left">
+                @*<input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />*@
+                @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
+                <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
+                    <div class="tabtitle">
+                        Item Details
+                    </div>
+                    <div style="margin-top: 7px;margin-left: 20px;font-size: 14px;font-weight: bold;">
+                        @*@if (Model.AvailableGroup != null)
+                            {
+                                <span>Number of Available Accounts : @Model.AvailableGroup.Count</span>
+                            }
+                            else
+                            {
+                                <span>Number of Available Accounts : 0</span>
+                            }*@
+                        <span>Party : @ViewBag.SLNM</span>
+                    </div>
+                    @*@if (Model.AvailableGroup != null)
+                        {*@
+                    <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100">
+                        <div style="height:58vh;overflow-y:auto;">
+                            <table id="available_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="FONT-SIZE:9px;width:1143px;" onkeydown="checkKey(event,'available_GRP','Checked_');">
+                                <thead>
+                                    <tr class="sticky-header" style="height:30px;">
+                                        <th class="sticky-cell" style="text-align:center;width: 27px;">
+                                            All
+                                            <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterParty(this, 'available_GRP', 'Checked_')" />
+                                        </th>
+                                        <th class="" style="width:50px;">Design</th>
+                                        <th class="" style="width:250px;">Group</th>
+                                        @*<th class="" style="width:50px;">Item</th>*@
+                                        <th class="" style="width:150px;text-align:right;">Sal.Qnty</th>
+                                        <th class="" style="width:150px;text-align:right;">Sal.Amt</th>
+                                        <th class="" style="width:150px;text-align:right;">S.Av.Rate</th>
+                                        <th class="" style="width:150px;text-align:right;">Ret.Qnty</th>
+                                        <th class="" style="width:150px;text-align:right;">Ret.Amt</th>
+                                        <th class="" style="width:150px;text-align:right;">R.Av.Rate</th>
+                                        <th class="" style="width:150px;text-align:right;">Net.Qnty</th>
+                                        <th class="" style="width:150px;text-align:right;">Net.Amt</th>
+                                        <th class="" style="width:150px;text-align:right;">N.Av.Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.billdet != null)
                                     {
-                                        <span>Number of Available Accounts : @Model.AvailableGroup.Count</span>
+                                        for (int i = 0; i <= Model.billdet.Count - 1; i++)
+                                        {
+                                            <tr id="available_GRP@(i + 1)">
+                                                <td class="sticky-cell" style="background-color:#808080">
+                                                    @Html.CheckBoxFor(model => model.billdet[i].Checked, new { id = "Checked_" + i, @style = "text-align:center;", onclick = "IndivedulaCheckBoxCheck(this," + i + ",'available_GRP');" })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].styleno, new { htmlAttributes = new { @class = "atextBoxFor", id = "styleno_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                    @Html.HiddenFor(model => model.billdet[i].itcd, new { id = "itcd_" + i })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].itgrpnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itgrpnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                @*<td>
+                                                        @Html.EditorFor(model => model.billdet[i].itnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                    </td>*@
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "sqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].samt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "samt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].srate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "srate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].rqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "ramt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].rrate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].netqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].netamt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netamt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.billdet[i].netrate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>
+                                            </tr>
+                                        }
                                     }
-                                    else
-                                    {
-                                        <span>Number of Available Accounts : 0</span>
-                                    }*@
-                                <span>Party : @ViewBag.SLNM</span>
-                            </div>
-                            @*@if (Model.AvailableGroup != null)
-                                {*@
-                            <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100">
-                                <div style="height:58vh;overflow-y:auto;">
-                                    <table id="available_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="FONT-SIZE:9px;width:1143px;" onkeydown="checkKey(event,'available_GRP','Checked_');">
-                                        <thead>
-                                            <tr class="sticky-header" style="height:30px;">
-                                                @*<th class="sticky-cell" style="text-align:center;width: 27px;">
-                                                        All
-                                                        <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterCUSTOM(this, 'available_GRP', 'Checked_', 'searchAV')" />
-                                                    </th>*@
-                                                <th class="" style="width:50px;">Design</th>
-                                                <th class="" style="width:250px;">Group</th>
-                                                <th class="" style="width:50px;">Item</th>
-                                                <th class="" style="width:150px;">Sal.Qnty</th>
-                                                <th class="" style="width:50px;">Sal.Amt</th>
-                                                <th class="" style="width:250px;">S.Av.Rate</th>
-                                                <th class="" style="width:50px;">Ret.Qnty</th>
-                                                <th class="" style="width:150px;">Ret.Amt</th>
-                                                <th class="" style="width:250px;">R.Av.Rate</th>
-                                                <th class="" style="width:50px;">Net.Qnty</th>
-                                                <th class="" style="width:150px;">Net.Amt</th>
-                                                <th class="" style="width:150px;">N.Av.Rate</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if (Model.billdet != null)
-                                            {
-                                                for (int i = 0; i <= Model.billdet.Count - 1; i++)
-                                                {
-                                                    <tr id="available_GRP@(i + 1)">
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].styleno, new { htmlAttributes = new { @class = "atextBoxFor", id = "styleno_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].itgrpnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itgrpnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].itnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor", id = "sqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].samt, new { htmlAttributes = new { @class = "atextBoxFor", id = "samt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].srate, new { htmlAttributes = new { @class = "atextBoxFor", id = "srate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].rqnty, new { htmlAttributes = new { @class = "atextBoxFor", id = "rqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor", id = "ramt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].rrate, new { htmlAttributes = new { @class = "atextBoxFor", id = "rrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].netqnty, new { htmlAttributes = new { @class = "atextBoxFor", id = "netqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].netamt, new { htmlAttributes = new { @class = "atextBoxFor", id = "netamt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                        <td>
-                                                            @Html.EditorFor(model => model.billdet[i].netrate, new { htmlAttributes = new { @class = "atextBoxFor", id = "netrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            }
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="sticky-footer">
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td style="text-align:right;border:groove;">
-                                                    @Html.EditorFor(model => Model.T_sqnty, new { htmlattributes = new { id = "T_sqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>
-                                                <td style="text-align:right;border:groove;">
-                                                    @Html.EditorFor(model => Model.T_samt, new { htmlattributes = new { id = "T_samt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td style="text-align:right;border:groove;">
-                                                    @Html.EditorFor(model => Model.T_rqnty, new { htmlattributes = new { id = "T_rqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>
-                                                <td style="text-align:right;border:groove;">
-                                                    @Html.EditorFor(model => Model.T_ramt, new { htmlattributes = new { id = "T_ramt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                                <td style="text-align:right;border:groove;">
-                                                    @Html.EditorFor(model => Model.T_netqnty, new { htmlattributes = new { id = "T_netqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>
-                                                <td style="text-align:right;border:groove;">
-                                                    @Html.EditorFor(model => Model.T_netamt, new { htmlattributes = new { id = "T_netamt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                                </td>
-                                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="sticky-footer">
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td style="text-align:right;border:groove;">
+                                            @Html.EditorFor(model => Model.T_sqnty, new { htmlattributes = new { id = "T_sqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td style="text-align:right;border:groove;">
+                                            @Html.EditorFor(model => Model.T_samt, new { htmlattributes = new { id = "T_samt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td style="text-align:right;border:groove;">
+                                            @Html.EditorFor(model => Model.T_rqnty, new { htmlattributes = new { id = "T_rqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td style="text-align:right;border:groove;">
+                                            @Html.EditorFor(model => Model.T_ramt, new { htmlattributes = new { id = "T_ramt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        <td style="text-align:right;border:groove;">
+                                            @Html.EditorFor(model => Model.T_netqnty, new { htmlattributes = new { id = "T_netqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td style="text-align:right;border:groove;">
+                                            @Html.EditorFor(model => Model.T_netamt, new { htmlattributes = new { id = "T_netamt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
-                    <div style="width:40%;display:inline-block;float:left">                        
-                            @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />*@                        
-                            @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
-                        @*<div style="height:66vh;margin-top:28px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#d9ebf1">*@
-                            <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
-                                <div class="tabtitle">
-                                    Bill Details
-                                </div>
-                                <div id="partial_existing">
-                                    @Html.Partial("_Rep_PartyItemSumm_Item_Det")
-                                </div>
-                            </div>
+                </div>
+            </div>
+                <div style="width:40%;display:inline-block;float:left">
+                    @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />*@
+                    @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
+                    @*<div style="height:66vh;margin-top:28px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#d9ebf1">*@
+                    <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
+                        <div class="tabtitle">
+                            Bill Details
                         </div>
+                        <div id="partial_existing">
+                            @Html.Partial("_Rep_PartyItemSumm_Item_Det")
+                        </div>
+                    </div>
+                </div>
         }
     }
     else
     {
         @ViewBag.ErrorMessage
     }
-    <div id="outerT">
-        <div id="innerT" style="height:350px;width:500px;padding-left:5px;">
-            <div class="row">
-                <div class="tabtitle">
-                    Indexing<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose3();"></span>
-                </div>
-            </div>
-            <div class="row" style="overflow-y:auto;height:250px">
-                @if (Model.MLIST != null)
-                {
-                    <table>
-                        @for (int i = 0; i <= Model.MLIST.Count - 1; i++)
-                    {
-                            <tr>
-                                @if (Model.MLIST[i].Space.Length <= 0)
-                                {
-                                    <td>
-                                        @Html.EditorFor(a => a.MLIST[i].GRPSLNO, new { htmlAttributes = new { style = "width:30px;font-weight:bold", maxlength = 3, onkeypress = "return numericOnly(this,-1);" } })
-                                    </td>
-                                    <td>
-                                        &nbsp;@(new HtmlString(Model.MLIST[i].Space))
-                                        <span style="margin-top:6px;font-weight:bold">@Model.MLIST[i].GRPNM</span>
-                                        @Html.HiddenFor(a => a.MLIST[i].GCD)
-                                        @Html.HiddenFor(a => a.MLIST[i].GRPCDFULL)
-                                        @Html.HiddenFor(a => a.MLIST[i].PARENTCD)
-                                        @Html.HiddenFor(a => a.MLIST[i].GRPNM)
-                                        @Html.HiddenFor(a => a.MLIST[i].ROOTCD)
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                        @Html.EditorFor(a => a.MLIST[i].GRPSLNO, new { htmlAttributes = new { style = "width:30px;", maxlength = 3, onkeypress = "return numericOnly(this,-1);" } })
-                                    </td>
-                                    <td>
-                                        &nbsp;@(new HtmlString(Model.MLIST[i].Space))
-                                        @Html.Label("", Model.MLIST[i].GRPNM, new { htmlAttributes = new { style = "margin-top:6px;" } })
-                                        @Html.HiddenFor(a => a.MLIST[i].GCD)
-                                        @Html.HiddenFor(a => a.MLIST[i].GRPCDFULL)
-                                        @Html.HiddenFor(a => a.MLIST[i].PARENTCD)
-                                        @Html.HiddenFor(a => a.MLIST[i].GRPNM)
-                                        @Html.HiddenFor(a => a.MLIST[i].ROOTCD)
-                                    </td>
-                                }
-
-                            </tr>
-                        }
-                    </table>
-                }
-
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", " ")
+    @*<div id="outerT">
+            <div id="innerT" style="height:350px;width:500px;padding-left:5px;">
+                <div class="row">
+                    <div class="tabtitle">
+                        Indexing<span class="fa fa-times-circle" title="Close" style="float:right;font-weight:bold;color:black;font-size:20px;margin-top:2px;margin-right:5px" onclick="MGClose3();"></span>
                     </div>
                 </div>
-                <div class="col-md-9">
-                    <button type="button" class="btn btn-danger" style="width:104px" onclick="Indexing();" title="Save">Save</button>
+                <div class="row" style="overflow-y:auto;height:250px">
+                    @if (Model.MLIST != null)
+                    {
+                        <table>
+                            @for (int i = 0; i <= Model.MLIST.Count - 1; i++)
+                        {
+                                <tr>
+                                    @if (Model.MLIST[i].Space.Length <= 0)
+                                    {
+                                        <td>
+                                            @Html.EditorFor(a => a.MLIST[i].GRPSLNO, new { htmlAttributes = new { style = "width:30px;font-weight:bold", maxlength = 3, onkeypress = "return numericOnly(this,-1);" } })
+                                        </td>
+                                        <td>
+                                            &nbsp;@(new HtmlString(Model.MLIST[i].Space))
+                                            <span style="margin-top:6px;font-weight:bold">@Model.MLIST[i].GRPNM</span>
+                                            @Html.HiddenFor(a => a.MLIST[i].GCD)
+                                            @Html.HiddenFor(a => a.MLIST[i].GRPCDFULL)
+                                            @Html.HiddenFor(a => a.MLIST[i].PARENTCD)
+                                            @Html.HiddenFor(a => a.MLIST[i].GRPNM)
+                                            @Html.HiddenFor(a => a.MLIST[i].ROOTCD)
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @Html.EditorFor(a => a.MLIST[i].GRPSLNO, new { htmlAttributes = new { style = "width:30px;", maxlength = 3, onkeypress = "return numericOnly(this,-1);" } })
+                                        </td>
+                                        <td>
+                                            &nbsp;@(new HtmlString(Model.MLIST[i].Space))
+                                            @Html.Label("", Model.MLIST[i].GRPNM, new { htmlAttributes = new { style = "margin-top:6px;" } })
+                                            @Html.HiddenFor(a => a.MLIST[i].GCD)
+                                            @Html.HiddenFor(a => a.MLIST[i].GRPCDFULL)
+                                            @Html.HiddenFor(a => a.MLIST[i].PARENTCD)
+                                            @Html.HiddenFor(a => a.MLIST[i].GRPNM)
+                                            @Html.HiddenFor(a => a.MLIST[i].ROOTCD)
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        </table>
+                    }
+
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", " ")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <button type="button" class="btn btn-danger" style="width:104px" onclick="Indexing();" title="Save">Save</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </div>*@
 }
 
 <div id="outerP">

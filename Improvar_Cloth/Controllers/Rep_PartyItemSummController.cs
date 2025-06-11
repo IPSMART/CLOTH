@@ -34,7 +34,7 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     string scmf = CommVar.FinSchema(UNQSNO);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                   
+
                     if (SLCD.retStr() == "")
                     {
                         VE.DropDown_list_ITGRP = dropDownHelp.GetItgrpcdforSelection();
@@ -43,6 +43,9 @@ namespace Improvar.Controllers
                     else
                     {
                         VE.SLCD = SLCD; VE.FDT2 = FDT; VE.TDT2 = TDT; VE.ITGRPCD = ITGRPCD;
+
+                        VE.SLCD2 = SLCD; VE.ITGRPCD2 = ITGRPCD; VE.ONLYSALES2 = CHECK;
+
                         if (CHECK == "Y")
                         {
                             VE.CHECK = true;
@@ -51,7 +54,44 @@ namespace Improvar.Controllers
                         {
                             VE.CHECK = false;
                         }
-                        ViewBag.SLNM = SLNM+" ["+SLCD+"]";
+                        ViewBag.SLNM = SLNM + " [" + SLCD + "]";
+
+                        DataTable dt = GetData(SLCD, FDT, TDT, ITGRPCD, CHECK);
+
+                        VE.billdet = (from DataRow DR in dt.Rows
+                                      group DR by new
+                                      {
+                                          styleno = DR["itstyle"].retStr(),
+                                          itgrpnm = DR["itgrpnm"].retStr(),
+                                          itnm = DR["itnm"].retStr(),
+                                          itcd = DR["itcd"].retStr(),
+                                      } into X
+                                      select new billdet()
+                                      {
+                                          itcd = X.Key.itcd.retStr(),
+                                          styleno = X.Key.styleno.retStr(),
+                                          itgrpnm = X.Key.itgrpnm.retStr(),
+                                          itnm = X.Key.itnm.retStr(),
+                                          sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
+                                          samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
+                                          srate = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) / X.Sum(Z => Z.Field<decimal>("sqnty").retDbl())).toRound(2),
+
+                                          rqnty = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()),
+                                          ramt = X.Sum(Z => Z.Field<decimal>("sramt").retDbl()),
+                                          rrate = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()) == 0 ? 0 : (X.Sum(Z => Z.Field<decimal>("sramt").retDbl()) / X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(2),
+
+                                          netqnty = (X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(3),
+                                          netamt = (X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2),
+                                          netrate = ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(3)) == 0 ? 0 : (((X.Sum(Z => Z.Field<decimal>("samt").retDbl()) - X.Sum(Z => Z.Field<decimal>("sramt").retDbl())).toRound(2)) / ((X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()) - X.Sum(Z => Z.Field<decimal>("srqnty").retDbl())).toRound(3))).toRound(2),
+                                      }).OrderBy(A => A.styleno).ToList();
+
+                        VE.T_sqnty = VE.billdet.Sum(a => a.sqnty).retDbl();
+                        VE.T_samt = VE.billdet.Sum(a => a.samt).retDbl();
+                        VE.T_rqnty = VE.billdet.Sum(a => a.rqnty).retDbl();
+                        VE.T_ramt = VE.billdet.Sum(a => a.ramt).retDbl();
+                        VE.T_netqnty = VE.billdet.Sum(a => a.netqnty).retDbl();
+                        VE.T_netamt = VE.billdet.Sum(a => a.netamt).retDbl();
+
                         //VE.MGRPNM = DB.M_TMGRP.Where(a => a.MGRPCD == MGRPCD).Select(a => a.MGRPNM).SingleOrDefault();
                         //var base64 = DB.M_TGRP.Where(a => a.MGRPCD == MGRPCD).ToList();
                         //if (base64.Any())
@@ -205,7 +245,192 @@ namespace Improvar.Controllers
                 return null;
             }
         }
+        public ActionResult GetItemData(string slcd = "", string fdt = "", string tdt = "", string check = "", string itgrpcd = "",string itcd="", string itnm = "")
+        {
+            try
+            {
+                PartyitemSummReport VE = new PartyitemSummReport();
+                //string itcd = (from a in VE.billdet where a.Checked == true select a.itcd).ToArray().retSqlfromStrarray();
+                DataTable dt = GetData(slcd, fdt, tdt, itgrpcd, check, itcd);
 
+                VE.ItmDet = (from DataRow DR in dt.Rows
+                             group DR by new
+                             {
+                                 refdt = DR["docdt"].retDateStr(),
+                                 refno = DR["docno"].retStr(),
+                                 slnm = DR["slnm"].retStr(),
+                                 docnm = DR["docnm"].retStr(),
+                             } into X
+                             select new ItmDet()
+                             {
+                                 refdt = X.Key.refdt.retStr(),
+                                 refno = X.Key.refno.retStr(),
+                                 slnm = X.Key.slnm.retStr(),
+                                 docnm = X.Key.docnm.retStr(),
+                                 sqnty = X.Sum(Z => Z.Field<decimal>("sqnty").retDbl()),
+                                 samt = X.Sum(Z => Z.Field<decimal>("samt").retDbl()),
+
+                                 rqnty = X.Sum(Z => Z.Field<decimal>("srqnty").retDbl()),
+                                 ramt = X.Sum(Z => Z.Field<decimal>("sramt").retDbl()),
+                             }).OrderBy(A => A.refno).ToList();
+
+                VE.T_sqntyi = VE.ItmDet.Sum(a => a.sqnty).retDbl();
+                VE.T_samti = VE.ItmDet.Sum(a => a.samt).retDbl();
+                VE.T_rqntyi = VE.ItmDet.Sum(a => a.rqnty).retDbl();
+                VE.T_ramti = VE.ItmDet.Sum(a => a.ramt).retDbl();
+
+                ViewBag.ITNM = itnm;
+
+                VE.DefaultView = true;
+                ModelState.Clear();
+                return PartialView("_Rep_PartyItemSumm_Item_Det", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
+        public DataTable GetData(string SLCD = "", string FDT = "", string TDT = "", string ITGRPCD = "", string CHECK = "", string ITCD = "")
+        {
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+            string txntag = "'SB','SR','SD','SC'";
+            if (CHECK == "Y")
+            {
+                txntag = "'SB'";
+            }
+            string sql = "";
+            sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,a.docdt,a.agslcd, " + Environment.NewLine;
+            sql += "a.prefno, a.prefdt, a.slcd, a.slnm,a.slarea,a.agslnm,a.sagslnm,a.nm,a.mobile,a.gstno, a.district, " + Environment.NewLine;
+            //if (dtlsumm == "E")
+            //{
+            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.roamt, 0) else 0 end)end) roamt, " + Environment.NewLine;
+            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.tcsamt, 0) else 0 end)end) tcsamt, " + Environment.NewLine;
+            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)*-1 else (case when a.rn = 1 then nvl(a.blamt, 0) else 0 end)end) blamt, " + Environment.NewLine;
+            //}
+            //else
+            //{
+            sql += "a.roamt,a.blamt,a.tcsamt, " + Environment.NewLine;
+            //}
+            sql += "a.slno,a.stkdrcr,a.itgrpnm, a.itcd, " + Environment.NewLine;
+            sql += "a.itnm,a.itstyle, a.itrem, a.hsncode,a.uomcd,a.uomnm, a.decimals, " + Environment.NewLine;
+
+            sql += "(case when a.doctag = 'SB' then nvl(a.nos, 0) else 0 end)snos," + Environment.NewLine;
+            sql += "(case when a.doctag = 'SR' then nvl(a.nos, 0) else 0 end)srnos," + Environment.NewLine;
+
+            sql += "(case when a.doctag = 'SB' then nvl(a.qnty, 0) else 0 end)sqnty," + Environment.NewLine;
+            sql += "(case when a.doctag = 'SR' then nvl(a.qnty, 0) else 0 end)srqnty," + Environment.NewLine;
+
+            sql += "(case when a.doctag = 'SB' then nvl(a.rate, 0) else 0 end)srate," + Environment.NewLine;
+            sql += "(case when a.doctag = 'SR' then nvl(a.rate, 0) else 0 end)srrate," + Environment.NewLine;
+
+            sql += "(case when a.doctag = 'SB' then nvl(a.amt, 0) else 0 end)samt," + Environment.NewLine;
+            sql += "(case when a.doctag = 'SR' then nvl(a.amt, 0) else 0 end)sramt," + Environment.NewLine;
+
+            //if (dtlsumm == "E")
+            //{
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.amt, 0) * -1 else nvl(a.amt, 0) end)amt," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.scmdiscamt, 0) * -1 else nvl(a.scmdiscamt, 0) end)scmdiscamt," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.tddiscamt, 0) * -1 else nvl(a.tddiscamt, 0) end)tddiscamt," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.discamt, 0) * -1 else nvl(a.discamt, 0) end)discamt," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.TXBLVAL, 0) * -1 else nvl(a.TXBLVAL, 0) end)TXBLVAL," + Environment.NewLine;
+            //}
+            //else
+            //{
+            sql += " a.amt,a.scmdiscamt, a.tddiscamt, a.discamt,a.TXBLVAL, " + Environment.NewLine;
+
+            //}
+            sql += " a.conslcd, a.cslnm,a.cgstno, a.cdistrict, " + Environment.NewLine;
+            sql += "a.trslnm,a.lrno,a.lrdt,a.GRWT,a.TRWT,a.NTWT,a.ordrefno,a.ordrefdt," + Environment.NewLine;
+            //if (dtlsumm == "E")
+            //{
+            //    sql += "  a.igstper,(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.igstamt, 0) * -1 else nvl(a.igstamt, 0) end)igstamt,a.cgstper," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cgstamt, 0) * -1 else nvl(a.cgstamt, 0) end)cgstamt,a.sgstper," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.sgstamt, 0) * -1 else nvl(a.sgstamt, 0) end)sgstamt,a.cessper," + Environment.NewLine;
+            //    sql += "  (case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.cessamt, 0) * -1 else nvl(a.sgstamt, 0) end)cessamt," + Environment.NewLine;
+            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.blqnty, 0)*-1 else nvl(a.blqnty, 0) end)blqnty," + Environment.NewLine;
+            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.NETAMT, 0)*-1 else nvl(a.NETAMT, 0) end)NETAMT,a.gstper," + Environment.NewLine;
+            //    sql += "(case when a.doctag = 'SR' or a.doctag = 'PR' then nvl(a.gstamt, 0)*-1 else nvl(a.gstamt, 0) end)gstamt," + Environment.NewLine;
+            //}
+            //else
+            //{
+            sql += "a.igstper,a.igstamt,a.cgstper,a.cgstamt,a.sgstper,a.sgstamt,a.cessper,a.cessamt,a.blqnty,a.NETAMT,a.gstper,a.gstamt," + Environment.NewLine;
+            //}
+
+
+            sql += "a.ackno,a.ackdt,a.pageno,a.PAGESLNO,a.baleno,a.docrem,a.bltype,a.docnm  " + Environment.NewLine;
+            sql += "from ( " + Environment.NewLine;
+
+
+            sql += " select a.autono, a.doccd, a.docno,a.doctag, a.cancel,to_char(a.docdt,'DD/MM/YYYY')docdt,a.docdt tchdocdt,h.agslcd, " + Environment.NewLine;
+            sql += "  a.prefno, nvl(to_char(a.prefdt,'dd/mm/yyyy'),'')prefdt,a.prefdt prefdate, a.slcd, c.slnm,c.slarea,l.slnm agslnm,m.slnm sagslnm,nvl(i.nm,p.rtdebnm) nm,i.mobile,c.gstno, c.district, nvl(a.roamt, 0) roamt, " + Environment.NewLine;
+            sql += " nvl(a.tcsamt, 0) tcsamt, a.blamt, " + Environment.NewLine;
+            sql += "   b.slno,b.stkdrcr,o.itgrpnm, b.itcd, " + Environment.NewLine;
+            sql += "   b.itnm,b.itstyle, b.itrem, b.hsncode,nvl(b.bluomcd,b.uomcd)uomcd, nvl(b.bluomnm,b.uomnm)uomnm, nvl(nullif(b.bldecimals,0),b.decimals) decimals, b.nos, " + Environment.NewLine;
+            sql += " nvl(nullif(b.blqnty,0),b.qnty)qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, " + Environment.NewLine;
+            sql += " e.slnm trslnm, f.lrno,nvl(to_char(f.lrdt,'dd/mm/yyyy'),'')lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, " + Environment.NewLine;
+            sql += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,nvl(to_char(k.ackdt,'dd/mm/yyyy'),'')ackdt,b.pageno,b.PAGESLNO,b.baleno,h.docrem,h.bltype,  " + Environment.NewLine;
+            sql += "row_number() over(partition by a.autono order by b.slno)rn,j.docnm " + Environment.NewLine;
+            sql += " from ( " + Environment.NewLine;
+            sql += " select a.autono,a.doctag, b.doccd, b.docno, b.cancel, " + Environment.NewLine;
+            sql += "b.docdt, " + Environment.NewLine;
+            sql += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt  " + Environment.NewLine;
+
+            sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + Environment.NewLine;
+            sql += " " + scmf + ".m_subleg c " + Environment.NewLine;
+            sql += "  where a.autono = b.autono and a.slcd = c.slcd(+) " + Environment.NewLine;
+            sql += "  and  b.compcd = '" + COM + "' " + Environment.NewLine;
+            sql += " and b.loccd = '" + LOC + "'  " + Environment.NewLine;
+
+            if (FDT != "") sql += "and b.docdt >= to_date('" + FDT + "','dd/mm/yyyy')   " + Environment.NewLine;
+            if (TDT != "") sql += "and b.docdt <= to_date('" + TDT + "','dd/mm/yyyy')   " + Environment.NewLine;
+
+            sql += "and a.doctag in (" + txntag + ") " + Environment.NewLine;
+            sql += " ) a,  " + Environment.NewLine;
+
+            sql += "(select distinct a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+            sql += " b.itnm,b.styleno||' '||b.itnm itstyle,nvl(a.hsncode,b.hsncode) hsncode, b.uomcd, c.uomnm, c.decimals, " + Environment.NewLine;
+            sql += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   " + Environment.NewLine;
+            sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm bluomnm,f.decimals bldecimals,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, " + Environment.NewLine;
+            sql += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scmf + ".m_uom f " + Environment.NewLine;
+            sql += " where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = d.autono(+) and a.slno=d.txnslno and d.barno = e.barno(+) and  a.bluomcd= f.uomcd(+) " + Environment.NewLine;
+            sql += " group by " + Environment.NewLine;
+            sql += " a.autono,a.stkdrcr, a.slno, a.itcd, a.itrem, " + Environment.NewLine;
+            sql += "  b.itnm, nvl(a.hsncode,b.hsncode), b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  " + Environment.NewLine;
+            sql += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd,f.uomnm,f.decimals,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno " + Environment.NewLine;
+            sql += " union " + Environment.NewLine;
+            sql += "select a.autono,";
+            sql += "(case when d.doctype in ('SBILD','SPSLP','SBCM','SBPOS','SBCMR','SPRM') then 'C' else 'D' end ) " + Environment.NewLine;
+            sql += " stkdrcr, a.slno + 1000 slno, a.amtcd itcd, '' itrem , b.amtnm itnm,b.amtnm itstyle ,a.hsncode,  " + Environment.NewLine;
+            sql += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL,0 NETAMT, a.igstper, a.igstamt, " + Environment.NewLine;
+            sql += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'' bluomcd,''bluomnm,0 bldecimals,0 pageno,0 PAGESLNO,''baleno " + Environment.NewLine;
+            sql += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b, " + scm1 + ".t_cntrl_hdr c, " + scm1 + ".m_doctype d " + Environment.NewLine;
+            sql += " where a.amtcd = b.amtcd and a.autono=c.autono(+) and c.doccd=d.doccd(+) " + Environment.NewLine;
+            sql += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + Environment.NewLine;
+            sql += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scm1 + ".m_doctype j," + scmf + ".t_txneinv k," + scmf + ".m_subleg l, " + Environment.NewLine;
+            sql += "" + scmf + ".m_subleg m ," + scm1 + ".m_sitem n," + scm1 + ".M_GROUP o, " + scmf + ".M_RETDEB p " + Environment.NewLine;
+            sql += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) and h.agslcd = l.slcd(+)  and h.sagslcd = m.slcd(+) " + Environment.NewLine;
+            sql += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+) and b.itcd=n.itcd(+) and n.itgrpcd=o.itgrpcd(+) and i.rtdebcd=p.rtdebcd(+)" + Environment.NewLine;
+
+            if (SLCD.retStr() != "") sql += " and a.slcd in ('" + SLCD + "') " + Environment.NewLine;
+            if (ITGRPCD.retStr() != "") sql += " and n.itgrpcd in (" + ITGRPCD + ") " + Environment.NewLine;
+            if (ITCD.retStr() != "") sql += " and b.itcd in (" + ITCD + ") " + Environment.NewLine;
+
+
+            //if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
+
+            sql += ") a " + Environment.NewLine;
+            //if (dtlsumm == "E")
+            //{
+            //    sql += "where nvl(a.cancel,'N')='N' " + Environment.NewLine;
+            //}
+            sql += "order by itstyle,itnm,itcd ";
+
+
+            DataTable tbl = masterHelp.SQLquery(sql);
+            return tbl;
+        }
 
         //public ActionResult BSGroupCode(string val)
         //{
@@ -279,187 +504,187 @@ namespace Improvar.Controllers
         //        }
         //    }
         //}
-        public string GenerateTree()
-        {
-            return null;
-            //string liid = "";
-            //if (Session["account_treeview"] != null)
-            //{
-            //    liid = Session["account_treeview"].ToString();
-            //}
-            //Hashtable Main_Menu;
-            //Hashtable Main_Menu_Head;
-            //ArrayList ManuLine = null;
-            //string Child = null;
-            //string ReParent = null;
-            //int Reuse = 0;
-            //Stack ST1 = new Stack();
-            //var results = from row in TGRP
-            //              where row.PARENTCD == null
-            //              orderby row.GRPSLNO
-            //              select row;
-            //Main_Menu = new Hashtable();
-            //Main_Menu_Head = new Hashtable();
-            //ManuLine = new ArrayList();
-            //foreach (var menu_row in results)
-            //{
-            //    bool autochk = false;
-            //    string parent = menu_row.GRPCDFULL;
-            //    string menuid_Child = menu_row.GCD;
-            //    string mname = menu_row.GRPNM;
-            //    string parentchild = parent;
-            //    if (liid == parentchild)
-            //    {
-            //        autochk = true;
-            //    }
-            //    string syntax = "";
-            //    if (autochk)
-            //    {
-            //        syntax = "checked='checked'";
-            //    }
-            //    string Menu = "<li>";
-            //    //Menu = Menu + "<input type='checkbox' "+ syntax + "  id='" + parent + "'/>" + "<label class='tree_label' for='" + parent + "'><img src='../Image/Glow.png' class='groupimg'/>&nbsp;<span id='" + mname.Replace(' ', '_') + "'>" + mname + "<script>Rmenu('" + mname.Replace(' ', '_') + "','" + menuid_Child + "^" + parent + "',3,'" + parentchild + "');</script></span></label>";
-            //    Menu = Menu + "<input type='checkbox' " + syntax + "  id='C" + parent + "'/>" + "<label class='tree_label' for='C" + parent + "'><img src='../Image/Glow.png' class='groupimg'/>&nbsp;<span id='" + parent + "'>" + mname + "<script>Rmenu('" + parent + "','" + menuid_Child + "^" + parent + "',3,'" + parentchild + "');</script></span></label>";
-            //    Menu = Menu + "<ul>";
-            //    Main_Menu.Add(parent, mname);
-            //    ManuLine.Add(Menu);
-            //    Temp_TGRP TTG = new Temp_TGRP();
-            //    TTG.GCD = menu_row.GCD;
-            //    TTG.GRPCDFULL = menu_row.GRPCDFULL;
-            //    TTG.GRPNM = menu_row.GRPNM;
-            //    TTG.GRPSLNO = Convert.ToInt32(menu_row.GRPSLNO);
-            //    TTG.MGRPCD = menu_row.MGRPCD;
-            //    TTG.PARENTCD = menu_row.PARENTCD;
-            //    TTG.ROOTCD = menu_row.ROOTCD;
-            //    TTG.Space = "";
-            //    MLIST.Add(TTG);
-            //    Main_Menu_Head.Add(parent, ManuLine.Count - 1);
-            //    Child = menuid_Child;
-            //    ReParent = parent;
-            //    ST1.Push(menuid_Child + "." + Reuse + "." + ReParent);
-            //    while (true)
-            //    {
-            //        var results1 =
-            //        (from row in TGRP
-            //         where row.PARENTCD == Child
-            //         orderby row.GRPSLNO
-            //         select row).ToList();
-            //        if (results1.Any() == true)
-            //        {
-            //            for (int x = Reuse; x <= results1.Count() - 1; x++)
-            //            {
-            //                var boundTable = results1[x];
-            //                string parent1 = boundTable.GRPCDFULL;
-            //                string menuid_Child1 = boundTable.GCD;
-            //                string mname1 = boundTable.GRPNM;
-            //                string space = "";
-            //                int sp_count = boundTable.GRPCDFULL.Length / 6;
-            //                for (int p = 0; p <= sp_count - 1; p++)
-            //                {
-            //                    space = space + "&nbsp;&nbsp;&nbsp;&nbsp;";
-            //                }
-            //                string SubMenu = "<li>";
-            //                SubMenu = SubMenu + "<input type='checkbox' " + syntax + "  id='C" + parent1 + "'/>" + "<label class='tree_label' for='C" + parent1 + "'><img src='../Image/Generic.png' class='groupimg'/>&nbsp;<span id='" + parent1 + "'>" + boundTable.GRPNM + "<script>Rmenu('" + parent1 + "','" + menuid_Child1 + "^" + parent1 + "',3,'" + parentchild + "');</script></span></label>";
-            //                SubMenu = SubMenu + "<ul>";
-            //                Main_Menu.Add(parent1, boundTable.GRPNM);
-            //                ManuLine.Add(SubMenu);
-            //                Temp_TGRP TTG1 = new Temp_TGRP();
-            //                TTG1.GCD = boundTable.GCD;
-            //                TTG1.GRPCDFULL = boundTable.GRPCDFULL;
-            //                TTG1.GRPNM = boundTable.GRPNM;
-            //                TTG1.GRPSLNO = Convert.ToInt32(boundTable.GRPSLNO);
-            //                TTG1.MGRPCD = boundTable.MGRPCD;
-            //                TTG1.PARENTCD = boundTable.PARENTCD;
-            //                TTG1.ROOTCD = boundTable.ROOTCD;
-            //                TTG1.Space = space;
-            //                MLIST.Add(TTG1);
-            //                Main_Menu_Head.Add(parent1, ManuLine.Count - 1);
-            //                Child = menuid_Child1;
-            //                ReParent = parent1;
-            //                Reuse = 0;
-            //                ST1.Push(menuid_Child1 + "." + Reuse + "." + ReParent);
-            //                break;
-            //            }
-            //            if (Reuse > results1.Count() - 1)
-            //            {
-            //                if (ST1.Count > 0)
-            //                {
-            //                    ST1.Pop();
-            //                    ManuLine.Add("</ul> </li>");
-            //                    if (ST1.Count == 0)
-            //                    {
-            //                        Reuse = 0;
-            //                        break;
-            //                    }
-            //                    string str = ST1.Pop().ToString();
-            //                    string[] getParent;
-            //                    getParent = str.Split('.');
-            //                    Child = getParent[0];
-            //                    ReParent = getParent[2];
-            //                    Reuse = Convert.ToInt32(getParent[1]);
-            //                    Reuse += 1;
-            //                    ST1.Push(Child + "." + Reuse + "." + ReParent);
-            //                }
-            //                else
-            //                {
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (ST1.Count > 0)
-            //            {
-            //                string Recall = ST1.Peek().ToString();
-            //                string[] RecallDetails;
-            //                RecallDetails = Recall.Split('.');
-            //                int index = (int)Main_Menu_Head[RecallDetails[2]];
-            //                string Manuname = (string)Main_Menu[RecallDetails[2]];
-            //                string Controller = "";
-            //                string SubMenu = " <li><span class='tree_label'>";
-            //                if (RecallDetails[0] == RecallDetails[2])  //+ RecallDetails[2] is fullgrpcd
-            //                {
-            //                    SubMenu = SubMenu + "<img src='../Image/Glow.png' class='groupimg'/>&nbsp;<span id='" + RecallDetails[2] + "' onclick=ExistTag('" + RecallDetails[0] + "^" + RecallDetails[2] + "');>" + Manuname + "<script>Rmenu('" + RecallDetails[2] + "','" + RecallDetails[0] + "^" + RecallDetails[2] + "',2,'" + parentchild + "');</script></span>&nbsp;";
-            //                }
-            //                else
-            //                {
-            //                    SubMenu = SubMenu + "<img src='../Image/Generic.png' class='groupimg'/>&nbsp;<span id='" + RecallDetails[2] + "' onclick=ExistTag('" + RecallDetails[0] + "^" + RecallDetails[2] + "');>" + Manuname + "<script>Rmenu('" + RecallDetails[2] + "','" + RecallDetails[0] + "^" + RecallDetails[2] + "',2,'" + parentchild + "');</script></span>&nbsp;";
-            //                }
-            //                SubMenu = SubMenu + "</span></li>";
-            //                ManuLine.RemoveAt(index);
-            //                ManuLine.Insert(index, SubMenu);
-            //                ST1.Pop();
-            //                if (ST1.Count == 0)
-            //                {
-            //                    Reuse = 0;
-            //                    break;
-            //                }
-            //                string str = ST1.Pop().ToString();
-            //                string[] getParent;
-            //                getParent = str.Split('.');
-            //                Child = getParent[0];
-            //                ReParent = getParent[2];
-            //                Reuse = Convert.ToInt32(getParent[1]);
-            //                Reuse += 1;
-            //                ST1.Push(Child + "." + Reuse + "." + ReParent);
-            //            }
-            //            else
-            //            {
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
-            //System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            //if (ManuLine != null)
-            //{
-            //    for (int i = 0; i <= ManuLine.Count - 1; i++)
-            //    {
-            //        SB.Append(ManuLine[i].ToString());
-            //    }
-            //}
-            //return SB.ToString();
-        }
+        //public string GenerateTree()
+        //{
+        //    return null;
+        //    //string liid = "";
+        //    //if (Session["account_treeview"] != null)
+        //    //{
+        //    //    liid = Session["account_treeview"].ToString();
+        //    //}
+        //    //Hashtable Main_Menu;
+        //    //Hashtable Main_Menu_Head;
+        //    //ArrayList ManuLine = null;
+        //    //string Child = null;
+        //    //string ReParent = null;
+        //    //int Reuse = 0;
+        //    //Stack ST1 = new Stack();
+        //    //var results = from row in TGRP
+        //    //              where row.PARENTCD == null
+        //    //              orderby row.GRPSLNO
+        //    //              select row;
+        //    //Main_Menu = new Hashtable();
+        //    //Main_Menu_Head = new Hashtable();
+        //    //ManuLine = new ArrayList();
+        //    //foreach (var menu_row in results)
+        //    //{
+        //    //    bool autochk = false;
+        //    //    string parent = menu_row.GRPCDFULL;
+        //    //    string menuid_Child = menu_row.GCD;
+        //    //    string mname = menu_row.GRPNM;
+        //    //    string parentchild = parent;
+        //    //    if (liid == parentchild)
+        //    //    {
+        //    //        autochk = true;
+        //    //    }
+        //    //    string syntax = "";
+        //    //    if (autochk)
+        //    //    {
+        //    //        syntax = "checked='checked'";
+        //    //    }
+        //    //    string Menu = "<li>";
+        //    //    //Menu = Menu + "<input type='checkbox' "+ syntax + "  id='" + parent + "'/>" + "<label class='tree_label' for='" + parent + "'><img src='../Image/Glow.png' class='groupimg'/>&nbsp;<span id='" + mname.Replace(' ', '_') + "'>" + mname + "<script>Rmenu('" + mname.Replace(' ', '_') + "','" + menuid_Child + "^" + parent + "',3,'" + parentchild + "');</script></span></label>";
+        //    //    Menu = Menu + "<input type='checkbox' " + syntax + "  id='C" + parent + "'/>" + "<label class='tree_label' for='C" + parent + "'><img src='../Image/Glow.png' class='groupimg'/>&nbsp;<span id='" + parent + "'>" + mname + "<script>Rmenu('" + parent + "','" + menuid_Child + "^" + parent + "',3,'" + parentchild + "');</script></span></label>";
+        //    //    Menu = Menu + "<ul>";
+        //    //    Main_Menu.Add(parent, mname);
+        //    //    ManuLine.Add(Menu);
+        //    //    Temp_TGRP TTG = new Temp_TGRP();
+        //    //    TTG.GCD = menu_row.GCD;
+        //    //    TTG.GRPCDFULL = menu_row.GRPCDFULL;
+        //    //    TTG.GRPNM = menu_row.GRPNM;
+        //    //    TTG.GRPSLNO = Convert.ToInt32(menu_row.GRPSLNO);
+        //    //    TTG.MGRPCD = menu_row.MGRPCD;
+        //    //    TTG.PARENTCD = menu_row.PARENTCD;
+        //    //    TTG.ROOTCD = menu_row.ROOTCD;
+        //    //    TTG.Space = "";
+        //    //    MLIST.Add(TTG);
+        //    //    Main_Menu_Head.Add(parent, ManuLine.Count - 1);
+        //    //    Child = menuid_Child;
+        //    //    ReParent = parent;
+        //    //    ST1.Push(menuid_Child + "." + Reuse + "." + ReParent);
+        //    //    while (true)
+        //    //    {
+        //    //        var results1 =
+        //    //        (from row in TGRP
+        //    //         where row.PARENTCD == Child
+        //    //         orderby row.GRPSLNO
+        //    //         select row).ToList();
+        //    //        if (results1.Any() == true)
+        //    //        {
+        //    //            for (int x = Reuse; x <= results1.Count() - 1; x++)
+        //    //            {
+        //    //                var boundTable = results1[x];
+        //    //                string parent1 = boundTable.GRPCDFULL;
+        //    //                string menuid_Child1 = boundTable.GCD;
+        //    //                string mname1 = boundTable.GRPNM;
+        //    //                string space = "";
+        //    //                int sp_count = boundTable.GRPCDFULL.Length / 6;
+        //    //                for (int p = 0; p <= sp_count - 1; p++)
+        //    //                {
+        //    //                    space = space + "&nbsp;&nbsp;&nbsp;&nbsp;";
+        //    //                }
+        //    //                string SubMenu = "<li>";
+        //    //                SubMenu = SubMenu + "<input type='checkbox' " + syntax + "  id='C" + parent1 + "'/>" + "<label class='tree_label' for='C" + parent1 + "'><img src='../Image/Generic.png' class='groupimg'/>&nbsp;<span id='" + parent1 + "'>" + boundTable.GRPNM + "<script>Rmenu('" + parent1 + "','" + menuid_Child1 + "^" + parent1 + "',3,'" + parentchild + "');</script></span></label>";
+        //    //                SubMenu = SubMenu + "<ul>";
+        //    //                Main_Menu.Add(parent1, boundTable.GRPNM);
+        //    //                ManuLine.Add(SubMenu);
+        //    //                Temp_TGRP TTG1 = new Temp_TGRP();
+        //    //                TTG1.GCD = boundTable.GCD;
+        //    //                TTG1.GRPCDFULL = boundTable.GRPCDFULL;
+        //    //                TTG1.GRPNM = boundTable.GRPNM;
+        //    //                TTG1.GRPSLNO = Convert.ToInt32(boundTable.GRPSLNO);
+        //    //                TTG1.MGRPCD = boundTable.MGRPCD;
+        //    //                TTG1.PARENTCD = boundTable.PARENTCD;
+        //    //                TTG1.ROOTCD = boundTable.ROOTCD;
+        //    //                TTG1.Space = space;
+        //    //                MLIST.Add(TTG1);
+        //    //                Main_Menu_Head.Add(parent1, ManuLine.Count - 1);
+        //    //                Child = menuid_Child1;
+        //    //                ReParent = parent1;
+        //    //                Reuse = 0;
+        //    //                ST1.Push(menuid_Child1 + "." + Reuse + "." + ReParent);
+        //    //                break;
+        //    //            }
+        //    //            if (Reuse > results1.Count() - 1)
+        //    //            {
+        //    //                if (ST1.Count > 0)
+        //    //                {
+        //    //                    ST1.Pop();
+        //    //                    ManuLine.Add("</ul> </li>");
+        //    //                    if (ST1.Count == 0)
+        //    //                    {
+        //    //                        Reuse = 0;
+        //    //                        break;
+        //    //                    }
+        //    //                    string str = ST1.Pop().ToString();
+        //    //                    string[] getParent;
+        //    //                    getParent = str.Split('.');
+        //    //                    Child = getParent[0];
+        //    //                    ReParent = getParent[2];
+        //    //                    Reuse = Convert.ToInt32(getParent[1]);
+        //    //                    Reuse += 1;
+        //    //                    ST1.Push(Child + "." + Reuse + "." + ReParent);
+        //    //                }
+        //    //                else
+        //    //                {
+        //    //                    break;
+        //    //                }
+        //    //            }
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            if (ST1.Count > 0)
+        //    //            {
+        //    //                string Recall = ST1.Peek().ToString();
+        //    //                string[] RecallDetails;
+        //    //                RecallDetails = Recall.Split('.');
+        //    //                int index = (int)Main_Menu_Head[RecallDetails[2]];
+        //    //                string Manuname = (string)Main_Menu[RecallDetails[2]];
+        //    //                string Controller = "";
+        //    //                string SubMenu = " <li><span class='tree_label'>";
+        //    //                if (RecallDetails[0] == RecallDetails[2])  //+ RecallDetails[2] is fullgrpcd
+        //    //                {
+        //    //                    SubMenu = SubMenu + "<img src='../Image/Glow.png' class='groupimg'/>&nbsp;<span id='" + RecallDetails[2] + "' onclick=ExistTag('" + RecallDetails[0] + "^" + RecallDetails[2] + "');>" + Manuname + "<script>Rmenu('" + RecallDetails[2] + "','" + RecallDetails[0] + "^" + RecallDetails[2] + "',2,'" + parentchild + "');</script></span>&nbsp;";
+        //    //                }
+        //    //                else
+        //    //                {
+        //    //                    SubMenu = SubMenu + "<img src='../Image/Generic.png' class='groupimg'/>&nbsp;<span id='" + RecallDetails[2] + "' onclick=ExistTag('" + RecallDetails[0] + "^" + RecallDetails[2] + "');>" + Manuname + "<script>Rmenu('" + RecallDetails[2] + "','" + RecallDetails[0] + "^" + RecallDetails[2] + "',2,'" + parentchild + "');</script></span>&nbsp;";
+        //    //                }
+        //    //                SubMenu = SubMenu + "</span></li>";
+        //    //                ManuLine.RemoveAt(index);
+        //    //                ManuLine.Insert(index, SubMenu);
+        //    //                ST1.Pop();
+        //    //                if (ST1.Count == 0)
+        //    //                {
+        //    //                    Reuse = 0;
+        //    //                    break;
+        //    //                }
+        //    //                string str = ST1.Pop().ToString();
+        //    //                string[] getParent;
+        //    //                getParent = str.Split('.');
+        //    //                Child = getParent[0];
+        //    //                ReParent = getParent[2];
+        //    //                Reuse = Convert.ToInt32(getParent[1]);
+        //    //                Reuse += 1;
+        //    //                ST1.Push(Child + "." + Reuse + "." + ReParent);
+        //    //            }
+        //    //            else
+        //    //            {
+        //    //                break;
+        //    //            }
+        //    //        }
+        //    //    }
+        //    //}
+        //    //System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //    //if (ManuLine != null)
+        //    //{
+        //    //    for (int i = 0; i <= ManuLine.Count - 1; i++)
+        //    //    {
+        //    //        SB.Append(ManuLine[i].ToString());
+        //    //    }
+        //    //}
+        //    //return SB.ToString();
+        //}
         //public ActionResult CreateSubGroup(string Gname, string Budgt, string Gdetails, string MGRPCD, string Parent, string Liid, string legdtlskp, string schdl)
         //{
         //    M_TGRP MTG = new M_TGRP();
