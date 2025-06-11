@@ -1,6 +1,6 @@
 ﻿
 @model Improvar.ViewModels.PartyitemSummReport
-@*@if (Model.ItemDet != null)
+@*@if (Model.ItmDet != null)
 {*@
     <script>
         $(document).ready(function () {
@@ -11,7 +11,7 @@
             });
         });
     </script>
-    <div style="margin-top: 7px;margin-left:13px;font-size: 14px;font-weight: bold;">       
+    <div id="ItemHead" style="margin-top: 7px;margin-left:13px;font-size: 14px;font-weight: bold;">       
             <span>Item : @ViewBag.ITNM</span>       
     </div>
     <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100;">
@@ -23,45 +23,45 @@
                             All
                             <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterCUSTOM(this, 'exist_GRP', 'EChecked_', 'searchEX')" />
                         </th>*@
-                        <th class="" style="width:60px;">Refdt</th>
+                        <th class="" style="width:120px;">Refdt</th>
                         <th class="" style="width:250px;">Refno</th>
                         <th class="" style="width:60px;">Party</th>
                         <th class="" style="width:150px;">Doctype</th>
-                        <th class="" style="width:60px;">Sal.Qnty</th>
-                        <th class="" style="width:250px;">Sal.Amt</th>
-                        <th class="" style="width:60px;">Ret.Qnty</th>
-                        <th class="" style="width:150px;">Ret.Amt</th>
+                        <th class="" style="width:150px;text-align:right;">Sal.Qnty</th>
+                        <th class="" style="width:150px;text-align:right;">Sal.Amt</th>
+                        <th class="" style="width:150px;text-align:right;">Ret.Qnty</th>
+                        <th class="" style="width:150px;text-align:right;">Ret.Amt</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @if (Model.ItemDet != null && Model.ItemDet.Count > 0)
+                <tbody id="ItemBody">
+                    @if (Model.ItmDet != null && Model.ItmDet.Count > 0)
                     {
-                        for (int i = 0; i <= Model.ItemDet.Count - 1; i++)
+                        for (int i = 0; i <= Model.ItmDet.Count - 1; i++)
                         {
                             <tr id="exist_GRP@(i+1)">                                
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].refdt, new { htmlAttributes = new { @class = "atextBoxFor", id = "refdt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].refdt, new { htmlAttributes = new { @class = "atextBoxFor", id = "refdt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].refno, new { htmlAttributes = new { @class = "atextBoxFor", id = "refno_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].refno, new { htmlAttributes = new { @class = "atextBoxFor", id = "refno_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].slnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "slnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].slnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "slnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].docnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "docnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].docnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "docnm_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor", id = "sqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "sqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].samt, new { htmlAttributes = new { @class = "atextBoxFor", id = "samt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].samt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "samt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].rqnty, new { htmlAttributes = new { @class = "atextBoxFor", id = "rqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].rqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rqnty_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => model.ItemDet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor", id = "ramt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                    @Html.EditorFor(model => model.ItmDet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "ramt_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
                                 </td>
                             </tr>
                         }
@@ -74,7 +74,7 @@
                         </tr>
                     }
                 </tbody>
-                <tfoot>
+                <tfoot id="ItemFoot">
                     <tr class="sticky-footer">
                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -82,16 +82,16 @@
                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
 
                         <td style="text-align:right;border:groove;">
-                            @Html.EditorFor(model => Model.T_sqnty, new { htmlattributes = new { id = "T_sqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => Model.T_sqntyi, new { htmlattributes = new { id = "T_sqntyi", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                         </td>
                         <td style="text-align:right;border:groove;">
-                            @Html.EditorFor(model => Model.T_samt, new { htmlattributes = new { id = "T_samt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => Model.T_samti, new { htmlattributes = new { id = "T_samti", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                         </td>
                         <td style="text-align:right;border:groove;">
-                            @Html.EditorFor(model => Model.T_rqnty, new { htmlattributes = new { id = "T_rqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => Model.T_rqntyi, new { htmlattributes = new { id = "T_rqntyi", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                         </td>
                         <td style="text-align:right;border:groove;">
-                            @Html.EditorFor(model => Model.T_ramt, new { htmlattributes = new { id = "T_ramt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => Model.T_ramti, new { htmlattributes = new { id = "T_ramti", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                         </td>
                     </tr>
                 </tfoot>
