@@ -107,6 +107,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].CESSPER, new { id = "D_CESSPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].CESSAMT, new { id = "D_CESSAMT_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].NETAMT, new { id = "D_NETAMT_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].SAMPLE, new { id = "D_SAMPLE_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -148,7 +149,14 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                            @if (Model.TTXNDTL[i].SAMPLE.retStr() == "Y")
+                                            {
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                            }
+                                            else
+                                            {
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                            }
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
@@ -243,7 +251,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td>
                                     @Html.EditorFor(model => Model.Det_UomTotal, new { htmlAttributes = new { id = "Det_UomTotal", @class = "atextBoxFor ", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-</td>
+                                </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />

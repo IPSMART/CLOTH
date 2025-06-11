@@ -1550,7 +1550,7 @@ namespace Improvar
             return rtval;
         }
 
-        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara = "", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showonlycommonbar = true, bool exactstyleno = false)
+        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara = "", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showonlycommonbar = true, bool exactstyleno = false, string slcdfrrt = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1573,10 +1573,18 @@ namespace Improvar
             sql = "";
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, " + Environment.NewLine;
-            sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, " + Environment.NewLine;
+            sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt,  e.bargentype, d.styleno||' '||d.itnm itstyle,c.fabitcd, n.itnm fabitnm, " + Environment.NewLine;
             sql += "d.itnm,d.convqtypunit,d.convuomcd,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,d.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, " + Environment.NewLine;
             sql += "(case nvl(c.commonuniqbar,e.bargentype) when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, " + Environment.NewLine;
             sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen, m.decimals,c.commonuniqbar,e.wpper,e.rpper " + Environment.NewLine;
+            if (slcdfrrt.retStr() != "")
+            {
+                sql += ",nvl(s.jobrt, b.rate)rate ";
+            }
+            else
+            {
+                sql += ",b.rate ";
+            }
             sql += "from " + Environment.NewLine;
             sql += "( " + Environment.NewLine;
             if (menupara != "PB" || barno != "")
@@ -1619,6 +1627,13 @@ namespace Improvar
             sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) " + Environment.NewLine;
             sql += ") a where prccd='" + prccd + "') b, " + Environment.NewLine;
 
+            if (slcdfrrt.retStr() != "")
+            {
+                sql += "(select a.itcd, a.slcd, a.jobrt " + Environment.NewLine;
+                sql += "from " + scm + ".M_SITEM_SLCD a  " + Environment.NewLine;
+                sql += "WHERE a.slcd in (" + slcdfrrt + ")  " + Environment.NewLine;
+                sql += ") s, ";
+            }
             sql += "(select a.barno, count(*) barimagecount, " + Environment.NewLine;
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) " + Environment.NewLine;
             sql += "within group (order by a.barno) as barimage from " + Environment.NewLine;
@@ -1675,6 +1690,10 @@ namespace Improvar
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and " + Environment.NewLine; //c.fabitcd=n.itcd(+) and 
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+) and d.fabitcd=n.itcd(+)  " + Environment.NewLine;
             if (showonlycommonbar == true) sql += "and c.commonuniqbar <> 'E' " + Environment.NewLine;
+            if (slcdfrrt.retStr() != "")
+            {
+                sql += "and a.itcd = s.itcd(+) ";
+            }
             tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
