@@ -288,7 +288,7 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 string qdsp = "";
                 if (rateqntybag == "B") qdsp = "n,12";
-                else qdsp = "n,12,4";
+                else qdsp = "n,12,2";
 
                 string dsp1 = "";
                 //if (repon == "I") dsp1 = "Party"; else dsp1 = "Item";
@@ -517,7 +517,7 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 string qdsp = "";
                 if (rateqntybag == "B") qdsp = "n,12";
-                else qdsp = "n,12,4";
+                else qdsp = "n,12,2";
 
                 string dsp1 = ""; string dsp2 = "";
                 //if (repon == "I") dsp1 = "Party"; else dsp1 = "Item";

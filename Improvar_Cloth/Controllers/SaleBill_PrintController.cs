@@ -3281,7 +3281,19 @@ namespace Improvar.Controllers
                             //System.Net.Mail.Attachment attchmail = new System.Net.Mail.Attachment(path_Save);
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
-                            string template = CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Salebill.htm";
+                            string template = "";
+                            template = "Salebill_" + CommVar.Compcd(UNQSNO) + ".htm";
+                            string filePath = Server.MapPath("~/Templates/Email/" + template + "");
+                            if (!System.IO.File.Exists(filePath))
+                            {
+                                template = "Salebill_" + CommVar.ClientCode(UNQSNO) + ".htm";
+                                filePath = Server.MapPath("~/Templates/Email/" + template + "");
+                            }
+                            if (!System.IO.File.Exists(filePath))
+                            {
+                                template = "Salebill.htm";
+                            }
+                            //CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Salebill.htm";
                             string[,] emlaryBody = new string[9, 2];
                             if (VE.TEXTBOX5 != null)
                             {
