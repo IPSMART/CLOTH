@@ -34,27 +34,27 @@ namespace Improvar.ViewModels
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string TDT2 { get; set; }
         public bool CHECK2 { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_sqnty { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_samt { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_rqnty { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_ramt { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_netamt { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_netqnty { get; set; }
         public double T_rrate { get; set; }
         public List<billdet> billdet { get; set; }
         public List<ItmDet> ItmDet { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_sqntyi { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_samti { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_rqntyi { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double T_ramti { get; set; }
@@ -72,24 +72,26 @@ public class billdet
     public string styleno { get; set; }
     public string itgrpnm { get; set; }
     public string itnm { get; set; }
-    [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double sqnty { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double samt { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double srate { get; set; }
-    [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double rqnty { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double ramt { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double rrate { get; set; }
-    [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double netqnty { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double netamt { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double netrate { get; set; }
+    public string BarImages { get; set; }
+    public string BarImagesCount { get; set; }
 }
 
 public class ItmDet
@@ -98,13 +100,15 @@ public class ItmDet
     public string refno { get; set; }
     public string slnm { get; set; }
     public string docnm { get; set; }
-    [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+    public string colrnm { get; set; }
+    [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double sqnty { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double samt { get; set; }
-    [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double rqnty { get; set; }
     [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
     public double ramt { get; set; }
+    public string itrem { get; set; }
 }
 
