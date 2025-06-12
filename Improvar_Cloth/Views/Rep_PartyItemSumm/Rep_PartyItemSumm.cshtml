@@ -7,6 +7,7 @@
 <script src="~/Scripts/jquery.min.js"></script>
 <link rel="stylesheet" href="~/Content/jquery.stickytable.css">
 <link rel="stylesheet" media="all" href="~/Content/main_layout.css?v=105" />
+<script src="~/Scripts/Cloth.js?Ver=@System.DateTime.Now"></script>
 <style>
     #outer {
         position: fixed;
@@ -134,7 +135,7 @@
         float: right;
         height: 30px;
         background: linear-gradient(#86abd8,#244976);
-        width: 150px;
+        width: 80px;
         color: white;
         font-size: 11px;
         font-weight: bold;
@@ -559,7 +560,7 @@
         totalRow = $("#" + tablename + " tbody tr").length;
         if (obj.checked == true) {
             start = document.getElementById(tablename + (index + 1));
-            start.style.backgroundColor = '#86d2f7';
+            //start.style.backgroundColor = '#86d2f7';
             start.focus();
         }
         else {
@@ -1320,6 +1321,7 @@
                 start.style.color = '';
                 document.getElementById("Checked_" + Index).checked = false;
             }
+            GetItemDetails();
         }
         else {
             var index = Index + 1;
@@ -1515,7 +1517,7 @@
         if (Model.SLCD.retStr() == "")
         {
             <div id="outer">
-                <div id="inner" style="height:300px;width:400px;">
+                <div id="inner" style="height:300px;width:602px;">
                     @*<div class="row">
                             <div class="tabtitle">
                                 Select B/L Main Group
@@ -1526,21 +1528,21 @@
                         <div style="padding:14px 0px;background-color:#ffffff;margin-top:25px;height:200px;overflow-y:auto">
 
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Party Code")
                                         <b style="color:Red;">*</b>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="editor-field">
                                         @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
+                <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
                                         @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @autocomplete = "off", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
                                         <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
                                     </div>
                                 </div>
-                                <div class="col-md-10">
+                                <div class="col-lg-7">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
                                         @*@Html.HiddenFor(model => model.PARTYCD, new { @class = "form-control", id = "PARTYCD_H" })
@@ -1555,7 +1557,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "From Date")
                                     </div>
@@ -1567,7 +1569,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "To Date")
                                     </div>
@@ -1580,7 +1582,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top:6px">
                                         @Html.Label("", "Is Only Sales")
                                     </div>
@@ -1591,7 +1593,7 @@
                             </div>
 
                             <div class="row" style="margin-top:6px">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="editor-label" style="margin-top:5px">
                                         @Html.Label("", "Group")
                                     </div>
@@ -1749,7 +1751,7 @@
                 </div>
             </div>
 
-            <div style="width:60%;display:inline-block;float:left">
+            <div style="width:38%;display:inline-block;float:left">
                 @*<input type="text" value="" class="form-control" autocomplete="off" id="searchAV" placeholder="Search From Available Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'available_GRP');" />*@
                 @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
                 <div style="height:66vh;margin-top:10px;border-top-right-radius:15px;border-top-left-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:2px solid #86abd8;border-left:2px solid #86abd8;background-color:#d9ebf1">
@@ -1771,25 +1773,26 @@
                         {*@
                     <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100">
                         <div style="height:58vh;overflow-y:auto;">
-                            <table id="available_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="FONT-SIZE:9px;width:1143px;" onkeydown="checkKey(event,'available_GRP','Checked_');">
+                            <table id="available_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1143px;" onkeydown="checkKey(event,'available_GRP','Checked_');">
                                 <thead>
                                     <tr class="sticky-header" style="height:30px;">
                                         <th class="sticky-cell" style="text-align:center;width: 27px;">
                                             All
                                             <input type="checkbox" name="Test" onclick="SetAllCheckBoxesFilterParty(this, 'available_GRP', 'Checked_')" />
                                         </th>
-                                        <th class="" style="width:50px;">Design</th>
-                                        <th class="" style="width:250px;">Group</th>
+                                        <th class="" >Design</th>
+                                        <th class="" style="width:30px; text-align:center">Img</th>
+                                        @*<th class="" style="width:250px;">Group</th>*@
                                         @*<th class="" style="width:50px;">Item</th>*@
-                                        <th class="" style="width:150px;text-align:right;">Sal.Qnty</th>
-                                        <th class="" style="width:150px;text-align:right;">Sal.Amt</th>
-                                        <th class="" style="width:150px;text-align:right;">S.Av.Rate</th>
-                                        <th class="" style="width:150px;text-align:right;">Ret.Qnty</th>
-                                        <th class="" style="width:150px;text-align:right;">Ret.Amt</th>
-                                        <th class="" style="width:150px;text-align:right;">R.Av.Rate</th>
-                                        <th class="" style="width:150px;text-align:right;">Net.Qnty</th>
-                                        <th class="" style="width:150px;text-align:right;">Net.Amt</th>
-                                        <th class="" style="width:150px;text-align:right;">N.Av.Rate</th>
+                                        <th class="" style="width:80px;text-align:right;">Sal.Qnty</th>
+                                        @*<th class="" style="width:150px;text-align:right;">Sal.Amt</th>*@
+                                        @*<th class="" style="width:150px;text-align:right;">S.Av.Rate</th>*@
+                                        @*<th class="" style="width:150px;text-align:right;">Ret.Qnty</th>*@
+                                        @*<th class="" style="width:150px;text-align:right;">Ret.Amt</th>*@
+                                        @*<th class="" style="width:150px;text-align:right;">R.Av.Rate</th>*@
+                                        <th class="" style="width:80px;text-align:right;">Net.Qnty</th>
+                                        <th class="" style="width:100px;text-align:right;">Net.Amt</th>
+                                        @*<th class="" style="width:150px;text-align:right;">N.Av.Rate</th>*@
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1798,46 +1801,50 @@
                                         for (int i = 0; i <= Model.billdet.Count - 1; i++)
                                         {
                                             <tr id="available_GRP@(i + 1)">
-                                                <td class="sticky-cell" style="background-color:#808080">
+                                                <td class="sticky-cell" style="background-color:#808080;padding-left:7px;padding-right:7px;">
                                                     @Html.CheckBoxFor(model => model.billdet[i].Checked, new { id = "Checked_" + i, @style = "text-align:center;", onclick = "IndivedulaCheckBoxCheck(this," + i + ",'available_GRP');" })
                                                 </td>
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].styleno, new { htmlAttributes = new { @class = "atextBoxFor", id = "styleno_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                     @Html.HiddenFor(model => model.billdet[i].itcd, new { id = "itcd_" + i })
                                                 </td>
-                                                <td>
-                                                    @Html.EditorFor(model => model.billdet[i].itgrpnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itgrpnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                <td class="">
+                                                    <input type="button" onclick="FillImageModal('BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="billdet[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.billdet[i].BarImagesCount" />
+                                                    @Html.HiddenFor(model => model.billdet[i].BarImages, new { id = "BarImages_" + i })
                                                 </td>
+                                                @*<td>
+                                                    @Html.EditorFor(model => model.billdet[i].itgrpnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itgrpnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
+                                                </td>*@
                                                 @*<td>
                                                         @Html.EditorFor(model => model.billdet[i].itnm, new { htmlAttributes = new { @class = "atextBoxFor", id = "itnm_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                     </td>*@
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].sqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "sqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                 </td>
-                                                <td>
+                                                @*<td>
                                                     @Html.EditorFor(model => model.billdet[i].samt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "samt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
-                                                <td>
+                                                </td>*@
+                                                @*<td>
                                                     @Html.EditorFor(model => model.billdet[i].srate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "srate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
-                                                <td>
+                                                </td>*@
+                                                @*<td>
                                                     @Html.EditorFor(model => model.billdet[i].rqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
-                                                <td>
+                                                </td>*@
+                                                @*<td>
                                                     @Html.EditorFor(model => model.billdet[i].ramt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "ramt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
-                                                <td>
+                                                </td>*@
+                                                @*<td>
                                                     @Html.EditorFor(model => model.billdet[i].rrate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "rrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
+                                                </td>*@
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].netqnty, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netqnty_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                 </td>
                                                 <td>
                                                     @Html.EditorFor(model => model.billdet[i].netamt, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netamt_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
                                                 </td>
-                                                <td>
+                                                @*<td>
                                                     @Html.EditorFor(model => model.billdet[i].netrate, new { htmlAttributes = new { @class = "atextBoxFor text-right", id = "netrate_" + i, maxlength = 10, @TabIndex = -1, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'available_GRP');" } })
-                                                </td>
+                                                </td>*@
                                             </tr>
                                         }
                                     }
@@ -1846,28 +1853,29 @@
                                     <tr class="sticky-footer">
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+ <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                         <td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_sqnty, new { htmlattributes = new { id = "T_sqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
-                                        <td style="text-align:right;border:groove;">
+                                        @*<td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_samt, new { htmlattributes = new { id = "T_samt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                        <td style="text-align:right;border:groove;">
+                                        </td>*@
+                                        @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                        @*<td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_rqnty, new { htmlattributes = new { id = "T_rqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
-                                        <td style="text-align:right;border:groove;">
+                                        </td>*@
+                                        @*<td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_ramt, new { htmlattributes = new { id = "T_ramt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        </td>*@
+                                        @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                         <td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_netqnty, new { htmlattributes = new { id = "T_netqnty", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td style="text-align:right;border:groove;">
                                             @Html.EditorFor(model => Model.T_netamt, new { htmlattributes = new { id = "T_netamt", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
-                                        <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                        @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1875,7 +1883,7 @@
                     </div>
                 </div>
             </div>
-                <div style="width:40%;display:inline-block;float:left">
+                <div style="width:62%;display:inline-block;float:left">
                     @*<input type="text" value="" class="form-control" autocomplete="off" id="searchEX" placeholder="Search From Tag Accounts" style="width:260px; margin-left:10px" onkeyup="filterTable(event, 'exist_GRP');" />*@
                     @*<span class="fa fa-search" style="margin-top:-18px;margin-left:251px;float:left"></span>*@
                     @*<div style="height:66vh;margin-top:28px;border-top:2px solid #86abd8;border-bottom:2px solid #86abd8;border-right:1px solid #86abd8;background-color:#d9ebf1">*@
@@ -1886,6 +1894,55 @@
                         <div id="partial_existing">
                             @Html.Partial("_Rep_PartyItemSumm_Item_Det")
                         </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <!-- Modal -->
+                    <div class="modal fade" id="ViewImageModal" role="dialog">
+                        <div class="modal-dialog modal-md">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Image Preview</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="myCarousel" class="carousel" data-ride="carousel">
+                                        <div class="carousel-inner" id="div_carousel_inner">
+                                            <div class="item active">
+                                                <img src="" alt="Los Angeles" style="width:100%;">
+                                            </div>
+                                            <div class="item">
+                                                <img src="" alt="Chicago" style="width:100%;">
+                                            </div>
+                                        </div>
+                                        <!-- Left and right controls -->
+                                        <a class="left  carousel-control arrow-left" id="prev">
+                                            <span class="glyphicon glyphicon-chevron-left"></span>
+                                        </a>
+                                        <a class="right  carousel-control arrow-right" id="next">
+                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="pull-left">
+                                                <input type="hidden" id="ActiveBarRowIndex" />
+                                                <input type="hidden" id="BarImages" />
+                                                <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="RateHistoryModal" role="dialog">
+                    </div>
+                    <div class="modal fade" id="PaymentDetailsModal" role="dialog">
                     </div>
                 </div>
         }

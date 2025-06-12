@@ -286,6 +286,8 @@ namespace Improvar.Controllers
 
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
+                var extr_col = "doclink";
+
                 string qdsp = "";
                 if (rateqntybag == "B") qdsp = "n,12";
                 else qdsp = "n,12,2";
@@ -293,8 +295,8 @@ namespace Improvar.Controllers
                 string dsp1 = "";
                 //if (repon == "I") dsp1 = "Party"; else dsp1 = "Item";
                 if (repon == "I") dsp1 = "Item"; else dsp1 = "Party";
-                HC.RepStart(IR, 3);
-
+                //HC.RepStart(IR, 3);
+                HC.RepStart(IR, 3, extr_col); 
                 if (repon == "I")
                 {
                     HC.GetPrintHeader(IR, "cd", "string", "c,10", "Code");
@@ -412,6 +414,8 @@ namespace Improvar.Controllers
                                 {
                                     IR.Rows[rNo]["conslnm"] = tbl.Rows[i]["conslnm"].ToString() + "[" + tbl.Rows[i]["conslcd"].ToString() + "]";
                                 }
+                                IR.Rows[rNo]["doclink"] = tbl.Rows[i]["autono"].retStr().retSqlformat();
+
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                                 IR.Rows[rNo]["BLTYPE"] = tbl.Rows[i]["BLTYPE"].ToString();
@@ -486,7 +490,10 @@ namespace Improvar.Controllers
 
                 string pghdr1 = dsp1 + " wise detail Statement from " + fdt + " to " + tdt;
                 string repname = "PartyStmt";
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
+
+                var Link_Var = "docno";
+                PV = HC.ShowReportWithImage(IR, repname, pghdr1, "", true, true, "P", false, Link_Var, extr_col);
+                //PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;
                 TempData[repname + "xxx"] = IR;
