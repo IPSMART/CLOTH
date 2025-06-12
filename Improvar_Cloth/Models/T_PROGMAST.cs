@@ -69,7 +69,7 @@ namespace Improvar.Models
         [StringLength(50)]
         public string ITREMARK { get; set; }
 
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
 
         [StringLength(15)]
         public string SHADE { get; set; }

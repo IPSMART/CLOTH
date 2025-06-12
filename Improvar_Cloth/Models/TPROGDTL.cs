@@ -45,7 +45,7 @@ namespace Improvar.Models
         public double? QNTY { get; set; }
 
         public double? STKQNTY { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
         
         [StringLength(25)]

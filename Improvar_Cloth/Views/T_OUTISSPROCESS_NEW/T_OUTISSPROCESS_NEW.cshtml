@@ -486,7 +486,7 @@
                     $("#B_ITCD_" + i).val($("#P_ITCD_" + J).val());
                     $("#B_ITSTYLE_" + i).val($("#P_ITNM_" + J).val());
                     $("#B_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
-                    $("#B_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());                  
+                    $("#B_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
                     $("#B_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
                     $("#B_COLRNM_" + i).val($("#P_COLRNM_" + J).val());
                     $("#B_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
@@ -496,7 +496,7 @@
                     $("#B_QNTY_" + i).val($("#P_QNTY_" + J).val());
                     $("#B_MTRLJOBCD_" + i).val($("#P_MTRLJOBCD_" + J).val());
                     var BARNO = $("#P_BARNO_" + J).val();
-                    Program_GetBarnoDetails(BARNO,"B_BARNO_" + i,"B_MTRLJOBCD_" + i ,"B_PARTCD_" + i,"B_ITCD_" + i ,"B_ITSTYLE_" + i,"B_UOM_" + i ,"B_ITGRPCD_" + i ,"B_ITGRPNM_" + i,"B_COLRCD_" + i,"B_SIZECD_" + i ,"B_COLRNM_" + i,"B_MTRLJOBNM_" + i ,'','','','','','QTYPROG','bar',i);           
+                    Program_GetBarnoDetails(BARNO, "B_BARNO_" + i, "B_MTRLJOBCD_" + i, "B_PARTCD_" + i, "B_ITCD_" + i, "B_ITSTYLE_" + i, "B_UOM_" + i, "B_ITGRPCD_" + i, "B_ITGRPNM_" + i, "B_COLRCD_" + i, "B_SIZECD_" + i, "B_COLRNM_" + i, "B_MTRLJOBNM_" + i, '', '', '', '', '', 'QTYPROG', 'bar', i);
                     $("#B_QNTY_" + i).focus();
                 }
             }
@@ -712,22 +712,18 @@
         }
         else {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            if ($("#TAXGRPCD").val() == "")
-            {
-                if (tag == "QTY" || tag == "QTYPROG")
-                {
+            if ($("#TAXGRPCD").val() == "") {
+                if (tag == "QTY" || tag == "QTYPROG") {
                     ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i + ",B_BarImages_" + i + ",OpenImageModal_" + i);
                 }
-                else
-                {
+                else {
                     ClearAllTextBoxes((P_BARNO_ + "," + P_MTRLJOBCD_ + "," + P_PARTCD_ + "," + P_ITCD_ + "," + P_ITNM_ + "," + P_UOM_ + "," + P_ITGRPCD_ + "," + P_ITGRPNM_ + "," + P_COLRCD_ + "," + P_SIZECD_ + "," + P_COLRNM_ + "," + P_MTRLJOBNM_ + "," + P_BarImages_ + "," + "," + BarImagesCount_ + "," + P_DECIMALS_ + "," + P_CLRBARCODE_ + "," + P_SZBARCODE_));
                 }
                 msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code");
                 message_value = "SLCD";
                 return false;
             }
-            if ($("#PRCCD").val() == "")
-            {
+            if ($("#PRCCD").val() == "") {
                 if (tag == "QTY" || tag == "QTYPROG") {
                     ClearAllTextBoxes("B_BARCODE_" + i + ",B_ITGRPCD_" + i + ",B_ITGRPNM_" + i + ",B_MTRLJOBCD_" + i + ",B_MTRLJOBNM_" + i + ",B_MTBARCODE_" + i + ",B_ITCD_" + i + ",B_ITSTYLE_" + i + ",B_STYLENO_" + i + ",B_STKTYPE_" + i + ",B_PARTCD_" + i + ",B_PARTNM_" + i + ",B_PRTBARCODE_" + i + ",B_COLRCD_" + i + ",B_COLRNM_" + i + ",B_CLRBARCODE_" + i + ",B_SIZECD_" + i + ",B_SIZENM_" + i + ",B_SZBARCODE_" + i + ",B_BALSTOCK_" + i + ",B_QNTY_" + i + ",B_UOM_" + i + ",B_GLCD_" + i + ",B_NOS_" + i + ",B_FLAGMTR_" + i + ",B_RATE_" + i + ",B_DISCRATE_" + i + ",B_HSNCODE_" + i + ",B_GSTPER_" + i + ",B_PRODGRPGSTPER_" + i + ",B_SHADE_" + i + ",B_TDDISCRATE_" + i + ",B_SCMDISCRATE_" + i + ",B_LOCABIN_" + i + ",B_BARGENTYPETEMP_" + i + ",B_NEGSTOCK_" + i + ",B_CUTLENGTH_" + i + ",B_BOMITCD_" + i + ",B_BOMITNM_" + i + ",B_BOMQNTY_" + i + ",B_BarImages_" + i + ",OpenImageModal_" + i);
                 }
@@ -910,15 +906,13 @@
         }
         else {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            if ($("#TAXGRPCD").val() == "")
-            {
+            if ($("#TAXGRPCD").val() == "") {
                 T_OUTISSPROCESS_ClearBarcodeArea('B');
                 msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code");
                 message_value = "SLCD";
                 return false;
             }
-            if ($("#PRCCD").val() == "")
-            {
+            if ($("#PRCCD").val() == "") {
                 T_OUTISSPROCESS_ClearBarcodeArea('B');
                 msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code");
                 message_value = "SLCD";
@@ -1983,15 +1977,13 @@
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
             var BARCODE = "";
             BARCODE = $("#C_BARNO").val();
-            if ($("#TAXGRPCD").val() == "")
-            {
+            if ($("#TAXGRPCD").val() == "") {
                 ClearAllTextBoxes("C_BARNO,M_STYLENO,MTRLJOBCD,PARTCD");
                 msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code");
                 message_value = "SLCD";
                 return false;
             }
-            if ($("#PRCCD").val() == "")
-            {
+            if ($("#PRCCD").val() == "") {
                 ClearAllTextBoxes("C_BARNO,M_STYLENO,MTRLJOBCD,PARTCD");
                 msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code");
                 message_value = "SLCD";
@@ -2681,7 +2673,7 @@
                 $("#txtZoomTextBoxModal").attr("readonly", false);
                 if (i == 0) $("#P_ITREMARK_" + i).focus();
             }
-        } 
+        }
         $("#edit_Remarks").hide();
         $("#update_Remarks").show();
         $("#cancel_Remarks").show();
@@ -2696,7 +2688,7 @@
         $.ajax({
             type: 'post',
             beforesend: $("#WaitingMode").show(),
-            url:"@Url.Action("Update_Remarks", PageControllerName)",
+            url: "@Url.Action("Update_Remarks", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#WaitingMode").hide();
@@ -2714,6 +2706,23 @@
             }
         });
     }
+</script>
+<script>
+    function ForSample(index) {
+        debugger;
+        var CheckedSample = document.getElementById("P_CheckedSample_" + index).checked;
+        if (CheckedSample == true) {
+            $("#P_RATE_" + index).attr("readonly", "readonly");
+            $("#P_RATE_" + index).val(0);
+        }
+
+        else
+        {
+            $("#P_RATE_" + index).attr("readonly", false);
+        }
+        return false;
+    }
+
 </script>
 @using (Html.BeginForm())
 {
@@ -3154,15 +3163,15 @@
                         </div>
                     </div>
                     @if (Model.DefaultAction == "V" && Model.Delete == "D")
-                            {
-                                <div class="row">
-                                    <div class="col-md-1" style="width:auto;">
-                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Remarks" id="edit_Remarks" value="Update Remarks(Alt+J)" title="Click here for edit Remarks Tab" onclick="Edit_Remarks()" />
-                                        <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="update" id="update_Remarks" value="Update(Alt+O)" accesskey="O" title="Click to Update Remarks Tab" onclick="Update_Remarks()" />
-                                        <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="cancel" id="cancel_Remarks" value="Cancel" title="Click to Cancel for Remarks Tab" onclick="Cancel_Remarks()" />
-                                    </div>
-                                </div>
-                            }
+                    {
+                        <div class="row">
+                            <div class="col-md-1" style="width:auto;">
+                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Update Remarks" id="edit_Remarks" value="Update Remarks(Alt+J)" title="Click here for edit Remarks Tab" onclick="Edit_Remarks()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="update" id="update_Remarks" value="Update(Alt+O)" accesskey="O" title="Click to Update Remarks Tab" onclick="Update_Remarks()" />
+                                <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" name="cancel" id="cancel_Remarks" value="Cancel" title="Click to Cancel for Remarks Tab" onclick="Cancel_Remarks()" />
+                            </div>
+                        </div>
+                    }
                     @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                             <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                                 <div>

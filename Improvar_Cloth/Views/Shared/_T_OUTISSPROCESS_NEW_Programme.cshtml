@@ -44,10 +44,11 @@
                                     <th class="" style="width:40px;">Barno</th>
                                     <th class="" style="width:150px;">Design No</th>
                                     <th class="" style="width:30px; text-align:center">Img</th>
-                                    <th class="" >Remarks</th>
+                                    <th class="">Remarks</th>
                                     <th class="" style="width:30px;text-align:center;">Cut Length</th>
                                     <th class="" style="width:25px;text-align:right;">Nos</th>
                                     <th class="" style="width:25px;text-align:right;">Quantity</th>
+                                    <th class="" style="width:25px;text-align:right;">Rate</th>
                                     <th class="" style="width:30px;text-align:right;">MI Qty.</th>
                                     <th class="" style="width:50px;">Order No.</th>
                                     <th class="" style="width:30px;">Order Slno.</th>
@@ -64,8 +65,8 @@
                                     <th class="" style="width:50px;">Material Job Name</th>
                                     <th class="" style="width:50px;">Part</th>
                                     <th class="" style="width:50px;">Size</th>
-                                    <th class="" style="width:50px;">Shade</th>         
-                            </tr>
+                                    <th class="" style="width:50px;">Shade</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 @if (Model.TPROGDTL != null)
@@ -129,6 +130,16 @@
                                                 @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateProgQnty('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
                                             </td>
                                             <td class="">
+                                                @if (Model.TPROGDTL[i].CheckedSample == true)
+                                                {
+                                                    @Html.EditorFor(model => Model.TPROGDTL[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                                }
+                                                else
+                                                {
+                                                    @Html.EditorFor(model => Model.TPROGDTL[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 12 } })
+                                                }
+                                            </td>
+                                            <td class="">
                                                 @Html.EditorFor(model => Model.TPROGDTL[i].MIQNTY, new { htmlAttributes = new { id = "P_MIQNTY_" + i, @style = "cursor:pointer", @class = " atextBoxFor text-primary text-right", maxlength = 12, onclick = "OpenPopupMI(" + i + ");", onkeydown = "OpenPopupMIByKey(" + i + ");", @readonly = "readonly", @title = "Click/F2 here to open Material Issue Details" } })
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].ChildMIData, new { id = "P_ChildMIData_" + i, Value = @Model.TPROGDTL[i].ChildMIData })
                                             </td>
@@ -163,7 +174,8 @@
                                                 @Html.HiddenFor(model => model.TPROGDTL[i].MAKEITCD, new { id = "MAKEITCD_" + i })
                                             </td>
                                             <td class="" style="padding-left:10px;">
-                                                @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i })
+                                                @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i, onclick = "ForSample(" + i + ");" })
+
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -215,8 +227,8 @@
 
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TPROGDTL[i].SHADE, new { id = "P_SHADE_" + i, @class = " atextBoxFor " })
-                                            </td>                                                                                 
-                                          </tr>
+                                            </td>
+                                        </tr>
                                     }
                                 }
                             </tbody>
@@ -239,6 +251,7 @@
                                     <td style="text-align:right;">
                                         @Html.EditorFor(model => Model.P_T_QNTY, new { htmlAttributes = new { id = "P_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                     </td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td style="text-align:right;">
                                         @Html.EditorFor(model => Model.P_T_MIQNTY, new { htmlAttributes = new { id = "P_T_MIQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                     </td>
@@ -246,7 +259,7 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
-                                    
+
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -260,7 +273,7 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                    
+
                                 </tr>
                             </tfoot>
                         </table>

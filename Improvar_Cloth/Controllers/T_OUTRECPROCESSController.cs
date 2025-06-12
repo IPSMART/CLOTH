@@ -1876,7 +1876,8 @@ namespace Improvar.Controllers
                 var tempdata = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 VE.TBATCHDTL = (from a in VE.TPROGDTL
-                                    //join b in tempdata.AsEnumerable() on a.PROGAUTOSLNO equals b.Field<string>("PROGAUTOSLNO").retStr() into Z
+                                join DataRow c in tempdata.Rows on a.PROGAUTOSLNO equals c["PROGAUTOSLNO"].retStr() into X
+                                from c in X.DefaultIfEmpty()
                                 join b in DB.M_GROUP on a.ITGRPCD equals b.ITGRPCD into Z
                                 from b in Z.DefaultIfEmpty()
                                 select new TBATCHDTL
@@ -1898,7 +1899,7 @@ namespace Improvar.Controllers
                                     NOS = a.NOS.retDbl(),
                                     QNTY = a.QNTY.retDbl(),
                                     BARGENTYPE = b.BARGENTYPE.retStr(),
-                                    //RATE = dr["RATE"].retDbl(),
+                                    RATE = a.SAMPLE.retStr() == "Y" ? 0 : c["RATE"].retDbl(),
                                     //DISCTYPE_DESC = dr["DISCTYPE_DESC"].retStr(),
                                     //DISCTYPE = dr["DISCTYPE"].retStr(),
                                     //DISCRATE = dr["DISCRATE"].retDbl(),
@@ -1944,7 +1945,7 @@ namespace Improvar.Controllers
                 string PRCCD = VE.T_TXNOTH.PRCCD.retStr();
                 string MTRLJOBCD = VE.MTRLJOBCD.retStr() == "" ? "" : VE.MTRLJOBCD.retStr().retSqlformat();
                 //var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD);
-                var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD,"","",true,false,"","","",false,false,true,"",true,false, VE.T_TXN.SLCD.retStr().retSqlformat());
+                var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD, "", "", true, false, "", "", "", false, false, true, "", true, false, VE.T_TXN.SLCD.retStr().retSqlformat());
 
                 string progautoslno = VE.TBATCHDTL.Select(a => a.RECPROGAUTONO + a.RECPROGSLNO).Distinct().ToArray().retSqlfromStrarray();
                 string scm = CommVar.CurSchema(UNQSNO);
@@ -1959,7 +1960,7 @@ namespace Improvar.Controllers
 
                 for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
                 {
-                    if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y")
+                    if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y" && VE.TBATCHDTL[p].RATE.retDbl() == 0)
                     {
                         VE.TBATCHDTL[p].RATE = (from DataRow a in barimgdata.Rows where a["barno"].retStr() == VE.TBATCHDTL[p].BARNO select a["rate"].retDbl()).FirstOrDefault();
                     }

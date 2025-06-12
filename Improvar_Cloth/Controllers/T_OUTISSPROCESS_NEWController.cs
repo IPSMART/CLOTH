@@ -365,7 +365,7 @@ namespace Improvar.Controllers
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
                 str = "";
-                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,l.szbarcode,m.colrnm,m.clrbarcode,p.partnm,o.mtrljobnm, ";
+                str += "select a.autono,a.slno,a.nos,a.qnty,a.RATE,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,l.szbarcode,m.colrnm,m.clrbarcode,p.partnm,o.mtrljobnm, ";
                 str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,q.decimals,s.docno ORDDOCNO,a.ordautono,A.ORDSLNO,a.makestyleno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p, " + scmf + ".m_uom q," + Scm + ".t_cntrl_hdr s ";
@@ -381,6 +381,7 @@ namespace Improvar.Controllers
                                    SLNO = Convert.ToInt16(dr["slno"]),
                                    NOS = dr["nos"].retDbl(),
                                    QNTY = dr["qnty"].retDbl(),
+                                   RATE = dr["RATE"].retDbl(),
                                    ITGRPCD = dr["itgrpcd"].retStr(),
                                    ITGRPNM = dr["itgrpnm"].retStr(),
                                    ITCD = dr["itcd"].retStr(),
@@ -3419,6 +3420,7 @@ namespace Improvar.Controllers
                             TPROGMAST.SIZECD = VE.TPROGDTL[i].SIZECD;
                             TPROGMAST.NOS = VE.TPROGDTL[i].NOS.retDbl();
                             TPROGMAST.QNTY = VE.TPROGDTL[i].QNTY.retDbl();
+                            TPROGMAST.RATE = VE.TPROGDTL[i].RATE;
                             TPROGMAST.ITREMARK = VE.TPROGDTL[i].ITREMARK;
                             TPROGMAST.SHADE = VE.TPROGDTL[i].SHADE;
                             TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();
@@ -3446,6 +3448,7 @@ namespace Improvar.Controllers
                             TPROGDTL.STKDRCR = stkdrcr;
                             TPROGDTL.NOS = VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.retDbl();
                             TPROGDTL.QNTY = VE.TPROGDTL[i].QNTY.retDbl();
+                            TPROGDTL.RATE = VE.TPROGDTL[i].RATE.retDbl();
 
                             dbsql = masterHelp.RetModeltoSql(TPROGDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();

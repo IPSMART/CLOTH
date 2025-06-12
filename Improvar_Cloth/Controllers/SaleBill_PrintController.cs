@@ -3306,7 +3306,18 @@ namespace Improvar.Controllers
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
                                 emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
                                 emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
+
+                                string msgprint = "";
+                                if (CommVar.ClientCode(UNQSNO) == "ANKN")
+                                {
+                                    msgprint = "ANKAN Sales Bill copy";
+                                }
+                                else
+                                {
+                                    msgprint = "Sales Bill copy";
+                                }
+                                  
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, msgprint, template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + VE.TEXTBOX5 + ";";
@@ -3335,19 +3346,30 @@ namespace Improvar.Controllers
                                 emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
                                 emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
                                 //bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", "Salebill.htm", emlaryBody, attchmail, grpemailid);
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
-                                if (emailsent == true)
+                                string msgprint = "";
+                                if (CommVar.ClientCode(UNQSNO) == "ANKN")
                                 {
-                                    sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
-                                    if (VE.Checkbox10 == true)
-                                    {
-                                        masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E", "SBILL", rsemailid[z].email.ToString());
-                                    }
+
+                                    msgprint = "ANKAN Sales Bill copy";
                                 }
                                 else
                                 {
-                                    sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
+                                    msgprint = "Sales Bill copy";
                                 }
+                            
+                                    bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, msgprint, template, emlaryBody, attchmail, grpemailid);
+                                    if (emailsent == true)
+                                    {
+                                        sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
+                                        if (VE.Checkbox10 == true)
+                                        {
+                                            masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E", "SBILL", rsemailid[z].email.ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
+                                    }                                
                             }
                             System.IO.File.Delete(path_Save);
                             //eof email sending
