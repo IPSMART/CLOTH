@@ -513,6 +513,16 @@
                         @Html.EditorFor(model => model.M_SUBLEG_COM.CRDAYS, new { htmlAttributes = new { @class = "form-control ", id = "CRDAYS", @placeholder = "Credit Days", @onkeypress = "return numericOnly(this,2);" } })
                     </div>
                 </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Cash Disc %")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SUBLEG_COM.CASHDISCPR, new { htmlAttributes = new { @class = "form-control ", id = "CASHDISCPR", @placeholder = "Cash Disc Days", @onkeypress = "return numericOnly(this,2);" } })
+                    </div>
+                </div>
 
             </div>
             <div class="row">

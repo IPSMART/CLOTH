@@ -62,7 +62,7 @@
     </div>
 
 </div>
-<div style="height:auto;overflow-y:auto;margin-top:5px;background-color:#c4b9b9">
+<div style="height:auto;overflow-y:auto;margin-top:5px;background-color:#c4b9b9;width:fit-content;">
     <div class="table-responsive table-wrapper">
         @if (Model.DefaultView == true)
         {
@@ -87,7 +87,7 @@
                                     }
                                     @for (int i = 8; i < Model.DTPRICES.Columns.Count; i++)
                                     {
-                                        <th class="grid_th">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer;color: mistyrose;">Same Rate(F8)</a></th>
+                                        <th class="grid_th"  style="width:50px;">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer;color: mistyrose;">Same Rate(F8)</a></th>
                                     }
                                 </tr>
                             </thead>

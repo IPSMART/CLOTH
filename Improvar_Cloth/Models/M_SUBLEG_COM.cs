@@ -56,6 +56,8 @@ namespace Improvar.Models
 
         [StringLength(20)]
         public string SAPCODE { get; set; }
-        
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? CASHDISCPR { get; set; }
+
     }
 }
