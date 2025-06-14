@@ -81,6 +81,7 @@ namespace Improvar.ViewModels
         public string mtrljobnm { get; set; }
 
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        public bool MergeLoc { get; set; }
 
 
     }
