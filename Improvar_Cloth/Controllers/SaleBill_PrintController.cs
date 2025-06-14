@@ -1900,7 +1900,7 @@ namespace Improvar.Controllers
                 sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, " + Environment.NewLine;
                 //sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
                 sql += " nvl(x.nm,nvl(e.fullname, e.slnm)) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  " + Environment.NewLine;
-                sql += " e.gstno, e.panno,e.MSMENO, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno,e.REGEMAILID, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
+                sql += " e.gstno, e.panno,e.MSMENO, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno,nvl(e.WHATSAPP_NO,e.regmobile)WHATSAPP_NO,e.REGEMAILID, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
                 sql += " nvl(b.conslcd, b.slcd) cslcd, '' cpartycd, nvl(f.fullname, f.slnm) cslnm, f.add1 csladd1, f.add2 csladd2, f.add3 csladd3, f.add4 csladd4, f.add5 csladd5, " + Environment.NewLine;
                 sql += " f.add6 csladd6, f.add7 csladd7, nvl(f.gstno, f.gstno) cgstno, nvl(f.panno, f.panno) cpanno,nvl(f.MSMENO, f.MSMENO) cMSMENO,f.actnameof cslactnameof,f.subdistrict csldistrict, " + Environment.NewLine;
                 sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno,f.REGEMAILID cREGEMAILID, f.state cstate, f.statecd cstatecd,  " + Environment.NewLine;
@@ -2284,6 +2284,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("sizecd", typeof(string), "");
                 IR.Columns.Add("sizenm", typeof(string), "");
                 IR.Columns.Add("cutlength", typeof(string), "");
+                IR.Columns.Add("WHATSAPP_NO", typeof(string), "");
 
                 if (VE.MENU_PARA == "PJBL") IR.Columns.Add("BL_TOP_DSC", typeof(string), "");
                 #endregion
@@ -2610,6 +2611,8 @@ namespace Improvar.Controllers
                             dr1["name"] = VE.TEXTBOX9.retStr() == "" ? tbl.Rows[i]["slnm"].ToString() : VE.TEXTBOX9.retStr();
                             dr1["COURCD"] = tbl.Rows[i]["COURCD"].ToString();
                             dr1["COURNM"] = tbl.Rows[i]["COURNM"].ToString();
+                            dr1["WHATSAPP_NO"] = tbl.Rows[i]["WHATSAPP_NO"].ToString();
+
                             string cfld = "", rfld = ""; int rf = 0;
                             for (int f = 1; f <= 6; f++)
                             {
@@ -2725,7 +2728,7 @@ namespace Improvar.Controllers
                                     rfld = "csladd" + Convert.ToString(rf);
                                     dr1[rfld] = "Email # " + tbl.Rows[i]["cREGEMAILID"].ToString();
                                 }
-                                
+
                                 if (tbl.Rows[i]["cslactnameof"].ToString() != "")
                                 {
                                     rf = rf + 1;
@@ -3005,7 +3008,7 @@ namespace Improvar.Controllers
                                             {
                                                 pcsdesc += v == 0 ? "" : "+";
                                                 pcsdesc += batch_data[a]["cutlength"].retDbl().ToString("0.00");
-                                                                                        }
+                                            }
                                         }
                                         else
                                         {
@@ -3159,6 +3162,7 @@ namespace Improvar.Controllers
                 //ReportDocument reportdocument = new ReportDocument();
                 string complogo = Salesfunc.retCompLogo();
                 EmailControl EmailControl = new EmailControl();
+                SMS SMS = new SMS();
 
                 string complogosrc = complogo;
                 string compfixlogosrc = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "fix.jpg";
@@ -3316,7 +3320,7 @@ namespace Improvar.Controllers
                                 {
                                     msgprint = "Sales Bill copy";
                                 }
-                                  
+
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, msgprint, template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
@@ -3356,20 +3360,20 @@ namespace Improvar.Controllers
                                 {
                                     msgprint = "Sales Bill copy";
                                 }
-                            
-                                    bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, msgprint, template, emlaryBody, attchmail, grpemailid);
-                                    if (emailsent == true)
+
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, msgprint, template, emlaryBody, attchmail, grpemailid);
+                                if (emailsent == true)
+                                {
+                                    sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
+                                    if (VE.Checkbox10 == true)
                                     {
-                                        sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
-                                        if (VE.Checkbox10 == true)
-                                        {
-                                            masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E", "SBILL", rsemailid[z].email.ToString());
-                                        }
+                                        masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E", "SBILL", rsemailid[z].email.ToString());
                                     }
-                                    else
-                                    {
-                                        sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
-                                    }                                
+                                }
+                                else
+                                {
+                                    sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
+                                }
                             }
                             System.IO.File.Delete(path_Save);
                             //eof email sending
@@ -3378,6 +3382,148 @@ namespace Improvar.Controllers
                     reportdocument.Dispose(); GC.Collect();
                     string emailretmsg = "email : " + sendemailids + "<br /> CC email on " + grpemailid;
                     return Content(emailretmsg);
+                }
+                else if (printemail == "WhatsApp")
+                {
+                    string id = "_" + System.DateTime.Now.ToString("yyMMddHHmmss").retStr();
+                    string filenm = "";
+                    var rswhtsapp = (from DataRow dr in IR.Rows
+                                     select new
+                                     {
+                                         whtsapp = dr["WHATSAPP_NO"]
+                                     }).Distinct().ToList();
+
+                    string msgresult = "";
+                    for (int z = 0; z < rswhtsapp.Count; z++)
+                    {
+                        if (rswhtsapp[z].whtsapp.ToString() != "")
+                        {
+                            var queryq = from row in IR.AsEnumerable()
+                                         where row.Field<string>("WHATSAPP_NO") == rswhtsapp[z].whtsapp.ToString()
+                                         select row;
+
+                            var rswhtsapp1 = queryq.AsDataView().ToTable();
+                            reportdocument.Load(System.Web.HttpContext.Current.Server.MapPath(rptname));
+
+                            maxR = rswhtsapp1.Rows.Count - 1;
+                            Int32 iz = 0;
+                            List<string> arrsbilldet = new List<string>();
+                            string slnm = "", emlslcd = "", chkfld = "", sbillautono = "", ordautono = "", slmobno = ""; int NoOfWp = 0;
+                            string[,] smsaryMsg = new string[5, 2];
+                            while (iz <= maxR)
+                            {
+                                NoOfWp++;
+                                slnm = rswhtsapp1.Rows[iz]["slnm"].ToString();
+                                emlslcd = rswhtsapp1.Rows[iz]["slcd"].ToString();
+                                //if (VE.Checkbox7 == true) grpemailid = rswhtsapp1.Rows[iz]["agWHATSAPP_NO"].ToString();
+
+                                slcd = rswhtsapp1.Rows[iz]["slcd"].ToString();
+                                smsaryMsg[0, 0] = "&nocases&"; smsaryMsg[0, 1] = "";// rswhtsapp1.Rows[iz]["casenm"].ToString();
+                                smsaryMsg[1, 0] = "&lrno&"; smsaryMsg[1, 1] = rswhtsapp1.Rows[iz]["lrno"].ToString();
+                                smsaryMsg[2, 0] = "&lrdt&"; smsaryMsg[2, 1] = rswhtsapp1.Rows[iz]["lrdt"].ToString().retDateStr();
+                                smsaryMsg[3, 0] = "&trslnm&"; smsaryMsg[3, 1] = rswhtsapp1.Rows[iz]["trslnm"].ToString();
+                                smsaryMsg[4, 0] = "&docno&"; smsaryMsg[4, 1] = rswhtsapp1.Rows[iz]["docno"].ToString();
+                                if (rswhtsapp1.Rows[iz]["WHATSAPP_NO"].ToString().retStr() != "") slmobno = rswhtsapp1.Rows[iz]["WHATSAPP_NO"].ToString();
+                                //if (rswhtsapp1.Rows[iz]["agWHATSAPP_NO"].ToString().retStr() != "") slmobno += "," + rswhtsapp1.Rows[iz]["agWHATSAPP_NO"].ToString();
+
+                                chkfld = rswhtsapp1.Rows[iz]["autono"].ToString().Substring(0, rswhtsapp1.Rows[iz]["autono"].ToString().Length - 1);
+                                sbillautono = chkfld;
+                                //ordautono = rswhtsapp1.Rows[iz]["ordautono"].ToString();
+                                arrsbilldet.Add(chkfld + Cn.GCS() + rswhtsapp1.Rows[iz]["docno"]);
+                                while (rswhtsapp1.Rows[iz]["autono"].ToString().Substring(0, rswhtsapp1.Rows[iz]["autono"].ToString().Length - 1) == chkfld)
+                                {
+                                    iz++;
+                                    if (iz > maxR) break;
+                                }
+                            }
+
+                            string uid = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
+                            string MOBILE = DB1.USER_APPL.Find(uid).MOBILE;
+                            string usrEMAIL = DB1.USER_APPL.Find(uid).EMAIL;
+                            string ldt = rswhtsapp1.Rows[rswhtsapp1.Rows.Count - 1]["docdt"].ToString();
+                            string billdocno = rswhtsapp1.Rows[rswhtsapp1.Rows.Count - 1]["docno"].ToString();
+                            string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
+                            string partynm = rswhtsapp1.Rows[rswhtsapp1.Rows.Count - 1]["slnm"].ToString();
+
+                            reportdocument.SetDataSource(rswhtsapp1);
+                            reportdocument.SetParameterValue("billheading", blhead);
+                            reportdocument.SetParameterValue("complogo", masterHelp.retCompLogo());
+                            reportdocument.SetParameterValue("complogo1", masterHelp.retCompLogo1());
+                            reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
+                            reportdocument.SetParameterValue("compadd", compaddress.retCompValue("compadd"));
+                            reportdocument.SetParameterValue("compcommu", compaddress.retCompValue("compcommu"));
+                            reportdocument.SetParameterValue("compstat", compaddress.retCompValue("compstat"));
+                            reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
+                            reportdocument.SetParameterValue("locacommu", compaddress.retCompValue("locacommu"));
+                            reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
+                            reportdocument.SetParameterValue("legalname", legalname);
+                            reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
+                            reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                            reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
+                            if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", masterHelp.retCompStamp());
+
+                            System.Web.HttpContext.Current.Response.Buffer = false;
+                            System.Web.HttpContext.Current.Response.ClearContent();
+                            System.Web.HttpContext.Current.Response.ClearHeaders();
+                            Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                            stream.Seek(0, SeekOrigin.Begin);
+
+                            List<string> pdffilenm = new List<string>();
+                            List<string> imgfilenm = new List<string>();
+
+                            string billpath_Save = "";
+
+                            filenm = billdocno.Replace("/", "-") + "_" + partynm + id + ".pdf";
+                            billpath_Save = Salesfunc.LocalWhatsappFilePath() + filenm;
+                            pdffilenm.Add(filenm);
+
+                            if (System.IO.File.Exists(billpath_Save))
+                            {
+                                System.IO.File.Delete(billpath_Save);
+                            }
+                            reportdocument.ExportToDisk(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, billpath_Save);
+                            reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+
+
+                            if (!string.IsNullOrEmpty(slmobno))
+                            {
+                                List<string> sendmsg = SMS.WHATSAPPMessContectGen(slcd, "SALEW", smsaryMsg);
+                                msgresult = SMS.WHATSAPPsend(slmobno, sendmsg[0], sendmsg[1], "media_url", pdffilenm, "media_url", imgfilenm);
+                                string[] msgretval = msgresult.Split('=');
+                                if (msgretval[0].retStr() == "")
+                                {
+                                    SMS.insT_TXNSTATUS(sbillautono, "W", "SALEW", msgresult);
+                                    msgresult = "   " + slmobno + ", " + SMS.retSMSSendInfo(sbillautono, "W", "SALEW") + "<br/><br/><br/>" + msgretval[1].retStr();
+                                }
+                                else
+                                {
+                                    msgresult += "   " + slmobno + ", " + SMS.retSMSSendInfo(sbillautono, "W", "SALEW") + "<br/><br/><br/>" + msgretval[1].retStr();
+                                }
+                            }
+                            if (pdffilenm != null && pdffilenm.Count() > 0)
+                            {
+                                for (int a = 0; a < pdffilenm.Count(); a++)
+                                {
+                                    string delpath = Salesfunc.LocalWhatsappFilePath() + pdffilenm[a];
+                                    System.IO.File.Delete(delpath);
+                                }
+                            }
+                            if (imgfilenm != null && imgfilenm.Count() > 0)
+                            {
+                                for (int a = 0; a < imgfilenm.Count(); a++)
+                                {
+                                    string delpath = Salesfunc.LocalWhatsappFilePath() + imgfilenm[a];
+                                    System.IO.File.Delete(delpath);
+                                }
+                            }
+
+                            //eof email sending
+                        }
+                    }
+                    string whtdappretmsg = "";
+
+                    whtdappretmsg = "whatsapp : " + msgresult;
+                    return Content(whtdappretmsg);
                 }
                 else
                 {

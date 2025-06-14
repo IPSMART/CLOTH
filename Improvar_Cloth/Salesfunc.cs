@@ -6,6 +6,7 @@ using System.Data;
 using System.Text.RegularExpressions;
 using Oracle.ManagedDataAccess.Client;
 using Improvar.ViewModels;
+using System.Configuration;
 
 namespace Improvar
 {
@@ -29,13 +30,13 @@ namespace Improvar
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
             sql += "y.docdt lastbldt, y.scmdiscrate, y.scmdisctype,y.listdiscper, ";
             //sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
-            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.panno,g.partycd, ";
+            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.panno,g.partycd,a.CASHDISCPR, ";
             sql += "(case when to_date('" + docdt + "', 'dd/mm/yyyy') < to_date('01/07/2021', 'dd/mm/yyyy') then nvl(g.tcsappl, 'Y') else  decode(nvl(g.tot194q, 'N'), 'Y', 'N', 'Y') end ) tcsappl ";
             sql += "from ";
 
             sql += "(select a.slcd from " + scmf + ".m_subleg a where a.slcd='" + slcd + "' ) z, ";
 
-            sql += "(select a.slcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.docth, b.gstno ";
+            sql += "(select a.slcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.docth, b.gstno,nvl(a.CASHDISCPR,0)CASHDISCPR ";
             sql += "from " + scm + ".m_subleg_com a, " + scmf + ".m_subleg b ";
             sql += "where b.slcd='" + slcd + "' and a.slcd=b.slcd(+) and (a.compcd='" + COM + "' or a.compcd is null) ) a, ";
 
@@ -4160,6 +4161,17 @@ namespace Improvar
             sql += "where a.prccd = b.prccd(+) and upper(a.barno) = '" + barno.ToUpper() + "' ";
             var dt = masterHelpFa.SQLquery(sql);
             return dt;
+        }
+        public static string LocalWhatsappFilePath(string FileName = "")
+        {
+            string path = System.Web.HttpContext.Current.Server.MapPath("~/Whatsapp/" + FileName);
+            return path;
+        }
+        public string GetWhatsappFilePath()
+        {
+            string foldernm = System.Web.HttpContext.Current.Request.Url.Segments[1];
+            string WebHostPath = @ConfigurationManager.AppSettings["WhtsappSendIp"].retStr() + "/" + foldernm + "Whatsapp/";
+            return WebHostPath;
         }
 
     }

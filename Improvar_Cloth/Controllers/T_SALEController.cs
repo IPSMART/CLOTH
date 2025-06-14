@@ -773,6 +773,7 @@ namespace Improvar.Controllers
                         VE.TCSAPPL = party_data.Rows[0]["TCSAPPL"].retStr();
                         if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
                         VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
+                        VE.CASHDISCPR = party_data.Rows[0]["CASHDISCPR"].retDbl();
                     }
                 }
 
@@ -2836,6 +2837,7 @@ namespace Improvar.Controllers
                               TDDISCTYPE_DESC = "%",
                               SCMDISCTYPE = "P",
                               SCMDISCTYPE_DESC = "%",
+                              SCMDISCRATE=VE.CASHDISCPR,
                               NEGSTOCK = a.NEGSTOCK.retStr(),
                               BARNO = a.BARNO.retStr()
                           }).ToList();

@@ -309,7 +309,9 @@ namespace Improvar.ViewModels
         public string Modify { get; set; }
         public double BuyerTotTurnover { get; set; }
         public List<PAYMENT_DETAILS> PAYMENT_DETAILS { get; set; }
-       
+        public double CASHDISCPR { get; set; }
+
+
     }
 
     public class PAYMENT_DETAILS

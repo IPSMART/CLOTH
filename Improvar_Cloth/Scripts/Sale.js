@@ -277,12 +277,17 @@ function FillBarcodeArea(str, Table, i) {
         }
         $("#UOM").val(returncolvalue(str, "uomcd"));
         $("#CUTLENGTH").val(returncolvalue(str, "CUTLENGTH"));
-        $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
+        $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));       
         var RATE = returncolvalue(str, "RATE");
         var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
         var SCMDISCTYPE = returncolvalue(str, "SCMDISCTYPE");
         var SCMDISCRATE = returncolvalue(str, "SCMDISCRATE");
-
+        var CASHDISCPR = $("#CASHDISCPR").val();
+        if (CASHDISCPR != 0) {
+            SCMDISCRATE = CASHDISCPR;
+            $("#SCMDISCRATE").val(CASHDISCPR);
+            $("#SCMDISCTYPE").val("P");
+        }
         var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE, SCMDISCTYPE, SCMDISCRATE);
         var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
         $.each(GSTPERarr, function () {
@@ -3183,7 +3188,7 @@ function GetPartyDetails(id) {
     var MENU_PARA = $("#MENU_PARA").val();
     var ClientCode = $("#ClientCode").val();
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM,CASHDISCPR");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -3209,7 +3214,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM,CASHDISCPR");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -3247,6 +3252,7 @@ function GetPartyDetails(id) {
                             $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
                             $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
                             $("#BuyerTotTurnover").val(returncolvalue(result, "TOTTURNOVER"));
+                            $("#CASHDISCPR").val(returncolvalue(result, "CASHDISCPR"));
 
 
                             debugger;
@@ -3297,7 +3303,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,BuyerTotTurnover,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD,SLDISCDESC,TRANSLCD,TRANSLNM,CASHDISCPR");
                         message_value = "SLCD";
                     }
                 }
@@ -3938,7 +3944,11 @@ function FillOrderToBarcode() {
             $("#MTBARCODE").val($("#Ord_MTBARCODE_" + i).val());
             $("#NEGSTOCK").val($("#Ord_NEGSTOCK_" + i).val());
             $("#BARCODE").val($("#Ord_BARNO_" + i).val());
-
+            var CASHDISCPR = $("#CASHDISCPR").val();
+            if (CASHDISCPR != 0) {
+                $("#SCMDISCRATE").val(CASHDISCPR);
+                $("#SCMDISCTYPE").val("P");
+            }
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
             var qnty = retFloat(BALQTY - CURRENTADJQTY).toFixed(2);
