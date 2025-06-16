@@ -332,14 +332,14 @@ namespace Improvar.Controllers
         {
             string compcd = CommVar.Compcd(UNQSNO);
             string scm = CommVar.CurSchema(UNQSNO); string scmf = CommVar.FinSchema(UNQSNO);
-            string sql = "select j.SLCD,j.PRCCD,j.COMPCD,p.SLNM,p.GSTNO,nvl(p.SLAREA,p.DISTRICT) DISTRICT,j.AGSLCD,q.slnm AGSLNM from " + scm + ".M_SUBLEG_COM j ," + scm + ".M_CNTRL_HDR o," + scmf + ".M_SUBLEG p," + scmf + ".M_SUBLEG q where j.M_AUTONO=o.M_AUTONO and j.SLCD=p.SLCD and j.AGSLCD=q.SLCD(+) and j.COMPCD = '" + compcd+"'   ";
+            string sql = "select j.SLCD,j.PRCCD,j.COMPCD,p.SLNM,p.GSTNO,nvl(p.SLAREA,p.DISTRICT) DISTRICT,j.AGSLCD,j.CASHDISCPR,q.slnm AGSLNM from " + scm + ".M_SUBLEG_COM j ," + scm + ".M_CNTRL_HDR o," + scmf + ".M_SUBLEG p," + scmf + ".M_SUBLEG q where j.M_AUTONO=o.M_AUTONO and j.SLCD=p.SLCD and j.AGSLCD=q.SLCD(+) and j.COMPCD = '" + compcd+"'   ";
             if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(p.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(p.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.AGSLCD) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(q.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
             DataTable MDT = masterHelp.SQLquery(sql);
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "District" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code" + Cn.GCS() + "Agent Name" + Cn.GCS() + "Agent Code";
+            var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "District" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code" + Cn.GCS() + "Agent Name" + Cn.GCS() + "Agent Code" + Cn.GCS() + "cashdisc%";
             for (int j = 0; j <= MDT.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["DISTRICT"].retStr() + "</td><td>" + MDT.Rows[j]["PRCCD"].retStr() + " </td><td> " + MDT.Rows[j]["COMPCD"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLNM"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLCD"].retStr() + "</td></tr>");
+                SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["DISTRICT"].retStr() + "</td><td>" + MDT.Rows[j]["PRCCD"].retStr() + " </td><td> " + MDT.Rows[j]["COMPCD"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLNM"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLCD"].retStr() + "</td><td> " + MDT.Rows[j]["CASHDISCPR"].retStr() + "</td></tr>");
             }
             return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "4", "4"));
 

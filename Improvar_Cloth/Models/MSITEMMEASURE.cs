@@ -31,7 +31,7 @@ namespace Improvar.Models
         public byte SLNO { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public string MDESC { get; set; }
 
          public double MVAL { get; set; }

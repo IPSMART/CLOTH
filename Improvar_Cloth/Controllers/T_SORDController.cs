@@ -393,7 +393,7 @@ namespace Improvar.Controllers
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yr_code = CommVar.YearCode(UNQSNO);
             VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
             string doccd = VE.DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
-            string sql = "select  a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, ";
+            string sql = "select  a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, to_char(e.DELVDT,'dd/mm/yyyy') DELVDT, ";
             sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval,sum(e.QNTY)QNTY,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT ";
             sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scm + ".t_sorddtl e, " + scm + ".M_SITEM f ";
             sql += "where a.autono = c.autono and a.autono = e.autono and e.ITCD = f.ITCD and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and ";
@@ -403,21 +403,21 @@ namespace Improvar.Controllers
             if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(d.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
             sql += "a.slcd = d.slcd and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "' and c.doccd in(" + doccd + ") ";
             sql += "group by  a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') , ";
-            sql += "c.docdt , a.slcd, d.slnm, d.district, a.prefno, 0 ,a.aproxval,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT ";
+            sql += "c.docdt , a.slcd, d.slnm, d.district, a.prefno, 0 ,a.aproxval,e.ITCD,f.ITCD,f.STYLENO,f.ITNM,a.PREFDT,e.DELVDT ";
             sql += "order by c.docdt, docno ";
             var tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder(); 
-             var hdr = "Order Number" + Cn.GCS() + "Order Date" + Cn.GCS() + "Party Order Number" + Cn.GCS() + "Party Ref Date" + Cn.GCS()  
+             var hdr = "Order Number" + Cn.GCS() + "Order Date" + Cn.GCS() + "Party Ref Number" + Cn.GCS() + "Party Ref Date" + Cn.GCS() + "Delivery Date" + Cn.GCS() 
                 + "Party Name"+ Cn.GCS() + "Order Approx Value" + Cn.GCS() + "Design Number" + Cn.GCS() + "Total Quantity"  + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {                
                 SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["prefno"] + " </td><td>"
-                    + tbl.Rows[j]["PREFDT"].retDateStr() + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["+ tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") "
+                    + tbl.Rows[j]["PREFDT"].retDateStr() + " </td><td>" + tbl.Rows[j]["DELVDT"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["+ tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") "
                     + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>" + tbl.Rows[j]["STYLENO"] + " " + tbl.Rows[j]["ITNM"] + " </td><td>" + tbl.Rows[j]["QNTY"] + "</td><td>"
                     + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "8", "8"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "9", "9"));
         }
         public ActionResult changeDocumentType(Permission VE, string DOC_CD, string DOCDT = "", bool AllowBDATE = false, string DOCNO = "")
         {
