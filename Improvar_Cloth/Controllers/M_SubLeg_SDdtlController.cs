@@ -336,12 +336,12 @@ namespace Improvar.Controllers
             if (SRC_FLAG.retStr() != "") sql += "and (upper(j.slcd) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(p.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(p.GSTNO) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(j.AGSLCD) like '%" + SRC_FLAG.retStr().ToUpper() + "%'or upper(q.slnm) like '%" + SRC_FLAG.retStr().ToUpper() + "%') ";
             DataTable MDT = masterHelp.SQLquery(sql);
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "District" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code" + Cn.GCS() + "Agent Name" + Cn.GCS() + "Agent Code" + Cn.GCS() + "cashdisc%";
+            var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "cashdisc%" + Cn.GCS() + "District" + Cn.GCS() + "Price list Code" + Cn.GCS() + "Company Code" + Cn.GCS() + "Agent Name" + Cn.GCS() + "Agent Code" ;
             for (int j = 0; j <= MDT.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["DISTRICT"].retStr() + "</td><td>" + MDT.Rows[j]["PRCCD"].retStr() + " </td><td> " + MDT.Rows[j]["COMPCD"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLNM"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLCD"].retStr() + "</td><td> " + MDT.Rows[j]["CASHDISCPR"].retStr() + "</td></tr>");
+                SB.Append("<tr><td>" + MDT.Rows[j]["SLCD"].retStr() + "</td><td>" + MDT.Rows[j]["SLNM"].retStr() + " </td><td> " + MDT.Rows[j]["CASHDISCPR"].retStr() + "</td><td> " + MDT.Rows[j]["DISTRICT"].retStr() + "</td><td>" + MDT.Rows[j]["PRCCD"].retStr() + " </td><td> " + MDT.Rows[j]["COMPCD"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLNM"].retStr() + "</td><td> " + MDT.Rows[j]["AGSLCD"].retStr() + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "4", "4"));
+            return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "5", "5"));
 
         }
         public ActionResult GetPriceDetails(string val)
