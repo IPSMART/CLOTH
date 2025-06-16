@@ -39,6 +39,7 @@
         }
         else if ("@Model.DefaultAction" == "E") {
             Checked_Disable('_T_OUTISSPROCESS_Programme_GRID');
+            FrezeHeader();
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -47,6 +48,26 @@
         //$("#popup1").hide();
         $("#WaitingMode").hide();
     });
+    function FrezeHeader() {
+        isrec = false;
+        var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var P_ChildProgData = $("#P_ChildProgData_" + i).val();
+            if (P_ChildProgData == "Y") {
+                isrec = true;
+                break;
+            }
+        }
+        if (isrec == true) {
+            $('.T_OUTISSPROCESS_NEW_Header input').not(".T_OUTISSPROCESS_NEW_HeaderNot").attr('readonly', 'readonly');
+            $('.T_OUTISSPROCESS_NEW_Header input').not(".T_OUTISSPROCESS_NEW_HeaderNot").removeAttr("onblur");
+            $('.T_OUTISSPROCESS_NEW_Header input').not(".T_OUTISSPROCESS_NEW_HeaderNot").attr('TabIndex', '-1');
+            $('.T_OUTISSPROCESS_NEW_Header').find(".Help_image_button").hide();
+            $('.T_OUTISSPROCESS_NEW_Header input').not(".T_OUTISSPROCESS_NEW_HeaderNot").removeAttr("onkeydown");
+            $(".T_OUTISSPROCESS_NEW_Header input[type='checkbox']").css('pointer-events', 'none');
+            $(".T_OUTISSPROCESS_NEW_Header input[type='checkbox']").css('background-color', '#eeeeee');
+        }
+    }
 </script>
 <script>
     @{
@@ -2772,7 +2793,7 @@
             {
                 @Html.Partial("_FilteredSearch")
             }
-            <div class="row" style="margin-top: 5px;">
+            <div class="T_OUTISSPROCESS_NEW_Header row" style="margin-top: 5px;">
                 <div class="row">
                     <div class="col-md-5" style="margin-top: 6px;">
                         <div class="editor-label">
@@ -2800,7 +2821,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "T_OUTISSPROCESS_NEW_HeaderNot form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
                     <div class="col-md-3" style="width:auto;">

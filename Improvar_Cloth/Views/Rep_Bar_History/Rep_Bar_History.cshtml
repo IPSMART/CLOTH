@@ -59,9 +59,17 @@
         var PRCCD = document.getElementById(PRCCD.id).value;
         var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value;
         var BAR_NO = document.getElementById(BARNO.id).value;
-
+        var MergeLoc = "";
+        if (document.getElementById("MergeLoc").checked == true)
+        {
+            MergeLoc = "Y";
+        }
+        else
+        {
+            MergeLoc = "N";
+        }
         //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
-        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BAR_NO;
+        var Code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + DOCDT + String.fromCharCode(181) + TAXGRPCD + String.fromCharCode(181) + GOCD + String.fromCharCode(181) + PRCCD + String.fromCharCode(181) + ALLMTRLJOBCD + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BAR_NO + String.fromCharCode(181) + MergeLoc;
         if (id == "") {
             $("#" + BARNO.id).val("");
             $("#STYLENO").val("");
@@ -396,7 +404,7 @@
     <div class="row" style="margin-top: 2px;">
         <div class="col-lg-10">
             <div class="row" style="margin-top: 5px; font:bold;">
-                <div class="col-md-5">
+                <div class="col-md-1">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Bar Code")
                     </div>
@@ -416,7 +424,7 @@
 
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-5" style="width:auto;">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Design No./Item")
                     </div>
@@ -428,17 +436,25 @@
                         <input type="hidden" id="stylehelpcap" value="styleno" />
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5" style="width:auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Merge All Location")
+                    </div>
+                </div>
+                <div class="col-md-8" style="width:auto;">
+                    <div class="editor-field" style="display: inline-block;margin-top: 6px;">
+                        @Html.CheckBoxFor(model => model.MergeLoc, new { id = "MergeLoc", @TabIndex = -1 })
+                    </div>
+                </div>
+                <div class="col-md-6" style="width:auto;">
                     <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="width:auto;">
                     <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Add_Barcode" value="Add Barcode" title="Click to Add Barcode" onclick="BarcodeOpen()" />
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="width:auto;">
                     <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Add_Barcode" value="Add Price" title="Click to Add Price" onclick="PriceOpen()" />
                 </div>
-                <div class="col-md-4"></div>
-
 
             </div>
 
@@ -472,7 +488,7 @@
                         @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
-                <div class="col-md-1" style="width:auto;">
+                <div class="col-md-1">
                     <div class="editor-field" style="margin-top: 6px;">
                         @Html.Label("", "Fabric")
                     </div>
@@ -506,7 +522,7 @@
                         @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "ITNM", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
-                <div class="col-md-1" style="width:auto;">
+                <div class="col-md-1" >
                     <div class="editor-field" style="font-weight: bold;margin-top: 6px;">
                         @Html.Label("", "Design", htmlAttributes: new { style = "font-weight:bold;" })
                     </div>
@@ -553,7 +569,7 @@
                         @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", @placeholder = "SLCD", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
-                <div class="col-md-7" style="width:auto;">
+                <div class="col-md-7">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", @placeholder = "SLNM", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
@@ -598,9 +614,6 @@
                         @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @placeholder = "COLRNM", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
-
-            </div>
-            <div class="row">
                 <div class="col-md-1">
                     <div class="editor-field" style="margin-top: 6px;">
                         @Html.Label("", "Size")
@@ -616,7 +629,6 @@
                         @Html.EditorFor(model => model.SIZENM, new { htmlAttributes = new { @class = "form-control", id = "SIZENM", @placeholder = "SIZENM", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
-                <div class="col-md-5"></div><div class="col-md-5"></div>
                 <div class="col-md-1" style="margin-top: 6px;width:auto;">
                     <div class="editor-field">
                         @Html.Label("", "Balance")

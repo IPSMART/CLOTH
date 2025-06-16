@@ -111,6 +111,7 @@ namespace Improvar.Controllers
                 if (val.retStr() != "")
                 {
                     bar_no = data[8].retStr() == "" ? "" : data[8].retStr().retSqlformat();
+                    VE.MergeLoc = data[9].retStr() == "Y" ? true : false;
                 }
                 //string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD,"", exactbarno);
                 string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", bar_no);
@@ -132,6 +133,7 @@ namespace Improvar.Controllers
                         sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and b.autono = h.autono(+) and h.rtdebcd = i.rtdebcd(+) and a.barno = j.barno(+) and j.COLRCD = k.colrcd(+) and j.itcd = l.itcd(+) and" + Environment.NewLine;
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and " + Environment.NewLine;
                         sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and (A.STKDRCR in ('D','C') or b.doctag in ('PI')) and upper(a.BARNO) = '" + barno.ToUpper() + "' " + Environment.NewLine;
+                        if (VE.MergeLoc == false) sql1 += "and f.loccd = '" + CommVar.Loccd(UNQSNO) + "' " + Environment.NewLine;
                         sql1 += "order by b.DOCDT,b.DOCNO " + Environment.NewLine;
 
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
@@ -303,6 +305,7 @@ namespace Improvar.Controllers
                     sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
                     sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
                     sql1 += "a.AUTONO = f.AUTONO(+) and f.compcd = g.compcd(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BAR_CODE + "' ";
+                    if (VE.MergeLoc == false) sql1 += "and f.loccd = '" + CommVar.Loccd(UNQSNO) + "' " + Environment.NewLine;
                     sql1 += "order by b.DOCDT,b.DOCNO ";
                     DataTable barcdhistory = masterHelp.SQLquery(sql1);
 
