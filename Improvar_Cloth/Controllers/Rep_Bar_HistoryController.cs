@@ -125,6 +125,8 @@ namespace Improvar.Controllers
                     { return Content(str = ""); }
                     else {
                         string barno = str.retCompValue("BARNO").retStr();
+                        string mtrljobcd = str.retCompValue("MTRLJOBCD").retStr();
+
                         string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,f.docno tchdocno ,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, " + Environment.NewLine;
                         sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE,nvl(f.cancel,'N')cancel,a.ITREM, k.COLRNM, j.itcd, l.styleno, j.COLRCD, k.colrcd,l.itnm,l.UOMCD, " + Environment.NewLine;
                         sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM,f.doccd,h.rtdebcd,i.rtdebnm,a.SCMDISCTYPE,A.SCMDISCRATE " + Environment.NewLine;
@@ -134,6 +136,7 @@ namespace Improvar.Controllers
                         sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and " + Environment.NewLine;
                         sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and f.compcd = g.compcd(+) and (A.STKDRCR in ('D','C') or b.doctag in ('PI')) and upper(a.BARNO) = '" + barno.ToUpper() + "' " + Environment.NewLine;
                         if (VE.MergeLoc == false) sql1 += "and f.loccd = '" + CommVar.Loccd(UNQSNO) + "' " + Environment.NewLine;
+                        if(mtrljobcd.retStr() != "") sql1 += "and a.mtrljobcd = '"+ mtrljobcd + "' " + Environment.NewLine;
                         sql1 += "order by b.DOCDT,b.DOCNO " + Environment.NewLine;
 
                         string sql2 = " select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate, b.prcnm from ";
@@ -163,7 +166,9 @@ namespace Improvar.Controllers
                                                  DOCNO = dr["cancel"].retStr() == "N" ? dr["tchdocno"].retStr() : dr["tchdocno"].retStr() + " (Record Cancelled)",
                                                  PREFNO = dr["PREFNO"].retStr(),
                                                  SLNM = dr["doccd"].retStr() == "SCM" ? dr["RTDEBCD"].retStr() == "" ? "" : dr["RTDEBNM"].retStr() + "[" + dr["RTDEBCD"].retStr() + "]" : dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]" + "[" + dr["DISTRICT"].retStr() + "]",
-                                                 LOCNM = dr["LOCANM"].retStr(),
+                                                 //LOCNM = dr["LOCANM"].retStr(),
+                                                 LOCNM = dr["LOCNM"].retStr(),
+                                                 GONM = dr["GONM"].retStr(),
                                                  //NOS = dr["cancel"].retStr() == "N" ? dr["NOS"].retDbl() : 0,
                                                  NOS = (dr["cancel"].retStr() == "N" && (dr["STKDRCR"].retStr() == "D" || dr["STKDRCR"].retStr() == "C")) ? dr["NOS"].retDbl() : 0,
                                                  RATE = dr["cancel"].retStr() == "N" ? dr["RATE"].retDbl() : 0,

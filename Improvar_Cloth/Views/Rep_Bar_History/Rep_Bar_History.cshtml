@@ -470,8 +470,6 @@
 
                     </div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-1">
                     <div class="editor-field" style="margin-top: 6px;">
                         @Html.Label("", "Group")
@@ -678,7 +676,7 @@
             </div>
         </div>
     </div>
-        <div class="row" style="margin-top:20PX">
+        <div class="row" style="margin-top:10PX">
             <div class="col-lg-3">
                 <div class="row">
                     <div>
@@ -702,6 +700,44 @@
                         <input class="btn-xs btn-info" type="submit" name="submitbutton" formmethod="post" value="Download Price Details Excel" formtarget="_blank" />
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-3" style="width:auto;">
+                        <div class="row">
+                            <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
+                                @Html.Label("", "BarCode Image")
+                            </div>
+                        </div>
+                        @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+                        <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                            <div id="myCarousel" class="carousel" data-ride="carousel">
+                                <div class="carousel-inner" id="div_carousel_inner">
+                                    <div class="item active">
+                                        <img src="" alt="Los Angeles" style="width:100%;">
+                                    </div>
+                                    <div class="item">
+                                        <img src="" alt="Chicago" style="width:100%;">
+                                    </div>
+                                </div>
+                                <!-- Left and right controls -->
+                                <a class="left  carousel-control arrow-left" id="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class="right  carousel-control arrow-right" id="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="PopUp_Backround">
+                        <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                            @Html.Partial("_Rep_Bar_History_AddNewBarno")
+                        </div>
+                        <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
+                            @Html.Partial("_Rep_Bar_History_AddNewPrice")
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-9">
                 <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
@@ -718,44 +754,7 @@
                                 <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
 
             </div>*@
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="row">
-                    <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;transform: translate(0%, 0%);z-index: 1100;">
-                        @Html.Label("", "BarCode Image")
-                    </div>
-                </div>
-                @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-                <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
-                    <div id="myCarousel" class="carousel" data-ride="carousel">
-                        <div class="carousel-inner" id="div_carousel_inner">
-                            <div class="item active">
-                                <img src="" alt="Los Angeles" style="width:100%;">
-                            </div>
-                            <div class="item">
-                                <img src="" alt="Chicago" style="width:100%;">
-                            </div>
-                        </div>
-                        <!-- Left and right controls -->
-                        <a class="left  carousel-control arrow-left" id="prev">
-                            <span class="glyphicon glyphicon-chevron-left"></span>
-                        </a>
-                        <a class="right  carousel-control arrow-right" id="next">
-                            <span class="glyphicon glyphicon-chevron-right"></span>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-            <div class="PopUp_Backround">
-                <div id="popupAddNewBarno" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                    @Html.Partial("_Rep_Bar_History_AddNewBarno")
-                </div>
-                <div id="popupAddNewPrice" class="row" style="margin-top: 11px;top:15%;left:25%;right:8%;position:absolute;display:none;">
-                    @Html.Partial("_Rep_Bar_History_AddNewPrice")
-                </div>
-            </div>
-        </div>
+        
         @*<div class="row" style="margin-top:20PX">
                 <div class="col-lg-6">
                     <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />

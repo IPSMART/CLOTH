@@ -35,7 +35,7 @@ namespace Improvar.Models
         public string itremarks { get; set; }
         public string colornm { get; set; }
         public string UOM { get; set; }
-
+        public string GONM { get; set; }
 
     }
 }
