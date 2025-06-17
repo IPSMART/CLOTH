@@ -378,7 +378,14 @@
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].TOTDISCAMT, new { id = "D_TOTDISCAMT_" + i })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].IGSTPER, new { htmlattributes = new { id = "D_IGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
+                                                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR") && Model.TTXNDTL[i].IGSTPER.retDbl() != 0)
+                                                    {
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].IGSTPER, new { htmlattributes = new { id = "D_IGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right", @onchange = "CalculateAmt_Details(" + i + ");GstUpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].IGSTPER, new { htmlattributes = new { id = "D_IGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
+                                                    }
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].PRODGRPGSTPER, new { id = "D_PRODGRPGSTPER_" + i })
                                                     @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
                                                 </td>
@@ -386,13 +393,26 @@
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_IGSTPER_" + i + ",D_NETAMT_" + i + ",D_CGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].CGSTPER, new { htmlattributes = new { id = "D_CGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
+@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR") && Model.TTXNDTL[i].CGSTPER.retDbl() != 0)
+{
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].CGSTPER, new { htmlattributes = new { id = "D_CGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @onchange = "CalculateAmt_Details(" + i + ");GstUpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].CGSTPER, new { htmlattributes = new { id = "D_CGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
+                                                    }
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_CGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_SGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                                 </td>
                                                 <td class="">
-                                                    @Html.EditorFor(model => Model.TTXNDTL[i].SGSTPER, new { htmlattributes = new { id = "D_SGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
+@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR") && Model.TTXNDTL[i].SGSTPER.retDbl() != 0)
+{
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].SGSTPER, new { htmlattributes = new { id = "D_SGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @onchange = "CalculateAmt_Details(" + i + ");GstUpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                                    }
+                                                    else {
+                                                        @Html.EditorFor(model => Model.TTXNDTL[i].SGSTPER, new { htmlattributes = new { id = "D_SGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
+                                                    }
                                                 </td>
                                                 <td class="">
                                                     @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, @onchange = "AmountChange(this,D_TXBLVAL_" + i + ",D_SGSTPER_" + i + ",D_NETAMT_" + i + ",D_IGSTAMT_" + i + ",D_CGSTAMT_" + i + ",D_CESSAMT_" + i + ",'', '_T_SALE_DETAIL_GRID');", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
@@ -509,7 +529,7 @@
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     }
-                                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS"|| Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "ISS" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI" || Model.MENU_PARA == "SBPOS") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                     {
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
                                         <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@

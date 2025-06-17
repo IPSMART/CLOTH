@@ -1118,7 +1118,7 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and MTRLJOBCD = '" + v.MTRLJOBCD + "' ");
+                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (DATA.Count() > 0)
                         {
                             DataTable tax_data = DATA.CopyToDataTable();
@@ -1136,7 +1136,10 @@ namespace Improvar.Controllers
                                     }
                                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                                     v.ALL_GSTPER = ALL_GSTPER;
-                                    v.GSTPER = GSTPER.retDbl();
+                                    if (VE.MENU_PARA != "PB" && VE.MENU_PARA != "PR")
+                                    {
+                                        v.GSTPER = GSTPER.retDbl();
+                                    }
                                 }
                                 if (TXN.REVCHRG == "N")
                                 {
@@ -1173,7 +1176,7 @@ namespace Improvar.Controllers
                     //if purchase stock det
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC")
                     {
-                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' and MTRLJOBCD = '" + v.MTRLJOBCD + "' ");
+                        var stkDATA = stockdata.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (stkDATA != null && stkDATA.Count() > 0)
                         {
                             v.BALSTOCK = stkDATA[0]["BALQNTY"].retDbl();
@@ -1447,7 +1450,7 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "SR")
                 {
                     var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "Bill Amt"
-                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "Doc.Remarks"  + Cn.GCS() + "AUTO NO";
+                        + (VE.SHOWBLTYPE.retStr() == "Y" ? (Cn.GCS() + "Bill Type") : "") + Cn.GCS() + "Doc.Remarks" + Cn.GCS() + "AUTO NO";
                     for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                     {
                         string cancel = tbl.Rows[j]["cancel"].retStr() == "Y" ? "<b> (Cancelled)</b>" : "";
@@ -2051,7 +2054,7 @@ namespace Improvar.Controllers
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string AUTONO = data[9].retStr() == "" ? "" : data[9].retStr().retSqlformat();
-                string SLCD = "",slcdfrrt="";
+                string SLCD = "", slcdfrrt = "";
                 if ((VE.MENU_PARA == "PR" || VE.MENU_PARA == "SR") && data[11].retStr() == "E")
                 {
                     SLCD = data[10].retStr() == "" ? "" : data[10].retStr().retSqlformat();
@@ -2837,7 +2840,7 @@ namespace Improvar.Controllers
                               TDDISCTYPE_DESC = "%",
                               SCMDISCTYPE = "P",
                               SCMDISCTYPE_DESC = "%",
-                              SCMDISCRATE=VE.CASHDISCPR,
+                              SCMDISCRATE = VE.CASHDISCPR,
                               NEGSTOCK = a.NEGSTOCK.retStr(),
                               BARNO = a.BARNO.retStr()
                           }).ToList();
@@ -5727,6 +5730,15 @@ namespace Improvar.Controllers
                                         ContentFlg = "Please link up Product Group with Tax Rate for this Item (" + VE.TTXNDTL[i].ITSTYLE.retStr() + ") !!"; goto dbnotsave;
                                     }
                                 }
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
+                                {
+                                    var batchgst = (from a in VE.TBATCHDTL where a.TXNSLNO == VE.TTXNDTL[i].SLNO select a.GSTPER).FirstOrDefault();
+                                    if (batchgst != (VE.TTXNDTL[i].IGSTPER.retDbl() + VE.TTXNDTL[i].CGSTPER.retDbl() + VE.TTXNDTL[i].SGSTPER.retDbl()))
+                                    {
+                                        ContentFlg = "Bar Code grid and Detail grid gst% not match. Please check tax at slno " + VE.TTXNDTL[i].SLNO;
+                                        goto dbnotsave;
+                                    }
+                                }
                                 if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
                                 else
                                 {
@@ -5757,7 +5769,7 @@ namespace Improvar.Controllers
                                 TTXNDTL.HSNCODE = VE.TTXNDTL[i].HSNCODE;
                                 if (minhsnlen != 0 && TTXNDTL.HSNCODE.retStr().Length < minhsnlen)
                                 {
-                                    ContentFlg = "HSNCODE(" + TTXNDTL.HSNCODE + ") less than " + minhsnlen + " at Item master at rowno:" + VE.TBATCHDTL[i].SLNO + " and itcd=" + VE.TBATCHDTL[i].ITCD + ". Make sure hsn length should be" + minhsnlen; goto dbnotsave;
+                                    ContentFlg = "HSNCODE(" + TTXNDTL.HSNCODE + ") less than " + minhsnlen + " at Item master at rowno:" + VE.TTXNDTL[i].SLNO + " and itcd=" + VE.TTXNDTL[i].ITCD + ". Make sure hsn length should be" + minhsnlen; goto dbnotsave;
 
                                 }
                                 TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
@@ -7492,7 +7504,13 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.finTblUpdt("t_vch_hdr", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-                    if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI")
+
+                    bool flag = true;
+                    if (VE.GSTNO.retStr() == CommVar.GSTNO(UNQSNO) && VE.MENU_PARA == "REC")
+                    {
+                        flag = false;
+                    }
+                    if (VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "OP" && VE.MENU_PARA != "SBPCK" && VE.MENU_PARA != "PI" && flag == true)
                     {
                         //dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null);
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_TXN.AUTONO, "D", "F", null, null, null, VE.T_TXN.DOCDT.retStr(), null, null, null, null, null, null, null, VE.DISPBLAMT, VE.Audit_REM);

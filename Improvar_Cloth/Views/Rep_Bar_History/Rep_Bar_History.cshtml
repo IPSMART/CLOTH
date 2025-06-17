@@ -126,7 +126,7 @@
                             document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
                             document.getElementById("COMMONUNIQBAR").value = returncolvalue(res[0], "COMMONUNIQBAR");
                             document.getElementById("STYLENO").value = returncolvalue(res[0], "STYLENO");
-                            document.getElementById("mtrljobcd").value = returncolvalue(res[0], "mtrljobcd");
+                            //document.getElementById("mtrljobcd").value = returncolvalue(res[0], "mtrljobcd");
                             document.getElementById("mtrljobnm").value = returncolvalue(res[0], "mtrljobnm");
 
                             if (returncolvalue(res[0], "COMMONUNIQBAR") == "E") {
@@ -413,7 +413,7 @@
                     <div class="editor-field">
                         @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=8/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/barhelpcap')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD,PARTCD,DOCDT,TAXGRPCD,GOCD,PRCCD,ALLMTRLJOBCD,'Bar');", @placeholder = "Bar Code", maxlength = 25 } })
                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=5/GOCD=GOCD=8/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/barhelpcap')" />
-                        @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
+                        @*@Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })*@
                         @Html.HiddenFor(model => model.GOCD, new { id = "GOCD" })
                         @Html.HiddenFor(model => model.PARTCD, new { id = "PARTCD" })
                         @Html.HiddenFor(model => model.DOCDT, new { id = "DOCDT" })
@@ -547,7 +547,7 @@
                 </div>
                 <div class="col-md-5" style="width:auto;">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.mtrljobcd, new { htmlAttributes = new { @class = "form-control", id = "mtrljobcd", @placeholder = "mtrljobcd", @readonly = "readonly", @TabIndex = -1 } })
+                        @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control", id = "MTRLJOBCD", @placeholder = "MTRLJOBCD", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
                 <div class="col-md-7">

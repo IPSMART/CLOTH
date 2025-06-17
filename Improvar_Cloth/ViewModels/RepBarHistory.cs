@@ -77,7 +77,7 @@ namespace Improvar.ViewModels
         public string listprccd { get; set; }
         public string T_UomTotalIn { get; set; }
         public string T_UomTotalOut { get; set; }
-        public string mtrljobcd  { get; set; }
+        //public string mtrljobcd  { get; set; }
         public string mtrljobnm { get; set; }
 
         public List<DropDown_list1> DropDown_list1 { get; set; }

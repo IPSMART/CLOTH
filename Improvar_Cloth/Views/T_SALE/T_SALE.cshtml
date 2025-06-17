@@ -963,6 +963,31 @@
         }
     }
 </script>
+<script>
+  function  GstUpdateBarCodeRow_FrmDet(i) {
+    
+      var TXNSLNO = $("#D_SLNO_" + i).val();
+      var ITGRPCD = $("#D_ITGRPCD_" + i).val();
+      var MTRLJOBCD = $("#D_MTRLJOBCD_" + i).val();
+      var ITCD = $("#D_ITCD_" + i).val();
+      var STKTYPE = $("#D_STKTYPE_" + i).val();
+      var GSTPER = (parseFloat($("#D_IGSTPER_" + i).val()) || 0) + (parseFloat($("#D_CGSTPER_" + i).val()) || 0) + (parseFloat($("#D_SGSTPER_" + i).val()) || 0);
+    
+      var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+      var count = 0;
+      for (j = 0; j <= GridRowMain - 1; j++) {
+          if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
+              count++;
+          }
+      }
+      for (j = 0; j <= GridRowMain - 1; j++) {
+          if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
+              $("#B_GSTPER_" + j).val(GSTPER);
+          }
+      }
+    
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
