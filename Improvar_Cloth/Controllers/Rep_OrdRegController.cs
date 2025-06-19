@@ -222,9 +222,9 @@ namespace Improvar.Controllers
                     {
                         HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
                         HC.GetPrintHeader(IR, "slnm", "string", "c,45", "Party Name");
-                        HC.GetPrintHeader(IR, "district", "string", "c,20", "Area");
+                        HC.GetPrintHeader(IR, "district", "string", "c,10", "Area");
                     }
-                    HC.GetPrintHeader(IR, "prefno", "string", "c,20", "Party Ref");
+                    HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");
                     HC.GetPrintHeader(IR, "PREFDT", "string", "c,20", "Party Ref Date"); 
                     if (ReportType == "Details")
                     {
@@ -625,7 +625,7 @@ namespace Improvar.Controllers
                 {
                     HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
                     HC.GetPrintHeader(IR, "slnm", "string", "c,45", "Party Name");
-                    HC.GetPrintHeader(IR, "district", "string", "c,20", "Area");
+                    HC.GetPrintHeader(IR, "district", "string", "c,10", "Area");
 
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
                     {

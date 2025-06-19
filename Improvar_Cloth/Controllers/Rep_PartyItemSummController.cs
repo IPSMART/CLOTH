@@ -464,7 +464,7 @@ namespace Improvar.Controllers
 
 
             //if (doctype != "") sql += " and j.doctype in(" + doctype + ") " + Environment.NewLine;
-
+            sql += " and b.stkdrcr in ('D','C') " + Environment.NewLine;
             sql += ") a " + Environment.NewLine;
             //if (dtlsumm == "E")
             //{
