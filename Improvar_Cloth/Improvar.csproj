@@ -1327,6 +1327,7 @@
     <Content Include="Scripts\SalePos.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Templates\Email\Docauth.htm" />
+    <Content Include="Templates\Email\Orderbill_ANKAN.htm" />
     <Content Include="Templates\Email\Salebill.htm" />
     <Content Include="Templates\Email\Salebill_ANKN.htm" />
     <Content Include="Templates\Email\Salebill_DIWH.htm" />

@@ -306,7 +306,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_prodlogo {
+        public CrystalDecisions.Shared.IParameterField Parameter_billheading {
             get {
                 return this.DataDefinition.ParameterFields[1];
             }
@@ -314,7 +314,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_billheading {
+        public CrystalDecisions.Shared.IParameterField Parameter_compnm {
             get {
                 return this.DataDefinition.ParameterFields[2];
             }
@@ -322,7 +322,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_compnm {
+        public CrystalDecisions.Shared.IParameterField Parameter_compadd {
             get {
                 return this.DataDefinition.ParameterFields[3];
             }
@@ -330,7 +330,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_compadd {
+        public CrystalDecisions.Shared.IParameterField Parameter_compstat {
             get {
                 return this.DataDefinition.ParameterFields[4];
             }
@@ -338,7 +338,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_compstat {
+        public CrystalDecisions.Shared.IParameterField Parameter_locaadd {
             get {
                 return this.DataDefinition.ParameterFields[5];
             }
@@ -346,7 +346,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_locaadd {
+        public CrystalDecisions.Shared.IParameterField Parameter_locastat {
             get {
                 return this.DataDefinition.ParameterFields[6];
             }
@@ -354,7 +354,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_locastat {
+        public CrystalDecisions.Shared.IParameterField Parameter_legalname {
             get {
                 return this.DataDefinition.ParameterFields[7];
             }
@@ -362,7 +362,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_legalname {
+        public CrystalDecisions.Shared.IParameterField Parameter_corpadd {
             get {
                 return this.DataDefinition.ParameterFields[8];
             }
@@ -370,7 +370,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_corpadd {
+        public CrystalDecisions.Shared.IParameterField Parameter_compcommu {
             get {
                 return this.DataDefinition.ParameterFields[9];
             }
@@ -378,7 +378,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_compcommu {
+        public CrystalDecisions.Shared.IParameterField Parameter_corpcommu {
             get {
                 return this.DataDefinition.ParameterFields[10];
             }
@@ -386,7 +386,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_corpcommu {
+        public CrystalDecisions.Shared.IParameterField Parameter_locacommu {
             get {
                 return this.DataDefinition.ParameterFields[11];
             }
@@ -394,7 +394,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_locacommu {
+        public CrystalDecisions.Shared.IParameterField Parameter_complogo1 {
             get {
                 return this.DataDefinition.ParameterFields[12];
             }
@@ -402,7 +402,7 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_complogo1 {
+        public CrystalDecisions.Shared.IParameterField Parameter_formerlynm {
             get {
                 return this.DataDefinition.ParameterFields[13];
             }
@@ -410,25 +410,9 @@ namespace Improvar.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_irnno {
-            get {
-                return this.DataDefinition.ParameterFields[14];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_formerlynm {
-            get {
-                return this.DataDefinition.ParameterFields[15];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
         public CrystalDecisions.Shared.IParameterField Parameter_compStamp {
             get {
-                return this.DataDefinition.ParameterFields[16];
+                return this.DataDefinition.ParameterFields[14];
             }
         }
     }

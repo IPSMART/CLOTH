@@ -98,7 +98,7 @@ namespace Improvar.Controllers
         }
 
         [HttpPost]
-        public ActionResult Rep_OrdPrint(ReportViewinHtml VE, FormCollection FC)
+        public ActionResult Rep_OrdPrint(ReportViewinHtml VE, FormCollection FC, string submitbutton)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace Improvar.Controllers
                 string prnemailid = "";
                 if (VE.TEXTBOX5 != null) prnemailid = "'" + VE.TEXTBOX5 + "' regemailid"; else prnemailid = "e.regemailid";
 
-                var printemail = "";
+                var printemail = submitbutton.ToString(); 
                 int maxR = 0; string blhead = "", gocd = "", grpemailid = "";
                 string rptname = "";
 
@@ -1340,6 +1340,7 @@ namespace Improvar.Controllers
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                 if (VE.maxdate == "CHALLAN") blhead = "CHALLAN";
                 ReportDocument reportdocument = new ReportDocument();
+
                 if (printemail == "Email")
                 {
                     var rsemailid = (from DataRow dr in IR.Rows
@@ -1406,7 +1407,6 @@ namespace Improvar.Controllers
                             string legalname = compaddress.retCompValue("legalname").retStr() == "" ? "" : "(" + compaddress.retCompValue("legalname") + ")";
                             reportdocument.SetDataSource(rsemailid1);
                             reportdocument.SetParameterValue("billheading", blhead);
-
                             reportdocument.SetParameterValue("complogo", Master_Help.retCompLogo());
                             reportdocument.SetParameterValue("complogo1", Master_Help.retCompLogo1());
                             reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
@@ -1420,7 +1420,8 @@ namespace Improvar.Controllers
                             reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                             reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                             reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
-                            if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", Master_Help.retCompStamp());
+                            //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", Master_Help.retCompStamp());
+                            reportdocument.SetParameterValue("compStamp", Master_Help.retCompStamp());
                             Response.Buffer = false;
                             Response.ClearContent();
                             Response.ClearHeaders();
@@ -1452,7 +1453,7 @@ namespace Improvar.Controllers
                             //System.Net.Mail.Attachment attchmail = new System.Net.Mail.Attachment(path_Save);
                             List<System.Net.Mail.Attachment> attchmail = new List<System.Net.Mail.Attachment>();// System.Net.Mail.Attachment(path_Save);
                             attchmail.Add(new System.Net.Mail.Attachment(path_Save));
-                            string template = CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Salebill.htm";
+                            string template = CommVar.ClientCode(UNQSNO) == "DIWH" ? "Salebill_DIWH.htm" : "Orderbill_ANKAN.htm";
                             string[,] emlaryBody = new string[9, 2];
                             if (VE.TEXTBOX5 != null)
                             {
@@ -1465,7 +1466,7 @@ namespace Improvar.Controllers
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
                                 emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
                                 emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Order copy", template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + VE.TEXTBOX5 + ";";
@@ -1494,7 +1495,7 @@ namespace Improvar.Controllers
                                 emlaryBody[7, 0] = "{compmobno}"; emlaryBody[7, 1] = compMobile;
                                 emlaryBody[8, 0] = "{compemail}"; emlaryBody[8, 1] = compEmail;
                                 //bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", "Salebill.htm", emlaryBody, attchmail, grpemailid);
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", template, emlaryBody, attchmail, grpemailid);
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Order copy", template, emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
@@ -1536,7 +1537,8 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                     reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
-                    if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", Master_Help.retCompStamp());
+                    //if (CommVar.ClientCode(UNQSNO) == "DIWH") reportdocument.SetParameterValue("compStamp", Master_Help.retCompStamp());
+                    reportdocument.SetParameterValue("compStamp", Master_Help.retCompStamp());
                     if (printemail == "PDF")
                     {
 
