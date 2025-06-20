@@ -160,25 +160,25 @@ namespace Improvar.Controllers
                         if (RepFormat == "STANDARD") HC.GetPrintHeader(IR, "Slnm", "string", "c,25", "Jobber Name.");
                         HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Iss. Date.");
                         HC.GetPrintHeader(IR, "docno", "string", "c,13", "Iss Doc No");
-                        HC.GetPrintHeader(IR, "itgrpnm", "string", "c,12", "Group");
+                        HC.GetPrintHeader(IR, "itgrpnm", "string", "c,10", "Group");
                         HC.GetPrintHeader(IR, "itnm", "string", "c,10", "Item");
-                        HC.GetPrintHeader(IR, "styleno", "string", "c,14", "Styleno");
-                        HC.GetPrintHeader(IR, "uom", "string", "c,16", "Uom");
+                        HC.GetPrintHeader(IR, "styleno", "string", "c,6", "Styleno");
+                        HC.GetPrintHeader(IR, "uom", "string", "c,4", "Uom");
                         HC.GetPrintHeader(IR, "Nos", "string", "n,5", "Nos");
                         HC.GetPrintHeader(IR, "cutlength", "double", "n,6,2", "cut length");
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,15,3", "Prog.Qnty");
+                        HC.GetPrintHeader(IR, "qnty", "double", "n,11,3", "Prog.Qnty");
                         if (showValue == true) HC.GetPrintHeader(IR, "issamt", "double", "n,15,2", "Iss Amt.");
                         HC.GetPrintHeader(IR, "itremarks", "string", "c,15", "itremark");
 
                         string rechdr = (ReportType == "SUMMARY" ? "Last " : "");
                         HC.GetPrintHeader(IR, "recdocdt", "string", "c,10", rechdr + "Rec Date");
-                        HC.GetPrintHeader(IR, "recdocno", "string", "c,16", rechdr + "Rec No");
+                        HC.GetPrintHeader(IR, "recdocno", "string", "c,13", rechdr + "Rec No");
 
                         HC.GetPrintHeader(IR, "recnos", "double", "n,5", "Rec Nos.");
-                        HC.GetPrintHeader(IR, "recqnty", "double", "n,15,3", "Rec Qnty.");
+                        HC.GetPrintHeader(IR, "recqnty", "double", "n,11,3", "Rec Qnty.");
 
-                        HC.GetPrintHeader(IR, "balqnty", "double", "n,15,3", "Bal Qnty.");
-                        if (showValue == true) HC.GetPrintHeader(IR, "balamt", "double", "n,15,3", "Bal Value");
+                        HC.GetPrintHeader(IR, "balqnty", "double", "n,11,3", "Bal Qnty.");
+                        if (showValue == true) HC.GetPrintHeader(IR, "balamt", "double", "n,12,3", "Bal Value");
                         IR.Columns.Add("slcd", typeof(string), "");
                         string[] arrcolnm = { "Nos", "cutlength", "qnty", "issamt", "recnos", "recqnty", "balqnty", "balamt" };
                         Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
@@ -368,7 +368,7 @@ namespace Improvar.Controllers
                                 }
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
-                                IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["fabitnm"].retStr() + " " + tbl.Rows[i - 1]["itnm"].retStr();
+                                IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["fabitnm"].retStr() + " " + tbl.Rows[i - 1]["styleno"].retStr() + " " + tbl.Rows[i - 1]["itnm"].retStr();
                                 IR.Rows[rNo]["uom"] = tbl.Rows[i - 1]["uomnm"].retStr();
                                 IR.Rows[rNo]["slcd"] = tbl.Rows[i - 1]["slcd"].retStr();
                                 IR.Rows[rNo]["balqnty"] = balqnty;
@@ -531,7 +531,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
                     HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item;Name");
                     HC.GetPrintHeader(IR, "hsncode", "string", "c,8", "HSN/SAC");
-                    HC.GetPrintHeader(IR, "uomcd", "string", "c,4", "Uom");
+                    HC.GetPrintHeader(IR, "uomcd", "string", "c,2", "Uom");
                     HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
                     HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                     HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");

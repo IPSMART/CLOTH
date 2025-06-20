@@ -22,6 +22,7 @@ namespace Improvar.Models
         public string DISCPER { get; set; }
         public string PREFNO { get; set; }
         public string SLNM { get; set; }
+        public string DOCREM { get; set; }        
         public string SLCD { get; set; }
         public string DISTRICT { get; set; }
         public string LOCNM { get; set; }
