@@ -1960,7 +1960,7 @@ namespace Improvar.Controllers
 
                 for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
                 {
-                    if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y" && VE.TBATCHDTL[p].RATE.retDbl() == 0)
+                    if (VE.TBATCHDTL[p].SAMPLE.retStr() != "Y" && VE.TBATCHDTL[p].RATE.retDbl() == 0 && VE.MENU_PARA != "DY")
                     {
                         VE.TBATCHDTL[p].RATE = (from DataRow a in barimgdata.Rows where a["barno"].retStr() == VE.TBATCHDTL[p].BARNO select a["rate"].retDbl()).FirstOrDefault();
                     }
