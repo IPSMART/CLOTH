@@ -236,7 +236,8 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "UpdateBarCodeRow_FrmDet(" + i + ");" })
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
+ @*@Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "UpdateBarCodeRow_FrmDet(" + i + ");" })*@
                                         </td>
                                     </tr>
                                 }

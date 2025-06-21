@@ -1639,8 +1639,9 @@
             <input type="hidden" id="courierlinkcd" value="U" />
             <input type="hidden" id="trnsportlinkcd" value="T" />
             <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
-            <input type="hidden" id="bardatachng" value="Y" />
-            <input type="hidden" id="clfrmP" value="ClfrmProgram" />
+            @*<input type="hidden" id="bardatachng" value="Y" />*@
+        <input type="hidden" id="bardatachng" value="N" />
+ <input type="hidden" id="clfrmP" value="ClfrmProgram" />
             <input type="hidden" id="clfrmR" value="ClfrmReceiv" />
             <input type="hidden" id="onclik" value="onclick" />
             @Html.HiddenFor(s => s.DefaultAction)
@@ -1788,12 +1789,12 @@
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="col-md-10">
+                        <div class="col-md-9">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO" } })
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" style="width:auto;">
                             <div class="editor-field" style="margin-top: 6px;">
                                 @Html.Label("", "Party Bill Date")
                                 <b style="color:Red;">*</b>
@@ -1804,6 +1805,16 @@
                                 @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                             </div>
                         </div>
+                        <div class="col-md-5" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", " DOC Remarks")
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="width:auto;">
+                            <div class="editor-field">
+                                @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM", @class = "form-control", @style = "width:270px;height:30px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
+                            </div>
+                        </div>
                         @if (Model.DefaultAction != "V")
                     {
                             <div class="col-md-8">
@@ -1811,18 +1822,6 @@
                             </div>
                         }
 
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", " DOC Remarks")
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="editor-field">
-                                @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM", @class = "form-control", @style = "width:270px;height:30px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="row" style="margin-top:5px;">
@@ -2066,7 +2065,7 @@
                             </div>
 
                         </div>
-                        <div id="Receive" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div id="Receive" class="tab-pane fade" style="margin-left: 11px;">
                             <div class="row">
                                 <input type="hidden" id="ImageName" value="" />
                                 <input type="hidden" id="ImageStr" value="" />
@@ -2095,17 +2094,16 @@
                                     </div>
                                 </div>
                             </div>                            
-                            <div class="panel panel-info">
+                            @*<div class="panel panel-info">
                                 <div class="panel-heading ui-icon-note">Rules</div>
                                 <div class="panel-body">
                                     <p>
-                                        @*1. Press <b>F9</b> for Same as program item [in the RSL No./Barno/itcd/itgrpcd]<br />*@
+                                        1. Press <b>F9</b> for Same as program item [in the RSL No./Barno/itcd/itgrpcd]<br />
                                         1. Press <b>F8</b> for repeat above Row [in the BILL SLNo./ItmGrp/Item Code]
                                     </p>
 
                                 </div>
-                            </div>
-                           
+                            </div>*@
                             <div class="row">
                                 @if (Model.DefaultAction != "V")
                                 {
@@ -2115,14 +2113,23 @@
                                     </div>
 
                                 }
-                                @*<div class="col-lg-6">
+                                <div class="col-md-1" style="width:auto;">
+                                    <p class="text-info">
+                                        **Press <b>F8</b> for repeat above Row [in the BILL SLNo./ItmGrp/Item Code]
+                                    </p>
+                                </div>
+                                    
+                                </div>
+                            @*<div class="row">
+                              
+                                <div class="col-lg-6">
                                     <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;width:fit-content;align-content: center">
                                         <div id="partialdivRateHistoryGrid">
                                             @Html.Partial("_T_OUTRECPROCESS_Receive_RateHistoryGrid")
                                         </div>
                                     </div>
-                                </div>*@
-                            </div>
+                                </div>
+                            </div>*@
                         </div>
 
                         <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
