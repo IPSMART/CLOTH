@@ -225,12 +225,11 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "district", "string", "c,10", "Area");
                     }
                     HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");
-                    HC.GetPrintHeader(IR, "PREFDT", "string", "c,20", "Party Ref Date"); 
+                    HC.GetPrintHeader(IR, "PREFDT", "string", "c,20", "Party Ref Date");
+                    HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
                     if (ReportType == "Details")
-                    {
-                        HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");                        
+                    {                                             
                         if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
-
                     }
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
                     {
@@ -308,7 +307,7 @@ namespace Improvar.Controllers
                                         IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
                                         IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr();
                                         IR.Rows[rNo]["DELVDT"] = tbl.Rows[i]["DELVDT"].retDateStr();
-                                        IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " "+tbl.Rows[i]["itnm"].ToString() + " [" + tbl.Rows[i]["itcd"].ToString() + "]";
+                                        IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " "+tbl.Rows[i]["itnm"].ToString();
 
                                         double cnt = 0;
                                         while (tbl.Rows[i]["agslcd"].ToString() == stragslcd && tbl.Rows[i]["slcd"].ToString() == party && tbl.Rows[i]["autono"].ToString() == chk1 && tbl.Rows[i]["itcd"].ToString() == ichk)
@@ -475,6 +474,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr(); 
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                                IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
 
                                 string chk1 = tbl.Rows[i]["autono"].ToString();
                                 double cqnty = 0, camt = 0, cancqnty = 0;
