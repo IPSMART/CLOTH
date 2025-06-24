@@ -1897,7 +1897,7 @@ namespace Improvar.Controllers
                 sqlc += "c.doccd = '" + doccd + "' and " + Environment.NewLine;
 
                 sql += " select a.autono, b.doctag, h.doccd, h.docno, h.docdt, b.duedays, h.canc_rem,to_char(h.usr_entdt, 'HH24:MI') invisstime,'N' batchdlprint,  " + Environment.NewLine;
-                sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd, b.slcd, " + Environment.NewLine;
+                sql += " b.gocd, k.gonm, k.goadd1, k.goadd2, k.goadd3, k.gophno, k.goemail, h.usr_id, h.usr_entdt, h.vchrno, nvl(e.pslcd, e.slcd) oslcd,b.PARGLCD, b.slcd, " + Environment.NewLine;
                 //sql += " nvl(e.fullname, e.slnm) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  ";
                 sql += " nvl(x.nm,nvl(e.fullname, e.slnm)) slnm, " + prnemailid + ", e.add1 sladd1, e.add2 sladd2, e.add3 sladd3, e.add4 sladd4, e.add5 sladd5, e.add6 sladd6, e.add7 sladd7,  " + Environment.NewLine;
                 sql += " e.gstno, e.panno,e.MSMENO, trim(e.regmobile || decode(e.regmobile, null, '', ',') || e.slphno || decode(e.phno1, null, '', ',' || e.phno1)) phno,nvl(e.WHATSAPP_NO,e.regmobile)WHATSAPP_NO,e.REGEMAILID, e.state, e.country, e.statecd, e.actnameof slactnameof,e.subdistrict sldistrict,  " + Environment.NewLine;
@@ -2384,7 +2384,7 @@ namespace Improvar.Controllers
                             if (doctype == "SBILL" && VE.Checkbox7 == true)
                             {
                                 oslcd = tbl.Rows[i]["oslcd"].ToString();
-                                oglcd = tbl.Rows[i]["debglcd"].ToString();
+                                oglcd = tbl.Rows[i]["PARGLCD"].ToString();
                                 odocdt = Convert.ToDateTime(tbl.Rows[i]["docdt"].ToString()).AddDays(-1).ToString().retDateStr();
                                 totalosamt = Convert.ToDouble(MasterHelpFa.slcdbal(oslcd, oglcd, odocdt, oclass1cd));
                                 oslcd.retStr();

@@ -2307,7 +2307,7 @@ namespace Improvar
             //if (menupara == "OP" || menupara == "OTH" || menupara == "PJRC")//menupara == "PB" || 
             if (menupara == "PB" || menupara == "OP" || menupara == "OTH" || menupara == "PJRC")
             {
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar,exactstyleno);
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD, showonlycommonbar,exactstyleno,slcdfrrt);
             }
             //else if (menupara == "ALL")
             //{
