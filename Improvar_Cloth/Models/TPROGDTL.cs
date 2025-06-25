@@ -64,6 +64,7 @@ namespace Improvar.Models
         public short? ISSPROGSLNO { get; set; }
         public bool Checked { get; set; }
         public string ITGRPCD { get; set; }
+        public string BARGENTYPE { get; set; }        
         public string ITGRPNM { get; set; }
         [StringLength(10)]
         public string ITCD { get; set; }

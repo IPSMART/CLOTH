@@ -55,6 +55,7 @@
                                 <th class="" style="width:25px;">Image Upload</th>
                                 <th class="" style="width:50px;">REC PROGAUTONO</th>
                                 <th class="" style="width:25px;">REC PROG SLNO</th>
+                                <th class="" style="width:160px;">Item Remarks</th>
                                 <th class="sticky-cell-opposite" style="width:43px;text-align:right;">Rate Hist</th>
                             </tr>
                         </thead>
@@ -147,8 +148,8 @@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].WPRATE, new { htmlAttributes = new { id = "B_WPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "HasChangeBarSale();" } })
-
-                                        </td>
+                                       
+                                         </td>
                                         @*<td class="">
                                                 @Html.DropDownListFor(model => Model.TBATCHDTL[i].DISCTYPE, new SelectList(Model.DISC_TYPE, "value", "text", Model.DISC_TYPE), new { id = "B_DISCTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
                                             </td>
@@ -170,6 +171,10 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
+                                            
                                         </td>
                                         <td class="sticky-cell-opposite">
                                             <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('B_ITCD_@i','B_ITSTYLE_@i','POPUP')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
@@ -210,6 +215,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

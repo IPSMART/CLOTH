@@ -1450,7 +1450,7 @@ namespace Improvar.Controllers
             sql += "from " + scm + ".t_jbill a, " + scm + ".m_jobmst c, " + scm + ".t_cntrl_hdr d, " + scmf + ".m_subleg e ";
             sql += "where a.slcd = e.slcd(+) and a.autono = d.autono(+) and a.jobcd=c.jobcd(+) and ";
             sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and d.yr_cd = '" + yrcd + "' and d.doccd in (" + doccd + ") ";
-            sql += "order by docno, ddocdt ";
+            sql += "order by ddocdt,docno ";
             DataTable tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();

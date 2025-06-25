@@ -459,10 +459,38 @@ namespace Improvar.Controllers
                                                           x.UOM
                                                       } into P
                                                       select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+
+                string barno = VE.TPROGDTL.Select(x => x.BARNO).Distinct().ToArray().retSqlfromStrarray();
+                string TAXGRPCD = TXNOTH.TAXGRPCD.retStr();
+                string GOCD = TXN.GOCD.retStr() == "" ? "" : TXN.GOCD.retStr().retSqlformat();
+                string PRCCD = TXNOTH.PRCCD.retStr();
+                string MTRLJOBCD = VE.MTRLJOBCD.retStr() == "" ? "" : VE.MTRLJOBCD.retStr().retSqlformat();
+                var barimgdata = salesfunc.GetBarHelp(TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD, "", "", true, false, "", "", "", false, false, true, "", true, false, TXN.SLCD.retStr().retSqlformat());
+
+
                 if (pendprogramme != null && pendprogramme.Rows.Count > 0)
                 {
                     foreach (var v in VE.TPROGDTL)
                     {
+                        var img = barimgdata.AsEnumerable().Where(a => a.Field<string>("barno").retStr() == v.BARNO).Select(b => b.Field<string>("barimage")).FirstOrDefault();
+                        if (img.retStr() != "")
+                        {
+                            var brimgs = img.Split((char)179);
+                            v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                            foreach (var barimg in brimgs)
+                            {
+                                string barfilename = barimg.Split('~')[0];
+                                string barimgdesc = barimg.Split('~')[1];
+                                v.BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                                string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                FROMpath = Path.Combine(FROMpath, "");
+                                string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                                Cn.CopyImage(FROMpath, TOPATH);
+                            }
+                            v.BarImages = v.BarImages.retStr().TrimStart((char)179);
+                        }
+
+
                         string PROGAUTOSLNO = v.PROGAUTOSLNO;
                         var data = (from DataRow dr in pendprogramme.Rows
                                     where dr["PROGAUTOSLNO"].retStr() == PROGAUTOSLNO
@@ -481,7 +509,7 @@ namespace Improvar.Controllers
                             v.CUTLENGTH = data[0].CUTLENGTH.retDbl();
                         }
                     }
-                }
+                }                              
 
                 VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
                 VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();
@@ -1779,7 +1807,7 @@ namespace Improvar.Controllers
                 {
                     if (tbl != null && tbl.Rows.Count > 0)
                     {
-
+                      
                         var data = (from DataRow dr in tbl.Rows
                                     select new TPROGDTL
                                     {
@@ -1817,9 +1845,34 @@ namespace Improvar.Controllers
                         {
                             VE.TPROGDTL = data;
                         }
+                        string barno = VE.TPROGDTL.Select(x => x.BARNO).Distinct().ToArray().retSqlfromStrarray();
+                        string TAXGRPCD = VE.T_TXNOTH.TAXGRPCD.retStr();
+                        string GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD.retStr().retSqlformat();
+                        string PRCCD = VE.T_TXNOTH.PRCCD.retStr();
+                        string MTRLJOBCD = VE.MTRLJOBCD.retStr() == "" ? "" : VE.MTRLJOBCD.retStr().retSqlformat();
+                        var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, barno, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD, "", "", true, false, "", "", "", false, false, true, "", true, false, VE.T_TXN.SLCD.retStr().retSqlformat());
+
                         int slno = 1;
                         for (int p = 0; p <= VE.TPROGDTL.Count - 1; p++)
                         {
+                            var img = barimgdata.AsEnumerable().Where(a => a.Field<string>("barno").retStr() == VE.TPROGDTL[p].BARNO).Select(b => b.Field<string>("barimage")).FirstOrDefault();
+                            if (img.retStr() != "")
+                            {
+                                var brimgs = img.Split((char)179);
+                                VE.TPROGDTL[p].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                                foreach (var barimg in brimgs)
+                                {
+                                    string barfilename = barimg.Split('~')[0];
+                                    string barimgdesc = barimg.Split('~')[1];
+                                    VE.TPROGDTL[p].BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                                    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                    FROMpath = Path.Combine(FROMpath, "");
+                                    string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                                    Cn.CopyImage(FROMpath, TOPATH);
+                                }
+                                VE.TPROGDTL[p].BarImages = VE.TPROGDTL[p].BarImages.retStr().TrimStart((char)179);
+                            }
+
                             VE.TPROGDTL[p].SLNO = slno.retShort();
                             VE.TPROGDTL[p].CheckedSample = VE.TPROGDTL[p].SAMPLE.retStr() == "Y" ? true : false;
 
@@ -2040,7 +2093,8 @@ namespace Improvar.Controllers
                                   x.UOM,
                                   x.RATE,
                                   x.DISCRATE,
-                                  x.SAMPLE
+                                  x.SAMPLE,
+                                  x.ITREM
                               } into P
                               select new TTXNDTL
                               {
@@ -2056,7 +2110,8 @@ namespace Improvar.Controllers
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
                                   DISCRATE = P.Key.DISCRATE,
-                                  SAMPLE = P.Key.SAMPLE
+                                  SAMPLE = P.Key.SAMPLE,
+                                  ITREM = P.Key.ITREM
                               }).ToList();
 
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));

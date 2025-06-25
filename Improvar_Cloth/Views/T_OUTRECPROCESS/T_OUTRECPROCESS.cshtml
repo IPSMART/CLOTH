@@ -749,6 +749,7 @@
         var RATE = $("#D_RATE_" + i).val();
         var DISCTYPE = $("#D_DISCTYPE_" + i).val();
         var DISCRATE = $("#D_DISCRATE_" + i).val();
+        var ITREM = $("#D_ITREM_" + i).val();
 
         var GridRowMain = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
         for (j = 0; j <= GridRowMain - 1; j++) {
@@ -756,6 +757,7 @@
                 $("#B_RATE_" + j).val(RATE);
                 $("#B_DISCTYPE_" + j).val(DISCTYPE);
                 $("#B_DISCRATE_" + j).val(DISCRATE);
+                $("#B_ITREM_" + j).val(ITREM);
             }
         }
 
