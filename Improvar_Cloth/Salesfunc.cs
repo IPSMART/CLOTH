@@ -240,10 +240,10 @@ namespace Improvar
             sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
             sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm,g.bargentype, f.uomcd, j.itnm fabitnm, ";
             sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, m.commonuniqbar, d.linecd, l.print_seq, ";
-            sql += "a.balqnty,a.RATE, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset from ";
+            sql += "a.balqnty,nvl(d.RATE,0)RATE, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm,n.docno ORDDOCNO,d.makestyleno,a.stktype,m.BATCHNO,''recdocno,''recslnm,f.brandcd,p.brandnm,0 pcsperbox,''sizecdgrp,0 pcsperset from ";
 
             sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno,o.stktype,o.txnslno, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty,nvl(a.RATE,0)RATE, ";
+            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
             sql += "sum(case a.stkdrcr when 'C' then a.nos when 'D' then a.nos*-1 end) balnos ";
             sql += "from " + scm + ".t_progdtl a, " + scm + ".t_progmast b, " + scm + ".t_cntrl_hdr c," + scm + ".t_batchdtl o ";
             sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.autono=c.autono(+) and a.progautono=o.autono(+)and  a.progslno=o.slno(+) and ";
@@ -255,7 +255,7 @@ namespace Improvar
             sql += "c.compcd='" + COM + "' and nvl(c.cancel,'N')='N' ";
             if (loccd != "") { sql += "and c.loccd in(" + loccd + ")  "; } else { sql += "and c.loccd='" + LOC + "' "; }
 
-            sql += "group by a.progautono, a.progslno, a.progautono||a.progslno,o.stktype,o.txnslno,nvl(a.RATE,0) ) a, ";
+            sql += "group by a.progautono, a.progslno, a.progautono||a.progslno,o.stktype,o.txnslno) a, ";
 
             sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";
             sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, ";
