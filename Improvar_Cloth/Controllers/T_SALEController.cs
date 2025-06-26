@@ -5699,29 +5699,31 @@ namespace Improvar.Controllers
                                 //if (!(VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y"))
                                 bool taxchking = true;
                                 if (VE.MENU_PARA == "PJBL" && VE.TTXNDTL[i].FREESTK.retStr() == "Y") taxchking = false;
-                                if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT" || VE.MENU_PARA == "SBEXP") taxchking = false;
+                                if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") taxchking = false;
+                                if (VE.T_TXN.REVCHRG.retStr() == "N") taxchking = false;
+
                                 if (taxchking == true)
                                 {
-                                    if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "ISS" && VE.MENU_PARA != "REC")
+                                    if (VE.TTXNDTL[i].IGSTAMT.retDbl() + VE.TTXNDTL[i].CGSTAMT.retDbl() + VE.TTXNDTL[i].SGSTAMT.retDbl() == 0)
                                     {
                                         ContentFlg = "TAX amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
                                         goto dbnotsave;
                                     }
-                                    else if (VE.TTXNDTL[i].CGSTAMT.retDbl() == 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0 && VE.T_TXN.REVCHRG != "N")
-                                    {
-                                        ContentFlg = "Cgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
-                                        goto dbnotsave;
-                                    }
-                                    else if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() == 0 && VE.T_TXN.REVCHRG != "N")
-                                    {
-                                        ContentFlg = "Sgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
-                                        goto dbnotsave;
-                                    }
-                                    if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].IGSTAMT.retDbl() != 0)
-                                    {
-                                        ContentFlg = "Cgst+Sgst+Igst 3 amount found. Please check tax at slno " + VE.TTXNDTL[i].SLNO;
-                                        goto dbnotsave;
-                                    }
+                                }
+                                if (VE.TTXNDTL[i].CGSTAMT.retDbl() == 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0)
+                                {
+                                    ContentFlg = "Cgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
+                                    goto dbnotsave;
+                                }
+                                else if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() == 0)
+                                {
+                                    ContentFlg = "Sgst amount not found. Please add tax at slno " + VE.TTXNDTL[i].SLNO;
+                                    goto dbnotsave;
+                                }
+                                if (VE.TTXNDTL[i].CGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].SGSTAMT.retDbl() != 0 && VE.TTXNDTL[i].IGSTAMT.retDbl() != 0)
+                                {
+                                    ContentFlg = "Cgst+Sgst+Igst 3 amount found. Please check tax at slno " + VE.TTXNDTL[i].SLNO;
+                                    goto dbnotsave;
                                 }
                                 if (VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "PI")
                                 {
@@ -7114,26 +7116,47 @@ namespace Improvar.Controllers
 
                         #endregion
                     }
-                    if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "PJBL" && VE.MENU_PARA != "PJBR" && VE.MENU_PARA != "SBEXP")
+
+                    bool gtaxchking = true;
+                    int cntFREESTK = (from a in VE.TTXNDTL where a.FREESTK.retStr() == "Y" select a).Count();
+                    if (VE.MENU_PARA == "PJBL" && cntFREESTK.retDbl() > 0) gtaxchking = false;
+                    if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH" || VE.MENU_PARA == "PJRC" || VE.MENU_PARA == "PJIS" || VE.MENU_PARA == "PJRT" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "ISS" || VE.MENU_PARA == "REC" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") gtaxchking = false;
+                    if (VE.T_TXN.REVCHRG.retStr() == "N") gtaxchking = false;
+
+
+                    if (gtaxchking == true)
                     {
-                        if (igst != 0 && (cgst + sgst) != 0)
+                        if (igst + cgst + sgst == 0)
                         {
-                            ContentFlg = "We can't add igst+cgst+sgst for the same party.";
-                            goto dbnotsave;
-                        }
-                        else if (igst + cgst + sgst == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "ISS" && VE.MENU_PARA != "REC")
-                        {
-                            //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
-                            //{
-                            //    ContentFlg = "Please enter tax % in Amount tab";
-                            //}
-                            //else
-                            //{
                             ContentFlg = "TAX amount not found. Please add tax with item.";
-                            //}
                             goto dbnotsave;
                         }
                     }
+                    if (igst != 0 && (cgst + sgst) != 0)
+                    {
+                        ContentFlg = "We can't add igst+cgst+sgst for the same party.";
+                        goto dbnotsave;
+                    }
+                    //if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH" && VE.MENU_PARA != "PJRC" && VE.MENU_PARA != "PJIS" && VE.MENU_PARA != "PJRT" && VE.MENU_PARA != "PJBL" && VE.MENU_PARA != "PJBR" && VE.MENU_PARA != "SBEXP")
+                    //{
+                    //    if (igst != 0 && (cgst + sgst) != 0)
+                    //    {
+                    //        ContentFlg = "We can't add igst+cgst+sgst for the same party.";
+                    //        goto dbnotsave;
+                    //    }
+                    //    else if (igst + cgst + sgst == 0 && VE.T_TXN.REVCHRG != "N" && VE.MENU_PARA != "ISS" && VE.MENU_PARA != "REC")
+                    //    {
+                    //        //if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                    //        //{
+                    //        //    ContentFlg = "Please enter tax % in Amount tab";
+                    //        //}
+                    //        //else
+                    //        //{
+                    //        ContentFlg = "TAX amount not found. Please add tax with item.";
+                    //        //}
+                    //        goto dbnotsave;
+                    //    }
+                    //}
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
                     {
                         ContentFlg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
