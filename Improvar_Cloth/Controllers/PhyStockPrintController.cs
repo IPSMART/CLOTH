@@ -441,41 +441,57 @@ namespace Improvar.Controllers
                 DataTable tbl_Phystk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, "");
                 DataTable tbl_Ackstk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, false, false, "", false);
 
-                var varItem = tbl_Ackstk.AsEnumerable().Union(tbl_Phystk.AsEnumerable()).OrderBy(d => d.Field<string>("itstyle")).Select(A => new
+                var Item = tbl_Ackstk.AsEnumerable().Union(tbl_Phystk.AsEnumerable()).OrderBy(d => d.Field<string>("itstyle")).Select(A => new
                 {
                     itcd = A["itcd"].ToString(),
                     itstyle = A["itstyle"].ToString(),
                     uomcd = A["uomcd"].ToString(),
-                }).DistinctBy(s => s.itcd).OrderBy(a=>a.itstyle).ToList();
+                }).DistinctBy(s => s.itcd).OrderBy(a => a.itstyle).ToList();
 
                 DataTable tbl = new DataTable();
-                if (varItem.Count > 0)
+                if (Item.Count() > 0)
                 {
-                    DataTable item = ListToDatatable.LINQResultToDataTable(varItem);
-                    var tempdata = (from DataRow dr in item.Rows
-                                    join DataRow dr1 in tbl_Phystk.Rows
-                                        on dr["itcd"].retStr() equals dr1["itcd"].retStr() into physJoin
-                                    from dr1 in physJoin.DefaultIfEmpty()
-                                    join DataRow dr2 in tbl_Ackstk.Rows
-                                        on dr["itcd"].retStr() equals dr2["itcd"].retStr() into ackJoin
-                                    from dr2 in ackJoin.DefaultIfEmpty()
+
+                    var tempPhystk = (from DataRow DR in tbl_Phystk.Rows
+                                      group DR by DR["itcd"].retStr() into X
+                                      select new
+                                      {
+                                          itcd = X.Key.retStr(),
+                                          balqnty = X.Sum(Z => Z["balqnty"].retDbl())
+                                      }).ToList();
+
+                    var tempAckstk = (from DataRow DR in tbl_Ackstk.Rows
+                                      group DR by DR["itcd"].retStr() into X
+                                      select new
+                                      {
+                                          itcd = X.Key.retStr(),
+                                          balqnty = X.Sum(Z => Z["balqnty"].retDbl())
+                                      }).ToList();
+
+
+                    var tempdata = (from a in Item
+                                    join b in tempPhystk on a.itcd equals b.itcd into physJoin
+                                    from b in physJoin.DefaultIfEmpty()
+                                    join c in tempAckstk on a.itcd equals c.itcd into ackJoin
+                                    from c in ackJoin.DefaultIfEmpty()
                                     select new
                                     {
-                                        itcd = dr["itcd"].retStr(),
-                                        itstyle = dr["itstyle"].retStr(),
-                                        uomcd = dr["uomcd"].retStr(),
-                                        pqnty = dr1 != null ? dr1["balqnty"].retDbl() : 0,  // from tbl_Phystk
-                                        aqnty = dr2 != null ? dr2["balqnty"].retDbl() : 0   // from tbl_Ackstk
-                                    } into joinedData
-                                    group joinedData by new { joinedData.itcd, joinedData.itstyle, joinedData.uomcd } into g
-                                    select new
-                                    {
-                                        itcd = g.Key.itcd,
-                                        itstyle = g.Key.itstyle,
-                                        uomcd = g.Key.uomcd,
-                                        pqnty = g.Sum(x => x.pqnty),
-                                        aqnty = g.Sum(x => x.aqnty)
-                                    }).ToList();
+                                        itcd = a.itcd,
+                                        itstyle = a.itstyle,
+                                        uomcd = a.uomcd,
+                                        pqnty = b != null ? b.balqnty : 0,
+                                        aqnty = c != null ? c.balqnty : 0
+                                    })
+                  .GroupBy(x => new { x.itcd, x.itstyle, x.uomcd })
+                  .Select(g => new
+                  {
+                      itcd = g.Key.itcd,
+                      itstyle = g.Key.itstyle,
+                      uomcd = g.Key.uomcd,
+                      pqnty = g.Sum(x => x.pqnty),
+                      aqnty = g.Sum(x => x.aqnty)
+                  })
+                  .ToList();
                     if (tempdata.Count > 0)
                     {
                         tbl = ListToDatatable.LINQResultToDataTable(tempdata);
