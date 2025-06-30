@@ -29,6 +29,13 @@
             $("#form1").submit();
         }
     }
+    function RemoveDate() {
+        var reptype = $('[id="TEXTBOX3"]:checked').val();
+        if (reptype == "PhysicalActualStock")
+        {
+            $("#FDT").val("");
+        }
+    }
 </script>
 @{
     string PageControllerName = "PhyStockPrint";
@@ -153,16 +160,16 @@
                     </div>
                     <div class="col-lg-9">
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Details", new { @checked = "checked", id = "TEXTBOX3" })  @Html.Label("Details")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Details", new { @checked = "checked", id = "TEXTBOX3", onclick = "RemoveDate();" })  @Html.Label("Details")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary", new {  id = "TEXTBOX3" })  @Html.Label("Date Wise Summary")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary", new {  id = "TEXTBOX3" , onclick = "RemoveDate();" })  @Html.Label("Date Wise Summary")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Super Summary", new { id = "TEXTBOX3" })  @Html.Label("Super Summary")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Super Summary", new { id = "TEXTBOX3", onclick = "RemoveDate();" })  @Html.Label("Super Summary")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "PhysicalActualStock", new { id = "TEXTBOX3" })  @Html.Label("Physical stock v/s Actual stock")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "PhysicalActualStock", new { id = "TEXTBOX3", onclick = "RemoveDate();" })  @Html.Label("Physical stock v/s Actual stock")
                         </label>
                     </div>
                 </div>
