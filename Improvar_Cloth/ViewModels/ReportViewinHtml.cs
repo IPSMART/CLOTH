@@ -81,6 +81,8 @@ namespace Improvar.ViewModels
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<DropDown_list_JOBCD> DropDown_list_JOBCD { get; set; }
         public List<DropDown_list_RTCD> DropDown_list_RTCD { get; set; }
+        public List<DropDown_list_MTRLJOBCDList> DropDown_list_MTRLJOBCDList { get; set; }
+
         public string SubLeg_Grp { get; set; }
         public string Agslnm { get; set; }
         public string SubAgent { get; set; }
@@ -92,6 +94,8 @@ namespace Improvar.ViewModels
         public string Empnm { get; set; }
         public string Locnm { get; set; }
         public string Gonm { get; set; }
+        public string Mtrljobnm { get; set; }
+        
         public string PRCCD { get; set; }
         public string PRCNM { get; set; }
         public string JOBCD { get; set; }

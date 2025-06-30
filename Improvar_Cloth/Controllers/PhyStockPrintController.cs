@@ -21,6 +21,8 @@ namespace Improvar.Controllers
         MasterHelp masterHelp = new MasterHelp();
         Salesfunc Salesfunc = new Salesfunc();
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
+        DropDownHelp DropDownHelp = new DropDownHelp();
+
         string path_Save = "C:\\Ipsmart\\Temp";
 
         string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -65,6 +67,13 @@ namespace Improvar.Controllers
                         List<DropDown_list1> drplst = new List<DropDown_list1>();
                         VE.DropDown_list1 = drplst;
                     }
+
+                    VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
+                    VE.Itnm = masterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
+
+                    VE.DropDown_list_MTRLJOBCDList = DropDownHelp.GetMtrljobforSelection();
+                    VE.Mtrljobnm = masterHelp.ComboFill("mtrljobcd", VE.DropDown_list_MTRLJOBCDList, 0, 1);
+
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
@@ -98,8 +107,7 @@ namespace Improvar.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult PhyStockPrint(ReportViewinHtml VE, FormCollection FC, string Command)
+        public ActionResult PhyStockDetailsPrint(ReportViewinHtml VE, FormCollection FC, string Command)
         {
             try
             {
@@ -250,7 +258,7 @@ namespace Improvar.Controllers
                     string fld = "autoslno";
                     if (ReportType == "Date Wise Summary")
                     {
-                        fld = "docdt";                        
+                        fld = "docdt";
                     }
                     else if (ReportType == "Super Summary")
                     {
@@ -290,7 +298,7 @@ namespace Improvar.Controllers
                                     if (ReportType == "Date Wise Summary")
                                     {
                                         IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].retStr();
-                                        IR.Rows[rNo]["fabitnm"] = tbl.Rows[i]["fabitnm"].retStr()+" ["+ tbl.Rows[i]["fabitcd"].retStr()+"]";
+                                        IR.Rows[rNo]["fabitnm"] = tbl.Rows[i]["fabitnm"].retStr() + " [" + tbl.Rows[i]["fabitcd"].retStr() + "]";
                                         IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i]["itgrpnm"].retStr();
                                     }
                                     IR.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"].retDbl();
@@ -318,9 +326,9 @@ namespace Improvar.Controllers
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 IR.Rows[rNo]["barno"] = tbl.Rows[i - 1]["barno"].retStr();
                                 IR.Rows[rNo]["itstyle"] = tbl.Rows[i - 1]["itstyle"].retStr();
-                                IR.Rows[rNo]["itnm"] = tbl.Rows[i-1]["itnm"].retStr();
-                                IR.Rows[rNo]["fabitnm"] = tbl.Rows[i-1]["fabitnm"].retStr() + " [" + tbl.Rows[i-1]["fabitcd"].retStr() + "]";
-                                IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i-1]["itgrpnm"].retStr();
+                                IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itnm"].retStr();
+                                IR.Rows[rNo]["fabitnm"] = tbl.Rows[i - 1]["fabitnm"].retStr() + " [" + tbl.Rows[i - 1]["fabitcd"].retStr() + "]";
+                                IR.Rows[rNo]["itgrpnm"] = tbl.Rows[i - 1]["itgrpnm"].retStr();
                                 IR.Rows[rNo]["cutlength"] = tbl.Rows[i - 1]["cutlength"].retDbl();
                                 IR.Rows[rNo]["nos"] = nos;
                                 IR.Rows[rNo]["qnty"] = qnty;
@@ -328,7 +336,7 @@ namespace Improvar.Controllers
                                 if (ReportType == "Date Wise Summary")
                                 {
                                     IR.Rows[rNo]["cprate"] = tbl.Rows[i - 1]["cprate"].retDbl();
-                                    IR.Rows[rNo]["jobprate"] = tbl.Rows[i-1]["jobprate"].retDbl();
+                                    IR.Rows[rNo]["jobprate"] = tbl.Rows[i - 1]["jobprate"].retDbl();
                                 }
                                 IR.Rows[rNo]["trem"] = tbl.Rows[i - 1]["trem"].retStr();
                                 IR.Rows[rNo]["usr_id"] = tbl.Rows[i - 1]["usr_id"].retStr();
@@ -387,6 +395,144 @@ namespace Improvar.Controllers
                     return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "PhyStockPrint" });
                 }
                 #endregion
+
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+            return null;
+        }
+
+        public ActionResult StockDiffPrint(ReportViewinHtml VE, FormCollection FC, string Command)
+        {
+            try
+            {
+                //Cn.getQueryString(VE);
+
+                string fdate = "", tdate = "";
+                if (VE.FDT != null)
+                {
+                    fdate = Convert.ToString(Convert.ToDateTime(FC["FDT"].ToString())).Substring(0, 10);
+                }
+                if (VE.TDT != null)
+                {
+                    tdate = Convert.ToString(Convert.ToDateTime(FC["TDT"].ToString())).Substring(0, 10);
+                }
+                string fdocno = FC["FDOCNO"].ToString();
+                string tdocno = FC["TDOCNO"].ToString();
+                string doccd = FC["doccd"].ToString();
+                string godown = VE.TEXTBOX1;
+                string ReportType = VE.TEXTBOX3;
+                string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+                string yr_cd = CommVar.YearCode(UNQSNO);
+                string prccd = "WP";
+                string selitcd = "";
+                if (FC.AllKeys.Contains("itcdvalue")) selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
+
+                string mtrljobcd = "'FS'";
+                if (FC.AllKeys.Contains("mtrljobcdvalue")) mtrljobcd = CommFunc.retSqlformat(FC["mtrljobcdvalue"].ToString());
+
+                DataTable tbl_Phystk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, true, false, "");
+                DataTable tbl_Ackstk = Salesfunc.GetStock(tdate, godown, "", selitcd, mtrljobcd, "", "", "", "CP", "C001", "", "", true, false, "", "", false, false, true, "", false, "", "", false, false, false, false, "", false);
+
+                var varItem = tbl_Ackstk.AsEnumerable().Union(tbl_Phystk.AsEnumerable()).OrderBy(d => d.Field<string>("itstyle")).Select(A => new
+                {
+                    itcd = A["itcd"].ToString(),
+                    itstyle = A["itstyle"].ToString(),
+                    uomcd = A["uomcd"].ToString(),
+                }).DistinctBy(s => s.itcd).OrderBy(a=>a.itstyle).ToList();
+
+                DataTable tbl = new DataTable();
+                if (varItem.Count > 0)
+                {
+                    DataTable item = ListToDatatable.LINQResultToDataTable(varItem);
+                    var tempdata = (from DataRow dr in item.Rows
+                                    join DataRow dr1 in tbl_Phystk.Rows
+                                        on dr["itcd"].retStr() equals dr1["itcd"].retStr() into physJoin
+                                    from dr1 in physJoin.DefaultIfEmpty()
+                                    join DataRow dr2 in tbl_Ackstk.Rows
+                                        on dr["itcd"].retStr() equals dr2["itcd"].retStr() into ackJoin
+                                    from dr2 in ackJoin.DefaultIfEmpty()
+                                    select new
+                                    {
+                                        itcd = dr["itcd"].retStr(),
+                                        itstyle = dr["itstyle"].retStr(),
+                                        uomcd = dr["uomcd"].retStr(),
+                                        pqnty = dr1 != null ? dr1["balqnty"].retDbl() : 0,  // from tbl_Phystk
+                                        aqnty = dr2 != null ? dr2["balqnty"].retDbl() : 0   // from tbl_Ackstk
+                                    } into joinedData
+                                    group joinedData by new { joinedData.itcd, joinedData.itstyle, joinedData.uomcd } into g
+                                    select new
+                                    {
+                                        itcd = g.Key.itcd,
+                                        itstyle = g.Key.itstyle,
+                                        uomcd = g.Key.uomcd,
+                                        pqnty = g.Sum(x => x.pqnty),
+                                        aqnty = g.Sum(x => x.aqnty)
+                                    }).ToList();
+                    if (tempdata.Count > 0)
+                    {
+                        tbl = ListToDatatable.LINQResultToDataTable(tempdata);
+                    }
+                }
+                if (tbl.Rows.Count == 0)
+                {
+                    return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "No Records Found !!" });
+                }
+
+                DataTable IR = new DataTable("mstrep");
+
+                Models.PrintViewer PV = new Models.PrintViewer();
+                HtmlConverter HC = new HtmlConverter();
+
+                HC.RepStart(IR, 2);
+                HC.GetPrintHeader(IR, "itcd", "string", "c,15", "Item Code");
+                HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Style No.");
+                HC.GetPrintHeader(IR, "uomcd", "string", "c,10", "Uom");
+                HC.GetPrintHeader(IR, "pqnty", "double", "c,15,3", "Physical Stock");
+                HC.GetPrintHeader(IR, "aqnty", "double", "c,15,3", "Actual Stock");
+
+                Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                i = 0; maxR = tbl.Rows.Count - 1;
+
+                double taqnty = 0, tpqnty = 0;
+                while (i <= maxR)
+                {
+                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].retStr();
+                    IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
+                    IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                    IR.Rows[rNo]["pqnty"] = tbl.Rows[i]["pqnty"].retDbl();
+                    IR.Rows[rNo]["aqnty"] = tbl.Rows[i]["aqnty"].retDbl();
+
+                    taqnty += tbl.Rows[i]["aqnty"].retDbl();
+                    tpqnty += tbl.Rows[i]["pqnty"].retDbl();
+                    i++;
+                    if (i > maxR) break;
+                }
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["dammy"] = "";
+
+                IR.Rows[rNo]["itcd"] = "Grand Totals";
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                IR.Rows[rNo]["aqnty"] = taqnty;
+                IR.Rows[rNo]["pqnty"] = tpqnty;
+
+                string pghdr1 = "";
+
+                pghdr1 = "Physical stock v/s Actual stock Details as on " + tdate;
+
+                PV = HC.ShowReport(IR, "PhyStockPrint", pghdr1, "", true, true, "P", false);
+
+                TempData["PhyStockPrint"] = PV;
+                return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "PhyStockPrint" });
+
 
 
 

@@ -11,11 +11,29 @@
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
 </script>
+<script>
+    function Show_rep()
+    {
+        debugger;
+        var reptype = $('[id="TEXTBOX3"]:checked').val();
+        $("#form1").attr('target', '_blank');
 
+        if (reptype == "PhysicalActualStock")
+        {
+            $("#form1").attr('action', 'StockDiffPrint');
+            $("#form1").submit();
+        }
+        else
+        {
+            $("#form1").attr('action', 'PhyStockDetailsPrint');
+            $("#form1").submit();
+        }
+    }
+</script>
 @{
     string PageControllerName = "PhyStockPrint";
 }
-@using (Html.BeginForm(PageControllerName, PageControllerName, FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
     {
@@ -107,6 +125,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Item")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Itnm))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Material Job")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Mtrljobnm))
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10PX">
                     <div class="col-md-8">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -115,13 +153,16 @@
                     </div>
                     <div class="col-lg-9">
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Details", new { @checked = "checked" })  @Html.Label("Details")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Details", new { @checked = "checked", id = "TEXTBOX3" })  @Html.Label("Details")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary")  @Html.Label("Date Wise Summary")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Date Wise Summary", new {  id = "TEXTBOX3" })  @Html.Label("Date Wise Summary")
                         </label>
                         <label class="radio-inline">
-                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Super Summary")  @Html.Label("Super Summary")
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "Super Summary", new { id = "TEXTBOX3" })  @Html.Label("Super Summary")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(model => model.TEXTBOX3, "PhysicalActualStock", new { id = "TEXTBOX3" })  @Html.Label("Physical stock v/s Actual stock")
                         </label>
                     </div>
                 </div>
@@ -142,7 +183,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field" style="margin-top:8px;">
-                            <input type="submit" value="Show Report" name="Command" class="btn btn-default" sstyle="width:66px;" formtarget="_blank" />
+                            <input type="button" value="Show Report" name="Command" class="btn btn-default" sstyle="width:66px;" formtarget="_blank" onclick="Show_rep()"/>
                         </div>
                     </div>
                 </div>

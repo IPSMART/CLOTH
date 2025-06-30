@@ -359,4 +359,9 @@ namespace Improvar.Models
         public string value { get; set; }
 
     }
+    public class DropDown_list_MTRLJOBCDList
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+    }
 }
