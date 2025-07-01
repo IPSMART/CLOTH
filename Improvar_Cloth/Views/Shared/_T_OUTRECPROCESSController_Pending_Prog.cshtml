@@ -1,0 +1,150 @@
+﻿@model Improvar.ViewModels.TransactionOutRecProcess
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $(".sl_bom_grid").prop("disabled", false);
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            // $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_OUTRECPROCESSController_Pending_Prog'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<script>
+    $("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); } });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:330px;height:auto;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;left:5%;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'PENDING_POPUP');" />
+                    <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Program Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
+                    <table id="_T_OUTRECPROCESSController_Pending_Prog" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1080px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="" style="width:15px;"> </th>
+                                <th class="" style="width:100px;">Doc No</th>
+                                <th class="" style="width:70px;">Doc Dt</th>
+                                <th class="" style="width:90px;">Uniq. No.</th>
+                                <th class="" style="width:90px;">Bar Code No</th>
+                                <th class="" style="width:65px;">Item Group</th>
+                                <th class="" style="width:55px;">Item</th>
+                                <th class="" style="width:80px;">Style No</th>
+                                <th class="" style="width:36px;text-align: right;">bal. Nos</th>
+                                <th class="" style="width:36px;text-align: right;">bal. Qnty.</th>
+                                @*<th class="" style="width:55px;">progautoslno</th>*@
+                                <th class="">Item Remarks</th>
+                                <th class="" style="width:55px;">Fabric Item</th>
+                                <th class="" style="width:94px;">Order No.</th>
+                                <th class="" style="width:36px;text-align: right;">Order Slno.</th>
+                                <th class="" style="width:55px;">Make StyleNo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PENDING_POPUP != null)
+                            {
+                                for (int i = 0; i <= Model.PENDING_POPUP.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="" style="padding-left:5px;padding-right:5px;">
+                                            @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_R_POPUP_', 'PROGAUTONO_R_POPUP_', 'PENDING_POPUP');" })
+                                            @Html.HiddenFor(model => model.PENDING_POPUP[i].PROGAUTONO, new { id = "PROGAUTONO_R_POPUP_" + i })
+                                            @Html.HiddenFor(model => model.PENDING_POPUP[i].PROGAUTOSLNO, new { id = "PROGAUTOSLNO_R_POPUP_" + i })
+                                        </td>
+                                            @*@if (Model.PENDING_POPUP[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, style = "pointer-events:none;background-color:#eee" })
+                                            }
+                                            else {
+                                                @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_R_POPUP_', 'BLAUTONO_R_POPUP_/BALENO_POPUP', 'T_BiltyR_Mutia_PopUp');" })
+                                            }                                            
+                                        </td>*@
+                                        @*<td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @if (Model.PENDING_POPUP[i].ChildData.retStr() == "Y")
+                                            {
+                                                @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, style = "pointer-events:none;background-color:#eee" })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'Checked_LRNO_', 'LRNO_POPUP', 'T_BiltyR_Mutia_PopUp');" })
+                                            }*@                                            
+                                            @*@Html.HiddenFor(model => model.PENDING_POPUP[i].BALEYR, new { id = "BALEY_R_POPUP_" + i })*@
+                                            @*@Html.HiddenFor(model => model.PENDING_POPUP[i].ChildData, new { id = "BALEY_R_ChildData_" + i })
+                                        </td>*@
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].DOCNO, new { id = "Docno_POPUP" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].DOCDT, new { id = "Docdt_POPUP" + i, @class = " atextBoxFor ", maxlength = 20, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].PROGUNIQNO, new { id = "proguniqno_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].BARNO, new { id = "Barno_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].ITGRPNM, new { id = "Itgrpnm_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].ITNM, new { id = "Itnm_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].STYLENO, new { id = "Styleno_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.PENDING_POPUP[i].BALNOS, new { htmlAttributes = new { id = "Nos_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, style = "text-align: right;", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.PENDING_POPUP[i].BALQNTY, new { htmlAttributes = new { id = "Qnty_POPUP" + i, @class = " atextBoxFor ", onkeypress = "return numericOnly(this,2);", @TabIndex = -1, style = "text-align: right;", @readonly = "readonly" } })
+                                        </td>
+                                        @*<td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].PROGAUTOSLNO, new { id = "Progoutslno_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>*@
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].ITREMARK, new { id = "Itremark" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].FABITNM, new { id = "Fabitnm_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].ORDDOCNO, new { id = "Orddocno_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].ORDSLNO, new { id = "Ordslno_POPUP" + i, @class = " atextBoxFor ", onkeypress = "return numericOnly(this,2);", @TabIndex = -1, style = "text-align: right;", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].MAKESTYLENO, new { id = "Makestyleno_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <div class="col-md-10">
+            <div class="editor-label" style="margin-top: 6px;">
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-label" style="margin-top: 6px;">
+                <input type="button" class="btn btn-success" id="btnCloseRMPM" value="Procced" onclick="SelectPendingProgram();" />
+                <input type="button" class="btn btn-danger" id="btnCancelRMPM" value="Cancel" onclick="CancelProgram();" />
+            </div>
+        </div>
+    </div>
+</div>
