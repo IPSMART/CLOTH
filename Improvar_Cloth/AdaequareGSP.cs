@@ -66,19 +66,36 @@ namespace Improvar
         }
 
         #region //E-Invoice
-        public Dictionary<string, string> AdaequareIRNHeader(Dictionary<string, string> optHeader = null)
+        public Dictionary<string, string> AdaequareIRNHeader(Dictionary<string, string> optHeader = null, bool OnlyGstInfo = false)
         {
             GSTTYPE = "TIN";
             if (AppType == "LIVE") GSTTYPE = "INV";
             string gstno = CommVar.GSTNO(UNQSNO);
-            if (CommVar.FinSchema(UNQSNO) == "")
+            if (OnlyGstInfo == true)
             {
-                sql = "select gstuid,gstpw from M_compgstin where gstno='" + gstno + "' and GSTTYPE='" + GSTTYPE + "' ";
+                if (CommVar.FinSchema(UNQSNO) == "")
+                {
+                    sql = "select gstuid,gstpw,gstno from M_compgstin where GSTTYPE='" + GSTTYPE + "' ";
+                    if (gstno.retStr() != "") sql += "and gstno='" + gstno + "'  ";
+                }
+                else
+                {
+                    sql = "select gstuid,gstpw,gstno from  " + CommVar.FinSchema(UNQSNO) + ".M_compgstin where GSTTYPE='" + GSTTYPE + "' ";
+                    if (gstno.retStr() != "") sql += "and gstno='" + gstno + "'  ";
+                }
             }
             else
             {
-                sql = "select gstuid,gstpw from  " + CommVar.FinSchema(UNQSNO) + ".M_compgstin where gstno='" + gstno + "'  and GSTTYPE='" + GSTTYPE + "' ";
+                if (CommVar.FinSchema(UNQSNO) == "")
+                {
+                    sql = "select gstuid,gstpw from M_compgstin where gstno='" + gstno + "' and GSTTYPE='" + GSTTYPE + "' ";
+                }
+                else
+                {
+                    sql = "select gstuid,gstpw from  " + CommVar.FinSchema(UNQSNO) + ".M_compgstin where gstno='" + gstno + "'  and GSTTYPE='" + GSTTYPE + "' ";
+                }
             }
+
             var dt = masterHelp.SQLquery(sql);
             Dictionary<string, string> dic = new Dictionary<string, string>();
             if (dt.Rows.Count > 0)
@@ -90,6 +107,10 @@ namespace Improvar
             {
                 Cn.SaveTextFile(GSTTYPE + " Please add a row in M_compgstin table. #" + gstno);
                 return null;
+            }
+            if (OnlyGstInfo == true && gstno.retStr() == "")
+            {
+                gstno = dt.Rows[0]["gstno"].ToString();
             }
             dic.Add("GSTIN", gstno);
             dic.Add("requestid", GetRequestId());
@@ -295,7 +316,7 @@ namespace Improvar
         public AdqrRespGstInfo AdqrGstInfo(string gstin)
         {
             IPSAPICODE = "GSTINFO";
-            Dictionary<string, string> AdaequareIRNHdr = AdaequareIRNHeader();
+            Dictionary<string, string> AdaequareIRNHdr = AdaequareIRNHeader(null, true);
             url = "https://gsp.adaequare.com/test/enriched/ei/api/master/gstin?gstin=" + gstin + "";
             if (AppType == "LIVE") url = "https://gsp.adaequare.com/enriched/ei/api/master/gstin?gstin=" + gstin + ""; ;
             string jsonstr = ConsumeAdqrAPI(url, "", AdaequareIRNHdr);

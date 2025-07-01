@@ -678,11 +678,12 @@ namespace Improvar.Controllers
                 var query = (from c in DB.M_SUBLEG where (c.GSTNO == val) select c);
                 if (query.Any())
                 {
-                    string str = "";
+                    string str = "<table class='table-bordered' border='2px'><tr><th style='border: 1px solid #b1ac05;padding-right:2px'>ID</th><th style='border: 1px solid #b1ac05;padding-right:2px'>Name</th><th style='border: 1px solid #b1ac05;padding-right:2px'>Address</th><th style='border: 1px solid #b1ac05;padding-right:2px'>GST</th></tr>";
                     foreach (var i in query)
                     {
-                        str = "Allready Exists this GST No.";
+                        str = str + "<tr><td style='border: 1px solid #a11818;'>" + i.SLCD + "</td><td style='border: 1px solid #a11818;'>" + i.SLNM + "</td><td style='border: 1px solid #a11818;'>" + i.BLDGNO + i.PREMISES + i.ROADNAME + "</td><td style='border: 1px solid #a11818;'>" + i.GSTNO + "</td></tr>";
                     }
+                    str = str + "</table><br /> GSTNO: <u>" + val + "</u>  Allready Entered";
                     return str;
                 }
                 else

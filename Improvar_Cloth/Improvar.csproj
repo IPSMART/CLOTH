@@ -731,6 +731,12 @@
       <DependentUpon>ENVELOPE.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\EwayBillPrint.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EwayBillPrint.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\JobIssue.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1766,6 +1772,10 @@
     <Content Include="Report\PrintBarcode_DDYA.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode_DDYA.cs</LastGenOutput>
+    </Content>
+    <Content Include="Report\EwayBillPrint.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>EwayBillPrint.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Report\PrintBarcode_DIWH_Old.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

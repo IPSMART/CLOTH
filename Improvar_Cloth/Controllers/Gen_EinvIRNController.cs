@@ -390,13 +390,18 @@ namespace Improvar.Controllers
                         sql += "nvl((select sum(blamt) blamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, ";
                         sql += "nvl((select sum(roamt) roamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(roamt,0) <> 0),0) roamt,  ";
                         sql += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
-                        sql += "a.igstamt, a.cgstamt, a.sgstamt, a.cessamt , a.othramt,nvl(a.conslcd, a.pcode)slcd  ";
+                        sql += "a.igstamt, a.cgstamt, a.sgstamt, a.cessamt , a.othramt,nvl(a.conslcd, a.pcode)slcd,  ";
+
+                        sql += "a.conslcd, translate(nvl(r.fullname, r.slnm), '+[#./()]^', ' ') conslnm, r.gstno congstno,  ";
+                        sql += "r.add1 || ' ' || r.add2 conadd1, r.add3 || ' ' || r.add4 conadd2, r.district condistrict, r.pin conpin, ";
+                        sql += "r.statecd constatecd, upper(s.statenm) constatenm,r.PROPNAME conLegalNm ";
+
                         sql += "from " + fdbnm + ".t_vch_gst a, " + fdbnm + ".t_cntrl_hdr b, " + fdbnm + ".t_txnewb c, " + fdbnm + ".m_subleg d, ";
                         sql += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, " + fdbnm + ".m_uom j, improvar.ms_state k, improvar.ms_gstuom l, ";
-                        sql += fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
+                        sql += fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q," + fdbnm + ".m_subleg r,improvar.ms_state s ";
                         sql += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and c.translcd=e.slcd(+) and ";
                         sql += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and c.gocd=o.gocd(+) and a.pcode=p.slcd(+) and nvl(a.pos,p.statecd)=q.statecd and ";
-                        sql += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and ";
+                        sql += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and a.conslcd=r.slcd(+) and r.statecd=s.statecd(+) and ";
                         sql += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd  and a.autono = '" + autono + "'";
                         sql += "order by blno, bldt, autono, slno ";
                         DataTable dt = masterHelp.SQLquery(sql);
@@ -489,28 +494,70 @@ namespace Improvar.Controllers
                                 dispDtls.Stcd = rsComp.Rows[0]["statecd"].retStr();
                             }
 
+                            ////consign   ==paRTY   
+                            //if (dt.Rows[i]["pin"].retStr().Trim() != "" && dt.Rows[i]["slnm"].retStr().Trim() != "")
+                            //{
+                            //    shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
+                            //    shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
+                            //    shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
+                            //    shipDtls.Addr1 = dt.Rows[i]["add1"].retStr();
+                            //    shipDtls.Addr2 = dt.Rows[i]["add2"].retStr();
+                            //    shipDtls.Loc = dt.Rows[i]["district"].retStr();
+                            //    shipDtls.Pin = dt.Rows[i]["pin"].ToString().retDcml().retInt();
+                            //    shipDtls.Stcd = dt.Rows[i]["statecd"].retStr();
+                            //}
+                            //else if (dt.Rows[i]["BOTHADD1"].retStr() != "" && dt.Rows[i]["BOTHADDPIN"].retStr() != "")
+                            //{//OTHER ADDRESS/ PARTY GODOWN ADDRESS
+                            //    shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
+                            //    shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
+                            //    shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
+                            //    shipDtls.Addr1 = dt.Rows[i]["bOTHADD1"].retStr();
+                            //    shipDtls.Addr2 = dt.Rows[i]["bOTHADD2"].retStr();
+                            //    shipDtls.Loc = dt.Rows[i]["bOTHADD4"].retStr();
+                            //    shipDtls.Pin = dt.Rows[i]["bOTHADDPIN"].ToString().retDcml().retInt();
+                            //    shipDtls.Stcd = dt.Rows[i]["bstatecd"].retStr();
+                            //}
+
                             //consign   ==paRTY   
-                            if (dt.Rows[i]["pin"].retStr().Trim() != "" && dt.Rows[i]["slnm"].retStr().Trim() != "")
+                            if (dt.Rows[i]["GOOD_SERV"].retStr() == "S")
                             {
-                                shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
-                                shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
-                                shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
-                                shipDtls.Addr1 = dt.Rows[i]["add1"].retStr();
-                                shipDtls.Addr2 = dt.Rows[i]["add2"].retStr();
-                                shipDtls.Loc = dt.Rows[i]["district"].retStr();
-                                shipDtls.Pin = dt.Rows[i]["pin"].ToString().retDcml().retInt();
-                                shipDtls.Stcd = dt.Rows[i]["statecd"].retStr();
+                                if (dt.Rows[i]["conslcd"].retStr().Trim() != "")
+                                {
+                                    shipDtls.Gstin = dt.Rows[i]["congstno"].retStr();
+                                    shipDtls.LglNm = dt.Rows[i]["conLegalNm"].retStr() == "" ? dt.Rows[i]["conslnm"].retStr() : dt.Rows[i]["conLegalNm"].retStr();
+                                    shipDtls.TrdNm = dt.Rows[i]["conslnm"].retStr();
+                                    shipDtls.Addr1 = dt.Rows[i]["conadd1"].retStr();
+                                    shipDtls.Addr2 = dt.Rows[i]["conadd2"].retStr();
+                                    shipDtls.Loc = dt.Rows[i]["condistrict"].retStr();
+                                    shipDtls.Pin = dt.Rows[i]["conpin"].ToString().retDcml().retInt();
+                                    shipDtls.Stcd = dt.Rows[i]["constatecd"].retStr();
+                                }
                             }
-                            else if (dt.Rows[i]["BOTHADD1"].retStr() != "" && dt.Rows[i]["BOTHADDPIN"].retStr() != "")
-                            {//OTHER ADDRESS/ PARTY GODOWN ADDRESS
-                                shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
-                                shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
-                                shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
-                                shipDtls.Addr1 = dt.Rows[i]["bOTHADD1"].retStr();
-                                shipDtls.Addr2 = dt.Rows[i]["bOTHADD2"].retStr();
-                                shipDtls.Loc = dt.Rows[i]["bOTHADD4"].retStr();
-                                shipDtls.Pin = dt.Rows[i]["bOTHADDPIN"].ToString().retDcml().retInt();
-                                shipDtls.Stcd = dt.Rows[i]["bstatecd"].retStr();
+                            else
+                            {
+                                if (dt.Rows[i]["conslcd"].retStr().Trim() != "")
+                                {
+                                    shipDtls.Gstin = dt.Rows[i]["congstno"].retStr();
+                                    shipDtls.LglNm = dt.Rows[i]["conLegalNm"].retStr() == "" ? dt.Rows[i]["conslnm"].retStr() : dt.Rows[i]["conLegalNm"].retStr();
+                                    shipDtls.TrdNm = dt.Rows[i]["conslnm"].retStr();
+                                    shipDtls.Addr1 = dt.Rows[i]["conadd1"].retStr();
+                                    shipDtls.Addr2 = dt.Rows[i]["conadd2"].retStr();
+                                    shipDtls.Loc = dt.Rows[i]["condistrict"].retStr();
+                                    shipDtls.Pin = dt.Rows[i]["conpin"].ToString().retDcml().retInt();
+                                    shipDtls.Stcd = dt.Rows[i]["constatecd"].retStr();
+                                }
+                                else if (dt.Rows[i]["BOTHADD1"].retStr() != "" && dt.Rows[i]["BOTHADDPIN"].retStr() != "")
+                                {//OTHER ADDRESS/ PARTY GODOWN ADDRESS
+                                    shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
+                                    shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
+                                    shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
+                                    shipDtls.Addr1 = dt.Rows[i]["bOTHADD1"].retStr();
+                                    shipDtls.Addr2 = dt.Rows[i]["bOTHADD2"].retStr();
+                                    shipDtls.Loc = dt.Rows[i]["bOTHADD4"].retStr();
+                                    shipDtls.Pin = dt.Rows[i]["bOTHADDPIN"].ToString().retDcml().retInt();
+                                    shipDtls.Stcd = dt.Rows[i]["bstatecd"].retStr();
+                                }
+
                             }
                             ItemList itemlst = new ItemList();
                             itemlst.SlNo = dt.Rows[i]["slno"].retStr();
@@ -617,7 +664,8 @@ namespace Improvar.Controllers
                             adaequareIRN.DispDtls = dispDtls;
                         }
                         //if (!string.IsNullOrEmpty(shipDtls.Gstin) && shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
-                        if (shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
+                        //if (shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
+                        if (shipDtls.Pin != 0)
                         {
                             adaequareIRN.ShipDtls = shipDtls;
                         }
@@ -625,12 +673,11 @@ namespace Improvar.Controllers
                         adaequareIRN.ValDtls = valDtls;
                         if (VE.GenEinvIRNGrid[gridindex].WAYBILLChecked == true)// && ewbDtls.Transid != ""
                         {
-                            //if (ewbDtls.Distance == 0)
-                            //{
-                            //    VE.GenEinvIRNGrid[gridindex].MESSAGE = "Distance need to Add in Sub Ledger"; continue;
-                            //}
-                            //else
-                            if (ewbDtls.Transid == null && ewbDtls.Transdocno == null && ewbDtls.Vehno == null)
+                            if (ewbDtls.Distance == 0)
+                            {
+                                VE.GenEinvIRNGrid[gridindex].MESSAGE = "Distance need to Add in Sub Ledger"; continue;
+                            }
+                            else if (ewbDtls.Transid == null && ewbDtls.Transdocno == null && ewbDtls.Vehno == null)
                             {
                                 VE.GenEinvIRNGrid[gridindex].MESSAGE = "Transid or Transdocno or Vehno  add into your bill for generate EWB"; continue;
                             }
@@ -643,11 +690,14 @@ namespace Improvar.Controllers
                                 adaequareIRN.EwbDtls = ewbDtls;
                             }
                         }
-                        string ValidateIRNdetailsmsg = adaequareGSP.ValidateIRNdetails(adaequareIRN);
-                        if (ValidateIRNdetailsmsg != "ok") { VE.GenEinvIRNGrid[gridindex].MESSAGE = ValidateIRNdetailsmsg; continue; }
-                        string jsonstr = JsonConvert.SerializeObject(adaequareIRN);
+
                         if (CallForValidation == false)
                         {
+                            string ValidateIRNdetailsmsg = adaequareGSP.ValidateIRNdetails(adaequareIRN);
+                            if (ValidateIRNdetailsmsg != "ok") { VE.GenEinvIRNGrid[gridindex].MESSAGE = ValidateIRNdetailsmsg; continue; }
+                            string jsonstr = JsonConvert.SerializeObject(adaequareIRN);
+
+
                             AdqrRespGenIRN adqrRespGenIRN = adaequareGSP.AdqrGenIRN(jsonstr);
                             string msg = adqrRespGenIRN.message;
                             if (adaequareGSP.AppType == "LIVE")
@@ -700,6 +750,11 @@ namespace Improvar.Controllers
                                 }
                             }
                             VE.GenEinvIRNGrid[gridindex].MESSAGE = msg;
+                        }
+                        else
+                        {
+                            string jsonstr = JsonConvert.SerializeObject(adaequareIRN);
+                            return jsonstr;
                         }
                     }//if checked
                 }//grid loop

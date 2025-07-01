@@ -5399,6 +5399,459 @@ namespace Improvar.Controllers
             }
         }
 
+        public ActionResult PrintEwayBill(ReportViewinHtml VE, FormCollection FC)
+        {
+            try
+            {
+
+                string FD = VE.FDT.retStr();
+                string TD = VE.TDT.retStr();
+                string doccd = VE.DOCCD.retStr();
+                string docnfrm = VE.FDOCNO.retStr();
+                string docnto = VE.TDOCNO.retStr();
+                string docnos = "", slcd = "";
+                if (VE.TEXTBOX8 != null) docnos = VE.TEXTBOX8.retSqlformat();
+                string autonos = "";// VE.AUTONO.retStr();
+                if (FC.AllKeys.Contains("slcdvalue")) slcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
+
+
+                DataTable tbl;
+                string query = "";
+                string dbnm = CommVar.SaleSchema(UNQSNO);
+                string fdbnm = CommVar.FinSchema(UNQSNO);
+                string comp = CommVar.Compcd(UNQSNO);
+                string loc = CommVar.Loccd(UNQSNO);
+                //string compname = CommVar.CompName(UNQSNO);
+                string trntable = "", crslcd = "";
+                string MODCD = Module.MODCD;
+                if (MODCD == "F") { trntable = "T_TXNewb"; crslcd = "translcd"; } else { trntable = "t_txntrans"; crslcd = "crslcd"; }
+
+                string sqlc = "";
+                sqlc += "b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.doccd in ('" + doccd + "') " + Environment.NewLine;
+
+                if (docnos.retStr() != "")
+                {
+                    sqlc += "and b.vchrno in(" + docnos + ") " + Environment.NewLine;
+                }
+                else if (autonos.retStr() != "")
+                {
+                    sqlc += "and b.autono in(" + autonos + ") " + Environment.NewLine;
+                }
+                else
+                {
+                    if (docnfrm != "") sqlc += "and b.doconlyno >= '" + docnfrm + "' and b.doconlyno <= '" + docnto + "' " + Environment.NewLine;
+                    if (FD != "") sqlc += "and b.docdt >= to_date('" + FD + "','dd/mm/yyyy') " + Environment.NewLine;
+                    if (TD != "") sqlc += "and b.docdt <= to_date('" + TD + "','dd/mm/yyyy') " + Environment.NewLine;
+                }
+                //if (slcd != "") sqlc += "and b.slcd in (" + slcd + ") " + Environment.NewLine;
+
+                query = "";
+                query += "select a.autono, a.doccd,a.ewaybillno,a.doctype, a.blno, a.bldt, a.slnm, a.gstno," + Environment.NewLine;
+                query += " a.add1, a.add2, a.district, a.pin, " + Environment.NewLine;
+                query += "a.statecd, a.statenm,a.bslnm, a.bgstno, a.badd1, " + Environment.NewLine;
+                query += "a.badd2, a.bdistrict, a.bpin, a.bstatecd, a.bstatenm, " + Environment.NewLine;
+                query += "a.trslcd,a.trslnm, a.trgst, a.trcen, a.lorryno, a.lrno, a.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, " + Environment.NewLine;
+                query += "a.itnm, a.slno, " + Environment.NewLine;
+                query += "a.hsncode, a.guomcd, a.guomnm, a.distance, " + Environment.NewLine;
+                query += "a.goadd1, a.goadd2, a.godistrict, a.gopin,a.SUPLTYPE,a.EWB_DOCTYPE,a.subtype, " + Environment.NewLine;
+                query += "a.qnty, a.amt, " + Environment.NewLine;
+                query += "a.blamt, " + Environment.NewLine;
+                query += "a.tcsamt, " + Environment.NewLine;
+                query += "a.igstamt, a.cgstamt, a.sgstamt, a.cessamt ,a.othramt, " + Environment.NewLine;
+                query += "a.docno,a.docdt,a.irnno,a.ackno,a.ackdt,a.TRANSMODE,a.INVTYPECD,a.EWAYBILLDT,a.EWAYBILLVALID,a.uom,a.uomnm,a.qdecimal,a.congstno,a.partygstno,a.partyothaddpin " + Environment.NewLine;
+                query += "from ( " + Environment.NewLine;
+
+                query += "select a.autono, b.doccd,n.ewaybillno,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno," + Environment.NewLine;
+                query += "d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin pin, " + Environment.NewLine;
+                query += "d.statecd, upper(k.statenm) statenm, translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno,decode(p.othaddpin,null,p.add1||' '||p.add2, p.othadd1||' '||p.othadd2) badd1, " + Environment.NewLine;
+                query += "decode(p.othaddpin,null,p.add3||' '||p.add4,p.othadd3||' '||p.othadd4)badd2, p.district bdistrict, nvl(p.othaddpin,p.pin)bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, " + Environment.NewLine;
+                query += "e.slcd trslcd,e.slnm trslnm, e.gstno trgst, e.cenno trcen, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, " + Environment.NewLine;
+                query += "translate(a.itnm,'+[#/()]^',' ') itnm, a.slno, " + Environment.NewLine;
+                query += "a.hsncode, l.guomcd, l.guomnm, nvl(m.distance,0) distance, " + Environment.NewLine;
+                query += "o.goadd1||' '||o.goadd2 goadd1, o.goadd3 goadd2, o.district godistrict, o.pin gopin,nvl(n.SUPLTYPE,'O')SUPLTYPE,n.DOCTYPE EWB_DOCTYPE,n.subtype, " + Environment.NewLine;
+                query += "sum(decode(nvl(j.gst_qntyconv,0),0,1,j.gst_qntyconv)*a.qnty) qnty, sum(a.amt) amt, " + Environment.NewLine;
+                query += "nvl((select sum(blamt) blamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, " + Environment.NewLine;
+                query += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, " + Environment.NewLine;
+                query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt, " + Environment.NewLine;
+                query += "b.docno,b.docdt,r.irnno,r.ackno,to_char(r.ackdt,'dd-Mon-yy')ackdt,nvl(n.TRANSMODE,'1')TRANSMODE,a.INVTYPECD,to_char(n.EWAYBILLDT,'dd-Mon-yy hh:mi AM')EWAYBILLDT,to_char(n.EWAYBILLVALID,'dd-Mon-yy hh:mi AM')EWAYBILLVALID,a.uom,j.uomnm,nvl(j.decimals,0) qdecimal,s.gstno congstno,p.gstno partygstno,p.othaddpin partyothaddpin " + Environment.NewLine;
+                query += "from " + fdbnm + ".t_vch_gst a, " + fdbnm + ".t_cntrl_hdr b, " + CommVar.CurSchema(UNQSNO) + "." + trntable + " c, " + fdbnm + ".m_subleg d, " + Environment.NewLine;
+                query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f,  " + fdbnm + ".m_doctype g," + fdbnm + ".m_uom j, ms_state k, ms_gstuom l, " + Environment.NewLine;
+                query += fdbnm + ".m_subleg_locoth m, " + fdbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "ms_state q, " + fdbnm + ".t_txneinv r, " + fdbnm + ".m_subleg s " + Environment.NewLine;
+                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c." + crslcd + ")=e.slcd(+) and b.doccd=g.doccd and " + Environment.NewLine;
+                query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and " + Environment.NewLine;
+                query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and a.autono=r.autono(+) and " + Environment.NewLine;
+                query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is not null and a.conslcd=s.slcd(+) and " + Environment.NewLine;
+                //if (aauto != "") query += "a.autono in(" + aauto + ") and ";
+                query += sqlc + Environment.NewLine;
+                //query += "and b.docdt >= to_date('" + FD + "','dd/mm/yyyy') and b.docdt <= to_date('" + TD + "','dd/mm/yyyy') ";
+                query += "group by a.autono,b.docdt,n.ewaybillno,a.itnm, a.slno, b.doccd,g.doctype, a.blno, a.bldt,a.uom,j.uomnm, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), " + Environment.NewLine;
+                query += "d.add1||' '||d.add2 , d.add3||' '||d.add4 , d.pin , " + Environment.NewLine;
+                query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, decode(p.othaddpin,null,p.add1||' '||p.add2, p.othadd1||' '||p.othadd2), " + Environment.NewLine;
+                query += "decode(p.othaddpin,null,p.add3||' '||p.add4,p.othadd3||' '||p.othadd4), p.district, nvl(p.othaddpin,p.pin), p.statecd, upper(q.statenm), " + Environment.NewLine;
+                query += "e.slcd,e.slnm, e.gstno, e.cenno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, " + Environment.NewLine;
+                if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' '), a.slno, "; else query += "'', 1, " + Environment.NewLine;
+                query += "a.hsncode,l.guomcd, l.guomnm, nvl(m.distance,0), " + Environment.NewLine;
+                query += "o.goadd1||' '||o.goadd2, o.goadd3, o.district, o.pin,n.SUPLTYPE,n.DOCTYPE,n.subtype, " + Environment.NewLine;
+                query += "b.docno,r.irnno,r.ackno,r.ackdt,n.TRANSMODE,a.INVTYPECD,n.EWAYBILLDT,n.EWAYBILLVALID,nvl(j.decimals,0),s.gstno,p.gstno,p.othaddpin " + Environment.NewLine;
+
+                query += "union all " + Environment.NewLine;
+                query += "select a.autono, b.doccd,n.ewaybillno,g.doctype, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno," + Environment.NewLine;
+                query += "d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin pin, " + Environment.NewLine;
+                query += "d.statecd, upper(k.statenm) statenm, translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno, decode(p.othaddpin,null,p.add1||' '||p.add2, p.othadd1||' '||p.othadd2) badd1, " + Environment.NewLine;
+                query += "decode(p.othaddpin,null,p.add3||' '||p.add4,p.othadd3||' '||p.othadd4) badd2, p.district bdistrict, nvl(p.othaddpin,p.pin) bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, " + Environment.NewLine;
+                query += "e.slcd trslcd,e.slnm trslnm, e.gstno trgst, e.cenno trcen, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, " + Environment.NewLine;
+                query += "translate(a.itnm,'+[#/()]^',' ') itnm, a.slno, " + Environment.NewLine;
+                query += "a.hsncode, l.guomcd, l.guomnm, nvl(m.distance,0) distance, " + Environment.NewLine;
+                query += "o.goadd1||' '||o.goadd2 goadd1, o.goadd3 goadd2, o.district godistrict, o.pin gopin,nvl(n.SUPLTYPE,'O')SUPLTYPE,n.DOCTYPE EWB_DOCTYPE,n.subtype, " + Environment.NewLine;
+                query += "sum(decode(nvl(j.gst_qntyconv,0),0,1,j.gst_qntyconv)*a.qnty) qnty, sum(a.amt) amt, " + Environment.NewLine;
+                query += "nvl((select sum(blamt) blamt from " + dbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, " + Environment.NewLine;
+                query += "nvl((select sum(tcsamt) tcsamt from " + dbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, " + Environment.NewLine;
+                query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt, " + Environment.NewLine;
+                query += "b.docno,b.docdt,r.irnno,r.ackno,to_char(r.ackdt,'dd-Mon-yy')ackdt,nvl(n.TRANSMODE,'1')TRANSMODE,a.INVTYPECD,to_char(n.EWAYBILLDT,'dd-Mon-yy hh:mi AM')EWAYBILLDT,to_char(n.EWAYBILLVALID,'dd-Mon-yy hh:mi AM')EWAYBILLVALID,a.uom,j.uomnm,nvl(j.decimals,0) qdecimal,s.gstno congstno,p.gstno partygstno,p.othaddpin partyothaddpin " + Environment.NewLine;
+                query += "from " + dbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + CommVar.CurSchema(UNQSNO) + "." + trntable + " c, " + fdbnm + ".m_subleg d, " + Environment.NewLine;
+                query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f,  " + dbnm + ".m_doctype g," + fdbnm + ".m_uom j, ms_state k, ms_gstuom l, " + Environment.NewLine;
+                query += fdbnm + ".m_subleg_locoth m, " + dbnm + ".T_TXNewb n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "ms_state q, " + fdbnm + ".t_txneinv r, " + fdbnm + ".m_subleg s " + Environment.NewLine;
+                query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c." + crslcd + ")=e.slcd(+) and b.doccd=g.doccd and " + Environment.NewLine;
+                query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and " + Environment.NewLine;
+                query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and a.autono=r.autono(+) and " + Environment.NewLine;
+                query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is not null and a.conslcd=s.slcd(+) and " + Environment.NewLine;
+                //if (aauto != "") query += "a.autono in(" + aauto + ") and ";
+                query += sqlc + Environment.NewLine;
+                //query += "and b.docdt >= to_date('" + FD + "','dd/mm/yyyy') and b.docdt <= to_date('" + TD + "','dd/mm/yyyy') ";
+                query += "group by a.autono,b.docdt,n.ewaybillno,a.itnm, a.slno, b.doccd,g.doctype, a.blno, a.bldt,a.uom,j.uomnm, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), " + Environment.NewLine;
+                query += "d.add1||' '||d.add2 , d.add3||' '||d.add4 , d.pin , " + Environment.NewLine;
+                query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, decode(p.othaddpin,null,p.add1||' '||p.add2, p.othadd1||' '||p.othadd2), " + Environment.NewLine;
+                query += "decode(p.othaddpin,null,p.add3||' '||p.add4,p.othadd3||' '||p.othadd4), p.district, nvl(p.othaddpin,p.pin), p.statecd, upper(q.statenm), " + Environment.NewLine;
+                query += "e.slcd,e.slnm, e.gstno, e.cenno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, " + Environment.NewLine;
+                if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' '), a.slno, "; else query += "'', 1, " + Environment.NewLine;
+                query += "a.hsncode,l.guomcd, l.guomnm, nvl(m.distance,0), " + Environment.NewLine;
+                query += "o.goadd1||' '||o.goadd2, o.goadd3, o.district, o.pin,n.SUPLTYPE,n.DOCTYPE,n.subtype, " + Environment.NewLine;
+                query += "b.docno,r.irnno,r.ackno,r.ackdt,n.TRANSMODE,a.INVTYPECD,n.EWAYBILLDT,n.EWAYBILLVALID,nvl(j.decimals,0),s.gstno,p.gstno,p.othaddpin " + Environment.NewLine;
+
+
+                query += ")a ";
+                query += "order by a.blno, a.bldt, a.autono, a.slno ";
+                tbl = masterHelp.SQLquery(query);
+
+                if (tbl.Rows.Count == 0) return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
+
+                DataTable rsComp;
+                query = "";
+
+                query = "select a.locnm slnm, a.gstno, a.add1||' '||a.add2 add1, a.add3||' '||a.add4 add2, a.district, a.pin, b.compnm,a.statecd, upper(c.statenm) statenm ";
+                query += "from " + fdbnm + ".m_loca a, " + fdbnm + ".m_comp b, improvar.ms_state c ";
+                query += "where a.compcd=b.compcd and a.statecd=c.statecd(+) and ";
+                query += "a.compcd='" + comp + "' and a.loccd='" + loc + "' ";
+                rsComp = masterHelp.SQLquery(query);
+
+                DataTable FINALRECORD = new DataTable();
+                FINALRECORD.Columns.Add("AUTONO", typeof(string));
+                FINALRECORD.Columns.Add("DOCNO", typeof(string));
+                FINALRECORD.Columns.Add("DOCDT", typeof(string));
+                FINALRECORD.Columns.Add("IRNNO", typeof(string));
+                FINALRECORD.Columns.Add("ACKNO", typeof(string));
+                FINALRECORD.Columns.Add("ACKDT", typeof(string));
+                FINALRECORD.Columns.Add("EWAYBILLNO", typeof(string));
+                FINALRECORD.Columns.Add("TRANSMODE", typeof(string));
+                FINALRECORD.Columns.Add("DISTANCE", typeof(string));
+                FINALRECORD.Columns.Add("INVTYPECD", typeof(string));
+                FINALRECORD.Columns.Add("EWAYBILLDT", typeof(string));
+                FINALRECORD.Columns.Add("EWAYBILLVALID", typeof(string));
+                FINALRECORD.Columns.Add("SUPLTYPE", typeof(string));
+
+                FINALRECORD.Columns.Add("fromSLNM", typeof(string));
+                FINALRECORD.Columns.Add("fromGSTNO", typeof(string));
+                FINALRECORD.Columns.Add("fromSTATENM", typeof(string));
+
+                FINALRECORD.Columns.Add("fromADD1", typeof(string));
+                FINALRECORD.Columns.Add("fromADD2", typeof(string));
+                FINALRECORD.Columns.Add("fromDISTRICT", typeof(string));
+                FINALRECORD.Columns.Add("fromPIN", typeof(string));
+
+                FINALRECORD.Columns.Add("toSLNM", typeof(string));
+                FINALRECORD.Columns.Add("toGSTNO", typeof(string));
+                FINALRECORD.Columns.Add("toSTATENM", typeof(string));
+
+                FINALRECORD.Columns.Add("toADD1", typeof(string));
+                FINALRECORD.Columns.Add("toADD2", typeof(string));
+                FINALRECORD.Columns.Add("toDISTRICT", typeof(string));
+                FINALRECORD.Columns.Add("toPIN", typeof(string));
+                FINALRECORD.Columns.Add("shiptostatenm", typeof(string));
+
+                FINALRECORD.Columns.Add("HSNCODE", typeof(string));
+                FINALRECORD.Columns.Add("ITNM", typeof(string));
+                FINALRECORD.Columns.Add("QNTY", typeof(double));
+                FINALRECORD.Columns.Add("UOMCD", typeof(string));
+                FINALRECORD.Columns.Add("CGSTPER", typeof(string));
+                FINALRECORD.Columns.Add("SGSTPER", typeof(string));
+                FINALRECORD.Columns.Add("OTHRAMT", typeof(string));
+                FINALRECORD.Columns.Add("BLAMT", typeof(string));
+                FINALRECORD.Columns.Add("AMT", typeof(string));
+                FINALRECORD.Columns.Add("TRSLNM", typeof(string));
+                FINALRECORD.Columns.Add("LORRYNO", typeof(string));
+                FINALRECORD.Columns.Add("gstper", typeof(string));
+                FINALRECORD.Columns.Add("gstdesc", typeof(string));
+
+                FINALRECORD.Columns.Add("gstdesc1", typeof(string));
+                FINALRECORD.Columns.Add("gstdesc2", typeof(string));
+                FINALRECORD.Columns.Add("gstamt1", typeof(string));
+                FINALRECORD.Columns.Add("gstamt2", typeof(string));
+                FINALRECORD.Columns.Add("tAMT", typeof(string));
+                FINALRECORD.Columns.Add("trslcd", typeof(string));
+                FINALRECORD.Columns.Add("TOTALCGST", typeof(string));
+                FINALRECORD.Columns.Add("TOTALSGST", typeof(string));
+                FINALRECORD.Columns.Add("TOTALIGST", typeof(string));
+                FINALRECORD.Columns.Add("QRIMGPATH", typeof(string), "");
+                FINALRECORD.Columns.Add("qdecimal", typeof(double), "");
+                FINALRECORD.Columns.Add("copymode", typeof(string));
+                FINALRECORD.Columns.Add("TRGSTNO", typeof(string));
+                FINALRECORD.Columns.Add("LRNO", typeof(string));
+
+                string[] copyno = new string[6];
+                if (VE.Checkbox1 == true) copyno[0] = "Y"; else copyno[0] = "N";
+                if (VE.Checkbox2 == true) copyno[1] = "Y"; else copyno[1] = "N";
+                if (VE.Checkbox3 == true) copyno[2] = "Y"; else copyno[2] = "N";
+                if (VE.Checkbox4 == true) copyno[3] = "Y"; else copyno[3] = "N";
+                if (VE.Checkbox5 == true) copyno[4] = "Y"; else copyno[4] = "N";
+                if (VE.Checkbox6 == true) copyno[5] = "Y"; else copyno[5] = "N";
+
+                if (copyno[0] == "N" && copyno[1] == "N" && copyno[2] == "N" && copyno[3] == "N" && copyno[4] == "N" && copyno[5] == "N")
+                {
+                    copyno[0] = "Y";
+                }
+
+                int i = 0;
+                double maxr = tbl.Rows.Count - 1;
+                Int16 maxCopy = 5;
+                string copymode = "";
+                int istore = 0, ilast = 0;
+                string auto1 = "";
+                while (i <= maxr)
+                {
+                    string autono = tbl.Rows[i]["AUTONO"].retStr();
+                    bool bltoshipto = false;
+                    if (tbl.Rows[i]["bgstno"].ToString() == tbl.Rows[i]["gstno"].ToString()) bltoshipto = true;
+
+                    istore = i;
+                    string Savepath = "C:/IPSMART/EWBQrcode/" + tbl.Rows[i]["EWAYBILLNO"].retStr() + ".png";
+                    string QRtext = tbl.Rows[i]["EWAYBILLNO"].retStr() + "/" + CommVar.GSTNO(UNQSNO) + "/" + tbl.Rows[i]["EWAYBILLDT"].ToString();
+                    Cn.GenerateQRcode(QRtext, "", Savepath);
+                    for (int ic = 0; ic <= maxCopy; ic++)
+                    {
+                        i = istore;
+                        double tamt = 0;
+                        double tcgst = 0;
+                        double tsgst = 0;
+                        double tigst = 0;
+                        while (tbl.Rows[i]["AUTONO"].retStr() == autono)
+                        {
+                            if (copyno[ic].ToString() == "N")
+                            {
+                                i = i + 1;
+                                break;
+                            }
+                            switch (ic)
+                            {
+                                case 0:
+                                    if (VE.MENU_PARA == "SGC") { copymode = "ORIGINAL FOR CONSIGNEE"; break; }
+                                    { copymode = "ORIGINAL FOR RECIPIENT"; break; }
+                                case 1:
+                                    copymode = "DUPLICATE FOR TRANSPORTER"; break;
+                                case 2:
+                                    if (VE.MENU_PARA == "SGC") { copymode = "TRIPLICATE FOR CONSIGNEE"; break; }
+                                    { copymode = "TRIPLICATE FOR SUPPLIER"; break; }
+                                case 3:
+                                    copymode = "EXTRA COPY"; break;
+                                case 4:
+                                    copymode = "EXTRA COPY"; break;
+                                case 5:
+                                    copymode = "EXTRA COPY"; break;
+                                default: copymode = ""; break;
+                            }
+                            DataRow fin1 = FINALRECORD.NewRow();
+
+                            auto1 = tbl.Rows[i]["autono"].ToString();
+                            fin1["AUTONO"] = auto1 + ic.ToString();
+
+                            fin1["DOCNO"] = tbl.Rows[i]["DOCNO"].retStr();
+                            fin1["DOCDT"] = tbl.Rows[i]["DOCDT"].retDateStr();
+                            fin1["IRNNO"] = tbl.Rows[i]["IRNNO"].retStr();
+                            fin1["ACKNO"] = tbl.Rows[i]["ACKNO"].retStr();
+                            fin1["ACKDT"] = tbl.Rows[i]["ACKDT"].retStr();
+                            fin1["EWAYBILLNO"] = tbl.Rows[i]["EWAYBILLNO"].retStr();
+                            fin1["LRNO"] = tbl.Rows[i]["lrno"].retStr();
+
+                            if (tbl.Rows[i]["TRANSMODE"].retStr() == "1")
+                            {
+                                fin1["TRANSMODE"] = "1 - Road";
+                            }
+                            if (tbl.Rows[i]["TRANSMODE"].retStr() == "")
+                            {
+                                fin1["TRANSMODE"] = "2 - Rail";
+                            }
+                            if (tbl.Rows[i]["TRANSMODE"].retStr() == "3")
+                            {
+                                fin1["TRANSMODE"] = "3 - Air";
+                            }
+                            if (tbl.Rows[i]["TRANSMODE"].retStr() == "4")
+                            {
+                                fin1["TRANSMODE"] = "4 - Ship";
+                            }
+
+                            fin1["DISTANCE"] = tbl.Rows[i]["DISTANCE"].retStr();
+
+                            if (tbl.Rows[i]["INVTYPECD"].retStr() == "01")
+                            {
+                                fin1["INVTYPECD"] = "Regular";
+                            }
+                            if (tbl.Rows[i]["INVTYPECD"].retStr() == "02")
+                            {
+                                fin1["INVTYPECD"] = "Bill To-Ship To";
+                            }
+                            if (tbl.Rows[i]["INVTYPECD"].retStr() == "03")
+                            {
+                                fin1["INVTYPECD"] = "Bill From - Dispatch";
+                            }
+                            if (tbl.Rows[i]["INVTYPECD"].retStr() == "04")
+                            {
+                                fin1["INVTYPECD"] = "Bill To-Ship To & Bill From - Dispatch";
+                            }
+                            if ((tbl.Rows[i]["congstno"].retStr() != "" && (tbl.Rows[i]["congstno"].retStr() != tbl.Rows[i]["partygstno"].retStr())) || tbl.Rows[i]["partyothaddpin"].retStr() != "")
+                            {
+                                fin1["INVTYPECD"] = "Bill To-Ship To";
+                            }
+                            fin1["EWAYBILLDT"] = tbl.Rows[i]["EWAYBILLDT"].ToString();
+                            fin1["EWAYBILLVALID"] = tbl.Rows[i]["EWAYBILLVALID"].retStr();
+                            if (tbl.Rows[i]["SUPLTYPE"].retStr() == "O")
+                            {
+                                fin1["SUPLTYPE"] = "Outward-Supply";
+                            }
+                            else
+                            {
+                                fin1["SUPLTYPE"] = "Inward-Supply";
+                            }
+
+
+                            fin1["fromSLNM"] = rsComp.Rows[0]["compnm"].retStr();
+                            fin1["fromGSTNO"] = rsComp.Rows[0]["GSTNO"].retStr();
+
+
+
+                            if (tbl.Rows[i]["goadd1"].ToString().Trim() != "")
+                            {
+                                fin1["fromADD1"] = tbl.Rows[i]["goadd1"].ToString();
+                                fin1["fromADD2"] = tbl.Rows[i]["goadd2"].ToString();
+                                fin1["fromDISTRICT"] = tbl.Rows[i]["godistrict"].ToString();
+                                fin1["fromPIN"] = tbl.Rows[i]["gopin"].ToString();
+
+                            }
+                            else
+                            {
+                                fin1["fromADD1"] = rsComp.Rows[0]["add1"].ToString();
+                                fin1["fromADD2"] = rsComp.Rows[0]["add2"].ToString();
+                                fin1["fromDISTRICT"] = rsComp.Rows[0]["district"].ToString();
+                                fin1["fromPIN"] = rsComp.Rows[0]["pin"].ToString();
+                            }
+
+                            fin1["fromSTATENM"] = rsComp.Rows[0]["STATENM"].retStr();
+                            fin1["toSLNM"] = tbl.Rows[i]["BSLNM"].retStr();
+                            fin1["toGSTNO"] = tbl.Rows[i]["bgstno"].ToString() == "" ? "URP" : tbl.Rows[i]["bgstno"].ToString();// tbl.Rows[i]["BGSTNO"].retStr();
+                            fin1["toSTATENM"] = tbl.Rows[i]["BSTATENM"].retStr();
+
+
+                            fin1["toADD1"] = (bltoshipto == true ? tbl.Rows[i]["badd1"].ToString() : tbl.Rows[i]["add1"].ToString());// tbl.Rows[i]["BADD1"].retStr();
+                            fin1["toADD2"] = (bltoshipto == true ? tbl.Rows[i]["badd2"].ToString() : tbl.Rows[i]["add2"].ToString());// tbl.Rows[i]["BADD2"].retStr();
+                            fin1["toDISTRICT"] = (bltoshipto == true ? tbl.Rows[i]["bdistrict"].ToString() : tbl.Rows[i]["district"].ToString()); //tbl.Rows[i]["BDISTRICT"].retStr();
+                            fin1["toPIN"] = (bltoshipto == true ? tbl.Rows[i]["bPIN"].ToString() : tbl.Rows[i]["PIN"].ToString()); //tbl.Rows[i]["PIN"].retStr();
+                            fin1["shiptostatenm"] = (bltoshipto == true ? tbl.Rows[i]["BSTATENM"].ToString() : tbl.Rows[i]["STATENM"].ToString()); //tbl.Rows[i]["PIN"].retStr();
+
+                            fin1["HSNCODE"] = tbl.Rows[i]["HSNCODE"].retStr();
+                            fin1["ITNM"] = tbl.Rows[i]["ITNM"].retStr();
+                            fin1["QNTY"] = tbl.Rows[i]["QNTY"].retDbl();
+                            fin1["UOMCD"] = tbl.Rows[i]["UOMnm"].retStr();
+                            fin1["CGSTPER"] = tbl.Rows[i]["CGSTPER"].retStr();
+                            fin1["SGSTPER"] = tbl.Rows[i]["SGSTPER"].retStr();
+                            fin1["OTHRAMT"] = tbl.Rows[i]["OTHRAMT"].retDbl().ToINRFormat();
+                            fin1["BLAMT"] = tbl.Rows[i]["BLAMT"].retDbl().ToINRFormat();
+                            fin1["AMT"] = tbl.Rows[i]["AMT"].retDbl().ToINRFormat();
+                            fin1["TRSLNM"] = tbl.Rows[i]["TRSLNM"].retStr();
+                            fin1["LORRYNO"] = tbl.Rows[i]["LORRYNO"].retStr();
+                            if (tbl.Rows[i]["igstper"].retDbl() != 0)
+                            {
+                                fin1["gstper"] = tbl.Rows[i]["igstper"].retStr();
+                                fin1["gstdesc"] = "(I)";
+                            }
+                            else if (tbl.Rows[i]["cgstper"].retDbl() + tbl.Rows[i]["sgstper"].retDbl() != 0)
+                            {
+                                fin1["gstper"] = tbl.Rows[i]["cgstper"].retStr() + "+" + tbl.Rows[i]["sgstper"].retStr();
+                                fin1["gstdesc"] = "(C+S)";
+                            }
+
+
+
+                            fin1["trslcd"] = tbl.Rows[i]["trslcd"].retStr();
+                            fin1["TRGSTNO"] = tbl.Rows[i]["trgst"].retStr();
+
+                            tamt += tbl.Rows[i]["AMT"].retDbl();
+                            fin1["tamt"] = tamt.ToINRFormat();
+
+
+                            tcgst += tbl.Rows[i]["CGSTAMT"].retDbl();
+                            fin1["TOTALCGST"] = tcgst.ToINRFormat();
+
+                            tsgst += tbl.Rows[i]["SGSTAMT"].retDbl();
+                            fin1["TOTALSGST"] = tsgst.ToINRFormat();
+
+                            tigst += tbl.Rows[i]["IGSTAMT"].retDbl();
+                            fin1["TOTALIGST"] = tigst.ToINRFormat();
+
+                            if (fin1["TOTALIGST"].retDbl() != 0)
+                            {
+                                fin1["gstdesc1"] = "IGST Amt";
+                                fin1["gstamt1"] = fin1["TOTALIGST"].retStr();
+                            }
+                            else if (fin1["TOTALCGST"].retDbl() + fin1["TOTALSGST"].retDbl() != 0)
+                            {
+                                fin1["gstdesc1"] = "CGST Amt";
+                                fin1["gstdesc2"] = "SGST Amt:";
+                                fin1["gstamt1"] = fin1["TOTALCGST"].retStr();
+                                fin1["gstamt2"] = fin1["TOTALSGST"].retStr();
+                            }
+
+                            fin1["QRIMGPATH"] = tbl.Rows[i]["EWAYBILLNO"].ToString() == "" ? "" : "C:\\IPSMART\\EWBQrcode\\" + tbl.Rows[i]["EWAYBILLNO"].ToString() + ".png";
+                            fin1["qdecimal"] = tbl.Rows[i]["qdecimal"].retDbl();
+
+                            fin1["copymode"] = copymode;
+
+                            FINALRECORD.Rows.Add(fin1);
+                            i++;
+                            ilast = i;
+                            if (i > maxr) break;
+                        }
+                        i = ilast;
+                    }
+                    if (i > maxr) break;
+                }
+
+                string compaddress = masterHelp.retCompAddress();
+                ReportDocument reportdocument = new ReportDocument();
+                reportdocument.Load(Server.MapPath("~/Report/EwayBillPrint.rpt"));
+                reportdocument.SetDataSource(FINALRECORD);
+                Response.Buffer = false;
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                stream.Seek(0, SeekOrigin.Begin);
+                return new FileStreamResult(stream, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+        }
+
     }
 }
 
