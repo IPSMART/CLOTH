@@ -1111,6 +1111,7 @@ namespace Improvar
                 sql += "and d.m_autono=o.m_autono(+) " + Environment.NewLine;
                 if (ShowOnlyFavitem == true) sql += "and nvl(d.favitem, 'N') = 'Y' ";
                 if (skipNegetivStock == true) sql += " and nvl(a.balqnty, 0)> 0 " + Environment.NewLine;
+                if (itcd.retStr() != "") sql += "and a.itcd in (" + itcd + ") " + Environment.NewLine;
 
             }
             else

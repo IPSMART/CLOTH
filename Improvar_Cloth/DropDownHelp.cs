@@ -191,7 +191,7 @@ namespace Improvar
             sql += "from " + scm + ".t_cntrl_hdr a, " + scm + "." + hdrtbl + " b, " + scmf + ".m_subleg c, " + scm + ".m_doctype d ";
             sql += "where a.autono=b.autono and b.slcd=c.slcd(+) and a.compcd='" + COM + "' and a.loccd = '" + LOC + "' and ";
             sql += "nvl(a.cancel,'N')='N' and a.doccd=d.doccd(+) ";
-            if(doctype!= "''") sql += "and d.doctype in (" + doctype + ") ";
+            if (doctype != "''") sql += "and d.doctype in (" + doctype + ") ";
             DataTable tbl = MasterHelp.SQLquery(sql);
 
             List<DropDown_list_TXN> sllist = new List<DropDown_list_TXN>();
@@ -280,7 +280,7 @@ namespace Improvar
             return sllist;
         }
         public List<DropDown_list_COLLNM> GetCOLLNMforSelection(string collnm = "")
-        {          
+        {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var LineList = (from c in DB.M_COLLECTION
                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
@@ -411,6 +411,25 @@ namespace Improvar
                              }).Distinct().ToList();
             return locnmlist;
         }
+        public List<DropDown_list_MTRLJOBCDList> GetMtrljobforSelection()
+        {
+            List<DropDown_list_MTRLJOBCDList> sllist = new List<DropDown_list_MTRLJOBCDList>();
 
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+
+            string SQL = "select a.MTRLJOBCD,a.MTRLJOBNM  ";
+            SQL += "from " + scm + ".M_MTRLJOBMST a, " + scm + ".m_cntrl_hdr b ";
+            SQL += "where a.m_autono = b.m_autono(+) and nvl(b.inactive_tag, 'N')= 'N' ";
+            SQL += "order by a.MTRLJOBNM ";
+            DataTable tbl = MasterHelp.SQLquery(SQL);
+
+            sllist = (from DataRow DR in tbl.Rows
+                                 select new DropDown_list_MTRLJOBCDList()
+                                 {
+                                     Value = DR["MTRLJOBCD"].ToString(),
+                                     Text = DR["MTRLJOBNM"].ToString()
+                                 }).ToList();
+            return sllist;
+        }
     }
 }
