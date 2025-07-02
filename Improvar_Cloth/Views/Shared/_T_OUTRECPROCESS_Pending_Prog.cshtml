@@ -10,6 +10,7 @@
         }
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_OUTRECPROCESS_Pending_Prog'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        FooterFilter('_T_OUTRECPROCESS_Pending_Prog');
     });
 </script>
 <script>
@@ -22,7 +23,7 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 <div class="col-md-8">
-                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'PENDING_POPUP');" />
+                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_OUTRECPROCESS_Pending_Prog');" />
                     <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Program Details</b></center>
@@ -90,7 +91,7 @@
                                             @Html.TextBoxFor(model => Model.PENDING_POPUP[i].DOCNO, new { id = "Docno_POPUP" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.PENDING_POPUP[i].DOCDT, new { id = "Docdt_POPUP" + i, @class = " atextBoxFor ", maxlength = 20, @readonly = "readonly" })
+                                            @Html.EditorFor(model => Model.PENDING_POPUP[i].DOCDT, new { htmlAttributes = new { id = "Docdt_POPUP" + i, @class = " atextBoxFor ", maxlength = 20, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDING_POPUP[i].PROGUNIQNO, new { id = "proguniqno_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
@@ -135,6 +136,25 @@
                                 }
                             }
                         </tbody>
+                        <tfoot>
+                            <tr class="sticky-footer">
+                                <th class="sticky-cell"></th>                                
+                                <th title="Doc No"></th>
+                                <th title="Doc Dt"></th>
+                                <th title="Uniq. No"></th>
+                                <th title="Bar Code No"></th>
+                                <th title="Item Group"></th>
+                                <th title="Item"></th>
+                                <th title="Style No"></th>
+                                <th title="bal. Nos"></th>
+                                <th title="bal. Qnty"></th>
+                                <th title="Item Remarks"></th>
+                                <th title="Fabric Item"></th>
+                                <th title="Order No"></th>
+                                <th title=">Order Slno"></th>
+                                <th title="Make StyleNo"></th>                                
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

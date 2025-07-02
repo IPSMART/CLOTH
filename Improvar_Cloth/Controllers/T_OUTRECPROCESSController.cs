@@ -4886,7 +4886,7 @@ namespace Improvar.Controllers
                                     select new PENDING_POPUP
                                     {
                                         DOCNO = dr["docno"].retStr(),
-                                        DOCDT = dr["docdt"].retStr(),
+                                        DOCDT = dr["docdt"].retDateStr(),
                                         PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
                                         BARNO = dr["barno"].retStr(),
                                         ITGRPNM = dr["itgrpnm"].retStr(),

@@ -2049,6 +2049,8 @@ namespace Improvar.Controllers
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         string sbarno = getmasterbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
+                        DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
+                        DB.T_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });                        
                         DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -2077,12 +2079,12 @@ namespace Improvar.Controllers
                                 System.IO.File.Delete(path); //Delete file if it  exist  
                             }
                         }
+                        DB.T_BATCH_IMG_HDR.RemoveRange(DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.SaveChanges();
                         DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
-                        DB.SaveChanges();
-                        DB.T_BATCH_IMG_HDR.RemoveRange(DB.T_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
-                        DB.SaveChanges();
+                        DB.SaveChanges();                       
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
