@@ -132,7 +132,7 @@ namespace Improvar.ViewModels
         public string LOCABIN { get; set; }
         public double T_NOS { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_QNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_AMT { get; set; }
@@ -202,7 +202,8 @@ namespace Improvar.ViewModels
         public string Prog_UomTotal { get; set; }
         public string Rec_UomTotal { get; set; }
         public string Det_UomTotal { get; set; }
-
+        public List<PENDING_POPUP> PENDING_POPUP { get; set; }
+        public List<TBILTYR> TBILTYR { get; set; }
         public List<DropDown_list2> RETURN_TYPE { get; set; }
 
 

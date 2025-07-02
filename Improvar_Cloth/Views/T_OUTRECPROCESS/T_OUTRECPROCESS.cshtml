@@ -468,8 +468,11 @@
         }
     }
 </script>
+
 <script>
+    
     function PendingProgramme() {
+        debugger;
         if (!emptyFieldCheck("Please Select / Enter Party", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         var DOCDT = $("#DOCDT").val();
@@ -478,25 +481,14 @@
         var AUTONO = $("#AUTONO").val();
         $.ajax({
             type: 'POST',
-            url: "@Url.Action("GetPendingProgramme", PageControllerName)",
-            data: { docdt: DOCDT, jobcd: JOBCD, slcd: SLCD, autono: AUTONO },
+            url: "@Url.Action("GetPendingData", PageControllerName)",
+            data: $('form').serialize() + "&DOCDT=" + DOCDT + "&SLCD=" + SLCD + "&JOBCD=" + JOBCD + "&AUTONO=" + AUTONO,
             success: function (result) {
-                if (result == "1") {
-                    document.getElementById("PendProgramme").disabled = true;
-                    $("#SLCD").attr('readonly', 'readonly');
-                    $('#PARTY_HELP').hide("");
-                    $("#SLCD").removeAttr("onblur");
-
-                    $("li").removeClass("active").addClass("");
-                    $(".nav-tabs li:nth-child(2)").addClass('active');
-                    //below set the  child sequence
-                    $(".tab-content div").removeClass("active");
-                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                    $("#BARCODE").focus();
-                }
-                else {
-                    msgInfo(result);
-                }
+                debugger;
+                if (result == 0) { return msgWarning("Record not Found!"); }
+                $("#popup").animate({ marginTop: '-10px' }, 50);
+                $("#popup").html(result);
+                $("#WaitingMode").hide();                
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -553,6 +545,7 @@
     }
 
     function FillReceiveTab() {
+        debugger;
         var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
         if (GridRow == 0) {
             $("li").removeClass("active").addClass("");
@@ -564,11 +557,16 @@
             message_value = "BARCODE";
             return false;
         }
+        var DOCDT = $("#DOCDT").val();
+        var SLCD = $("#SLCD").val();
+        var JOBCD = $("#JOBCD").val();
+        var AUTONO = $("#AUTONO").val();
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillReceiveData", PageControllerName)",
-            data: $('form').serialize(),
+            data: $('form').serialize() + "&DOCDT=" + DOCDT + "&SLCD=" + SLCD + "&JOBCD=" + JOBCD + "&AUTONO=" + AUTONO,
             success: function (result) {
+                debugger;
                 $("#partialdivReceive").html(result);
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(3)").addClass('active');
@@ -1625,6 +1623,65 @@
         window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
     }
 </script>
+
+
+<script>
+    function SelectPendingProgram() {
+        debugger;
+        if (!emptyFieldCheck("Please Select / Enter Party", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        var DOCDT = $("#DOCDT").val();
+        var SLCD = $("#SLCD").val();
+        var JOBCD = $("#JOBCD").val();
+        var AUTONO = $("#AUTONO").val();
+        var Count = 0;
+        var GridPendingPO = $("#_T_OUTRECPROCESS_Pending_Prog > tbody > tr").length;
+        for (var i = 0; i <= GridPendingPO - 1; i++) {
+            var Check = document.getElementById("chkid_R_POPUP_" + i).checked;
+            if (Check == true) {
+                Count = Count + 1;
+            }
+        }
+        if (Count > 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("SelectPendingProgram", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&DOCDT=" + DOCDT + "&SLCD=" + SLCD + "&JOBCD=" + JOBCD + "&AUTONO=" + AUTONO,
+                success: function (result) {
+                    debugger;
+                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                $("#partialdivProgramme").html(result);
+                $("#WaitingMode").hide();
+                $('#popup').html("");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+            });
+
+        }
+       
+    }
+    function CancelProgram() {
+        $('#popup').html("");
+        $('.PopUp_Backround').fadeOut();
+    }
+</script>
+<script>
+    function SelectAllCheck(index) {
+        debugger;
+        var checkall = document.getElementById("chkid_R_POPUP_" + index).checked;
+        var GridRow = $("#_T_OUTRECPROCESS_Pending_Prog > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                document.getElementById("chkid_R_POPUP_" + i).checked = checkall;
+            }
+    }
+</script>
+
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1837,6 +1894,8 @@
                         <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                         <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                     </ul>
+                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:15%;position:absolute;">
+                    </div>
                     <div class="tab-content">
                         <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                             <div class="row">
@@ -2039,7 +2098,7 @@
                                 </div>*@
                         </div>
                         <div id="Programme" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                            @if (Model.DefaultAction != "V")
+                            @*@if (Model.DefaultAction != "V")
                             {
                                 <div class="row">
                                     <div class="col-md-3">
@@ -2057,7 +2116,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            }
+                            }*@
                             <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                                 <div>
                                     <div id="partialdivProgramme" style="margin-top:0px;">

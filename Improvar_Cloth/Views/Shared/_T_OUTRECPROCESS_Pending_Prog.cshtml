@@ -8,7 +8,7 @@
         else if ("@Model.DefaultAction" == "A") {
             // $('form :input:enabled:visible:not([readonly]):first').focus();
         }
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_OUTRECPROCESSController_Pending_Prog'));
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_OUTRECPROCESS_Pending_Prog'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
 </script>
@@ -29,10 +29,12 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
-                    <table id="_T_OUTRECPROCESSController_Pending_Prog" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1080px;">
+                    <table id="_T_OUTRECPROCESS_Pending_Prog" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1080px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="" style="width:15px;"> </th>
+                                <th class="sticky-cell" style="width: 15px;padding-left:5px;padding-right:5px;">
+                                    <input type="checkbox" name="Test" id="allchkord" onclick="SetAllCheckBoxesFilter(this, '_T_OUTRECPROCESS_Pending_Prog', 'chkid_R_POPUP_')" />
+                                </th>
                                 <th class="" style="width:100px;">Doc No</th>
                                 <th class="" style="width:70px;">Doc Dt</th>
                                 <th class="" style="width:90px;">Uniq. No.</th>
@@ -57,7 +59,10 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="" style="padding-left:5px;padding-right:5px;">
-                                            @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_R_POPUP_', 'PROGAUTONO_R_POPUP_', 'PENDING_POPUP');" })
+                                            @*@Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_R_POPUP_', 'PROGAUTONO_R_POPUP_', 'PENDING_POPUP');" })*@
+                                           
+                                                @Html.CheckBoxFor(model => model.PENDING_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i })
+                                           
                                             @Html.HiddenFor(model => model.PENDING_POPUP[i].PROGAUTONO, new { id = "PROGAUTONO_R_POPUP_" + i })
                                             @Html.HiddenFor(model => model.PENDING_POPUP[i].PROGAUTOSLNO, new { id = "PROGAUTOSLNO_R_POPUP_" + i })
                                         </td>

@@ -509,7 +509,7 @@ namespace Improvar.Controllers
                             v.CUTLENGTH = data[0].CUTLENGTH.retDbl();
                         }
                     }
-                }                              
+                }
 
                 VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
                 VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();
@@ -1807,7 +1807,7 @@ namespace Improvar.Controllers
                 {
                     if (tbl != null && tbl.Rows.Count > 0)
                     {
-                      
+
                         var data = (from DataRow dr in tbl.Rows
                                     select new TPROGDTL
                                     {
@@ -1921,12 +1921,15 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult FillReceiveData(TransactionOutRecProcess VE)
+        public ActionResult FillReceiveData(TransactionOutRecProcess VE, string DOCDT, string SLCD, string JOBCD, string AUTONO)
         {
             try
             {
                 Cn.getQueryString(VE);
-                var tempdata = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
+                JOBCD = JOBCD.retStr() == "" ? "" : JOBCD.retStr().retSqlformat();
+                SLCD = SLCD.retStr() == "" ? "" : SLCD.retStr().retSqlformat();
+                var tempdata = salesfunc.getPendProg(DOCDT.retStr(), "", SLCD.retStr(), "", JOBCD.retStr(), AUTONO.retStr(), "");
+
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 VE.TBATCHDTL = (from a in VE.TPROGDTL
                                 join DataRow c in tempdata.Rows on a.PROGAUTOSLNO equals c["PROGAUTOSLNO"].retStr() into X
@@ -4866,6 +4869,179 @@ namespace Improvar.Controllers
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetPendingData(TransactionOutRecProcess VE, string DOCDT, string jobcd, string slcd, string autono)
+        {
+            try
+            {
+                jobcd = jobcd.retStr() == "" ? "" : jobcd.retStr().retSqlformat();
+                slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
+                var pendprg_data = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
+                //var GetPendig_Data = masterHelp.Generate_help(th, tbody);
+                DataView dv = new DataView(pendprg_data);
+                string[] COL = new string[] { "DOCNO", "DOCDT", "PROGUNIQNO", "BARNO", "ITGRPNM", "ITNM", "STYLENO", "BALNOS", "BALQNTY", "PROGAUTOSLNO", "ITREMARK", "FABITNM", "ORDDOCNO", "ORDSLNO", "Makestyleno" };
+                pendprg_data = dv.ToTable(true, COL);
+                VE.PENDING_POPUP = (from DataRow dr in pendprg_data.Rows
+                                    select new PENDING_POPUP
+                                    {
+                                        DOCNO = dr["docno"].retStr(),
+                                        DOCDT = dr["docdt"].retStr(),
+                                        PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
+                                        BARNO = dr["barno"].retStr(),
+                                        ITGRPNM = dr["itgrpnm"].retStr(),
+                                        ITNM = dr["ITNM"].retStr(),
+                                        STYLENO = dr["STYLENO"].retStr(),
+                                        BALNOS = dr["BALNOS"].retDbl(),
+                                        BALQNTY = dr["BALQNTY"].retDbl(),
+                                        PROGAUTOSLNO = dr["PROGAUTOSLNO"].retStr(),
+                                        ITREMARK = dr["ITREMARK"].retStr(),
+                                        FABITNM = dr["FABITNM"].retStr(),
+                                        ORDDOCNO = dr["ORDDOCNO"].retStr(),
+                                        ORDSLNO = dr["ORDSLNO"].retDbl() == 0 ? (double?)null : dr["ORDSLNO"].retDbl(),
+                                        MAKESTYLENO = dr["Makestyleno"].retStr()
+                                    }).Distinct().OrderBy(a => a.DOCDT).ThenBy(a => a.DOCNO).ToList();
+                if (VE.TPROGDTL != null)
+                {//checked when opend secone times.
+                    var selectedbillautoslno = VE.TPROGDTL.Select(e => e.PROGAUTOSLNO).Distinct().ToList();
+                    VE.PENDING_POPUP = VE.PENDING_POPUP.Where(x => !selectedbillautoslno.Contains(x.PROGAUTOSLNO)).ToList();
+                }
+               
+                if (VE.PENDING_POPUP.Count != 0)
+                {
+                    VE.DefaultView = true;
+                    return PartialView("_T_OUTRECPROCESS_Pending_Prog", VE);
+                }
+                else {
+                    VE.DefaultView = true;
+                    return Content("0");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult SelectPendingProgram(TransactionOutRecProcess VE, string DOCDT, string jobcd, string slcd, string autono)
+        {
+            Cn.getQueryString(VE);
+            try
+            {
+                jobcd = jobcd.retStr() == "" ? "" : jobcd.retStr().retSqlformat();
+                slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
+
+                var Selectedprog = (from p in VE.PENDING_POPUP where p.Checked == true select p.PROGAUTOSLNO).ToArray();
+
+                var pendprg_data = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
+                var data = (from DataRow dr in pendprg_data.Rows
+                            where Selectedprog.Contains(dr["PROGAUTOSLNO"].retStr())
+                            select new TPROGDTL
+                            {
+                                PROGAUTONO = dr["PROGAUTONO"].retStr(),
+                                PROGSLNO = dr["PROGSLNO"].retShort(),
+                                PROGAUTOSLNO = dr["PROGAUTOSLNO"].retStr(),
+                                PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
+                                BARNO = dr["BARNO"].retStr(),
+                                ITGRPNM = dr["ITGRPNM"].retStr(),
+                                ITGRPCD = dr["ITGRPCD"].retStr(),
+                                ITNM = dr["FABITNM"].retStr() + " " + dr["ITNM"].retStr(),
+                                ITCD = dr["ITCD"].retStr(),
+                                //FABITCD = dr["FABITCD"].retStr(),
+                                STYLENO = dr["STYLENO"].retStr(),
+                                UOM = dr["UOMCD"].retStr(),
+                                COLRNM = dr["COLRNM"].retStr(),
+                                COLRCD = dr["COLRCD"].retStr(),
+                                SIZECD = dr["SIZECD"].retStr(),
+                                SHADE = dr["SHADE"].retStr(),
+                                NOS = dr["BALNOS"].retDbl(),
+                                QNTY = dr["BALQNTY"].retDbl(),
+                                //BALNOS = dr["BALNOS"].retDbl(),
+                                //BALQNTY = dr["BALQNTY"].retDbl(),
+                                ITREMARK = dr["ITREMARK"].retStr(),
+                                SAMPLE = dr["sample"].retStr(),
+                                COMMONUNIQBAR = dr["COMMONUNIQBAR"].retStr(),
+                                CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
+                            }).ToList();
+                if (VE.TPROGDTL != null)
+                {
+                    VE.TPROGDTL.AddRange(data);
+                }
+                else
+                {
+                    VE.TPROGDTL = data;
+                }
+                string BARNO = VE.TPROGDTL.Select(x => x.BARNO).Distinct().ToArray().retSqlfromStrarray();
+                string TAXGRPCD = VE.T_TXNOTH.TAXGRPCD.retStr();
+                string GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD.retStr().retSqlformat();
+                string PRCCD = VE.T_TXNOTH.PRCCD.retStr();
+                string MTRLJOBCD = VE.MTRLJOBCD.retStr() == "" ? "" : VE.MTRLJOBCD.retStr().retSqlformat();
+                var barimgdata = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), GOCD, BARNO, "", MTRLJOBCD, "", "", "", PRCCD, TAXGRPCD, "", "", true, false, "", "", "", false, false, true, "", true, false, VE.T_TXN.SLCD.retStr().retSqlformat());
+
+                int slno = 1;
+                for (int p = 0; p <= VE.TPROGDTL.Count - 1; p++)
+                {
+                    var img = barimgdata.AsEnumerable().Where(a => a.Field<string>("BARNO").retStr() == VE.TPROGDTL[p].BARNO).Select(b => b.Field<string>("barimage")).FirstOrDefault();
+                    if (img.retStr() != "")
+                    {
+                        var brimgs = img.Split((char)179);
+                        VE.TPROGDTL[p].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                        foreach (var barimg in brimgs)
+                        {
+                            string barfilename = barimg.Split('~')[0];
+                            string barimgdesc = barimg.Split('~')[1];
+                            VE.TPROGDTL[p].BarImages += (char)179 + CommVar.WebUploadDocURL(barfilename) + "~" + barimgdesc;
+                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                            FROMpath = Path.Combine(FROMpath, "");
+                            string TOPATH = CommVar.LocalUploadDocPath() + barfilename;
+                            Cn.CopyImage(FROMpath, TOPATH);
+                        }
+                        VE.TPROGDTL[p].BarImages = VE.TPROGDTL[p].BarImages.retStr().TrimStart((char)179);
+                    }
+
+                    VE.TPROGDTL[p].SLNO = slno.retShort();
+                    VE.TPROGDTL[p].CheckedSample = VE.TPROGDTL[p].SAMPLE.retStr() == "Y" ? true : false;
+
+                    string progautoslno = VE.TPROGDTL[p].PROGAUTOSLNO;
+                    var balnosqnty = (from DataRow dr in pendprg_data.Rows
+                                      where dr["PROGAUTOSLNO"].retStr() == progautoslno
+                                      select new
+                                      {
+                                          balnos = dr["balnos"].retDbl(),
+                                          balqnty = dr["balqnty"].retDbl(),
+                                      }).FirstOrDefault();
+                    if (balnosqnty != null)
+                    {
+                        VE.TPROGDTL[p].BALNOS = balnosqnty.balnos.retDbl();
+                        VE.TPROGDTL[p].BALQNTY = balnosqnty.balqnty.retDbl();
+                    }
+
+                    slno++;
+
+
+                }
+                VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
+                VE.P_T_QNTY = VE.TPROGDTL.Sum(a => a.QNTY).retDbl();
+                VE.Prog_UomTotal = string.Join(", ", (from x in VE.TPROGDTL
+                                                      where x.UOM.retStr() != ""
+                                                      group x by new
+                                                      {
+                                                          x.UOM
+                                                      } into P
+                                                      select P.Key.UOM.retStr() + " : " + P.Sum(A => A.QNTY.retDbl()).retDbl()).ToList());
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_OUTRECPROCESS_Programme", VE);
+            }
+            catch (Exception ex)
+            {
+                VE.DefaultView = false;
+                VE.DefaultDay = 0;
+                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
+                Cn.SaveException(ex, "");
+                return View(VE);
             }
         }
 

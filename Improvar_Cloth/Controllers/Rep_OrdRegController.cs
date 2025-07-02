@@ -217,20 +217,29 @@ namespace Improvar.Controllers
                 if (ReportType == "Details" || ReportType == "Summary")
                 {
                     HC.GetPrintHeader(IR, "docdt", "string", "c,10", "DocDate");
-                    HC.GetPrintHeader(IR, "docno", "string", "c,15", "DocNo.");
+                    if (ReportType != "Summary")
+                    {
+                        HC.GetPrintHeader(IR, "docno", "string", "c,15", "DocNo.");
+                    }
                     if (ReportType == "Summary")
                     {
-                        HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
+                        //HC.GetPrintHeader(IR, "slcd", "string", "c,8", "Party Cd");
                         HC.GetPrintHeader(IR, "slnm", "string", "c,45", "Party Name");
                         HC.GetPrintHeader(IR, "district", "string", "c,10", "Area");
+                        HC.GetPrintHeader(IR, "docno", "string", "c,15", "DocNo.");
                     }
-                    HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");
                     HC.GetPrintHeader(IR, "PREFDT", "string", "c,20", "Party Ref Date");
-                    HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
-                    if (ReportType == "Details")
-                    {                                             
-                        if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
+                    if (ReportType == "Summary")
+                    {
+                        HC.GetPrintHeader(IR, "DELVDT", "string", "c,20", "Delivary Date");
                     }
+                    HC.GetPrintHeader(IR, "prefno", "string", "c,45", "Party Ref");                    
+                    HC.GetPrintHeader(IR, "itnm", "string", "c,15", "Item Name");
+                    if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
+                    //if (ReportType == "Details")
+                    //{                                             
+                    //    if (showcolor == true) HC.GetPrintHeader(IR, "colrnm", "string", "c,50", "Color");
+                    //}
                     if (VE.Checkbox1 == true && VE.Checkbox7 == false)
                     {
                         HC.GetPrintHeader(IR, "qnty", "double", "n,12,3:##,##,##,##0.000", "Balance Order Qnty");
@@ -468,13 +477,15 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].retDateStr();
 
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString() + (tbl.Rows[i]["cancel"].retStr() == "Y" ? " (Cancel)" : "");
-                                IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
+                                //IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
                                 IR.Rows[rNo]["district"] = tbl.Rows[i]["district"].ToString();
                                 IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
+                                IR.Rows[rNo]["DELVDT"] = tbl.Rows[i]["DELVDT"].retDateStr();
                                 IR.Rows[rNo]["PREFDT"] = tbl.Rows[i]["PREFDT"].retDateStr(); 
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
                                 IR.Rows[rNo]["itnm"] = tbl.Rows[i]["STYLENO"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
+                                if (showcolor == true) IR.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
 
                                 string chk1 = tbl.Rows[i]["autono"].ToString();
                                 double cqnty = 0, camt = 0, cancqnty = 0;

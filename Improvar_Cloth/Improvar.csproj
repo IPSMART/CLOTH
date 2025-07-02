@@ -1627,7 +1627,7 @@
     <Content Include="Views\Shared\_Rep_PartyItemSumm_Item_Det.cshtml" />
     <Content Include="Views\Shared\_tree_ExistingTag.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_Register.cshtml" />
-    <Content Include="Views\Shared\_T_OUTRECPROCESSController_Pending_Prog.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Pending_Prog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

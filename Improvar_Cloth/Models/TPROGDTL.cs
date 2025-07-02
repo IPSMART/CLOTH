@@ -30,7 +30,7 @@ namespace Improvar.Models
         
         [StringLength(6)]
         public string DOCNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOCDT { get; set; }
         
         [StringLength(30)]
@@ -110,7 +110,8 @@ namespace Improvar.Models
         public string ORDAUTONO { get; set; }
         public string MAKESTYLENO { get; set; }
         public string MAKEITCD { get; set; }
-        public short ORDSLNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public short? ORDSLNO { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double  MIQNTY { get; set; }
         public string ChildMIData { get; set; }
@@ -118,6 +119,12 @@ namespace Improvar.Models
         [StringLength(1)]
         public string JOBTXNTY { get; set; }
         public bool CheckedJOBTXNTY { get; set; }
+        //public string DOCNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        //public string Docdt { get; set; }
+        //public string Barno { get; set; }
+        public string FABITNM { get; set; }
+        //public string Makestyleno { get; set; }        
 
     }
 }
