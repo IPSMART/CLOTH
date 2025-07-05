@@ -4875,14 +4875,36 @@ namespace Improvar.Controllers
         {
             try
             {
+                Cn.getQueryString(VE);
                 jobcd = jobcd.retStr() == "" ? "" : jobcd.retStr().retSqlformat();
                 slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
-                var pendprg_data = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
-                //var GetPendig_Data = masterHelp.Generate_help(th, tbody);
-                DataView dv = new DataView(pendprg_data);
-                string[] COL = new string[] { "DOCNO", "DOCDT", "PROGUNIQNO", "BARNO", "ITGRPNM", "ITNM", "STYLENO", "BALNOS", "BALQNTY", "PROGAUTOSLNO", "ITREMARK", "FABITNM", "ORDDOCNO", "ORDSLNO", "Makestyleno" };
-                pendprg_data = dv.ToTable(true, COL);
-                VE.PENDING_POPUP = (from DataRow dr in pendprg_data.Rows
+                DataTable tbl = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
+
+                if (VE.TPROGDTL != null)
+                {
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        string progautoslno = tbl.Rows[i]["PROGAUTOSLNO"].retStr();
+                        var griddata = VE.TPROGDTL.Where(a => a.PROGAUTOSLNO == progautoslno).Select(b => new { b.QNTY, b.NOS }).ToList();
+                        if (griddata.Count > 0)
+                        {
+                            var totalgridqnty = griddata.Select(a => a.QNTY).Sum();
+                            var totalgridnos = griddata.Select(a => a.NOS).Sum();
+                            tbl.Rows[i]["balnos"] = tbl.Rows[i]["balnos"].retDbl() - totalgridnos.retDbl();
+                            tbl.Rows[i]["balqnty"] = tbl.Rows[i]["balqnty"].retDbl() - totalgridqnty.retDbl();
+                        }
+                    }
+                    var tbl_data = (from DataRow dr in tbl.Rows where dr["balqnty"].retDbl() != 0 select dr);
+                    if (tbl_data != null && tbl_data.Count() > 0)
+                    {
+                        tbl = tbl_data.CopyToDataTable();
+                    }
+                    else
+                    {
+                        tbl = tbl.Clone();
+                    }
+                }
+                VE.PENDING_POPUP = (from DataRow dr in tbl.Rows
                                     select new PENDING_POPUP
                                     {
                                         DOCNO = dr["docno"].retStr(),
@@ -4901,12 +4923,7 @@ namespace Improvar.Controllers
                                         ORDSLNO = dr["ORDSLNO"].retDbl() == 0 ? (double?)null : dr["ORDSLNO"].retDbl(),
                                         MAKESTYLENO = dr["Makestyleno"].retStr()
                                     }).Distinct().OrderBy(a => a.DOCDT).ThenBy(a => a.DOCNO).ToList();
-                if (VE.TPROGDTL != null)
-                {//checked when opend secone times.
-                    var selectedbillautoslno = VE.TPROGDTL.Select(e => e.PROGAUTOSLNO).Distinct().ToList();
-                    VE.PENDING_POPUP = VE.PENDING_POPUP.Where(x => !selectedbillautoslno.Contains(x.PROGAUTOSLNO)).ToList();
-                }
-               
+
                 if (VE.PENDING_POPUP.Count != 0)
                 {
                     VE.DefaultView = true;
@@ -4932,11 +4949,11 @@ namespace Improvar.Controllers
                 jobcd = jobcd.retStr() == "" ? "" : jobcd.retStr().retSqlformat();
                 slcd = slcd.retStr() == "" ? "" : slcd.retStr().retSqlformat();
 
-                var Selectedprog = (from p in VE.PENDING_POPUP where p.Checked == true select p.PROGAUTOSLNO).ToArray();
 
                 var pendprg_data = salesfunc.getPendProg(DOCDT.retStr(), "", slcd.retStr(), "", jobcd.retStr(), autono.retStr());
                 var data = (from DataRow dr in pendprg_data.Rows
-                            where Selectedprog.Contains(dr["PROGAUTOSLNO"].retStr())
+                            join b in VE.PENDING_POPUP on dr["PROGAUTOSLNO"].retStr() equals b.PROGAUTOSLNO
+                            where b.Checked == true
                             select new TPROGDTL
                             {
                                 PROGAUTONO = dr["PROGAUTONO"].retStr(),
@@ -4955,8 +4972,8 @@ namespace Improvar.Controllers
                                 COLRCD = dr["COLRCD"].retStr(),
                                 SIZECD = dr["SIZECD"].retStr(),
                                 SHADE = dr["SHADE"].retStr(),
-                                NOS = dr["BALNOS"].retDbl(),
-                                QNTY = dr["BALQNTY"].retDbl(),
+                                NOS = b.BALNOS.retDbl(),
+                                QNTY = b.BALQNTY.retDbl(),
                                 //BALNOS = dr["BALNOS"].retDbl(),
                                 //BALQNTY = dr["BALQNTY"].retDbl(),
                                 ITREMARK = dr["ITREMARK"].retStr(),

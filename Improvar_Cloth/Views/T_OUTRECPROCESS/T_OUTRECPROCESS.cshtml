@@ -481,14 +481,19 @@
         var AUTONO = $("#AUTONO").val();
         $.ajax({
             type: 'POST',
+            beforesend: $("#WaitingMode").show(),
             url: "@Url.Action("GetPendingData", PageControllerName)",
             data: $('form').serialize() + "&DOCDT=" + DOCDT + "&SLCD=" + SLCD + "&JOBCD=" + JOBCD + "&AUTONO=" + AUTONO,
             success: function (result) {
                 debugger;
-                if (result == 0) { return msgWarning("Record not Found!"); }
+                $("#WaitingMode").hide();
+                if (result == 0)
+                {
+                    return msgWarning("Record not Found!");
+                }
                 $("#popup").animate({ marginTop: '-10px' }, 50);
                 $("#popup").html(result);
-                $("#WaitingMode").hide();                
+                           
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -2148,7 +2153,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                                 <div>
                                     <div id="partialdivReceive" style="margin-top:0px;">
                                         @Html.Partial("_T_OUTRECPROCESS_Receive")
