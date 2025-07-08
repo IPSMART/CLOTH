@@ -2934,6 +2934,8 @@ namespace Improvar.Controllers
                     sql = "select a.autono,a.slno,a.qnty from " + scm1 + ".t_progdtl a," + scm1 + ".t_cntrl_hdr b," + scm1 + ".m_doctype c  ";
                     sql += "where a.autono=b.autono(+) and b.doccd=c.doccd(+) and nvl(b.cancel,'N')='N' and c.doctype in ('" + recdoctype + "') ";
                     DataTable dtIssProg = masterHelp.SQLquery(sql);
+                    double txnslno = 1;
+                    double batchslno = 1;
 
                     for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
                     {
@@ -2976,25 +2978,37 @@ namespace Improvar.Controllers
                                                  join d in DB1.M_DOCTYPE on c.DOCCD equals d.DOCCD
                                                  where a.SLNO == b.TXNSLNO && b.RECPROGAUTONO == progautono && b.RECPROGSLNO == progslno && d.DOCTYPE == recdoctype
                                                  select a).ToList();
+                                List<TTXNDTL> tempTTXNDTL = new List<TTXNDTL>();
                                 foreach (var v in issTXNDTL)
                                 {
+                                    TTXNDTL TTXNDTL1 = new TTXNDTL();
+                                    TTXNDTL1.AUTONO = v.AUTONO;
+                                    TTXNDTL1.SLNO = v.SLNO;
+                                    TTXNDTL1.tempslno = txnslno.retDbl();
+                                    tempTTXNDTL.Add(TTXNDTL1);
+
+
                                     v.QNTY = ((v.QNTY / issprogqnty) * VE.TPROGDTL[i].QNTY).retDbl().toRound(3);
                                     v.AUTONO = TTXN.AUTONO;
                                     v.STKDRCR = "D";
-                                    v.SLNO = (v.SLNO + 1000).retShort();
+                                    v.SLNO = (txnslno + 1000).retShort();
+                                    //v.SLNO = (v.SLNO + 1000).retShort();
                                     T_TXNDTL TTXNDTL = new T_TXNDTL();
                                     TTXNDTL = v;
 
                                     dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                                    txnslno++;
                                 }
                                 foreach (var v in issBATCHDTL)
                                 {
+                                    double temptxnslno = (from a in tempTTXNDTL where a.AUTONO == v.AUTONO && a.SLNO == v.TXNSLNO  select a.tempslno).FirstOrDefault();
                                     v.QNTY = ((v.QNTY / issprogqnty) * VE.TPROGDTL[i].QNTY).retDbl().toRound(3);
                                     v.AUTONO = TTXN.AUTONO;
                                     v.STKDRCR = "D";
-                                    v.TXNSLNO = (v.TXNSLNO + 1000).retShort();
-                                    v.SLNO = (v.SLNO + 1000).retShort();
+                                    v.TXNSLNO = (temptxnslno + 1000).retShort();//(v.TXNSLNO + 1000).retShort();
+                                    v.SLNO = (batchslno + 1000).retShort();// (v.SLNO + 1000).retShort();
                                     v.RECPROGAUTONO = TTXN.AUTONO;
                                     v.RECPROGSLNO = VE.TPROGDTL[i].PROGSLNO;
                                     T_BATCHDTL TBATCHDTL = new T_BATCHDTL();
@@ -3002,6 +3016,7 @@ namespace Improvar.Controllers
 
                                     dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    batchslno++;
                                 }
 
                             }
