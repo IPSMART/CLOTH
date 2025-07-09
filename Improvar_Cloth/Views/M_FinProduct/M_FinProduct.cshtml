@@ -23,7 +23,7 @@
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#SRC_FLAG").attr("readonly", false);
-            $('form :input:enabled:visible:not([readonly]):first').focus();
+            //$('form :input:enabled:visible:not([readonly]):first').focus();
             SetColor('Y');
             $("input[type='color']").css('pointer-events', 'none');
             $("input[type='file']").attr("disabled", false);
@@ -38,7 +38,7 @@
             SetColor('Y');
         }
         else if ("@Model.DefaultAction" == "A") {
-            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();           
         }
 
         $("#WaitingMode").hide();
@@ -1031,11 +1031,11 @@
     }
 
     function ShowItemDtls() {
-        $("#form1").submit();
+        $("#form").submit();
     }
 
 </script>
-@using (Html.BeginForm("M_FinProduct", "M_FinProduct", FormMethod.Post, new {id = "form1", enctype = "multipart /form-data" }))
+@using (Html.BeginForm("M_FinProduct", "M_FinProduct", FormMethod.Post, new {id = "form", enctype = "multipart /form-data" }))
 {
                 if (Model.DefaultView == true)
                 {
@@ -1797,11 +1797,14 @@
                         </div>
                     </div>
                 </div>
+                @if (Model.DefaultAction == "V")
+                {
                 <div>
                     <div id="PopupItemDtls" class="row" style="margin-top: 11px;top:25%;left:30%;position:absolute;display:none;">
                         @Html.Partial("_M_FinProduct_Register")
                     </div>
                 </div>
+                }
             </div>
 
         </div>
